@@ -1,19 +1,23 @@
 package net.bagusekasaputra.griyakampung.ui.main
 
+import android.content.Intent
 import android.os.Bundle
-import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.GridLayoutManager
 import dagger.hilt.android.AndroidEntryPoint
 import net.bagusekasaputra.griyakampung.databinding.ActivityMainBinding
 import net.bagusekasaputra.griyakampung.domain.entity.Kavling
+import net.bagusekasaputra.griyakampung.ui.detail.DetailActivity
 
 @AndroidEntryPoint
 class MainActivity : AppCompatActivity() {
 
-    private lateinit var binding: ActivityMainBinding
+    companion object {
+        const val INTENT_KAVLING_KODE = "kavling_kode"
+    }
 
+    private lateinit var binding: ActivityMainBinding
     private val viewModel: MainViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -35,8 +39,10 @@ class MainActivity : AppCompatActivity() {
 
     private fun setupRecyclerView(kavlings: List<Kavling>) {
         val adapter = MainAdapter(kavlings) {
-            // TODO
-            Toast.makeText(this, "${kavlings[it].kode} clicked!", Toast.LENGTH_SHORT).show()
+            val intent = Intent(this, DetailActivity::class.java).apply {
+                putExtra(INTENT_KAVLING_KODE, kavlings[it].kode)
+            }
+            startActivity(intent)
         }
         binding.recyclerMain.adapter = adapter
         binding.recyclerMain.layoutManager = GridLayoutManager(this, 3)
