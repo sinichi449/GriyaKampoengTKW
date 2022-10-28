@@ -1,0 +1,140 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:padding="24dp">
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/guideline_vertical"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintGuide_percent="0.50" />
+
+    <com.google.android.material.textview.MaterialTextView
+        android:id="@+id/tv_info_title"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Tambah Block atau Kavling"
+        style="@style/TextAppearance.MaterialComponents.Headline6"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        android:textAlignment="center"/>
+
+    <com.google.android.material.textview.MaterialTextView
+        android:id="@+id/tv_info_block"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Block"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@id/til_block"
+        app:layout_constraintBottom_toBottomOf="@id/til_block"
+        app:layout_constraintEnd_toStartOf="@id/til_block"
+        android:layout_marginEnd="24dp"
+        style="@style/TextAppearance.MaterialComponents.Subtitle1"/>
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/til_block"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        app:layout_constraintStart_toEndOf="@id/guideline_vertical"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/tv_info_title"
+        android:layout_marginTop="24dp"
+        android:hint="Kode block">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/edt_block_kode"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:inputType="textCapCharacters"/>
+
+    </com.google.android.material.textfield.TextInputLayout>
+
+
+    <com.google.android.material.textview.MaterialTextView
+        android:id="@+id/tv_info_start_kavling"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Start No. Kavling"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@id/til_start_kavling"
+        app:layout_constraintBottom_toBottomOf="@id/til_start_kavling"
+        app:layout_constraintEnd_toStartOf="@id/til_start_kavling"
+        android:layout_marginEnd="24dp"
+        style="@style/TextAppearance.MaterialComponents.Subtitle1"/>
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/til_start_kavling"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        app:layout_constraintStart_toEndOf="@id/guideline_vertical"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/til_block"
+        android:layout_marginTop="8dp"
+        android:hint="Start">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/edt_start_kavling"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:inputType="number"/>
+
+    </com.google.android.material.textfield.TextInputLayout>
+
+
+    <com.google.android.material.textview.MaterialTextView
+        android:id="@+id/tv_info_end_kavling"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="End No. Kavling"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@id/til_end_kavling"
+        app:layout_constraintBottom_toBottomOf="@id/til_end_kavling"
+        app:layout_constraintEnd_toStartOf="@id/til_end_kavling"
+        android:layout_marginEnd="24dp"
+        style="@style/TextAppearance.MaterialComponents.Subtitle1"/>
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/til_end_kavling"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        app:layout_constraintStart_toEndOf="@id/guideline_vertical"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/til_start_kavling"
+        android:layout_marginTop="8dp"
+        android:hint="End">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/edt_end_kavling"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:inputType="number"/>
+
+    </com.google.android.material.textfield.TextInputLayout>
+
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/btn_tambahkan"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/til_end_kavling"
+        android:layout_marginTop="24dp"
+        android:text="Tambahkan"
+        app:cornerRadius="8dp"/>
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/btn_batal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/btn_tambahkan"
+        android:text="Batal"
+        app:cornerRadius="8dp"/>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

@@ -3,11 +3,14 @@ package net.bagusekasaputra.griyakampoengtkw.ui.main
 import android.content.Intent
 import android.os.Bundle
 import androidx.activity.viewModels
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
 import net.bagusekasaputra.griyakampoengtkw.databinding.ActivityMainBinding
+import net.bagusekasaputra.griyakampoengtkw.databinding.DialogNewBlockBinding
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.Block
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.Kavling
 import net.bagusekasaputra.griyakampoengtkw.ui.detail.DetailActivity
@@ -29,6 +32,9 @@ class MainActivity : AppCompatActivity() {
 
         setupViewModel()
 
+        binding.fabAddKavling.setOnClickListener {
+            showNewBlockDialog()
+        }
     }
 
     private fun setupViewModel() {
@@ -66,6 +72,25 @@ class MainActivity : AppCompatActivity() {
         }
         binding.recyclerKavlings.adapter = adapter
         binding.recyclerKavlings.layoutManager = GridLayoutManager(this, 3)
+    }
+
+    private fun showNewBlockDialog() {
+        val dialogBinding = DialogNewBlockBinding.inflate(layoutInflater)
+        val alertDialog = AlertDialog.Builder(this).apply {
+            setView(dialogBinding.root)
+        }.create()
+
+        alertDialog.show()
+
+        dialogBinding.btnTambahkan.setOnClickListener {
+            // TODO
+            alertDialog.dismiss()
+            Snackbar.make(this, binding.root, "Berhasil ditambahkan! (fake)", Snackbar.LENGTH_SHORT).show()
+        }
+
+        dialogBinding.btnBatal.setOnClickListener {
+            alertDialog.dismiss()
+        }
     }
 
     override fun onResume() {
