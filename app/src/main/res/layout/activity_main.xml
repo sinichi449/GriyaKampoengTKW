@@ -23,7 +23,13 @@
         android:layout_height="wrap_content"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/tv_info_block"/>
+        app:layout_constraintTop_toBottomOf="@id/tv_info_block"
+        android:background="@drawable/background_recycler_blocks"
+        android:elevation="4dp"
+        android:layout_marginHorizontal="8dp"
+        android:layout_marginBottom="16dp"
+        android:paddingHorizontal="8dp"
+        android:clipToPadding="false"/>
 
     <com.google.android.material.divider.MaterialDivider
         android:id="@+id/divider_recycler_blocks_kavling"
@@ -32,7 +38,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toBottomOf="@id/recycler_blocks"
-        android:layout_marginVertical="8dp"
+        android:layout_marginTop="16dp"
         android:layout_marginHorizontal="16dp"/>
 
     <com.google.android.material.textview.MaterialTextView
@@ -53,7 +59,14 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toBottomOf="@id/tv_info_kavling"
-        app:layout_constraintBottom_toBottomOf="parent"/>
+        app:layout_constraintBottom_toBottomOf="parent"
+        android:clipToPadding="false"
+        android:layout_marginVertical="16dp"
+        android:layout_marginHorizontal="16dp"
+        android:paddingHorizontal="8dp"
+        android:paddingBottom="64dp"
+        android:background="@drawable/background_recycler_kavling"
+        android:elevation="8dp"/>
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/fab_add_kavling"
@@ -63,6 +76,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintBottom_toBottomOf="parent"
         android:layout_marginBottom="24dp"
-        android:layout_marginEnd="24dp"/>
+        android:layout_marginEnd="24dp"
+        app:elevation="16dp"/>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
