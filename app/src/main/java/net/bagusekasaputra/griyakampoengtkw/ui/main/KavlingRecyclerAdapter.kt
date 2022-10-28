@@ -6,10 +6,10 @@ import androidx.recyclerview.widget.RecyclerView
 import net.bagusekasaputra.griyakampoengtkw.databinding.LayoutRecyclerKavlingsBinding
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.Kavling
 
-class MainAdapter(
+class KavlingRecyclerAdapter(
     private val kavlings: List<Kavling>,
     private val onRecyclerItemClick: (position: Int) -> Unit
-): RecyclerView.Adapter<MainAdapter.MyViewHolder>() {
+): RecyclerView.Adapter<KavlingRecyclerAdapter.MyViewHolder>() {
 
     class MyViewHolder(val binding: LayoutRecyclerKavlingsBinding)
         : RecyclerView.ViewHolder(binding.root) {
@@ -28,7 +28,7 @@ class MainAdapter(
     override fun onBindViewHolder(holder: MyViewHolder, position: Int) {
         holder.binding.tvCardBlockName.text = kavlings[position].kode
 
-        holder.binding.cardBlock.setOnClickListener {
+        holder.binding.cardKavling.setOnClickListener {
             onRecyclerItemClick(position)
         }
     }

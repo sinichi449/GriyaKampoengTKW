@@ -2,8 +2,10 @@ package net.bagusekasaputra.griyakampoengtkw.data.repository
 
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
-import net.bagusekasaputra.griyakampoengtkw.data.source.local.KavlingModel
-import net.bagusekasaputra.griyakampoengtkw.data.source.local.LocalKavlingRepository
+import net.bagusekasaputra.griyakampoengtkw.data.source.local.block.BlockModel
+import net.bagusekasaputra.griyakampoengtkw.data.source.local.kavling.KavlingModel
+import net.bagusekasaputra.griyakampoengtkw.data.source.local.kavling.LocalKavlingRepository
+import net.bagusekasaputra.griyakampoengtkw.domain.entity.Block
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.Kavling
 import net.bagusekasaputra.griyakampoengtkw.domain.repository.KavlingRepository
 import javax.inject.Inject
@@ -11,14 +13,15 @@ import javax.inject.Singleton
 
 @Singleton
 class KavlingRepositoryImpl @Inject constructor(
-    val localKavlingRepository: LocalKavlingRepository
+    private val localKavlingRepository: LocalKavlingRepository
 ): KavlingRepository {
 
-    override fun getKavlingByKode(kode: String): Flow<List<Kavling>> {
-        val kavlings = localKavlingRepository.getKavlingByKode(kode).map {
-            mapKavling(it)
-        }
+    override fun getKavlingByBlock(block: Block): Flow<List<Kavling>> {
         return flow {
+            val blockModel = BlockModel(kode = block.kode, warna = block.warna)
+            val kavlings = localKavlingRepository.getKavlingByBlock(blockModel).map {
+                mapKavling(it)
+            }
             emit(kavlings)
         }
     }

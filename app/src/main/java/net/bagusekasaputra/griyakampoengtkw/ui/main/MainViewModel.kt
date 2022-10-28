@@ -7,29 +7,45 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import net.bagusekasaputra.griyakampoengtkw.domain.entity.Block
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.Kavling
-import net.bagusekasaputra.griyakampoengtkw.domain.usecase.GetKavlingsByKodeUseCase
+import net.bagusekasaputra.griyakampoengtkw.domain.usecase.GetAllBlocksUseCase
+import net.bagusekasaputra.griyakampoengtkw.domain.usecase.GetKavlingsByBlockUseCase
 import javax.inject.Inject
 
 @HiltViewModel
 class MainViewModel @Inject constructor(
-    private val getKavlingsByKodeUseCase: GetKavlingsByKodeUseCase
+    private val getKavlingsByBlockUseCase: GetKavlingsByBlockUseCase,
+    private val getAllBlocksUseCase: GetAllBlocksUseCase
 ): ViewModel() {
 
     private val _kavlings = MutableLiveData<List<Kavling>>()
     val kavlings: LiveData<List<Kavling>>
         get() = _kavlings
 
-    val currentKode = MutableLiveData<String>("A")
+    private val _blocks = MutableLiveData<List<Block>>()
+    val blocks: LiveData<List<Block>>
+        get() = _blocks
 
-    fun getKavlings(kode: String) {
+    val currentBlock = MutableLiveData("A")
+
+    fun getKavlings(block: Block) {
         CoroutineScope(Dispatchers.IO).launch {
-            val request = GetKavlingsByKodeUseCase.Request(kode)
-            getKavlingsByKodeUseCase.execute(request).collect {
+            val request = GetKavlingsByBlockUseCase.Request(block)
+            getKavlingsByBlockUseCase.execute(request).collect {
                 val result = it.data.data
                 _kavlings.postValue(result)
             }
         }
     }
 
+    fun getAllBlocks() {
+        CoroutineScope(Dispatchers.IO).launch {
+            val request = GetAllBlocksUseCase.Request
+            getAllBlocksUseCase.execute(request).collect {
+                val result = it.data.data
+                _blocks.postValue(result)
+            }
+        }
+    }
 }
