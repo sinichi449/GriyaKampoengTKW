@@ -27,6 +27,7 @@ class BlockRecyclerAdapter(
 
     override fun onBindViewHolder(holder: MyViewHolder, position: Int) {
         holder.binding.tvBlockKode.text = blocks[position].kode
+
         holder.binding.cardBlock.setCardBackgroundColor(
             getColor(blocks[position].warna)
         )

@@ -1,6 +1,5 @@
 package net.bagusekasaputra.griyakampoengtkw.data.source.local.kavling
 
-import net.bagusekasaputra.griyakampoengtkw.R
 import net.bagusekasaputra.griyakampoengtkw.data.source.local.block.BlockModel
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -9,18 +8,6 @@ import javax.inject.Singleton
 class FakeKavlingModelDb @Inject constructor(
 
 ): LocalKavlingRepository {
-
-    private val kavlings = ArrayList<HashMap<String, ArrayList<KavlingModel>>>()
-
-    init {
-        kavlings.apply {
-            val blockA = HashMap<String, ArrayList<KavlingModel>>()
-
-            blockA["A"] = generatePseudoKavlingModel(BlockModel("A", R.color.abang))
-
-            add(blockA)
-        }
-    }
 
     private fun generatePseudoKavlingModel(blockModel: BlockModel): ArrayList<KavlingModel> {
         val models = ArrayList<KavlingModel>()
@@ -34,16 +21,7 @@ class FakeKavlingModelDb @Inject constructor(
     }
 
     override fun getKavlingByBlock(block: BlockModel): List<KavlingModel> {
-        var kavlingModels = ArrayList<KavlingModel>()
-
-        for (blockKode in kavlings) {
-            if (blockKode[block.kode] != null) {
-                kavlingModels = blockKode[block.kode]!!
-                break
-            }
-        }
-
-        return kavlingModels
+        return generatePseudoKavlingModel(block)
     }
 
 }

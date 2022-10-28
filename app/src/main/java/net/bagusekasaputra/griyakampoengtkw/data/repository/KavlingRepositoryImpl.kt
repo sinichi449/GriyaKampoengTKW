@@ -33,7 +33,8 @@ class KavlingRepositoryImpl @Inject constructor(
     private fun mapKavling(kavlingModel: KavlingModel): Kavling {
         return Kavling(
             kavlingModel.kode,
-            kavlingModel.isActive
+            kavlingModel.isActive,
+            kavlingModel.warna
         )
     }
 

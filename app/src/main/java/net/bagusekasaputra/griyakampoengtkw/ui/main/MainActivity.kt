@@ -2,7 +2,6 @@ package net.bagusekasaputra.griyakampoengtkw.ui.main
 
 import android.content.Intent
 import android.os.Bundle
-import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.GridLayoutManager
@@ -47,9 +46,11 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun setupBlockRecyclerview(blocks: List<Block>) {
-        val adapter = BlockRecyclerAdapter(blocks) {
-            // TODO
-            Toast.makeText(this, "Block ${blocks[it].kode} clicked!", Toast.LENGTH_SHORT).show()
+        val adapter = BlockRecyclerAdapter(blocks) { position ->
+            viewModel.currentBlock.value = blocks[position].kode
+            viewModel.currentBlock.value?.let {
+                viewModel.getKavlings(Block(kode = it))
+            }
         }
 
         binding.recyclerBlocks.adapter = adapter
