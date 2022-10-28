@@ -2,6 +2,7 @@ package net.bagusekasaputra.griyakampoengtkw.ui.main
 
 import android.content.Intent
 import android.os.Bundle
+import android.view.Menu
 import androidx.activity.viewModels
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
@@ -9,6 +10,7 @@ import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
+import net.bagusekasaputra.griyakampoengtkw.R
 import net.bagusekasaputra.griyakampoengtkw.databinding.ActivityMainBinding
 import net.bagusekasaputra.griyakampoengtkw.databinding.DialogNewBlockBinding
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.Block
@@ -29,6 +31,10 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
+
+        setSupportActionBar(binding.toolbarMain)
+        supportActionBar?.setHomeAsUpIndicator(R.drawable.settings_24px)
+        supportActionBar?.setDisplayHomeAsUpEnabled(true)
 
         setupViewModel()
 
@@ -102,5 +108,10 @@ class MainActivity : AppCompatActivity() {
             val block = Block(kode = it)
             viewModel.getKavlings(block)
         }
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
+        menuInflater.inflate(R.menu.menu_main, menu)
+        return super.onCreateOptionsMenu(menu)
     }
 }

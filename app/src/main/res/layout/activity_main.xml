@@ -6,13 +6,34 @@
     android:layout_height="match_parent"
     tools:context=".ui.main.MainActivity">
 
+    <androidx.appcompat.widget.Toolbar
+        android:id="@+id/toolbar_main"
+        android:layout_width="match_parent"
+        android:minHeight="?attr/actionBarSize"
+        android:layout_height="wrap_content"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        android:background="@color/purple_500"
+        android:theme="@style/Theme.GriyaKampung">
+
+        <com.google.android.material.textview.MaterialTextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Site Plan Management"
+            android:textColor="@color/white"
+            android:textAlignment="center"
+            style="@style/TextAppearance.AppCompat.Widget.ActionBar.Title"/>
+
+    </androidx.appcompat.widget.Toolbar>
+
     <com.google.android.material.textview.MaterialTextView
         android:id="@+id/tv_info_block"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="Blocks"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/toolbar_main"
         style="@style/TextAppearance.MaterialComponents.Headline6"
         android:layout_margin="16dp"
         android:padding="8dp"/>
