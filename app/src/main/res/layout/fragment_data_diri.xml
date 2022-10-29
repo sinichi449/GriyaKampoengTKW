@@ -5,12 +5,12 @@
     android:layout_height="match_parent"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     tools:context=".ui.detail.DataDiriFragment"
-    android:padding="24dp"
     android:orientation="vertical">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        android:layout_marginTop="24dp">
 
         <ImageView
             android:id="@+id/img_profile"
@@ -32,8 +32,10 @@
     <com.google.android.material.card.MaterialCardView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        app:cardElevation="8dp"
-        app:cardCornerRadius="8dp">
+        app:cardElevation="4dp"
+        app:cardCornerRadius="8dp"
+        android:layout_marginVertical="24dp"
+        android:layout_marginHorizontal="16dp">
 
         <androidx.appcompat.widget.LinearLayoutCompat
             android:layout_width="match_parent"
@@ -64,7 +66,8 @@
                     android:layout_weight="0.5"
                     android:text="Soejono"
                     android:textSize="16sp"
-                    android:gravity="end" />
+                    android:gravity="end"
+                    android:textColor="@color/black"/>
 
             </androidx.appcompat.widget.LinearLayoutCompat>
 
@@ -91,7 +94,8 @@
                     android:layout_weight="0.5"
                     android:text="3507043007010001"
                     android:textSize="16sp"
-                    android:gravity="end" />
+                    android:gravity="end"
+                    android:textColor="@color/black"/>
 
             </androidx.appcompat.widget.LinearLayoutCompat>
 
@@ -119,7 +123,8 @@
                     android:layout_weight="0.5"
                     android:text="Harjokuncaran RT.14/05"
                     android:textSize="16sp"
-                    android:gravity="end" />
+                    android:gravity="end"
+                    android:textColor="@color/black"/>
 
             </androidx.appcompat.widget.LinearLayoutCompat>
 
@@ -128,7 +133,6 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
-                android:background="#E3F2FD"
                 android:padding="8dp">
 
                 <com.google.android.material.textview.MaterialTextView
@@ -147,7 +151,8 @@
                     android:layout_weight="0.5"
                     android:text="Redville 21 Block, Ang Mo Kio"
                     android:textSize="16sp"
-                    android:gravity="end" />
+                    android:gravity="end"
+                    android:textColor="@color/black"/>
 
             </androidx.appcompat.widget.LinearLayoutCompat>
 
@@ -156,6 +161,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
+                android:background="#E3F2FD"
                 android:padding="8dp">
 
                 <com.google.android.material.textview.MaterialTextView
@@ -174,7 +180,8 @@
                     android:layout_weight="0.5"
                     android:text="082257878513"
                     android:textSize="16sp"
-                    android:gravity="end" />
+                    android:gravity="end"
+                    android:textColor="@color/black"/>
 
             </androidx.appcompat.widget.LinearLayoutCompat>
 
@@ -182,8 +189,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
-                android:padding="8dp"
-                android:background="#E3F2FD">
+                android:padding="8dp">
 
                 <com.google.android.material.textview.MaterialTextView
                     android:layout_width="match_parent"
@@ -201,7 +207,8 @@
                     android:layout_weight="0.5"
                     android:text="Singapore"
                     android:textSize="16sp"
-                    android:gravity="end" />
+                    android:gravity="end"
+                    android:textColor="@color/black"/>
 
             </androidx.appcompat.widget.LinearLayoutCompat>
 
