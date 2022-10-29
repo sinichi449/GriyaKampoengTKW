@@ -35,7 +35,7 @@ class DetailActivity : AppCompatActivity() {
         pagerAdapter.apply {
             addFragment(DataDiriFragment(), "Data Diri")
             addFragment(FormPembayaranFragment(), "Form Pembayaran")
-            addFragment(FeeMarketingFragment(), "Fee Marketing")
+            addFragment(BiayaMarketingFragment(), "Biaya Marketing")
         }
 
         binding.viewPager.adapter = pagerAdapter

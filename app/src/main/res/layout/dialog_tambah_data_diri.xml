@@ -10,13 +10,13 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        app:layout_constraintGuide_percent="0.50" />
+        app:layout_constraintGuide_percent="0.45" />
 
     <com.google.android.material.textview.MaterialTextView
         android:id="@+id/tv_info_title"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Tambah Block atau Kavling"
+        android:text="Data Diri Costumer"
         style="@style/TextAppearance.MaterialComponents.Headline6"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
@@ -24,10 +24,10 @@
         android:textAlignment="center"/>
 
     <com.google.android.material.textview.MaterialTextView
-        android:id="@+id/tv_info_block"
+        android:id="@+id/tv_info_nama"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Block"
+        android:text="Nama"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="@id/til_nama"
         app:layout_constraintBottom_toBottomOf="@id/til_nama"
@@ -43,13 +43,13 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toBottomOf="@id/tv_info_title"
         android:layout_marginTop="24dp"
-        android:hint="Kode block">
+        android:hint="Nama Costumer">
 
         <com.google.android.material.textfield.TextInputEditText
             android:id="@+id/edt_nama_costumer"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:inputType="textCapCharacters"/>
+            android:inputType="textPersonName"/>
 
     </com.google.android.material.textfield.TextInputLayout>
 
@@ -58,7 +58,7 @@
         android:id="@+id/tv_info_no_identitas"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Start No. Kavling"
+        android:text="No Identitas"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="@id/til_no_identitas"
         app:layout_constraintBottom_toBottomOf="@id/til_no_identitas"
@@ -74,7 +74,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toBottomOf="@id/til_nama"
         android:layout_marginTop="8dp"
-        android:hint="Start">
+        android:hint="KTP, Passport">
 
         <com.google.android.material.textfield.TextInputEditText
             android:id="@+id/edt_no_identitas"
@@ -86,14 +86,44 @@
 
 
     <com.google.android.material.textview.MaterialTextView
+        android:id="@+id/tv_info_alamat_indo"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Alamat Indo"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@id/til_alamat_indo"
+        app:layout_constraintBottom_toBottomOf="@id/til_alamat_indo"
+        app:layout_constraintEnd_toStartOf="@id/til_alamat_indo"
+        android:layout_marginEnd="24dp"
+        style="@style/TextAppearance.MaterialComponents.Subtitle1"/>
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/til_alamat_indo"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        app:layout_constraintStart_toEndOf="@id/guideline_vertical"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/til_no_identitas"
+        android:layout_marginTop="8dp"
+        android:hint="Residensi di Indonesia">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/edt_alamat_indo"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:inputType="text"/>
+
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <com.google.android.material.textview.MaterialTextView
         android:id="@+id/tv_info_alamat_kerja"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="End No. Kavling"
-        app:layout_constraintStart_toStartOf="parent"
+        android:text="Alamat Kerja"
         app:layout_constraintTop_toTopOf="@id/til_alamat_kerja"
         app:layout_constraintBottom_toBottomOf="@id/til_alamat_kerja"
-        app:layout_constraintEnd_toStartOf="@id/til_alamat_kerja"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="@id/guideline_vertical"
         android:layout_marginEnd="24dp"
         style="@style/TextAppearance.MaterialComponents.Subtitle1"/>
 
@@ -103,17 +133,66 @@
         android:layout_height="wrap_content"
         app:layout_constraintStart_toEndOf="@id/guideline_vertical"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/til_no_identitas"
+        app:layout_constraintTop_toBottomOf="@id/til_alamat_indo"
         android:layout_marginTop="8dp"
-        android:hint="End">
+        android:hint="Residensi Majikan">
 
         <com.google.android.material.textfield.TextInputEditText
             android:id="@+id/edt_alamat_kerja"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:inputType="number"/>
+            android:inputType="text"/>
 
     </com.google.android.material.textfield.TextInputLayout>
+
+    <com.google.android.material.textview.MaterialTextView
+        android:id="@+id/tv_info_no_hp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="No. Handphone"
+        app:layout_constraintTop_toTopOf="@id/til_no_hp"
+        app:layout_constraintBottom_toBottomOf="@id/til_no_hp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="@id/guideline_vertical"
+        android:layout_marginEnd="24dp"
+        style="@style/TextAppearance.MaterialComponents.Subtitle1"/>
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/til_no_hp"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        app:layout_constraintStart_toEndOf="@id/guideline_vertical"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/til_alamat_kerja"
+        android:layout_marginTop="8dp"
+        android:hint="No Telpon Seluler / WhatsApp">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/edt_no_handphone"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:inputType="text"/>
+
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <com.google.android.material.textview.MaterialTextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toStartOf="@id/guideline_vertical"
+        app:layout_constraintTop_toTopOf="@id/spinner_negara_bekerja"
+        app:layout_constraintBottom_toBottomOf="@id/spinner_negara_bekerja"
+        style="@style/TextAppearance.MaterialComponents.Subtitle1"
+        android:text="Negara Bekerja"/>
+
+    <Spinner
+        android:id="@+id/spinner_negara_bekerja"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/til_no_hp"
+        app:layout_constraintStart_toEndOf="@id/guideline_vertical"
+        android:layout_marginTop="8dp"/>
 
 
     <com.google.android.material.button.MaterialButton
@@ -122,7 +201,7 @@
         android:layout_height="wrap_content"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/til_alamat_kerja"
+        app:layout_constraintTop_toBottomOf="@id/spinner_negara_bekerja"
         android:layout_marginTop="24dp"
         android:text="Tambahkan"
         app:cornerRadius="8dp"/>

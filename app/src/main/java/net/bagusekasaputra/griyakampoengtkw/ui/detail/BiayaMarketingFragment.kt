@@ -9,7 +9,7 @@ import dagger.hilt.android.AndroidEntryPoint
 import net.bagusekasaputra.griyakampoengtkw.databinding.FragmentFeeMarketingBinding
 
 @AndroidEntryPoint
-class FeeMarketingFragment : Fragment() {
+class BiayaMarketingFragment : Fragment() {
 
     private lateinit var binding: FragmentFeeMarketingBinding
 
