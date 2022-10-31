@@ -7,6 +7,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ArrayAdapter
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.viewModels
 import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
 import net.bagusekasaputra.griyakampoengtkw.databinding.DialogTambahDataDiriBinding
@@ -16,6 +17,7 @@ import net.bagusekasaputra.griyakampoengtkw.databinding.FragmentDataDiriBinding
 class DataDiriFragment : Fragment() {
 
     private lateinit var binding: FragmentDataDiriBinding
+    private val viewModel: DetailViewModel by viewModels()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,

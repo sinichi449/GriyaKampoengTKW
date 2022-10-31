@@ -2,6 +2,7 @@ package net.bagusekasaputra.griyakampoengtkw.ui.detail
 
 import android.os.Bundle
 import android.view.MenuItem
+import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import dagger.hilt.android.AndroidEntryPoint
 import net.bagusekasaputra.griyakampoengtkw.R
@@ -13,6 +14,7 @@ class DetailActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityDetailBinding
     private lateinit var pagerAdapter: ViewPagerAdapter
+    private val viewModel: DetailViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -25,6 +27,7 @@ class DetailActivity : AppCompatActivity() {
         val kavlingKode = intent.getStringExtra(MainActivity.INTENT_KAVLING_KODE)
         kavlingKode?.let {
             supportActionBar?.title = "Kavling $it"
+            viewModel.currentKavlingKode.value = it
         }
 
         setupViewPager()
@@ -53,6 +56,14 @@ class DetailActivity : AppCompatActivity() {
             true
         } else {
             super.onOptionsItemSelected(item)
+        }
+    }
+
+    override fun onResume() {
+        super.onResume()
+
+        viewModel.currentKavlingKode.value?.let {
+            viewModel.getDataDiri(it)
         }
     }
 }
