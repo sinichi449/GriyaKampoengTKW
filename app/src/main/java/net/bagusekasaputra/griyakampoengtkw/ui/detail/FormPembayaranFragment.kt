@@ -13,6 +13,7 @@ import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.textview.MaterialTextView
 import dagger.hilt.android.AndroidEntryPoint
 import net.bagusekasaputra.griyakampoengtkw.databinding.DialogAddFormPembayaranBinding
+import net.bagusekasaputra.griyakampoengtkw.databinding.DialogEditHargaBinding
 import net.bagusekasaputra.griyakampoengtkw.databinding.FragmentFormPembayaranBinding
 import java.text.SimpleDateFormat
 import java.util.*
@@ -35,12 +36,16 @@ class FormPembayaranFragment : Fragment() {
 
         populateTableLayout()
 
+        binding.layoutHarga.setOnClickListener {
+            showEditHargaDialog()
+        }
+
         binding.fabAddPembayaranData.setOnClickListener {
-            showDialog()
+            showAddFormPembayaranDialog()
         }
     }
 
-    private fun showDialog() {
+    private fun showAddFormPembayaranDialog() {
         val dialogBinding = DialogAddFormPembayaranBinding.inflate(layoutInflater)
         val dialogView = AlertDialog.Builder(requireContext()).apply {
             setView(dialogBinding.root)
@@ -74,6 +79,25 @@ class FormPembayaranFragment : Fragment() {
             val datePickerDialog = DatePickerDialog(requireContext(), onDateListenerSet, currentYear, currentMonth, currentDate)
 
             datePickerDialog.show()
+        }
+    }
+
+    private fun showEditHargaDialog() {
+        val dialogBinding = DialogEditHargaBinding.inflate(layoutInflater)
+        val dialogView = AlertDialog.Builder(requireContext()).apply {
+            setView(dialogBinding.root)
+        }.create()
+
+        dialogView.show()
+
+        dialogBinding.btnTambahkan.setOnClickListener {
+            // TODO
+            dialogView.dismiss()
+            Snackbar.make(requireContext(), binding.root, "Harga berhasil ditambahkan! (fake}", Snackbar.LENGTH_SHORT).show()
+        }
+
+        dialogBinding.btnBatal.setOnClickListener {
+            dialogView.dismiss()
         }
     }
 

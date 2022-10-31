@@ -16,16 +16,30 @@
         app:layout_constraintTop_toTopOf="parent"
         style="@style/TextAppearance.MaterialComponents.Headline6"/>
 
-    <com.google.android.material.textview.MaterialTextView
-        android:id="@+id/tv_harga"
-        android:layout_width="0dp"
+    <androidx.appcompat.widget.LinearLayoutCompat
+        android:id="@+id/layout_harga"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         app:layout_constraintStart_toEndOf="@id/tv_info_harga"
-        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="@id/tv_info_harga"
         app:layout_constraintBottom_toBottomOf="@id/tv_info_harga"
-        android:text="Rp. 230.000.000"
-        style="@style/TextAppearance.MaterialComponents.Subtitle1"/>
+        android:orientation="horizontal">
+
+        <com.google.android.material.textview.MaterialTextView
+            android:id="@+id/tv_harga"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="230.000.000"
+            style="@style/TextAppearance.MaterialComponents.Subtitle1"/>
+
+        <ImageView
+            android:id="@+id/img_edit"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/ic_baseline_edit_24"
+            android:layout_marginStart="24dp"/>
+
+    </androidx.appcompat.widget.LinearLayoutCompat>
 
     <!-- TODO: Update blank fragment layout -->
     <ScrollView
