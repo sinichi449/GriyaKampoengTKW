@@ -7,6 +7,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ArrayAdapter
 import androidx.fragment.app.Fragment
+import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
 import net.bagusekasaputra.griyakampoengtkw.databinding.DialogTambahDataDiriBinding
 import net.bagusekasaputra.griyakampoengtkw.databinding.FragmentDataDiriBinding
@@ -37,9 +38,19 @@ class DataDiriFragment : Fragment() {
         val dialogBinding = DialogTambahDataDiriBinding.inflate(layoutInflater)
         val dialogView = AlertDialog.Builder(requireActivity())
             .setView(dialogBinding.root)
+            .setCancelable(false)
             .create()
 
         dialogView.show()
+
+        dialogBinding.btnTambahkan.setOnClickListener {
+            dialogView.dismiss()
+            Snackbar.make(requireContext(), binding.root, "Berhasil ditambahkan (fake)", Snackbar.LENGTH_SHORT).show()
+        }
+
+        dialogBinding.btnBatal.setOnClickListener {
+            dialogView.dismiss()
+        }
 
         setupSpinner(dialogBinding)
     }
