@@ -15,7 +15,6 @@ class FakeBlockModelsDb @Inject constructor(
             add(BlockModel(kode = "A", warna = R.color.abang))
             add(BlockModel(kode = "B", warna = R.color.oren_1))
             add(BlockModel(kode = "C", warna = R.color.oren_2))
-            add(BlockModel(kode = "D", warna = R.color.black))
         }
     }
 

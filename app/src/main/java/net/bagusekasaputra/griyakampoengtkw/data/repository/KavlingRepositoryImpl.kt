@@ -26,8 +26,16 @@ class KavlingRepositoryImpl @Inject constructor(
         }
     }
 
-    override fun addKavling(kode: String): Flow<Boolean> {
-        TODO("Not yet implemented")
+    override fun addKavling(block: Block): Flow<Boolean> {
+        return flow {
+            val result = localKavlingRepository.addKavling(
+                BlockModel(
+                    kode = block.kode,
+                    warna = block.warna
+                )
+            )
+            emit(result)
+        }
     }
 
     private fun mapKavling(kavlingModel: KavlingModel): Kavling {

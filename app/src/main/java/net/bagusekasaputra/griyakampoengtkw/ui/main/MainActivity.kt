@@ -39,7 +39,8 @@ class MainActivity : AppCompatActivity() {
         setupViewModel()
 
         binding.fabAddKavling.setOnClickListener {
-            showNewBlockDialog()
+            val block = Block(kode = viewModel.currentBlock.value!!)
+            viewModel.addKavling(block)
         }
     }
 

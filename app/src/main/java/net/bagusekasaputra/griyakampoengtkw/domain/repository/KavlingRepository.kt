@@ -8,5 +8,5 @@ interface KavlingRepository {
 
     fun getKavlingByBlock(block: Block): Flow<List<Kavling>>
 
-    fun addKavling(kode: String): Flow<Boolean>
+    fun addKavling(block: Block): Flow<Boolean>
 }
