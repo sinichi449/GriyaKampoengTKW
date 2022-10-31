@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "599654176470",
+    "firebase_url": "https://griya-kampoeng-tkw-mobile-default-rtdb.asia-southeast1.firebasedatabase.app",
+    "project_id": "griya-kampoeng-tkw-mobile",
+    "storage_bucket": "griya-kampoeng-tkw-mobile.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:599654176470:android:9a86e0946336c2aba4db77",
+        "android_client_info": {
+          "package_name": "net.bagusekasaputra.griyakampoengtkw"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "599654176470-rmpc3jmadqdutb2ia74fhotcutvjbqu3.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCPa6jePpE8sQOSWjpEi-Qt7-hxnbISZ8A"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "599654176470-rmpc3jmadqdutb2ia74fhotcutvjbqu3.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
