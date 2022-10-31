@@ -1,16 +1,117 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".ui.detail.FormPembayaranFragment">
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    tools:context=".ui.detail.FormPembayaranFragment"
+    android:padding="16dp">
+
+    <com.google.android.material.textview.MaterialTextView
+        android:id="@+id/tv_info_harga"
+        android:layout_width="150dp"
+        android:layout_height="wrap_content"
+        android:text="Harga"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        style="@style/TextAppearance.MaterialComponents.Headline6"/>
+
+    <com.google.android.material.textview.MaterialTextView
+        android:id="@+id/tv_harga"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        app:layout_constraintStart_toEndOf="@id/tv_info_harga"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="@id/tv_info_harga"
+        app:layout_constraintBottom_toBottomOf="@id/tv_info_harga"
+        android:text="Rp. 230.000.000"
+        style="@style/TextAppearance.MaterialComponents.Subtitle1"/>
 
     <!-- TODO: Update blank fragment layout -->
-    <TextView
+    <ScrollView
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:text="Form Pembayaran Fragment"
-        android:gravity="center"
-        style="@style/TextAppearance.MaterialComponents.Headline4"/>
+        android:layout_height="0dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/tv_info_harga"
+        app:layout_constraintBottom_toTopOf="@id/fab_add_pembayaran_data"
+        android:layout_marginTop="24dp"
+        android:scrollbars="horizontal|vertical"
+        android:scrollbarStyle="outsideInset"
+        android:fillViewport="true"
+        android:layout_marginBottom="24dp">
 
-</FrameLayout>
+        <HorizontalScrollView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:scrollbars="horizontal|vertical">
+
+            <TableLayout
+                android:id="@+id/table_layout"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content">
+
+                <TableRow
+                    android:background="@color/abang">
+
+                    <TextView
+                        android:text="Termin"
+                        android:textColor="@color/white"
+                        android:padding="8dp"
+                        style="@style/TextAppearance.MaterialComponents.Subtitle1"
+                        android:textStyle="bold"/>
+
+                    <TextView
+                        android:text="Tanggal"
+                        android:textColor="@color/white"
+                        android:padding="8dp"
+                        style="@style/TextAppearance.MaterialComponents.Subtitle1"
+                        android:textStyle="bold"/>
+
+                    <TextView
+                        android:text="Jumlah Uang dibayar"
+                        android:textColor="@color/white"
+                        android:padding="8dp"
+                        style="@style/TextAppearance.MaterialComponents.Subtitle1"
+                        android:textStyle="bold"/>
+
+                    <TextView
+                        android:text="Total Uang Masuk"
+                        android:textColor="@color/white"
+                        android:padding="8dp"
+                        style="@style/TextAppearance.MaterialComponents.Subtitle1"
+                        android:textStyle="bold"/>
+
+                    <TextView
+                        android:text="Presentase"
+                        android:textColor="@color/white"
+                        android:padding="8dp"
+                        style="@style/TextAppearance.MaterialComponents.Subtitle1"
+                        android:textStyle="bold"/>
+
+                    <TextView
+                        android:text="Keterangan Progress"
+                        android:textColor="@color/white"
+                        android:padding="8dp"
+                        style="@style/TextAppearance.MaterialComponents.Subtitle1"
+                        android:textStyle="bold"/>
+
+                </TableRow>
+
+            </TableLayout>
+
+        </HorizontalScrollView>
+
+    </ScrollView>
+
+
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/fab_add_pembayaran_data"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@drawable/ic_baseline_add_24"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginEnd="24dp"
+        android:layout_marginBottom="24dp"/>
+
+</androidx.constraintlayout.widget.ConstraintLayout>
