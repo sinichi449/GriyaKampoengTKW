@@ -9,8 +9,9 @@
     <TextView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:text="Fee Marketing Fragment"
+        android:text="Coming Soon!"
         style="@style/TextAppearance.MaterialComponents.Headline4"
+        android:textColor="#9C000000"
         android:gravity="center"/>
 
 </FrameLayout>

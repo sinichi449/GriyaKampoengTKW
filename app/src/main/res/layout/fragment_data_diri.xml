@@ -77,12 +77,40 @@
                 </androidx.appcompat.widget.LinearLayoutCompat>
 
 
-
                 <androidx.appcompat.widget.LinearLayoutCompat
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="horizontal"
                     android:padding="8dp">
+
+                    <com.google.android.material.textview.MaterialTextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="0.5"
+                        android:text="Jenis Identitas"
+                        style="@style/TextAppearance.MaterialComponents.Subtitle2"
+                        android:textSize="16sp"
+                        android:gravity="start"/>
+
+                    <com.google.android.material.textview.MaterialTextView
+                        android:id="@+id/tv_jenis_identitas"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="0.5"
+                        android:text="KTP"
+                        android:textSize="16sp"
+                        android:gravity="end"
+                        android:textColor="@color/black"/>
+
+                </androidx.appcompat.widget.LinearLayoutCompat>
+
+
+                <androidx.appcompat.widget.LinearLayoutCompat
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:padding="8dp"
+                    android:background="#E3F2FD">
 
                     <com.google.android.material.textview.MaterialTextView
                         android:layout_width="match_parent"
@@ -110,7 +138,62 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="horizontal"
-                    android:background="#E3F2FD"
+                    android:padding="8dp">
+
+                    <com.google.android.material.textview.MaterialTextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="0.5"
+                        android:text="Negara Bekerja"
+                        style="@style/TextAppearance.MaterialComponents.Subtitle2"
+                        android:textSize="16sp"
+                        android:gravity="start"/>
+
+                    <com.google.android.material.textview.MaterialTextView
+                        android:id="@+id/tv_negara_bekerja"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="0.5"
+                        android:text="Singapore"
+                        android:textSize="16sp"
+                        android:gravity="end"
+                        android:textColor="@color/black"/>
+
+                </androidx.appcompat.widget.LinearLayoutCompat>
+
+
+                <androidx.appcompat.widget.LinearLayoutCompat
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:padding="8dp"
+                    android:background="#E3F2FD">
+
+                    <com.google.android.material.textview.MaterialTextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="0.5"
+                        android:text="Alamat Kerja"
+                        style="@style/TextAppearance.MaterialComponents.Subtitle2"
+                        android:textSize="16sp"
+                        android:gravity="start"/>
+
+                    <com.google.android.material.textview.MaterialTextView
+                        android:id="@+id/tv_alamat_kerja"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="0.5"
+                        android:text="Redville 21 Block, Ang Mo Kio"
+                        android:textSize="16sp"
+                        android:gravity="end"
+                        android:textColor="@color/black"/>
+
+                </androidx.appcompat.widget.LinearLayoutCompat>
+
+                <androidx.appcompat.widget.LinearLayoutCompat
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
                     android:padding="8dp">
 
                     <com.google.android.material.textview.MaterialTextView
@@ -128,34 +211,6 @@
                         android:layout_height="wrap_content"
                         android:layout_weight="0.5"
                         android:text="Harjokuncaran RT.14/05"
-                        android:textSize="16sp"
-                        android:gravity="end"
-                        android:textColor="@color/black"/>
-
-                </androidx.appcompat.widget.LinearLayoutCompat>
-
-
-                <androidx.appcompat.widget.LinearLayoutCompat
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="horizontal"
-                    android:padding="8dp">
-
-                    <com.google.android.material.textview.MaterialTextView
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="0.5"
-                        android:text="Alamat Kerja"
-                        style="@style/TextAppearance.MaterialComponents.Subtitle2"
-                        android:textSize="16sp"
-                        android:gravity="start"/>
-
-                    <com.google.android.material.textview.MaterialTextView
-                        android:id="@+id/tv_alamat_kerja"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="0.5"
-                        android:text="Redville 21 Block, Ang Mo Kio"
                         android:textSize="16sp"
                         android:gravity="end"
                         android:textColor="@color/black"/>
@@ -185,33 +240,6 @@
                         android:layout_height="wrap_content"
                         android:layout_weight="0.5"
                         android:text="082257878513"
-                        android:textSize="16sp"
-                        android:gravity="end"
-                        android:textColor="@color/black"/>
-
-                </androidx.appcompat.widget.LinearLayoutCompat>
-
-                <androidx.appcompat.widget.LinearLayoutCompat
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="horizontal"
-                    android:padding="8dp">
-
-                    <com.google.android.material.textview.MaterialTextView
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="0.5"
-                        android:text="Negara Bekerja"
-                        style="@style/TextAppearance.MaterialComponents.Subtitle2"
-                        android:textSize="16sp"
-                        android:gravity="start"/>
-
-                    <com.google.android.material.textview.MaterialTextView
-                        android:id="@+id/tv_negara_bekerja"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="0.5"
-                        android:text="Singapore"
                         android:textSize="16sp"
                         android:gravity="end"
                         android:textColor="@color/black"/>
