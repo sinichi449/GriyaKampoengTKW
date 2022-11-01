@@ -1,53 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    tools:context=".ui.detail.FormPembayaranFragment"
-    android:padding="16dp">
+    android:padding="8dp">
 
-    <com.google.android.material.textview.MaterialTextView
-        android:id="@+id/tv_info_harga"
-        android:layout_width="150dp"
-        android:layout_height="wrap_content"
-        android:text="Harga"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        style="@style/TextAppearance.MaterialComponents.Headline6"/>
-
-    <androidx.appcompat.widget.LinearLayoutCompat
-        android:id="@+id/layout_harga"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        app:layout_constraintStart_toEndOf="@id/tv_info_harga"
-        app:layout_constraintTop_toTopOf="@id/tv_info_harga"
-        app:layout_constraintBottom_toBottomOf="@id/tv_info_harga"
-        android:orientation="horizontal">
-
-        <com.google.android.material.textview.MaterialTextView
-            android:id="@+id/tv_harga"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="230.000.000"
-            style="@style/TextAppearance.MaterialComponents.Subtitle1"/>
-
-        <ImageView
-            android:id="@+id/img_edit"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:src="@drawable/ic_baseline_edit_24"
-            android:layout_marginStart="24dp"/>
-
-    </androidx.appcompat.widget.LinearLayoutCompat>
-
-    <!-- TODO: Update blank fragment layout -->
     <ScrollView
         android:layout_width="match_parent"
         android:layout_height="0dp"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/tv_info_harga"
-        app:layout_constraintBottom_toTopOf="@id/fab_add_pembayaran_data"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
         android:layout_marginTop="24dp"
         android:scrollbars="horizontal|vertical"
         android:scrollbarStyle="outsideInset"
@@ -68,8 +31,6 @@
                     android:background="@color/abang">
 
                     <TextView
-                        android:layout_width="fill_parent"
-                        android:layout_weight="0.06"
                         android:text="Termin"
                         android:textColor="@color/white"
                         android:padding="4dp"
@@ -77,8 +38,6 @@
                         android:textStyle="bold"/>
 
                     <TextView
-                        android:layout_width="fill_parent"
-                        android:layout_weight="0.24"
                         android:text="Tanggal"
                         android:textColor="@color/white"
                         android:padding="4dp"
@@ -86,8 +45,6 @@
                         android:textStyle="bold"/>
 
                     <TextView
-                        android:layout_width="fill_parent"
-                        android:layout_weight="0.12"
                         android:text="Jumlah Uang dibayar"
                         android:textColor="@color/white"
                         android:padding="4dp"
@@ -95,8 +52,6 @@
                         android:textStyle="bold"/>
 
                     <TextView
-                        android:layout_width="fill_parent"
-                        android:layout_weight="0.12"
                         android:text="Total Uang Masuk"
                         android:textColor="@color/white"
                         android:padding="4dp"
@@ -104,8 +59,6 @@
                         android:textStyle="bold"/>
 
                     <TextView
-                        android:layout_width="fill_parent"
-                        android:layout_weight="0.06"
                         android:text="Presentase"
                         android:textColor="@color/white"
                         android:padding="4dp"
@@ -113,8 +66,6 @@
                         android:textStyle="bold"/>
 
                     <TextView
-                        android:layout_width="fill_parent"
-                        android:layout_weight="0.4"
                         android:text="Keterangan Progress"
                         android:textColor="@color/white"
                         android:padding="4dp"
@@ -128,16 +79,5 @@
         </HorizontalScrollView>
 
     </ScrollView>
-
-
-    <com.google.android.material.floatingactionbutton.FloatingActionButton
-        android:id="@+id/fab_add_pembayaran_data"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:src="@drawable/ic_baseline_add_24"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        android:layout_marginEnd="24dp"
-        android:layout_marginBottom="24dp"/>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

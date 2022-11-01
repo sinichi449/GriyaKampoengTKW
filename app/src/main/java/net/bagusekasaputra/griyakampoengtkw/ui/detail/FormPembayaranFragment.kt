@@ -2,11 +2,9 @@ package net.bagusekasaputra.griyakampoengtkw.ui.detail
 
 import android.app.AlertDialog
 import android.app.DatePickerDialog
+import android.content.res.Configuration
 import android.os.Bundle
-import android.view.Gravity
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
+import android.view.*
 import android.widget.TableRow
 import androidx.fragment.app.Fragment
 import com.google.android.material.snackbar.Snackbar
@@ -23,11 +21,21 @@ class FormPembayaranFragment : Fragment() {
 
     private lateinit var binding: FragmentFormPembayaranBinding
 
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+
+        val orientation = requireActivity().resources.configuration.orientation
+        if (orientation == Configuration.ORIENTATION_LANDSCAPE) {
+            onFullScreenLandscapeMode()
+        }
+    }
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?,
     ): View {
         binding = FragmentFormPembayaranBinding.inflate(inflater, container, false)
+
         return binding.root
     }
 
@@ -36,13 +44,18 @@ class FormPembayaranFragment : Fragment() {
 
         populateTableLayout()
 
-        binding.layoutHarga.setOnClickListener {
+        binding.layoutHarga?.setOnClickListener {
             showEditHargaDialog()
         }
 
-        binding.fabAddPembayaranData.setOnClickListener {
+        binding.fabAddPembayaranData?.setOnClickListener {
             showAddFormPembayaranDialog()
         }
+    }
+
+    private fun onFullScreenLandscapeMode() {
+        requireActivity().requestWindowFeature(Window.FEATURE_NO_TITLE)
+        requireActivity().window.setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
     }
 
     private fun showAddFormPembayaranDialog() {
