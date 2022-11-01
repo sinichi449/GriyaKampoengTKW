@@ -67,7 +67,7 @@ class FormPembayaranFragment : Fragment() {
 
         dialogView.show()
 
-        setDateDefaulOrPickEdtTanggal(dialogBinding)
+        setDateDefaulOrPickEdtTanggal(true, dialogBinding)
 
         dialogBinding.btnBatal.setOnClickListener {
             dialogView.dismiss()
@@ -91,11 +91,13 @@ class FormPembayaranFragment : Fragment() {
         }
     }
 
-    private fun setDateDefaulOrPickEdtTanggal(dialogBinding: DialogAddFormPembayaranBinding) {
+    private fun setDateDefaulOrPickEdtTanggal(defaultDate: Boolean, dialogBinding: DialogAddFormPembayaranBinding) {
         val currentDate = getTodayDate()
         val dateFormatter = SimpleDateFormat("dd/MM/yyyy", Locale.US)
 
-        dialogBinding.edtTanggal.setText(dateFormatter.format(currentDate.time))
+        if (defaultDate) {
+            dialogBinding.edtTanggal.setText(dateFormatter.format(currentDate.time))
+        }
 
         dialogBinding.btnPilihTanggal.setOnClickListener {
 
@@ -257,6 +259,8 @@ class FormPembayaranFragment : Fragment() {
         dialogBinding.btnBatal.setOnClickListener {
             dialogView.dismiss()
         }
+
+        setDateDefaulOrPickEdtTanggal(false, dialogBinding)
     }
 
     private fun checkNullEditTexts(vararg textInputEditText: TextInputEditText): Boolean {
