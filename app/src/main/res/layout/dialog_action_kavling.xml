@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.appcompat.widget.LinearLayoutCompat xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical"
+    android:padding="24dp">
+
+    <com.google.android.material.textview.MaterialTextView
+        android:id="@+id/tv_kavling_kode"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Kavling A2"
+        android:gravity="center"
+        style="@style/TextAppearance.MaterialComponents.Headline6"/>
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/btn_edit"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Edit Kavling"
+        app:cornerRadius="8dp"
+        android:layout_marginTop="24dp"
+        android:backgroundTint="@color/abang"/>
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/btn_hapus_kavling"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Hapus Kavling"
+        app:cornerRadius="8dp"
+        android:backgroundTint="@color/abang"/>
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/btn_batal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Batal"
+        app:cornerRadius="8dp"
+        android:layout_marginTop="24dp"/>
+
+</androidx.appcompat.widget.LinearLayoutCompat>

@@ -9,7 +9,8 @@ import net.bagusekasaputra.griyakampoengtkw.domain.entity.Kavling
 
 class KavlingRecyclerAdapter(
     private val kavlings: List<Kavling>,
-    private val onRecyclerItemClick: (position: Int) -> Unit
+    private val onRecyclerItemClick: (position: Int) -> Unit,
+    private val onRecyclerItemHold: (position: Int) -> Unit,
 ): RecyclerView.Adapter<KavlingRecyclerAdapter.MyViewHolder>() {
 
     private lateinit var context: Context
@@ -41,6 +42,11 @@ class KavlingRecyclerAdapter(
 
         holder.binding.cardKavling.setOnClickListener {
             onRecyclerItemClick(position)
+        }
+
+        holder.binding.cardKavling.setOnLongClickListener {
+            onRecyclerItemHold(position)
+            true
         }
     }
 

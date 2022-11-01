@@ -3,6 +3,7 @@ package net.bagusekasaputra.griyakampoengtkw.ui.main
 import android.content.Intent
 import android.os.Bundle
 import android.view.Menu
+import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
@@ -12,6 +13,8 @@ import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
 import net.bagusekasaputra.griyakampoengtkw.R
 import net.bagusekasaputra.griyakampoengtkw.databinding.ActivityMainBinding
+import net.bagusekasaputra.griyakampoengtkw.databinding.DialogActionKavlingBinding
+import net.bagusekasaputra.griyakampoengtkw.databinding.DialogEditKavlingBinding
 import net.bagusekasaputra.griyakampoengtkw.databinding.DialogNewBlockBinding
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.Block
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.Kavling
@@ -71,12 +74,14 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun setupKavlingRecyclerView(kavlings: List<Kavling>) {
-        val adapter = KavlingRecyclerAdapter(kavlings) {
+        val adapter = KavlingRecyclerAdapter(kavlings, {
             val intent = Intent(this, DetailActivity::class.java).apply {
                 putExtra(INTENT_KAVLING_KODE, kavlings[it].kode)
             }
             startActivity(intent)
-        }
+        }, {
+            showActionKavlingDialog(kavlings[it])
+        })
         binding.recyclerKavlings.adapter = adapter
         binding.recyclerKavlings.layoutManager = GridLayoutManager(this, 3)
     }
@@ -97,6 +102,67 @@ class MainActivity : AppCompatActivity() {
 
         dialogBinding.btnBatal.setOnClickListener {
             alertDialog.dismiss()
+        }
+    }
+
+    private fun showActionKavlingDialog(kavling: Kavling) {
+        val dialogBinding = DialogActionKavlingBinding.inflate(layoutInflater)
+        val dialogView = AlertDialog.Builder(this).apply {
+            setView(dialogBinding.root)
+        }.create()
+
+        dialogView.show()
+
+        val text = "Kavling ${kavling.kode}"
+        dialogBinding.tvKavlingKode.text = text
+        dialogBinding.btnEdit.setOnClickListener {
+            dialogView.dismiss()
+            showEditKavlingDialog(kavling)
+        }
+        dialogBinding.btnBatal.setOnClickListener {
+            dialogView.dismiss()
+        }
+        dialogBinding.btnHapusKavling.setOnClickListener {
+            dialogView.dismiss()
+            val dialogHapus = AlertDialog.Builder(this).apply {
+                setTitle("Hapus Kavling")
+                setMessage("Apakah Anda yakin menhapus kavling ${kavling.kode}?")
+                setPositiveButton("Yes") { dialog, which ->
+                    // TODO: Hapus kavling
+                    Toast.makeText(this@MainActivity, "Kavling ${kavling.kode} berhasil dihapus! (fake)", Toast.LENGTH_SHORT).show()
+                    dialog.dismiss()
+
+                }
+                setNegativeButton("No") { dialog, which ->
+                    dialog.dismiss()
+                }
+            }.create()
+
+            dialogHapus.show()
+        }
+    }
+
+    private fun showEditKavlingDialog(kavling: Kavling) {
+        val dialogBinding = DialogEditKavlingBinding.inflate(layoutInflater)
+        val dialogView = AlertDialog.Builder(this).apply {
+            setView(dialogBinding.root)
+        }.create()
+
+        val ukuran = kavling.ukuran.split("x")
+        dialogBinding.edtLebar.setText(ukuran[0])
+        dialogBinding.edtPanjang.setText(ukuran[1])
+        dialogBinding.edtTipeRumah.setText(kavling.type)
+
+        dialogView.show()
+
+        dialogBinding.btnSimpan.setOnClickListener {
+            // TODO: Save data
+            dialogView.dismiss()
+            Toast.makeText(this, "Data tersimpan! (fake)", Toast.LENGTH_SHORT).show()
+        }
+
+        dialogBinding.btnBatal.setOnClickListener {
+            dialogView.dismiss()
         }
     }
 
