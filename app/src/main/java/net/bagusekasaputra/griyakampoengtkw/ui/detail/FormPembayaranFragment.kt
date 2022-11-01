@@ -8,6 +8,7 @@ import android.view.*
 import android.widget.TableRow
 import androidx.fragment.app.Fragment
 import com.google.android.material.snackbar.Snackbar
+import com.google.android.material.textfield.TextInputEditText
 import com.google.android.material.textview.MaterialTextView
 import dagger.hilt.android.AndroidEntryPoint
 import net.bagusekasaputra.griyakampoengtkw.databinding.DialogAddFormPembayaranBinding
@@ -20,6 +21,7 @@ import java.util.*
 class FormPembayaranFragment : Fragment() {
 
     private lateinit var binding: FragmentFormPembayaranBinding
+    private lateinit var data: ArrayList<Pembayaran>
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -44,12 +46,10 @@ class FormPembayaranFragment : Fragment() {
 
         populateTableLayout()
 
+        setupExtendedFloatingButton()
+
         binding.layoutHarga?.setOnClickListener {
             showEditHargaDialog()
-        }
-
-        binding.fabAddPembayaranData?.setOnClickListener {
-            showAddFormPembayaranDialog()
         }
     }
 
@@ -132,9 +132,9 @@ class FormPembayaranFragment : Fragment() {
     }
 
     private fun populateTableLayout() {
-        val data = generatePseudoPembayaran()
+        this.data = generatePseudoPembayaran()
 
-        for (test in data) {
+        for (test in this.data) {
             val termin = MaterialTextView(requireContext())
             val tanggal = MaterialTextView(requireContext())
             val jumlahUangDibayar = MaterialTextView(requireContext())
@@ -175,6 +175,106 @@ class FormPembayaranFragment : Fragment() {
         data.add(Pembayaran("DP1", "13/07/2022", 5010000, 1002000, 4.36, ""))
 
         return data
+    }
+
+    private fun setupExtendedFloatingButton() {
+        binding.fabAddPembayaranData?.visibility = View.GONE
+        binding.fabEditData?.visibility = View.GONE
+        binding.tvInfoAddPembayaranData?.visibility = View.GONE
+        binding.tvInfoEditData?.visibility = View.GONE
+
+        var isAllFabsVisible = false
+
+        binding.fabActions?.shrink()
+
+        binding.fabActions?.setOnClickListener {
+            if (!isAllFabsVisible) {
+                binding.fabAddPembayaranData?.show()
+                binding.fabEditData?.show()
+                binding.tvInfoAddPembayaranData?.visibility = View.VISIBLE
+                binding.tvInfoEditData?.visibility = View.VISIBLE
+
+                binding.fabActions?.extend()
+
+                isAllFabsVisible = true
+            } else {
+                binding.fabAddPembayaranData?.hide()
+                binding.fabEditData?.hide()
+                binding.tvInfoAddPembayaranData?.visibility = View.GONE
+                binding.tvInfoEditData?.visibility = View.GONE
+
+                binding.fabActions?.shrink()
+
+                isAllFabsVisible = false
+            }
+        }
+
+        binding.fabAddPembayaranData?.setOnClickListener {
+            showAddFormPembayaranDialog()
+        }
+
+        binding.fabEditData?.setOnClickListener {
+            showEditDataDialog()
+        }
+    }
+
+    private fun showEditDataDialog() {
+        val dialogBinding = DialogAddFormPembayaranBinding.inflate(layoutInflater)
+        val dialogView = AlertDialog.Builder(requireContext()).apply {
+            setView(dialogBinding.root)
+            setCancelable(false)
+        }.create()
+
+        dialogView.show()
+
+        dialogBinding.tvTitle.text = "Ubah Form"
+        dialogBinding.btnTambahkan.text = "Simpan Perubahan"
+
+        val lastData = this.data[this.data.size - 1]
+        dialogBinding.edtTermin.setText(lastData.termin)
+        dialogBinding.edtTanggal.setText(lastData.tanggal)
+        dialogBinding.edtJumlahUangDibayar.setText(lastData.jumlahUang.toString())
+        dialogBinding.edtKeteranganProgress.setText(lastData.keterangan)
+
+        dialogBinding.btnTambahkan.setOnClickListener {
+            val isOkay = checkNullEditTexts(dialogBinding.edtTermin, dialogBinding.edtTanggal, dialogBinding.edtJumlahUangDibayar, dialogBinding.edtKeteranganProgress)
+            if (isOkay) {
+                val pembayaran = Pembayaran(
+                    termin = dialogBinding.edtTermin.text.toString(),
+                    tanggal = dialogBinding.edtTanggal.text.toString(),
+                    jumlahUang = dialogBinding.edtJumlahUangDibayar.text.toString().toInt(),
+                    totalUangMasuk = lastData.totalUangMasuk,
+                    presentase = lastData.presentase,
+                    keterangan = dialogBinding.edtKeteranganProgress.text.toString()
+                )
+
+                saveFormChanges(pembayaran, this.data.size - 1)
+                dialogView.dismiss()
+                Snackbar.make(requireContext(), dialogBinding.root, "Data berhasil disimpan! (fake)", Snackbar.LENGTH_SHORT).show()
+            }
+        }
+
+        dialogBinding.btnBatal.setOnClickListener {
+            dialogView.dismiss()
+        }
+    }
+
+    private fun checkNullEditTexts(vararg textInputEditText: TextInputEditText): Boolean {
+        var isOkay = true
+        for (edt in textInputEditText) {
+            if (edt.text.isNullOrEmpty()) {
+                edt.error = "Masih kosong"
+                isOkay = false
+
+                break
+            }
+        }
+
+        return isOkay
+    }
+
+    private fun saveFormChanges(pembayaran: Pembayaran, index: Int) {
+        this.data[index] = pembayaran
     }
 
     data class Pembayaran(
