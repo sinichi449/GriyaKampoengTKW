@@ -67,6 +67,8 @@ class FormPembayaranFragment : Fragment() {
 
         dialogView.show()
 
+        setDateDefaulOrPickEdtTanggal(dialogBinding)
+
         dialogBinding.btnBatal.setOnClickListener {
             dialogView.dismiss()
         }
@@ -76,20 +78,35 @@ class FormPembayaranFragment : Fragment() {
             dialogView.dismiss()
             Snackbar.make(requireContext(), binding.root, "Berhasil ditambahkan! (fake)", Snackbar.LENGTH_SHORT).show()
         }
+    }
+
+    private fun getTodayDate(): Calendar {
+        val calendar = Calendar.getInstance()
+        val currentYear = calendar.get(Calendar.YEAR)
+        val currentMonth = calendar.get(Calendar.MONTH)
+        val currentDate = calendar.get(Calendar.DAY_OF_MONTH)
+
+        return Calendar.getInstance().apply {
+            set(currentYear, currentMonth, currentDate)
+        }
+    }
+
+    private fun setDateDefaulOrPickEdtTanggal(dialogBinding: DialogAddFormPembayaranBinding) {
+        val currentDate = getTodayDate()
+        val dateFormatter = SimpleDateFormat("dd/MM/yyyy", Locale.US)
+
+        dialogBinding.edtTanggal.setText(dateFormatter.format(currentDate.time))
 
         dialogBinding.btnPilihTanggal.setOnClickListener {
-            val calendar = Calendar.getInstance()
-            val currentYear = calendar.get(Calendar.YEAR)
-            val currentMonth = calendar.get(Calendar.MONTH)
-            val currentDate = calendar.get(Calendar.DAY_OF_MONTH)
+
             val onDateListenerSet = DatePickerDialog.OnDateSetListener { view, year, monthOfYear, dayOfMonth ->
-                    val newDate = Calendar.getInstance().apply {
-                        set(year, monthOfYear, dayOfMonth)
-                    }
-                    val dateFormatter = SimpleDateFormat("dd/MM/yyyy", Locale.US)
-                    dialogBinding.edtTanggal.setText(dateFormatter.format(newDate.time))
+                val newDate = Calendar.getInstance().apply {
+                    set(year, monthOfYear, dayOfMonth)
                 }
-            val datePickerDialog = DatePickerDialog(requireContext(), onDateListenerSet, currentYear, currentMonth, currentDate)
+                dialogBinding.edtTanggal.setText(dateFormatter.format(newDate.time))
+            }
+            val datePickerDialog = DatePickerDialog(requireContext(), onDateListenerSet,
+                currentDate.get(Calendar.YEAR), currentDate.get(Calendar.MONTH), currentDate.get(Calendar.DAY_OF_MONTH))
 
             datePickerDialog.show()
         }

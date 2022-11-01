@@ -20,7 +20,8 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:hint="Termin"
-        android:layout_marginTop="24dp">
+        android:layout_marginTop="24dp"
+        app:startIconDrawable="@drawable/ic_baseline_account_balance_wallet_24">
 
         <com.google.android.material.textfield.TextInputEditText
             android:id="@+id/edt_termin"
@@ -43,15 +44,16 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintEnd_toStartOf="@id/btn_pilih_tanggal"
-            app:layout_constraintHorizontal_weight="0.65"
+            app:layout_constraintHorizontal_weight="0.75"
             android:layout_marginEnd="8dp"
-            android:hint="Tanggal">
+            android:hint="Tanggal"
+            app:startIconDrawable="@drawable/ic_baseline_calendar_month_24"
+            app:endIconMode="clear_text">
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/edt_tanggal"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                />
+                android:layout_height="match_parent" />
 
         </com.google.android.material.textfield.TextInputLayout>
 
@@ -63,8 +65,8 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="@id/til_tanggal"
             app:layout_constraintBottom_toBottomOf="@id/til_tanggal"
-            app:layout_constraintHorizontal_weight="0.35"
-            android:text="Pilih Tanggal"
+            app:layout_constraintHorizontal_weight="0.25"
+            android:text="Pilih"
             app:cornerRadius="8dp"/>
 
     </androidx.constraintlayout.widget.ConstraintLayout>
@@ -74,7 +76,8 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:hint="Jumlah Uang Dibayar"
-        android:layout_marginTop="8dp">
+        android:layout_marginTop="8dp"
+        app:startIconDrawable="@drawable/ic_baseline_attach_money_24">
 
         <com.google.android.material.textfield.TextInputEditText
             android:id="@+id/edt_jumlah_uang_dibayar"
@@ -89,7 +92,8 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:hint="Keterangan Progress"
-        android:layout_marginTop="8dp">
+        android:layout_marginTop="8dp"
+        app:startIconDrawable="@drawable/ic_baseline_notes_24">
 
         <com.google.android.material.textfield.TextInputEditText
             android:id="@+id/edt_keterangan_progress"
