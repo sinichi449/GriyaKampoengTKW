@@ -235,10 +235,10 @@ class FormPembayaranFragment : Fragment() {
             dialogView.dismiss()
         }
 
-        setupTerminRecyclerView(dialogBinding)
+        setupTerminRecyclerView(dialogView, dialogBinding)
     }
 
-    private fun setupTerminRecyclerView(dialogBinding: DialogPilihTerminBinding) {
+    private fun setupTerminRecyclerView(terminalDialog: AlertDialog, dialogBinding: DialogPilihTerminBinding) {
         val termins = ArrayList<String>()
 
         for (pembayaran in this.data) {
@@ -246,6 +246,7 @@ class FormPembayaranFragment : Fragment() {
         }
 
         val adapter = TerminRecyclerAdapter(termins) {
+            terminalDialog.dismiss()
             showEditDataDialog(it)
         }
         dialogBinding.recyclerTermin.adapter = adapter
