@@ -7,7 +7,7 @@
 
     <ScrollView
         android:layout_width="match_parent"
-        android:layout_height="0dp"
+        android:layout_height="wrap_content"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent"
@@ -45,25 +45,31 @@
                         android:textStyle="bold"/>
 
                     <TextView
+                        android:layout_width="100dp"
                         android:text="Jumlah Uang dibayar"
                         android:textColor="@color/white"
                         android:padding="4dp"
                         android:textSize="15sp"
-                        android:textStyle="bold"/>
+                        android:textStyle="bold"
+                        android:textAlignment="center"/>
 
                     <TextView
+                        android:layout_width="100dp"
                         android:text="Total Uang Masuk"
                         android:textColor="@color/white"
                         android:padding="4dp"
                         android:textSize="15sp"
-                        android:textStyle="bold"/>
+                        android:textStyle="bold"
+                        android:textAlignment="center"/>
 
                     <TextView
-                        android:text="Presentase"
+                        android:layout_width="50dp"
+                        android:text="(%)"
                         android:textColor="@color/white"
                         android:padding="4dp"
                         android:textSize="15sp"
-                        android:textStyle="bold"/>
+                        android:textStyle="bold"
+                        android:textAlignment="center"/>
 
                     <TextView
                         android:text="Keterangan Progress"

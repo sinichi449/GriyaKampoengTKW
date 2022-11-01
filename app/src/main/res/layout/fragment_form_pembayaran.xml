@@ -68,8 +68,6 @@
                     android:background="@color/abang">
 
                     <TextView
-                        android:layout_width="fill_parent"
-                        android:layout_weight="0.06"
                         android:text="Termin"
                         android:textColor="@color/white"
                         android:padding="4dp"
@@ -77,8 +75,6 @@
                         android:textStyle="bold"/>
 
                     <TextView
-                        android:layout_width="fill_parent"
-                        android:layout_weight="0.24"
                         android:text="Tanggal"
                         android:textColor="@color/white"
                         android:padding="4dp"
@@ -86,8 +82,8 @@
                         android:textStyle="bold"/>
 
                     <TextView
-                        android:layout_width="fill_parent"
-                        android:layout_weight="0.12"
+                        android:layout_width="100dp"
+                        android:textAlignment="center"
                         android:text="Jumlah Uang dibayar"
                         android:textColor="@color/white"
                         android:padding="4dp"
@@ -95,8 +91,8 @@
                         android:textStyle="bold"/>
 
                     <TextView
-                        android:layout_width="fill_parent"
-                        android:layout_weight="0.12"
+                        android:layout_width="100dp"
+                        android:textAlignment="center"
                         android:text="Total Uang Masuk"
                         android:textColor="@color/white"
                         android:padding="4dp"
@@ -104,9 +100,9 @@
                         android:textStyle="bold"/>
 
                     <TextView
-                        android:layout_width="fill_parent"
-                        android:layout_weight="0.06"
-                        android:text="Presentase"
+                        android:layout_width="50dp"
+                        android:textAlignment="center"
+                        android:text="(%)"
                         android:textColor="@color/white"
                         android:padding="4dp"
                         android:textSize="15sp"
