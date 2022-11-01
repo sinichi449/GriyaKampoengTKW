@@ -7,13 +7,16 @@ import android.os.Bundle
 import android.view.*
 import android.widget.TableRow
 import androidx.fragment.app.Fragment
+import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.textfield.TextInputEditText
 import com.google.android.material.textview.MaterialTextView
 import dagger.hilt.android.AndroidEntryPoint
 import net.bagusekasaputra.griyakampoengtkw.databinding.DialogAddFormPembayaranBinding
 import net.bagusekasaputra.griyakampoengtkw.databinding.DialogEditHargaBinding
+import net.bagusekasaputra.griyakampoengtkw.databinding.DialogPilihTerminBinding
 import net.bagusekasaputra.griyakampoengtkw.databinding.FragmentFormPembayaranBinding
+import net.bagusekasaputra.griyakampoengtkw.domain.entity.Pembayaran
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -216,11 +219,40 @@ class FormPembayaranFragment : Fragment() {
         }
 
         binding.fabEditData?.setOnClickListener {
-            showEditDataDialog()
+            showTerminSelectionButtonsDialog()
         }
     }
 
-    private fun showEditDataDialog() {
+    private fun showTerminSelectionButtonsDialog() {
+        val dialogBinding = DialogPilihTerminBinding.inflate(layoutInflater)
+        val dialogView = AlertDialog.Builder(requireContext()).apply {
+            setView(dialogBinding.root)
+        }.create()
+
+        dialogView.show()
+
+        dialogBinding.btnBatal.setOnClickListener {
+            dialogView.dismiss()
+        }
+
+        setupTerminRecyclerView(dialogBinding)
+    }
+
+    private fun setupTerminRecyclerView(dialogBinding: DialogPilihTerminBinding) {
+        val termins = ArrayList<String>()
+
+        for (pembayaran in this.data) {
+            termins.add(pembayaran.termin)
+        }
+
+        val adapter = TerminRecyclerAdapter(termins) {
+            showEditDataDialog(it)
+        }
+        dialogBinding.recyclerTermin.adapter = adapter
+        dialogBinding.recyclerTermin.layoutManager = LinearLayoutManager(requireContext())
+    }
+
+    private fun showEditDataDialog(index: Int) {
         val dialogBinding = DialogAddFormPembayaranBinding.inflate(layoutInflater)
         val dialogView = AlertDialog.Builder(requireContext()).apply {
             setView(dialogBinding.root)
@@ -232,11 +264,11 @@ class FormPembayaranFragment : Fragment() {
         dialogBinding.tvTitle.text = "Ubah Form"
         dialogBinding.btnTambahkan.text = "Simpan Perubahan"
 
-        val lastData = this.data[this.data.size - 1]
-        dialogBinding.edtTermin.setText(lastData.termin)
-        dialogBinding.edtTanggal.setText(lastData.tanggal)
-        dialogBinding.edtJumlahUangDibayar.setText(lastData.jumlahUang.toString())
-        dialogBinding.edtKeteranganProgress.setText(lastData.keterangan)
+        val selectedData = this.data[index]
+        dialogBinding.edtTermin.setText(selectedData.termin)
+        dialogBinding.edtTanggal.setText(selectedData.tanggal)
+        dialogBinding.edtJumlahUangDibayar.setText(selectedData.jumlahUang.toString())
+        dialogBinding.edtKeteranganProgress.setText(selectedData.keterangan)
 
         dialogBinding.btnTambahkan.setOnClickListener {
             val isOkay = checkNullEditTexts(dialogBinding.edtTermin, dialogBinding.edtTanggal, dialogBinding.edtJumlahUangDibayar, dialogBinding.edtKeteranganProgress)
@@ -245,8 +277,8 @@ class FormPembayaranFragment : Fragment() {
                     termin = dialogBinding.edtTermin.text.toString(),
                     tanggal = dialogBinding.edtTanggal.text.toString(),
                     jumlahUang = dialogBinding.edtJumlahUangDibayar.text.toString().toInt(),
-                    totalUangMasuk = lastData.totalUangMasuk,
-                    presentase = lastData.presentase,
+                    totalUangMasuk = selectedData.totalUangMasuk,
+                    presentase = selectedData.presentase,
                     keterangan = dialogBinding.edtKeteranganProgress.text.toString()
                 )
 
@@ -280,14 +312,5 @@ class FormPembayaranFragment : Fragment() {
     private fun saveFormChanges(pembayaran: Pembayaran, index: Int) {
         this.data[index] = pembayaran
     }
-
-    data class Pembayaran(
-        val termin: String,
-        val tanggal: String,
-        val jumlahUang: Int,
-        val totalUangMasuk: Int,
-        val presentase: Double,
-        val keterangan: String
-    )
 
 }
