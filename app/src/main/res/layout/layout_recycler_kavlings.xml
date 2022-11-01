@@ -16,7 +16,8 @@
     <androidx.appcompat.widget.LinearLayoutCompat
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:gravity="center">
+        android:gravity="center"
+        android:orientation="vertical">
 
         <com.google.android.material.textview.MaterialTextView
             android:id="@+id/tv_card_block_name"
@@ -24,8 +25,29 @@
             android:layout_height="wrap_content"
             tools:text="A2"
             style="@style/TextAppearance.MaterialComponents.Headline5"
-            android:padding="16dp"
+            android:paddingHorizontal="16dp"
+            android:paddingTop="8dp"
             android:textColor="@color/white"/>
+
+        <com.google.android.material.textview.MaterialTextView
+            android:id="@+id/tv_ukuran"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="6x11"
+            android:textColor="@color/white"
+            style="@style/TextAppearance.MaterialComponents.Subtitle1"
+            android:gravity="center"
+            android:layout_marginTop="8dp"/>
+
+        <com.google.android.material.textview.MaterialTextView
+            android:id="@+id/tv_type_rumah"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Type 36"
+            android:gravity="center"
+            android:textColor="@color/white"
+            android:paddingBottom="8dp"
+            android:textStyle="italic"/>
 
     </androidx.appcompat.widget.LinearLayoutCompat>
 

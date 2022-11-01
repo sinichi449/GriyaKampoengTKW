@@ -16,9 +16,26 @@ class FakeKavlingModelDb @Inject constructor(
     private fun generatePseudoKavlingModel(kavlings: ArrayList<KavlingModel>, blockModel: BlockModel, limit: Int) {
         if (kavlings.size == 0) {
             for (i in 1 .. limit) {
-                kavlings.add(
-                    KavlingModel(kode = "${blockModel.kode}$i", warna = blockModel.warna, isActive = true)
-                )
+                when(blockModel.kode) {
+                    "A" -> {
+                        kavlings.add(
+                            KavlingModel(kode = "${blockModel.kode}$i", warna = blockModel.warna, isActive = true,
+                                ukuran = "6x11", type = "Type 36")
+                        )
+                    }
+                    "B" -> {
+                        kavlings.add(
+                            KavlingModel(kode = "${blockModel.kode}$i", warna = blockModel.warna, isActive = true,
+                                ukuran = "6x12", type = "Type 36")
+                        )
+                    }
+                    else -> {
+                        kavlings.add(
+                            KavlingModel(kode = "${blockModel.kode}$i", warna = blockModel.warna, isActive = true,
+                                ukuran = "6x11", type = "Type 36")
+                        )
+                    }
+                }
             }
         }
     }
@@ -39,30 +56,7 @@ class FakeKavlingModelDb @Inject constructor(
         }
     }
 
-    private fun newKavling(block: BlockModel, kavlings: ArrayList<KavlingModel>) {
-        val lastKavlingIndex = kavlings.size + 1
-        val newKavlingModel = KavlingModel(
-            kode = "${block.kode}$lastKavlingIndex",
-            warna = block.warna,
-            isActive = true
-        )
-        kavlings.add(newKavlingModel)
-    }
-
     override fun addKavling(block: BlockModel): Boolean {
-        getKavlingByBlock(block)
-        when (block.kode) {
-            "A" -> {
-                newKavling(block, blockA)
-            }
-            "B" -> {
-                newKavling(block, blockB)
-            }
-            else -> {
-                newKavling(block, blockC)
-            }
-        }
-
         return true
     }
 

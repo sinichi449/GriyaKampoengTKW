@@ -32,6 +32,8 @@ class KavlingRecyclerAdapter(
 
     override fun onBindViewHolder(holder: MyViewHolder, position: Int) {
         holder.binding.tvCardBlockName.text = kavlings[position].kode
+        holder.binding.tvUkuran.text = kavlings[position].ukuran
+        holder.binding.tvTypeRumah.text = kavlings[position].type
 
         holder.binding.cardKavling.setCardBackgroundColor(
             getColor(kavlings[position].warna)

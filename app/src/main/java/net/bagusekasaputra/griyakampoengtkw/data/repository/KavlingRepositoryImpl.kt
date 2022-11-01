@@ -42,7 +42,9 @@ class KavlingRepositoryImpl @Inject constructor(
         return Kavling(
             kavlingModel.kode,
             kavlingModel.isActive,
-            kavlingModel.warna
+            kavlingModel.warna,
+            kavlingModel.ukuran,
+            kavlingModel.type
         )
     }
 
