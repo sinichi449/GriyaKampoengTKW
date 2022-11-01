@@ -20,13 +20,13 @@ class FakeKavlingModelDb @Inject constructor(
                     "A" -> {
                         kavlings.add(
                             KavlingModel(kode = "${blockModel.kode}$i", warna = blockModel.warna, isActive = true,
-                                ukuran = "6x11", type = "Type 36")
+                                ukuran = "6x12", type = "Type 36")
                         )
                     }
                     "B" -> {
                         kavlings.add(
                             KavlingModel(kode = "${blockModel.kode}$i", warna = blockModel.warna, isActive = true,
-                                ukuran = "6x12", type = "Type 36")
+                                ukuran = "6x11", type = "Type 36")
                         )
                     }
                     else -> {

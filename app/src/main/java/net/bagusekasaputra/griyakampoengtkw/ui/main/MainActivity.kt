@@ -149,8 +149,8 @@ class MainActivity : AppCompatActivity() {
         }.create()
 
         val ukuran = kavling.ukuran.split("x")
-        dialogBinding.edtLebar.setText(ukuran[0])
-        dialogBinding.edtPanjang.setText(ukuran[1])
+        dialogBinding.edtPanjang.setText(ukuran[0])
+        dialogBinding.edtLebar.setText(ukuran[1])
         dialogBinding.edtTipeRumah.setText(kavling.type)
 
         dialogView.show()
