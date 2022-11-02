@@ -1,6 +1,5 @@
 package net.bagusekasaputra.griyakampoengtkw.ui.main
 
-import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -14,7 +13,6 @@ import net.bagusekasaputra.griyakampoengtkw.domain.usecase.AddKavlingUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.usecase.AddNewBlockUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.usecase.GetAllBlocksUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.usecase.GetKavlingsByBlockUseCase
-import net.bagusekasaputra.griyakampoengtkw.util.GriyaNodes.Companion.LOG_TAG
 import javax.inject.Inject
 
 @HiltViewModel
@@ -54,7 +52,6 @@ class MainViewModel @Inject constructor(
 
                 result?.let { blocks ->
                     _blocks.postValue(blocks)
-                    Log.d(LOG_TAG, "Got flow viewmodel: ${blocks[0].kode} ${blocks[0].warna} ${blocks.size}")
                 }
 
                 isFinishOperation.postValue(true)

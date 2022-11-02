@@ -16,6 +16,7 @@ import net.bagusekasaputra.griyakampoengtkw.databinding.*
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.Block
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.Kavling
 import net.bagusekasaputra.griyakampoengtkw.ui.detail.DetailActivity
+import net.bagusekasaputra.griyakampoengtkw.util.GriyaNodes
 import net.bagusekasaputra.griyakampoengtkw.util.InputUtil
 
 @AndroidEntryPoint
@@ -37,10 +38,21 @@ class MainActivity : AppCompatActivity() {
         supportActionBar?.setHomeAsUpIndicator(R.drawable.settings_24px)
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
 
+        val deviceOnline = intent.getBooleanExtra(GriyaNodes.INTENT_IS_ONLINE, false)
+        if (!deviceOnline) {
+            Toast.makeText(this, "Device terdeteksi offline, data tidak akan tersinkronisasi!", Toast.LENGTH_LONG).show()
+        } else {
+            syncData()
+        }
+
         setupViewModel()
 
         binding.fabAddKavling.setOnClickListener {
             showAddKavlingDialog()
+        }
+
+        binding.swipeRefreshMain.setOnRefreshListener {
+            syncData()
         }
     }
 
@@ -59,9 +71,18 @@ class MainActivity : AppCompatActivity() {
 
         viewModel.isFinishOperation.observe(this) {
             it?.let { finish ->
-                binding.swipeRefreshMain.isRefreshing = !it
+                binding.swipeRefreshMain.isRefreshing = !finish
             }
         }
+    }
+
+    private fun syncData() {
+        viewModel.getAllBlocks()
+
+//        viewModel.currentBlock.value?.let {
+//            val block = Block(kode = it)
+//            viewModel.getKavlings(block)
+//        }
     }
 
     private fun setupBlockRecyclerview(blocks: List<Block>) {
@@ -206,17 +227,6 @@ class MainActivity : AppCompatActivity() {
         dialogBinding.btnBatal.setOnClickListener {
             dialogView.dismiss()
         }
-    }
-
-    override fun onResume() {
-        super.onResume()
-
-        viewModel.getAllBlocks()
-
-//        viewModel.currentBlock.value?.let {
-//            val block = Block(kode = it)
-//            viewModel.getKavlings(block)
-//        }
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {

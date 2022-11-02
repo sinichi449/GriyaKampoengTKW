@@ -3,6 +3,8 @@ package net.bagusekasaputra.griyakampoengtkw.util
 class GriyaNodes {
 
     companion object {
+        const val INTENT_IS_ONLINE = "is_online"
+
         const val LOG_TAG = "DEBUG_ME"
 
         const val firebaseUrl = "https://griya-kampoeng-tkw-mobile-default-rtdb.asia-southeast1.firebasedatabase.app/"
