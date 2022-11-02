@@ -8,18 +8,17 @@ import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
-class GetAllBlocksUseCase @Inject constructor(
+class AddNewBlockUseCase @Inject constructor(
     private val blockRepository: BlockRepository
-): UseCase<GetAllBlocksUseCase.Request, GetAllBlocksUseCase.Response>() {
+): UseCase<AddNewBlockUseCase.Request, AddNewBlockUseCase.Response>() {
 
-    object Request: UseCase.Request
+    data class Request(val block: Block): UseCase.Request
 
-    data class Response(val data: List<Block>?): UseCase.Response
+    data class Response(val isSuccess: Boolean): UseCase.Response
 
     override fun process(request: Request): Flow<Response> {
-        return blockRepository.getAllBlocks().map {
+        return blockRepository.addBlock(request.block).map {
             Response(it)
         }
     }
-
 }

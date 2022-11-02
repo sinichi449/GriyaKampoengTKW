@@ -3,8 +3,14 @@ package net.bagusekasaputra.griyakampoengtkw.util
 class GriyaNodes {
 
     companion object {
+        const val LOG_TAG = "DEBUG_ME"
+
         const val firebaseUrl = "https://griya-kampoeng-tkw-mobile-default-rtdb.asia-southeast1.firebasedatabase.app/"
+
+        // Blocks
         const val blocks = "blocks"
+        const val kode = "kode"
+        const val warna = "warna"
 
         // Marketing
         const val biayaMarketing = "biayaMarketing"

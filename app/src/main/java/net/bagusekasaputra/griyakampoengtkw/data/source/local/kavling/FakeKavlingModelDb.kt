@@ -1,6 +1,6 @@
 package net.bagusekasaputra.griyakampoengtkw.data.source.local.kavling
 
-import net.bagusekasaputra.griyakampoengtkw.data.source.local.block.BlockModel
+import net.bagusekasaputra.griyakampoengtkw.data.source.remote.block.BlockModel
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -19,19 +19,19 @@ class FakeKavlingModelDb @Inject constructor(
                 when(blockModel.kode) {
                     "A" -> {
                         kavlings.add(
-                            KavlingModel(kode = "${blockModel.kode}$i", warna = blockModel.warna, isActive = true,
+                            KavlingModel(kode = "${blockModel.kode}$i", warna = blockModel.warna?: "Black", isActive = true,
                                 ukuran = "6x12", type = "Type 36")
                         )
                     }
                     "B" -> {
                         kavlings.add(
-                            KavlingModel(kode = "${blockModel.kode}$i", warna = blockModel.warna, isActive = true,
+                            KavlingModel(kode = "${blockModel.kode}$i", warna = blockModel.warna?: "Black", isActive = true,
                                 ukuran = "6x11", type = "Type 36")
                         )
                     }
                     else -> {
                         kavlings.add(
-                            KavlingModel(kode = "${blockModel.kode}$i", warna = blockModel.warna, isActive = true,
+                            KavlingModel(kode = "${blockModel.kode}$i", warna = blockModel.warna?: "Black", isActive = true,
                                 ukuran = "6x11", type = "Type 36")
                         )
                     }

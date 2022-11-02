@@ -8,12 +8,12 @@ import dagger.hilt.components.SingletonComponent
 import net.bagusekasaputra.griyakampoengtkw.data.repository.BlockRepositoryImpl
 import net.bagusekasaputra.griyakampoengtkw.data.repository.DataDiriRepositoryImpl
 import net.bagusekasaputra.griyakampoengtkw.data.repository.KavlingRepositoryImpl
-import net.bagusekasaputra.griyakampoengtkw.data.source.local.block.FakeBlockModelsDb
-import net.bagusekasaputra.griyakampoengtkw.data.source.local.block.LocalBlockRepository
 import net.bagusekasaputra.griyakampoengtkw.data.source.local.kavling.FakeKavlingModelDb
 import net.bagusekasaputra.griyakampoengtkw.data.source.local.kavling.LocalKavlingRepository
 import net.bagusekasaputra.griyakampoengtkw.data.source.remote.DataDiriRemoteRepositoryImpl
 import net.bagusekasaputra.griyakampoengtkw.data.source.remote.IDataDiriRemoteRepository
+import net.bagusekasaputra.griyakampoengtkw.data.source.remote.block.FirebaseBlockRepository
+import net.bagusekasaputra.griyakampoengtkw.data.source.remote.block.RemoteBlockRepository
 import net.bagusekasaputra.griyakampoengtkw.domain.repository.BlockRepository
 import net.bagusekasaputra.griyakampoengtkw.domain.repository.DataDiriRepository
 import net.bagusekasaputra.griyakampoengtkw.domain.repository.KavlingRepository
@@ -23,26 +23,29 @@ import net.bagusekasaputra.griyakampoengtkw.domain.repository.KavlingRepository
 
 object RepositoryModule {
 
+    // Block Repository
     @Provides
-    fun provideLocalKavlingRepository(): LocalKavlingRepository {
-        return FakeKavlingModelDb()
+    fun provideBlockRepository(remoteBlockRepository: RemoteBlockRepository): BlockRepository {
+        return BlockRepositoryImpl(remoteBlockRepository)
     }
 
+    @Provides
+    fun provideRemoteBlockRepository(databaseReference: DatabaseReference): RemoteBlockRepository {
+        return FirebaseBlockRepository(databaseReference)
+    }
+
+    // Kavling Repository
     @Provides
     fun provideKavlingRepository(localKavlingRepository: LocalKavlingRepository): KavlingRepository {
         return KavlingRepositoryImpl(localKavlingRepository)
     }
 
     @Provides
-    fun provideBlockRepository(localBlockRepository: LocalBlockRepository): BlockRepository {
-        return BlockRepositoryImpl(localBlockRepository)
+    fun provideLocalKavlingRepository(): LocalKavlingRepository {
+        return FakeKavlingModelDb()
     }
 
-    @Provides
-    fun provideLocalBlockRepository(): LocalBlockRepository {
-        return FakeBlockModelsDb()
-    }
-
+    // Data Diri Repository
     @Provides
     fun provideDataDiriRepository(iDataDiriRemoteRepository: IDataDiriRemoteRepository): DataDiriRepository {
         return DataDiriRepositoryImpl(iDataDiriRemoteRepository)

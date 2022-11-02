@@ -16,6 +16,7 @@ import net.bagusekasaputra.griyakampoengtkw.databinding.*
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.Block
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.Kavling
 import net.bagusekasaputra.griyakampoengtkw.ui.detail.DetailActivity
+import net.bagusekasaputra.griyakampoengtkw.util.InputUtil
 
 @AndroidEntryPoint
 class MainActivity : AppCompatActivity() {
@@ -53,6 +54,12 @@ class MainActivity : AppCompatActivity() {
         viewModel.kavlings.observe(this) {
             it?.let {
                 setupKavlingRecyclerView(it)
+            }
+        }
+
+        viewModel.isFinishOperation.observe(this) {
+            it?.let { finish ->
+                binding.swipeRefreshMain.isRefreshing = !it
             }
         }
     }
@@ -110,7 +117,29 @@ class MainActivity : AppCompatActivity() {
         dialogView.show()
 
         dialogBinding.btnTambahkan.setOnClickListener {
-            // TODO
+            val isEmptyEdt = InputUtil.isNullOrEmptyEditTexts(dialogBinding.edtKode)
+            if (!isEmptyEdt) {
+                val kode = dialogBinding.edtKode.text.toString()
+                val block = Block(kode[0].toString())
+
+                viewModel.addNewBlock(block)
+
+                dialogBinding.btnTambahkan.isEnabled = false
+
+                viewModel.isFinishOperation.observe(this) {
+                    it?.let {
+                        dialogBinding.btnTambahkan.isEnabled = true
+
+                        if (it) {
+                            Toast.makeText(this, "Sukses menambahkan kavling", Toast.LENGTH_SHORT)
+                                .show()
+                        } else {
+                            Toast.makeText(this, "Gagal menambahkan kavling", Toast.LENGTH_SHORT)
+                                .show()
+                        }
+                    }
+                }
+            }
         }
 
         dialogBinding.btnBatal.setOnClickListener {
@@ -184,10 +213,10 @@ class MainActivity : AppCompatActivity() {
 
         viewModel.getAllBlocks()
 
-        viewModel.currentBlock.value?.let {
-            val block = Block(kode = it)
-            viewModel.getKavlings(block)
-        }
+//        viewModel.currentBlock.value?.let {
+//            val block = Block(kode = it)
+//            viewModel.getKavlings(block)
+//        }
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {

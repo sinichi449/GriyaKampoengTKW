@@ -2,9 +2,10 @@ package net.bagusekasaputra.griyakampoengtkw.data.repository
 
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
-import net.bagusekasaputra.griyakampoengtkw.data.source.local.block.BlockModel
+import net.bagusekasaputra.griyakampoengtkw.R
 import net.bagusekasaputra.griyakampoengtkw.data.source.local.kavling.KavlingModel
 import net.bagusekasaputra.griyakampoengtkw.data.source.local.kavling.LocalKavlingRepository
+import net.bagusekasaputra.griyakampoengtkw.data.source.remote.block.BlockModel
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.Block
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.Kavling
 import net.bagusekasaputra.griyakampoengtkw.domain.repository.KavlingRepository
@@ -18,7 +19,10 @@ class KavlingRepositoryImpl @Inject constructor(
 
     override fun getKavlingByBlock(block: Block): Flow<List<Kavling>> {
         return flow {
-            val blockModel = BlockModel(kode = block.kode, warna = block.warna)
+            val blockModel = BlockModel(
+                kode = block.kode,
+                warna = BlockRepositoryImpl.parseBlockWarna(block.warna?: R.color.black)
+            )
             val kavlings = localKavlingRepository.getKavlingByBlock(blockModel).map {
                 mapKavling(it)
             }
@@ -31,7 +35,7 @@ class KavlingRepositoryImpl @Inject constructor(
             val result = localKavlingRepository.addKavling(
                 BlockModel(
                     kode = block.kode,
-                    warna = block.warna
+                    warna = BlockRepositoryImpl.parseBlockWarna(block.warna?: R.color.black)
                 )
             )
             emit(result)
@@ -42,7 +46,7 @@ class KavlingRepositoryImpl @Inject constructor(
         return Kavling(
             kavlingModel.kode,
             kavlingModel.isActive,
-            kavlingModel.warna,
+            BlockRepositoryImpl.parseBlockWarna(kavlingModel.warna)?: R.color.black,
             kavlingModel.ukuran,
             kavlingModel.type
         )

@@ -1,5 +1,6 @@
 package net.bagusekasaputra.griyakampoengtkw.ui.main
 
+import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -10,15 +11,18 @@ import kotlinx.coroutines.launch
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.Block
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.Kavling
 import net.bagusekasaputra.griyakampoengtkw.domain.usecase.AddKavlingUseCase
+import net.bagusekasaputra.griyakampoengtkw.domain.usecase.AddNewBlockUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.usecase.GetAllBlocksUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.usecase.GetKavlingsByBlockUseCase
+import net.bagusekasaputra.griyakampoengtkw.util.GriyaNodes.Companion.LOG_TAG
 import javax.inject.Inject
 
 @HiltViewModel
 class MainViewModel @Inject constructor(
     private val getKavlingsByBlockUseCase: GetKavlingsByBlockUseCase,
     private val getAllBlocksUseCase: GetAllBlocksUseCase,
-    private val addKavlingUseCase: AddKavlingUseCase
+    private val addNewBlockUseCase: AddNewBlockUseCase,
+    private val addKavlingUseCase: AddKavlingUseCase,
 ): ViewModel() {
 
     private val _kavlings = MutableLiveData<List<Kavling>>()
@@ -31,12 +35,31 @@ class MainViewModel @Inject constructor(
 
     val currentBlock = MutableLiveData("A")
 
+    val isFinishOperation = MutableLiveData<Boolean>()
+
 
     fun refresh() {
         val block = Block(
             kode = currentBlock.value!!
         )
         getKavlings(block)
+    }
+
+    fun getAllBlocks() {
+        isFinishOperation.value = false
+        CoroutineScope(Dispatchers.IO).launch {
+            val request = GetAllBlocksUseCase.Request
+            getAllBlocksUseCase.execute(request).collect {
+                val result = it.data.data
+
+                result?.let { blocks ->
+                    _blocks.postValue(blocks)
+                    Log.d(LOG_TAG, "Got flow viewmodel: ${blocks[0].kode} ${blocks[0].warna} ${blocks.size}")
+                }
+
+                isFinishOperation.postValue(true)
+            }
+        }
     }
 
     fun getKavlings(block: Block) {
@@ -49,12 +72,13 @@ class MainViewModel @Inject constructor(
         }
     }
 
-    fun getAllBlocks() {
+
+    fun addNewBlock(block: Block) {
+        isFinishOperation.value = false
         CoroutineScope(Dispatchers.IO).launch {
-            val request = GetAllBlocksUseCase.Request
-            getAllBlocksUseCase.execute(request).collect {
-                val result = it.data.data
-                _blocks.postValue(result)
+            val request = AddNewBlockUseCase.Request(block)
+            addNewBlockUseCase.execute(request).collect {
+                isFinishOperation.postValue(it.data.isSuccess)
             }
         }
     }

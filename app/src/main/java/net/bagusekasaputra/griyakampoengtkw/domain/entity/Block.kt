@@ -4,7 +4,7 @@ import net.bagusekasaputra.griyakampoengtkw.R
 
 data class Block(
     val kode: String,
-    val warna: Int = getWarnaByKode(kode)
+    val warna: Int? = getWarnaByKode(kode)
 ) {
 
     companion object {
