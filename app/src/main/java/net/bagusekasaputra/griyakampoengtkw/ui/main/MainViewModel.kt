@@ -64,7 +64,10 @@ class MainViewModel @Inject constructor(
                 val result = it.data.result
 
                 if (result.isSuccess) {
-                    _kavlings.postValue(result.getOrNull())
+                    val unsortedKavlings = result.getOrNull()
+                    unsortedKavlings?.let { kavling ->
+                        _kavlings.postValue(sortKavling(kavling))
+                    }
                 }
 
                 isFinishOperation.postValue(true)
@@ -104,6 +107,20 @@ class MainViewModel @Inject constructor(
                 isFinishOperation.postValue(true)
             }
         }
+    }
+
+    private fun sortKavling(kavlings: List<Kavling>): List<Kavling> {
+        val mutableKavling = mutableListOf<Kavling>()
+
+        kavlings.forEach {
+            mutableKavling.add(it)
+        }
+
+        mutableKavling.sortBy {
+            it.kode.substring(1).toInt()
+        }
+
+        return mutableKavling
     }
 
     data class Operation(
