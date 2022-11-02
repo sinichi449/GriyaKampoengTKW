@@ -66,4 +66,53 @@ class FirebaseKavlingRepository @Inject constructor(
             awaitClose {  }
         }
     }
+
+    override fun editKavling(
+        blockKode: String,
+        oldKavling: KavlingModel,
+        newKavling: KavlingModel
+    ): Flow<Result<Boolean>> {
+        Log.d(LOG_TAG, "Editting kavling ${oldKavling.kode}")
+        return callbackFlow {
+            isKavlingExists(blockKode, oldKavling).collect { exist ->
+                if (exist) {
+                    Log.d(LOG_TAG, "Found kavling ${oldKavling.kode} in database")
+                    databaseReference
+                        .child(GriyaNodes.kavlings)
+                        .child(blockKode)
+                        .child(oldKavling.kode)
+                        .setValue(newKavling)
+                        .addOnSuccessListener {
+                            trySendBlocking(Result.success(true))
+                        }
+                        .addOnFailureListener {
+                            trySendBlocking(Result.failure(it))
+                        }
+                } else {
+                    Log.d(LOG_TAG, "Kavling ${oldKavling.kode} doesn't in database")
+                    trySendBlocking(Result.success(false))
+                }
+            }
+
+            awaitClose {  }
+        }
+    }
+
+    private fun isKavlingExists(blockKode: String, kavling: KavlingModel): Flow<Boolean> {
+        return callbackFlow {
+            databaseReference
+                .child(GriyaNodes.kavlings)
+                .child(blockKode)
+                .get()
+                .addOnSuccessListener { snapshot ->
+                    if (snapshot.hasChild(kavling.kode)) {
+                        trySendBlocking(true)
+                    } else {
+                        trySendBlocking(false)
+                    }
+                }
+
+            awaitClose {}
+        }
+    }
 }

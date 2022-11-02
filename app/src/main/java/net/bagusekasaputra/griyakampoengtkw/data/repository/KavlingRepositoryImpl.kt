@@ -44,6 +44,21 @@ class KavlingRepositoryImpl @Inject constructor(
         }
     }
 
+    override fun editKavling(
+        blockCode: String,
+        oldKavling: Kavling,
+        newKavling: Kavling
+    ): Flow<Result<Boolean>> {
+        val firstKavlingModel = mapKavling(oldKavling)
+        val secondKavlingModel = mapKavling(newKavling)
+
+        return flow {
+            emitAll(
+                remoteKavlingRepository.editKavling(blockCode, firstKavlingModel, secondKavlingModel)
+            )
+        }
+    }
+
     private fun mapKavling(kavlingModel: KavlingModel): Kavling {
         return Kavling(
             kavlingModel.kode,

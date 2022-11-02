@@ -8,5 +8,4 @@ interface RemoteBlockRepository {
     fun getAllBlocks(): Flow<List<BlockModel>?>
 
     fun addNewBlock(blockModel: BlockModel): Flow<Result<Boolean>>
-
 }

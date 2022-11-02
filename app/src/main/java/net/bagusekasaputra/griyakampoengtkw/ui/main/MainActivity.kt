@@ -203,17 +203,38 @@ class MainActivity : AppCompatActivity() {
             setView(dialogBinding.root)
         }.create()
 
-        val ukuran = kavling.ukuran.split("x")
-        dialogBinding.edtPanjang.setText(ukuran[0])
-        dialogBinding.edtLebar.setText(ukuran[1])
-        dialogBinding.edtTipeRumah.setText(kavling.type)
-
         dialogView.show()
 
+        val oldUkuran = kavling.ukuran.split("x")
+        dialogBinding.edtPanjang.setText(oldUkuran[0])
+        dialogBinding.edtLebar.setText(oldUkuran[1])
+        dialogBinding.edtTipeRumah.setText(kavling.type)
+
         dialogBinding.btnSimpan.setOnClickListener {
-            // TODO: Save data
-            dialogView.dismiss()
-            Toast.makeText(this, "Data tersimpan! (fake)", Toast.LENGTH_SHORT).show()
+            dialogBinding.btnSimpan.isEnabled = false
+            dialogBinding.btnSimpan.text = "Menyimpan data ..."
+
+            val isInvalidEdt = InputUtil.isNullOrEmptyEditTexts(
+                dialogBinding.edtPanjang, dialogBinding.edtLebar, dialogBinding.edtTipeRumah)
+
+            if (!isInvalidEdt) {
+                val panjang = dialogBinding.edtPanjang.text.toString()
+                val lebar = dialogBinding.edtLebar.text.toString()
+                val newUkuran = panjang + "x" + lebar
+                val tipeRumah = dialogBinding.edtTipeRumah.text.toString()
+                val newKavling = Kavling(kavling.kode, kavling.isActive, kavling.warna, newUkuran, tipeRumah)
+                val blockCode = viewModel.currentBlock.value!!
+
+                viewModel.editKavling(blockCode, kavling, newKavling)
+
+                viewModel.operationResult.observe(this) {
+                    it?.let {
+                        Toast.makeText(this, it.message, Toast.LENGTH_SHORT).show()
+                        syncData()
+                        dialogView.dismiss()
+                    }
+                }
+            }
         }
 
         dialogBinding.btnBatal.setOnClickListener {

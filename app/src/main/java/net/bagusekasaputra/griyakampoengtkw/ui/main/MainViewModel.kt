@@ -9,10 +9,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.Block
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.Kavling
-import net.bagusekasaputra.griyakampoengtkw.domain.usecase.AddKavlingUseCase
-import net.bagusekasaputra.griyakampoengtkw.domain.usecase.AddNewBlockUseCase
-import net.bagusekasaputra.griyakampoengtkw.domain.usecase.GetAllBlocksUseCase
-import net.bagusekasaputra.griyakampoengtkw.domain.usecase.GetKavlingsByBlockUseCase
+import net.bagusekasaputra.griyakampoengtkw.domain.usecase.*
 import javax.inject.Inject
 
 @HiltViewModel
@@ -21,6 +18,7 @@ class MainViewModel @Inject constructor(
     private val getAllBlocksUseCase: GetAllBlocksUseCase,
     private val addNewBlockUseCase: AddNewBlockUseCase,
     private val addKavlingUseCase: AddKavlingUseCase,
+    private val editKavlingUseCase: EditKavlingUseCase,
 ): ViewModel() {
 
     private val _kavlings = MutableLiveData<List<Kavling>>()
@@ -102,6 +100,33 @@ class MainViewModel @Inject constructor(
                     operationResult.postValue(Operation(true, "Kavling ${kavling.kode} berhasil ditambahkan"))
                 } else {
                     operationResult.postValue(Operation(false, "Gagal: ${result.exceptionOrNull()?.message}"))
+                }
+
+                isFinishOperation.postValue(true)
+            }
+        }
+    }
+
+    fun editKavling(blockKode: String, oldKavling: Kavling, newKavling: Kavling) {
+        isFinishOperation.value = false
+
+        CoroutineScope(Dispatchers.IO).launch {
+            val request = EditKavlingUseCase.Request(blockKode, oldKavling, newKavling)
+
+            editKavlingUseCase.execute(request).collect { response ->
+                val result = response.data.result
+                if (result.isSuccess) {
+                    result.getOrNull()?.let {
+                        if (it) {
+                            operationResult.postValue(Operation(true, "Berhasil mengubah data kavling ${oldKavling.kode}"))
+                        } else {
+                            operationResult.postValue(Operation(false, "Data kavling ${oldKavling.kode} tidak ditemukan!"))
+                        }
+                    }
+                } else {
+                    result.exceptionOrNull()?.let {
+                        operationResult.postValue(Operation(false, "Gagal: ${it.message}"))
+                    }
                 }
 
                 isFinishOperation.postValue(true)
