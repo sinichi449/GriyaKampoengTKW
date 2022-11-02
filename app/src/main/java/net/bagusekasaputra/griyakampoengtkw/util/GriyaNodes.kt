@@ -17,6 +17,12 @@ class GriyaNodes {
         const val kode = "kode"
         const val warna = "warna"
 
+        // Kavlings
+        const val kavlings = "kavlings"
+        const val active = "active"
+        const val tipe = "type"
+        const val ukuran = "ukuran"
+
         // Marketing
         const val biayaMarketing = "biayaMarketing"
 

@@ -38,15 +38,9 @@ class MainViewModel @Inject constructor(
     val operationResult = MutableLiveData<Operation>()
 
 
-    fun refresh() {
-        val block = Block(
-            kode = currentBlock.value!!
-        )
-        getKavlings(block)
-    }
-
     fun getAllBlocks() {
         isFinishOperation.value = false
+
         CoroutineScope(Dispatchers.IO).launch {
             val request = GetAllBlocksUseCase.Request
             getAllBlocksUseCase.execute(request).collect {
@@ -61,27 +55,16 @@ class MainViewModel @Inject constructor(
         }
     }
 
-    fun getKavlings(block: Block) {
-        CoroutineScope(Dispatchers.IO).launch {
-            val request = GetKavlingsByBlockUseCase.Request(block)
-            getKavlingsByBlockUseCase.execute(request).collect {
-                val result = it.data.data
-                _kavlings.postValue(result)
-            }
-        }
-    }
-
-
-    fun addNewBlock(block: Block) {
+    fun getKavlings(blockKode: String) {
         isFinishOperation.value = false
+
         CoroutineScope(Dispatchers.IO).launch {
-            val request = AddNewBlockUseCase.Request(block)
-            addNewBlockUseCase.execute(request).collect {
+            val request = GetKavlingsByBlockUseCase.Request(blockKode)
+            getKavlingsByBlockUseCase.execute(request).collect {
                 val result = it.data.result
+
                 if (result.isSuccess) {
-                    operationResult.postValue(Operation(true, "Blok ${block.kode} berhasil ditambahkan"))
-                } else {
-                    operationResult.postValue(Operation(false, result.exceptionOrNull()?.message))
+                    _kavlings.postValue(result.getOrNull())
                 }
 
                 isFinishOperation.postValue(true)
@@ -89,11 +72,36 @@ class MainViewModel @Inject constructor(
         }
     }
 
-    fun addKavling(block: Block) {
+
+    fun addNewBlock(block: Block) {
         CoroutineScope(Dispatchers.IO).launch {
-            val request = AddKavlingUseCase.Request(block)
+            val request = AddNewBlockUseCase.Request(block)
+            addNewBlockUseCase.execute(request).collect {
+                val result = it.data.result
+                if (result.isSuccess) {
+                    operationResult.postValue(Operation(true, "Blok ${block.kode} berhasil ditambahkan"))
+                } else {
+                    operationResult.postValue(Operation(false, "Gagal: ${result.exceptionOrNull()?.message}"))
+                }
+            }
+        }
+    }
+
+    fun addKavling(blockKode: String, kavling: Kavling) {
+        isFinishOperation.value = false
+
+        CoroutineScope(Dispatchers.IO).launch {
+            val request = AddKavlingUseCase.Request(blockKode, kavling)
             addKavlingUseCase.execute(request).collect {
-                val result = it.data.isSuccess
+                val result = it.data.result
+
+                if (result.isSuccess) {
+                    operationResult.postValue(Operation(true, "Kavling ${kavling.kode} berhasil ditambahkan"))
+                } else {
+                    operationResult.postValue(Operation(false, "Gagal: ${result.exceptionOrNull()?.message}"))
+                }
+
+                isFinishOperation.postValue(true)
             }
         }
     }

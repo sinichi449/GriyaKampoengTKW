@@ -1,4 +1,4 @@
-package net.bagusekasaputra.griyakampoengtkw.data.source.remote
+package net.bagusekasaputra.griyakampoengtkw.data.source.remote.datadiri
 
 import kotlinx.coroutines.flow.Flow
 

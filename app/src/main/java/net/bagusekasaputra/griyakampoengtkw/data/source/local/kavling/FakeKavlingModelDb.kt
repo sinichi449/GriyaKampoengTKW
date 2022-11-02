@@ -1,6 +1,7 @@
 package net.bagusekasaputra.griyakampoengtkw.data.source.local.kavling
 
 import net.bagusekasaputra.griyakampoengtkw.data.source.model.BlockModel
+import net.bagusekasaputra.griyakampoengtkw.data.source.model.KavlingModel
 import javax.inject.Inject
 import javax.inject.Singleton
 

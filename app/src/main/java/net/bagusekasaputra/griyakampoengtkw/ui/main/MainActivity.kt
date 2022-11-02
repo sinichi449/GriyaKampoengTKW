@@ -83,17 +83,16 @@ class MainActivity : AppCompatActivity() {
     private fun syncData() {
         viewModel.getAllBlocks()
 
-//        viewModel.currentBlock.value?.let {
-//            val block = Block(kode = it)
-//            viewModel.getKavlings(block)
-//        }
+        viewModel.currentBlock.value?.let {
+            viewModel.getKavlings(it)
+        }
     }
 
     private fun setupBlockRecyclerview(blocks: List<Block>) {
         val adapter = BlockRecyclerAdapter(blocks) { position ->
             viewModel.currentBlock.value = blocks[position].kode
             viewModel.currentBlock.value?.let {
-                viewModel.getKavlings(Block(kode = it))
+                viewModel.getKavlings(it)
             }
         }
 
@@ -123,18 +122,25 @@ class MainActivity : AppCompatActivity() {
         dialogView.show()
 
         dialogBinding.btnTambahkan.setOnClickListener {
-            val isValidEdt = InputUtil.isNullOrEmptyEditTexts(
-                dialogBinding.edtBlock, dialogBinding.edtNoKavling, dialogBinding.edtWarna
+            val isInValidEdt = InputUtil.isNullOrEmptyEditTexts(
+                dialogBinding.edtBlock, dialogBinding.edtNoKavling, dialogBinding.edtWarna,
+                dialogBinding.edtPanjang, dialogBinding.edtLebar, dialogBinding.edtTipeRumah
             ) && isValidHexWarna(dialogBinding.edtWarna)
 
-            if (!isValidEdt) {
+            if (!isInValidEdt) {
                 val kode = dialogBinding.edtBlock.text.toString()
-                val noKavling = dialogBinding.edtNoKavling.toString()
+                val noKavling = dialogBinding.edtNoKavling.text.toString()
                 val warna = dialogBinding.edtWarna.text.toString()
+                val panjang = dialogBinding.edtPanjang.text.toString()
+                val lebar = dialogBinding.edtLebar.text.toString()
+                val ukuran = panjang + "x" + lebar
+                val type = dialogBinding.edtTipeRumah.text.toString()
 
                 val block = Block(kode, warna)
+                val kavling = Kavling(kode + noKavling, true, warna, ukuran, type)
 
                 viewModel.addNewBlock(block)
+                viewModel.addKavling(kode, kavling)
 
                 dialogBinding.btnTambahkan.isEnabled = false
                 dialogBinding.btnTambahkan.text = "Menyimpan data ..."

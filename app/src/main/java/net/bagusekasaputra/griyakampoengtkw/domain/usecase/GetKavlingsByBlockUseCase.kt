@@ -2,7 +2,6 @@ package net.bagusekasaputra.griyakampoengtkw.domain.usecase
 
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
-import net.bagusekasaputra.griyakampoengtkw.domain.entity.Block
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.Kavling
 import net.bagusekasaputra.griyakampoengtkw.domain.repository.KavlingRepository
 import javax.inject.Inject
@@ -13,12 +12,12 @@ class GetKavlingsByBlockUseCase @Inject constructor(
     private val repository: KavlingRepository
 ): UseCase<GetKavlingsByBlockUseCase.Request, GetKavlingsByBlockUseCase.Response>() {
 
-    data class Request(val block: Block): UseCase.Request
+    data class Request(val blockKode: String): UseCase.Request
 
-    data class Response(val data: List<Kavling>): UseCase.Response
+    data class Response(val result: Result<List<Kavling>?>): UseCase.Response
 
     override fun process(request: Request): Flow<Response> {
-        return repository.getKavlingByBlock(request.block).map {
+        return repository.getKavlingByBlock(request.blockKode).map {
             Response(it)
         }
     }

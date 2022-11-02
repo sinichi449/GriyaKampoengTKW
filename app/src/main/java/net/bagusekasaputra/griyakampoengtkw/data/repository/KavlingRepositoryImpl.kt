@@ -1,11 +1,10 @@
 package net.bagusekasaputra.griyakampoengtkw.data.repository
 
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.emitAll
 import kotlinx.coroutines.flow.flow
-import net.bagusekasaputra.griyakampoengtkw.data.source.local.kavling.KavlingModel
-import net.bagusekasaputra.griyakampoengtkw.data.source.local.kavling.LocalKavlingRepository
-import net.bagusekasaputra.griyakampoengtkw.data.source.model.BlockModel
-import net.bagusekasaputra.griyakampoengtkw.domain.entity.Block
+import net.bagusekasaputra.griyakampoengtkw.data.source.model.KavlingModel
+import net.bagusekasaputra.griyakampoengtkw.data.source.remote.kavling.RemoteKavlingRepository
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.Kavling
 import net.bagusekasaputra.griyakampoengtkw.domain.repository.KavlingRepository
 import javax.inject.Inject
@@ -13,31 +12,35 @@ import javax.inject.Singleton
 
 @Singleton
 class KavlingRepositoryImpl @Inject constructor(
-    private val localKavlingRepository: LocalKavlingRepository
+    private val remoteKavlingRepository: RemoteKavlingRepository
 ): KavlingRepository {
 
-    override fun getKavlingByBlock(block: Block): Flow<List<Kavling>> {
+    override fun getKavlingByBlock(blockCode: String): Flow<Result<List<Kavling>>> {
         return flow {
-            val blockModel = BlockModel(
-                kode = block.kode,
-                warna = block.warna
-            )
-            val kavlings = localKavlingRepository.getKavlingByBlock(blockModel).map {
-                mapKavling(it)
+            val flowResultKavlingModel = remoteKavlingRepository.getAllKavlings(blockCode)
+            flowResultKavlingModel.collect { result ->
+                if (result.isSuccess) {
+                    val kavlings = result.getOrNull()?.map { kavlingModel ->
+                        mapKavling(kavlingModel)
+                    }
+                    kavlings?.let {
+                        emit(Result.success(it))
+                    }
+                } else {
+                    val throwable = result.exceptionOrNull()
+                    throwable?.let {
+                        emit(Result.failure(it))
+                    }
+                }
             }
-            emit(kavlings)
         }
     }
 
-    override fun addKavling(block: Block): Flow<Boolean> {
+    override fun addKavling(blockKode: String, kavling: Kavling): Flow<Result<Boolean>> {
         return flow {
-            val result = localKavlingRepository.addKavling(
-                BlockModel(
-                    kode = block.kode,
-                    warna = block.warna
-                )
+            emitAll(
+                remoteKavlingRepository.addKavling(blockKode, mapKavling(kavling))
             )
-            emit(result)
         }
     }
 
@@ -48,6 +51,16 @@ class KavlingRepositoryImpl @Inject constructor(
             kavlingModel.warna,
             kavlingModel.ukuran,
             kavlingModel.type
+        )
+    }
+
+    private fun mapKavling(kavling: Kavling): KavlingModel {
+        return KavlingModel(
+            kavling.kode,
+            kavling.warna,
+            kavling.isActive,
+            kavling.ukuran,
+            kavling.type
         )
     }
 

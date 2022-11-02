@@ -10,10 +10,12 @@ import net.bagusekasaputra.griyakampoengtkw.data.repository.DataDiriRepositoryIm
 import net.bagusekasaputra.griyakampoengtkw.data.repository.KavlingRepositoryImpl
 import net.bagusekasaputra.griyakampoengtkw.data.source.local.kavling.FakeKavlingModelDb
 import net.bagusekasaputra.griyakampoengtkw.data.source.local.kavling.LocalKavlingRepository
-import net.bagusekasaputra.griyakampoengtkw.data.source.remote.DataDiriRemoteRepositoryImpl
-import net.bagusekasaputra.griyakampoengtkw.data.source.remote.IDataDiriRemoteRepository
 import net.bagusekasaputra.griyakampoengtkw.data.source.remote.block.FirebaseBlockRepository
 import net.bagusekasaputra.griyakampoengtkw.data.source.remote.block.RemoteBlockRepository
+import net.bagusekasaputra.griyakampoengtkw.data.source.remote.datadiri.DataDiriRemoteRepositoryImpl
+import net.bagusekasaputra.griyakampoengtkw.data.source.remote.datadiri.IDataDiriRemoteRepository
+import net.bagusekasaputra.griyakampoengtkw.data.source.remote.kavling.FirebaseKavlingRepository
+import net.bagusekasaputra.griyakampoengtkw.data.source.remote.kavling.RemoteKavlingRepository
 import net.bagusekasaputra.griyakampoengtkw.domain.repository.BlockRepository
 import net.bagusekasaputra.griyakampoengtkw.domain.repository.DataDiriRepository
 import net.bagusekasaputra.griyakampoengtkw.domain.repository.KavlingRepository
@@ -36,13 +38,18 @@ object RepositoryModule {
 
     // Kavling Repository
     @Provides
-    fun provideKavlingRepository(localKavlingRepository: LocalKavlingRepository): KavlingRepository {
-        return KavlingRepositoryImpl(localKavlingRepository)
+    fun provideKavlingRepository(remoteKavlingRepository: RemoteKavlingRepository): KavlingRepository {
+        return KavlingRepositoryImpl(remoteKavlingRepository)
     }
 
     @Provides
     fun provideLocalKavlingRepository(): LocalKavlingRepository {
         return FakeKavlingModelDb()
+    }
+
+    @Provides
+    fun provideRemoteKavlingRepository(databaseReference: DatabaseReference): RemoteKavlingRepository {
+        return FirebaseKavlingRepository(databaseReference)
     }
 
     // Data Diri Repository

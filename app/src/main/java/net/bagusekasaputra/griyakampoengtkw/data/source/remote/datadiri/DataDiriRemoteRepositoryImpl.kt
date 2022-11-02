@@ -1,4 +1,4 @@
-package net.bagusekasaputra.griyakampoengtkw.data.source.remote
+package net.bagusekasaputra.griyakampoengtkw.data.source.remote.datadiri
 
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
@@ -23,7 +23,8 @@ class DataDiriRemoteRepositoryImpl @Inject constructor(
                 override fun onDataChange(snapshot: DataSnapshot) {
                     val blockKode = kavlingKode[0].toString()
 
-                    val result = snapshot.child(GriyaNodes.blocks).child(blockKode).child(kavlingKode).child(GriyaNodes.dataDiri).getValue(DataDiriFirebaseModel::class.java)
+                    val result = snapshot.child(GriyaNodes.blocks).child(blockKode).child(kavlingKode).child(GriyaNodes.dataDiri).getValue(
+                        DataDiriFirebaseModel::class.java)
 
                     trySendBlocking(Result.success(result))
                 }
