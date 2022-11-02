@@ -12,10 +12,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
 import net.bagusekasaputra.griyakampoengtkw.R
-import net.bagusekasaputra.griyakampoengtkw.databinding.ActivityMainBinding
-import net.bagusekasaputra.griyakampoengtkw.databinding.DialogActionKavlingBinding
-import net.bagusekasaputra.griyakampoengtkw.databinding.DialogEditKavlingBinding
-import net.bagusekasaputra.griyakampoengtkw.databinding.DialogNewBlockBinding
+import net.bagusekasaputra.griyakampoengtkw.databinding.*
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.Block
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.Kavling
 import net.bagusekasaputra.griyakampoengtkw.ui.detail.DetailActivity
@@ -42,8 +39,7 @@ class MainActivity : AppCompatActivity() {
         setupViewModel()
 
         binding.fabAddKavling.setOnClickListener {
-            val block = Block(kode = viewModel.currentBlock.value!!)
-            viewModel.addKavling(block)
+            showAddKavlingDialog()
         }
     }
 
@@ -102,6 +98,23 @@ class MainActivity : AppCompatActivity() {
 
         dialogBinding.btnBatal.setOnClickListener {
             alertDialog.dismiss()
+        }
+    }
+
+    private fun showAddKavlingDialog() {
+        val dialogBinding = DialogAddKavlingBinding.inflate(layoutInflater)
+        val dialogView = AlertDialog.Builder(this).apply {
+            setView(dialogBinding.root)
+        }.create()
+
+        dialogView.show()
+
+        dialogBinding.btnTambahkan.setOnClickListener {
+            // TODO
+        }
+
+        dialogBinding.btnBatal.setOnClickListener {
+            dialogView.dismiss()
         }
     }
 
