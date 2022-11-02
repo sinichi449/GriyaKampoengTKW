@@ -10,9 +10,13 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.android.material.snackbar.Snackbar
+import com.google.android.material.textfield.TextInputEditText
 import dagger.hilt.android.AndroidEntryPoint
 import net.bagusekasaputra.griyakampoengtkw.R
-import net.bagusekasaputra.griyakampoengtkw.databinding.*
+import net.bagusekasaputra.griyakampoengtkw.databinding.ActivityMainBinding
+import net.bagusekasaputra.griyakampoengtkw.databinding.DialogActionKavlingBinding
+import net.bagusekasaputra.griyakampoengtkw.databinding.DialogAddKavlingBinding
+import net.bagusekasaputra.griyakampoengtkw.databinding.DialogEditKavlingBinding
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.Block
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.Kavling
 import net.bagusekasaputra.griyakampoengtkw.ui.detail.DetailActivity
@@ -110,25 +114,6 @@ class MainActivity : AppCompatActivity() {
         binding.recyclerKavlings.layoutManager = GridLayoutManager(this, 3)
     }
 
-    private fun showNewBlockDialog() {
-        val dialogBinding = DialogNewBlockBinding.inflate(layoutInflater)
-        val alertDialog = AlertDialog.Builder(this).apply {
-            setView(dialogBinding.root)
-        }.create()
-
-        alertDialog.show()
-
-        dialogBinding.btnTambahkan.setOnClickListener {
-            // TODO
-            alertDialog.dismiss()
-            Snackbar.make(this, binding.root, "Berhasil ditambahkan! (fake)", Snackbar.LENGTH_SHORT).show()
-        }
-
-        dialogBinding.btnBatal.setOnClickListener {
-            alertDialog.dismiss()
-        }
-    }
-
     private fun showAddKavlingDialog() {
         val dialogBinding = DialogAddKavlingBinding.inflate(layoutInflater)
         val dialogView = AlertDialog.Builder(this).apply {
@@ -138,26 +123,27 @@ class MainActivity : AppCompatActivity() {
         dialogView.show()
 
         dialogBinding.btnTambahkan.setOnClickListener {
-            val isEmptyEdt = InputUtil.isNullOrEmptyEditTexts(dialogBinding.edtKode)
-            if (!isEmptyEdt) {
-                val kode = dialogBinding.edtKode.text.toString()
-                val block = Block(kode[0].toString())
+            val isValidEdt = InputUtil.isNullOrEmptyEditTexts(
+                dialogBinding.edtBlock, dialogBinding.edtNoKavling, dialogBinding.edtWarna
+            ) && isValidHexWarna(dialogBinding.edtWarna)
+
+            if (!isValidEdt) {
+                val kode = dialogBinding.edtBlock.text.toString()
+                val noKavling = dialogBinding.edtNoKavling.toString()
+                val warna = dialogBinding.edtWarna.text.toString()
+
+                val block = Block(kode, warna)
 
                 viewModel.addNewBlock(block)
 
                 dialogBinding.btnTambahkan.isEnabled = false
+                dialogBinding.btnTambahkan.text = "Menyimpan data ..."
 
-                viewModel.isFinishOperation.observe(this) {
+                viewModel.operationResult.observe(this) {
                     it?.let {
-                        dialogBinding.btnTambahkan.isEnabled = true
-
-                        if (it) {
-                            Toast.makeText(this, "Sukses menambahkan kavling", Toast.LENGTH_SHORT)
-                                .show()
-                        } else {
-                            Toast.makeText(this, "Gagal menambahkan kavling", Toast.LENGTH_SHORT)
-                                .show()
-                        }
+                        Snackbar.make(this, binding.root, it.message?: "Hasil tak diketahui", Snackbar.LENGTH_SHORT).show()
+                        syncData()
+                        dialogView.dismiss()
                     }
                 }
             }
@@ -226,6 +212,16 @@ class MainActivity : AppCompatActivity() {
 
         dialogBinding.btnBatal.setOnClickListener {
             dialogView.dismiss()
+        }
+    }
+
+    private fun isValidHexWarna(edtWarna: TextInputEditText): Boolean {
+        val firstChar = edtWarna.text.toString()[0]
+        return if (firstChar == '#') {
+            true
+        } else {
+            edtWarna.error = "Warna tidak valid!"
+            false
         }
     }
 

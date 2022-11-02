@@ -35,6 +35,8 @@ class MainViewModel @Inject constructor(
 
     val isFinishOperation = MutableLiveData<Boolean>()
 
+    val operationResult = MutableLiveData<Operation>()
+
 
     fun refresh() {
         val block = Block(
@@ -75,7 +77,14 @@ class MainViewModel @Inject constructor(
         CoroutineScope(Dispatchers.IO).launch {
             val request = AddNewBlockUseCase.Request(block)
             addNewBlockUseCase.execute(request).collect {
-                isFinishOperation.postValue(it.data.isSuccess)
+                val result = it.data.result
+                if (result.isSuccess) {
+                    operationResult.postValue(Operation(true, "Blok ${block.kode} berhasil ditambahkan"))
+                } else {
+                    operationResult.postValue(Operation(false, result.exceptionOrNull()?.message))
+                }
+
+                isFinishOperation.postValue(true)
             }
         }
     }
@@ -88,4 +97,9 @@ class MainViewModel @Inject constructor(
             }
         }
     }
+
+    data class Operation(
+        val isSuccess: Boolean,
+        val message: String?
+    )
 }

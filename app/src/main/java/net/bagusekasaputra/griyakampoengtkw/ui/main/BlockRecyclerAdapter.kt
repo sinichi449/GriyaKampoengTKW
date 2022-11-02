@@ -1,10 +1,10 @@
 package net.bagusekasaputra.griyakampoengtkw.ui.main
 
 import android.content.Context
+import android.graphics.Color
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
-import net.bagusekasaputra.griyakampoengtkw.R
 import net.bagusekasaputra.griyakampoengtkw.databinding.LayoutRecyclerBlocksBinding
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.Block
 
@@ -29,23 +29,11 @@ class BlockRecyclerAdapter(
     override fun onBindViewHolder(holder: MyViewHolder, position: Int) {
         holder.binding.tvBlockKode.text = blocks[position].kode
 
-        if (blocks[position].warna != null) {
-            holder.binding.cardBlock.setCardBackgroundColor(
-                getColor(blocks[position].warna!!)
-            )
-        } else {
-            holder.binding.cardBlock.setCardBackgroundColor(
-                getColor(R.color.black)
-            )
-        }
+        holder.binding.cardBlock.setCardBackgroundColor(Color.parseColor(blocks[position].warna))
 
         holder.binding.cardBlock.setOnClickListener {
             onBlockClick(position)
         }
-    }
-
-    private fun getColor(colorId: Int): Int {
-        return context.resources.getColor(colorId)
     }
 
     override fun getItemCount(): Int {

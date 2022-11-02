@@ -1,6 +1,7 @@
 package net.bagusekasaputra.griyakampoengtkw.ui.main
 
 import android.content.Context
+import android.graphics.Color
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
@@ -36,9 +37,7 @@ class KavlingRecyclerAdapter(
         holder.binding.tvUkuran.text = kavlings[position].ukuran
         holder.binding.tvTypeRumah.text = kavlings[position].type
 
-        holder.binding.cardKavling.setCardBackgroundColor(
-            getColor(kavlings[position].warna)
-        )
+        holder.binding.cardKavling.setCardBackgroundColor(Color.parseColor(kavlings[position].warna))
 
         holder.binding.cardKavling.setOnClickListener {
             onRecyclerItemClick(position)

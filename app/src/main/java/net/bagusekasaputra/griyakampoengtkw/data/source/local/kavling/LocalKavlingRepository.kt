@@ -1,6 +1,6 @@
 package net.bagusekasaputra.griyakampoengtkw.data.source.local.kavling
 
-import net.bagusekasaputra.griyakampoengtkw.data.source.remote.block.BlockModel
+import net.bagusekasaputra.griyakampoengtkw.data.source.model.BlockModel
 
 interface LocalKavlingRepository {
 

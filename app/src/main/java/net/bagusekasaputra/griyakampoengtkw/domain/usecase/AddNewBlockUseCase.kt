@@ -14,7 +14,7 @@ class AddNewBlockUseCase @Inject constructor(
 
     data class Request(val block: Block): UseCase.Request
 
-    data class Response(val isSuccess: Boolean): UseCase.Response
+    data class Response(val result: Result<Boolean>): UseCase.Response
 
     override fun process(request: Request): Flow<Response> {
         return blockRepository.addBlock(request.block).map {

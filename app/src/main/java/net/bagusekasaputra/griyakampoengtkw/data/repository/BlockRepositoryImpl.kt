@@ -4,8 +4,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.emitAll
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.map
-import net.bagusekasaputra.griyakampoengtkw.R
-import net.bagusekasaputra.griyakampoengtkw.data.source.remote.block.BlockModel
+import net.bagusekasaputra.griyakampoengtkw.data.source.model.BlockModel
 import net.bagusekasaputra.griyakampoengtkw.data.source.remote.block.RemoteBlockRepository
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.Block
 import net.bagusekasaputra.griyakampoengtkw.domain.repository.BlockRepository
@@ -23,7 +22,7 @@ class BlockRepositoryImpl @Inject constructor(
                 blockModels?.map {
                     Block(
                         kode = it.kode,
-                        warna = parseBlockWarna(it.warna?: "Black")
+                        warna = it.warna
                     )
                 }
             }
@@ -32,35 +31,14 @@ class BlockRepositoryImpl @Inject constructor(
         }
     }
 
-    override fun addBlock(block: Block): Flow<Boolean> {
+    override fun addBlock(block: Block): Flow<Result<Boolean>> {
         return flow {
             val blockModel = BlockModel(
                 kode = block.kode,
-                warna = parseBlockWarna(block.warna?: R.color.black)
+                warna = block.warna
             )
 
             emitAll(remoteBlockRepository.addNewBlock(blockModel))
-        }
-    }
-
-    companion object {
-        fun parseBlockWarna(warna: String): Int? {
-            return when (warna) {
-                "Red" -> R.color.abang
-                "Orange" -> R.color.oren_1
-                "Yellow" -> R.color.oren_2
-                "Black" -> R.color.black
-                else -> null
-            }
-        }
-
-        fun parseBlockWarna(warna: Int): String {
-            return when (warna) {
-                R.color.abang -> "Red"
-                R.color.oren_1 -> "Orange"
-                R.color.oren_2 -> "Yellow"
-                else -> "Black"
-            }
         }
     }
 }

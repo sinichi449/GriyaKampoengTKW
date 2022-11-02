@@ -9,6 +9,9 @@ class GriyaNodes {
 
         const val firebaseUrl = "https://griya-kampoeng-tkw-mobile-default-rtdb.asia-southeast1.firebasedatabase.app/"
 
+        // Timestamp
+        const val timestamp = "timestamp"
+
         // Blocks
         const val blocks = "blocks"
         const val kode = "kode"

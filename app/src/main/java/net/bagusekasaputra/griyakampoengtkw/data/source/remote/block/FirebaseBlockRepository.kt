@@ -7,6 +7,7 @@ import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.channels.trySendBlocking
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
+import net.bagusekasaputra.griyakampoengtkw.data.source.model.BlockModel
 import net.bagusekasaputra.griyakampoengtkw.util.GriyaNodes
 import net.bagusekasaputra.griyakampoengtkw.util.GriyaNodes.Companion.LOG_TAG
 import javax.inject.Inject
@@ -45,13 +46,11 @@ class FirebaseBlockRepository @Inject constructor(
                 }
 
 
-            awaitClose {
-
-            }
+            awaitClose {}
         }
     }
 
-    override fun addNewBlock(blockModel: BlockModel): Flow<Boolean> {
+    override fun addNewBlock(blockModel: BlockModel): Flow<Result<Boolean>> {
         Log.d(LOG_TAG, "Sending ${blockModel.kode} to Firebase...")
 
         return callbackFlow {
@@ -60,17 +59,15 @@ class FirebaseBlockRepository @Inject constructor(
                 .child(blockModel.kode)
                 .setValue(blockModel)
                 .addOnSuccessListener {
-                    trySendBlocking(true)
+                    trySendBlocking(Result.success(true))
                     Log.d(LOG_TAG, "Write new block success")
                 }
                 .addOnFailureListener {
-                    trySendBlocking(false)
+                    trySendBlocking(Result.failure(it))
                     Log.d(LOG_TAG, "Write new block failed: ${it.message}")
                 }
 
-            awaitClose {
-
-            }
+            awaitClose {}
         }
     }
 }

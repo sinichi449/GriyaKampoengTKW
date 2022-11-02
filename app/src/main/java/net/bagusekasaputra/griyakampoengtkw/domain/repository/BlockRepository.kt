@@ -7,6 +7,6 @@ interface BlockRepository {
 
     fun getAllBlocks(): Flow<List<Block>?>
 
-    fun addBlock(block: Block): Flow<Boolean>
+    fun addBlock(block: Block): Flow<Result<Boolean>>
 
 }
