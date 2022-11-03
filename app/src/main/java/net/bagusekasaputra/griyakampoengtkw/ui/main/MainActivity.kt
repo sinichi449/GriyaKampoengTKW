@@ -11,6 +11,9 @@ import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.github.dhaval2404.colorpicker.MaterialColorPickerDialog
+import com.github.dhaval2404.colorpicker.model.ColorShape
+import com.github.dhaval2404.colorpicker.model.ColorSwatch
 import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
 import net.bagusekasaputra.griyakampoengtkw.R
@@ -157,6 +160,19 @@ class MainActivity : AppCompatActivity() {
         }.create()
 
         dialogView.show()
+
+        dialogBinding.btnPilihWarna.setOnClickListener {
+            MaterialColorPickerDialog.Builder(this)
+                .setTitle("Pilih Warna")
+                .setColorShape(ColorShape.CIRCLE)
+                .setColorSwatch(ColorSwatch._500)
+                .setDefaultColor(R.color.abang)
+                .setColorListener { color, colorHex ->
+                    val removeHash = colorHex.substring(1)
+                    dialogBinding.edtWarna.setText(removeHash)
+                }
+                .show()
+        }
 
         dialogBinding.btnTambahkan.setOnClickListener {
             dialogBinding.btnTambahkan.isEnabled = false
