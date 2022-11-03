@@ -1,5 +1,6 @@
 package net.bagusekasaputra.griyakampoengtkw.ui.main
 
+import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -10,6 +11,7 @@ import kotlinx.coroutines.launch
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.Block
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.Kavling
 import net.bagusekasaputra.griyakampoengtkw.domain.usecase.*
+import net.bagusekasaputra.griyakampoengtkw.util.GriyaNodes.Companion.LOG_TAG
 import javax.inject.Inject
 
 @HiltViewModel
@@ -75,15 +77,20 @@ class MainViewModel @Inject constructor(
 
 
     fun addNewBlock(block: Block) {
+        isFinishOperation.value = false
+
         CoroutineScope(Dispatchers.IO).launch {
             val request = AddNewBlockUseCase.Request(block)
             addNewBlockUseCase.execute(request).collect {
                 val result = it.data.result
+                Log.d(LOG_TAG, "Got viewmodel value: ${it.data.result.getOrNull()}")
                 if (result.isSuccess) {
                     operationResult.postValue(Operation(true, "Blok ${block.kode} berhasil ditambahkan"))
                 } else {
                     operationResult.postValue(Operation(false, "Gagal: ${result.exceptionOrNull()?.message}"))
                 }
+
+                isFinishOperation.postValue(true)
             }
         }
     }

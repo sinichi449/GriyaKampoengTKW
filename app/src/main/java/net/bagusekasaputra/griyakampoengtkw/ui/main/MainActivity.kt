@@ -3,6 +3,8 @@ package net.bagusekasaputra.griyakampoengtkw.ui.main
 import android.content.Intent
 import android.os.Bundle
 import android.view.Menu
+import android.view.View
+import android.widget.ArrayAdapter
 import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.appcompat.app.AlertDialog
@@ -10,13 +12,9 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.android.material.snackbar.Snackbar
-import com.google.android.material.textfield.TextInputEditText
 import dagger.hilt.android.AndroidEntryPoint
 import net.bagusekasaputra.griyakampoengtkw.R
-import net.bagusekasaputra.griyakampoengtkw.databinding.ActivityMainBinding
-import net.bagusekasaputra.griyakampoengtkw.databinding.DialogActionKavlingBinding
-import net.bagusekasaputra.griyakampoengtkw.databinding.DialogAddKavlingBinding
-import net.bagusekasaputra.griyakampoengtkw.databinding.DialogEditKavlingBinding
+import net.bagusekasaputra.griyakampoengtkw.databinding.*
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.Block
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.Kavling
 import net.bagusekasaputra.griyakampoengtkw.ui.detail.DetailActivity
@@ -51,8 +49,14 @@ class MainActivity : AppCompatActivity() {
 
         setupViewModel()
 
+        setupFloatingButtons()
+
         binding.fabAddKavling.setOnClickListener {
             showAddKavlingDialog()
+        }
+
+        binding.fabAddBlock.setOnClickListener {
+            showAddBlockDialog()
         }
 
         binding.swipeRefreshMain.setOnRefreshListener {
@@ -88,6 +92,39 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+    private fun setupFloatingButtons() {
+        binding.fabAddKavling.visibility = View.GONE
+        binding.fabAddBlock.visibility = View.GONE
+        binding.tvInfoAddKavling.visibility = View.GONE
+        binding.tvInfoAddBlock.visibility = View.GONE
+
+        binding.fabActions.shrink()
+
+        var isAllFabsVisible = false
+
+        binding.fabActions.setOnClickListener {
+            if (isAllFabsVisible) {
+                binding.fabActions.shrink()
+
+                binding.fabAddKavling.hide()
+                binding.fabAddBlock.hide()
+                binding.tvInfoAddKavling.visibility = View.GONE
+                binding.tvInfoAddBlock.visibility = View.GONE
+
+                isAllFabsVisible = false
+            } else {
+                binding.fabActions.extend()
+
+                binding.fabAddKavling.show()
+                binding.fabAddBlock.show()
+                binding.tvInfoAddKavling.visibility = View.VISIBLE
+                binding.tvInfoAddBlock.visibility = View.VISIBLE
+
+                isAllFabsVisible = true
+            }
+        }
+    }
+
     private fun setupBlockRecyclerview(blocks: List<Block>) {
         val adapter = BlockRecyclerAdapter(blocks) { position ->
             viewModel.currentBlock.value = blocks[position].kode
@@ -113,8 +150,8 @@ class MainActivity : AppCompatActivity() {
         binding.recyclerKavlings.layoutManager = GridLayoutManager(this, 3)
     }
 
-    private fun showAddKavlingDialog() {
-        val dialogBinding = DialogAddKavlingBinding.inflate(layoutInflater)
+    private fun showAddBlockDialog() {
+        val dialogBinding = DialogAddBlockBinding.inflate(layoutInflater)
         val dialogView = AlertDialog.Builder(this).apply {
             setView(dialogBinding.root)
         }.create()
@@ -122,24 +159,67 @@ class MainActivity : AppCompatActivity() {
         dialogView.show()
 
         dialogBinding.btnTambahkan.setOnClickListener {
+            dialogBinding.btnTambahkan.isEnabled = false
+            dialogBinding.btnTambahkan.text = "Menyimpan data ..."
+
+            val isInvalidEdt = InputUtil.isNullOrEmptyEditTexts(
+                dialogBinding.edtKode, dialogBinding.edtWarna
+            )
+
+            if (!isInvalidEdt) {
+                val kode = dialogBinding.edtKode.text.toString()
+                val warna = "#${dialogBinding.edtWarna.text.toString()}"
+
+                val block = Block(kode, warna)
+
+                viewModel.addNewBlock(block)
+
+                viewModel.operationResult.observe(this) {
+                    it?.let {
+                        Toast.makeText(this, it.message, Toast.LENGTH_SHORT).show()
+                        syncData()
+                        dialogView.dismiss()
+                    }
+                }
+            }
+        }
+
+        dialogBinding.btnBatal.setOnClickListener {
+            dialogView.dismiss()
+        }
+    }
+
+    private fun showAddKavlingDialog() {
+        val dialogBinding = DialogAddKavlingBinding.inflate(layoutInflater)
+        val dialogView = AlertDialog.Builder(this).apply {
+            setView(dialogBinding.root)
+        }.create()
+
+        val blockLists = ArrayList<String>()
+        viewModel.blocks.value?.forEach {
+            blockLists.add(it.kode)
+        }
+        val spinnerAdapter = ArrayAdapter<String>(this, android.R.layout.simple_spinner_dropdown_item, blockLists)
+        dialogBinding.spinnerBlocks.adapter = spinnerAdapter
+
+        dialogView.show()
+
+        dialogBinding.btnTambahkan.setOnClickListener {
             val isInValidEdt = InputUtil.isNullOrEmptyEditTexts(
-                dialogBinding.edtBlock, dialogBinding.edtNoKavling, dialogBinding.edtWarna,
-                dialogBinding.edtPanjang, dialogBinding.edtLebar, dialogBinding.edtTipeRumah
-            ) && isValidHexWarna(dialogBinding.edtWarna)
+                dialogBinding.edtNoKavling, dialogBinding.edtPanjang, dialogBinding.edtLebar, dialogBinding.edtTipeRumah)
 
             if (!isInValidEdt) {
-                val kode = dialogBinding.edtBlock.text.toString()
+                val spinnerPosition = dialogBinding.spinnerBlocks.selectedItemPosition
+                val kode = blockLists[spinnerPosition]
+                val warna = viewModel.blocks.value!![spinnerPosition].warna
                 val noKavling = dialogBinding.edtNoKavling.text.toString()
-                val warna = dialogBinding.edtWarna.text.toString()
                 val panjang = dialogBinding.edtPanjang.text.toString()
                 val lebar = dialogBinding.edtLebar.text.toString()
                 val ukuran = panjang + "x" + lebar
                 val type = dialogBinding.edtTipeRumah.text.toString()
 
-                val block = Block(kode, warna)
                 val kavling = Kavling(kode + noKavling, true, warna, ukuran, type)
 
-                viewModel.addNewBlock(block)
                 viewModel.addKavling(kode, kavling)
 
                 dialogBinding.btnTambahkan.isEnabled = false
@@ -239,16 +319,6 @@ class MainActivity : AppCompatActivity() {
 
         dialogBinding.btnBatal.setOnClickListener {
             dialogView.dismiss()
-        }
-    }
-
-    private fun isValidHexWarna(edtWarna: TextInputEditText): Boolean {
-        val firstChar = edtWarna.text.toString()[0]
-        return if (firstChar == '#') {
-            true
-        } else {
-            edtWarna.error = "Warna tidak valid!"
-            false
         }
     }
 

@@ -46,7 +46,7 @@ class FirebaseBlockRepository @Inject constructor(
                 }
 
 
-            awaitClose {}
+            awaitClose { }
         }
     }
 
@@ -54,24 +54,20 @@ class FirebaseBlockRepository @Inject constructor(
         Log.d(LOG_TAG, "Sending ${blockModel.kode} to Firebase...")
 
         return callbackFlow {
-            isBlockAlreadyExist(blockModel.kode).collect { exist ->
-                if (!exist) {
-                    databaseReference
-                        .child(GriyaNodes.blocks)
-                        .child(blockModel.kode)
-                        .setValue(blockModel)
-                        .addOnSuccessListener {
-                            trySendBlocking(Result.success(true))
-                            Log.d(LOG_TAG, "Write new block success")
-                        }
-                        .addOnFailureListener {
-                            trySendBlocking(Result.failure(it))
-                            Log.d(LOG_TAG, "Write new block failed: ${it.message}")
-                        }
-
-                    awaitClose {}
+            databaseReference
+                .child(GriyaNodes.blocks)
+                .child(blockModel.kode)
+                .setValue(blockModel)
+                .addOnSuccessListener {
+                    trySendBlocking(Result.success(true))
+                    Log.d(LOG_TAG, "Write new block success")
                 }
-            }
+                .addOnFailureListener {
+                    trySendBlocking(Result.failure(it))
+                    Log.d(LOG_TAG, "Write new block failed: ${it.message}")
+                }
+
+            awaitClose {  }
         }
     }
 
@@ -87,6 +83,8 @@ class FirebaseBlockRepository @Inject constructor(
                         trySendBlocking(false)
                     }
                 }
+
+            awaitClose {  }
         }
     }
 }
