@@ -266,25 +266,38 @@ class MainActivity : AppCompatActivity() {
 
         val text = "Kavling ${kavling.kode}"
         dialogBinding.tvKavlingKode.text = text
+
         dialogBinding.btnEdit.setOnClickListener {
             dialogView.dismiss()
             showEditKavlingDialog(kavling)
         }
+
         dialogBinding.btnBatal.setOnClickListener {
             dialogView.dismiss()
         }
+
         dialogBinding.btnHapusKavling.setOnClickListener {
             dialogView.dismiss()
+
             val dialogHapus = AlertDialog.Builder(this).apply {
                 setTitle("Hapus Kavling")
-                setMessage("Apakah Anda yakin menhapus kavling ${kavling.kode}?")
-                setPositiveButton("Yes") { dialog, which ->
-                    // TODO: Hapus kavling
-                    Toast.makeText(this@MainActivity, "Kavling ${kavling.kode} berhasil dihapus! (fake)", Toast.LENGTH_SHORT).show()
-                    dialog.dismiss()
+                setMessage("Apakah Anda yakin menghapus kavling ${kavling.kode}?")
+                setPositiveButton("Ya") { dialog, _ ->
+                    val blockKode = viewModel.currentBlock.value!!
+                    val kavlingKode = kavling.kode
+
+                    viewModel.removeKavling(blockKode, kavlingKode)
+
+                    viewModel.operationResult.observe(this@MainActivity) {
+                        it?.let { operation ->
+                            Toast.makeText(this@MainActivity, operation.message?: "Null", Toast.LENGTH_SHORT).show()
+
+                            dialog.dismiss()
+                        }
+                    }
 
                 }
-                setNegativeButton("No") { dialog, which ->
+                setNegativeButton("Tidak") { dialog, _ ->
                     dialog.dismiss()
                 }
             }.create()

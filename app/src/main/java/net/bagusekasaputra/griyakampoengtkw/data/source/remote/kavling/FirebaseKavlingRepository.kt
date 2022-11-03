@@ -98,6 +98,24 @@ class FirebaseKavlingRepository @Inject constructor(
         }
     }
 
+    override fun removeKavling(blockKode: String, kavlingKode: String): Flow<Result<Boolean>> {
+        return callbackFlow {
+            databaseReference
+                .child(GriyaNodes.kavlings)
+                .child(blockKode)
+                .child(kavlingKode)
+                .removeValue()
+                .addOnSuccessListener {
+                    trySendBlocking(Result.success(true))
+                }
+                .addOnFailureListener {
+                    trySendBlocking(Result.failure(it))
+                }
+
+            awaitClose {  }
+        }
+    }
+
     private fun isKavlingExists(blockKode: String, kavling: KavlingModel): Flow<Boolean> {
         return callbackFlow {
             databaseReference

@@ -10,4 +10,6 @@ interface KavlingRepository {
     fun addKavling(blockKode: String, kavling: Kavling): Flow<Result<Boolean>>
 
     fun editKavling(blockCode: String, oldKavling: Kavling, newKavling: Kavling): Flow<Result<Boolean>>
+
+    fun removeKavling(blockCode: String, kavlingKode: String): Flow<Result<Boolean>>
 }

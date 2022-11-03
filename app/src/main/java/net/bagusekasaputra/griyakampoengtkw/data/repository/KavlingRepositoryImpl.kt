@@ -59,6 +59,14 @@ class KavlingRepositoryImpl @Inject constructor(
         }
     }
 
+    override fun removeKavling(blockCode: String, kavlingKode: String): Flow<Result<Boolean>> {
+        return flow {
+            emitAll(
+                remoteKavlingRepository.removeKavling(blockCode, kavlingKode)
+            )
+        }
+    }
+
     private fun mapKavling(kavlingModel: KavlingModel): Kavling {
         return Kavling(
             kavlingModel.kode,

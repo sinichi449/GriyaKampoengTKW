@@ -1,9 +1,10 @@
-package net.bagusekasaputra.griyakampoengtkw.domain.usecase
+package net.bagusekasaputra.griyakampoengtkw.domain.usecase.block
 
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.DataDiri
 import net.bagusekasaputra.griyakampoengtkw.domain.repository.DataDiriRepository
+import net.bagusekasaputra.griyakampoengtkw.domain.usecase.UseCase
 import javax.inject.Inject
 import javax.inject.Singleton
 

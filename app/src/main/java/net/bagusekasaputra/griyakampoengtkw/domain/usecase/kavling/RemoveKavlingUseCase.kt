@@ -1,22 +1,23 @@
-package net.bagusekasaputra.griyakampoengtkw.domain.usecase
+package net.bagusekasaputra.griyakampoengtkw.domain.usecase.kavling
 
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
-import net.bagusekasaputra.griyakampoengtkw.domain.entity.Kavling
 import net.bagusekasaputra.griyakampoengtkw.domain.repository.KavlingRepository
+import net.bagusekasaputra.griyakampoengtkw.domain.usecase.UseCase
 import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
-class AddKavlingUseCase @Inject constructor(
+class RemoveKavlingUseCase @Inject constructor(
     private val kavlingRepository: KavlingRepository
-): UseCase<AddKavlingUseCase.Request, AddKavlingUseCase.Response>() {
+): UseCase<RemoveKavlingUseCase.Request, RemoveKavlingUseCase.Response>() {
 
-    data class Request(val blockKode: String, val kavling: Kavling): UseCase.Request
+    data class Request(val blockKode: String, val kavlingKode: String): UseCase.Request
+
     data class Response(val result: Result<Boolean>): UseCase.Response
 
     override fun process(request: Request): Flow<Response> {
-        return kavlingRepository.addKavling(request.blockKode, request.kavling).map {
+        return kavlingRepository.removeKavling(request.blockKode, request.kavlingKode).map {
             Response(it)
         }
     }

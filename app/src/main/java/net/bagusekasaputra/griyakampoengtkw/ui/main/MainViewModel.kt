@@ -10,7 +10,12 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.Block
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.Kavling
-import net.bagusekasaputra.griyakampoengtkw.domain.usecase.*
+import net.bagusekasaputra.griyakampoengtkw.domain.usecase.block.AddNewBlockUseCase
+import net.bagusekasaputra.griyakampoengtkw.domain.usecase.block.GetAllBlocksUseCase
+import net.bagusekasaputra.griyakampoengtkw.domain.usecase.kavling.AddKavlingUseCase
+import net.bagusekasaputra.griyakampoengtkw.domain.usecase.kavling.EditKavlingUseCase
+import net.bagusekasaputra.griyakampoengtkw.domain.usecase.kavling.GetKavlingsByBlockUseCase
+import net.bagusekasaputra.griyakampoengtkw.domain.usecase.kavling.RemoveKavlingUseCase
 import net.bagusekasaputra.griyakampoengtkw.util.GriyaNodes.Companion.LOG_TAG
 import javax.inject.Inject
 
@@ -21,6 +26,7 @@ class MainViewModel @Inject constructor(
     private val addNewBlockUseCase: AddNewBlockUseCase,
     private val addKavlingUseCase: AddKavlingUseCase,
     private val editKavlingUseCase: EditKavlingUseCase,
+    private val removeKavlingUseCase: RemoveKavlingUseCase,
 ): ViewModel() {
 
     private val _kavlings = MutableLiveData<List<Kavling>>()
@@ -35,9 +41,9 @@ class MainViewModel @Inject constructor(
 
     val isFinishOperation = MutableLiveData<Boolean>()
 
-    val operationResult = MutableLiveData<Operation>()
+    val operationResult = MutableLiveData<Operation?>()
 
-
+    // Blocks
     fun getAllBlocks() {
         isFinishOperation.value = false
 
@@ -55,6 +61,27 @@ class MainViewModel @Inject constructor(
         }
     }
 
+    fun addNewBlock(block: Block) {
+        isFinishOperation.value = false
+        operationResult.value = null
+
+        CoroutineScope(Dispatchers.IO).launch {
+            val request = AddNewBlockUseCase.Request(block)
+            addNewBlockUseCase.execute(request).collect {
+                val result = it.data.result
+                Log.d(LOG_TAG, "Got viewmodel value: ${it.data.result.getOrNull()}")
+                if (result.isSuccess) {
+                    operationResult.postValue(Operation(true, "Blok ${block.kode} berhasil ditambahkan"))
+                } else {
+                    operationResult.postValue(Operation(false, "Gagal: ${result.exceptionOrNull()?.message}"))
+                }
+
+                isFinishOperation.postValue(true)
+            }
+        }
+    }
+
+    // Kavlings
     fun getKavlings(blockKode: String) {
         isFinishOperation.value = false
 
@@ -75,28 +102,9 @@ class MainViewModel @Inject constructor(
         }
     }
 
-
-    fun addNewBlock(block: Block) {
-        isFinishOperation.value = false
-
-        CoroutineScope(Dispatchers.IO).launch {
-            val request = AddNewBlockUseCase.Request(block)
-            addNewBlockUseCase.execute(request).collect {
-                val result = it.data.result
-                Log.d(LOG_TAG, "Got viewmodel value: ${it.data.result.getOrNull()}")
-                if (result.isSuccess) {
-                    operationResult.postValue(Operation(true, "Blok ${block.kode} berhasil ditambahkan"))
-                } else {
-                    operationResult.postValue(Operation(false, "Gagal: ${result.exceptionOrNull()?.message}"))
-                }
-
-                isFinishOperation.postValue(true)
-            }
-        }
-    }
-
     fun addKavling(blockKode: String, kavling: Kavling) {
         isFinishOperation.value = false
+        operationResult.value = null
 
         CoroutineScope(Dispatchers.IO).launch {
             val request = AddKavlingUseCase.Request(blockKode, kavling)
@@ -116,6 +124,7 @@ class MainViewModel @Inject constructor(
 
     fun editKavling(blockKode: String, oldKavling: Kavling, newKavling: Kavling) {
         isFinishOperation.value = false
+        operationResult.value = null
 
         CoroutineScope(Dispatchers.IO).launch {
             val request = EditKavlingUseCase.Request(blockKode, oldKavling, newKavling)
@@ -134,6 +143,27 @@ class MainViewModel @Inject constructor(
                     result.exceptionOrNull()?.let {
                         operationResult.postValue(Operation(false, "Gagal: ${it.message}"))
                     }
+                }
+
+                isFinishOperation.postValue(true)
+            }
+        }
+    }
+
+    fun removeKavling(blockKode: String, kavlingKode: String) {
+        isFinishOperation.value = false
+        operationResult.value = null
+
+        CoroutineScope(Dispatchers.IO).launch {
+            val request = RemoveKavlingUseCase.Request(blockKode, kavlingKode)
+
+            removeKavlingUseCase.execute(request).collect {
+                val result = it.data.result
+
+                if (result.isSuccess) {
+                    operationResult.postValue(Operation(true, "Berhasil menghapus kavling $kavlingKode"))
+                } else {
+                    operationResult.postValue(Operation(false, "Gagal menghapus kavling $kavlingKode: ${result.exceptionOrNull()}"))
                 }
 
                 isFinishOperation.postValue(true)

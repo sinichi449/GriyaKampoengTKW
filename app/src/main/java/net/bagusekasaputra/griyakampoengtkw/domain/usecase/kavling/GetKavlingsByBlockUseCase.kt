@@ -1,9 +1,10 @@
-package net.bagusekasaputra.griyakampoengtkw.domain.usecase
+package net.bagusekasaputra.griyakampoengtkw.domain.usecase.kavling
 
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.Kavling
 import net.bagusekasaputra.griyakampoengtkw.domain.repository.KavlingRepository
+import net.bagusekasaputra.griyakampoengtkw.domain.usecase.UseCase
 import javax.inject.Inject
 import javax.inject.Singleton
 
