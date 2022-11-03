@@ -2,14 +2,13 @@ package net.bagusekasaputra.griyakampoengtkw.ui.detail
 
 import android.app.AlertDialog
 import android.os.Bundle
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
+import android.view.*
 import android.widget.ArrayAdapter
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import dagger.hilt.android.AndroidEntryPoint
+import net.bagusekasaputra.griyakampoengtkw.R
 import net.bagusekasaputra.griyakampoengtkw.databinding.DialogTambahDataDiriBinding
 import net.bagusekasaputra.griyakampoengtkw.databinding.FragmentDataDiriBinding
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.DataDiri
@@ -22,6 +21,12 @@ class DataDiriFragment : Fragment() {
     private val viewModel: DetailViewModel by viewModels()
     private var currentKavlingKode: String? = null
     private lateinit var arrayAdapter: ArrayAdapter<String>
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+
+        setHasOptionsMenu(true)
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -156,6 +161,29 @@ class DataDiriFragment : Fragment() {
         }
     }
 
+    private fun showDeleteDataDiriDialog() {
+        val dialogView = AlertDialog.Builder(requireContext())
+            .setTitle("Hapus Data Diri")
+            .setMessage("Apakah Anda yakin akan menghapus Data Diri di kavling $currentKavlingKode?")
+            .setPositiveButton("Ya") { dialog, _ ->
+                 viewModel.deleteDataDiri(currentKavlingKode!!)
+
+                viewModel.operationResult.observe(requireActivity()) { operation ->
+                    operation?.message?.let { msg ->
+                        Toast.makeText(requireContext(), msg, Toast.LENGTH_SHORT).show()
+                    }
+
+                    dialog.dismiss()
+                }
+            }
+            .setNegativeButton("Tidak") { dialog, _ ->
+                dialog.dismiss()
+            }
+            .create()
+
+        dialogView.show()
+    }
+
     private fun setupSpinner(dialogBinding: DialogTambahDataDiriBinding) {
         val negaraBekerjaList = ArrayList<String>().apply {
             add("Hongkong")
@@ -172,5 +200,21 @@ class DataDiriFragment : Fragment() {
         )
 
         dialogBinding.spinnerNegaraBekerja.adapter = arrayAdapter
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
+        inflater.inflate(R.menu.menu_data_diri, menu)
+        super.onCreateOptionsMenu(menu, inflater)
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        return when (item.itemId) {
+            R.id.hapus_data_diri -> {
+                showDeleteDataDiriDialog()
+
+                true
+            }
+            else -> super.onOptionsItemSelected(item)
+        }
     }
 }

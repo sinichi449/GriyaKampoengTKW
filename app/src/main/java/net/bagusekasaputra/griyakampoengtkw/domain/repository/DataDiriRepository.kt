@@ -8,4 +8,6 @@ interface DataDiriRepository {
     fun getDataDiri(kavlingKode: String): Flow<Result<DataDiri?>>
 
     fun addDataDiri(kavlingKode: String, dataDiri: DataDiri): Flow<Result<Boolean>>
+
+    fun deleteDataDiri(kavlingKode: String): Flow<Result<Boolean>>
 }

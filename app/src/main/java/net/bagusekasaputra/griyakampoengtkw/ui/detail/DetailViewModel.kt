@@ -10,6 +10,7 @@ import kotlinx.coroutines.launch
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.DataDiri
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.Operation
 import net.bagusekasaputra.griyakampoengtkw.domain.usecase.datadiri.AddDataDiriUseCase
+import net.bagusekasaputra.griyakampoengtkw.domain.usecase.datadiri.DeleteDataDiriUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.usecase.datadiri.GetDataDiriUseCase
 import javax.inject.Inject
 
@@ -17,6 +18,7 @@ import javax.inject.Inject
 class DetailViewModel @Inject constructor(
     private val addDataDiriUseCase: AddDataDiriUseCase,
     private val getDataDiriUseCase: GetDataDiriUseCase,
+    private val deleteDataDiriUseCase: DeleteDataDiriUseCase,
 ): ViewModel() {
 
     private val _dataDiriLive = MutableLiveData<DataDiri>()
@@ -75,6 +77,27 @@ class DetailViewModel @Inject constructor(
                     result.exceptionOrNull()?.let {
                         operationResult.postValue(Operation(false, "Gagal menambahkan data diri: ${it.message}"))
                     }
+                }
+
+                isFinishOperation.postValue(true)
+            }
+        }
+    }
+
+    fun deleteDataDiri(kavlingKode: String) {
+        isFinishOperation.value = false
+        operationResult.value = null
+
+        CoroutineScope(Dispatchers.IO).launch {
+            val request = DeleteDataDiriUseCase.Request(kavlingKode)
+
+            deleteDataDiriUseCase.execute(request).collect { response ->
+                val result = response.data.result
+
+                if (result.isSuccess) {
+                    operationResult.postValue(Operation(true, "Hapus data diri berhasil"))
+                } else {
+                    operationResult.postValue(Operation(false, "Gagal menghapus data diri: ${result.exceptionOrNull()?.message}"))
                 }
 
                 isFinishOperation.postValue(true)

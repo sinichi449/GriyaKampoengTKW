@@ -58,5 +58,21 @@ class FirebaseDataDiriRepository @Inject constructor(
         }
     }
 
+    override fun deleteDataDiri(kavlingKode: String): Flow<Result<Boolean>> {
+        return callbackFlow {
+            databaseReference
+                .child(GriyaNodes.dataDiri)
+                .child(kavlingKode)
+                .removeValue()
+                .addOnSuccessListener {
+                    trySendBlocking(Result.success(true))
+                }
+                .addOnFailureListener {
+                    trySendBlocking(Result.failure(it))
+                }
+
+            awaitClose {  }
+        }
+    }
 
 }

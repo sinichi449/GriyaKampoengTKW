@@ -42,6 +42,14 @@ class DataDiriRepositoryImpl @Inject constructor(
         }
     }
 
+    override fun deleteDataDiri(kavlingKode: String): Flow<Result<Boolean>> {
+        return flow {
+            remoteDataDiriRepository.deleteDataDiri(kavlingKode).collect {
+                emit(it)
+            }
+        }
+    }
+
 
     private fun mapDataDiri(dataDiriModel: DataDiriModel): DataDiri {
         return dataDiriModel.let {
