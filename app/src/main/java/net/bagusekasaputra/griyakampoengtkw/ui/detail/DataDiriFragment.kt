@@ -127,7 +127,6 @@ class DataDiriFragment : Fragment() {
                     viewModel.operationResult.observe(requireActivity()) { operation ->
                         operation?.let {
                             Toast.makeText(requireContext(), it.message?: "Null", Toast.LENGTH_SHORT).show()
-                            syncDataDiri()
 
                             dialogView.dismiss()
                         }
