@@ -1,4 +1,4 @@
-package net.bagusekasaputra.griyakampoengtkw.ui.main
+package net.bagusekasaputra.griyakampoengtkw.ui.main.adapter
 
 import android.content.Context
 import android.graphics.Color

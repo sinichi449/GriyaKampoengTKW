@@ -1,4 +1,4 @@
-package net.bagusekasaputra.griyakampoengtkw.ui.detail
+package net.bagusekasaputra.griyakampoengtkw.ui.detail.adapter
 
 import android.view.LayoutInflater
 import android.view.ViewGroup

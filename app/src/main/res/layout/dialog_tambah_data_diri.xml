@@ -51,7 +51,8 @@
                 android:id="@+id/rb_id_ktp"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="KTP"/>
+                android:text="KTP"
+                android:checked="true"/>
 
             <RadioButton
                 android:id="@+id/rb_id_passport"

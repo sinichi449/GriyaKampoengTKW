@@ -21,6 +21,8 @@ import net.bagusekasaputra.griyakampoengtkw.databinding.*
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.Block
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.Kavling
 import net.bagusekasaputra.griyakampoengtkw.ui.detail.DetailActivity
+import net.bagusekasaputra.griyakampoengtkw.ui.main.adapter.BlockRecyclerAdapter
+import net.bagusekasaputra.griyakampoengtkw.ui.main.adapter.KavlingRecyclerAdapter
 import net.bagusekasaputra.griyakampoengtkw.util.GriyaNodes
 import net.bagusekasaputra.griyakampoengtkw.util.InputUtil
 
@@ -98,8 +100,6 @@ class MainActivity : AppCompatActivity() {
     private fun setupFloatingButtons() {
         binding.fabAddKavling.visibility = View.GONE
         binding.fabAddBlock.visibility = View.GONE
-        binding.tvInfoAddKavling.visibility = View.GONE
-        binding.tvInfoAddBlock.visibility = View.GONE
 
         binding.fabActions.shrink()
 
@@ -111,8 +111,6 @@ class MainActivity : AppCompatActivity() {
 
                 binding.fabAddKavling.hide()
                 binding.fabAddBlock.hide()
-                binding.tvInfoAddKavling.visibility = View.GONE
-                binding.tvInfoAddBlock.visibility = View.GONE
 
                 isAllFabsVisible = false
             } else {
@@ -120,8 +118,6 @@ class MainActivity : AppCompatActivity() {
 
                 binding.fabAddKavling.show()
                 binding.fabAddBlock.show()
-                binding.tvInfoAddKavling.visibility = View.VISIBLE
-                binding.tvInfoAddBlock.visibility = View.VISIBLE
 
                 isAllFabsVisible = true
             }

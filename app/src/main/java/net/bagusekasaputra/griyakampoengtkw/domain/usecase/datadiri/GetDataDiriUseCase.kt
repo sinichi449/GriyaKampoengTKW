@@ -1,4 +1,4 @@
-package net.bagusekasaputra.griyakampoengtkw.domain.usecase.block
+package net.bagusekasaputra.griyakampoengtkw.domain.usecase.datadiri
 
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
@@ -15,7 +15,7 @@ class GetDataDiriUseCase @Inject constructor(
 
     data class Request(val kavlingKode: String): UseCase.Request
 
-    data class Response(val dataDiri: DataDiri?): UseCase.Response
+    data class Response(val dataDiri: Result<DataDiri?>): UseCase.Response
 
     override fun process(request: Request): Flow<Response> {
         return dataDiriRepository.getDataDiri(request.kavlingKode).map {

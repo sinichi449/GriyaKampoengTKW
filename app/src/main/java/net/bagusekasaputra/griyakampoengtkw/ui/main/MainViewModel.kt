@@ -10,6 +10,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.Block
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.Kavling
+import net.bagusekasaputra.griyakampoengtkw.domain.entity.Operation
 import net.bagusekasaputra.griyakampoengtkw.domain.usecase.block.AddNewBlockUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.usecase.block.GetAllBlocksUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.usecase.kavling.AddKavlingUseCase
@@ -184,9 +185,4 @@ class MainViewModel @Inject constructor(
 
         return mutableKavling
     }
-
-    data class Operation(
-        val isSuccess: Boolean,
-        val message: String?
-    )
 }

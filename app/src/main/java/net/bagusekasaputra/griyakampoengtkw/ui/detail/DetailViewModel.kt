@@ -1,39 +1,59 @@
 package net.bagusekasaputra.griyakampoengtkw.ui.detail
 
-import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import com.google.firebase.database.FirebaseDatabase
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.DataDiri
-import net.bagusekasaputra.griyakampoengtkw.util.GriyaNodes
-import net.bagusekasaputra.griyakampoengtkw.util.GriyaNodes.Companion.firebaseUrl
+import net.bagusekasaputra.griyakampoengtkw.domain.entity.Operation
+import net.bagusekasaputra.griyakampoengtkw.domain.usecase.datadiri.AddDataDiriUseCase
 import javax.inject.Inject
 
 @HiltViewModel
 class DetailViewModel @Inject constructor(
-
+    private val addDataDiriUseCase: AddDataDiriUseCase
 ): ViewModel() {
 
-    private val _dataDiri = MutableLiveData<DataDiri>()
-    val dataDiri: LiveData<DataDiri>
-        get() = _dataDiri
+    private val _dataDiriList = MutableLiveData<DataDiri>()
+    val dataDiriList: LiveData<DataDiri>
+        get() = _dataDiriList
 
     val currentKavlingKode = MutableLiveData<String>()
 
+    val isFinishOperation = MutableLiveData<Boolean>()
+
+    val operationResult = MutableLiveData<Operation?>()
+
+
+    // Data Diri
     fun getDataDiri(kavlingKode: String) {
-        Log.d("DEBUG_ME", "KavlingKode: $kavlingKode")
-
-        val mDatabase = FirebaseDatabase.getInstance(firebaseUrl).reference
-
-        val blockKode = kavlingKode[0].toString()
-        mDatabase.child(GriyaNodes.blocks).child(blockKode).child(kavlingKode).child(GriyaNodes.dataDiri).get()
-            .addOnSuccessListener {
-                Log.d("DEBUG_ME", "Got value ${it.value}")
-            }
-            .addOnFailureListener {
-                Log.d("DEBUG_ME", "Error getting data")
-            }
+        // TODO
     }
+
+    fun addDataDiri(kavlingKode: String, dataDiri: DataDiri) {
+        isFinishOperation.value  = false
+        operationResult.value = null
+
+        CoroutineScope(Dispatchers.IO).launch {
+            val request = AddDataDiriUseCase.Request(kavlingKode, dataDiri)
+
+            addDataDiriUseCase.execute(request).collect { response ->
+                val result = response.data.result
+
+                if (result.isSuccess) {
+                    operationResult.postValue(Operation(true, "Berhasil menambahakan data ${dataDiri.nama}"))
+                } else {
+                    result.exceptionOrNull()?.let {
+                        operationResult.postValue(Operation(false, "Gagal menambahkan data diri: ${it.message}"))
+                    }
+                }
+
+                isFinishOperation.postValue(true)
+            }
+        }
+    }
+
 }

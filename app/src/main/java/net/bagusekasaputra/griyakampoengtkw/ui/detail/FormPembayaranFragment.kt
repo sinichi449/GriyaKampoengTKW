@@ -17,6 +17,7 @@ import net.bagusekasaputra.griyakampoengtkw.databinding.DialogEditHargaBinding
 import net.bagusekasaputra.griyakampoengtkw.databinding.DialogPilihTerminBinding
 import net.bagusekasaputra.griyakampoengtkw.databinding.FragmentFormPembayaranBinding
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.Pembayaran
+import net.bagusekasaputra.griyakampoengtkw.ui.detail.adapter.TerminRecyclerAdapter
 import java.text.SimpleDateFormat
 import java.util.*
 

@@ -4,6 +4,7 @@ class GriyaNodes {
 
     companion object {
         const val INTENT_IS_ONLINE = "is_online"
+        const val INTENT_KAVLING_KODE = "kavling_kode"
 
         const val LOG_TAG = "DEBUG_ME"
 

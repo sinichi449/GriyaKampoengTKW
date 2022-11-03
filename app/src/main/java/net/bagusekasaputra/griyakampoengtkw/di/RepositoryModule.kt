@@ -12,8 +12,8 @@ import net.bagusekasaputra.griyakampoengtkw.data.source.local.kavling.FakeKavlin
 import net.bagusekasaputra.griyakampoengtkw.data.source.local.kavling.LocalKavlingRepository
 import net.bagusekasaputra.griyakampoengtkw.data.source.remote.block.FirebaseBlockRepository
 import net.bagusekasaputra.griyakampoengtkw.data.source.remote.block.RemoteBlockRepository
-import net.bagusekasaputra.griyakampoengtkw.data.source.remote.datadiri.DataDiriRemoteRepositoryImpl
-import net.bagusekasaputra.griyakampoengtkw.data.source.remote.datadiri.IDataDiriRemoteRepository
+import net.bagusekasaputra.griyakampoengtkw.data.source.remote.datadiri.FirebaseDataDiriRepository
+import net.bagusekasaputra.griyakampoengtkw.data.source.remote.datadiri.RemoteDataDiriRepository
 import net.bagusekasaputra.griyakampoengtkw.data.source.remote.kavling.FirebaseKavlingRepository
 import net.bagusekasaputra.griyakampoengtkw.data.source.remote.kavling.RemoteKavlingRepository
 import net.bagusekasaputra.griyakampoengtkw.domain.repository.BlockRepository
@@ -54,12 +54,12 @@ object RepositoryModule {
 
     // Data Diri Repository
     @Provides
-    fun provideDataDiriRepository(iDataDiriRemoteRepository: IDataDiriRemoteRepository): DataDiriRepository {
-        return DataDiriRepositoryImpl(iDataDiriRemoteRepository)
+    fun provideDataDiriRepository(remoteDataDiriRepository: RemoteDataDiriRepository): DataDiriRepository {
+        return DataDiriRepositoryImpl(remoteDataDiriRepository)
     }
 
     @Provides
-    fun provideIDataDiriFirebaseRepository(databaseReference: DatabaseReference): IDataDiriRemoteRepository {
-        return DataDiriRemoteRepositoryImpl(databaseReference)
+    fun provideRemoteDataDiriRepository(databaseReference: DatabaseReference): RemoteDataDiriRepository {
+        return FirebaseDataDiriRepository(databaseReference)
     }
 }

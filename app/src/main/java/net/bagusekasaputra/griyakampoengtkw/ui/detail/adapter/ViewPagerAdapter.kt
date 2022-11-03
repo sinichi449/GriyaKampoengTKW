@@ -1,4 +1,4 @@
-package net.bagusekasaputra.griyakampoengtkw.ui.detail
+package net.bagusekasaputra.griyakampoengtkw.ui.detail.adapter
 
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
