@@ -21,6 +21,7 @@ class DataDiriFragment : Fragment() {
     private lateinit var binding: FragmentDataDiriBinding
     private val viewModel: DetailViewModel by viewModels()
     private var currentKavlingKode: String? = null
+    private lateinit var arrayAdapter: ArrayAdapter<String>
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -68,7 +69,7 @@ class DataDiriFragment : Fragment() {
                         Toast.makeText(requireContext(), msg, Toast.LENGTH_SHORT).show()
                     }
                 }
-
+                
                 viewModel.dataDiriLive.value?.let { dataDiri ->
                     binding.tvNama.text = dataDiri.nama
                     binding.tvJenisIdentitas.text = dataDiri.jenisIdentitas
@@ -88,6 +89,21 @@ class DataDiriFragment : Fragment() {
             .setView(dialogBinding.root)
             .setCancelable(false)
             .create()
+
+        setupSpinner(dialogBinding)
+
+        // If data diri exists in viewModel, then assign to the EditTexts
+        // as an Update Data Diri Operation.
+        viewModel.dataDiriLive.value?.let { dataDiri ->
+            dialogBinding.spinnerNegaraBekerja.setSelection(arrayAdapter.getPosition(dataDiri.negaraBekerja), true)
+            dialogBinding.edtNamaCostumer.setText(dataDiri.nama)
+            dialogBinding.edtNoIdentitas.setText(dataDiri.noIdentitas)
+            dialogBinding.edtAlamatKerja.setText(dataDiri.alamatKerja)
+            dialogBinding.edtAlamatIndo.setText(dataDiri.alamatIndo)
+            dialogBinding.edtNoHandphone.setText(dataDiri.noHp)
+            if (dataDiri.jenisIdentitas == "KTP") dialogBinding.rbIdKtp.isChecked = true
+                else dialogBinding.rbIdPassport.isChecked = true
+        }
 
         dialogView.show()
 
@@ -138,26 +154,23 @@ class DataDiriFragment : Fragment() {
         dialogBinding.btnBatal.setOnClickListener {
             dialogView.dismiss()
         }
-
-        setupSpinner(dialogBinding)
     }
 
     private fun setupSpinner(dialogBinding: DialogTambahDataDiriBinding) {
-        val negaraBekerjaList = ArrayList<String>()
-        negaraBekerjaList.add("Hongkong")
-        negaraBekerjaList.add("Macau")
-        negaraBekerjaList.add("Taiwan")
-        negaraBekerjaList.add("Singapore")
-        negaraBekerjaList.add("Malaysia")
-        negaraBekerjaList.add("Arab Saudi")
-        negaraBekerjaList.add("Abu Dhabi")
+        val negaraBekerjaList = ArrayList<String>().apply {
+            add("Hongkong")
+            add("Macau")
+            add("Taiwan")
+            add("Singapore")
+            add("Malaysia")
+            add("Arab Saudi")
+            add("Abu Dhabi")
+        }
 
-        val arrayAdapter = ArrayAdapter<String>(
+        arrayAdapter = ArrayAdapter<String>(
             requireContext(), android.R.layout.simple_spinner_dropdown_item, negaraBekerjaList
         )
 
         dialogBinding.spinnerNegaraBekerja.adapter = arrayAdapter
-        // TODO: Spinner onclick
     }
-
 }
