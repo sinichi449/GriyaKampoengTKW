@@ -41,8 +41,44 @@ class DataDiriFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        syncDataDiri()
+
         binding.fabTambahDataDiri.setOnClickListener {
             showAddDataDiriDialog()
+        }
+
+        binding.swipeRefreshDataDiri.setOnRefreshListener {
+            syncDataDiri()
+        }
+
+        viewModel.isFinishOperation.observe(requireActivity()) {
+            it?.let { finish ->
+                binding.swipeRefreshDataDiri.isRefreshing = !finish
+            }
+        }
+    }
+
+    private fun syncDataDiri() {
+        if (currentKavlingKode != null) {
+            viewModel.getDataDiri(currentKavlingKode!!)
+
+            viewModel.operationResult.observe(requireActivity()) { operation ->
+                operation?.let {
+                    it.message?.let { msg ->
+                        Toast.makeText(requireContext(), msg, Toast.LENGTH_SHORT).show()
+                    }
+                }
+
+                viewModel.dataDiriLive.value?.let { dataDiri ->
+                    binding.tvNama.text = dataDiri.nama
+                    binding.tvJenisIdentitas.text = dataDiri.jenisIdentitas
+                    binding.tvNoIdentitas.text = dataDiri.noIdentitas
+                    binding.tvNegaraBekerja.text = dataDiri.negaraBekerja
+                    binding.tvAlamatKerja.text = dataDiri.alamatKerja
+                    binding.tvAlamatIndo.text = dataDiri.alamatIndo
+                    binding.tvNoHp.text = dataDiri.noHp
+                }
+            }
         }
     }
 
@@ -91,6 +127,7 @@ class DataDiriFragment : Fragment() {
                     viewModel.operationResult.observe(requireActivity()) { operation ->
                         operation?.let {
                             Toast.makeText(requireContext(), it.message?: "Null", Toast.LENGTH_SHORT).show()
+                            syncDataDiri()
 
                             dialogView.dismiss()
                         }

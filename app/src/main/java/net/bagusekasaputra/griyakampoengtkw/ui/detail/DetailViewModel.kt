@@ -10,16 +10,18 @@ import kotlinx.coroutines.launch
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.DataDiri
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.Operation
 import net.bagusekasaputra.griyakampoengtkw.domain.usecase.datadiri.AddDataDiriUseCase
+import net.bagusekasaputra.griyakampoengtkw.domain.usecase.datadiri.GetDataDiriUseCase
 import javax.inject.Inject
 
 @HiltViewModel
 class DetailViewModel @Inject constructor(
-    private val addDataDiriUseCase: AddDataDiriUseCase
+    private val addDataDiriUseCase: AddDataDiriUseCase,
+    private val getDataDiriUseCase: GetDataDiriUseCase,
 ): ViewModel() {
 
-    private val _dataDiriList = MutableLiveData<DataDiri>()
-    val dataDiriList: LiveData<DataDiri>
-        get() = _dataDiriList
+    private val _dataDiriLive = MutableLiveData<DataDiri>()
+    val dataDiriLive: LiveData<DataDiri>
+        get() = _dataDiriLive
 
     val currentKavlingKode = MutableLiveData<String>()
 
@@ -30,7 +32,31 @@ class DetailViewModel @Inject constructor(
 
     // Data Diri
     fun getDataDiri(kavlingKode: String) {
-        // TODO
+        isFinishOperation.value = false
+        operationResult.value = null
+
+        CoroutineScope(Dispatchers.IO).launch {
+            val request = GetDataDiriUseCase.Request(kavlingKode)
+
+            getDataDiriUseCase.execute(request).collect { response ->
+                val result = response.data.dataDiri
+
+                if (result.isSuccess) {
+                    val dataDiri = result.getOrNull()
+
+                    if (dataDiri == null) {
+                        operationResult.postValue(Operation(true, "Data diri pada kavling $kavlingKode masih kosong"))
+                    } else {
+                        _dataDiriLive.postValue(dataDiri!!)
+                        operationResult.postValue(Operation(true, null))
+                    }
+                } else {
+                    operationResult.postValue(Operation(false, "Gagal mendapatkan data diri dari server: ${result.exceptionOrNull()?.message}"))
+                }
+
+                isFinishOperation.postValue(true)
+            }
+        }
     }
 
     fun addDataDiri(kavlingKode: String, dataDiri: DataDiri) {
