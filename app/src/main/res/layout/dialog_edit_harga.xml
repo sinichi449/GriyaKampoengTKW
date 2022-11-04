@@ -19,7 +19,9 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:hint="Masukkan Harga"
-        android:layout_marginTop="24dp">
+        android:layout_marginTop="24dp"
+        app:startIconDrawable="@drawable/ic_baseline_local_tag_24"
+        app:endIconMode="clear_text">
 
         <com.google.android.material.textfield.TextInputEditText
             android:id="@+id/edt_harga"

@@ -1,89 +1,97 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.swiperefreshlayout.widget.SwipeRefreshLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/swipe_refresh_form_pembayaran"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:padding="8dp">
 
-    <ScrollView
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        android:layout_marginTop="24dp"
-        android:scrollbars="horizontal|vertical"
-        android:scrollbarStyle="outsideInset"
-        android:fillViewport="true"
-        android:layout_marginBottom="24dp">
+        android:layout_height="match_parent"
+        android:padding="8dp">
 
-        <HorizontalScrollView
-            android:layout_width="wrap_content"
+        <ScrollView
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:scrollbars="horizontal|vertical">
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            android:layout_marginTop="24dp"
+            android:scrollbars="horizontal|vertical"
+            android:scrollbarStyle="outsideInset"
+            android:fillViewport="true"
+            android:layout_marginBottom="24dp">
 
-            <TableLayout
-                android:id="@+id/table_layout"
+            <HorizontalScrollView
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content">
+                android:layout_height="wrap_content"
+                android:scrollbars="horizontal|vertical">
 
-                <TableRow
-                    android:background="@color/abang">
+                <TableLayout
+                    android:id="@+id/table_layout"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content">
 
-                    <TextView
-                        android:text="Termin"
-                        android:textColor="@color/white"
-                        android:padding="4dp"
-                        android:textSize="15sp"
-                        android:textStyle="bold"/>
+                    <TableRow
+                        android:background="@color/abang">
 
-                    <TextView
-                        android:text="Tanggal"
-                        android:textColor="@color/white"
-                        android:padding="4dp"
-                        android:textSize="15sp"
-                        android:textStyle="bold"/>
+                        <TextView
+                            android:text="Termin"
+                            android:textColor="@color/white"
+                            android:padding="4dp"
+                            android:textSize="15sp"
+                            android:textStyle="bold"/>
 
-                    <TextView
-                        android:layout_width="100dp"
-                        android:text="Jumlah Uang dibayar"
-                        android:textColor="@color/white"
-                        android:padding="4dp"
-                        android:textSize="15sp"
-                        android:textStyle="bold"
-                        android:textAlignment="center"/>
+                        <TextView
+                            android:text="Tanggal"
+                            android:textColor="@color/white"
+                            android:padding="4dp"
+                            android:textSize="15sp"
+                            android:textStyle="bold"/>
 
-                    <TextView
-                        android:layout_width="100dp"
-                        android:text="Total Uang Masuk"
-                        android:textColor="@color/white"
-                        android:padding="4dp"
-                        android:textSize="15sp"
-                        android:textStyle="bold"
-                        android:textAlignment="center"/>
+                        <TextView
+                            android:layout_width="100dp"
+                            android:text="Jumlah Uang dibayar"
+                            android:textColor="@color/white"
+                            android:padding="4dp"
+                            android:textSize="15sp"
+                            android:textStyle="bold"
+                            android:textAlignment="center"/>
 
-                    <TextView
-                        android:layout_width="50dp"
-                        android:text="(%)"
-                        android:textColor="@color/white"
-                        android:padding="4dp"
-                        android:textSize="15sp"
-                        android:textStyle="bold"
-                        android:textAlignment="center"/>
+                        <TextView
+                            android:layout_width="100dp"
+                            android:text="Total Uang Masuk"
+                            android:textColor="@color/white"
+                            android:padding="4dp"
+                            android:textSize="15sp"
+                            android:textStyle="bold"
+                            android:textAlignment="center"/>
 
-                    <TextView
-                        android:text="Keterangan Progress"
-                        android:textColor="@color/white"
-                        android:padding="4dp"
-                        android:textSize="15sp"
-                        android:textStyle="bold"/>
+                        <TextView
+                            android:layout_width="50dp"
+                            android:text="(%)"
+                            android:textColor="@color/white"
+                            android:padding="4dp"
+                            android:textSize="15sp"
+                            android:textStyle="bold"
+                            android:textAlignment="center"/>
 
-                </TableRow>
+                        <TextView
+                            android:text="Keterangan Progress"
+                            android:textColor="@color/white"
+                            android:padding="4dp"
+                            android:textSize="15sp"
+                            android:textStyle="bold"/>
 
-            </TableLayout>
+                    </TableRow>
 
-        </HorizontalScrollView>
+                </TableLayout>
 
-    </ScrollView>
+            </HorizontalScrollView>
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+        </ScrollView>
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</androidx.swiperefreshlayout.widget.SwipeRefreshLayout>

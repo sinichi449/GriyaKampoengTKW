@@ -5,20 +5,20 @@ import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
-import net.bagusekasaputra.griyakampoengtkw.data.repository.BlockRepositoryImpl
-import net.bagusekasaputra.griyakampoengtkw.data.repository.DataDiriRepositoryImpl
-import net.bagusekasaputra.griyakampoengtkw.data.repository.KavlingRepositoryImpl
+import net.bagusekasaputra.griyakampoengtkw.data.repository.*
 import net.bagusekasaputra.griyakampoengtkw.data.source.local.kavling.FakeKavlingModelDb
 import net.bagusekasaputra.griyakampoengtkw.data.source.local.kavling.LocalKavlingRepository
 import net.bagusekasaputra.griyakampoengtkw.data.source.remote.block.FirebaseBlockRepository
 import net.bagusekasaputra.griyakampoengtkw.data.source.remote.block.RemoteBlockRepository
 import net.bagusekasaputra.griyakampoengtkw.data.source.remote.datadiri.FirebaseDataDiriRepository
 import net.bagusekasaputra.griyakampoengtkw.data.source.remote.datadiri.RemoteDataDiriRepository
+import net.bagusekasaputra.griyakampoengtkw.data.source.remote.hargakavling.FirebaseHargaKavlingSource
+import net.bagusekasaputra.griyakampoengtkw.data.source.remote.hargakavling.RemoteHargaKavlingSource
 import net.bagusekasaputra.griyakampoengtkw.data.source.remote.kavling.FirebaseKavlingRepository
 import net.bagusekasaputra.griyakampoengtkw.data.source.remote.kavling.RemoteKavlingRepository
-import net.bagusekasaputra.griyakampoengtkw.domain.repository.BlockRepository
-import net.bagusekasaputra.griyakampoengtkw.domain.repository.DataDiriRepository
-import net.bagusekasaputra.griyakampoengtkw.domain.repository.KavlingRepository
+import net.bagusekasaputra.griyakampoengtkw.data.source.remote.pembayaran.FirebasePembayaranSource
+import net.bagusekasaputra.griyakampoengtkw.data.source.remote.pembayaran.RemotePembayaranSource
+import net.bagusekasaputra.griyakampoengtkw.domain.repository.*
 
 @Module
 @InstallIn(SingletonComponent::class)
@@ -61,5 +61,27 @@ object RepositoryModule {
     @Provides
     fun provideRemoteDataDiriRepository(databaseReference: DatabaseReference): RemoteDataDiriRepository {
         return FirebaseDataDiriRepository(databaseReference)
+    }
+
+    // Pembayaran Repository
+    @Provides
+    fun providePembayaranRepository(remotePembayaranSource: RemotePembayaranSource): PembayaranRepository {
+        return PembayaranRepositoryImpl(remotePembayaranSource)
+    }
+
+    @Provides
+    fun provideRemotePembayaranSource(databaseReference: DatabaseReference): RemotePembayaranSource {
+        return FirebasePembayaranSource(databaseReference)
+    }
+
+    // Harga Kavling Repository
+    @Provides
+    fun provideHargaKavlingRepository(remoteHargaKavlingSource: RemoteHargaKavlingSource): HargaKavlingRepository {
+        return HargaKavlingRepositoryImpl(remoteHargaKavlingSource)
+    }
+
+    @Provides
+    fun provideRemoteHargaKavlingSource(databaseReference: DatabaseReference): RemoteHargaKavlingSource {
+        return FirebaseHargaKavlingSource(databaseReference)
     }
 }

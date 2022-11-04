@@ -6,7 +6,9 @@ import android.content.res.Configuration
 import android.os.Bundle
 import android.view.*
 import android.widget.TableRow
+import android.widget.Toast
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.textfield.TextInputEditText
@@ -16,8 +18,13 @@ import net.bagusekasaputra.griyakampoengtkw.databinding.DialogAddFormPembayaranB
 import net.bagusekasaputra.griyakampoengtkw.databinding.DialogEditHargaBinding
 import net.bagusekasaputra.griyakampoengtkw.databinding.DialogPilihTerminBinding
 import net.bagusekasaputra.griyakampoengtkw.databinding.FragmentFormPembayaranBinding
+import net.bagusekasaputra.griyakampoengtkw.domain.entity.HargaKavling
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.Pembayaran
+import net.bagusekasaputra.griyakampoengtkw.ui.ThousandSeparatorTextWatcher
 import net.bagusekasaputra.griyakampoengtkw.ui.detail.adapter.TerminRecyclerAdapter
+import net.bagusekasaputra.griyakampoengtkw.util.GriyaNodes
+import net.bagusekasaputra.griyakampoengtkw.util.InputUtil
+import net.bagusekasaputra.griyakampoengtkw.util.NumberUtil
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -26,6 +33,8 @@ class FormPembayaranFragment : Fragment() {
 
     private lateinit var binding: FragmentFormPembayaranBinding
     private lateinit var data: ArrayList<Pembayaran>
+    private val viewModel: DetailViewModel by viewModels()
+    private var currentKavlingKode: String? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -33,6 +42,10 @@ class FormPembayaranFragment : Fragment() {
         val orientation = requireActivity().resources.configuration.orientation
         if (orientation == Configuration.ORIENTATION_LANDSCAPE) {
             onFullScreenLandscapeMode()
+        }
+
+        arguments?.getString(GriyaNodes.INTENT_KAVLING_KODE)?.let {
+            currentKavlingKode = it
         }
     }
 
@@ -52,8 +65,40 @@ class FormPembayaranFragment : Fragment() {
 
         setupExtendedFloatingButton()
 
+        setupViewModel()
+
         binding.layoutHarga?.setOnClickListener {
             showEditHargaDialog()
+        }
+
+        binding.swipeRefreshFormPembayaran.setOnRefreshListener {
+            viewModel.getHargaKavling(currentKavlingKode!!)
+        }
+    }
+
+    override fun onResume() {
+        super.onResume()
+
+        syncData()
+    }
+
+    private fun syncData() {
+        viewModel.getHargaKavling(currentKavlingKode!!)
+    }
+
+    private fun setupViewModel() {
+        viewModel.isFinishOperation.observe(requireActivity()) { finish ->
+            finish?.let {
+                binding.swipeRefreshFormPembayaran.isRefreshing = !it
+            }
+        }
+
+        viewModel.hargaKavlingLive.observe(requireActivity()) { hargaStr ->
+            if (hargaStr == null) {
+                viewModel.getHargaKavling(currentKavlingKode!!)
+            } else {
+                binding.tvHarga?.text = hargaStr
+            }
         }
     }
 
@@ -70,6 +115,10 @@ class FormPembayaranFragment : Fragment() {
         }.create()
 
         dialogView.show()
+
+        dialogBinding.edtJumlahUangDibayar.apply {
+            addTextChangedListener(ThousandSeparatorTextWatcher(this))
+        }
 
         setDateDefaulOrPickEdtTanggal(true, dialogBinding)
 
@@ -126,10 +175,36 @@ class FormPembayaranFragment : Fragment() {
 
         dialogView.show()
 
+        dialogBinding.edtHarga.apply {
+            val harga = binding.tvHarga?.text
+            if (harga != "0")
+                this.setText(harga)
+            addTextChangedListener(ThousandSeparatorTextWatcher(this))
+        }
+
         dialogBinding.btnTambahkan.setOnClickListener {
-            // TODO
-            dialogView.dismiss()
-            Snackbar.make(requireContext(), binding.root, "Harga berhasil ditambahkan! (fake}", Snackbar.LENGTH_SHORT).show()
+            dialogBinding.btnTambahkan.isEnabled = false
+            dialogBinding.btnTambahkan.text = "Menyimpan data ..."
+
+            val isInvalidEdt = InputUtil.isNullOrEmptyEditTexts(dialogBinding.edtHarga)
+
+            if (!isInvalidEdt) {
+                val harga = dialogBinding.edtHarga.text.toString()
+                val hargaKavling = HargaKavling(currentKavlingKode!!, harga)
+
+                viewModel.addHargaKavling(hargaKavling)
+
+                viewModel.operationResult.observe(requireActivity()) { operation ->
+                    operation?.message?.let { msg ->
+                        // sync
+                        viewModel.getHargaKavling(currentKavlingKode!!)
+
+                        Toast.makeText(requireContext(), msg, Toast.LENGTH_SHORT).show()
+
+                        dialogView.dismiss()
+                    }
+                }
+            }
         }
 
         dialogBinding.btnBatal.setOnClickListener {
@@ -177,8 +252,8 @@ class FormPembayaranFragment : Fragment() {
     private fun generatePseudoPembayaran(): ArrayList<Pembayaran> {
         val data = ArrayList<Pembayaran>()
 
-        data.add(Pembayaran("ITJ", "12/07/2022", 5010000, 5010000, 2.18, ""))
-        data.add(Pembayaran("DP1", "13/07/2022", 5010000, 1002000, 4.36, ""))
+        data.add(Pembayaran("ITJ", "12/07/2022", NumberUtil.formatLongToString(5010000L), NumberUtil.formatLongToString(5010000L), 2.18, ""))
+        data.add(Pembayaran("DP1", "13/07/2022", NumberUtil.formatLongToString(5010000L), NumberUtil.formatLongToString(10020000L), 4.36, ""))
 
         return data
     }
@@ -263,6 +338,9 @@ class FormPembayaranFragment : Fragment() {
 
         dialogView.show()
 
+        dialogBinding.edtJumlahUangDibayar.apply {
+            addTextChangedListener(ThousandSeparatorTextWatcher(this))
+        }
         dialogBinding.tvTitle.text = "Ubah Form"
         dialogBinding.btnTambahkan.text = "Simpan Perubahan"
 
@@ -278,7 +356,7 @@ class FormPembayaranFragment : Fragment() {
                 val pembayaran = Pembayaran(
                     termin = dialogBinding.edtTermin.text.toString(),
                     tanggal = dialogBinding.edtTanggal.text.toString(),
-                    jumlahUang = dialogBinding.edtJumlahUangDibayar.text.toString().toInt(),
+                    jumlahUang = dialogBinding.edtJumlahUangDibayar.text.toString(),
                     totalUangMasuk = selectedData.totalUangMasuk,
                     presentase = selectedData.presentase,
                     keterangan = dialogBinding.edtKeteranganProgress.text.toString()

@@ -47,5 +47,8 @@ class GriyaNodes {
         const val keteranganProgress = "keteranganProgress"
         const val tanggal = "tanggal"
         const val totalUangMasuk = "totalUangMasuk"
+
+        // Harga Kavling
+        const val hargaKavling = "hargaKavling"
     }
 }
