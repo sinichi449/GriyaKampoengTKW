@@ -7,9 +7,7 @@ interface PembayaranRepository {
 
     fun getPembayaran(kavlingKode: String): Flow<Result<Pembayaran>>
 
-    fun addPembayaran(kavlingKode: String, pembayaran: Pembayaran): Flow<Result<Boolean>>
+    fun addPembayaran(kavlingKode: String, hargaKavling: Long, pembayaran: Pembayaran): Flow<Result<Boolean>>
 
     fun updatePembayaran(kavlingKode: String, oldPembayaran: Pembayaran, newPembayaran: Pembayaran): Flow<Result<Boolean>>
-
-    fun getLatestTotalUangMasuk(kavlingKode: String): Flow<Result<Long>>
 }

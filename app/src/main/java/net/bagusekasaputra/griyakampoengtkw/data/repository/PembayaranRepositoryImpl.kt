@@ -20,10 +20,15 @@ class PembayaranRepositoryImpl @Inject constructor(
         TODO("Not yet implemented")
     }
 
-    override fun addPembayaran(kavlingKode: String, pembayaran: Pembayaran): Flow<Result<Boolean>> {
+    override fun addPembayaran(
+        kavlingKode: String,
+        hargaKavling: Long,
+        pembayaran: Pembayaran
+    ): Flow<Result<Boolean>> {
         return flow {
             emitAll(
-                remotePembayaranSource.addPembayaranModel(kavlingKode, mapPembayaran(pembayaran))
+                remotePembayaranSource.addPembayaranModel(kavlingKode, hargaKavling,
+                    mapPembayaran(pembayaran))
             )
         }
     }
@@ -36,20 +41,13 @@ class PembayaranRepositoryImpl @Inject constructor(
         TODO("Not yet implemented")
     }
 
-    override fun getLatestTotalUangMasuk(kavlingKode: String): Flow<Result<Long>> {
-        return flow {
-            emitAll(remotePembayaranSource.getLatestTotalUangMasuk(kavlingKode))
-        }
-    }
 
     private fun mapPembayaran(pembayaran: Pembayaran): PembayaranModel {
         return pembayaran.let {
             PembayaranModel(
                 termin = it.termin,
                 tanggal = it.tanggal,
-                jumlahUang = NumberUtil.formatStringToLong(it.jumlahUang),
-                totalUangMasuk = NumberUtil.formatStringToLong(it.totalUangMasuk),
-                presentase = it.presentase,
+                jumlahUangDibayar = NumberUtil.formatStringToLong(it.jumlahUangDibayar),
                 keterangan = it.keterangan,
             )
         }

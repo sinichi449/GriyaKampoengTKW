@@ -108,28 +108,65 @@ class FormPembayaranFragment : Fragment() {
     }
 
     private fun showAddFormPembayaranDialog() {
-        val dialogBinding = DialogAddFormPembayaranBinding.inflate(layoutInflater)
-        val dialogView = AlertDialog.Builder(requireContext()).apply {
-            setView(dialogBinding.root)
-            setCancelable(false)
-        }.create()
-
-        dialogView.show()
-
-        dialogBinding.edtJumlahUangDibayar.apply {
-            addTextChangedListener(ThousandSeparatorTextWatcher(this))
+        val hargaKavling = binding.tvHarga?.text.toString().let {
+            NumberUtil.formatStringToLong(it)
         }
 
-        setDateDefaulOrPickEdtTanggal(true, dialogBinding)
+        if (hargaKavling <= 0L) {
+            Toast.makeText(requireContext(), "Harga kavling masih kosong", Toast.LENGTH_SHORT)
+                .show()
+        } else {
+            val dialogBinding = DialogAddFormPembayaranBinding.inflate(layoutInflater)
+            val dialogView = AlertDialog.Builder(requireContext()).apply {
+                setView(dialogBinding.root)
+                setCancelable(false)
+            }.create()
 
-        dialogBinding.btnBatal.setOnClickListener {
-            dialogView.dismiss()
-        }
+            dialogView.show()
 
-        dialogBinding.btnTambahkan.setOnClickListener {
-            // TODO
-            dialogView.dismiss()
-            Snackbar.make(requireContext(), binding.root, "Berhasil ditambahkan! (fake)", Snackbar.LENGTH_SHORT).show()
+            dialogBinding.edtJumlahUangDibayar.apply {
+                addTextChangedListener(ThousandSeparatorTextWatcher(this))
+            }
+
+            setDateDefaulOrPickEdtTanggal(true, dialogBinding)
+
+            dialogBinding.btnBatal.setOnClickListener {
+                dialogView.dismiss()
+            }
+
+            dialogBinding.btnTambahkan.setOnClickListener {
+                dialogBinding.btnTambahkan.text = "Menyimpan data ..."
+                dialogBinding.btnTambahkan.isEnabled = false
+
+                val isInvalidEdt = InputUtil.isNullOrEmptyEditTexts(
+                    dialogBinding.edtTermin, dialogBinding.edtTanggal, dialogBinding.edtJumlahUangDibayar
+                )
+
+                if (!isInvalidEdt) {
+                    val termin = dialogBinding.edtTermin.text.toString()
+                    val tanggal = dialogBinding.edtTanggal.text.toString()
+                    val jumlahUangDibayar = dialogBinding.edtJumlahUangDibayar.text.toString()
+                    val keteranganProgress = dialogBinding.edtKeteranganProgress.text.toString() ?: ""
+                    val pembayaran = Pembayaran(
+                        termin = termin,
+                        tanggal = tanggal,
+                        jumlahUangDibayar = jumlahUangDibayar,
+                        keterangan = keteranganProgress
+                    )
+
+                    viewModel.addPembayaran(currentKavlingKode!!, hargaKavling, pembayaran)
+
+                    viewModel.operationResult.observe(requireActivity()) { operation ->
+                        operation?.message?.let { msg ->
+                            Toast.makeText(requireContext(), msg, Toast.LENGTH_SHORT).show()
+
+                            // TODO: sync pembayaran data
+
+                            dialogView.dismiss()
+                        }
+                    }
+                }
+            }
         }
     }
 
@@ -225,7 +262,7 @@ class FormPembayaranFragment : Fragment() {
 
             termin.text = test.termin
             tanggal.text = test.tanggal
-            jumlahUangDibayar.text = test.jumlahUang.toString()
+            jumlahUangDibayar.text = test.jumlahUangDibayar.toString()
             totalUangMasuk.text = test.totalUangMasuk.toString()
             presentase.text = test.presentase.toString()
             keterangan.text = test.keterangan
@@ -300,18 +337,27 @@ class FormPembayaranFragment : Fragment() {
     }
 
     private fun showTerminSelectionButtonsDialog() {
-        val dialogBinding = DialogPilihTerminBinding.inflate(layoutInflater)
-        val dialogView = AlertDialog.Builder(requireContext()).apply {
-            setView(dialogBinding.root)
-        }.create()
-
-        dialogView.show()
-
-        dialogBinding.btnBatal.setOnClickListener {
-            dialogView.dismiss()
+        val hargaKavling = binding.tvHarga?.text.toString().let {
+            NumberUtil.formatStringToLong(it)
         }
 
-        setupTerminRecyclerView(dialogView, dialogBinding)
+        if (hargaKavling <= 0L) {
+            Toast.makeText(requireContext(), "Harga kavling masih kosong", Toast.LENGTH_SHORT)
+                .show()
+        } else {
+            val dialogBinding = DialogPilihTerminBinding.inflate(layoutInflater)
+            val dialogView = AlertDialog.Builder(requireContext()).apply {
+                setView(dialogBinding.root)
+            }.create()
+
+            dialogView.show()
+
+            dialogBinding.btnBatal.setOnClickListener {
+                dialogView.dismiss()
+            }
+
+            setupTerminRecyclerView(dialogView, dialogBinding)
+        }
     }
 
     private fun setupTerminRecyclerView(terminalDialog: AlertDialog, dialogBinding: DialogPilihTerminBinding) {
@@ -347,7 +393,7 @@ class FormPembayaranFragment : Fragment() {
         val selectedData = this.data[index]
         dialogBinding.edtTermin.setText(selectedData.termin)
         dialogBinding.edtTanggal.setText(selectedData.tanggal)
-        dialogBinding.edtJumlahUangDibayar.setText(selectedData.jumlahUang.toString())
+        dialogBinding.edtJumlahUangDibayar.setText(selectedData.jumlahUangDibayar.toString())
         dialogBinding.edtKeteranganProgress.setText(selectedData.keterangan)
 
         dialogBinding.btnTambahkan.setOnClickListener {
@@ -356,7 +402,7 @@ class FormPembayaranFragment : Fragment() {
                 val pembayaran = Pembayaran(
                     termin = dialogBinding.edtTermin.text.toString(),
                     tanggal = dialogBinding.edtTanggal.text.toString(),
-                    jumlahUang = dialogBinding.edtJumlahUangDibayar.text.toString(),
+                    jumlahUangDibayar = dialogBinding.edtJumlahUangDibayar.text.toString(),
                     totalUangMasuk = selectedData.totalUangMasuk,
                     presentase = selectedData.presentase,
                     keterangan = dialogBinding.edtKeteranganProgress.text.toString()
@@ -392,5 +438,4 @@ class FormPembayaranFragment : Fragment() {
     private fun saveFormChanges(pembayaran: Pembayaran, index: Int) {
         this.data[index] = pembayaran
     }
-
 }

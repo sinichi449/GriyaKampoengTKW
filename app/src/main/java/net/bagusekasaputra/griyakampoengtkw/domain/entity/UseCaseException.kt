@@ -11,3 +11,7 @@ sealed class UseCaseException(cause: Throwable): Throwable(cause) {
         }
     }
 }
+
+class NullHargaKavlingException(
+    message: String = "Error harga kavling masih kosong"
+): Throwable(message)

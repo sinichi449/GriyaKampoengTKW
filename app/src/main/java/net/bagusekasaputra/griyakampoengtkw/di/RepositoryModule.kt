@@ -65,7 +65,9 @@ object RepositoryModule {
 
     // Pembayaran Repository
     @Provides
-    fun providePembayaranRepository(remotePembayaranSource: RemotePembayaranSource): PembayaranRepository {
+    fun providePembayaranRepository(
+        remotePembayaranSource: RemotePembayaranSource,
+    ): PembayaranRepository {
         return PembayaranRepositoryImpl(remotePembayaranSource)
     }
 

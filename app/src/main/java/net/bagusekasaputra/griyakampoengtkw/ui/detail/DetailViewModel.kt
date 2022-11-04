@@ -6,18 +6,17 @@ import androidx.lifecycle.ViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.launch
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.DataDiri
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.HargaKavling
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.Operation
+import net.bagusekasaputra.griyakampoengtkw.domain.entity.Pembayaran
 import net.bagusekasaputra.griyakampoengtkw.domain.usecase.datadiri.AddDataDiriUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.usecase.datadiri.DeleteDataDiriUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.usecase.datadiri.GetDataDiriUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.usecase.hargakavling.AddHargaKavlingUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.usecase.hargakavling.GetHargaKavlingUseCase
-import net.bagusekasaputra.griyakampoengtkw.domain.usecase.pembayaran.GetLatestTotalUangMasukUseCase
+import net.bagusekasaputra.griyakampoengtkw.domain.usecase.pembayaran.AddPembayaranUseCase
 import javax.inject.Inject
 
 @HiltViewModel
@@ -25,9 +24,9 @@ class DetailViewModel @Inject constructor(
     private val addDataDiriUseCase: AddDataDiriUseCase,
     private val getDataDiriUseCase: GetDataDiriUseCase,
     private val deleteDataDiriUseCase: DeleteDataDiriUseCase,
-    private val getLatestTotalUangMasukUseCase: GetLatestTotalUangMasukUseCase,
     private val getHargaKavlingUseCase: GetHargaKavlingUseCase,
     private val addHargaKavlingUseCase: AddHargaKavlingUseCase,
+    private val addPembayaranUseCase: AddPembayaranUseCase,
 ): ViewModel() {
 
     private val _dataDiriLive = MutableLiveData<DataDiri>()
@@ -116,26 +115,8 @@ class DetailViewModel @Inject constructor(
         }
     }
 
-    fun getLatestUangMasuk(kavlingKode: String): Flow<Long?> {
-        isFinishOperation.value = false
 
-        return flow {
-            val request = GetLatestTotalUangMasukUseCase.Request(kavlingKode)
-
-            getLatestTotalUangMasukUseCase.execute(request).collect { response ->
-                val result = response.data.result
-
-                if (result.isSuccess) {
-                    emit(result.getOrNull())
-                } else {
-                    emit(null)
-                }
-
-                isFinishOperation.postValue(true)
-            }
-        }
-    }
-
+    // Harga Kavling
     fun getHargaKavling(kavlingKode: String) {
         isFinishOperation.value = false
         operationResult.value = null
@@ -177,6 +158,29 @@ class DetailViewModel @Inject constructor(
                     operationResult.postValue(Operation(true, "Berhasil menambahkan harga kavling ${hargaKavling.kavlingKode}"))
                 } else {
                     operationResult.postValue(Operation(false, "Gagal menambahkan harga kavling: ${result.exceptionOrNull()?.message}"))
+                }
+
+                isFinishOperation.postValue(true)
+            }
+        }
+    }
+
+
+    // Pembayaran
+    fun addPembayaran(kavlingKode: String, hargaKavling: Long, pembayaran: Pembayaran) {
+        isFinishOperation.value = false
+        operationResult.value = null
+
+        CoroutineScope(Dispatchers.IO).launch {
+            val request = AddPembayaranUseCase.Request(kavlingKode, hargaKavling, pembayaran)
+
+            addPembayaranUseCase.execute(request).collect { response ->
+                val result = response.data.result
+
+                if (result.isSuccess) {
+                    operationResult.postValue(Operation(true, "Berhasil menambahkan pembayaran"))
+                } else {
+                    operationResult.postValue(Operation(false, "Gagal menambahkan pembayaran: ${result.exceptionOrNull()?.message}"))
                 }
 
                 isFinishOperation.postValue(true)

@@ -331,7 +331,6 @@ class MainActivity : AppCompatActivity() {
                 val blockCode = viewModel.currentBlock.value!!
 
                 viewModel.editKavling(blockCode, kavling, newKavling)
-
                 viewModel.operationResult.observe(this) {
                     it?.let {
                         Toast.makeText(this, it.message, Toast.LENGTH_SHORT).show()
@@ -339,6 +338,7 @@ class MainActivity : AppCompatActivity() {
                         dialogView.dismiss()
                     }
                 }
+
             }
         }
 

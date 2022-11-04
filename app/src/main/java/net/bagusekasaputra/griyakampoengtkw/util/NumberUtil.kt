@@ -1,17 +1,17 @@
 package net.bagusekasaputra.griyakampoengtkw.util
 
 import java.text.DecimalFormat
+import java.text.DecimalFormatSymbols
+import java.util.*
 
 object NumberUtil {
 
     fun formatLongToString(number: Long): String {
-        val decimalFormat = DecimalFormat("#,###,###,###")
+        val decimalFormat = DecimalFormat("###,###,###", DecimalFormatSymbols(Locale.US))
         return decimalFormat.format(number)
     }
 
     fun formatStringToLong(numStr: String): Long {
-        val parsed = numStr.replace(",", "").toLong()
-
-        return parsed
+        return numStr.replace(",", "").toLong()
     }
 }

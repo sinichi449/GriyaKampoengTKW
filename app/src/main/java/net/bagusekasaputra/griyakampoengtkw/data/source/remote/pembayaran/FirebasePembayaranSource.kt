@@ -20,59 +20,66 @@ class FirebasePembayaranSource @Inject constructor(
     private val databaseReference: DatabaseReference
 ): RemotePembayaranSource {
 
-    init {
-        databaseReference.child(GriyaNodes.formPembayaran).keepSynced(true)
-    }
-
     override fun addPembayaranModel(
         kavlingKode: String,
-        pembayaranModel: PembayaranModel,
+        hargaKavling: Long,
+        pembayaranModel: PembayaranModel
     ): Flow<Result<Boolean>> {
+        Log.d(LOG_TAG, "Adding pembayaran on $kavlingKode")
         return callbackFlow {
-            databaseReference
-                .child(GriyaNodes.formPembayaran)
-                .child(kavlingKode)
-                .child(pembayaranModel.termin)
-                .setValue(pembayaranModel)
-                .addOnSuccessListener {
-                    trySendBlocking(Result.success(true))
+            getAllTotalUangMasuk(kavlingKode).collect { allTotalUangMasuk ->
+                Log.d(LOG_TAG, "All total uang masuk $allTotalUangMasuk")
+                if (allTotalUangMasuk <= 0L) {
+                    pembayaranModel.totalUangMasuk = pembayaranModel.jumlahUangDibayar
+                } else {
+                    pembayaranModel.totalUangMasuk = allTotalUangMasuk + pembayaranModel.jumlahUangDibayar
                 }
-                .addOnFailureListener {
-                    trySendBlocking(Result.failure(it))
-                }
+                pembayaranModel.presentase = pembayaranModel.totalUangMasuk.toDouble() / hargaKavling.toDouble()
+
+                Log.d(LOG_TAG, "Presentase: ${pembayaranModel.presentase}")
+
+                databaseReference
+                    .child(GriyaNodes.formPembayaran)
+                    .child(kavlingKode)
+                    .child(pembayaranModel.termin)
+                    .setValue(pembayaranModel)
+                    .addOnSuccessListener {
+                        Log.d(LOG_TAG, "Successfully add pembayaran")
+                        this.trySendBlocking(Result.success(true))
+                    }
+                    .addOnFailureListener {
+                        Log.d(LOG_TAG, "Fail to add pembayaran: ${it.message}")
+                        this.trySendBlocking(Result.failure(it))
+                    }
+            }
 
             awaitClose {  }
         }
     }
 
-    override fun getLatestTotalUangMasuk(kavlingKode: String): Flow<Result<Long>> {
+    private fun getAllTotalUangMasuk(kavlingKode: String): Flow<Long> {
         return callbackFlow {
             databaseReference
                 .child(GriyaNodes.formPembayaran)
                 .child(kavlingKode)
                 .get()
                 .addOnSuccessListener { snapshot ->
-                    val terminHashmap = snapshot.getValue<HashMap<String, PembayaranModel>>()
-                    val mostRecentDate = getMostRecentDate(terminHashmap)
-                    Log.d(LOG_TAG, "Most recent date: $mostRecentDate")
+                    val terminsHashmap = snapshot.getValue<HashMap<String, PembayaranModel>>()
+                    var allTotalUangMasuk = 0L
 
-                    // traverse through hashmap for specific date
-                    terminHashmap?.keys?.let { keys ->
-                        for (key in keys) {
-                            if (terminHashmap[key]!!.tanggal == mostRecentDate) {
-                                val latestUangMasuk = terminHashmap[key]!!.totalUangMasuk
-                                trySendBlocking(Result.success(latestUangMasuk))
-
-                                break
+                    if (terminsHashmap != null) {
+                        for (key in terminsHashmap.keys) {
+                            terminsHashmap[key]?.totalUangMasuk?.let {
+                                Log.d(LOG_TAG, "Found totalMasuk: $it")
+                                allTotalUangMasuk += it
                             }
                         }
+
+                        trySendBlocking(allTotalUangMasuk)
                     }
                 }
-                .addOnFailureListener {
-                    trySendBlocking(Result.failure(it))
-                }
 
-            awaitClose { }
+            awaitClose {  }
         }
     }
 

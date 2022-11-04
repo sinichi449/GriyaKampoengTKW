@@ -1,6 +1,7 @@
 package net.bagusekasaputra.griyakampoengtkw.data.repository
 
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.emitAll
 import kotlinx.coroutines.flow.flow
 import net.bagusekasaputra.griyakampoengtkw.data.source.model.HargaKavlingModel
 import net.bagusekasaputra.griyakampoengtkw.data.source.remote.hargakavling.RemoteHargaKavlingSource
@@ -33,9 +34,10 @@ class HargaKavlingRepositoryImpl @Inject constructor(
     }
 
     override fun addHargaKavling(hargaKavling: HargaKavling): Flow<Result<Boolean>> {
-        return remoteHargaKavlingSource.addHargaKavlingModel(
-            mapHargaKavling(hargaKavling)
-        )
+        return flow {
+            emitAll(remoteHargaKavlingSource.addHargaKavlingModel(
+                mapHargaKavling(hargaKavling)))
+        }
     }
 
     private fun mapHargaKavling(hargaKavling: HargaKavling): HargaKavlingModel {
