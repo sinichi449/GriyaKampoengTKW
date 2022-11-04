@@ -3,7 +3,7 @@ package net.bagusekasaputra.griyakampoengtkw.data.repository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.emitAll
 import kotlinx.coroutines.flow.flow
-import net.bagusekasaputra.griyakampoengtkw.data.source.model.KavlingModel
+import net.bagusekasaputra.griyakampoengtkw.data.model.KavlingModel
 import net.bagusekasaputra.griyakampoengtkw.data.source.remote.kavling.RemoteKavlingRepository
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.Kavling
 import net.bagusekasaputra.griyakampoengtkw.domain.repository.KavlingRepository

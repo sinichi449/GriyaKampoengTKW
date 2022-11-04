@@ -1,7 +1,7 @@
 package net.bagusekasaputra.griyakampoengtkw.data.source.remote.datadiri
 
 import kotlinx.coroutines.flow.Flow
-import net.bagusekasaputra.griyakampoengtkw.data.source.model.DataDiriModel
+import net.bagusekasaputra.griyakampoengtkw.data.model.DataDiriModel
 
 interface RemoteDataDiriRepository {
 

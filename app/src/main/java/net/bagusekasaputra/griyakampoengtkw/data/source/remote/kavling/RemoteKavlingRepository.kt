@@ -1,7 +1,7 @@
 package net.bagusekasaputra.griyakampoengtkw.data.source.remote.kavling
 
 import kotlinx.coroutines.flow.Flow
-import net.bagusekasaputra.griyakampoengtkw.data.source.model.KavlingModel
+import net.bagusekasaputra.griyakampoengtkw.data.model.KavlingModel
 
 interface RemoteKavlingRepository {
 

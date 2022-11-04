@@ -1,7 +1,7 @@
 package net.bagusekasaputra.griyakampoengtkw.data.source.remote.pembayaran
 
 import kotlinx.coroutines.flow.Flow
-import net.bagusekasaputra.griyakampoengtkw.data.source.model.PembayaranModel
+import net.bagusekasaputra.griyakampoengtkw.data.model.PembayaranModel
 
 interface RemotePembayaranSource {
 

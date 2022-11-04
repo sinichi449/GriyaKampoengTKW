@@ -3,7 +3,7 @@ package net.bagusekasaputra.griyakampoengtkw.data.repository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.emitAll
 import kotlinx.coroutines.flow.flow
-import net.bagusekasaputra.griyakampoengtkw.data.source.model.DataDiriModel
+import net.bagusekasaputra.griyakampoengtkw.data.model.DataDiriModel
 import net.bagusekasaputra.griyakampoengtkw.data.source.remote.datadiri.RemoteDataDiriRepository
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.DataDiri
 import net.bagusekasaputra.griyakampoengtkw.domain.repository.DataDiriRepository

@@ -1,4 +1,4 @@
-package net.bagusekasaputra.griyakampoengtkw.data.source.model
+package net.bagusekasaputra.griyakampoengtkw.data.model
 
 
 data class BlockModel(

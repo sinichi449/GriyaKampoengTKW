@@ -1,9 +1,7 @@
 package net.bagusekasaputra.griyakampoengtkw.data.repository
 
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.emitAll
-import kotlinx.coroutines.flow.flow
-import net.bagusekasaputra.griyakampoengtkw.data.source.model.PembayaranModel
+import net.bagusekasaputra.griyakampoengtkw.data.model.PembayaranModel
 import net.bagusekasaputra.griyakampoengtkw.data.source.remote.pembayaran.RemotePembayaranSource
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.Pembayaran
 import net.bagusekasaputra.griyakampoengtkw.domain.repository.PembayaranRepository
@@ -25,12 +23,8 @@ class PembayaranRepositoryImpl @Inject constructor(
         hargaKavling: Long,
         pembayaran: Pembayaran
     ): Flow<Result<Boolean>> {
-        return flow {
-            emitAll(
-                remotePembayaranSource.addPembayaranModel(kavlingKode, hargaKavling,
-                    mapPembayaran(pembayaran))
-            )
-        }
+        return remotePembayaranSource.addPembayaranModel(kavlingKode, hargaKavling,
+            mapPembayaran(pembayaran))
     }
 
     override fun updatePembayaran(

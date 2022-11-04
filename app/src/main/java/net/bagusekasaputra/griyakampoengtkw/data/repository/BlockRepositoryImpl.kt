@@ -4,7 +4,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.emitAll
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.map
-import net.bagusekasaputra.griyakampoengtkw.data.source.model.BlockModel
+import net.bagusekasaputra.griyakampoengtkw.data.model.BlockModel
 import net.bagusekasaputra.griyakampoengtkw.data.source.remote.block.RemoteBlockRepository
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.Block
 import net.bagusekasaputra.griyakampoengtkw.domain.repository.BlockRepository

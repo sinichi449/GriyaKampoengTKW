@@ -1,7 +1,7 @@
 package net.bagusekasaputra.griyakampoengtkw.data.source.remote.block
 
 import kotlinx.coroutines.flow.Flow
-import net.bagusekasaputra.griyakampoengtkw.data.source.model.BlockModel
+import net.bagusekasaputra.griyakampoengtkw.data.model.BlockModel
 
 interface RemoteBlockRepository {
 

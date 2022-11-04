@@ -3,7 +3,7 @@ package net.bagusekasaputra.griyakampoengtkw.data.repository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.emitAll
 import kotlinx.coroutines.flow.flow
-import net.bagusekasaputra.griyakampoengtkw.data.source.model.HargaKavlingModel
+import net.bagusekasaputra.griyakampoengtkw.data.model.HargaKavlingModel
 import net.bagusekasaputra.griyakampoengtkw.data.source.remote.hargakavling.RemoteHargaKavlingSource
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.HargaKavling
 import net.bagusekasaputra.griyakampoengtkw.domain.repository.HargaKavlingRepository

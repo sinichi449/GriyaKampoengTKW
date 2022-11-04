@@ -6,7 +6,7 @@ import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.channels.trySendBlocking
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
-import net.bagusekasaputra.griyakampoengtkw.data.source.model.DataDiriModel
+import net.bagusekasaputra.griyakampoengtkw.data.model.DataDiriModel
 import net.bagusekasaputra.griyakampoengtkw.util.GriyaNodes
 import javax.inject.Inject
 import javax.inject.Singleton

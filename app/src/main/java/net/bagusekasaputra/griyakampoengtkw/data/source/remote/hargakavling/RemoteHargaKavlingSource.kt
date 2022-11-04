@@ -1,7 +1,7 @@
 package net.bagusekasaputra.griyakampoengtkw.data.source.remote.hargakavling
 
 import kotlinx.coroutines.flow.Flow
-import net.bagusekasaputra.griyakampoengtkw.data.source.model.HargaKavlingModel
+import net.bagusekasaputra.griyakampoengtkw.data.model.HargaKavlingModel
 
 interface RemoteHargaKavlingSource {
 

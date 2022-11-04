@@ -1,7 +1,7 @@
 package net.bagusekasaputra.griyakampoengtkw.data.source.local.kavling
 
-import net.bagusekasaputra.griyakampoengtkw.data.source.model.BlockModel
-import net.bagusekasaputra.griyakampoengtkw.data.source.model.KavlingModel
+import net.bagusekasaputra.griyakampoengtkw.data.model.BlockModel
+import net.bagusekasaputra.griyakampoengtkw.data.model.KavlingModel
 
 interface LocalKavlingRepository {
 

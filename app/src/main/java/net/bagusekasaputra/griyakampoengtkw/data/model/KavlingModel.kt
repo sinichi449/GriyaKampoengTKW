@@ -1,4 +1,4 @@
-package net.bagusekasaputra.griyakampoengtkw.data.source.model
+package net.bagusekasaputra.griyakampoengtkw.data.model
 
 class KavlingModel(
     val kode: String = "",
