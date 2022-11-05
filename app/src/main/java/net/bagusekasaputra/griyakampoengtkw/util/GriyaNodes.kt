@@ -50,5 +50,12 @@ class GriyaNodes {
 
         // Harga Kavling
         const val hargaKavling = "hargaKavling"
+
+        // Update
+        const val update = "update"
+        const val latestVersion = "latestVersion"
+        const val latestVersionCode = "latestVersionCode"
+        const val url = "url"
+        const val releaseNotes = "releaseNotes"
     }
 }

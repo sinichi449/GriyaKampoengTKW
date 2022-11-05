@@ -8,9 +8,12 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+import net.bagusekasaputra.griyakampoengtkw.domain.entity.AppUpdate
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.Block
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.Kavling
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.Operation
+import net.bagusekasaputra.griyakampoengtkw.domain.usecase.appupdate.GetUpdateInformationUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.usecase.block.AddNewBlockUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.usecase.block.GetAllBlocksUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.usecase.kavling.AddKavlingUseCase
@@ -28,6 +31,7 @@ class MainViewModel @Inject constructor(
     private val addKavlingUseCase: AddKavlingUseCase,
     private val editKavlingUseCase: EditKavlingUseCase,
     private val removeKavlingUseCase: RemoveKavlingUseCase,
+    private val getAppUpdateInformationUseCase: GetUpdateInformationUseCase,
 ): ViewModel() {
 
     private val _kavlings = MutableLiveData<List<Kavling>>()
@@ -168,6 +172,31 @@ class MainViewModel @Inject constructor(
                 }
 
                 isFinishOperation.postValue(true)
+            }
+        }
+    }
+
+    fun checkUpdates(
+        onAvailable: (appUpdate: AppUpdate) -> Unit,
+        onFailure: (msg: String) -> Unit,
+    ) {
+        CoroutineScope(Dispatchers.IO).launch {
+            val request = GetUpdateInformationUseCase.Request
+
+            getAppUpdateInformationUseCase.execute(request).collect { response ->
+                val result = response.data.result
+
+                if (result.isSuccess) {
+                    result.getOrNull()?.let { appUpdate ->
+                        withContext(Dispatchers.Main) {
+                            onAvailable(appUpdate)
+                        }
+                    }
+                } else {
+                    withContext(Dispatchers.Main) {
+                        onFailure("Gagal mendapatkan update: ${result.exceptionOrNull()?.message ?: "null"}")
+                    }
+                }
             }
         }
     }

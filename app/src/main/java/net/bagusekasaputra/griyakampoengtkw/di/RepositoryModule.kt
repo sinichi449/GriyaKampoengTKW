@@ -8,6 +8,8 @@ import dagger.hilt.components.SingletonComponent
 import net.bagusekasaputra.griyakampoengtkw.data.repository.*
 import net.bagusekasaputra.griyakampoengtkw.data.source.local.kavling.FakeKavlingModelDb
 import net.bagusekasaputra.griyakampoengtkw.data.source.local.kavling.LocalKavlingRepository
+import net.bagusekasaputra.griyakampoengtkw.data.source.remote.appupdate.FirebaseAppUpdateSource
+import net.bagusekasaputra.griyakampoengtkw.data.source.remote.appupdate.RemoteAppUpdateSource
 import net.bagusekasaputra.griyakampoengtkw.data.source.remote.block.FirebaseBlockRepository
 import net.bagusekasaputra.griyakampoengtkw.data.source.remote.block.RemoteBlockRepository
 import net.bagusekasaputra.griyakampoengtkw.data.source.remote.datadiri.FirebaseDataDiriRepository
@@ -85,5 +87,16 @@ object RepositoryModule {
     @Provides
     fun provideRemoteHargaKavlingSource(databaseReference: DatabaseReference): RemoteHargaKavlingSource {
         return FirebaseHargaKavlingSource(databaseReference)
+    }
+
+    // App Update Repository
+    @Provides
+    fun provideAppUpdateRepository(remoteAppUpdateSource: RemoteAppUpdateSource): AppUpdateRepository {
+        return AppUpdateRepositoryImpl(remoteAppUpdateSource)
+    }
+
+    @Provides
+    fun provideRemoteAppUpdateSource(databaseReference: DatabaseReference): RemoteAppUpdateSource {
+        return FirebaseAppUpdateSource(databaseReference)
     }
 }

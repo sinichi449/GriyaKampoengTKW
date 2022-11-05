@@ -18,6 +18,7 @@ import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
 import net.bagusekasaputra.griyakampoengtkw.R
 import net.bagusekasaputra.griyakampoengtkw.databinding.*
+import net.bagusekasaputra.griyakampoengtkw.domain.entity.AppUpdate
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.Block
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.Kavling
 import net.bagusekasaputra.griyakampoengtkw.ui.detail.DetailActivity
@@ -51,6 +52,12 @@ class MainActivity : AppCompatActivity() {
         } else {
             syncData()
         }
+
+        viewModel.checkUpdates({
+            showUpdateDialog(it)
+        }, { msg ->
+            Toast.makeText(this, msg, Toast.LENGTH_SHORT).show()
+        })
 
         setupViewModel()
 
@@ -345,6 +352,25 @@ class MainActivity : AppCompatActivity() {
         dialogBinding.btnBatal.setOnClickListener {
             dialogView.dismiss()
         }
+    }
+
+    private fun showUpdateDialog(appUpdate: AppUpdate) {
+        AlertDialog.Builder(this)
+            .setTitle("Update Tersedia!")
+            .setMessage(
+                appUpdate.releaseNotes.let { notes ->
+                    val result = StringBuilder()
+
+                    notes.forEach { result.append("- ").append(it).append("\n") }
+
+                    return@let result.toString()
+                }
+            )
+            .setPositiveButton("Update") { dialog, _ ->
+                // TODO: On update click
+            }
+            .create()
+            .show()
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
