@@ -67,21 +67,23 @@ class FormPembayaranFragment : Fragment() {
         }
 
         binding.swipeRefreshFormPembayaran.setOnRefreshListener {
-            syncData()
+            syncPembayaran()
         }
-
-        syncData()
     }
 
     override fun onResume() {
         super.onResume()
 
-        syncData()
+        syncPembayaran()
     }
 
-    private fun syncData() {
-        viewModel.getHargaKavling(currentKavlingKode!!)
-        viewModel.getAllPembayaran(currentKavlingKode!!)
+    private fun syncPembayaran() {
+        viewModel.getHargaKavling(currentKavlingKode!!) { failMsg ->
+            Toast.makeText(requireContext(), failMsg, Toast.LENGTH_LONG).show()
+        }
+        viewModel.getAllPembayaran(currentKavlingKode!!) { failMsg ->
+            Toast.makeText(requireContext(), failMsg, Toast.LENGTH_LONG).show()
+        }
     }
 
     private fun setupViewModel() {
@@ -93,7 +95,9 @@ class FormPembayaranFragment : Fragment() {
 
         viewModel.hargaKavlingLive.observe(requireActivity()) { hargaStr ->
             if (hargaStr == null) {
-                viewModel.getHargaKavling(currentKavlingKode!!)
+                viewModel.getHargaKavling(currentKavlingKode!!) { failMsg ->
+                    Toast.makeText(requireContext(), failMsg, Toast.LENGTH_LONG).show()
+                }
             } else {
                 binding.tvHarga?.text = hargaStr
             }
@@ -208,8 +212,8 @@ class FormPembayaranFragment : Fragment() {
 
                     viewModel.addPembayaran(currentKavlingKode!!, hargaKavling, pembayaran) { msg ->
                         Toast.makeText(requireContext(), msg, Toast.LENGTH_SHORT).show()
-                        syncData()
                         dialogView.dismiss()
+                        syncPembayaran()
                     }
 
                 }
@@ -276,18 +280,12 @@ class FormPembayaranFragment : Fragment() {
                 val harga = dialogBinding.edtHarga.text.toString()
                 val hargaKavling = HargaKavling(currentKavlingKode!!, harga)
 
-                viewModel.addHargaKavling(hargaKavling)
-
-                viewModel.operationResult.observe(requireActivity()) { operation ->
-                    operation?.message?.let { msg ->
-                        // sync
-                        viewModel.getHargaKavling(currentKavlingKode!!)
-
-                        Toast.makeText(requireContext(), msg, Toast.LENGTH_SHORT).show()
-
-                        dialogView.dismiss()
-                    }
+                viewModel.addHargaKavling(hargaKavling) { msg ->
+                    Toast.makeText(requireContext(), msg, Toast.LENGTH_SHORT).show()
+                    syncPembayaran()
+                    dialogView.dismiss()
                 }
+
             }
         }
 

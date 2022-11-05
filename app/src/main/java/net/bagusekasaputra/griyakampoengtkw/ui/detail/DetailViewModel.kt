@@ -1,6 +1,5 @@
 package net.bagusekasaputra.griyakampoengtkw.ui.detail
 
-import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -10,7 +9,6 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.DataDiri
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.HargaKavling
-import net.bagusekasaputra.griyakampoengtkw.domain.entity.Operation
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.Pembayaran
 import net.bagusekasaputra.griyakampoengtkw.domain.usecase.datadiri.AddDataDiriUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.usecase.datadiri.DeleteDataDiriUseCase
@@ -32,9 +30,7 @@ class DetailViewModel @Inject constructor(
     private val addPembayaranUseCase: AddPembayaranUseCase,
 ): ViewModel() {
 
-    private val _dataDiriLive = MutableLiveData<DataDiri>()
-    val dataDiriLive: LiveData<DataDiri>
-        get() = _dataDiriLive
+    val dataDiriLive = MutableLiveData<DataDiri?>()
 
     val hargaKavlingLive = MutableLiveData<String>()
 
@@ -44,13 +40,10 @@ class DetailViewModel @Inject constructor(
 
     val isFinishOperation = MutableLiveData<Boolean>()
 
-    val operationResult = MutableLiveData<Operation?>()
-
 
     // Data Diri
-    fun getDataDiri(kavlingKode: String) {
+    fun getDataDiri(kavlingKode: String, onFailure: (cause: String) -> Unit) {
         isFinishOperation.value = false
-        operationResult.value = null
 
         CoroutineScope(Dispatchers.IO).launch {
             val request = GetDataDiriUseCase.Request(kavlingKode)
@@ -61,14 +54,14 @@ class DetailViewModel @Inject constructor(
                 if (result.isSuccess) {
                     val dataDiri = result.getOrNull()
 
-                    if (dataDiri == null) {
-                        operationResult.postValue(Operation(true, "Data diri pada kavling $kavlingKode masih kosong"))
-                    } else {
-                        _dataDiriLive.postValue(dataDiri!!)
-                        operationResult.postValue(Operation(true, null))
+                    dataDiri?.let {
+                        dataDiriLive.postValue(it)
                     }
+
                 } else {
-                    operationResult.postValue(Operation(false, "Gagal mendapatkan data diri dari server: ${result.exceptionOrNull()?.message}"))
+                    withContext(Dispatchers.Main) {
+                        onFailure("Gagal mendapatkan data diri: ${result.exceptionOrNull()?.message ?: "null"}")
+                    }
                 }
 
                 isFinishOperation.postValue(true)
@@ -76,9 +69,8 @@ class DetailViewModel @Inject constructor(
         }
     }
 
-    fun addDataDiri(kavlingKode: String, dataDiri: DataDiri) {
+    fun addDataDiri(kavlingKode: String, dataDiri: DataDiri, onComplete: (msg: String) -> Unit) {
         isFinishOperation.value  = false
-        operationResult.value = null
 
         CoroutineScope(Dispatchers.IO).launch {
             val request = AddDataDiriUseCase.Request(kavlingKode, dataDiri)
@@ -87,10 +79,12 @@ class DetailViewModel @Inject constructor(
                 val result = response.data.result
 
                 if (result.isSuccess) {
-                    operationResult.postValue(Operation(true, "Berhasil menambahakan data ${dataDiri.nama}"))
+                    withContext(Dispatchers.Main) {
+                       onComplete( "Berhasil menambahakan data ${dataDiri.nama}")
+                    }
                 } else {
-                    result.exceptionOrNull()?.let {
-                        operationResult.postValue(Operation(false, "Gagal menambahkan data diri: ${it.message}"))
+                    withContext(Dispatchers.Main) {
+                        onComplete("Gagal menambahkan data diri: ${result.exceptionOrNull()?.message ?: "null"}")
                     }
                 }
 
@@ -99,9 +93,8 @@ class DetailViewModel @Inject constructor(
         }
     }
 
-    fun deleteDataDiri(kavlingKode: String) {
+    fun deleteDataDiri(kavlingKode: String, onComplete: (msg: String) -> Unit) {
         isFinishOperation.value = false
-        operationResult.value = null
 
         CoroutineScope(Dispatchers.IO).launch {
             val request = DeleteDataDiriUseCase.Request(kavlingKode)
@@ -110,9 +103,14 @@ class DetailViewModel @Inject constructor(
                 val result = response.data.result
 
                 if (result.isSuccess) {
-                    operationResult.postValue(Operation(true, "Hapus data diri berhasil"))
+                    dataDiriLive.postValue(null)
+                    withContext(Dispatchers.Main) {
+                        onComplete("Hapus data diri berhasil")
+                    }
                 } else {
-                    operationResult.postValue(Operation(false, "Gagal menghapus data diri: ${result.exceptionOrNull()?.message}"))
+                    withContext(Dispatchers.Main) {
+                        onComplete("Gagal menghapus data diri: ${result.exceptionOrNull()?.message ?: "null"}")
+                    }
                 }
 
                 isFinishOperation.postValue(true)
@@ -122,8 +120,8 @@ class DetailViewModel @Inject constructor(
 
 
     // Harga Kavling
-    fun getHargaKavling(kavlingKode: String) {
-        operationResult.value = null
+    fun getHargaKavling(kavlingKode: String, onFailure: (cause: String) -> Unit) {
+        isFinishOperation.value = false
 
         CoroutineScope(Dispatchers.IO).launch {
             val request = GetHargaKavlingUseCase.Request(kavlingKode)
@@ -140,15 +138,18 @@ class DetailViewModel @Inject constructor(
                         hargaKavlingLive.postValue(hargaKavling.harga)
                     }
                 } else {
-                    operationResult.postValue(Operation(false, "Gagal mendapatkan harga kavling: ${result.exceptionOrNull()?.message}"))
+                    withContext(Dispatchers.Main) {
+                        onFailure("Gagal mendapatkan harga kavling: ${result.exceptionOrNull()?.message ?: "null"}")
+                    }
                 }
+
+                isFinishOperation.postValue(true)
             }
         }
     }
 
-    fun addHargaKavling(hargaKavling: HargaKavling) {
+    fun addHargaKavling(hargaKavling: HargaKavling, onComplete: (msg: String) -> Unit) {
         isFinishOperation.value = false
-        operationResult.value = null
 
         CoroutineScope(Dispatchers.IO).launch {
             val request = AddHargaKavlingUseCase.Request(hargaKavling)
@@ -157,9 +158,13 @@ class DetailViewModel @Inject constructor(
                 val result = response.data.result
 
                 if (result.isSuccess) {
-                    operationResult.postValue(Operation(true, "Berhasil menambahkan harga kavling ${hargaKavling.kavlingKode}"))
+                    withContext(Dispatchers.Main) {
+                        onComplete("Berhasil menambahkan harga kavling ${hargaKavling.kavlingKode}")
+                    }
                 } else {
-                    operationResult.postValue(Operation(false, "Gagal menambahkan harga kavling: ${result.exceptionOrNull()?.message}"))
+                    withContext(Dispatchers.Main) {
+                        onComplete("Gagal menambahkan harga kavling: ${result.exceptionOrNull()?.message ?: "null"}")
+                    }
                 }
 
                 isFinishOperation.postValue(true)
@@ -198,20 +203,24 @@ class DetailViewModel @Inject constructor(
         }
     }
 
-    fun getAllPembayaran(kavlingKode: String) {
+    fun getAllPembayaran(kavlingKode: String, onFailure: (cause: String) -> Unit) {
         isFinishOperation.value = false
-        operationResult.value = null
-        val request = GetAllPembayaranUseCase.Request(kavlingKode)
 
         CoroutineScope(Dispatchers.IO).launch {
+            val request = GetAllPembayaranUseCase.Request(kavlingKode)
+
             getAllPembayaranUseCase.execute(request).collect { response ->
                 val result = response.data.result
 
                 if (result.isSuccess) {
                     val listPembayaran = result.getOrNull()
 
-                    if (listPembayaran != null) {
-                        listPembayaranLive.postValue(listPembayaran!!)
+                    listPembayaran?.let {
+                        listPembayaranLive.postValue(it)
+                    }
+                } else {
+                    withContext(Dispatchers.IO) {
+                        onFailure("Gagal mendapatkan pembayaran: ${result.exceptionOrNull()?.message ?: "null"}")
                     }
                 }
 

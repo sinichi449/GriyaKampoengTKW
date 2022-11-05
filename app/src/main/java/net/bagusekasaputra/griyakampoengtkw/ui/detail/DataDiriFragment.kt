@@ -62,27 +62,25 @@ class DataDiriFragment : Fragment() {
         }
     }
 
-    private fun syncDataDiri() {
-        if (currentKavlingKode != null) {
-            viewModel.getDataDiri(currentKavlingKode!!)
+    override fun onResume() {
+        super.onResume()
 
-            viewModel.operationResult.observe(requireActivity()) { operation ->
-                operation?.let {
-                    it.message?.let { msg ->
-                        Toast.makeText(requireContext(), msg, Toast.LENGTH_SHORT).show()
-                    }
-                }
-                
-                viewModel.dataDiriLive.value?.let { dataDiri ->
-                    binding.tvNama.text = dataDiri.nama
-                    binding.tvJenisIdentitas.text = dataDiri.jenisIdentitas
-                    binding.tvNoIdentitas.text = dataDiri.noIdentitas
-                    binding.tvNegaraBekerja.text = dataDiri.negaraBekerja
-                    binding.tvAlamatKerja.text = dataDiri.alamatKerja
-                    binding.tvAlamatIndo.text = dataDiri.alamatIndo
-                    binding.tvNoHp.text = dataDiri.noHp
-                }
-            }
+        syncDataDiri()
+    }
+
+    private fun syncDataDiri() {
+        viewModel.getDataDiri(currentKavlingKode!!) { failMsg ->
+            Toast.makeText(requireContext(), failMsg, Toast.LENGTH_LONG).show()
+        }
+
+        viewModel.dataDiriLive.observe(requireActivity()) { dataDiri ->
+            binding.tvNama.text = dataDiri?.nama ?: "-"
+            binding.tvJenisIdentitas.text = dataDiri?.jenisIdentitas ?: "KTP"
+            binding.tvNoIdentitas.text = dataDiri?.noIdentitas ?: "-"
+            binding.tvNegaraBekerja.text = dataDiri?.negaraBekerja ?: "Hongkong"
+            binding.tvAlamatKerja.text = dataDiri?.alamatKerja ?: "-"
+            binding.tvAlamatIndo.text = dataDiri?.alamatIndo ?: "-"
+            binding.tvNoHp.text = dataDiri?.noHp ?: "-"
         }
     }
 
@@ -139,16 +137,10 @@ class DataDiriFragment : Fragment() {
                         "Ada masalah dengan kavling, mohon hubungi developer: Null Kavling",
                         Toast.LENGTH_LONG).show()
                 } else {
-                    viewModel.addDataDiri(currentKavlingKode!!, dataDiri)
-
-                    // observe operation in viewModel
-                    // if operation finished, show the result
-                    viewModel.operationResult.observe(requireActivity()) { operation ->
-                        operation?.let {
-                            Toast.makeText(requireContext(), it.message?: "Null", Toast.LENGTH_SHORT).show()
-
-                            dialogView.dismiss()
-                        }
+                    viewModel.addDataDiri(currentKavlingKode!!, dataDiri) { completeMsg ->
+                        Toast.makeText(requireContext(), completeMsg, Toast.LENGTH_SHORT).show()
+                        dialogView.dismiss()
+                        syncDataDiri()
                     }
                 }
             }
@@ -164,15 +156,11 @@ class DataDiriFragment : Fragment() {
             .setTitle("Hapus Data Diri")
             .setMessage("Apakah Anda yakin akan menghapus Data Diri di kavling $currentKavlingKode?")
             .setPositiveButton("Ya") { dialog, _ ->
-                 viewModel.deleteDataDiri(currentKavlingKode!!)
-
-                viewModel.operationResult.observe(requireActivity()) { operation ->
-                    operation?.message?.let { msg ->
-                        Toast.makeText(requireContext(), msg, Toast.LENGTH_SHORT).show()
-                    }
-
-                    dialog.dismiss()
-                }
+                 viewModel.deleteDataDiri(currentKavlingKode!!) { completeMsg ->
+                     Toast.makeText(requireContext(), completeMsg, Toast.LENGTH_SHORT).show()
+                     dialog.dismiss()
+                     syncDataDiri()
+                 }
             }
             .setNegativeButton("Tidak") { dialog, _ ->
                 dialog.dismiss()
