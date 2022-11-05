@@ -5,4 +5,5 @@ data class PembayaranModel(
     val tanggal: String = "",
     val jumlahUangDibayar: Long = 0L,
     val keterangan: String = "",
+    val timeMillis: Long = 0L,
 )

@@ -194,22 +194,25 @@ class FormPembayaranFragment : Fragment() {
                     val termin = dialogBinding.edtTermin.text.toString()
                     val tanggal = dialogBinding.edtTanggal.text.toString()
                     val jumlahUangDibayar = dialogBinding.edtJumlahUangDibayar.text.toString()
-                    val keteranganProgress = dialogBinding.edtKeteranganProgress.text.toString() ?: ""
+                    val keteranganProgress = dialogBinding.edtKeteranganProgress.text.let {
+                        if (it.isNullOrBlank()) return@let "-"
+                        else return@let it.toString()
+                    }
                     val pembayaran = Pembayaran(
                         termin = termin,
                         tanggal = tanggal,
                         jumlahUangDibayar = jumlahUangDibayar,
-                        keterangan = keteranganProgress
+                        keterangan = keteranganProgress,
+                        timeMillis = System.currentTimeMillis(),
                     )
 
                     viewModel.addPembayaran(currentKavlingKode!!, hargaKavling, pembayaran)
 
                     viewModel.operationResult.observe(requireActivity()) { operation ->
-                        operation?.message?.let { msg ->
-                            Toast.makeText(requireContext(), msg, Toast.LENGTH_SHORT).show()
-
-                            // TODO: sync pembayaran data
-
+                        operation?.let { op ->
+                            op.message?.let { msg ->
+                                Toast.makeText(requireContext(), msg, Toast.LENGTH_SHORT).show()
+                            }
                             dialogView.dismiss()
                         }
                     }
@@ -334,15 +337,6 @@ class FormPembayaranFragment : Fragment() {
 
             binding.tableLayout.addView(tableRow)
         }
-    }
-
-    private fun generatePseudoPembayaran(): ArrayList<Pembayaran> {
-        val data = ArrayList<Pembayaran>()
-
-        data.add(Pembayaran("ITJ", "12/07/2022", NumberUtil.formatLongToString(5010000L), NumberUtil.formatLongToString(5010000L), 2.18, ""))
-        data.add(Pembayaran("DP1", "13/07/2022", NumberUtil.formatLongToString(5010000L), NumberUtil.formatLongToString(10020000L), 4.36, ""))
-
-        return data
     }
 
 //    private fun showTerminSelectionButtonsDialog() {

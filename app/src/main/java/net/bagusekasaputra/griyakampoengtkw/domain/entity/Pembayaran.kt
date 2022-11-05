@@ -6,6 +6,7 @@ data class Pembayaran(
     val jumlahUangDibayar: String = "",
     var totalUangMasuk: String = "",
     var presentase: Double = 0.0,
-    val keterangan: String
+    val keterangan: String,
+    val timeMillis: Long,
 ) {
 }

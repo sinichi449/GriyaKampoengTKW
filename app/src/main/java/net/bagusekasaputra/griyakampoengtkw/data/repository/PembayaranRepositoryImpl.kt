@@ -75,6 +75,7 @@ class PembayaranRepositoryImpl @Inject constructor(
                 tanggal = it.tanggal,
                 jumlahUangDibayar = NumberUtil.formatStringToLong(it.jumlahUangDibayar),
                 keterangan = it.keterangan,
+                timeMillis = it.timeMillis,
             )
         }
     }
@@ -86,6 +87,7 @@ class PembayaranRepositoryImpl @Inject constructor(
                 tanggal = it.tanggal,
                 jumlahUangDibayar = NumberUtil.formatLongToString(it.jumlahUangDibayar),
                 keterangan = it.keterangan,
+                timeMillis = it.timeMillis,
             )
         }
     }

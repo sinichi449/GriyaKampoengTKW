@@ -42,11 +42,15 @@ class GetAllPembayaranUseCase @Inject constructor(
             }
     }
 
-    private fun maskPembayaran(listPembayaran: List<Pembayaran>, hargaKavling: Long): List<Pembayaran> {
+    private fun maskPembayaran(
+        listPembayaran: List<Pembayaran>,
+        hargaKavling: Long
+    ): List<Pembayaran> {
+        val sortedListPembayaran = sortListPembayaran(listPembayaran)
         val newListPembayaran = ArrayList<Pembayaran>()
         var totalUangMasuk = 0L
 
-        listPembayaran.forEach {
+        sortedListPembayaran.forEach {
             totalUangMasuk += NumberUtil.formatStringToLong(it.jumlahUangDibayar)
             it.totalUangMasuk = NumberUtil.formatLongToString(totalUangMasuk)
             it.presentase = getPersentase(totalUangMasuk, hargaKavling)
@@ -67,6 +71,12 @@ class GetAllPembayaranUseCase @Inject constructor(
         }
 
         return persentase.toDouble()
+    }
+
+    private fun sortListPembayaran(listPembayaran: List<Pembayaran>): List<Pembayaran> {
+        return listPembayaran.sortedBy {
+            it.timeMillis
+        }
     }
 
     private fun getHargaKavling(kavlingKode: String): Flow<Long> {
