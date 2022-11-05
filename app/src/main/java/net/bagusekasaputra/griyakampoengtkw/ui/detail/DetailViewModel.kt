@@ -1,5 +1,6 @@
 package net.bagusekasaputra.griyakampoengtkw.ui.detail
 
+import android.net.Uri
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -9,12 +10,15 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.DataDiri
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.HargaKavling
+import net.bagusekasaputra.griyakampoengtkw.domain.entity.ImageDataDiri
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.Pembayaran
 import net.bagusekasaputra.griyakampoengtkw.domain.usecase.datadiri.AddDataDiriUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.usecase.datadiri.DeleteDataDiriUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.usecase.datadiri.GetDataDiriUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.usecase.hargakavling.AddHargaKavlingUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.usecase.hargakavling.GetHargaKavlingUseCase
+import net.bagusekasaputra.griyakampoengtkw.domain.usecase.imageDataDiri.AddImageDataDiriUseCase
+import net.bagusekasaputra.griyakampoengtkw.domain.usecase.imageDataDiri.GetImageDataDiriByKavlingKodeUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.usecase.pembayaran.*
 import javax.inject.Inject
 
@@ -30,7 +34,11 @@ class DetailViewModel @Inject constructor(
     private val updatePembayaranUseCase: UpdatePembayaranUseCase,
     private val deletePembayaranByTerminUseCase: DeletePembayaranByTerminUseCase,
     private val deleteAllPembayaranUseCase: DeleteAllPembayaranUseCase,
+    private val getImageDataDiriByKavlingKodeUseCase: GetImageDataDiriByKavlingKodeUseCase,
+    private val addImageDataDiriUseCase: AddImageDataDiriUseCase,
 ): ViewModel() {
+
+    val imageDataDiriLive = MutableLiveData<ImageDataDiri?>()
 
     val dataDiriLive = MutableLiveData<DataDiri?>()
 
@@ -41,6 +49,53 @@ class DetailViewModel @Inject constructor(
     val currentKavlingKode = MutableLiveData<String>()
 
     val isFinishOperation = MutableLiveData<Boolean>()
+
+    // Image Data Diri
+    fun getImageDataDiri(kavlingKode: String, onComplete: (msg: String) -> Unit) {
+        isFinishOperation.value = false
+
+        CoroutineScope(Dispatchers.IO).launch {
+            val request = GetImageDataDiriByKavlingKodeUseCase.Request(kavlingKode)
+
+            getImageDataDiriByKavlingKodeUseCase.execute(request).collect { response ->
+                val result = response.data.result
+
+                if (result.isSuccess) {
+                    result.getOrNull()?.let { imageDataDiriLive.postValue(it) }
+                    withContext(Dispatchers.Main) {
+                        onComplete("")
+                    }
+                } else {
+                    withContext(Dispatchers.Main) {
+                        onComplete("Gagal mendapatkan image data diri: ${result.exceptionOrNull()?.message ?: "null"}")
+                    }
+                }
+
+                isFinishOperation.postValue(true)
+            }
+        }
+    }
+
+    fun addImageDataDiri(kavlingKode: String, uri: Uri, onFailure: (msg: String) -> Unit) {
+        isFinishOperation.value = false
+
+        CoroutineScope(Dispatchers.IO).launch {
+            val request = AddImageDataDiriUseCase.Request(kavlingKode, uri)
+
+            addImageDataDiriUseCase.execute(request).collect { response ->
+                val result = response.data.result
+
+                if (result.isFailure) {
+                    withContext(Dispatchers.Main) {
+                        onFailure("Gagal menambahkan image data diri: ${result.exceptionOrNull()?.message ?: "null"}")
+                    }
+                }
+
+                isFinishOperation.postValue(true)
+            }
+        }
+    }
+
 
     // Data Diri
     fun getDataDiri(kavlingKode: String, onFailure: (cause: String) -> Unit) {
@@ -311,5 +366,4 @@ class DetailViewModel @Inject constructor(
             }
         }
     }
-
 }

@@ -2,7 +2,6 @@ package net.bagusekasaputra.griyakampoengtkw.ui.detail
 
 import android.app.Activity
 import android.app.AlertDialog
-import android.net.Uri
 import android.os.Bundle
 import android.text.InputType
 import android.view.*
@@ -26,7 +25,6 @@ class DataDiriFragment : Fragment() {
     private val viewModel: DetailViewModel by viewModels()
     private var currentKavlingKode: String? = null
     private lateinit var arrayAdapter: ArrayAdapter<String>
-    private var mFotoUri: Uri? = null
 
     private val startProfileImageForResult =
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
@@ -34,9 +32,7 @@ class DataDiriFragment : Fragment() {
             val data = result.data
 
             if (resultCode == Activity.RESULT_OK) {
-                mFotoUri = data?.data!!
-
-                binding.imgProfile.setImageURI(mFotoUri)
+                viewModel.addImageDataDiri(currentKavlingKode!!, data?.data!!) { syncDataDiri() }
             } else if (resultCode == ImagePicker.RESULT_ERROR) {
                 Toast.makeText(requireContext(), ImagePicker.getError(data), Toast.LENGTH_SHORT).show()
             } else {
@@ -75,11 +71,7 @@ class DataDiriFragment : Fragment() {
             syncDataDiri()
         }
 
-        viewModel.isFinishOperation.observe(requireActivity()) {
-            it?.let { finish ->
-                binding.swipeRefreshDataDiri.isRefreshing = !finish
-            }
-        }
+        setupViewModel()
     }
 
     override fun onResume() {
@@ -89,8 +81,22 @@ class DataDiriFragment : Fragment() {
     }
 
     private fun syncDataDiri() {
+        viewModel.getImageDataDiri(currentKavlingKode!!) { }
+
         viewModel.getDataDiri(currentKavlingKode!!) { failMsg ->
             Toast.makeText(requireContext(), failMsg, Toast.LENGTH_LONG).show()
+        }
+    }
+
+    private fun setupViewModel() {
+        viewModel.isFinishOperation.observe(requireActivity()) {
+            it?.let { finish ->
+                binding.swipeRefreshDataDiri.isRefreshing = !finish
+            }
+        }
+
+        viewModel.imageDataDiriLive.observe(requireActivity()) { imageDataDiri ->
+            imageDataDiri?.let { binding.imgProfile.setImageBitmap(it.bitmap) }
         }
 
         viewModel.dataDiriLive.observe(requireActivity()) { dataDiri ->
@@ -103,6 +109,7 @@ class DataDiriFragment : Fragment() {
             binding.tvNoHp.text = dataDiri?.noHp ?: "-"
         }
     }
+
 
     private fun setupExtendedFloatingButton() {
         binding.fabActions.shrink()

@@ -1,11 +1,15 @@
 package net.bagusekasaputra.griyakampoengtkw.di
 
+import android.content.ContentResolver
 import com.google.firebase.database.DatabaseReference
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
 import net.bagusekasaputra.griyakampoengtkw.data.repository.*
+import net.bagusekasaputra.griyakampoengtkw.data.source.local.imageDataDiri.LocalImageDataDiriSource
+import net.bagusekasaputra.griyakampoengtkw.data.source.local.imageDataDiri.room.ImageDataDiriDao
+import net.bagusekasaputra.griyakampoengtkw.data.source.local.imageDataDiri.room.ImageDataDiriRoomSource
 import net.bagusekasaputra.griyakampoengtkw.data.source.local.kavling.FakeKavlingModelDb
 import net.bagusekasaputra.griyakampoengtkw.data.source.local.kavling.LocalKavlingRepository
 import net.bagusekasaputra.griyakampoengtkw.data.source.remote.appupdate.FirebaseAppUpdateSource
@@ -98,5 +102,16 @@ object RepositoryModule {
     @Provides
     fun provideRemoteAppUpdateSource(databaseReference: DatabaseReference): RemoteAppUpdateSource {
         return FirebaseAppUpdateSource(databaseReference)
+    }
+
+    // Image Data Diri
+    @Provides
+    fun provideImageDataDiriRepository(localImageDataDiriSource: LocalImageDataDiriSource, contentResolver: ContentResolver): ImageDataDiriRepository {
+        return ImageDataDiriRepositoryImpl(localImageDataDiriSource, contentResolver)
+    }
+
+    @Provides
+    fun provideLocalImageDataDiriSource(imageDataDiriDao: ImageDataDiriDao): LocalImageDataDiriSource {
+        return ImageDataDiriRoomSource(imageDataDiriDao)
     }
 }
