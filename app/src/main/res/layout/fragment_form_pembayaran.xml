@@ -13,47 +13,76 @@
         tools:context=".ui.detail.FormPembayaranFragment"
         android:padding="16dp">
 
+        <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/guideline_vertical"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            app:layout_constraintGuide_percent="0.5"/>
+
         <com.google.android.material.textview.MaterialTextView
             android:id="@+id/tv_info_harga"
-            android:layout_width="150dp"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:text="Harga"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            style="@style/TextAppearance.MaterialComponents.Headline6"/>
+            app:layout_constraintEnd_toStartOf="@id/guideline_vertical"
+            style="@style/TextAppearance.MaterialComponents.Headline6"
+            android:textSize="18sp"/>
 
-        <androidx.appcompat.widget.LinearLayoutCompat
-            android:id="@+id/layout_harga"
+        <com.google.android.material.textview.MaterialTextView
+            android:id="@+id/tv_harga"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            app:layout_constraintStart_toEndOf="@id/tv_info_harga"
+            app:layout_constraintStart_toEndOf="@id/guideline_vertical"
             app:layout_constraintTop_toTopOf="@id/tv_info_harga"
             app:layout_constraintBottom_toBottomOf="@id/tv_info_harga"
-            android:orientation="horizontal">
+            android:layout_marginStart="24dp"
+            style="@style/TextAppearance.MaterialComponents.Subtitle1"
+            android:text="0"/>
 
-            <com.google.android.material.textview.MaterialTextView
-                android:id="@+id/tv_harga"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="0"
-                style="@style/TextAppearance.MaterialComponents.Subtitle1"/>
+        <ImageView
+            android:id="@+id/img_edit"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/ic_baseline_edit_24"
+            app:layout_constraintStart_toEndOf="@id/tv_harga"
+            app:layout_constraintTop_toTopOf="@id/tv_harga"
+            app:layout_constraintBottom_toBottomOf="@id/tv_harga"
+            android:layout_marginStart="24dp"/>
 
-            <ImageView
-                android:id="@+id/img_edit"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:src="@drawable/ic_baseline_edit_24"
-                android:layout_marginStart="24dp"/>
+        <com.google.android.material.textview.MaterialTextView
+            android:id="@+id/tv_info_sisa_blm_terbayar"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            app:layout_constraintStart_toStartOf="@id/tv_info_harga"
+            app:layout_constraintTop_toBottomOf="@id/tv_info_harga"
+            app:layout_constraintEnd_toStartOf="@id/guideline_vertical"
+            android:text="Sisa Blm Terbayar"
+            style="@style/TextAppearance.MaterialComponents.Headline6"
+            android:textSize="18sp"
+            android:layout_marginTop="8dp"/>
 
-        </androidx.appcompat.widget.LinearLayoutCompat>
+        <com.google.android.material.textview.MaterialTextView
+            android:id="@+id/tv_sisa_blm_terbayar"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            app:layout_constraintStart_toStartOf="@id/tv_harga"
+            app:layout_constraintEnd_toEndOf="@id/tv_harga"
+            app:layout_constraintTop_toTopOf="@id/tv_info_sisa_blm_terbayar"
+            app:layout_constraintBottom_toBottomOf="@id/tv_info_sisa_blm_terbayar"
+            style="@style/TextAppearance.MaterialComponents.Subtitle1"
+            android:gravity="center"
+            android:text="0"/>
 
-        <!-- TODO: Update blank fragment layout -->
         <ScrollView
+            android:id="@+id/scroll_view_table"
             android:layout_width="match_parent"
             android:layout_height="0dp"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/tv_info_harga"
-            app:layout_constraintBottom_toTopOf="@id/fab_add_pembayaran_data"
+            app:layout_constraintTop_toBottomOf="@id/tv_info_sisa_blm_terbayar"
+            app:layout_constraintBottom_toTopOf="@id/fab_actions"
             android:layout_marginTop="24dp"
             android:scrollbars="horizontal|vertical"
             android:scrollbarStyle="outsideInset"
@@ -186,7 +215,6 @@
             app:layout_constraintBottom_toBottomOf="@id/fab_edit_data"
             app:layout_constraintEnd_toStartOf="@id/fab_edit_data"
             app:layout_constraintTop_toTopOf="@id/fab_edit_data"/>
-
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

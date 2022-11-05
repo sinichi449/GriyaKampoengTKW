@@ -4,7 +4,6 @@ import android.app.AlertDialog
 import android.app.DatePickerDialog
 import android.content.res.Configuration
 import android.os.Bundle
-import android.util.Log
 import android.view.*
 import android.widget.TableRow
 import android.widget.Toast
@@ -24,7 +23,6 @@ import net.bagusekasaputra.griyakampoengtkw.domain.entity.Pembayaran
 import net.bagusekasaputra.griyakampoengtkw.ui.ThousandSeparatorTextWatcher
 import net.bagusekasaputra.griyakampoengtkw.ui.detail.adapter.TerminRecyclerAdapter
 import net.bagusekasaputra.griyakampoengtkw.util.GriyaNodes
-import net.bagusekasaputra.griyakampoengtkw.util.GriyaNodes.Companion.LOG_TAG
 import net.bagusekasaputra.griyakampoengtkw.util.InputUtil
 import net.bagusekasaputra.griyakampoengtkw.util.NumberUtil
 import java.text.SimpleDateFormat
@@ -69,7 +67,7 @@ class FormPembayaranFragment : Fragment() {
 
         setupViewModel()
 
-        binding.layoutHarga?.setOnClickListener {
+        binding.imgEdit?.setOnClickListener {
             showEditHargaDialog()
         }
 
@@ -112,10 +110,8 @@ class FormPembayaranFragment : Fragment() {
 
         viewModel.listPembayaranLive.observe(requireActivity()) { listPembayaran ->
             listPembayaran?.let {
-                it.forEach { p ->
-                    Log.d(LOG_TAG, "Got value: ${p.termin}")
-                }
                 populateTableLayout(it)
+                binding.tvSisaBlmTerbayar?.text = it.last().sisaBelumTerbayar
             }
         }
     }

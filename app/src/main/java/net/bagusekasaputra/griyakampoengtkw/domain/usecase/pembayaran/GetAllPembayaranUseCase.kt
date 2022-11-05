@@ -55,6 +55,7 @@ class GetAllPembayaranUseCase @Inject constructor(
             totalUangMasuk += NumberUtil.formatStringToLong(it.jumlahUangDibayar)
             it.totalUangMasuk = NumberUtil.formatLongToString(totalUangMasuk)
             it.presentase = getPersentase(totalUangMasuk, hargaKavling)
+            it.sisaBelumTerbayar = NumberUtil.formatLongToString(hargaKavling - totalUangMasuk)
             Log.d(LOG_TAG, "Ready value pembayaran: $it")
 
             newListPembayaran.add(it)
