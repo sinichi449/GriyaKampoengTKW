@@ -40,7 +40,6 @@ class DetailViewModel @Inject constructor(
 
     val isFinishOperation = MutableLiveData<Boolean>()
 
-
     // Data Diri
     fun getDataDiri(kavlingKode: String, onFailure: (cause: String) -> Unit) {
         isFinishOperation.value = false

@@ -2,6 +2,7 @@ package net.bagusekasaputra.griyakampoengtkw.ui.detail
 
 import android.app.AlertDialog
 import android.os.Bundle
+import android.text.InputType
 import android.view.*
 import android.widget.ArrayAdapter
 import android.widget.Toast
@@ -102,8 +103,21 @@ class DataDiriFragment : Fragment() {
             dialogBinding.edtAlamatKerja.setText(dataDiri.alamatKerja)
             dialogBinding.edtAlamatIndo.setText(dataDiri.alamatIndo)
             dialogBinding.edtNoHandphone.setText(dataDiri.noHp)
-            if (dataDiri.jenisIdentitas == "KTP") dialogBinding.rbIdKtp.isChecked = true
-                else dialogBinding.rbIdPassport.isChecked = true
+            if (dataDiri.jenisIdentitas == "KTP") {
+                dialogBinding.rbIdKtp.isChecked = true
+                dialogBinding.edtNoIdentitas.inputType = InputType.TYPE_CLASS_NUMBER or InputType.TYPE_NUMBER_VARIATION_NORMAL
+            } else {
+                dialogBinding.rbIdPassport.isChecked = true
+                dialogBinding.edtNoIdentitas.inputType = InputType.TYPE_CLASS_TEXT or InputType.TYPE_TEXT_FLAG_CAP_CHARACTERS
+            }
+        }
+
+        // listen for radio button
+        dialogBinding.rbIdKtp.setOnClickListener {
+            dialogBinding.edtNoIdentitas.inputType = InputType.TYPE_CLASS_NUMBER or InputType.TYPE_NUMBER_VARIATION_NORMAL
+        }
+        dialogBinding.rbIdPassport.setOnClickListener {
+            dialogBinding.edtNoIdentitas.inputType = InputType.TYPE_CLASS_TEXT or InputType.TYPE_TEXT_FLAG_CAP_CHARACTERS
         }
 
         dialogView.show()
