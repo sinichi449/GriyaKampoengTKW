@@ -7,20 +7,20 @@
     android:layout_height="wrap_content"
     tools:context=".ui.detail.DataDiriFragment">
 
-    <ScrollView
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        tools:context=".ui.detail.DataDiriFragment">
+        android:layout_height="match_parent">
 
-        <androidx.appcompat.widget.LinearLayoutCompat
+        <ScrollView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical">
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
 
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_marginTop="24dp">
+                android:layout_height="wrap_content">
 
                 <ImageView
                     android:id="@+id/img_profile"
@@ -30,252 +30,265 @@
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintTop_toTopOf="parent"
-                    app:layout_constraintBottom_toBottomOf="parent"/>
+                    android:layout_marginTop="24dp"/>
 
-            </androidx.constraintlayout.widget.ConstraintLayout>
-
-            <Space
-                android:layout_width="match_parent"
-                android:layout_height="36dp"/>
-
-
-            <com.google.android.material.card.MaterialCardView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                app:cardElevation="4dp"
-                app:cardCornerRadius="8dp"
-                android:layout_marginVertical="24dp"
-                android:layout_marginHorizontal="16dp">
-
-                <androidx.appcompat.widget.LinearLayoutCompat
+                <com.google.android.material.card.MaterialCardView
+                    android:id="@+id/card_data_diri"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:orientation="vertical">
-
-
-                    <androidx.appcompat.widget.LinearLayoutCompat
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:orientation="horizontal"
-                        android:background="#E3F2FD"
-                        android:padding="8dp">
-
-                        <com.google.android.material.textview.MaterialTextView
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:layout_weight="0.5"
-                            android:text="Nama"
-                            style="@style/TextAppearance.MaterialComponents.Subtitle2"
-                            android:textSize="16sp"
-                            android:gravity="start"/>
-
-                        <com.google.android.material.textview.MaterialTextView
-                            android:id="@+id/tv_nama"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:layout_weight="0.5"
-                            android:text="-"
-                            android:textSize="16sp"
-                            android:gravity="end"
-                            android:textColor="@color/black"/>
-
-                    </androidx.appcompat.widget.LinearLayoutCompat>
-
-
-                    <androidx.appcompat.widget.LinearLayoutCompat
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:orientation="horizontal"
-                        android:padding="8dp">
-
-                        <com.google.android.material.textview.MaterialTextView
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:layout_weight="0.5"
-                            android:text="Jenis Identitas"
-                            style="@style/TextAppearance.MaterialComponents.Subtitle2"
-                            android:textSize="16sp"
-                            android:gravity="start"/>
-
-                        <com.google.android.material.textview.MaterialTextView
-                            android:id="@+id/tv_jenis_identitas"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:layout_weight="0.5"
-                            android:text="-"
-                            android:textSize="16sp"
-                            android:gravity="end"
-                            android:textColor="@color/black"/>
-
-                    </androidx.appcompat.widget.LinearLayoutCompat>
-
-
-                    <androidx.appcompat.widget.LinearLayoutCompat
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:orientation="horizontal"
-                        android:padding="8dp"
-                        android:background="#E3F2FD">
-
-                        <com.google.android.material.textview.MaterialTextView
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:layout_weight="0.5"
-                            android:text="No. Identitas"
-                            style="@style/TextAppearance.MaterialComponents.Subtitle2"
-                            android:textSize="16sp"
-                            android:gravity="start"/>
-
-                        <com.google.android.material.textview.MaterialTextView
-                            android:id="@+id/tv_no_identitas"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:layout_weight="0.5"
-                            android:text="-"
-                            android:textSize="16sp"
-                            android:gravity="end"
-                            android:textColor="@color/black"/>
-
-                    </androidx.appcompat.widget.LinearLayoutCompat>
-
-
-                    <androidx.appcompat.widget.LinearLayoutCompat
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:orientation="horizontal"
-                        android:padding="8dp">
-
-                        <com.google.android.material.textview.MaterialTextView
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:layout_weight="0.5"
-                            android:text="Negara Bekerja"
-                            style="@style/TextAppearance.MaterialComponents.Subtitle2"
-                            android:textSize="16sp"
-                            android:gravity="start"/>
-
-                        <com.google.android.material.textview.MaterialTextView
-                            android:id="@+id/tv_negara_bekerja"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:layout_weight="0.5"
-                            android:text="-"
-                            android:textSize="16sp"
-                            android:gravity="end"
-                            android:textColor="@color/black"/>
-
-                    </androidx.appcompat.widget.LinearLayoutCompat>
-
-
-                    <androidx.appcompat.widget.LinearLayoutCompat
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:orientation="horizontal"
-                        android:padding="8dp"
-                        android:background="#E3F2FD">
-
-                        <com.google.android.material.textview.MaterialTextView
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:layout_weight="0.5"
-                            android:text="Alamat Kerja"
-                            style="@style/TextAppearance.MaterialComponents.Subtitle2"
-                            android:textSize="16sp"
-                            android:gravity="start"/>
-
-                        <com.google.android.material.textview.MaterialTextView
-                            android:id="@+id/tv_alamat_kerja"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:layout_weight="0.5"
-                            android:text="-"
-                            android:textSize="16sp"
-                            android:gravity="end"
-                            android:textColor="@color/black"/>
-
-                    </androidx.appcompat.widget.LinearLayoutCompat>
-
-                    <androidx.appcompat.widget.LinearLayoutCompat
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:orientation="horizontal"
-                        android:padding="8dp">
-
-                        <com.google.android.material.textview.MaterialTextView
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:layout_weight="0.5"
-                            android:text="Alamat Indo"
-                            style="@style/TextAppearance.MaterialComponents.Subtitle2"
-                            android:textSize="16sp"
-                            android:gravity="start"/>
-
-                        <com.google.android.material.textview.MaterialTextView
-                            android:id="@+id/tv_alamat_indo"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:layout_weight="0.5"
-                            android:text="-"
-                            android:textSize="16sp"
-                            android:gravity="end"
-                            android:textColor="@color/black"/>
-
-                    </androidx.appcompat.widget.LinearLayoutCompat>
-
-
-                    <androidx.appcompat.widget.LinearLayoutCompat
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:orientation="horizontal"
-                        android:background="#E3F2FD"
-                        android:padding="8dp">
-
-                        <com.google.android.material.textview.MaterialTextView
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:layout_weight="0.5"
-                            android:text="No. Hp"
-                            style="@style/TextAppearance.MaterialComponents.Subtitle2"
-                            android:textSize="16sp"
-                            android:gravity="start"/>
-
-                        <com.google.android.material.textview.MaterialTextView
-                            android:id="@+id/tv_no_hp"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:layout_weight="0.5"
-                            android:text="-"
-                            android:textSize="16sp"
-                            android:gravity="end"
-                            android:textColor="@color/black"/>
-
-                    </androidx.appcompat.widget.LinearLayoutCompat>
-
-
-                </androidx.appcompat.widget.LinearLayoutCompat>
-
-            </com.google.android.material.card.MaterialCardView>
-
-            <androidx.constraintlayout.widget.ConstraintLayout
-                android:layout_width="match_parent"
-                android:layout_height="fill_parent">
-
-                <com.google.android.material.floatingactionbutton.FloatingActionButton
-                    android:id="@+id/fab_tambah_data_diri"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:src="@drawable/ic_baseline_add_24"
+                    app:cardElevation="4dp"
+                    app:cardCornerRadius="8dp"
+                    app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    android:layout_marginBottom="16dp"
-                    android:layout_marginEnd="16dp"/>
+                    app:layout_constraintTop_toBottomOf="@id/img_profile"
+                    android:layout_marginTop="24dp"
+                    android:layout_marginHorizontal="16dp">
+
+                    <androidx.appcompat.widget.LinearLayoutCompat
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical">
+
+
+                        <androidx.appcompat.widget.LinearLayoutCompat
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="horizontal"
+                            android:background="#E3F2FD"
+                            android:padding="8dp">
+
+                            <com.google.android.material.textview.MaterialTextView
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="0.5"
+                                android:text="Nama"
+                                style="@style/TextAppearance.MaterialComponents.Subtitle2"
+                                android:textSize="16sp"
+                                android:gravity="start"/>
+
+                            <com.google.android.material.textview.MaterialTextView
+                                android:id="@+id/tv_nama"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="0.5"
+                                android:text="-"
+                                android:textSize="16sp"
+                                android:gravity="end"
+                                android:textColor="@color/black"/>
+
+                        </androidx.appcompat.widget.LinearLayoutCompat>
+
+
+                        <androidx.appcompat.widget.LinearLayoutCompat
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="horizontal"
+                            android:padding="8dp">
+
+                            <com.google.android.material.textview.MaterialTextView
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="0.5"
+                                android:text="Jenis Identitas"
+                                style="@style/TextAppearance.MaterialComponents.Subtitle2"
+                                android:textSize="16sp"
+                                android:gravity="start"/>
+
+                            <com.google.android.material.textview.MaterialTextView
+                                android:id="@+id/tv_jenis_identitas"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="0.5"
+                                android:text="-"
+                                android:textSize="16sp"
+                                android:gravity="end"
+                                android:textColor="@color/black"/>
+
+                        </androidx.appcompat.widget.LinearLayoutCompat>
+
+
+                        <androidx.appcompat.widget.LinearLayoutCompat
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="horizontal"
+                            android:padding="8dp"
+                            android:background="#E3F2FD">
+
+                            <com.google.android.material.textview.MaterialTextView
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="0.5"
+                                android:text="No. Identitas"
+                                style="@style/TextAppearance.MaterialComponents.Subtitle2"
+                                android:textSize="16sp"
+                                android:gravity="start"/>
+
+                            <com.google.android.material.textview.MaterialTextView
+                                android:id="@+id/tv_no_identitas"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="0.5"
+                                android:text="-"
+                                android:textSize="16sp"
+                                android:gravity="end"
+                                android:textColor="@color/black"/>
+
+                        </androidx.appcompat.widget.LinearLayoutCompat>
+
+
+                        <androidx.appcompat.widget.LinearLayoutCompat
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="horizontal"
+                            android:padding="8dp">
+
+                            <com.google.android.material.textview.MaterialTextView
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="0.5"
+                                android:text="Negara Bekerja"
+                                style="@style/TextAppearance.MaterialComponents.Subtitle2"
+                                android:textSize="16sp"
+                                android:gravity="start"/>
+
+                            <com.google.android.material.textview.MaterialTextView
+                                android:id="@+id/tv_negara_bekerja"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="0.5"
+                                android:text="-"
+                                android:textSize="16sp"
+                                android:gravity="end"
+                                android:textColor="@color/black"/>
+
+                        </androidx.appcompat.widget.LinearLayoutCompat>
+
+
+                        <androidx.appcompat.widget.LinearLayoutCompat
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="horizontal"
+                            android:padding="8dp"
+                            android:background="#E3F2FD">
+
+                            <com.google.android.material.textview.MaterialTextView
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="0.5"
+                                android:text="Alamat Kerja"
+                                style="@style/TextAppearance.MaterialComponents.Subtitle2"
+                                android:textSize="16sp"
+                                android:gravity="start"/>
+
+                            <com.google.android.material.textview.MaterialTextView
+                                android:id="@+id/tv_alamat_kerja"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="0.5"
+                                android:text="-"
+                                android:textSize="16sp"
+                                android:gravity="end"
+                                android:textColor="@color/black"/>
+
+                        </androidx.appcompat.widget.LinearLayoutCompat>
+
+                        <androidx.appcompat.widget.LinearLayoutCompat
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="horizontal"
+                            android:padding="8dp">
+
+                            <com.google.android.material.textview.MaterialTextView
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="0.5"
+                                android:text="Alamat Indo"
+                                style="@style/TextAppearance.MaterialComponents.Subtitle2"
+                                android:textSize="16sp"
+                                android:gravity="start"/>
+
+                            <com.google.android.material.textview.MaterialTextView
+                                android:id="@+id/tv_alamat_indo"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="0.5"
+                                android:text="-"
+                                android:textSize="16sp"
+                                android:gravity="end"
+                                android:textColor="@color/black"/>
+
+                        </androidx.appcompat.widget.LinearLayoutCompat>
+
+
+                        <androidx.appcompat.widget.LinearLayoutCompat
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="horizontal"
+                            android:background="#E3F2FD"
+                            android:padding="8dp">
+
+                            <com.google.android.material.textview.MaterialTextView
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="0.5"
+                                android:text="No. Hp"
+                                style="@style/TextAppearance.MaterialComponents.Subtitle2"
+                                android:textSize="16sp"
+                                android:gravity="start"/>
+
+                            <com.google.android.material.textview.MaterialTextView
+                                android:id="@+id/tv_no_hp"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="0.5"
+                                android:text="-"
+                                android:textSize="16sp"
+                                android:gravity="end"
+                                android:textColor="@color/black"/>
+
+                        </androidx.appcompat.widget.LinearLayoutCompat>
+
+
+                    </androidx.appcompat.widget.LinearLayoutCompat>
+
+                </com.google.android.material.card.MaterialCardView>
 
             </androidx.constraintlayout.widget.ConstraintLayout>
 
-        </androidx.appcompat.widget.LinearLayoutCompat>
+        </ScrollView>
 
-    </ScrollView>
+        <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
+            android:id="@+id/fab_actions"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            android:layout_marginEnd="24dp"
+            android:layout_marginBottom="24dp"
+            app:icon="@drawable/ic_baseline_add_24"
+            android:text="Ubah"/>
 
+        <com.google.android.material.floatingactionbutton.FloatingActionButton
+            android:id="@+id/fab_tambah_data_diri"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/ic_baseline_person_24"
+            app:layout_constraintBottom_toTopOf="@id/fab_actions"
+            app:layout_constraintEnd_toEndOf="@id/fab_actions"
+            android:layout_marginBottom="24dp"
+            app:fabSize="normal"/>
+
+        <com.google.android.material.floatingactionbutton.FloatingActionButton
+            android:id="@+id/fab_tambah_foto"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/ic_baseline_camera_alt_24"
+            app:layout_constraintBottom_toTopOf="@id/fab_tambah_data_diri"
+            app:layout_constraintEnd_toEndOf="@id/fab_tambah_data_diri"
+            android:layout_marginBottom="24dp"
+            app:fabSize="normal"/>
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
 
 </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>

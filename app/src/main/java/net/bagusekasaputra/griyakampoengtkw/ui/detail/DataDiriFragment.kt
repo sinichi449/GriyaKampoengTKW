@@ -48,9 +48,7 @@ class DataDiriFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        binding.fabTambahDataDiri.setOnClickListener {
-            showAddDataDiriDialog()
-        }
+        setupExtendedFloatingButton()
 
         binding.swipeRefreshDataDiri.setOnRefreshListener {
             syncDataDiri()
@@ -82,6 +80,35 @@ class DataDiriFragment : Fragment() {
             binding.tvAlamatKerja.text = dataDiri?.alamatKerja ?: "-"
             binding.tvAlamatIndo.text = dataDiri?.alamatIndo ?: "-"
             binding.tvNoHp.text = dataDiri?.noHp ?: "-"
+        }
+    }
+
+    private fun setupExtendedFloatingButton() {
+        binding.fabActions.shrink()
+        binding.fabTambahDataDiri.visibility = View.GONE
+        binding.fabTambahFoto.visibility = View.GONE
+
+        var isAllFabVisible = false
+
+        binding.fabActions.setOnClickListener {
+            if (isAllFabVisible) {
+                binding.fabActions.shrink()
+                binding.fabTambahDataDiri.hide()
+                binding.fabTambahFoto.hide()
+
+                isAllFabVisible = false
+
+            } else {
+                binding.fabActions.extend()
+                binding.fabTambahDataDiri.show()
+                binding.fabTambahFoto.show()
+
+                isAllFabVisible = true
+            }
+        }
+
+        binding.fabTambahDataDiri.setOnClickListener {
+            showAddDataDiriDialog()
         }
     }
 
