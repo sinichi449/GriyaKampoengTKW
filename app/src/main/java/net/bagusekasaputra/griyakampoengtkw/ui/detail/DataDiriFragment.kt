@@ -1,13 +1,17 @@
 package net.bagusekasaputra.griyakampoengtkw.ui.detail
 
+import android.app.Activity
 import android.app.AlertDialog
+import android.net.Uri
 import android.os.Bundle
 import android.text.InputType
 import android.view.*
 import android.widget.ArrayAdapter
 import android.widget.Toast
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
+import com.github.dhaval2404.imagepicker.ImagePicker
 import dagger.hilt.android.AndroidEntryPoint
 import net.bagusekasaputra.griyakampoengtkw.R
 import net.bagusekasaputra.griyakampoengtkw.databinding.DialogTambahDataDiriBinding
@@ -22,6 +26,23 @@ class DataDiriFragment : Fragment() {
     private val viewModel: DetailViewModel by viewModels()
     private var currentKavlingKode: String? = null
     private lateinit var arrayAdapter: ArrayAdapter<String>
+    private var mFotoUri: Uri? = null
+
+    private val startProfileImageForResult =
+        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+            val resultCode = result.resultCode
+            val data = result.data
+
+            if (resultCode == Activity.RESULT_OK) {
+                mFotoUri = data?.data!!
+
+                binding.imgProfile.setImageURI(mFotoUri)
+            } else if (resultCode == ImagePicker.RESULT_ERROR) {
+                Toast.makeText(requireContext(), ImagePicker.getError(data), Toast.LENGTH_SHORT).show()
+            } else {
+                Toast.makeText(requireContext(), "Task Cancelled", Toast.LENGTH_SHORT).show()
+            }
+        }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -110,6 +131,8 @@ class DataDiriFragment : Fragment() {
         binding.fabTambahDataDiri.setOnClickListener {
             showAddDataDiriDialog()
         }
+
+        binding.fabTambahFoto.setOnClickListener { showImagePicker() }
     }
 
     private fun showAddDataDiriDialog() {
@@ -209,6 +232,15 @@ class DataDiriFragment : Fragment() {
             .create()
 
         dialogView.show()
+    }
+
+    private fun showImagePicker() {
+        ImagePicker.with(this)
+            .crop()
+            .compress(1024)
+            .createIntent { intent ->
+                startProfileImageForResult.launch(intent)
+            }
     }
 
     private fun setupSpinner(dialogBinding: DialogTambahDataDiriBinding) {
