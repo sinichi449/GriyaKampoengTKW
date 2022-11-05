@@ -10,15 +10,19 @@ import android.widget.TableRow
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.textview.MaterialTextView
 import dagger.hilt.android.AndroidEntryPoint
 import net.bagusekasaputra.griyakampoengtkw.R
 import net.bagusekasaputra.griyakampoengtkw.databinding.DialogAddFormPembayaranBinding
 import net.bagusekasaputra.griyakampoengtkw.databinding.DialogEditHargaBinding
+import net.bagusekasaputra.griyakampoengtkw.databinding.DialogPilihTerminBinding
 import net.bagusekasaputra.griyakampoengtkw.databinding.FragmentFormPembayaranBinding
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.HargaKavling
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.Pembayaran
 import net.bagusekasaputra.griyakampoengtkw.ui.ThousandSeparatorTextWatcher
+import net.bagusekasaputra.griyakampoengtkw.ui.detail.adapter.TerminRecyclerAdapter
 import net.bagusekasaputra.griyakampoengtkw.util.GriyaNodes
 import net.bagusekasaputra.griyakampoengtkw.util.GriyaNodes.Companion.LOG_TAG
 import net.bagusekasaputra.griyakampoengtkw.util.InputUtil
@@ -153,7 +157,7 @@ class FormPembayaranFragment : Fragment() {
         }
 
         binding.fabEditData?.setOnClickListener {
-//            showTerminSelectionButtonsDialog()
+            showTerminSelectionButtonsDialog()
         }
     }
 
@@ -355,94 +359,121 @@ class FormPembayaranFragment : Fragment() {
         dialogView.show()
     }
 
-//    private fun showTerminSelectionButtonsDialog() {
-//        val hargaKavling = binding.tvHarga?.text.toString().let {
-//            NumberUtil.formatStringToLong(it)
-//        }
-//
-//        if (hargaKavling <= 0L) {
-//            Toast.makeText(requireContext(), "Harga kavling masih kosong", Toast.LENGTH_SHORT)
-//                .show()
-//        } else {
-//            val dialogBinding = DialogPilihTerminBinding.inflate(layoutInflater)
-//            val dialogView = AlertDialog.Builder(requireContext()).apply {
-//                setView(dialogBinding.root)
-//            }.create()
-//
-//            dialogView.show()
-//
-//            dialogBinding.btnBatal.setOnClickListener {
-//                dialogView.dismiss()
-//            }
-//
-//            setupTerminRecyclerView(dialogView, dialogBinding)
-//        }
-//    }
+    private fun showTerminSelectionButtonsDialog() {
+        val hargaKavling = binding.tvHarga?.text.toString().let {
+            NumberUtil.formatStringToLong(it)
+        }
 
-//    private fun showEditDataDialog(index: Int) {
-//        val dialogBinding = DialogAddFormPembayaranBinding.inflate(layoutInflater)
-//        val dialogView = AlertDialog.Builder(requireContext()).apply {
-//            setView(dialogBinding.root)
-//            setCancelable(false)
-//        }.create()
-//
-//        dialogView.show()
-//
-//        dialogBinding.edtJumlahUangDibayar.apply {
-//            addTextChangedListener(ThousandSeparatorTextWatcher(this))
-//        }
-//        dialogBinding.tvTitle.text = "Ubah Form"
-//        dialogBinding.btnTambahkan.text = "Simpan Perubahan"
-//
-//        val selectedData = this.data[index]
-//        dialogBinding.edtTermin.setText(selectedData.termin)
-//        dialogBinding.edtTanggal.setText(selectedData.tanggal)
-//        dialogBinding.edtJumlahUangDibayar.setText(selectedData.jumlahUangDibayar.toString())
-//        dialogBinding.edtKeteranganProgress.setText(selectedData.keterangan)
-//
-//        dialogBinding.btnTambahkan.setOnClickListener {
-//            val isOkay = checkNullEditTexts(dialogBinding.edtTermin, dialogBinding.edtTanggal, dialogBinding.edtJumlahUangDibayar, dialogBinding.edtKeteranganProgress)
-//            if (isOkay) {
-//                val pembayaran = Pembayaran(
-//                    termin = dialogBinding.edtTermin.text.toString(),
-//                    tanggal = dialogBinding.edtTanggal.text.toString(),
-//                    jumlahUangDibayar = dialogBinding.edtJumlahUangDibayar.text.toString(),
-//                    totalUangMasuk = selectedData.totalUangMasuk,
-//                    presentase = selectedData.presentase,
-//                    keterangan = dialogBinding.edtKeteranganProgress.text.toString()
-//                )
-//
-//                saveFormChanges(pembayaran, this.data.size - 1)
-//                dialogView.dismiss()
-//                Snackbar.make(requireContext(), dialogBinding.root, "Data berhasil disimpan! (fake)", Snackbar.LENGTH_SHORT).show()
-//            }
-//        }
-//
-//        dialogBinding.btnBatal.setOnClickListener {
-//            dialogView.dismiss()
-//        }
-//
-//        setDateDefaulOrPickEdtTanggal(false, dialogBinding)
-//    }
-//
-//    private fun setupTerminRecyclerView(terminalDialog: AlertDialog, dialogBinding: DialogPilihTerminBinding) {
-//        val termins = ArrayList<String>()
-//
-//        for (pembayaran in this.data) {
-//            termins.add(pembayaran.termin)
-//        }
-//
-//        val adapter = TerminRecyclerAdapter(termins) {
-//            terminalDialog.dismiss()
-//            showEditDataDialog(it)
-//        }
-//        dialogBinding.recyclerTermin.adapter = adapter
-//        dialogBinding.recyclerTermin.layoutManager = LinearLayoutManager(requireContext())
-//    }
-//
-//    private fun saveFormChanges(pembayaran: Pembayaran, index: Int) {
-//        this.data[index] = pembayaran
-//    }
+        if (hargaKavling <= 0L) {
+            Toast.makeText(requireContext(), "Harga kavling masih kosong", Toast.LENGTH_SHORT)
+                .show()
+        } else {
+            val dialogBinding = DialogPilihTerminBinding.inflate(layoutInflater)
+            val dialogView = AlertDialog.Builder(requireContext()).apply {
+                setView(dialogBinding.root)
+            }.create()
+
+            dialogView.show()
+
+            dialogBinding.btnBatal.setOnClickListener {
+                dialogView.dismiss()
+            }
+            
+            viewModel.listPembayaranLive.value?.let {
+                setupTerminRecyclerView(it, dialogView, dialogBinding.recyclerTermin)   
+            }
+        }
+    }
+
+    private fun setupTerminRecyclerView(
+        listPembayaran: List<Pembayaran>,
+        terminDialog: AlertDialog,
+        recyclerTermin: RecyclerView,
+    ) {
+        val termins = ArrayList<String>()
+        
+        listPembayaran.forEach { termins.add(it.termin) }
+
+        val adapter = TerminRecyclerAdapter(termins) {
+            terminDialog.dismiss()
+            showEditDataDialog(listPembayaran[it])
+        }
+        recyclerTermin.adapter = adapter
+        recyclerTermin.layoutManager = LinearLayoutManager(requireContext())
+    }
+
+    private fun showEditDataDialog(pembayaran: Pembayaran) {
+        val dialogBinding = DialogAddFormPembayaranBinding.inflate(layoutInflater)
+        val dialogView = AlertDialog.Builder(requireContext()).apply {
+            setView(dialogBinding.root)
+            setCancelable(false)
+        }.create()
+
+        dialogView.show()
+
+        dialogBinding.edtJumlahUangDibayar.apply {
+            addTextChangedListener(ThousandSeparatorTextWatcher(this))
+        }
+        dialogBinding.tvTitle.text = "Ubah Form"
+        dialogBinding.btnTambahkan.text = "Simpan Perubahan"
+        dialogBinding.btnHapus.visibility = View.VISIBLE
+        dialogBinding.edtTermin.setText(pembayaran.termin)
+        dialogBinding.edtTanggal.setText(pembayaran.tanggal)
+        dialogBinding.edtJumlahUangDibayar.setText(pembayaran.jumlahUangDibayar.toString())
+        dialogBinding.edtKeteranganProgress.setText(pembayaran.keterangan)
+
+        fun getPembayaranFromEdt(): Pembayaran? {
+            val isInvalidEdt = InputUtil.isNullOrEmptyEditTexts(dialogBinding.edtTermin, dialogBinding.edtTanggal, dialogBinding.edtJumlahUangDibayar, dialogBinding.edtKeteranganProgress)
+
+            return if (!isInvalidEdt) {
+                Pembayaran(
+                    termin = dialogBinding.edtTermin.text.toString(),
+                    tanggal = dialogBinding.edtTanggal.text.toString(),
+                    jumlahUangDibayar = dialogBinding.edtJumlahUangDibayar.text.toString(),
+                    totalUangMasuk = pembayaran.totalUangMasuk,
+                    presentase = pembayaran.presentase,
+                    keterangan = dialogBinding.edtKeteranganProgress.text.toString(),
+                    timeMillis = System.currentTimeMillis(),
+                )
+            } else {
+                null
+            }
+        }
+
+        dialogBinding.btnTambahkan.setOnClickListener {
+            // TODO
+        }
+
+        dialogBinding.btnBatal.setOnClickListener {
+            dialogView.dismiss()
+        }
+
+        dialogBinding.btnHapus.setOnClickListener {
+            val confirmDialog = AlertDialog.Builder(requireContext())
+                .setTitle("Hapus Pembayaran")
+                .setMessage("Apakah Anda yakin menghapus pembayaran ${pembayaran.termin}?")
+                .setPositiveButton("Ya") { dialog, _ ->
+                    dialogBinding.btnTambahkan.isEnabled = false
+                    dialogBinding.btnTambahkan.text = "Menghapus data ..."
+
+                    dialog.dismiss()
+                    getPembayaranFromEdt()?.let { pembayaran ->
+                        viewModel.deletePembayaranByTermin(currentKavlingKode!!, pembayaran.termin) { msg ->
+                            Toast.makeText(requireContext(), msg, Toast.LENGTH_SHORT).show()
+                            dialogView.dismiss()
+                            syncPembayaran()
+                        }
+                    }
+                }
+                .setNegativeButton("Tidak") { dialog, _ ->
+                    dialog.dismiss()
+                }.create()
+
+            confirmDialog.show()
+        }
+
+        setDateDefaulOrPickEdtTanggal(false, dialogBinding)
+    }
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
         inflater.inflate(R.menu.menu_pembayaran, menu)
