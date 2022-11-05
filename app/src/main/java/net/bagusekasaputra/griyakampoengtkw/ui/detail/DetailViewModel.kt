@@ -16,6 +16,8 @@ import net.bagusekasaputra.griyakampoengtkw.domain.usecase.datadiri.GetDataDiriU
 import net.bagusekasaputra.griyakampoengtkw.domain.usecase.hargakavling.AddHargaKavlingUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.usecase.hargakavling.GetHargaKavlingUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.usecase.pembayaran.AddPembayaranUseCase
+import net.bagusekasaputra.griyakampoengtkw.domain.usecase.pembayaran.DeleteAllPembayaranUseCase
+import net.bagusekasaputra.griyakampoengtkw.domain.usecase.pembayaran.DeletePembayaranByTerminUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.usecase.pembayaran.GetAllPembayaranUseCase
 import javax.inject.Inject
 
@@ -28,6 +30,8 @@ class DetailViewModel @Inject constructor(
     private val addHargaKavlingUseCase: AddHargaKavlingUseCase,
     private val getAllPembayaranUseCase: GetAllPembayaranUseCase,
     private val addPembayaranUseCase: AddPembayaranUseCase,
+    private val deletePembayaranByTerminUseCase: DeletePembayaranByTerminUseCase,
+    private val deleteAllPembayaranUseCase: DeleteAllPembayaranUseCase,
 ): ViewModel() {
 
     val dataDiriLive = MutableLiveData<DataDiri?>()
@@ -220,6 +224,59 @@ class DetailViewModel @Inject constructor(
                 } else {
                     withContext(Dispatchers.IO) {
                         onFailure("Gagal mendapatkan pembayaran: ${result.exceptionOrNull()?.message ?: "null"}")
+                    }
+                }
+
+                isFinishOperation.postValue(true)
+            }
+        }
+    }
+
+    fun deletePembayaranByTermin(
+        kavlingKode: String,
+        termin: String,
+        onComplete: (msg: String) -> Unit,
+    ) {
+        isFinishOperation.value = false
+
+        CoroutineScope(Dispatchers.IO).launch {
+            val request = DeletePembayaranByTerminUseCase.Request(kavlingKode, termin)
+
+            deletePembayaranByTerminUseCase.execute(request).collect { response ->
+                val result = response.data.result
+
+                if (result.isSuccess) {
+                    withContext(Dispatchers.Main) {
+                        onComplete("Berhasil menghapus pembayaran $termin")
+                    }
+                } else {
+                    withContext(Dispatchers.Main) {
+                        onComplete("Gagal menghapus pembayaran: ${result.exceptionOrNull()?.message ?: "null"}")
+                    }
+                }
+
+                isFinishOperation.postValue(true)
+            }
+        }
+    }
+
+    fun deleteAllPembayaran(kavlingKode: String, onComplete: (msg: String) -> Unit) {
+        isFinishOperation.value = false
+
+        CoroutineScope(Dispatchers.IO).launch {
+            val request = DeleteAllPembayaranUseCase.Request(kavlingKode)
+
+            deleteAllPembayaranUseCase.execute(request).collect { response ->
+                val result = response.data.result
+
+                if (result.isSuccess) {
+                    withContext(Dispatchers.Main) {
+                        onComplete("Berhasil menghapus semua pembayaran di $kavlingKode")
+                    }
+                    listPembayaranLive.postValue(emptyList<Pembayaran>())
+                } else {
+                    withContext(Dispatchers.Main) {
+                        onComplete("Gagal menghapus pembayaran: ${result.exceptionOrNull()?.message ?: "null"}")
                     }
                 }
 

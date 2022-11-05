@@ -62,5 +62,36 @@ class FirebasePembayaranSource @Inject constructor(
             }
     }
 
+    override suspend fun deletePembayaranModelByTermin(
+        kavlingKode: String,
+        termin: String,
+        onSuccess: () -> Unit,
+        onFailure: (throwable: Throwable) -> Unit
+    ) {
+        databaseReference
+            .child(GriyaNodes.formPembayaran)
+            .child(kavlingKode)
+            .child(termin)
+            .removeValue()
+            .addOnSuccessListener { onSuccess() }
+            .addOnFailureListener {
+                onFailure(it.cause?: UnknownError("Terjadi kesalahan menghapus pembayaran"))
+            }
+    }
+
+    override suspend fun deleteAllPembayaranModel(
+        kavlingKode: String,
+        onSuccess: () -> Unit,
+        onFailure: (throwable: Throwable) -> Unit,
+    ) {
+        databaseReference
+            .child(GriyaNodes.formPembayaran)
+            .child(kavlingKode)
+            .removeValue()
+            .addOnSuccessListener { onSuccess() }
+            .addOnFailureListener {
+                onFailure(it.cause?: UnknownError("Terjadi kesalahan menghapus semua pembayaran kalving $kavlingKode"))
+            }
+    }
 
 }

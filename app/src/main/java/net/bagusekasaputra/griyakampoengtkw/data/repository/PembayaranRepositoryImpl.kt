@@ -67,6 +67,42 @@ class PembayaranRepositoryImpl @Inject constructor(
         TODO("Not yet implemented")
     }
 
+    override fun deletePembayaranByTermin(
+        kavlingKode: String,
+        termin: String,
+    ): Flow<Result<Boolean>> {
+        return callbackFlow {
+            remotePembayaranSource.deletePembayaranModelByTermin(
+                kavlingKode = kavlingKode,
+                termin = termin,
+                onSuccess = {
+                    trySendBlocking(Result.success(true))
+                },
+                onFailure = {
+                    trySendBlocking(Result.failure(it))
+                }
+            )
+
+            awaitClose {  }
+        }
+    }
+
+    override fun deleteAllPembayaran(kavlingKode: String): Flow<Result<Boolean>> {
+        return callbackFlow {
+            remotePembayaranSource.deleteAllPembayaranModel(
+                kavlingKode = kavlingKode,
+                onSuccess = {
+                    trySendBlocking(Result.success(true))
+                },
+                onFailure = {
+                    trySendBlocking(Result.failure(it))
+                }
+            )
+
+            awaitClose {  }
+        }
+    }
+
 
     private fun mapPembayaran(pembayaran: Pembayaran): PembayaranModel {
         return pembayaran.let {

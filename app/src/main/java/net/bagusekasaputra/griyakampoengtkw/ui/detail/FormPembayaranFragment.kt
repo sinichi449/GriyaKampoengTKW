@@ -12,6 +12,7 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import com.google.android.material.textview.MaterialTextView
 import dagger.hilt.android.AndroidEntryPoint
+import net.bagusekasaputra.griyakampoengtkw.R
 import net.bagusekasaputra.griyakampoengtkw.databinding.DialogAddFormPembayaranBinding
 import net.bagusekasaputra.griyakampoengtkw.databinding.DialogEditHargaBinding
 import net.bagusekasaputra.griyakampoengtkw.databinding.FragmentFormPembayaranBinding
@@ -44,6 +45,8 @@ class FormPembayaranFragment : Fragment() {
         arguments?.getString(GriyaNodes.INTENT_KAVLING_KODE)?.let {
             currentKavlingKode = it
         }
+
+        setHasOptionsMenu(true)
     }
 
     override fun onCreateView(
@@ -333,6 +336,25 @@ class FormPembayaranFragment : Fragment() {
         }
     }
 
+    private fun showDeleteAllPembayaranDialog() {
+        val dialogView = AlertDialog.Builder(requireContext())
+            .setTitle("Hapus Semua Pembayaran")
+            .setMessage("Apakah Anda yakin ingin menghapus semua pembayaran di kavling $currentKavlingKode?")
+            .setPositiveButton("Ya") { dialog, _ ->
+                viewModel.deleteAllPembayaran(currentKavlingKode!!) { msg ->
+                    Toast.makeText(requireContext(), msg, Toast.LENGTH_SHORT).show()
+                    dialog.dismiss()
+                    syncPembayaran()
+                }
+            }
+            .setNegativeButton("Tidak") { dialog, _ ->
+                dialog.dismiss()
+            }
+            .create()
+
+        dialogView.show()
+    }
+
 //    private fun showTerminSelectionButtonsDialog() {
 //        val hargaKavling = binding.tvHarga?.text.toString().let {
 //            NumberUtil.formatStringToLong(it)
@@ -421,4 +443,20 @@ class FormPembayaranFragment : Fragment() {
 //    private fun saveFormChanges(pembayaran: Pembayaran, index: Int) {
 //        this.data[index] = pembayaran
 //    }
+
+    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
+        inflater.inflate(R.menu.menu_pembayaran, menu)
+        super.onCreateOptionsMenu(menu, inflater)
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        return when (item.itemId) {
+            R.id.hapus_semua_pembayaran -> {
+                showDeleteAllPembayaranDialog()
+                true
+            }
+            else -> return super.onOptionsItemSelected(item)
+        }
+    }
+
 }
