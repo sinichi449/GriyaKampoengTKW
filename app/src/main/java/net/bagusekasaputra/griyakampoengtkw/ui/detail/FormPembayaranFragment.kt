@@ -206,16 +206,12 @@ class FormPembayaranFragment : Fragment() {
                         timeMillis = System.currentTimeMillis(),
                     )
 
-                    viewModel.addPembayaran(currentKavlingKode!!, hargaKavling, pembayaran)
-
-                    viewModel.operationResult.observe(requireActivity()) { operation ->
-                        operation?.let { op ->
-                            op.message?.let { msg ->
-                                Toast.makeText(requireContext(), msg, Toast.LENGTH_SHORT).show()
-                            }
-                            dialogView.dismiss()
-                        }
+                    viewModel.addPembayaran(currentKavlingKode!!, hargaKavling, pembayaran) { msg ->
+                        Toast.makeText(requireContext(), msg, Toast.LENGTH_SHORT).show()
+                        syncData()
+                        dialogView.dismiss()
                     }
+
                 }
             }
         }

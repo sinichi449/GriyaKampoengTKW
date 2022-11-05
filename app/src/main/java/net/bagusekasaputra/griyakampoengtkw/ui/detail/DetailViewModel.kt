@@ -7,6 +7,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.DataDiri
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.HargaKavling
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.Operation
@@ -168,9 +169,13 @@ class DetailViewModel @Inject constructor(
 
 
     // Pembayaran
-    fun addPembayaran(kavlingKode: String, hargaKavling: Long, pembayaran: Pembayaran) {
+    fun addPembayaran(
+        kavlingKode: String,
+        hargaKavling: Long,
+        pembayaran: Pembayaran,
+        onComplete: (msg: String) -> Unit,
+    ) {
         isFinishOperation.value = false
-        operationResult.value = null
 
         CoroutineScope(Dispatchers.IO).launch {
             val request = AddPembayaranUseCase.Request(kavlingKode, hargaKavling, pembayaran)
@@ -179,9 +184,13 @@ class DetailViewModel @Inject constructor(
                 val result = response.data.result
 
                 if (result.isSuccess) {
-                    operationResult.postValue(Operation(true, "Berhasil menambahkan pembayaran"))
+                    withContext(Dispatchers.Main) {
+                        onComplete("Berhasil menambahkan pembayaran")
+                    }
                 } else {
-                    operationResult.postValue(Operation(false, "Gagal menambahkan pembayaran: ${result.exceptionOrNull()?.message}"))
+                    withContext(Dispatchers.Main) {
+                        onComplete("Gagal menambahkan pembayaran: ${result.exceptionOrNull()?.message?: "null"}")
+                    }
                 }
 
                 isFinishOperation.postValue(true)
