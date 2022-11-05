@@ -396,13 +396,13 @@ class FormPembayaranFragment : Fragment() {
 
         val adapter = TerminRecyclerAdapter(termins) {
             terminDialog.dismiss()
-            showEditDataDialog(listPembayaran[it])
+            showEditPembayaranDialog(listPembayaran[it])
         }
         recyclerTermin.adapter = adapter
         recyclerTermin.layoutManager = LinearLayoutManager(requireContext())
     }
 
-    private fun showEditDataDialog(pembayaran: Pembayaran) {
+    private fun showEditPembayaranDialog(pembayaran: Pembayaran) {
         val dialogBinding = DialogAddFormPembayaranBinding.inflate(layoutInflater)
         val dialogView = AlertDialog.Builder(requireContext()).apply {
             setView(dialogBinding.root)
@@ -441,7 +441,17 @@ class FormPembayaranFragment : Fragment() {
         }
 
         dialogBinding.btnTambahkan.setOnClickListener {
-            // TODO
+            dialogBinding.btnTambahkan.text = "Menyimpan data ..."
+            dialogBinding.btnTambahkan.isEnabled = false
+            dialogBinding.btnHapus.isEnabled = false
+
+            getPembayaranFromEdt()?.let { newPembayaran ->
+                viewModel.updatePembayaran(currentKavlingKode!!, pembayaran, newPembayaran) { msg ->
+                    Toast.makeText(requireContext(), msg, Toast.LENGTH_SHORT).show()
+                    dialogView.dismiss()
+                    syncPembayaran()
+                }
+            }
         }
 
         dialogBinding.btnBatal.setOnClickListener {
@@ -453,8 +463,9 @@ class FormPembayaranFragment : Fragment() {
                 .setTitle("Hapus Pembayaran")
                 .setMessage("Apakah Anda yakin menghapus pembayaran ${pembayaran.termin}?")
                 .setPositiveButton("Ya") { dialog, _ ->
-                    dialogBinding.btnTambahkan.isEnabled = false
                     dialogBinding.btnTambahkan.text = "Menghapus data ..."
+                    dialogBinding.btnTambahkan.isEnabled = false
+                    dialogBinding.btnHapus.isEnabled = false
 
                     dialog.dismiss()
                     getPembayaranFromEdt()?.let { pembayaran ->

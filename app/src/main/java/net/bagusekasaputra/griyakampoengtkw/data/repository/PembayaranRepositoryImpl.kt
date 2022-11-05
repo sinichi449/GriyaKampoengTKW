@@ -64,7 +64,17 @@ class PembayaranRepositoryImpl @Inject constructor(
         oldPembayaran: Pembayaran,
         newPembayaran: Pembayaran,
     ): Flow<Result<Boolean>> {
-        TODO("Not yet implemented")
+        return callbackFlow {
+            remotePembayaranSource.updatePembayaranModel(
+                kavlingKode = kavlingKode,
+                oldPembayaranModel = mapPembayaran(oldPembayaran),
+                newPembayaranModel = mapPembayaran(newPembayaran),
+                onSuccess = { trySendBlocking(Result.success(true)) },
+                onFailure = { trySendBlocking(Result.failure(it)) },
+            )
+
+            awaitClose {  }
+        }
     }
 
     override fun deletePembayaranByTermin(

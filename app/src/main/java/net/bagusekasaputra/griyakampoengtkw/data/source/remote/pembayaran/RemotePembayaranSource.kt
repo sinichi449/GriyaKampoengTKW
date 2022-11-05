@@ -18,6 +18,14 @@ interface RemotePembayaranSource {
         onFailure: (throwable: Throwable) -> Unit,
     )
 
+    suspend fun updatePembayaranModel(
+        kavlingKode: String,
+        oldPembayaranModel: PembayaranModel,
+        newPembayaranModel: PembayaranModel,
+        onSuccess: () -> Unit,
+        onFailure: (throwable: Throwable) -> Unit,
+    )
+
     suspend fun deletePembayaranModelByTermin(
         kavlingKode: String,
         termin: String,

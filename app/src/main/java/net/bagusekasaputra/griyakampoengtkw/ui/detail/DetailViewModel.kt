@@ -15,10 +15,7 @@ import net.bagusekasaputra.griyakampoengtkw.domain.usecase.datadiri.DeleteDataDi
 import net.bagusekasaputra.griyakampoengtkw.domain.usecase.datadiri.GetDataDiriUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.usecase.hargakavling.AddHargaKavlingUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.usecase.hargakavling.GetHargaKavlingUseCase
-import net.bagusekasaputra.griyakampoengtkw.domain.usecase.pembayaran.AddPembayaranUseCase
-import net.bagusekasaputra.griyakampoengtkw.domain.usecase.pembayaran.DeleteAllPembayaranUseCase
-import net.bagusekasaputra.griyakampoengtkw.domain.usecase.pembayaran.DeletePembayaranByTerminUseCase
-import net.bagusekasaputra.griyakampoengtkw.domain.usecase.pembayaran.GetAllPembayaranUseCase
+import net.bagusekasaputra.griyakampoengtkw.domain.usecase.pembayaran.*
 import javax.inject.Inject
 
 @HiltViewModel
@@ -30,6 +27,7 @@ class DetailViewModel @Inject constructor(
     private val addHargaKavlingUseCase: AddHargaKavlingUseCase,
     private val getAllPembayaranUseCase: GetAllPembayaranUseCase,
     private val addPembayaranUseCase: AddPembayaranUseCase,
+    private val updatePembayaranUseCase: UpdatePembayaranUseCase,
     private val deletePembayaranByTerminUseCase: DeletePembayaranByTerminUseCase,
     private val deleteAllPembayaranUseCase: DeleteAllPembayaranUseCase,
 ): ViewModel() {
@@ -224,6 +222,35 @@ class DetailViewModel @Inject constructor(
                 } else {
                     withContext(Dispatchers.IO) {
                         onFailure("Gagal mendapatkan pembayaran: ${result.exceptionOrNull()?.message ?: "null"}")
+                    }
+                }
+
+                isFinishOperation.postValue(true)
+            }
+        }
+    }
+
+    fun updatePembayaran(
+        kavlingKode: String,
+        oldPembayaran: Pembayaran,
+        newPembayaran: Pembayaran,
+        onComplete: (msg: String) -> Unit,
+    ) {
+        isFinishOperation.value = false
+
+        CoroutineScope(Dispatchers.IO).launch {
+            val request = UpdatePembayaranUseCase.Request(kavlingKode, oldPembayaran, newPembayaran)
+
+            updatePembayaranUseCase.execute(request).collect { response ->
+                val result = response.data.result
+
+                if (result.isSuccess) {
+                    withContext(Dispatchers.Main) {
+                        onComplete("Berhasil mengubah pembayaran ${oldPembayaran.termin}")
+                    }
+                } else {
+                    withContext(Dispatchers.Main) {
+                        onComplete("Gagal menghubah pembayaran: ${result.exceptionOrNull()?.message ?: "null"}")
                     }
                 }
 

@@ -12,6 +12,8 @@ class FirebasePembayaranSource @Inject constructor(
     private val databaseReference: DatabaseReference
 ): RemotePembayaranSource {
 
+    private val pembayaranRef = databaseReference.child(GriyaNodes.formPembayaran)
+
     override suspend fun getAllPembayaran(
         kavlingKode: String,
         onSuccess: (listPembayaranModel: List<PembayaranModel>?) -> Unit,
@@ -60,6 +62,21 @@ class FirebasePembayaranSource @Inject constructor(
             .addOnFailureListener {
                 onFailure(it.cause?: UnknownError("Terjadi kesalahan!"))
             }
+    }
+
+    override suspend fun updatePembayaranModel(
+        kavlingKode: String,
+        oldPembayaranModel: PembayaranModel,
+        newPembayaranModel: PembayaranModel,
+        onSuccess: () -> Unit,
+        onFailure: (throwable: Throwable) -> Unit,
+    ) {
+        pembayaranRef
+            .child(kavlingKode)
+            .child(oldPembayaranModel.termin)
+            .setValue(newPembayaranModel)
+            .addOnSuccessListener { onSuccess() }
+            .addOnFailureListener{ onFailure(it.cause?: UnknownError("Terjadi kesalahan mengubah pembayaran")) }
     }
 
     override suspend fun deletePembayaranModelByTermin(

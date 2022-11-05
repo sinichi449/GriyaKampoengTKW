@@ -79,7 +79,8 @@
         android:layout_height="wrap_content"
         android:hint="Jumlah Uang Dibayar"
         android:layout_marginTop="8dp"
-        app:startIconDrawable="@drawable/ic_baseline_attach_money_24">
+        app:startIconDrawable="@drawable/ic_baseline_attach_money_24"
+        app:endIconMode="clear_text">
 
         <com.google.android.material.textfield.TextInputEditText
             android:id="@+id/edt_jumlah_uang_dibayar"
