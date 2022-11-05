@@ -1,6 +1,9 @@
 package net.bagusekasaputra.griyakampoengtkw.data.repository
 
+import kotlinx.coroutines.channels.awaitClose
+import kotlinx.coroutines.channels.trySendBlocking
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.callbackFlow
 import kotlinx.coroutines.flow.emitAll
 import kotlinx.coroutines.flow.flow
 import net.bagusekasaputra.griyakampoengtkw.data.model.HargaKavlingModel
@@ -22,8 +25,13 @@ class HargaKavlingRepositoryImpl @Inject constructor(
                 if (result.isSuccess) {
                     val hargaKavlingModel = result.getOrNull()
 
-                    if (hargaKavlingModel != null) emit(Result.success(mapHargaKavling(hargaKavlingModel)))
-                    else emit(Result.success(null))
+                    if (hargaKavlingModel != null) {
+                        emit(Result.success(mapHargaKavling(hargaKavlingModel)))
+                    }
+                    else {
+                        emit(Result.success(null))
+                    }
+
                 } else {
                     result.exceptionOrNull()?.let { throwable ->
                         emit(Result.failure(throwable))
@@ -37,6 +45,19 @@ class HargaKavlingRepositoryImpl @Inject constructor(
         return flow {
             emitAll(remoteHargaKavlingSource.addHargaKavlingModel(
                 mapHargaKavling(hargaKavling)))
+        }
+    }
+
+    override fun getSingleHargaKavlingForPembayaran(kavlingKode: String): Flow<Long> {
+        return callbackFlow {
+            remoteHargaKavlingSource.getSingleHargaKavlingForPembayaran(
+                kavlingKode = kavlingKode,
+                onSuccess = {
+                    trySendBlocking(it)
+                }
+            )
+
+            awaitClose {  }
         }
     }
 
@@ -57,4 +78,5 @@ class HargaKavlingRepositoryImpl @Inject constructor(
             )
         }
     }
+
 }

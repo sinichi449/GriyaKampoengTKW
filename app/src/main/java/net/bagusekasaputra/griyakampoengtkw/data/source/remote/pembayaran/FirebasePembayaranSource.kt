@@ -1,10 +1,7 @@
 package net.bagusekasaputra.griyakampoengtkw.data.source.remote.pembayaran
 
 import com.google.firebase.database.DatabaseReference
-import kotlinx.coroutines.channels.awaitClose
-import kotlinx.coroutines.channels.trySendBlocking
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.callbackFlow
+import com.google.firebase.database.ktx.getValue
 import net.bagusekasaputra.griyakampoengtkw.data.model.PembayaranModel
 import net.bagusekasaputra.griyakampoengtkw.util.GriyaNodes
 import javax.inject.Inject
@@ -15,25 +12,54 @@ class FirebasePembayaranSource @Inject constructor(
     private val databaseReference: DatabaseReference
 ): RemotePembayaranSource {
 
-    override fun addPembayaranModel(
+    override suspend fun getAllPembayaran(
+        kavlingKode: String,
+        onSuccess: (listPembayaranModel: List<PembayaranModel>?) -> Unit,
+        onFailure: (throwable: Throwable) -> Unit,
+    ) {
+        databaseReference
+            .child(GriyaNodes.formPembayaran)
+            .child(kavlingKode)
+            .get()
+            .addOnSuccessListener { snapshot ->
+                val terminHashMap = snapshot.getValue<HashMap<String, PembayaranModel>>()
+
+                if (terminHashMap != null) {
+                    val listPembayaranModel = ArrayList<PembayaranModel>()
+                    for (key in terminHashMap.keys) {
+                        terminHashMap[key]?.let {
+                            listPembayaranModel.add(it)
+                        }
+                    }
+
+                    onSuccess(listPembayaranModel)
+                } else {
+                    onSuccess(null)
+                }
+            }
+            .addOnFailureListener {
+                onFailure(it)
+            }
+    }
+
+    override suspend fun addPembayaranModel(
         kavlingKode: String,
         hargaKavling: Long,
         pembayaranModel: PembayaranModel,
-    ): Flow<Result<Boolean>> {
-        return callbackFlow {
-            databaseReference
-                .child(GriyaNodes.formPembayaran)
-                .child(kavlingKode)
-                .setValue(pembayaranModel)
-                .addOnSuccessListener {
-                    trySendBlocking(Result.success(true))
-                }
-                .addOnFailureListener {
-                    trySendBlocking(Result.failure(it))
-                }
-
-            awaitClose {  }
-        }
+        onSuccess: () -> Unit,
+        onFailure: (throwable: Throwable) -> Unit
+    ) {
+        databaseReference
+            .child(GriyaNodes.formPembayaran)
+            .child(kavlingKode)
+            .child(pembayaranModel.termin)
+            .setValue(pembayaranModel)
+            .addOnSuccessListener {
+                onSuccess()
+            }
+            .addOnFailureListener {
+                onFailure(it.cause?: UnknownError("Terjadi kesalahan!"))
+            }
     }
 
 

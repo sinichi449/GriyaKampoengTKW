@@ -17,6 +17,7 @@ import net.bagusekasaputra.griyakampoengtkw.domain.usecase.datadiri.GetDataDiriU
 import net.bagusekasaputra.griyakampoengtkw.domain.usecase.hargakavling.AddHargaKavlingUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.usecase.hargakavling.GetHargaKavlingUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.usecase.pembayaran.AddPembayaranUseCase
+import net.bagusekasaputra.griyakampoengtkw.domain.usecase.pembayaran.GetAllPembayaranUseCase
 import javax.inject.Inject
 
 @HiltViewModel
@@ -26,6 +27,7 @@ class DetailViewModel @Inject constructor(
     private val deleteDataDiriUseCase: DeleteDataDiriUseCase,
     private val getHargaKavlingUseCase: GetHargaKavlingUseCase,
     private val addHargaKavlingUseCase: AddHargaKavlingUseCase,
+    private val getAllPembayaranUseCase: GetAllPembayaranUseCase,
     private val addPembayaranUseCase: AddPembayaranUseCase,
 ): ViewModel() {
 
@@ -34,6 +36,8 @@ class DetailViewModel @Inject constructor(
         get() = _dataDiriLive
 
     val hargaKavlingLive = MutableLiveData<String>()
+
+    val listPembayaranLive = MutableLiveData<List<Pembayaran>>()
 
     val currentKavlingKode = MutableLiveData<String>()
 
@@ -118,7 +122,6 @@ class DetailViewModel @Inject constructor(
 
     // Harga Kavling
     fun getHargaKavling(kavlingKode: String) {
-        isFinishOperation.value = false
         operationResult.value = null
 
         CoroutineScope(Dispatchers.IO).launch {
@@ -138,8 +141,6 @@ class DetailViewModel @Inject constructor(
                 } else {
                     operationResult.postValue(Operation(false, "Gagal mendapatkan harga kavling: ${result.exceptionOrNull()?.message}"))
                 }
-
-                isFinishOperation.postValue(true)
             }
         }
     }
@@ -181,6 +182,28 @@ class DetailViewModel @Inject constructor(
                     operationResult.postValue(Operation(true, "Berhasil menambahkan pembayaran"))
                 } else {
                     operationResult.postValue(Operation(false, "Gagal menambahkan pembayaran: ${result.exceptionOrNull()?.message}"))
+                }
+
+                isFinishOperation.postValue(true)
+            }
+        }
+    }
+
+    fun getAllPembayaran(kavlingKode: String) {
+        isFinishOperation.value = false
+        operationResult.value = null
+        val request = GetAllPembayaranUseCase.Request(kavlingKode)
+
+        CoroutineScope(Dispatchers.IO).launch {
+            getAllPembayaranUseCase.execute(request).collect { response ->
+                val result = response.data.result
+
+                if (result.isSuccess) {
+                    val listPembayaran = result.getOrNull()
+
+                    if (listPembayaran != null) {
+                        listPembayaranLive.postValue(listPembayaran!!)
+                    }
                 }
 
                 isFinishOperation.postValue(true)
