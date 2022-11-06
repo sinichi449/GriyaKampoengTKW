@@ -7,4 +7,9 @@
         android:title="Hapus Data Diri"
         app:showAsAction="never"/>
 
+    <item
+        android:id="@+id/hapus_foto"
+        android:title="Hapus Foto"
+        app:showAsAction="never"/>
+
 </menu>

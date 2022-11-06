@@ -18,6 +18,7 @@ import net.bagusekasaputra.griyakampoengtkw.domain.usecase.datadiri.GetDataDiriU
 import net.bagusekasaputra.griyakampoengtkw.domain.usecase.hargakavling.AddHargaKavlingUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.usecase.hargakavling.GetHargaKavlingUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.usecase.imageDataDiri.AddImageDataDiriUseCase
+import net.bagusekasaputra.griyakampoengtkw.domain.usecase.imageDataDiri.DeleteImageDataDiriUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.usecase.imageDataDiri.GetImageDataDiriByKavlingKodeUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.usecase.pembayaran.*
 import javax.inject.Inject
@@ -36,6 +37,7 @@ class DetailViewModel @Inject constructor(
     private val deleteAllPembayaranUseCase: DeleteAllPembayaranUseCase,
     private val getImageDataDiriByKavlingKodeUseCase: GetImageDataDiriByKavlingKodeUseCase,
     private val addImageDataDiriUseCase: AddImageDataDiriUseCase,
+    private val deleteImageDataDiriUseCase: DeleteImageDataDiriUseCase,
 ): ViewModel() {
 
     val imageDataDiriLive = MutableLiveData<ImageDataDiri?>()
@@ -50,34 +52,36 @@ class DetailViewModel @Inject constructor(
 
     val isFinishOperation = MutableLiveData<Boolean>()
 
+    val isFinishAddImage = MutableLiveData<Boolean>()
+
     // Image Data Diri
-    fun getImageDataDiri(kavlingKode: String, onComplete: (msg: String) -> Unit) {
+    fun getImageDataDiri(kavlingKode: String, onFailure: (cause: String) -> Unit) {
         isFinishOperation.value = false
 
         CoroutineScope(Dispatchers.IO).launch {
             val request = GetImageDataDiriByKavlingKodeUseCase.Request(kavlingKode)
 
-            getImageDataDiriByKavlingKodeUseCase.execute(request).collect { response ->
-                val result = response.data.result
+            getImageDataDiriByKavlingKodeUseCase.execute(request)
+                .collect { response ->
+                    val result = response.data.result
 
-                if (result.isSuccess) {
-                    result.getOrNull()?.let { imageDataDiriLive.postValue(it) }
-                    withContext(Dispatchers.Main) {
-                        onComplete("")
+                    if (result.isSuccess) {
+                        imageDataDiriLive.postValue(result.getOrNull())
+                    } else {
+                        withContext(Dispatchers.Main) {
+                            onFailure("Gagal mendapatkan image data diri: ${result.exceptionOrNull()?.message ?: "null"}")
+                        }
                     }
-                } else {
-                    withContext(Dispatchers.Main) {
-                        onComplete("Gagal mendapatkan image data diri: ${result.exceptionOrNull()?.message ?: "null"}")
-                    }
+
+                    isFinishOperation.postValue(true)
+                    isFinishAddImage.postValue(false)
                 }
-
-                isFinishOperation.postValue(true)
-            }
         }
     }
 
-    fun addImageDataDiri(kavlingKode: String, uri: Uri, onFailure: (msg: String) -> Unit) {
+    fun addImageDataDiri(kavlingKode: String, uri: Uri, onComplete: (msg: String) -> Unit) {
         isFinishOperation.value = false
+        isFinishAddImage.value = false
 
         CoroutineScope(Dispatchers.IO).launch {
             val request = AddImageDataDiriUseCase.Request(kavlingKode, uri)
@@ -85,13 +89,47 @@ class DetailViewModel @Inject constructor(
             addImageDataDiriUseCase.execute(request).collect { response ->
                 val result = response.data.result
 
-                if (result.isFailure) {
+                if (result.isSuccess) {
                     withContext(Dispatchers.Main) {
-                        onFailure("Gagal menambahkan image data diri: ${result.exceptionOrNull()?.message ?: "null"}")
+                        onComplete("Berhasil menambahkan foto")
+                    }
+                } else if (result.isFailure) {
+                    withContext(Dispatchers.Main) {
+                        onComplete("Gagal menambahkan image data diri: ${result.exceptionOrNull()?.message ?: "null"}")
                     }
                 }
 
                 isFinishOperation.postValue(true)
+                isFinishAddImage.postValue(true)
+            }
+        }
+    }
+
+    fun deleteImageDataDiri(onComplete: (msg: String) -> Unit) {
+        isFinishOperation.value = false
+
+        CoroutineScope(Dispatchers.IO).launch {
+            val imageDataDiri = imageDataDiriLive.value
+
+            if (imageDataDiri == null) {
+                withContext(Dispatchers.Main) { onComplete("Foto masih kosong") }
+                isFinishOperation.postValue(true)
+            } else {
+                val request = DeleteImageDataDiriUseCase.Request(imageDataDiri)
+
+                deleteImageDataDiriUseCase.execute(request).collect { response ->
+                    val result = response.data.result
+
+                    if (result.isSuccess) {
+                        withContext(Dispatchers.Main) { onComplete("Berhasil menghapus foto") }
+                        imageDataDiriLive.postValue(null)
+                        isFinishOperation.postValue(true)
+                    } else {
+                        withContext(Dispatchers.Main) { onComplete("Gagal menghapus foto: ${result.exceptionOrNull()?.message}") }
+                        isFinishOperation.postValue(true)
+                    }
+
+                }
             }
         }
     }
@@ -149,7 +187,7 @@ class DetailViewModel @Inject constructor(
         }
     }
 
-    fun deleteDataDiri(kavlingKode: String, onComplete: (msg: String) -> Unit) {
+    fun deleteImageDataDiri(kavlingKode: String, onComplete: (msg: String) -> Unit) {
         isFinishOperation.value = false
 
         CoroutineScope(Dispatchers.IO).launch {

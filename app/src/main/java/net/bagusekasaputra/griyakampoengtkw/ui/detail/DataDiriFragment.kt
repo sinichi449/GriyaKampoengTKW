@@ -8,6 +8,7 @@ import android.view.*
 import android.widget.ArrayAdapter
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.core.content.res.ResourcesCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import com.github.dhaval2404.imagepicker.ImagePicker
@@ -32,7 +33,9 @@ class DataDiriFragment : Fragment() {
             val data = result.data
 
             if (resultCode == Activity.RESULT_OK) {
-                viewModel.addImageDataDiri(currentKavlingKode!!, data?.data!!) { syncDataDiri() }
+                viewModel.addImageDataDiri(currentKavlingKode!!, data?.data!!) {
+                    Toast.makeText(requireContext(), it, Toast.LENGTH_SHORT).show()
+                }
             } else if (resultCode == ImagePicker.RESULT_ERROR) {
                 Toast.makeText(requireContext(), ImagePicker.getError(data), Toast.LENGTH_SHORT).show()
             } else {
@@ -81,11 +84,11 @@ class DataDiriFragment : Fragment() {
     }
 
     private fun syncDataDiri() {
-        viewModel.getImageDataDiri(currentKavlingKode!!) { }
-
         viewModel.getDataDiri(currentKavlingKode!!) { failMsg ->
             Toast.makeText(requireContext(), failMsg, Toast.LENGTH_LONG).show()
         }
+
+        viewModel.getImageDataDiri(currentKavlingKode!!) { }
     }
 
     private fun setupViewModel() {
@@ -96,7 +99,9 @@ class DataDiriFragment : Fragment() {
         }
 
         viewModel.imageDataDiriLive.observe(requireActivity()) { imageDataDiri ->
-            imageDataDiri?.let { binding.imgProfile.setImageBitmap(it.bitmap) }
+            imageDataDiri?.let {
+                binding.imgProfile.setImageBitmap(imageDataDiri.bitmap)
+            }
         }
 
         viewModel.dataDiriLive.observe(requireActivity()) { dataDiri ->
@@ -108,8 +113,15 @@ class DataDiriFragment : Fragment() {
             binding.tvAlamatIndo.text = dataDiri?.alamatIndo ?: "-"
             binding.tvNoHp.text = dataDiri?.noHp ?: "-"
         }
-    }
 
+        viewModel.isFinishAddImage.observe(requireActivity()) { finished ->
+            finished?.let {
+                if (it) viewModel.getImageDataDiri(currentKavlingKode!!) { failMsg ->
+                    Toast.makeText(requireContext(), failMsg, Toast.LENGTH_SHORT).show()
+                }
+            }
+        }
+    }
 
     private fun setupExtendedFloatingButton() {
         binding.fabActions.shrink()
@@ -227,7 +239,7 @@ class DataDiriFragment : Fragment() {
             .setTitle("Hapus Data Diri")
             .setMessage("Apakah Anda yakin akan menghapus Data Diri di kavling $currentKavlingKode?")
             .setPositiveButton("Ya") { dialog, _ ->
-                 viewModel.deleteDataDiri(currentKavlingKode!!) { completeMsg ->
+                 viewModel.deleteImageDataDiri(currentKavlingKode!!) { completeMsg ->
                      Toast.makeText(requireContext(), completeMsg, Toast.LENGTH_SHORT).show()
                      dialog.dismiss()
                      syncDataDiri()
@@ -275,9 +287,17 @@ class DataDiriFragment : Fragment() {
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         return when (item.itemId) {
+            R.id.hapus_foto -> {
+                viewModel.deleteImageDataDiri { completeMsg ->
+                    ResourcesCompat.getDrawable(resources, R.drawable.avatar_1, null).let {
+                        binding.imgProfile.setImageDrawable(it)
+                    }
+                    Toast.makeText(requireContext(), completeMsg, Toast.LENGTH_SHORT).show()
+                }
+                true
+            }
             R.id.hapus_data_diri -> {
                 showDeleteDataDiriDialog()
-
                 true
             }
             else -> super.onOptionsItemSelected(item)

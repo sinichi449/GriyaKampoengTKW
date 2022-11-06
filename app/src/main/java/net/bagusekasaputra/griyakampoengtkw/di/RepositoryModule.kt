@@ -25,6 +25,7 @@ import net.bagusekasaputra.griyakampoengtkw.data.source.remote.kavling.RemoteKav
 import net.bagusekasaputra.griyakampoengtkw.data.source.remote.pembayaran.FirebasePembayaranSource
 import net.bagusekasaputra.griyakampoengtkw.data.source.remote.pembayaran.RemotePembayaranSource
 import net.bagusekasaputra.griyakampoengtkw.domain.repository.*
+import java.io.File
 
 @Module
 @InstallIn(SingletonComponent::class)
@@ -106,8 +107,12 @@ object RepositoryModule {
 
     // Image Data Diri
     @Provides
-    fun provideImageDataDiriRepository(localImageDataDiriSource: LocalImageDataDiriSource, contentResolver: ContentResolver): ImageDataDiriRepository {
-        return ImageDataDiriRepositoryImpl(localImageDataDiriSource, contentResolver)
+    fun provideImageDataDiriRepository(
+        localImageDataDiriSource: LocalImageDataDiriSource,
+        contentResolver: ContentResolver,
+        externalFileDir: File?,
+    ): ImageDataDiriRepository {
+        return ImageDataDiriRepositoryImpl(localImageDataDiriSource, contentResolver, externalFileDir)
     }
 
     @Provides

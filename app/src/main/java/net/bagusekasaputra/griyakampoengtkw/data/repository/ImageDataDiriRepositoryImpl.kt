@@ -4,6 +4,7 @@ import android.content.ContentResolver
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.net.Uri
+import androidx.core.net.toFile
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.channels.trySendBlocking
 import kotlinx.coroutines.flow.Flow
@@ -12,6 +13,7 @@ import net.bagusekasaputra.griyakampoengtkw.data.model.ImageDataDiriModel
 import net.bagusekasaputra.griyakampoengtkw.data.source.local.imageDataDiri.LocalImageDataDiriSource
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.ImageDataDiri
 import net.bagusekasaputra.griyakampoengtkw.domain.repository.ImageDataDiriRepository
+import java.io.File
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -19,6 +21,7 @@ import javax.inject.Singleton
 class ImageDataDiriRepositoryImpl @Inject constructor(
     private val localImageDataDiriSource: LocalImageDataDiriSource,
     private val contentResolver: ContentResolver,
+    private val externalFileDir: File?,
 ): ImageDataDiriRepository {
 
     override fun getByKavlingKode(kavlingKode: String): Flow<Result<ImageDataDiri>> {
@@ -54,7 +57,37 @@ class ImageDataDiriRepositoryImpl @Inject constructor(
     }
 
     override fun deleteImage(imageDataDiri: ImageDataDiri): Flow<Result<Boolean>> {
-        TODO("Not yet implemented")
+        return callbackFlow {
+            localImageDataDiriSource.getUriByKavlingKode(
+                kavlingKode = imageDataDiri.kavlingKode,
+                onSuccess = {
+                    it.toFile().delete()
+                },
+                onFailure = { trySendBlocking(Result.failure(it ?: UnknownError("Terjadi kesalahan mendapatkan ID")))}
+            )
+
+            localImageDataDiriSource.deleteByKavlingKode(
+                kavlingKode = imageDataDiri.kavlingKode,
+                onSuccess = { trySendBlocking(Result.success(true)) },
+                onFailure = { trySendBlocking(Result.failure(it ?: UnknownError("Terjadi kesalahan menghapus gambar"))) },
+            )
+
+            awaitClose {  }
+        }
+    }
+
+    override fun getUriByKavlingKode(kavlingKode: String): Flow<Result<Uri>> {
+        return callbackFlow {
+
+
+            localImageDataDiriSource.getUriByKavlingKode(
+                kavlingKode = kavlingKode,
+                onSuccess = { trySendBlocking(Result.success(it)) },
+                onFailure = { trySendBlocking(Result.failure(it ?: UnknownError("Gagal mendapatkan uri"))) },
+            )
+
+            awaitClose {  }
+        }
     }
 
     private fun mapImageDataDiri(imageDataDiriModel: ImageDataDiriModel): ImageDataDiri {

@@ -14,4 +14,6 @@ interface ImageDataDiriRepository {
 
     fun deleteImage(imageDataDiri: ImageDataDiri): Flow<Result<Boolean>>
 
+    fun getUriByKavlingKode(kavlingKode: String): Flow<Result<Uri>>
+
 }

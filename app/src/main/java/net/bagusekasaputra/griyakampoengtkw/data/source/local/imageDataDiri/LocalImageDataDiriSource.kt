@@ -1,5 +1,6 @@
 package net.bagusekasaputra.griyakampoengtkw.data.source.local.imageDataDiri
 
+import android.net.Uri
 import net.bagusekasaputra.griyakampoengtkw.data.model.ImageDataDiriModel
 
 interface LocalImageDataDiriSource {
@@ -22,6 +23,12 @@ interface LocalImageDataDiriSource {
         onFailure: (cause: Throwable?) -> Unit
     )
 
+    suspend fun deleteByKavlingKode(
+        kavlingKode: String,
+        onSuccess: () -> Unit,
+        onFailure: (cause: Throwable?) -> Unit,
+    )
+
     suspend fun update(
         oldModel: ImageDataDiriModel,
         newModel: ImageDataDiriModel,
@@ -29,4 +36,9 @@ interface LocalImageDataDiriSource {
         onFailure: (cause: Throwable?) -> Unit
     )
 
+    suspend fun getUriByKavlingKode(
+        kavlingKode: String,
+        onSuccess: (uri: Uri) -> Unit,
+        onFailure: (cause: Throwable?) -> Unit,
+    )
 }

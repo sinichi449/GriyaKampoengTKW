@@ -6,7 +6,7 @@ import androidx.room.PrimaryKey
 
 @Entity(tableName = "image_data_diri")
 data class ImageDataDiriRoom(
-    @PrimaryKey(autoGenerate = true) val id: Int = 0,
+    @PrimaryKey(autoGenerate = false)
     @ColumnInfo(name = "kavling_kode") val kavlingKode: String,
     @ColumnInfo(name = "uri") val imgUri: String,
 )
