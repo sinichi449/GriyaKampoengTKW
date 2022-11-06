@@ -1,7 +1,9 @@
 package net.bagusekasaputra.griyakampoengtkw.ui.main
 
 import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
+import android.os.Environment
 import android.view.Menu
 import android.view.View
 import android.widget.ArrayAdapter
@@ -9,6 +11,7 @@ import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.net.toUri
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.github.dhaval2404.colorpicker.MaterialColorPickerDialog
@@ -26,6 +29,7 @@ import net.bagusekasaputra.griyakampoengtkw.ui.main.adapter.BlockRecyclerAdapter
 import net.bagusekasaputra.griyakampoengtkw.ui.main.adapter.KavlingRecyclerAdapter
 import net.bagusekasaputra.griyakampoengtkw.util.GriyaNodes
 import net.bagusekasaputra.griyakampoengtkw.util.InputUtil
+import java.io.File
 
 @AndroidEntryPoint
 class MainActivity : AppCompatActivity() {
@@ -367,10 +371,22 @@ class MainActivity : AppCompatActivity() {
                 }
             )
             .setPositiveButton("Update") { dialog, _ ->
-                // TODO: On update click
+                File(this.getExternalFilesDir(Environment.DIRECTORY_DOWNLOADS), "griya-kampoeng-tkw.apk")
+                    .toUri()
+                    .let {
+                        openBrowser(Uri.parse(appUpdate.url))
+                    }
             }
             .create()
             .show()
+    }
+
+    private fun openBrowser(uri: Uri) {
+        Intent(Intent.ACTION_VIEW, uri).let { browserIntent ->
+            browserIntent.resolveActivity(packageManager)?.let {
+                startActivity(browserIntent)
+            }
+        }
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
