@@ -1,4 +1,4 @@
-package net.bagusekasaputra.griyakampoengtkw.ui
+package net.bagusekasaputra.griyakampoengtkw.ui.custom
 
 import android.text.Editable
 import android.text.TextWatcher

@@ -16,6 +16,7 @@
         android:id="@+id/refresh"
         android:title="Refresh"
         app:showAsAction="ifRoom"
-        android:icon="@drawable/ic_baseline_refresh_24"/>
+        android:icon="@drawable/ic_baseline_refresh_24"
+        android:iconTint="@color/white"/>
 
 </menu>

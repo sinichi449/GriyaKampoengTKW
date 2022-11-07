@@ -11,7 +11,7 @@
         android:layout_width="match_parent"
         android:layout_height="?attr/actionBarSize"/>
 
-    <net.bagusekasaputra.griyakampoengtkw.ui.DisabledSwipeViewPager
+    <net.bagusekasaputra.griyakampoengtkw.ui.custom.DisabledSwipeViewPager
         android:id="@+id/view_pager"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"/>

@@ -70,9 +70,10 @@ class DataDiriFragment : Fragment() {
 
         setupExtendedFloatingButton()
 
-        binding.swipeRefreshDataDiri.setOnRefreshListener {
-            syncDataDiri()
-        }
+        binding.swipeRefreshDataDiri.isEnabled = false
+//        binding.swipeRefreshDataDiri.setOnRefreshListener {
+//            syncDataDiri()
+//        }
 
         setupViewModel()
     }
@@ -298,6 +299,10 @@ class DataDiriFragment : Fragment() {
             }
             R.id.hapus_data_diri -> {
                 showDeleteDataDiriDialog()
+                true
+            }
+            R.id.refresh -> {
+                syncDataDiri()
                 true
             }
             else -> super.onOptionsItemSelected(item)

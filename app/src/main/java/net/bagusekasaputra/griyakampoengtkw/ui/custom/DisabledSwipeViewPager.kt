@@ -1,4 +1,4 @@
-package net.bagusekasaputra.griyakampoengtkw.ui
+package net.bagusekasaputra.griyakampoengtkw.ui.custom
 
 import android.content.Context
 import android.util.AttributeSet
