@@ -17,6 +17,7 @@ import net.bagusekasaputra.griyakampoengtkw.R
 import net.bagusekasaputra.griyakampoengtkw.databinding.DialogTambahDataDiriBinding
 import net.bagusekasaputra.griyakampoengtkw.databinding.FragmentDataDiriBinding
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.DataDiri
+import net.bagusekasaputra.griyakampoengtkw.ui.custom.NewFeatureShowCase
 import net.bagusekasaputra.griyakampoengtkw.util.InputUtil
 
 @AndroidEntryPoint
@@ -82,7 +83,18 @@ class DataDiriFragment : Fragment() {
         super.onResume()
 
         syncDataDiri()
+
+        NewFeatureShowCase(requireActivity(), requireContext()).apply {
+            val movingFab = NewFeatureShowCase.Feature(binding.fabActions,
+                getString(R.string.sharedprefs_key_moveable_fab),
+                "Ini bisa gerak!",
+                "Sekarang biar No Hp gk ketutupan lagi, geser tombol ini ke arah mana saja.")
+
+            addFeature(movingFab)
+        }.show()
     }
+
+
 
     private fun syncDataDiri() {
         viewModel.getDataDiri(currentKavlingKode!!) { failMsg ->
@@ -130,7 +142,6 @@ class DataDiriFragment : Fragment() {
         binding.fabTambahFoto.visibility = View.GONE
 
         var isAllFabVisible = false
-
         binding.fabActions.setOnClickListener {
             if (isAllFabVisible) {
                 binding.fabActions.shrink()

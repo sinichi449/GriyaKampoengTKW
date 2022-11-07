@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="sharedprefs_key_moveable_fab">moveable_floating_action_button</string>
+</resources>

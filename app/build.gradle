@@ -14,8 +14,8 @@ android {
         applicationId "net.bagusekasaputra.griyakampoengtkw"
         minSdk 21
         targetSdk 32
-        versionCode 5
-        versionName "1.7.1"
+        versionCode 6
+        versionName "1.7.2"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
@@ -67,4 +67,5 @@ dependencies {
     implementation 'androidx.swiperefreshlayout:swiperefreshlayout:1.1.0'
     implementation 'com.github.Dhaval2404:ColorPicker:2.3'
     implementation 'com.github.dhaval2404:imagepicker:2.1'
+    implementation 'com.github.amlcurran.showcaseview:library:5.4.3'
 }

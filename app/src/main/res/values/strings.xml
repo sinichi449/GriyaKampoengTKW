@@ -2,4 +2,5 @@
     <string name="app_name">Griya Kampoeng TKW</string>
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="sharedprefs_key_moveable_fab">moveable_floating_action_button</string>
 </resources>
