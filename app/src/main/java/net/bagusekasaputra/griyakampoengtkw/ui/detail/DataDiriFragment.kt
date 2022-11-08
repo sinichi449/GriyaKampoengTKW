@@ -2,6 +2,7 @@ package net.bagusekasaputra.griyakampoengtkw.ui.detail
 
 import android.app.Activity
 import android.app.AlertDialog
+import android.content.Intent
 import android.os.Bundle
 import android.text.InputType
 import android.view.*
@@ -18,6 +19,7 @@ import net.bagusekasaputra.griyakampoengtkw.databinding.DialogTambahDataDiriBind
 import net.bagusekasaputra.griyakampoengtkw.databinding.FragmentDataDiriBinding
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.DataDiri
 import net.bagusekasaputra.griyakampoengtkw.ui.custom.NewFeatureShowCase
+import net.bagusekasaputra.griyakampoengtkw.util.GriyaNodes
 import net.bagusekasaputra.griyakampoengtkw.util.InputUtil
 
 @AndroidEntryPoint
@@ -76,6 +78,20 @@ class DataDiriFragment : Fragment() {
 //            syncDataDiri()
 //        }
 
+        binding.imgProfile.setOnClickListener {
+            Intent(requireContext(), FullImageFotoDataDiriActivity::class.java).let { intent ->
+                viewModel.imageDataDiriLive.value.let { img ->
+                    if (img == null) {
+                        Toast.makeText(requireContext(), "Foto masih kosong!", Toast.LENGTH_SHORT)
+                            .show()
+                    } else {
+                        intent.putExtra(GriyaNodes.INTENT_BITMAP, img.bitmap)
+                        startActivity(intent)
+                    }
+                }
+            }
+        }
+
         setupViewModel()
     }
 
@@ -84,7 +100,7 @@ class DataDiriFragment : Fragment() {
 
         syncDataDiri()
 
-        NewFeatureShowCase(requireActivity(), requireContext()).apply {
+        NewFeatureShowCase(requireActivity()).apply {
             val movingFab = NewFeatureShowCase.Feature(binding.fabActions,
                 getString(R.string.sharedprefs_key_moveable_fab),
                 "Ini bisa gerak!",

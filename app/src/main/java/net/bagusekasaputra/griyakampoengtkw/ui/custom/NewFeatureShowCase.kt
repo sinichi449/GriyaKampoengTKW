@@ -12,10 +12,9 @@ import com.google.android.material.button.MaterialButton
 import net.bagusekasaputra.griyakampoengtkw.R
 import net.bagusekasaputra.griyakampoengtkw.util.GriyaNodes
 
-class NewFeatureShowCase(
-    private val activity: Activity,
-    private val ctx: Context,
-) {
+class NewFeatureShowCase(private val activity: Activity) {
+
+    private val ctx = activity.applicationContext
 
     data class Feature(
         val view: View,

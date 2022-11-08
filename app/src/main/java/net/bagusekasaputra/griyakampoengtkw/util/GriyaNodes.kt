@@ -5,6 +5,7 @@ class GriyaNodes {
     companion object {
         const val INTENT_IS_ONLINE = "is_online"
         const val INTENT_KAVLING_KODE = "kavling_kode"
+        const val INTENT_BITMAP = "image_uri"
 
         const val SHARED_PREFS_NEW_FEATURE = "new_feature"
 
