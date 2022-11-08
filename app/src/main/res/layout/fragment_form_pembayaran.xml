@@ -152,23 +152,23 @@
                             android:text="Termin"
                             android:textColor="@color/white"
                             android:padding="4dp"
-                            android:textSize="15sp"
+                            android:textSize="@dimen/text_table_header_size"
                             android:textStyle="bold"/>
 
                         <TextView
                             android:text="Tanggal"
                             android:textColor="@color/white"
                             android:padding="4dp"
-                            android:textSize="15sp"
+                            android:textSize="@dimen/text_table_header_size"
                             android:textStyle="bold"/>
 
                         <TextView
                             android:layout_width="100dp"
                             android:textAlignment="center"
-                            android:text="Jumlah Uang dibayar"
+                            android:text="Jumlah Uang Dibayar"
                             android:textColor="@color/white"
                             android:padding="4dp"
-                            android:textSize="15sp"
+                            android:textSize="@dimen/text_table_header_size"
                             android:textStyle="bold"/>
 
                         <TextView
@@ -177,7 +177,7 @@
                             android:text="Total Uang Masuk"
                             android:textColor="@color/white"
                             android:padding="4dp"
-                            android:textSize="15sp"
+                            android:textSize="@dimen/text_table_header_size"
                             android:textStyle="bold"/>
 
                         <TextView
@@ -186,7 +186,7 @@
                             android:text="(%)"
                             android:textColor="@color/white"
                             android:padding="4dp"
-                            android:textSize="15sp"
+                            android:textSize="@dimen/text_table_header_size"
                             android:textStyle="bold"/>
 
                         <TextView
@@ -195,7 +195,7 @@
                             android:text="Keterangan Progress"
                             android:textColor="@color/white"
                             android:padding="4dp"
-                            android:textSize="15sp"
+                            android:textSize="@dimen/text_table_header_size"
                             android:textStyle="bold"/>
 
                     </TableRow>

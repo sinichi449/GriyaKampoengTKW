@@ -357,7 +357,7 @@ class FormPembayaranFragment : Fragment() {
             val jumlahUangDibayar = createTextViewForTableRows()
             val totalUangMasuk = createTextViewForTableRows()
             val presentase = createTextViewForTableRows()
-            val keterangan = createTextViewForTableRows()
+            val keterangan = createTextViewForTableRows().apply { textAlignment = View.TEXT_ALIGNMENT_VIEW_START }
 
             termin.text = it.termin
             tanggal.text = it.tanggal
@@ -565,7 +565,7 @@ class FormPembayaranFragment : Fragment() {
     }
 
     private fun createTextViewForTableRows(): MaterialTextView {
-        return MaterialTextView(requireContext()).apply {
+        return MaterialTextView(requireContext(), null, com.google.android.material.R.style.TextAppearance_MaterialComponents_Body1).apply {
             setPadding(8, 4, 8, 4)
         }
     }
