@@ -116,8 +116,11 @@ class PembayaranRepositoryImpl @Inject constructor(
 
     private fun mapPembayaran(pembayaran: Pembayaran): PembayaranModel {
         return pembayaran.let {
-            PembayaranModel(
-                termin = it.termin,
+            val pisah = pisahkanTerminDanUrutan(it.termin)
+
+            return@let PembayaranModel(
+                termin = pisah["jenis"]!!,
+                urutan = pisah["urutan"]!!.toInt(),
                 tanggal = it.tanggal,
                 jumlahUangDibayar = NumberUtil.formatStringToLong(it.jumlahUangDibayar),
                 keterangan = it.keterangan,
@@ -136,6 +139,14 @@ class PembayaranRepositoryImpl @Inject constructor(
                 timeMillis = it.timeMillis,
             )
         }
+    }
+
+    private fun pisahkanTerminDanUrutan(termin: String): Map<String, String> {
+        val terminDanUrutan = termin.split(" ")
+        return mapOf<String, String>(
+            Pair("jenis", terminDanUrutan[0]),
+            Pair("urutan", terminDanUrutan[1]),
+        )
     }
 
 }

@@ -46,7 +46,7 @@ class DetailViewModel @Inject constructor(
 
     val hargaKavlingLive = MutableLiveData<HargaKavling>()
 
-    val listPembayaranLive = MutableLiveData<List<Pembayaran>>()
+    val listPembayaranLive = MutableLiveData<List<Pembayaran>?>()
 
     val currentKavlingKode = MutableLiveData<String>()
 
@@ -393,7 +393,7 @@ class DetailViewModel @Inject constructor(
                     withContext(Dispatchers.Main) {
                         onComplete("Berhasil menghapus semua pembayaran di $kavlingKode")
                     }
-                    listPembayaranLive.postValue(emptyList<Pembayaran>())
+                    listPembayaranLive.postValue(null)
                 } else {
                     withContext(Dispatchers.Main) {
                         onComplete("Gagal menghapus pembayaran: ${result.exceptionOrNull()?.message ?: "null"}")

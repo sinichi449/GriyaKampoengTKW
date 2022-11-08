@@ -51,10 +51,10 @@ class FirebasePembayaranSource @Inject constructor(
         onSuccess: () -> Unit,
         onFailure: (throwable: Throwable) -> Unit
     ) {
-        databaseReference
-            .child(GriyaNodes.formPembayaran)
+        pembayaranRef
             .child(kavlingKode)
-            .child(pembayaranModel.termin)
+            .child("${pembayaranModel.termin} ${pembayaranModel.urutan}") // Must be "DP 1", where "DP" is
+            // in $pembayaranModel.termin and "1" is in $pembayaranModel.urutan
             .setValue(pembayaranModel)
             .addOnSuccessListener {
                 onSuccess()

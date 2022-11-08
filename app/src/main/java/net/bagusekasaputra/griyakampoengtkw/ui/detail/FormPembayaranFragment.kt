@@ -180,6 +180,7 @@ class FormPembayaranFragment : Fragment() {
     }
 
     private fun showAddFormPembayaranDialog() {
+        // check harga kavling available
         val hargaKavling = binding.tvHarga?.text.toString().let {
             NumberUtil.formatStringToLong(it)
         }
@@ -187,7 +188,9 @@ class FormPembayaranFragment : Fragment() {
         if (hargaKavling <= 0L) {
             Toast.makeText(requireContext(), "Harga kavling masih kosong", Toast.LENGTH_SHORT)
                 .show()
+        // available? move on!
         } else {
+            // inflating
             val dialogBinding = DialogAddFormPembayaranBinding.inflate(layoutInflater)
             val dialogView = AlertDialog.Builder(requireContext()).apply {
                 setView(dialogBinding.root)
@@ -199,17 +202,20 @@ class FormPembayaranFragment : Fragment() {
 
             dialogView.show()
 
+            // setting layout
             dialogBinding.edtJumlahUangDibayar.apply {
                 addTextChangedListener(ThousandSeparatorTextWatcher(this))
             }
 
             setDateDefaulOrPickEdtTanggal(true, dialogBinding)
 
+            // click listeners
             dialogBinding.btnBatal.setOnClickListener {
                 dialogView.dismiss()
             }
 
             dialogBinding.btnTambahkan.setOnClickListener {
+                // on view click
                 dialogBinding.btnTambahkan.text = "Menyimpan data ..."
                 dialogBinding.btnTambahkan.isEnabled = false
 
@@ -218,12 +224,18 @@ class FormPembayaranFragment : Fragment() {
                 )
 
                 if (!isInvalidEdt) {
-                    val termin = dialogBinding.edtTermin.text.toString()
+                    // getting data from edt
+                    val termin = dialogBinding.edtTermin.text.toString().let { urutanTermin ->
+                        if (dialogBinding.rbItj.isChecked) "ITJ $urutanTermin"
+                        else if (dialogBinding.rbDp.isChecked) "DP $urutanTermin"
+                        else if (dialogBinding.rbTermin.isChecked) "Termin $urutanTermin"
+                        else "Termin 999" // This is ridiculuously error :v
+                    }
                     val tanggal = dialogBinding.edtTanggal.text.toString()
                     val jumlahUangDibayar = dialogBinding.edtJumlahUangDibayar.text.toString()
                     val keteranganProgress = dialogBinding.edtKeteranganProgress.text.let {
-                        if (it.isNullOrBlank()) return@let "-"
-                        else return@let it.toString()
+                        if (it.isNullOrBlank())  "-"
+                        else it.toString()
                     }
                     val pembayaran = Pembayaran(
                         termin = termin,
@@ -233,6 +245,7 @@ class FormPembayaranFragment : Fragment() {
                         timeMillis = System.currentTimeMillis(),
                     )
 
+                    // call view model
                     viewModel.addPembayaran(currentKavlingKode!!, hargaKavling, pembayaran) { msg ->
                         Toast.makeText(requireContext(), msg, Toast.LENGTH_SHORT).show()
                         dialogView.dismiss()
@@ -331,24 +344,27 @@ class FormPembayaranFragment : Fragment() {
     }
 
     private fun populateTableLayout(listPembayaran: List<Pembayaran>) {
+        // avoiding multiple table, so we need to clear the table for each
+        // "populateTableLayout()" function call
         binding.tableLayout.apply {
             removeViews(1, max(0, this.childCount - 1))
         }
 
-        for (test in listPembayaran) {
-            val termin = MaterialTextView(requireContext())
-            val tanggal = MaterialTextView(requireContext())
-            val jumlahUangDibayar = MaterialTextView(requireContext())
-            val totalUangMasuk = MaterialTextView(requireContext())
-            val presentase = MaterialTextView(requireContext())
-            val keterangan = MaterialTextView(requireContext())
+        listPembayaran.forEach {
+            // Creating Textview for each rows
+            val termin = createTextViewForTableRows()
+            val tanggal = createTextViewForTableRows()
+            val jumlahUangDibayar = createTextViewForTableRows()
+            val totalUangMasuk = createTextViewForTableRows()
+            val presentase = createTextViewForTableRows()
+            val keterangan = createTextViewForTableRows()
 
-            termin.text = test.termin
-            tanggal.text = test.tanggal
-            jumlahUangDibayar.text = test.jumlahUangDibayar.toString()
-            totalUangMasuk.text = test.totalUangMasuk.toString()
-            presentase.text = test.presentase.toString()
-            keterangan.text = test.keterangan
+            termin.text = it.termin
+            tanggal.text = it.tanggal
+            jumlahUangDibayar.text = it.jumlahUangDibayar.toString()
+            totalUangMasuk.text = it.totalUangMasuk.toString()
+            presentase.text = it.presentase.toString()
+            keterangan.text = it.keterangan
 
             val textViews = ArrayList<MaterialTextView>().apply {
                 add(termin)
@@ -545,6 +561,12 @@ class FormPembayaranFragment : Fragment() {
             dialogBinding.edtTermin.isEnabled = true
             dialogBinding.tilTermin.isEnabled = true
             dialogBinding.tilTermin.hint = "Masukkan urutan Termin"
+        }
+    }
+
+    private fun createTextViewForTableRows(): MaterialTextView {
+        return MaterialTextView(requireContext()).apply {
+            setPadding(8, 4, 8, 4)
         }
     }
 
