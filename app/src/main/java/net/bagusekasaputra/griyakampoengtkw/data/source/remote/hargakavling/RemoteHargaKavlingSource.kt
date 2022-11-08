@@ -9,5 +9,5 @@ interface RemoteHargaKavlingSource {
 
     fun addHargaKavlingModel(hargaKavlingModel: HargaKavlingModel): Flow<Result<Boolean>>
 
-    fun getSingleHargaKavlingForPembayaran(kavlingKode: String, onSuccess: (harga: Long) -> Unit)
+    fun getSingleHargaKavlingForPembayaran(kavlingKode: String, onSuccess: (hargaKavlingModel: HargaKavlingModel?) -> Unit)
 }

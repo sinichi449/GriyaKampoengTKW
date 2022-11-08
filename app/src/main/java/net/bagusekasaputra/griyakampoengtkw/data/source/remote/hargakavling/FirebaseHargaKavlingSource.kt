@@ -63,16 +63,16 @@ class FirebaseHargaKavlingSource @Inject constructor(
 
     override fun getSingleHargaKavlingForPembayaran(
         kavlingKode: String,
-        onSuccess: (harga: Long) -> Unit,
+        onSuccess: (harga: HargaKavlingModel?) -> Unit
     ) {
         databaseReference
             .child(GriyaNodes.hargaKavling)
             .child(kavlingKode)
             .get()
             .addOnSuccessListener { snapshot ->
-                val hargaKavling = snapshot.getValue<HargaKavlingModel>()
+                val hargaKavlingKavlingModel = snapshot.getValue<HargaKavlingModel>()
 
-                onSuccess(hargaKavling?.harga ?: 0L)
+                onSuccess(hargaKavlingKavlingModel)
             }
     }
 

@@ -44,7 +44,7 @@ class DetailViewModel @Inject constructor(
 
     val dataDiriLive = MutableLiveData<DataDiri?>()
 
-    val hargaKavlingLive = MutableLiveData<String>()
+    val hargaKavlingLive = MutableLiveData<HargaKavling>()
 
     val listPembayaranLive = MutableLiveData<List<Pembayaran>>()
 
@@ -227,9 +227,9 @@ class DetailViewModel @Inject constructor(
                     val hargaKavling = result.getOrNull()
 
                     if (hargaKavling == null) {
-                        hargaKavlingLive.postValue("0")
+                        hargaKavlingLive.postValue(HargaKavling(kavlingKode, "0", "0"))
                     } else {
-                        hargaKavlingLive.postValue(hargaKavling.harga)
+                        hargaKavlingLive.postValue(hargaKavling!!)
                     }
                 } else {
                     withContext(Dispatchers.Main) {

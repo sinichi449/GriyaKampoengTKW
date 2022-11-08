@@ -48,14 +48,17 @@ class HargaKavlingRepositoryImpl @Inject constructor(
         }
     }
 
-    override fun getSingleHargaKavlingForPembayaran(kavlingKode: String): Flow<Long> {
+    override fun getSingleHargaKavlingForPembayaran(kavlingKode: String): Flow<HargaKavling> {
         return callbackFlow {
             remoteHargaKavlingSource.getSingleHargaKavlingForPembayaran(
-                kavlingKode = kavlingKode,
-                onSuccess = {
-                    trySendBlocking(it)
+                kavlingKode = kavlingKode
+            ) {
+                if (it != null) {
+                    trySendBlocking(mapHargaKavling(it))
+                } else {
+                    trySendBlocking(HargaKavling(kavlingKode, "0", "0"))
                 }
-            )
+            }
 
             awaitClose {  }
         }
@@ -65,7 +68,8 @@ class HargaKavlingRepositoryImpl @Inject constructor(
         return hargaKavling.let {
             HargaKavlingModel(
                 kavlingKode = it.kavlingKode,
-                harga = NumberUtil.formatStringToLong(it.harga)
+                harga = NumberUtil.formatStringToLong(it.harga),
+                tambahLuasan = NumberUtil.formatStringToLong(it.tambahanLuas),
             )
         }
     }
@@ -74,7 +78,8 @@ class HargaKavlingRepositoryImpl @Inject constructor(
         return hargaKavlingModel.let {
             HargaKavling(
                 kavlingKode = it.kavlingKode,
-                harga = NumberUtil.formatLongToString(it.harga)
+                harga = NumberUtil.formatLongToString(it.harga),
+                tambahanLuas = NumberUtil.formatLongToString(it.tambahLuasan),
             )
         }
     }

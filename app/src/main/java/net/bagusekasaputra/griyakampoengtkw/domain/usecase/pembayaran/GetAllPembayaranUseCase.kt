@@ -3,6 +3,7 @@ package net.bagusekasaputra.griyakampoengtkw.domain.usecase.pembayaran
 import android.util.Log
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.*
+import net.bagusekasaputra.griyakampoengtkw.domain.entity.HargaKavling
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.Pembayaran
 import net.bagusekasaputra.griyakampoengtkw.domain.repository.PembayaranRepository
 import net.bagusekasaputra.griyakampoengtkw.domain.usecase.UseCase
@@ -45,7 +46,7 @@ class GetAllPembayaranUseCase @Inject constructor(
 
     private fun maskPembayaran(
         listPembayaran: List<Pembayaran>,
-        hargaKavling: Long
+        hargaKavling: HargaKavling,
     ): List<Pembayaran> {
         val sortedListPembayaran = sortListPembayaran(listPembayaran)
         val newListPembayaran = ArrayList<Pembayaran>()
@@ -64,7 +65,7 @@ class GetAllPembayaranUseCase @Inject constructor(
         return newListPembayaran
     }
 
-    private fun getPersentase(totalUangMasuk: Long, hargaKavling: Long): Double {
+    private fun getPersentase(totalUangMasuk: Long, hargaKavling: HargaKavling): Double {
         val floatTotalUangMasuk = totalUangMasuk.toFloat()
         val floatHargaKavling = hargaKavling.toFloat()
         val persentase = floatTotalUangMasuk.div(floatHargaKavling).let {
@@ -94,12 +95,12 @@ class GetAllPembayaranUseCase @Inject constructor(
         return calendar.toInstant().toEpochMilli()
     }
 
-    private fun getHargaKavling(kavlingKode: String): Flow<Long> {
-        return flow {
+    private fun getHargaKavling(kavlingKode: String): Flow<HargaKavling> {
+        return flow<HargaKavling> {
             val request = GetSingleHargaKavlingForPembayaranUseCase.Request(kavlingKode)
 
             getSingleHargaKavlingForPembayaranUseCase.execute(request).collect { response ->
-                val result = response.data.harga
+                val result = response.data.hargaKavling
 
                 emit(result)
             }

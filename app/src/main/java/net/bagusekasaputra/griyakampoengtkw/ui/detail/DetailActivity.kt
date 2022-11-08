@@ -47,6 +47,8 @@ class DetailActivity : AppCompatActivity() {
             addFragment(putKavlingKode(BiayaMarketingFragment(), currentKavlingKode), "Biaya Marketing")
         }
 
+
+
         binding.viewPager.adapter = pagerAdapter
         binding.tabLayout.setupWithViewPager(binding.viewPager)
     }

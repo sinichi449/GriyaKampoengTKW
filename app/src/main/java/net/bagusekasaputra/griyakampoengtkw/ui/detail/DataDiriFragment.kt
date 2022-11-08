@@ -101,12 +101,14 @@ class DataDiriFragment : Fragment() {
         syncDataDiri()
 
         NewFeatureShowCase(requireActivity()).apply {
-            val movingFab = NewFeatureShowCase.Feature(binding.fabActions,
-                getString(R.string.sharedprefs_key_moveable_fab),
-                "Ini bisa gerak!",
-                "Sekarang biar No Hp gk ketutupan lagi, geser tombol ini ke arah mana saja.")
+            val perbesarFoto = NewFeatureShowCase.Feature(
+                binding.imgProfile,
+                getString(R.string.shared_prefs_enlarge_photo),
+                "Klik untuk perbesar foto",
+                "Punya gambar asupan tapi masya Allah burik?"
+            )
 
-            addFeature(movingFab)
+            addFeature(perbesarFoto)
         }.show()
     }
 

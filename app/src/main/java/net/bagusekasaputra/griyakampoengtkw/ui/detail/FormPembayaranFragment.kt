@@ -20,6 +20,7 @@ import net.bagusekasaputra.griyakampoengtkw.databinding.DialogPilihTerminBinding
 import net.bagusekasaputra.griyakampoengtkw.databinding.FragmentFormPembayaranBinding
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.HargaKavling
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.Pembayaran
+import net.bagusekasaputra.griyakampoengtkw.ui.custom.NewFeatureShowCase
 import net.bagusekasaputra.griyakampoengtkw.ui.custom.ThousandSeparatorTextWatcher
 import net.bagusekasaputra.griyakampoengtkw.ui.detail.adapter.TerminRecyclerAdapter
 import net.bagusekasaputra.griyakampoengtkw.util.GriyaNodes
@@ -80,6 +81,17 @@ class FormPembayaranFragment : Fragment() {
         super.onResume()
 
         syncPembayaran()
+
+        NewFeatureShowCase(requireActivity()).apply {
+            val tambahLuas = NewFeatureShowCase.Feature(
+                binding.tvInfoTambahanLuas as View,
+                "info_tambah_luasan",
+                "Tambah Luasan",
+                "Punya costumer tapi masya Allah ngeyel pingin buat rumah sepanjang jarak di antara kita?"
+            )
+
+            addFeature(tambahLuas)
+        }.show()
     }
 
     private fun syncPembayaran() {
@@ -98,13 +110,18 @@ class FormPembayaranFragment : Fragment() {
             }
         }
 
-        viewModel.hargaKavlingLive.observe(requireActivity()) { hargaStr ->
-            if (hargaStr == null) {
+        viewModel.hargaKavlingLive.observe(requireActivity()) { hargaKavling ->
+            if (hargaKavling == null) {
                 viewModel.getHargaKavling(currentKavlingKode!!) { failMsg ->
                     Toast.makeText(requireContext(), failMsg, Toast.LENGTH_LONG).show()
                 }
             } else {
-                binding.tvHarga?.text = hargaStr
+                binding.tvHarga?.text = hargaKavling.harga
+                binding.tvTambahanLuas?.text = hargaKavling.tambahanLuas
+
+                (NumberUtil.formatStringToLong(hargaKavling.harga) + NumberUtil.formatStringToLong(hargaKavling.tambahanLuas)).let {
+                    binding.tvTotalHarga?.text = NumberUtil.formatLongToString(it)
+                }
             }
         }
 
@@ -272,6 +289,12 @@ class FormPembayaranFragment : Fragment() {
                 this.setText(harga)
             addTextChangedListener(ThousandSeparatorTextWatcher(this))
         }
+        dialogBinding.edtTambahLuasan.apply {
+            val tambahanLuas = binding.tvTambahanLuas?.text
+            if (tambahanLuas != "0") this.setText(tambahanLuas)
+
+            addTextChangedListener(ThousandSeparatorTextWatcher(this))
+        }
 
         dialogBinding.btnTambahkan.setOnClickListener {
             dialogBinding.btnTambahkan.isEnabled = false
@@ -281,7 +304,14 @@ class FormPembayaranFragment : Fragment() {
 
             if (!isInvalidEdt) {
                 val harga = dialogBinding.edtHarga.text.toString()
-                val hargaKavling = HargaKavling(currentKavlingKode!!, harga)
+                var hargaKavling = HargaKavling(currentKavlingKode!!, harga, "0")
+
+                dialogBinding.edtTambahLuasan.text.let {
+                    if (!it.isNullOrBlank()) {
+                        val tambahLuasan = it.toString()
+                        hargaKavling = HargaKavling(currentKavlingKode!!, harga, tambahLuasan)
+                    }
+                }
 
                 viewModel.addHargaKavling(hargaKavling) { msg ->
                     Toast.makeText(requireContext(), msg, Toast.LENGTH_SHORT).show()

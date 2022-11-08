@@ -29,7 +29,7 @@
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintEnd_toStartOf="@id/guideline_vertical"
             style="@style/TextAppearance.MaterialComponents.Headline6"
-            android:textSize="18sp"/>
+            android:textSize="@dimen/form_pembayaran_title_text_size"/>
 
         <com.google.android.material.textview.MaterialTextView
             android:id="@+id/tv_harga"
@@ -53,28 +53,74 @@
             android:layout_marginStart="24dp"/>
 
         <com.google.android.material.textview.MaterialTextView
-            android:id="@+id/tv_info_sisa_blm_terbayar"
+            android:id="@+id/tv_info_tambahan_luas"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             app:layout_constraintStart_toStartOf="@id/tv_info_harga"
             app:layout_constraintTop_toBottomOf="@id/tv_info_harga"
             app:layout_constraintEnd_toStartOf="@id/guideline_vertical"
-            android:text="Sisa Blm Terbayar"
+            android:text="Tambah Luasan"
             style="@style/TextAppearance.MaterialComponents.Headline6"
-            android:textSize="18sp"
+            android:textSize="@dimen/form_pembayaran_title_text_size"
             android:layout_marginTop="8dp"/>
 
         <com.google.android.material.textview.MaterialTextView
-            android:id="@+id/tv_sisa_blm_terbayar"
-            android:layout_width="0dp"
+            android:id="@+id/tv_tambahan_luas"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             app:layout_constraintStart_toStartOf="@id/tv_harga"
             app:layout_constraintEnd_toEndOf="@id/tv_harga"
-            app:layout_constraintTop_toTopOf="@id/tv_info_sisa_blm_terbayar"
-            app:layout_constraintBottom_toBottomOf="@id/tv_info_sisa_blm_terbayar"
+            app:layout_constraintTop_toTopOf="@id/tv_info_tambahan_luas"
+            app:layout_constraintBottom_toBottomOf="@id/tv_info_tambahan_luas"
             style="@style/TextAppearance.MaterialComponents.Subtitle1"
             android:gravity="center"
             android:text="0"/>
+
+        <com.google.android.material.divider.MaterialDivider
+            android:id="@+id/divider_harga_tambahan_luas"
+            android:layout_width="0dp"
+            android:layout_height="2dp"
+            app:layout_constraintStart_toEndOf="@id/guideline_vertical"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/tv_tambahan_luas"
+            android:layout_marginTop="8dp"
+            android:layout_marginHorizontal="16dp"/>
+
+        <com.google.android.material.textview.MaterialTextView
+            android:id="@+id/tv_total_harga"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintStart_toStartOf="@id/tv_tambahan_luas"
+            app:layout_constraintEnd_toEndOf="@id/tv_tambahan_luas"
+            app:layout_constraintTop_toBottomOf="@id/divider_harga_tambahan_luas"
+            android:text="0"
+            style="@style/TextAppearance.MaterialComponents.Subtitle1"
+            android:gravity="center"
+            android:layout_marginTop="8dp"/>
+
+        <com.google.android.material.textview.MaterialTextView
+            android:id="@+id/tv_info_sisa_blm_terbayar"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            app:layout_constraintTop_toBottomOf="@id/tv_total_harga"
+            app:layout_constraintStart_toStartOf="@id/tv_info_tambahan_luas"
+            app:layout_constraintEnd_toStartOf="@id/guideline_vertical"
+            android:text="Sisa Belum Bayar"
+            android:layout_marginTop="12dp"
+            style="@style/TextAppearance.MaterialComponents.Headline6"
+            android:textSize="@dimen/form_pembayaran_title_text_size"/>
+
+        <com.google.android.material.textview.MaterialTextView
+            android:id="@+id/tv_sisa_blm_terbayar"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintStart_toStartOf="@id/tv_total_harga"
+            app:layout_constraintEnd_toEndOf="@id/tv_total_harga"
+            app:layout_constraintTop_toTopOf="@id/tv_info_sisa_blm_terbayar"
+            app:layout_constraintBottom_toBottomOf="@id/tv_info_sisa_blm_terbayar"
+            android:text="0"
+            style="@style/TextAppearance.MaterialComponents.Subtitle1"/>
+
 
         <ScrollView
             android:id="@+id/scroll_view_table"

@@ -6,9 +6,9 @@ import android.graphics.Point
 import android.os.Handler
 import android.os.Looper
 import android.view.View
+import android.widget.Button
 import com.github.amlcurran.showcaseview.ShowcaseView
 import com.github.amlcurran.showcaseview.targets.Target
-import com.google.android.material.button.MaterialButton
 import net.bagusekasaputra.griyakampoengtkw.R
 import net.bagusekasaputra.griyakampoengtkw.util.GriyaNodes
 
@@ -66,7 +66,7 @@ class NewFeatureShowCase(private val activity: Activity) {
             .setContentTitle(title)
             .setContentText(content)
             .hideOnTouchOutside()
-            .replaceEndButton(MaterialButton(ctx).apply { visibility = View.GONE })
+            .replaceEndButton(Button(ctx).apply { visibility = View.GONE })
             .setStyle(R.style.ShowcaseView_GriyaStyle)
             .build()
     }
