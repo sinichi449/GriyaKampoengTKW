@@ -17,18 +17,56 @@
         style="@style/TextAppearance.MaterialComponents.Headline6"/>
 
 
-    <com.google.android.material.textfield.TextInputLayout
+    <com.google.android.material.textview.MaterialTextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="Termin"
-        android:layout_marginTop="24dp"
-        app:startIconDrawable="@drawable/ic_baseline_account_balance_wallet_24">
+        android:text="Jenis Pembayaran"
+        style="@style/TextAppearance.MaterialComponents.Subtitle1"
+        android:layout_marginTop="24dp"/>
+
+    <RadioGroup
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp">
+
+        <RadioButton
+            android:id="@+id/rb_itj"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="ITJ"/>
+
+        <RadioButton
+            android:id="@+id/rb_dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="DP"/>
+
+        <RadioButton
+            android:id="@+id/rb_termin"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Termin"/>
+
+    </RadioGroup>
+
+
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/til_termin"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Silakan pilih jenis pembayaran"
+        android:layout_marginTop="8dp"
+        android:enabled="false"
+        app:startIconDrawable="@drawable/ic_baseline_account_balance_wallet_24"
+        app:endIconMode="clear_text">
 
         <com.google.android.material.textfield.TextInputEditText
             android:id="@+id/edt_termin"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:inputType="text"/>
+            android:enabled="false"
+            android:inputType="number"/>
 
     </com.google.android.material.textfield.TextInputLayout>
 
