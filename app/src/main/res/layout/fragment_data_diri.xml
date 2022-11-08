@@ -28,8 +28,8 @@
 
                 <ImageView
                     android:id="@+id/img_profile"
-                    android:layout_width="256dp"
-                    android:layout_height="256dp"
+                    android:layout_width="200dp"
+                    android:layout_height="200dp"
                     android:layout_marginTop="24dp"
                     android:src="@drawable/avatar_1"
                     app:layout_constraintEnd_toEndOf="parent"
@@ -69,7 +69,7 @@
                                 android:layout_weight="0.5"
                                 android:gravity="start"
                                 android:text="Nama"
-                                android:textSize="16sp" />
+                                android:textSize="@dimen/data_diri_text_size" />
 
                             <com.google.android.material.textview.MaterialTextView
                                 android:id="@+id/tv_nama"
@@ -79,7 +79,7 @@
                                 android:gravity="end"
                                 android:text="-"
                                 android:textColor="@color/black"
-                                android:textSize="16sp" />
+                                android:textSize="@dimen/data_diri_text_size" />
 
                         </androidx.appcompat.widget.LinearLayoutCompat>
 
@@ -97,7 +97,7 @@
                                 android:layout_weight="0.5"
                                 android:gravity="start"
                                 android:text="Jenis Identitas"
-                                android:textSize="16sp" />
+                                android:textSize="@dimen/data_diri_text_size" />
 
                             <com.google.android.material.textview.MaterialTextView
                                 android:id="@+id/tv_jenis_identitas"
@@ -107,7 +107,7 @@
                                 android:gravity="end"
                                 android:text="-"
                                 android:textColor="@color/black"
-                                android:textSize="16sp" />
+                                android:textSize="@dimen/data_diri_text_size" />
 
                         </androidx.appcompat.widget.LinearLayoutCompat>
 
@@ -126,7 +126,7 @@
                                 android:layout_weight="0.5"
                                 android:gravity="start"
                                 android:text="No. Identitas"
-                                android:textSize="16sp" />
+                                android:textSize="@dimen/data_diri_text_size" />
 
                             <com.google.android.material.textview.MaterialTextView
                                 android:id="@+id/tv_no_identitas"
@@ -136,7 +136,7 @@
                                 android:gravity="end"
                                 android:text="-"
                                 android:textColor="@color/black"
-                                android:textSize="16sp" />
+                                android:textSize="@dimen/data_diri_text_size" />
 
                         </androidx.appcompat.widget.LinearLayoutCompat>
 
@@ -154,7 +154,7 @@
                                 android:layout_weight="0.5"
                                 android:gravity="start"
                                 android:text="Negara Bekerja"
-                                android:textSize="16sp" />
+                                android:textSize="@dimen/data_diri_text_size" />
 
                             <com.google.android.material.textview.MaterialTextView
                                 android:id="@+id/tv_negara_bekerja"
@@ -164,7 +164,7 @@
                                 android:gravity="end"
                                 android:text="-"
                                 android:textColor="@color/black"
-                                android:textSize="16sp" />
+                                android:textSize="@dimen/data_diri_text_size" />
 
                         </androidx.appcompat.widget.LinearLayoutCompat>
 
@@ -183,7 +183,7 @@
                                 android:layout_weight="0.5"
                                 android:gravity="start"
                                 android:text="Alamat Kerja"
-                                android:textSize="16sp" />
+                                android:textSize="@dimen/data_diri_text_size" />
 
                             <com.google.android.material.textview.MaterialTextView
                                 android:id="@+id/tv_alamat_kerja"
@@ -193,7 +193,7 @@
                                 android:gravity="end"
                                 android:text="-"
                                 android:textColor="@color/black"
-                                android:textSize="16sp" />
+                                android:textSize="@dimen/data_diri_text_size" />
 
                         </androidx.appcompat.widget.LinearLayoutCompat>
 
@@ -210,7 +210,7 @@
                                 android:layout_weight="0.5"
                                 android:gravity="start"
                                 android:text="Alamat Indo"
-                                android:textSize="16sp" />
+                                android:textSize="@dimen/data_diri_text_size" />
 
                             <com.google.android.material.textview.MaterialTextView
                                 android:id="@+id/tv_alamat_indo"
@@ -220,7 +220,7 @@
                                 android:gravity="end"
                                 android:text="-"
                                 android:textColor="@color/black"
-                                android:textSize="16sp" />
+                                android:textSize="@dimen/data_diri_text_size" />
 
                         </androidx.appcompat.widget.LinearLayoutCompat>
 
@@ -239,7 +239,7 @@
                                 android:layout_weight="0.5"
                                 android:gravity="start"
                                 android:text="No. Hp"
-                                android:textSize="16sp" />
+                                android:textSize="@dimen/data_diri_text_size" />
 
                             <com.google.android.material.textview.MaterialTextView
                                 android:id="@+id/tv_no_hp"
@@ -249,7 +249,7 @@
                                 android:gravity="end"
                                 android:text="-"
                                 android:textColor="@color/black"
-                                android:textSize="16sp" />
+                                android:textSize="@dimen/data_diri_text_size" />
 
                         </androidx.appcompat.widget.LinearLayoutCompat>
 
