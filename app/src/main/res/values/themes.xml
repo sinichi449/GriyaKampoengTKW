@@ -19,4 +19,13 @@
         <item name="sv_backgroundColor">#CC6200EE</item>
         <item name="sv_showcaseColor">@color/teal_200</item>
     </style>
+
+    <style name="CustomAlertDialog" parent="Theme.AppCompat.Light.Dialog.Alert">
+        <item name="android:windowBackground">@drawable/background_rounded_dialog</item>
+    </style>
+
+    <style name="FadingAlertDialog">
+        <item name="android:windowEnterAnimation">@anim/dialog_fade_in</item>
+        <item name="android:windowExitAnimation">@anim/dialog_fade_out</item>
+    </style>
 </resources>

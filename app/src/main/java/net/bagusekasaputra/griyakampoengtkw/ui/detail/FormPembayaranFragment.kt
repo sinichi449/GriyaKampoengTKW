@@ -180,7 +180,7 @@ class FormPembayaranFragment : Fragment() {
         } else {
             // inflating
             val dialogBinding = DialogAddFormPembayaranBinding.inflate(layoutInflater)
-            val dialogView = AlertDialog.Builder(requireContext()).apply {
+            val dialogView = AlertDialog.Builder(requireContext(), R.style.CustomAlertDialog).apply {
                 setView(dialogBinding.root)
                 setCancelable(false)
             }.create()
@@ -188,6 +188,7 @@ class FormPembayaranFragment : Fragment() {
             // Set Action for TextInputLayout everytime Radio Button Clicked
             onRadioButtonJenisPembayaranClick(dialogBinding)
 
+            additionalDialogSetting(dialogView)
             dialogView.show()
 
             // setting layout
@@ -285,6 +286,7 @@ class FormPembayaranFragment : Fragment() {
             setView(dialogBinding.root)
         }.create()
 
+        additionalDialogSetting(dialogView)
         dialogView.show()
 
         dialogBinding.edtHarga.apply {
@@ -389,6 +391,7 @@ class FormPembayaranFragment : Fragment() {
             }
             .create()
 
+        additionalDialogSetting(dialogView)
         dialogView.show()
     }
 
@@ -406,6 +409,7 @@ class FormPembayaranFragment : Fragment() {
                 setView(dialogBinding.root)
             }.create()
 
+            additionalDialogSetting(dialogView)
             dialogView.show()
 
             dialogBinding.btnBatal.setOnClickListener {
@@ -443,6 +447,7 @@ class FormPembayaranFragment : Fragment() {
             setCancelable(false)
         }.create()
 
+        additionalDialogSetting(dialogView)
         dialogView.show()
 
         // setting layout
@@ -590,6 +595,10 @@ class FormPembayaranFragment : Fragment() {
         return MaterialTextView(requireContext(), null, com.google.android.material.R.style.TextAppearance_MaterialComponents_Body1).apply {
             setPadding(8, 4, 8, 4)
         }
+    }
+
+    private fun additionalDialogSetting(dialog: AlertDialog) {
+        dialog.window?.attributes?.windowAnimations = R.style.FadingAlertDialog
     }
 
 }
