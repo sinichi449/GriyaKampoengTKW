@@ -10,6 +10,7 @@ import net.bagusekasaputra.griyakampoengtkw.domain.usecase.UseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.usecase.hargakavling.GetSingleHargaKavlingForPembayaranUseCase
 import net.bagusekasaputra.griyakampoengtkw.util.GriyaNodes.Companion.LOG_TAG
 import net.bagusekasaputra.griyakampoengtkw.util.NumberUtil
+import net.bagusekasaputra.griyakampoengtkw.util.PembayaranSorterUtil
 import java.math.BigDecimal
 import java.math.RoundingMode
 import java.util.*
@@ -77,9 +78,7 @@ class GetAllPembayaranUseCase @Inject constructor(
     }
 
     private fun sortListPembayaran(listPembayaran: List<Pembayaran>): List<Pembayaran> {
-        return listPembayaran.sortedBy {
-            getMilliFromTanggal(it.tanggal)
-        }
+        return PembayaranSorterUtil(listPembayaran).getSortedList()
     }
 
     private fun getMilliFromTanggal(tanggal: String): Long {

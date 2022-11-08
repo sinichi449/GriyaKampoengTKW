@@ -22,7 +22,7 @@ class PembayaranRepositoryImpl @Inject constructor(
             remotePembayaranSource.getAllPembayaran(
                 kavlingKode = kavlingKode,
                 onSuccess = { listPembayaranModel ->
-                    val listPembayaran = listPembayaranModel?.map { pembayaranModel -> mapPembayaran(pembayaranModel) }
+                    val listPembayaran = listPembayaranModel?.map { mapPembayaran(it) }
 
                     if (listPembayaran != null) {
                         trySendBlocking(Result.success(listPembayaran))
@@ -129,7 +129,7 @@ class PembayaranRepositoryImpl @Inject constructor(
     private fun mapPembayaran(pembayaranModel: PembayaranModel): Pembayaran {
         return pembayaranModel.let {
             Pembayaran(
-                termin = it.termin,
+                termin = "${it.termin} ${it.urutan}",
                 tanggal = it.tanggal,
                 jumlahUangDibayar = NumberUtil.formatLongToString(it.jumlahUangDibayar),
                 keterangan = it.keterangan,

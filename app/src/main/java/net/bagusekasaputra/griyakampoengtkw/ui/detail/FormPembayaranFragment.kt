@@ -194,6 +194,9 @@ class FormPembayaranFragment : Fragment() {
                 setCancelable(false)
             }.create()
 
+            // Set Action for TextInputLayout everytime Radio Button Clicked
+            onRadioButtonJenisPembayaranClick(dialogBinding)
+
             dialogView.show()
 
             dialogBinding.edtJumlahUangDibayar.apply {
@@ -524,6 +527,24 @@ class FormPembayaranFragment : Fragment() {
                 true
             }
             else -> return super.onOptionsItemSelected(item)
+        }
+    }
+
+    private fun onRadioButtonJenisPembayaranClick(dialogBinding: DialogAddFormPembayaranBinding) {
+        dialogBinding.rbItj.setOnClickListener {
+            dialogBinding.edtTermin.isEnabled = true
+            dialogBinding.tilTermin.isEnabled = true
+            dialogBinding.tilTermin.hint = "Masukkan urutan ITJ"
+        }
+        dialogBinding.rbDp.setOnClickListener {
+            dialogBinding.edtTermin.isEnabled = true
+            dialogBinding.tilTermin.isEnabled = true
+            dialogBinding.tilTermin.hint = "Masukkan urutan DP"
+        }
+        dialogBinding.rbTermin.setOnClickListener {
+            dialogBinding.edtTermin.isEnabled = true
+            dialogBinding.tilTermin.isEnabled = true
+            dialogBinding.tilTermin.hint = "Masukkan urutan Termin"
         }
     }
 
