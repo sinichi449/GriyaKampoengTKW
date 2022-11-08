@@ -18,7 +18,6 @@ import net.bagusekasaputra.griyakampoengtkw.R
 import net.bagusekasaputra.griyakampoengtkw.databinding.DialogTambahDataDiriBinding
 import net.bagusekasaputra.griyakampoengtkw.databinding.FragmentDataDiriBinding
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.DataDiri
-import net.bagusekasaputra.griyakampoengtkw.ui.custom.NewFeatureShowCase
 import net.bagusekasaputra.griyakampoengtkw.util.GriyaNodes
 import net.bagusekasaputra.griyakampoengtkw.util.InputUtil
 
@@ -99,17 +98,6 @@ class DataDiriFragment : Fragment() {
         super.onResume()
 
         syncDataDiri()
-
-        NewFeatureShowCase(requireActivity()).apply {
-            val perbesarFoto = NewFeatureShowCase.Feature(
-                binding.imgProfile,
-                getString(R.string.shared_prefs_enlarge_photo),
-                "Klik untuk perbesar foto",
-                "Punya gambar asupan tapi masya Allah burik?"
-            )
-
-            addFeature(perbesarFoto)
-        }.show()
     }
 
 

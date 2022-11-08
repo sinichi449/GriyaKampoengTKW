@@ -51,17 +51,26 @@ class FirebasePembayaranSource @Inject constructor(
         onSuccess: () -> Unit,
         onFailure: (throwable: Throwable) -> Unit
     ) {
-        pembayaranRef
-            .child(kavlingKode)
-            .child("${pembayaranModel.termin} ${pembayaranModel.urutan}") // Must be "DP 1", where "DP" is
-            // in $pembayaranModel.termin and "1" is in $pembayaranModel.urutan
-            .setValue(pembayaranModel)
-            .addOnSuccessListener {
-                onSuccess()
+        val terminChild = getTerminChild(pembayaranModel.termin, pembayaranModel.urutan)
+
+        // check if child is available to avoid replacing the available data.
+        // if the user intended to replace, he must go through edit.
+        isTerminChildAvailable(kavlingKode, terminChild) { available ->
+            if (available) {
+                onFailure(UnknownError("Child sudah ada di database!"))
+            } else {
+                pembayaranRef
+                    .child(kavlingKode)
+                    .child(terminChild)
+                    .setValue(pembayaranModel)
+                    .addOnSuccessListener {
+                        onSuccess()
+                    }
+                    .addOnFailureListener {
+                        onFailure(it.cause?: UnknownError("Terjadi kesalahan!"))
+                    }
             }
-            .addOnFailureListener {
-                onFailure(it.cause?: UnknownError("Terjadi kesalahan!"))
-            }
+        }
     }
 
     override suspend fun updatePembayaranModel(
@@ -73,7 +82,7 @@ class FirebasePembayaranSource @Inject constructor(
     ) {
         pembayaranRef
             .child(kavlingKode)
-            .child(oldPembayaranModel.termin)
+            .child(getTerminChild(oldPembayaranModel.termin, oldPembayaranModel.urutan))
             .setValue(newPembayaranModel)
             .addOnSuccessListener { onSuccess() }
             .addOnFailureListener{ onFailure(it.cause?: UnknownError("Terjadi kesalahan mengubah pembayaran")) }
@@ -109,6 +118,27 @@ class FirebasePembayaranSource @Inject constructor(
             .addOnFailureListener {
                 onFailure(it.cause?: UnknownError("Terjadi kesalahan menghapus semua pembayaran kalving $kavlingKode"))
             }
+    }
+
+    private fun isTerminChildAvailable(
+        kavlingKode: String,
+        terminChild: String,
+        onSuccess: (available: Boolean) -> Unit,
+    ) {
+        pembayaranRef
+            .child(kavlingKode)
+            .child(terminChild)
+            .get()
+            .addOnSuccessListener { snapshot ->
+                val data = snapshot.getValue<PembayaranModel>()
+
+                if (data == null) onSuccess(false)
+                else onSuccess(true)
+            }
+    }
+
+    private fun getTerminChild(termin: String, urutan: Int): String {
+        return "$termin $urutan"
     }
 
 }

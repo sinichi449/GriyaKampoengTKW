@@ -20,7 +20,6 @@ import net.bagusekasaputra.griyakampoengtkw.databinding.DialogPilihTerminBinding
 import net.bagusekasaputra.griyakampoengtkw.databinding.FragmentFormPembayaranBinding
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.HargaKavling
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.Pembayaran
-import net.bagusekasaputra.griyakampoengtkw.ui.custom.NewFeatureShowCase
 import net.bagusekasaputra.griyakampoengtkw.ui.custom.ThousandSeparatorTextWatcher
 import net.bagusekasaputra.griyakampoengtkw.ui.detail.adapter.TerminRecyclerAdapter
 import net.bagusekasaputra.griyakampoengtkw.util.GriyaNodes
@@ -81,17 +80,6 @@ class FormPembayaranFragment : Fragment() {
         super.onResume()
 
         syncPembayaran()
-
-        NewFeatureShowCase(requireActivity()).apply {
-            val tambahLuas = NewFeatureShowCase.Feature(
-                binding.tvInfoTambahanLuas as View,
-                "info_tambah_luasan",
-                "Tambah Luasan",
-                "Punya costumer tapi masya Allah ngeyel pingin buat rumah sepanjang jarak di antara kita?"
-            )
-
-            addFeature(tambahLuas)
-        }.show()
     }
 
     private fun syncPembayaran() {
@@ -448,6 +436,7 @@ class FormPembayaranFragment : Fragment() {
     }
 
     private fun showEditPembayaranDialog(pembayaran: Pembayaran) {
+        // inflate
         val dialogBinding = DialogAddFormPembayaranBinding.inflate(layoutInflater)
         val dialogView = AlertDialog.Builder(requireContext()).apply {
             setView(dialogBinding.root)
@@ -456,13 +445,40 @@ class FormPembayaranFragment : Fragment() {
 
         dialogView.show()
 
+        // setting layout
         dialogBinding.edtJumlahUangDibayar.apply {
             addTextChangedListener(ThousandSeparatorTextWatcher(this))
         }
-        dialogBinding.tvTitle.text = "Ubah Form"
-        dialogBinding.btnTambahkan.text = "Simpan Perubahan"
+        dialogBinding.tilTermin.isEnabled = true
+        dialogBinding.edtTermin.isEnabled = true
         dialogBinding.btnHapus.visibility = View.VISIBLE
-        dialogBinding.edtTermin.setText(pembayaran.termin)
+        dialogBinding.btnTambahkan.text = "Simpan Perubahan"
+
+        // misc
+        fun getJenisPembayaranAndUrutan(termin: String): Map<String, String> {
+            val terminDanUrutan = termin.split(" ")
+            return mapOf(
+                Pair("jenis", terminDanUrutan[0]),
+                Pair("urutan", terminDanUrutan[1]),
+            )
+        }
+
+        // populate fields with available pembayaran data
+        dialogBinding.tvTitle.text = "Ubah Form"
+        dialogBinding.apply {
+            val mapTermin = getJenisPembayaranAndUrutan(pembayaran.termin)
+            val jenisPembayaran = mapTermin["jenis"]!!
+
+            when (jenisPembayaran) {
+                "ITJ" -> rbItj.isChecked = true
+                "DP" -> rbDp.isChecked = true
+                "Termin" -> rbTermin.isChecked = true
+            }
+        } // which RadioButton is clicked
+        dialogBinding.edtTermin.apply {
+            val mapTermin = getJenisPembayaranAndUrutan(pembayaran.termin)
+            setText(mapTermin["urutan"])
+        }
         dialogBinding.edtTanggal.setText(pembayaran.tanggal)
         dialogBinding.edtJumlahUangDibayar.setText(pembayaran.jumlahUangDibayar.toString())
         dialogBinding.edtKeteranganProgress.setText(pembayaran.keterangan)
@@ -472,7 +488,12 @@ class FormPembayaranFragment : Fragment() {
 
             return if (!isInvalidEdt) {
                 Pembayaran(
-                    termin = dialogBinding.edtTermin.text.toString(),
+                    termin = dialogBinding.edtTermin.text.toString().let { urutanTermin ->
+                        if (dialogBinding.rbItj.isChecked) "ITJ $urutanTermin"
+                        else if (dialogBinding.rbDp.isChecked) "DP ${urutanTermin}"
+                        else if (dialogBinding.rbTermin.isChecked) "Termin ${urutanTermin}"
+                        else "Termin 999" // this is ridiciously wrong
+                    },
                     tanggal = dialogBinding.edtTanggal.text.toString(),
                     jumlahUangDibayar = dialogBinding.edtJumlahUangDibayar.text.toString(),
                     totalUangMasuk = pembayaran.totalUangMasuk,
@@ -486,6 +507,7 @@ class FormPembayaranFragment : Fragment() {
         }
 
         dialogBinding.btnTambahkan.setOnClickListener {
+            // onclick view
             dialogBinding.btnTambahkan.text = "Menyimpan data ..."
             dialogBinding.btnTambahkan.isEnabled = false
             dialogBinding.btnHapus.isEnabled = false
