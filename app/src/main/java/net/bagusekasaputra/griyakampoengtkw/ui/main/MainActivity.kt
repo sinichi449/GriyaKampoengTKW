@@ -26,6 +26,7 @@ import net.bagusekasaputra.griyakampoengtkw.domain.entity.Kavling
 import net.bagusekasaputra.griyakampoengtkw.ui.detail.DetailActivity
 import net.bagusekasaputra.griyakampoengtkw.ui.main.adapter.BlockRecyclerAdapter
 import net.bagusekasaputra.griyakampoengtkw.ui.main.adapter.KavlingRecyclerAdapter
+import net.bagusekasaputra.griyakampoengtkw.util.DialogUtil
 import net.bagusekasaputra.griyakampoengtkw.util.GriyaNodes
 import net.bagusekasaputra.griyakampoengtkw.util.InputUtil
 
@@ -164,6 +165,8 @@ class MainActivity : AppCompatActivity() {
             setView(dialogBinding.root)
         }.create()
 
+        DialogUtil.additionalDialogSetting(this, dialogView)
+
         dialogView.show()
 
         dialogBinding.btnPilihWarna.setOnClickListener {
@@ -216,6 +219,8 @@ class MainActivity : AppCompatActivity() {
             setView(dialogBinding.root)
         }.create()
 
+        DialogUtil.additionalDialogSetting(this, dialogView)
+
         val blockLists = ArrayList<String>()
         viewModel.blocks.value?.forEach {
             blockLists.add(it.kode)
@@ -267,6 +272,8 @@ class MainActivity : AppCompatActivity() {
             setView(dialogBinding.root)
         }.create()
 
+        DialogUtil.additionalDialogSetting(this, dialogView)
+
         dialogView.show()
 
         val text = "Kavling ${kavling.kode}"
@@ -284,30 +291,29 @@ class MainActivity : AppCompatActivity() {
         dialogBinding.btnHapusKavling.setOnClickListener {
             dialogView.dismiss()
 
-            val dialogHapus = AlertDialog.Builder(this).apply {
-                setTitle("Hapus Kavling")
-                setMessage("Apakah Anda yakin menghapus kavling ${kavling.kode}?")
-                setPositiveButton("Ya") { dialog, _ ->
-                    val blockKode = viewModel.currentBlock.value!!
-                    val kavlingKode = kavling.kode
+            val alertDialogHapus = {
+                MaterialAlertDialogBuilder(this).apply {
+                    setTitle("Hapus Kavling")
+                    setMessage("Apakah Anda yakin menghapus kavling ${kavling.kode}?")
+                    setPositiveButton("Ya") { dialog, _ ->
+                        val blockKode = viewModel.currentBlock.value!!
+                        val kavlingKode = kavling.kode
 
-                    viewModel.removeKavling(blockKode, kavlingKode)
+                        viewModel.removeKavling(blockKode, kavlingKode)
 
-                    viewModel.operationResult.observe(this@MainActivity) {
-                        it?.let { operation ->
-                            Toast.makeText(this@MainActivity, operation.message?: "Null", Toast.LENGTH_SHORT).show()
-
-                            dialog.dismiss()
+                        viewModel.operationResult.observe(this@MainActivity) {
+                            it?.let { operation ->
+                                Toast.makeText(this@MainActivity, operation.message?: "Null", Toast.LENGTH_SHORT).show()
+                                syncData()
+                                dialog.dismiss()
+                            }
                         }
                     }
+                    setNegativeButton("Tidak") { dialog, _ -> dialog.dismiss() }
+                }.create()
+            }
 
-                }
-                setNegativeButton("Tidak") { dialog, _ ->
-                    dialog.dismiss()
-                }
-            }.create()
-
-            dialogHapus.show()
+            alertDialogHapus().show()
         }
     }
 
@@ -316,6 +322,8 @@ class MainActivity : AppCompatActivity() {
         val dialogView = AlertDialog.Builder(this).apply {
             setView(dialogBinding.root)
         }.create()
+
+        DialogUtil.additionalDialogSetting(this, dialogView)
 
         dialogView.show()
 
