@@ -13,7 +13,6 @@ import net.bagusekasaputra.griyakampoengtkw.util.NumberUtil
 import net.bagusekasaputra.griyakampoengtkw.util.PembayaranSorterUtil
 import java.math.BigDecimal
 import java.math.RoundingMode
-import java.util.*
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -79,19 +78,6 @@ class GetAllPembayaranUseCase @Inject constructor(
 
     private fun sortListPembayaran(listPembayaran: List<Pembayaran>): List<Pembayaran> {
         return PembayaranSorterUtil(listPembayaran).getSortedList()
-    }
-
-    private fun getMilliFromTanggal(tanggal: String): Long {
-        val calendar = Calendar.getInstance()
-        tanggal.split("/").let {
-            val year = it[2].toInt()
-            val month = it[1].toInt()
-            val day = it[0].toInt()
-            Log.d(LOG_TAG, "Tanggal: $day/$month/$year")
-            calendar.set(year, month, day, 0, 0, 0)
-        }
-
-        return calendar.toInstant().toEpochMilli()
     }
 
     private fun getHargaKavling(kavlingKode: String): Flow<HargaKavling> {
