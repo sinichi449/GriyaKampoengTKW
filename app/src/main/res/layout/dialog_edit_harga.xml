@@ -36,7 +36,8 @@
         android:layout_height="wrap_content"
         android:hint="Harga Tambah Luasan"
         app:startIconDrawable="@drawable/ic_baseline_attach_money_24"
-        app:endIconMode="clear_text">
+        app:endIconMode="clear_text"
+        android:layout_marginTop="8dp">
 
         <com.google.android.material.textfield.TextInputEditText
             android:id="@+id/edt_tambah_luasan"
