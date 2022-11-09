@@ -3,7 +3,6 @@ package net.bagusekasaputra.griyakampoengtkw.ui.main
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
-import android.os.Environment
 import android.view.Menu
 import android.view.View
 import android.widget.ArrayAdapter
@@ -11,12 +10,12 @@ import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.net.toUri
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.github.dhaval2404.colorpicker.MaterialColorPickerDialog
 import com.github.dhaval2404.colorpicker.model.ColorShape
 import com.github.dhaval2404.colorpicker.model.ColorSwatch
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
 import net.bagusekasaputra.griyakampoengtkw.R
@@ -29,7 +28,6 @@ import net.bagusekasaputra.griyakampoengtkw.ui.main.adapter.BlockRecyclerAdapter
 import net.bagusekasaputra.griyakampoengtkw.ui.main.adapter.KavlingRecyclerAdapter
 import net.bagusekasaputra.griyakampoengtkw.util.GriyaNodes
 import net.bagusekasaputra.griyakampoengtkw.util.InputUtil
-import java.io.File
 
 @AndroidEntryPoint
 class MainActivity : AppCompatActivity() {
@@ -359,7 +357,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun showUpdateDialog(appUpdate: AppUpdate) {
-        AlertDialog.Builder(this)
+        MaterialAlertDialogBuilder(this)
             .setTitle("Update Tersedia!")
             .setMessage(
                 appUpdate.releaseNotes.let { notes ->
@@ -371,22 +369,16 @@ class MainActivity : AppCompatActivity() {
                 }
             )
             .setPositiveButton("Update") { dialog, _ ->
-                File(this.getExternalFilesDir(Environment.DIRECTORY_DOWNLOADS), "griya-kampoeng-tkw.apk")
-                    .toUri()
-                    .let {
-                        openBrowser(Uri.parse(appUpdate.url))
-                    }
+                openBrowser(Uri.parse(appUpdate.url))
             }
             .create()
             .show()
     }
 
     private fun openBrowser(uri: Uri) {
-        Intent(Intent.ACTION_VIEW, uri).let { browserIntent ->
-            browserIntent.resolveActivity(packageManager)?.let {
-                startActivity(browserIntent)
-            }
-        }
+        val intent = Intent(Intent.ACTION_VIEW)
+        intent.data = uri
+        startActivity(intent)
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
