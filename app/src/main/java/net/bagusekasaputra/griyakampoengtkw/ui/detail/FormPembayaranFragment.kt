@@ -12,6 +12,7 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.textview.MaterialTextView
 import dagger.hilt.android.AndroidEntryPoint
 import net.bagusekasaputra.griyakampoengtkw.R
@@ -366,7 +367,7 @@ class FormPembayaranFragment : Fragment() {
     }
 
     private fun showDeleteAllPembayaranDialog() {
-        val dialogView = AlertDialog.Builder(requireContext())
+        val dialogView = MaterialAlertDialogBuilder(requireContext())
             .setTitle("Hapus Semua Pembayaran")
             .setMessage("Apakah Anda yakin ingin menghapus semua pembayaran di kavling $currentKavlingKode?")
             .setPositiveButton("Ya") { dialog, _ ->
@@ -381,7 +382,6 @@ class FormPembayaranFragment : Fragment() {
             }
             .create()
 
-        additionalDialogSetting(requireContext(), dialogView)
         dialogView.show()
     }
 
