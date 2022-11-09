@@ -146,7 +146,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun setupKavlingRecyclerView(kavlings: List<Kavling>) {
-        val adapter = KavlingRecyclerAdapter(kavlings, {
+        val adapter = KavlingRecyclerAdapter(this, kavlings, {
             val intent = Intent(this, DetailActivity::class.java).apply {
                 putExtra(INTENT_KAVLING_KODE, kavlings[it].kode)
             }
