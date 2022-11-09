@@ -14,8 +14,8 @@ android {
         applicationId "net.bagusekasaputra.griyakampoengtkw"
         minSdk 21
         targetSdk 32
-        versionCode 8
-        versionName "1.7.4"
+        versionCode 10
+        versionName "1.7.6"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }

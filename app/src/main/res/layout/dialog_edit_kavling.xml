@@ -25,7 +25,8 @@
             android:layout_height="wrap_content"
             android:layout_weight="0.4"
             android:hint="Panjang"
-            app:startIconDrawable="@drawable/ic_baseline_align_horizontal_left_24">
+            app:startIconDrawable="@drawable/ic_baseline_align_horizontal_left_24"
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense">
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/edt_panjang"
@@ -49,7 +50,8 @@
             android:layout_height="wrap_content"
             android:layout_weight="0.4"
             android:hint="Lebar"
-            app:startIconDrawable="@drawable/ic_baseline_align_horizontal_left_24">
+            app:startIconDrawable="@drawable/ic_baseline_align_horizontal_left_24"
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense">
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/edt_lebar"
@@ -67,7 +69,9 @@
         android:layout_height="wrap_content"
         android:hint="Tipe Rumah"
         android:layout_marginTop="8dp"
-        app:startIconDrawable="@drawable/ic_baseline_add_home_24">
+        app:startIconDrawable="@drawable/ic_baseline_add_home_24"
+        app:endIconMode="clear_text"
+        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
 
         <com.google.android.material.textfield.TextInputEditText
             android:id="@+id/edt_tipe_rumah"

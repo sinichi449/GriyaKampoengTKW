@@ -18,7 +18,8 @@
         android:layout_height="wrap_content"
         android:hint="Kode"
         app:startIconDrawable="@drawable/ic_baseline_block_24"
-        android:layout_marginTop="24dp">
+        android:layout_marginTop="24dp"
+        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense">
 
         <com.google.android.material.textfield.TextInputEditText
             android:id="@+id/edt_kode"
@@ -44,13 +45,14 @@
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toStartOf="@id/btn_pilih_warna"
             android:layout_marginEnd="24dp"
-            app:startIconDrawable="@drawable/ic_baseline_palette_24">
+            app:startIconDrawable="@drawable/ic_baseline_palette_24"
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/edt_warna"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:inputType="textCapCharacters" />
+                android:inputType="textCapCharacters"/>
 
         </com.google.android.material.textfield.TextInputLayout>
 
@@ -61,7 +63,8 @@
             android:text="Pilih"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintBottom_toBottomOf="@id/til_warna"
-            app:layout_constraintTop_toTopOf="@id/til_warna"/>
+            app:layout_constraintTop_toTopOf="@id/til_warna"
+            style="@style/Widget.MaterialComponents.Button.TextButton"/>
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

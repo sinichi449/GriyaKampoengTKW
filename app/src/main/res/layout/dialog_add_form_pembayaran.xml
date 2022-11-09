@@ -47,23 +47,26 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp">
 
-        <RadioButton
+        <com.google.android.material.radiobutton.MaterialRadioButton
             android:id="@+id/rb_itj"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="ITJ"/>
+            android:text="ITJ"
+            android:theme="@style/Theme.GriyaKampung.Material3"/>
 
-        <RadioButton
+        <com.google.android.material.radiobutton.MaterialRadioButton
             android:id="@+id/rb_dp"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="DP"/>
+            android:text="DP"
+            android:theme="@style/Theme.GriyaKampung.Material3"/>
 
-        <RadioButton
+        <com.google.android.material.radiobutton.MaterialRadioButton
             android:id="@+id/rb_termin"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Termin"/>
+            android:text="Termin"
+            android:theme="@style/Theme.GriyaKampung.Material3"/>
 
     </RadioGroup>
 
@@ -77,14 +80,15 @@
         android:layout_marginTop="8dp"
         android:enabled="false"
         app:startIconDrawable="@drawable/ic_baseline_account_balance_wallet_24"
-        app:endIconMode="clear_text">
+        app:endIconMode="clear_text"
+        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense">
 
         <com.google.android.material.textfield.TextInputEditText
             android:id="@+id/edt_termin"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:enabled="false"
-            android:inputType="number"/>
+            android:inputType="number" />
 
     </com.google.android.material.textfield.TextInputLayout>
 
@@ -105,7 +109,8 @@
             android:layout_marginEnd="8dp"
             android:hint="Tanggal"
             app:startIconDrawable="@drawable/ic_baseline_calendar_month_24"
-            app:endIconMode="clear_text">
+            app:endIconMode="clear_text"
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense">
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/edt_tanggal"
@@ -125,7 +130,8 @@
             app:layout_constraintHorizontal_weight="0.25"
             android:textSize="12sp"
             android:text="Pilih"
-            app:cornerRadius="8dp"/>
+            app:cornerRadius="8dp"
+            style="@style/Widget.MaterialComponents.Button.TextButton"/>
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
@@ -136,13 +142,14 @@
         android:hint="Jumlah Uang Dibayar"
         android:layout_marginTop="8dp"
         app:startIconDrawable="@drawable/ic_baseline_attach_money_24"
-        app:endIconMode="clear_text">
+        app:endIconMode="clear_text"
+        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense">
 
         <com.google.android.material.textfield.TextInputEditText
             android:id="@+id/edt_jumlah_uang_dibayar"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:inputType="number"/>
+            android:inputType="number" />
 
     </com.google.android.material.textfield.TextInputLayout>
 
@@ -153,7 +160,8 @@
         android:hint="Keterangan Progress"
         android:layout_marginTop="8dp"
         app:startIconDrawable="@drawable/ic_baseline_notes_24"
-        app:endIconMode="clear_text">
+        app:endIconMode="clear_text"
+        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
 
         <com.google.android.material.textfield.TextInputEditText
             android:id="@+id/edt_keterangan_progress"
@@ -170,14 +178,15 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="24dp"
         android:text="Tambahkan"
-        app:cornerRadius="8dp"/>
+        app:cornerRadius="8dp" />
 
     <com.google.android.material.button.MaterialButton
         android:id="@+id/btn_batal"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="Batal"
-        app:cornerRadius="8dp"/>
+        app:cornerRadius="8dp"
+        android:theme="@style/Theme.GriyaKampung"/>
 
     <com.google.android.material.button.MaterialButton
         android:id="@+id/btn_hapus"
@@ -185,8 +194,9 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="24dp"
         android:text="hapus data"
-        android:backgroundTint="@color/abang"
+        android:textColor="@color/abang"
         app:cornerRadius="8dp"
+        style="@style/Widget.MaterialComponents.Button.TextButton"
         android:visibility="gone"/>
 
 </androidx.appcompat.widget.LinearLayoutCompat>

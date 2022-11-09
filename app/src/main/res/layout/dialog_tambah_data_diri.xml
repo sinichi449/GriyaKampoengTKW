@@ -25,7 +25,9 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="24dp"
             android:hint="Nama Costumer"
-            app:startIconDrawable="@drawable/ic_baseline_person_24">
+            app:startIconDrawable="@drawable/ic_baseline_person_24"
+            app:endIconMode="clear_text"
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense">
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/edt_nama_costumer"
@@ -47,18 +49,20 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
 
-            <RadioButton
+            <com.google.android.material.radiobutton.MaterialRadioButton
                 android:id="@+id/rb_id_ktp"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="KTP"
-                android:checked="true"/>
+                android:checked="true"
+                android:theme="@style/Theme.GriyaKampung.Material3"/>
 
             <RadioButton
                 android:id="@+id/rb_id_passport"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Passport"/>
+                android:text="Passport"
+                android:theme="@style/Theme.GriyaKampung.Material3"/>
 
         </RadioGroup>
 
@@ -69,7 +73,9 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="24dp"
             android:hint="No. Identitas"
-            app:startIconDrawable="@drawable/ic_baseline_add_card_24">
+            app:startIconDrawable="@drawable/ic_baseline_add_card_24"
+            app:endIconMode="clear_text"
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense">
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/edt_no_identitas"
@@ -110,7 +116,9 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="24dp"
             android:hint="Alamat Kerja"
-            app:startIconDrawable="@drawable/ic_baseline_home_work_24">
+            app:startIconDrawable="@drawable/ic_baseline_home_work_24"
+            app:endIconMode="clear_text"
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/edt_alamat_kerja"
@@ -127,7 +135,9 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="8dp"
             android:hint="Alamat Indo"
-            app:startIconDrawable="@drawable/ic_baseline_home_24">
+            app:endIconMode="clear_text"
+            app:startIconDrawable="@drawable/ic_baseline_home_24"
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/edt_alamat_indo"
@@ -144,7 +154,9 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="8dp"
             android:hint="No Telpon Seluler / WhatsApp"
-            app:startIconDrawable="@drawable/ic_baseline_phone_24">
+            app:endIconMode="clear_text"
+            app:startIconDrawable="@drawable/ic_baseline_phone_24"
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense">
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/edt_no_handphone"
@@ -162,14 +174,16 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="24dp"
             android:text="Tambahkan"
-            app:cornerRadius="8dp"/>
+            app:cornerRadius="8dp"
+            android:theme="@style/Theme.GriyaKampung"/>
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/btn_batal"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="Batal"
-            app:cornerRadius="8dp"/>
+            app:cornerRadius="8dp"
+            android:theme="@style/Theme.GriyaKampung"/>
 
     </androidx.appcompat.widget.LinearLayoutCompat>
 

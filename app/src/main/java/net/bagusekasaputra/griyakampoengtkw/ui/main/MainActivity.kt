@@ -291,29 +291,27 @@ class MainActivity : AppCompatActivity() {
         dialogBinding.btnHapusKavling.setOnClickListener {
             dialogView.dismiss()
 
-            val alertDialogHapus = {
-                MaterialAlertDialogBuilder(this).apply {
-                    setTitle("Hapus Kavling")
-                    setMessage("Apakah Anda yakin menghapus kavling ${kavling.kode}?")
-                    setPositiveButton("Ya") { dialog, _ ->
-                        val blockKode = viewModel.currentBlock.value!!
-                        val kavlingKode = kavling.kode
+            val alertDialogHapus = MaterialAlertDialogBuilder(this).apply {
+                setTitle("Hapus Kavling")
+                setMessage("Apakah Anda yakin menghapus kavling ${kavling.kode}?")
+                setPositiveButton("Ya") { dialog, _ ->
+                    val blockKode = viewModel.currentBlock.value!!
+                    val kavlingKode = kavling.kode
 
-                        viewModel.removeKavling(blockKode, kavlingKode)
+                    viewModel.removeKavling(blockKode, kavlingKode)
 
-                        viewModel.operationResult.observe(this@MainActivity) {
-                            it?.let { operation ->
-                                Toast.makeText(this@MainActivity, operation.message?: "Null", Toast.LENGTH_SHORT).show()
-                                syncData()
-                                dialog.dismiss()
-                            }
+                    viewModel.operationResult.observe(this@MainActivity) {
+                        it?.let { operation ->
+                            Toast.makeText(this@MainActivity, operation.message?: "Null", Toast.LENGTH_SHORT).show()
+                            syncData()
+                            dialog.dismiss()
                         }
                     }
-                    setNegativeButton("Tidak") { dialog, _ -> dialog.dismiss() }
-                }.create()
-            }
+                }
+                setNegativeButton("Tidak") { dialog, _ -> dialog.dismiss() }
+            }.create()
 
-            alertDialogHapus().show()
+            alertDialogHapus.show()
         }
     }
 
