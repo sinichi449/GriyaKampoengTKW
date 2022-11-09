@@ -7,6 +7,7 @@ import android.os.Bundle
 import android.view.*
 import android.widget.TableRow
 import android.widget.Toast
+import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -22,6 +23,7 @@ import net.bagusekasaputra.griyakampoengtkw.domain.entity.HargaKavling
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.Pembayaran
 import net.bagusekasaputra.griyakampoengtkw.ui.custom.ThousandSeparatorTextWatcher
 import net.bagusekasaputra.griyakampoengtkw.ui.detail.adapter.TerminRecyclerAdapter
+import net.bagusekasaputra.griyakampoengtkw.util.DialogUtil.additionalDialogSetting
 import net.bagusekasaputra.griyakampoengtkw.util.GriyaNodes
 import net.bagusekasaputra.griyakampoengtkw.util.InputUtil
 import net.bagusekasaputra.griyakampoengtkw.util.NumberUtil
@@ -35,6 +37,7 @@ class FormPembayaranFragment : Fragment() {
     private lateinit var binding: FragmentFormPembayaranBinding
     private val viewModel: DetailViewModel by viewModels()
     private var currentKavlingKode: String? = null
+    private var isAllFabsVisible = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -127,38 +130,24 @@ class FormPembayaranFragment : Fragment() {
         binding.tvInfoAddPembayaranData?.visibility = View.GONE
         binding.tvInfoEditData?.visibility = View.GONE
 
-        var isAllFabsVisible = false
-
         binding.fabActions?.shrink()
 
         binding.fabActions?.setOnClickListener {
             if (!isAllFabsVisible) {
-                binding.fabAddPembayaranData?.show()
-                binding.fabEditData?.show()
-                binding.tvInfoAddPembayaranData?.visibility = View.VISIBLE
-                binding.tvInfoEditData?.visibility = View.VISIBLE
-
-                binding.fabActions?.extend()
-
-                isAllFabsVisible = true
+                showFabs()
             } else {
-                binding.fabAddPembayaranData?.hide()
-                binding.fabEditData?.hide()
-                binding.tvInfoAddPembayaranData?.visibility = View.GONE
-                binding.tvInfoEditData?.visibility = View.GONE
-
-                binding.fabActions?.shrink()
-
-                isAllFabsVisible = false
+                hideFabs()
             }
         }
 
         binding.fabAddPembayaranData?.setOnClickListener {
             showAddFormPembayaranDialog()
+            hideFabs()
         }
 
         binding.fabEditData?.setOnClickListener {
             showTerminSelectionButtonsDialog()
+            hideFabs()
         }
     }
 
@@ -180,7 +169,7 @@ class FormPembayaranFragment : Fragment() {
         } else {
             // inflating
             val dialogBinding = DialogAddFormPembayaranBinding.inflate(layoutInflater)
-            val dialogView = AlertDialog.Builder(requireContext(), R.style.CustomAlertDialog).apply {
+            val dialogView = AlertDialog.Builder(requireContext()).apply {
                 setView(dialogBinding.root)
                 setCancelable(false)
             }.create()
@@ -188,15 +177,13 @@ class FormPembayaranFragment : Fragment() {
             // Set Action for TextInputLayout everytime Radio Button Clicked
             onRadioButtonJenisPembayaranClick(dialogBinding)
 
-            additionalDialogSetting(dialogView)
-            dialogView.show()
-
             // setting layout
             dialogBinding.edtJumlahUangDibayar.apply {
                 addTextChangedListener(ThousandSeparatorTextWatcher(this))
             }
-
             setDateDefaulOrPickEdtTanggal(true, dialogBinding)
+            additionalDialogSetting(requireContext(), dialogView)
+            dialogView.show()
 
             // click listeners
             dialogBinding.btnBatal.setOnClickListener {
@@ -243,6 +230,9 @@ class FormPembayaranFragment : Fragment() {
 
                 }
             }
+
+            // on eye icon click
+            imgVisibilityOnClick(dialogView, dialogBinding)
         }
     }
 
@@ -286,7 +276,7 @@ class FormPembayaranFragment : Fragment() {
             setView(dialogBinding.root)
         }.create()
 
-        additionalDialogSetting(dialogView)
+        additionalDialogSetting(requireContext(), dialogView)
         dialogView.show()
 
         dialogBinding.edtHarga.apply {
@@ -391,7 +381,7 @@ class FormPembayaranFragment : Fragment() {
             }
             .create()
 
-        additionalDialogSetting(dialogView)
+        additionalDialogSetting(requireContext(), dialogView)
         dialogView.show()
     }
 
@@ -409,7 +399,7 @@ class FormPembayaranFragment : Fragment() {
                 setView(dialogBinding.root)
             }.create()
 
-            additionalDialogSetting(dialogView)
+            additionalDialogSetting(requireContext(), dialogView)
             dialogView.show()
 
             dialogBinding.btnBatal.setOnClickListener {
@@ -447,9 +437,6 @@ class FormPembayaranFragment : Fragment() {
             setCancelable(false)
         }.create()
 
-        additionalDialogSetting(dialogView)
-        dialogView.show()
-
         // setting layout
         dialogBinding.edtJumlahUangDibayar.apply {
             addTextChangedListener(ThousandSeparatorTextWatcher(this))
@@ -458,6 +445,11 @@ class FormPembayaranFragment : Fragment() {
         dialogBinding.edtTermin.isEnabled = true
         dialogBinding.btnHapus.visibility = View.VISIBLE
         dialogBinding.btnTambahkan.text = "Simpan Perubahan"
+
+        setDateDefaulOrPickEdtTanggal(false, dialogBinding)
+        additionalDialogSetting(requireContext(), dialogView)
+        dialogView.show()
+
 
         // misc
         fun getJenisPembayaranAndUrutan(termin: String): Map<String, String> {
@@ -555,7 +547,7 @@ class FormPembayaranFragment : Fragment() {
             confirmDialog.show()
         }
 
-        setDateDefaulOrPickEdtTanggal(false, dialogBinding)
+        imgVisibilityOnClick(dialogView, dialogBinding)
     }
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
@@ -597,8 +589,39 @@ class FormPembayaranFragment : Fragment() {
         }
     }
 
-    private fun additionalDialogSetting(dialog: AlertDialog) {
-        dialog.window?.attributes?.windowAnimations = R.style.FadingAlertDialog
+    private fun showFabs() {
+        binding.fabAddPembayaranData?.show()
+        binding.fabEditData?.show()
+        binding.tvInfoAddPembayaranData?.visibility = View.VISIBLE
+        binding.tvInfoEditData?.visibility = View.VISIBLE
+
+        binding.fabActions?.extend()
+
+        isAllFabsVisible = true
     }
 
+    private fun hideFabs() {
+        binding.fabAddPembayaranData?.hide()
+        binding.fabEditData?.hide()
+        binding.tvInfoAddPembayaranData?.visibility = View.GONE
+        binding.tvInfoEditData?.visibility = View.GONE
+
+        binding.fabActions?.shrink()
+
+        isAllFabsVisible = false
+    }
+
+    private fun imgVisibilityOnClick(dialogView: AlertDialog, dialogBinding: DialogAddFormPembayaranBinding) {
+        dialogBinding.imgVisibility.setOnTouchListener { view, motionEvent ->
+            if (motionEvent.action == MotionEvent.ACTION_DOWN) {
+                dialogBinding.root.alpha = 0.0f
+                dialogView.window?.setBackgroundDrawableResource(android.R.color.transparent)
+            } else if (motionEvent.action == MotionEvent.ACTION_UP) {
+                dialogBinding.root.alpha = 1.0f
+                dialogView.window?.setBackgroundDrawable(ContextCompat.getDrawable(requireContext(), R.drawable.background_rounded_dialog))
+            }
+
+            true
+        }
+    }
 }
