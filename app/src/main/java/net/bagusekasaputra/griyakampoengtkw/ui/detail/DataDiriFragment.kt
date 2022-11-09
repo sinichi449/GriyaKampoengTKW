@@ -13,11 +13,13 @@ import androidx.core.content.res.ResourcesCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import com.github.dhaval2404.imagepicker.ImagePicker
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import dagger.hilt.android.AndroidEntryPoint
 import net.bagusekasaputra.griyakampoengtkw.R
 import net.bagusekasaputra.griyakampoengtkw.databinding.DialogTambahDataDiriBinding
 import net.bagusekasaputra.griyakampoengtkw.databinding.FragmentDataDiriBinding
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.DataDiri
+import net.bagusekasaputra.griyakampoengtkw.util.DialogUtil
 import net.bagusekasaputra.griyakampoengtkw.util.GriyaNodes
 import net.bagusekasaputra.griyakampoengtkw.util.InputUtil
 
@@ -179,6 +181,8 @@ class DataDiriFragment : Fragment() {
             .setCancelable(false)
             .create()
 
+        DialogUtil.additionalDialogSetting(requireContext(), dialogView)
+
         setupSpinner(dialogBinding)
 
         // If data diri exists in viewModel, then assign to the EditTexts
@@ -253,19 +257,37 @@ class DataDiriFragment : Fragment() {
     }
 
     private fun showDeleteDataDiriDialog() {
-        val dialogView = AlertDialog.Builder(requireContext())
+        val dialogView = MaterialAlertDialogBuilder(requireContext())
             .setTitle("Hapus Data Diri")
             .setMessage("Apakah Anda yakin akan menghapus Data Diri di kavling $currentKavlingKode?")
-            .setPositiveButton("Ya") { dialog, _ ->
-                 viewModel.deleteImageDataDiri(currentKavlingKode!!) { completeMsg ->
-                     Toast.makeText(requireContext(), completeMsg, Toast.LENGTH_SHORT).show()
-                     dialog.dismiss()
-                     syncDataDiri()
-                 }
+            .setPositiveButton("Ya")  { dialog, _ ->
+                viewModel.deleteDataDiri(currentKavlingKode!!) { completeMsg ->
+                    Toast.makeText(requireContext(), completeMsg, Toast.LENGTH_SHORT).show()
+                    dialog.dismiss()
+                    syncDataDiri()
+                }
             }
             .setNegativeButton("Tidak") { dialog, _ ->
                 dialog.dismiss()
             }
+            .create()
+
+        dialogView.show()
+    }
+
+    private fun showDeleteImageFotoDataDiriDialog() {
+        val dialogView = MaterialAlertDialogBuilder(requireContext())
+            .setTitle("Hapus Foto")
+            .setMessage("Apakah Anda yakin akan menghapus foto?")
+            .setPositiveButton("Ya") { dialog, _ ->
+                viewModel.deleteImageDataDiri { completeMsg ->
+                    ResourcesCompat.getDrawable(resources, R.drawable.avatar_1, null).let {
+                        binding.imgProfile.setImageDrawable(it)
+                    }
+                    Toast.makeText(requireContext(), completeMsg, Toast.LENGTH_SHORT).show()
+                }
+            }
+            .setNegativeButton("Tidak") { dialog, _ -> dialog.dismiss() }
             .create()
 
         dialogView.show()
@@ -306,12 +328,7 @@ class DataDiriFragment : Fragment() {
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         return when (item.itemId) {
             R.id.hapus_foto -> {
-                viewModel.deleteImageDataDiri { completeMsg ->
-                    ResourcesCompat.getDrawable(resources, R.drawable.avatar_1, null).let {
-                        binding.imgProfile.setImageDrawable(it)
-                    }
-                    Toast.makeText(requireContext(), completeMsg, Toast.LENGTH_SHORT).show()
-                }
+                showDeleteImageFotoDataDiriDialog()
                 true
             }
             R.id.hapus_data_diri -> {

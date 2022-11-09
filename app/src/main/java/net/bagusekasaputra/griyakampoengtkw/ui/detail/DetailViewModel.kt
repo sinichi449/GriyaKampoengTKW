@@ -187,7 +187,7 @@ class DetailViewModel @Inject constructor(
         }
     }
 
-    fun deleteImageDataDiri(kavlingKode: String, onComplete: (msg: String) -> Unit) {
+    fun deleteDataDiri(kavlingKode: String, onComplete: (msg: String) -> Unit) {
         isFinishOperation.value = false
 
         CoroutineScope(Dispatchers.IO).launch {
