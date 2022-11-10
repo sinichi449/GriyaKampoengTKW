@@ -8,6 +8,7 @@ import androidx.fragment.app.Fragment
 import dagger.hilt.android.AndroidEntryPoint
 import net.bagusekasaputra.griyakampoengtkw.R
 import net.bagusekasaputra.griyakampoengtkw.databinding.ActivityDetailBinding
+import net.bagusekasaputra.griyakampoengtkw.ui.custom.DepthPageTransformer
 import net.bagusekasaputra.griyakampoengtkw.ui.detail.adapter.ViewPagerAdapter
 import net.bagusekasaputra.griyakampoengtkw.ui.main.MainActivity
 import net.bagusekasaputra.griyakampoengtkw.util.GriyaNodes
@@ -47,9 +48,8 @@ class DetailActivity : AppCompatActivity() {
             addFragment(putKavlingKode(BiayaMarketingFragment(), currentKavlingKode), "Biaya Marketing")
         }
 
-
-
         binding.viewPager.adapter = pagerAdapter
+        binding.viewPager.setPageTransformer(true, DepthPageTransformer())
         binding.tabLayout.setupWithViewPager(binding.viewPager)
     }
 
