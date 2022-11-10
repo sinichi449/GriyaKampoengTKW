@@ -23,6 +23,7 @@ import net.bagusekasaputra.griyakampoengtkw.databinding.*
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.AppUpdate
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.Block
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.Kavling
+import net.bagusekasaputra.griyakampoengtkw.ui.custom.ConnectivityAnimation
 import net.bagusekasaputra.griyakampoengtkw.ui.detail.DetailActivity
 import net.bagusekasaputra.griyakampoengtkw.ui.main.adapter.BlockRecyclerAdapter
 import net.bagusekasaputra.griyakampoengtkw.ui.main.adapter.KavlingRecyclerAdapter
@@ -39,6 +40,7 @@ class MainActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityMainBinding
     private val viewModel: MainViewModel by viewModels()
+    private lateinit var connectivityAnimation: ConnectivityAnimation
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -47,15 +49,17 @@ class MainActivity : AppCompatActivity() {
 
         // Setup toolbar
         setSupportActionBar(binding.toolbarMain)
-        supportActionBar?.setHomeAsUpIndicator(R.drawable.settings_24px)
-        supportActionBar?.setDisplayHomeAsUpEnabled(true)
 
         // Check connectivity
+        connectivityAnimation = ConnectivityAnimation(this, binding.root, binding.connectivityStatus)
+
         val deviceOnline = intent.getBooleanExtra(GriyaNodes.INTENT_IS_ONLINE, false)
 
         if (!deviceOnline) {
             Toast.makeText(this, "Device terdeteksi offline, data tidak akan tersinkronisasi!", Toast.LENGTH_LONG).show()
+            connectivityAnimation.onOfflineAnimation()
         }
+
 
         // Syncing data, if offline it will pull from local database
         syncData()
@@ -81,6 +85,7 @@ class MainActivity : AppCompatActivity() {
         binding.swipeRefreshMain.setOnRefreshListener {
             syncData()
         }
+
     }
 
     private fun setupViewModel() {
@@ -121,6 +126,7 @@ class MainActivity : AppCompatActivity() {
 
         binding.fabActions.setOnClickListener {
             if (isAllFabsVisible) {
+
                 binding.fabActions.shrink()
 
                 binding.fabAddKavling.hide()
