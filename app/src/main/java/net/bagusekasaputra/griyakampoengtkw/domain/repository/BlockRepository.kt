@@ -5,7 +5,7 @@ import net.bagusekasaputra.griyakampoengtkw.domain.entity.Block
 
 interface BlockRepository {
 
-    fun getAllBlocks(): Flow<List<Block>?>
+    fun getAllBlocks(): Flow<Result<List<Block>?>>
 
     fun addBlock(block: Block): Flow<Result<Boolean>>
 

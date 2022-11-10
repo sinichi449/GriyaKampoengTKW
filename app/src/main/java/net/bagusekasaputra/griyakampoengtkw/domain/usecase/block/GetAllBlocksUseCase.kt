@@ -15,7 +15,7 @@ class GetAllBlocksUseCase @Inject constructor(
 
     object Request: UseCase.Request
 
-    data class Response(val data: List<Block>?): UseCase.Response
+    data class Response(val result: Result<List<Block>?>): UseCase.Response
 
     override fun process(request: Request): Flow<Response> {
         return blockRepository.getAllBlocks().map {

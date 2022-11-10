@@ -38,9 +38,9 @@ class MainViewModel @Inject constructor(
     val kavlings: LiveData<List<Kavling>>
         get() = _kavlings
 
-    private val _blocks = MutableLiveData<List<Block>>()
-    val blocks: LiveData<List<Block>>
-        get() = _blocks
+    private val _blocksLive = MutableLiveData<List<Block>>()
+    val blocksLive: LiveData<List<Block>>
+        get() = _blocksLive
 
     val currentBlock = MutableLiveData("A")
 
@@ -49,16 +49,24 @@ class MainViewModel @Inject constructor(
     val operationResult = MutableLiveData<Operation?>()
 
     // Blocks
-    fun getAllBlocks() {
+    fun getAllBlocks(onFailure: (msg: String) -> Unit) {
         isFinishOperation.value = false
 
         CoroutineScope(Dispatchers.IO).launch {
             val request = GetAllBlocksUseCase.Request
             getAllBlocksUseCase.execute(request).collect {
-                val result = it.data.data
+                val result = it.data.result
 
-                result?.let { blocks ->
-                    _blocks.postValue(blocks)
+                if (result.isSuccess) {
+                    result.getOrNull()?.let { blocks ->
+                        _blocksLive.postValue(blocks)
+                    }
+                } else {
+                    withContext(Dispatchers.Main) {
+                        result.exceptionOrNull()?.message?.let { failMsg ->
+                            onFailure(failMsg)
+                        }
+                    }
                 }
 
                 isFinishOperation.postValue(true)

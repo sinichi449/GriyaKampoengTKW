@@ -8,8 +8,8 @@ import kotlinx.coroutines.channels.trySendBlocking
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
 import kotlinx.coroutines.flow.first
+import net.bagusekasaputra.griyakampoengtkw.data.ConnectionUtil
 import net.bagusekasaputra.griyakampoengtkw.data.model.KavlingModel
-import net.bagusekasaputra.griyakampoengtkw.util.ConnectionUtil
 import net.bagusekasaputra.griyakampoengtkw.util.GriyaNodes
 import net.bagusekasaputra.griyakampoengtkw.util.GriyaNodes.Companion.LOG_TAG
 import java.util.concurrent.atomic.AtomicBoolean
@@ -58,7 +58,6 @@ class FirebaseKavlingRepository @Inject constructor(
                     Log.d(LOG_TAG, "Timeout reached")
                     trySendBlocking(Result.failure(UnknownError("Koneksi menuju server gagal, periksa koneksi Anda.")))
                 },
-                timeoutMillis = 3000
             )
 
             awaitClose {

@@ -7,9 +7,13 @@ import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.channels.trySendBlocking
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
+import kotlinx.coroutines.flow.first
+import net.bagusekasaputra.griyakampoengtkw.data.ConnectionUtil
 import net.bagusekasaputra.griyakampoengtkw.data.model.BlockModel
+import net.bagusekasaputra.griyakampoengtkw.logEvent
 import net.bagusekasaputra.griyakampoengtkw.util.GriyaNodes
 import net.bagusekasaputra.griyakampoengtkw.util.GriyaNodes.Companion.LOG_TAG
+import java.util.concurrent.atomic.AtomicBoolean
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -18,19 +22,20 @@ class FirebaseBlockRepository @Inject constructor(
     private val databaseReference: DatabaseReference
 ): RemoteBlockRepository {
 
-    init {
-        databaseReference.child(GriyaNodes.blocks).keepSynced(true)
-    }
+    private val blockRef = databaseReference.child(GriyaNodes.blocks)
 
-    override fun getAllBlocks(): Flow<List<BlockModel>?> {
-        Log.d(LOG_TAG, "Getting all blocks from firebase ...")
+    override suspend fun getAllBlocks(): Result<List<BlockModel>?> {
+        return callbackFlow<Result<List<BlockModel>?>> {
 
-        return callbackFlow {
+            val gotResult = AtomicBoolean(false)
+
             databaseReference
                 .child(GriyaNodes.blocks)
                 .get()
                 .addOnSuccessListener { snapshot ->
                     Log.d(LOG_TAG, "Getting blocks success.")
+                    gotResult.set(true)
+
                     val hashMap = snapshot.getValue<HashMap<String, BlockModel>>()
                     val blockModels = ArrayList<BlockModel>()
                     hashMap?.keys?.forEach { keys ->
@@ -39,15 +44,25 @@ class FirebaseBlockRepository @Inject constructor(
                         }
                     }
 
-                    trySendBlocking(blockModels)
+                    trySendBlocking(Result.success(blockModels))
                 }
                 .addOnFailureListener {
                     Log.d(LOG_TAG, "Error getting blocks: ${it.message}")
+                    trySendBlocking(Result.failure(it))
                 }
 
+            ConnectionUtil.createRequestTimeout(
+                gotResult = gotResult.get(),
+                onTimeOut = {
+                    trySendBlocking(Result.failure(UnknownError("Getting blocks from server timed out")))
+                }
+            )
 
-            awaitClose { }
-        }
+
+            awaitClose {
+                logEvent("Getting block from server connection closed")
+            }
+        }.first()
     }
 
     override fun addNewBlock(blockModel: BlockModel): Flow<Result<Boolean>> {

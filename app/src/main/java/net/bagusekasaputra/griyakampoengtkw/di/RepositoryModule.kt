@@ -8,10 +8,12 @@ import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
 import net.bagusekasaputra.griyakampoengtkw.data.repository.*
 import net.bagusekasaputra.griyakampoengtkw.data.source.local.MyRoomDatabase
+import net.bagusekasaputra.griyakampoengtkw.data.source.local.block.LocalBlockRepository
+import net.bagusekasaputra.griyakampoengtkw.data.source.local.block.room.RoomBlockRepository
 import net.bagusekasaputra.griyakampoengtkw.data.source.local.imageDataDiri.LocalImageDataDiriSource
 import net.bagusekasaputra.griyakampoengtkw.data.source.local.imageDataDiri.room.RoomLocalImageDataDiriRepository
 import net.bagusekasaputra.griyakampoengtkw.data.source.local.kavling.LocalKavlingRepository
-import net.bagusekasaputra.griyakampoengtkw.data.source.local.kavling.room.RoomLocalKavlingRepository
+import net.bagusekasaputra.griyakampoengtkw.data.source.local.kavling.room.RoomKavlingRepository
 import net.bagusekasaputra.griyakampoengtkw.data.source.remote.appupdate.FirebaseAppUpdateSource
 import net.bagusekasaputra.griyakampoengtkw.data.source.remote.appupdate.RemoteAppUpdateSource
 import net.bagusekasaputra.griyakampoengtkw.data.source.remote.block.FirebaseBlockRepository
@@ -34,8 +36,16 @@ object RepositoryModule {
 
     // Block Repository
     @Provides
-    fun provideBlockRepository(remoteBlockRepository: RemoteBlockRepository): BlockRepository {
-        return BlockRepositoryImpl(remoteBlockRepository)
+    fun provideBlockRepository(
+        localBlockRepository: LocalBlockRepository,
+        remoteBlockRepository: RemoteBlockRepository,
+    ): BlockRepository {
+        return BlockRepositoryImpl(localBlockRepository, remoteBlockRepository)
+    }
+
+    @Provides
+    fun provideLocalBlockRepository(roomDatabase: MyRoomDatabase): LocalBlockRepository {
+        return RoomBlockRepository(roomDatabase)
     }
 
     @Provides
@@ -54,7 +64,7 @@ object RepositoryModule {
 
     @Provides
     fun provideLocalKavlingRepository(myRoomDatabase: MyRoomDatabase): LocalKavlingRepository {
-        return RoomLocalKavlingRepository(myRoomDatabase)
+        return RoomKavlingRepository(myRoomDatabase)
     }
 
     @Provides

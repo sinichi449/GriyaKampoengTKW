@@ -9,6 +9,8 @@ class GriyaNodes {
 
         const val SHARED_PREFS_NEW_FEATURE = "new_feature"
 
+        const val SERVER_TIMEOUT_MILLIS = 3000L
+
         const val LOG_TAG = "DEBUG_ME"
 
         const val firebaseUrl = "https://griya-kampoeng-tkw-mobile-default-rtdb.asia-southeast1.firebasedatabase.app/"

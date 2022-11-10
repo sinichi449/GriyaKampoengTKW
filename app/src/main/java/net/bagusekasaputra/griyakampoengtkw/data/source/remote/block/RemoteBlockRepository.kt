@@ -5,7 +5,7 @@ import net.bagusekasaputra.griyakampoengtkw.data.model.BlockModel
 
 interface RemoteBlockRepository {
 
-    fun getAllBlocks(): Flow<List<BlockModel>?>
+    suspend fun getAllBlocks(): Result<List<BlockModel>?>
 
     fun addNewBlock(blockModel: BlockModel): Flow<Result<Boolean>>
 }

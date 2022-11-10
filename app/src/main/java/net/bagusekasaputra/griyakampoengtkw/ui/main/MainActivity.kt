@@ -84,7 +84,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun setupViewModel() {
-        viewModel.blocks.observe(this) {
+        viewModel.blocksLive.observe(this) {
             it?.let {
                 setupBlockRecyclerview(it)
             }
@@ -104,7 +104,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun syncData() {
-        viewModel.getAllBlocks()
+        getBlocks()
 
         viewModel.currentBlock.value?.let {
             getKavlings(it)
@@ -226,7 +226,7 @@ class MainActivity : AppCompatActivity() {
         DialogUtil.additionalDialogSetting(this, dialogView)
 
         val blockLists = ArrayList<String>()
-        viewModel.blocks.value?.forEach {
+        viewModel.blocksLive.value?.forEach {
             blockLists.add(it.kode)
         }
         val spinnerAdapter = ArrayAdapter<String>(this, android.R.layout.simple_spinner_dropdown_item, blockLists)
@@ -241,7 +241,7 @@ class MainActivity : AppCompatActivity() {
             if (!isInValidEdt) {
                 val spinnerPosition = dialogBinding.spinnerBlocks.selectedItemPosition
                 val kode = blockLists[spinnerPosition]
-                val warna = viewModel.blocks.value!![spinnerPosition].warna
+                val warna = viewModel.blocksLive.value!![spinnerPosition].warna
                 val noKavling = dialogBinding.edtNoKavling.text.toString()
                 val panjang = dialogBinding.edtPanjang.text.toString()
                 val lebar = dialogBinding.edtLebar.text.toString()
@@ -398,6 +398,12 @@ class MainActivity : AppCompatActivity() {
 
     private fun getKavlings(blockKode: String) {
         viewModel.getKavlings(blockKode) { failMsg ->
+            Snackbar.make(binding.root, failMsg, Snackbar.LENGTH_SHORT).show()
+        }
+    }
+
+    private fun getBlocks() {
+        viewModel.getAllBlocks { failMsg ->
             Snackbar.make(binding.root, failMsg, Snackbar.LENGTH_SHORT).show()
         }
     }
