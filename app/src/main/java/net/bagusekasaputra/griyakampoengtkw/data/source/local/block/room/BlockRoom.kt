@@ -14,7 +14,7 @@ data class BlockRoomEntity(
     @ColumnInfo(name = "kode")
     val kode: String,
     @ColumnInfo(name = "warna")
-    val warna: String,
+    var warna: String,
 )
 
 

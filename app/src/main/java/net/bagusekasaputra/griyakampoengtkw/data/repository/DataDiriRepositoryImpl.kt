@@ -3,7 +3,9 @@ package net.bagusekasaputra.griyakampoengtkw.data.repository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.emitAll
 import kotlinx.coroutines.flow.flow
+import net.bagusekasaputra.griyakampoengtkw.data.DataUtil
 import net.bagusekasaputra.griyakampoengtkw.data.model.DataDiriModel
+import net.bagusekasaputra.griyakampoengtkw.data.source.local.datadiri.LocalDataDiriRepository
 import net.bagusekasaputra.griyakampoengtkw.data.source.remote.datadiri.RemoteDataDiriRepository
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.DataDiri
 import net.bagusekasaputra.griyakampoengtkw.domain.repository.DataDiriRepository
@@ -12,24 +14,34 @@ import javax.inject.Singleton
 
 @Singleton
 class DataDiriRepositoryImpl @Inject constructor(
-    private val remoteDataDiriRepository: RemoteDataDiriRepository
+    private val localDataDiriRepository: LocalDataDiriRepository,
+    private val remoteDataDiriRepository: RemoteDataDiriRepository,
 ): DataDiriRepository {
 
     override fun getDataDiri(kavlingKode: String): Flow<Result<DataDiri?>> {
         return flow {
-            val flowDataDiriModel = remoteDataDiriRepository.getDataDiri(kavlingKode)
+            // First, get from remote server.
+            val getDataDiriRemote = remoteDataDiriRepository.getDataDiri(kavlingKode)
 
-            flowDataDiriModel.collect { resultModel ->
-                if (resultModel.isSuccess) {
-                    val model = resultModel.getOrNull()
+            if (getDataDiriRemote.isSuccess) {
+                // Emit the data diri
+                emit(DataUtil.mapSingleResult(getDataDiriRemote, ::mapDataDiri))
 
-                    if (model != null) emit(Result.success(mapDataDiri(model)))
-                    else emit(Result.success(null))
-                } else {
-                    resultModel.exceptionOrNull()?.let {
-                        emit(Result.failure(it))
-                    }
+                // Then save to local
+                getDataDiriRemote.getOrNull()?.let {
+                    localDataDiriRepository.addDataDiri(kavlingKode, it)
                 }
+            } else {
+                // Emit the error
+                getDataDiriRemote.exceptionOrNull()?.let { emit(Result.failure(it)) }
+
+                // Emit from local instead
+                val getDataDiriFromLocal = localDataDiriRepository.getDataDiri(kavlingKode)
+
+                if (getDataDiriFromLocal.isSuccess)
+                    emit(DataUtil.mapSingleResult(getDataDiriFromLocal, ::mapDataDiri))
+                else
+                    emit(Result.failure(UnknownError("Gagal mendapatkan data diri")))
             }
         }
     }

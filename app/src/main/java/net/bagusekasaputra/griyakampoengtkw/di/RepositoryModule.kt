@@ -10,6 +10,8 @@ import net.bagusekasaputra.griyakampoengtkw.data.repository.*
 import net.bagusekasaputra.griyakampoengtkw.data.source.local.MyRoomDatabase
 import net.bagusekasaputra.griyakampoengtkw.data.source.local.block.LocalBlockRepository
 import net.bagusekasaputra.griyakampoengtkw.data.source.local.block.room.RoomBlockRepository
+import net.bagusekasaputra.griyakampoengtkw.data.source.local.datadiri.LocalDataDiriRepository
+import net.bagusekasaputra.griyakampoengtkw.data.source.local.datadiri.room.RoomDataDiriRepository
 import net.bagusekasaputra.griyakampoengtkw.data.source.local.imageDataDiri.LocalImageDataDiriSource
 import net.bagusekasaputra.griyakampoengtkw.data.source.local.imageDataDiri.room.RoomLocalImageDataDiriRepository
 import net.bagusekasaputra.griyakampoengtkw.data.source.local.kavling.LocalKavlingRepository
@@ -74,8 +76,16 @@ object RepositoryModule {
 
     // Data Diri Repository
     @Provides
-    fun provideDataDiriRepository(remoteDataDiriRepository: RemoteDataDiriRepository): DataDiriRepository {
-        return DataDiriRepositoryImpl(remoteDataDiriRepository)
+    fun provideDataDiriRepository(
+        localDataDiriRepository: LocalDataDiriRepository,
+        remoteDataDiriRepository: RemoteDataDiriRepository
+    ): DataDiriRepository {
+        return DataDiriRepositoryImpl(localDataDiriRepository, remoteDataDiriRepository)
+    }
+
+    @Provides
+    fun provideLocalDataDiriRepository(roomDatabase: MyRoomDatabase): LocalDataDiriRepository {
+        return RoomDataDiriRepository(roomDatabase)
     }
 
     @Provides

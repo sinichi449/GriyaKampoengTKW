@@ -6,8 +6,11 @@ import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.channels.trySendBlocking
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
+import kotlinx.coroutines.flow.first
+import net.bagusekasaputra.griyakampoengtkw.data.ConnectionUtil
 import net.bagusekasaputra.griyakampoengtkw.data.model.DataDiriModel
 import net.bagusekasaputra.griyakampoengtkw.util.GriyaNodes
+import java.util.concurrent.atomic.AtomicBoolean
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -16,26 +19,38 @@ class FirebaseDataDiriRepository @Inject constructor(
     private val databaseReference: DatabaseReference
 ): RemoteDataDiriRepository {
 
-    init {
-        databaseReference.child(GriyaNodes.dataDiri).keepSynced(true)
-    }
+    private val dataDiriRef = databaseReference.child(GriyaNodes.dataDiri)
 
-    override fun getDataDiri(kavlingKode: String): Flow<Result<DataDiriModel?>> {
-        return callbackFlow {
-            databaseReference
-                .child(GriyaNodes.dataDiri)
+    override suspend fun getDataDiri(kavlingKode: String): Result<DataDiriModel?> {
+        return callbackFlow<Result<DataDiriModel?>> {
+
+            val gotResult = AtomicBoolean(false)
+
+            dataDiriRef
                 .child(kavlingKode)
                 .get()
                 .addOnSuccessListener { snapshot ->
                     val model = snapshot.getValue<DataDiriModel>()
+
+                    gotResult.set(true)
+
                     trySendBlocking(Result.success(model))
                 }
                 .addOnFailureListener {
                     trySendBlocking(Result.failure(it))
                 }
 
-            awaitClose {  }
-        }
+            ConnectionUtil.createRequestTimeout(
+                gotResult = gotResult.get(),
+                onTimeOut = {
+                    trySendBlocking(Result.failure(UnknownError("Gagal mendapatkan data diri, periksa koneksi Anda")))
+                }
+            )
+
+            awaitClose {
+
+            }
+        }.first()
     }
 
     override fun addDataDiri(

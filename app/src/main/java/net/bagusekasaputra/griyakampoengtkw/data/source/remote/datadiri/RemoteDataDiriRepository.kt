@@ -5,7 +5,7 @@ import net.bagusekasaputra.griyakampoengtkw.data.model.DataDiriModel
 
 interface RemoteDataDiriRepository {
 
-    fun getDataDiri(kavlingKode: String): Flow<Result<DataDiriModel?>>
+    suspend fun getDataDiri(kavlingKode: String): Result<DataDiriModel?>
 
     fun addDataDiri(kavlingKode: String, dataDiriModel: DataDiriModel): Flow<Result<Boolean>>
 
