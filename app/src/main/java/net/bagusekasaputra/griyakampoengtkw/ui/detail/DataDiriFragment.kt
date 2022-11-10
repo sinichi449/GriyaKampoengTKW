@@ -74,10 +74,9 @@ class DataDiriFragment : Fragment() {
 
         setupExtendedFloatingButton()
 
-        binding.swipeRefreshDataDiri.isEnabled = false
-//        binding.swipeRefreshDataDiri.setOnRefreshListener {
-//            syncDataDiri()
-//        }
+        binding.swipeRefreshDataDiri.setOnRefreshListener {
+            syncDataDiri()
+        }
 
         binding.imgProfile.setOnClickListener {
             Intent(requireContext(), FullImageFotoDataDiriActivity::class.java).let { intent ->

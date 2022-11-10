@@ -5,7 +5,7 @@ import net.bagusekasaputra.griyakampoengtkw.data.model.KavlingModel
 
 interface RemoteKavlingRepository {
 
-    fun getAllKavlings(blockKode: String): Flow<Result<List<KavlingModel>>>
+    suspend fun getAllKavlings(blockKode: String): Result<List<KavlingModel>?>
 
     fun addKavling(blockKode: String, kavlingModel: KavlingModel): Flow<Result<Boolean>>
 

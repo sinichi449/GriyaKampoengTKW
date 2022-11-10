@@ -87,11 +87,12 @@ class MainViewModel @Inject constructor(
     }
 
     // Kavlings
-    fun getKavlings(blockKode: String) {
+    fun getKavlings(blockKode: String, onFailure: (msg: String) -> Unit) {
         isFinishOperation.value = false
 
         CoroutineScope(Dispatchers.IO).launch {
             val request = GetKavlingsByBlockUseCase.Request(blockKode)
+
             getKavlingsByBlockUseCase.execute(request).collect {
                 val result = it.data.result
 
@@ -99,6 +100,10 @@ class MainViewModel @Inject constructor(
                     val unsortedKavlings = result.getOrNull()
                     unsortedKavlings?.let { kavling ->
                         _kavlings.postValue(sortKavling(kavling))
+                    }
+                } else {
+                    withContext(Dispatchers.Main) {
+                        result.exceptionOrNull()?.message?.let(onFailure)
                     }
                 }
 

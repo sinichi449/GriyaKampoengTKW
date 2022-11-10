@@ -7,9 +7,12 @@ import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.channels.trySendBlocking
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
+import kotlinx.coroutines.flow.first
 import net.bagusekasaputra.griyakampoengtkw.data.model.KavlingModel
+import net.bagusekasaputra.griyakampoengtkw.util.ConnectionUtil
 import net.bagusekasaputra.griyakampoengtkw.util.GriyaNodes
 import net.bagusekasaputra.griyakampoengtkw.util.GriyaNodes.Companion.LOG_TAG
+import java.util.concurrent.atomic.AtomicBoolean
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -18,17 +21,20 @@ class FirebaseKavlingRepository @Inject constructor(
     private val databaseReference: DatabaseReference
 ): RemoteKavlingRepository {
 
-    init {
-        databaseReference.child(GriyaNodes.kavlings).keepSynced(true)
-    }
+    private val kavlingRef = databaseReference.child(GriyaNodes.kavlings)
 
-    override fun getAllKavlings(blockKode: String): Flow<Result<List<KavlingModel>>> {
-        return callbackFlow {
-            databaseReference
-                .child(GriyaNodes.kavlings)
+    override suspend fun getAllKavlings(blockKode: String): Result<List<KavlingModel>?> {
+        return callbackFlow<Result<List<KavlingModel>?>> {
+
+            val gotResult = AtomicBoolean(false)
+
+            kavlingRef
                 .child(blockKode)
                 .get()
                 .addOnSuccessListener { snapshot ->
+                    Log.d(LOG_TAG, "Getting kavlings from server success")
+                    gotResult.set(true)
+
                     val hashMap = snapshot.getValue<HashMap<String, KavlingModel>>()
                     val kavlings = ArrayList<KavlingModel>()
 
@@ -39,13 +45,26 @@ class FirebaseKavlingRepository @Inject constructor(
                     }
 
                     trySendBlocking(Result.success(kavlings))
+
                 }
                 .addOnFailureListener {
+                    Log.d(LOG_TAG, "Getting kavlings fails: ${it.message}")
                     trySendBlocking(Result.failure(it))
                 }
 
-            awaitClose {  }
-        }
+            ConnectionUtil.createRequestTimeout(
+                gotResult = gotResult.get(),
+                onTimeOut = {
+                    Log.d(LOG_TAG, "Timeout reached")
+                    trySendBlocking(Result.failure(UnknownError("Koneksi menuju server gagal, periksa koneksi Anda.")))
+                },
+                timeoutMillis = 3000
+            )
+
+            awaitClose {
+                Log.d(LOG_TAG, "Getting kavlings connection closed.")
+            }
+        }.first()
     }
 
     override fun addKavling(blockKode: String, kavlingModel: KavlingModel): Flow<Result<Boolean>> {

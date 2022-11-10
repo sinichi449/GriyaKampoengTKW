@@ -7,11 +7,11 @@ import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
 import net.bagusekasaputra.griyakampoengtkw.data.repository.*
+import net.bagusekasaputra.griyakampoengtkw.data.source.local.MyRoomDatabase
 import net.bagusekasaputra.griyakampoengtkw.data.source.local.imageDataDiri.LocalImageDataDiriSource
-import net.bagusekasaputra.griyakampoengtkw.data.source.local.imageDataDiri.room.ImageDataDiriDao
-import net.bagusekasaputra.griyakampoengtkw.data.source.local.imageDataDiri.room.ImageDataDiriRoomSource
-import net.bagusekasaputra.griyakampoengtkw.data.source.local.kavling.FakeKavlingModelDb
+import net.bagusekasaputra.griyakampoengtkw.data.source.local.imageDataDiri.room.RoomLocalImageDataDiriRepository
 import net.bagusekasaputra.griyakampoengtkw.data.source.local.kavling.LocalKavlingRepository
+import net.bagusekasaputra.griyakampoengtkw.data.source.local.kavling.room.RoomLocalKavlingRepository
 import net.bagusekasaputra.griyakampoengtkw.data.source.remote.appupdate.FirebaseAppUpdateSource
 import net.bagusekasaputra.griyakampoengtkw.data.source.remote.appupdate.RemoteAppUpdateSource
 import net.bagusekasaputra.griyakampoengtkw.data.source.remote.block.FirebaseBlockRepository
@@ -45,13 +45,16 @@ object RepositoryModule {
 
     // Kavling Repository
     @Provides
-    fun provideKavlingRepository(remoteKavlingRepository: RemoteKavlingRepository): KavlingRepository {
-        return KavlingRepositoryImpl(remoteKavlingRepository)
+    fun provideKavlingRepository(
+        localKavlingRepository: LocalKavlingRepository,
+        remoteKavlingRepository: RemoteKavlingRepository,
+    ): KavlingRepository {
+        return KavlingRepositoryImpl(localKavlingRepository, remoteKavlingRepository)
     }
 
     @Provides
-    fun provideLocalKavlingRepository(): LocalKavlingRepository {
-        return FakeKavlingModelDb()
+    fun provideLocalKavlingRepository(myRoomDatabase: MyRoomDatabase): LocalKavlingRepository {
+        return RoomLocalKavlingRepository(myRoomDatabase)
     }
 
     @Provides
@@ -116,7 +119,7 @@ object RepositoryModule {
     }
 
     @Provides
-    fun provideLocalImageDataDiriSource(imageDataDiriDao: ImageDataDiriDao): LocalImageDataDiriSource {
-        return ImageDataDiriRoomSource(imageDataDiriDao)
+    fun provideLocalImageDataDiriSource(roomDatabase: MyRoomDatabase): LocalImageDataDiriSource {
+        return RoomLocalImageDataDiriRepository(roomDatabase)
     }
 }

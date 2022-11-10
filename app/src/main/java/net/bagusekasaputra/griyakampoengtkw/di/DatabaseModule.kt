@@ -9,8 +9,7 @@ import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
-import net.bagusekasaputra.griyakampoengtkw.data.source.local.imageDataDiri.room.ImageDataDiriDao
-import net.bagusekasaputra.griyakampoengtkw.data.source.local.imageDataDiri.room.ImageDataDiriDatabase
+import net.bagusekasaputra.griyakampoengtkw.data.source.local.MyRoomDatabase
 import net.bagusekasaputra.griyakampoengtkw.util.GriyaNodes.Companion.firebaseUrl
 
 @Module
@@ -18,18 +17,15 @@ import net.bagusekasaputra.griyakampoengtkw.util.GriyaNodes.Companion.firebaseUr
 object DatabaseModule {
 
     @Provides
-    fun providesFirebaseDatabaseReference(): DatabaseReference {
-        return FirebaseDatabase.getInstance(firebaseUrl).reference
+    fun provideMyRoomDatabase(@ApplicationContext appContext: Context): MyRoomDatabase {
+        return Room.databaseBuilder(
+            appContext, MyRoomDatabase::class.java, "griya_kampoeng_tkw.db"
+        ).build()
     }
 
     @Provides
-    fun provideImageDataDiriDao(@ApplicationContext applicationContext: Context): ImageDataDiriDao {
-        val db = Room.databaseBuilder(
-            applicationContext,
-            ImageDataDiriDatabase::class.java, "griya.db"
-        ).build()
-
-        return db.getDao()
+    fun providesFirebaseDatabaseReference(): DatabaseReference {
+        return FirebaseDatabase.getInstance(firebaseUrl).reference
     }
 
 }

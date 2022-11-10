@@ -1,11 +1,11 @@
 package net.bagusekasaputra.griyakampoengtkw.data.source.local.kavling
 
-import net.bagusekasaputra.griyakampoengtkw.data.model.BlockModel
 import net.bagusekasaputra.griyakampoengtkw.data.model.KavlingModel
 
 interface LocalKavlingRepository {
 
-    fun getKavlingByBlock(block: BlockModel): List<KavlingModel>
+    suspend fun getKavlingByBlockKode(blockKode: String): Result<List<KavlingModel>?>
 
-    fun addKavling(block: BlockModel): Boolean
+    suspend fun addKavling(blockKode: String, kavlingModel: KavlingModel): Result<Nothing?>
+
 }

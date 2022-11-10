@@ -45,16 +45,20 @@ class MainActivity : AppCompatActivity() {
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
+        // Setup toolbar
         setSupportActionBar(binding.toolbarMain)
         supportActionBar?.setHomeAsUpIndicator(R.drawable.settings_24px)
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
 
+        // Check connectivity
         val deviceOnline = intent.getBooleanExtra(GriyaNodes.INTENT_IS_ONLINE, false)
+
         if (!deviceOnline) {
             Toast.makeText(this, "Device terdeteksi offline, data tidak akan tersinkronisasi!", Toast.LENGTH_LONG).show()
-        } else {
-            syncData()
         }
+
+        // Syncing data, if offline it will pull from local database
+        syncData()
 
         viewModel.checkUpdates({
             showUpdateDialog(it)
@@ -103,7 +107,7 @@ class MainActivity : AppCompatActivity() {
         viewModel.getAllBlocks()
 
         viewModel.currentBlock.value?.let {
-            viewModel.getKavlings(it)
+            getKavlings(it)
         }
     }
 
@@ -138,7 +142,7 @@ class MainActivity : AppCompatActivity() {
         val adapter = BlockRecyclerAdapter(blocks) { position ->
             viewModel.currentBlock.value = blocks[position].kode
             viewModel.currentBlock.value?.let {
-                viewModel.getKavlings(it)
+                getKavlings(it)
             }
         }
 
@@ -390,5 +394,11 @@ class MainActivity : AppCompatActivity() {
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
         menuInflater.inflate(R.menu.menu_main, menu)
         return super.onCreateOptionsMenu(menu)
+    }
+
+    private fun getKavlings(blockKode: String) {
+        viewModel.getKavlings(blockKode) { failMsg ->
+            Snackbar.make(binding.root, failMsg, Snackbar.LENGTH_SHORT).show()
+        }
     }
 }

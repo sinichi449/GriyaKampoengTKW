@@ -2,14 +2,17 @@ package net.bagusekasaputra.griyakampoengtkw.data.source.local.imageDataDiri.roo
 
 import android.net.Uri
 import net.bagusekasaputra.griyakampoengtkw.data.model.ImageDataDiriModel
+import net.bagusekasaputra.griyakampoengtkw.data.source.local.MyRoomDatabase
 import net.bagusekasaputra.griyakampoengtkw.data.source.local.imageDataDiri.LocalImageDataDiriSource
 import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
-class ImageDataDiriRoomSource @Inject constructor(
-    private val imageDao: ImageDataDiriDao
+class RoomLocalImageDataDiriRepository @Inject constructor(
+    myRoomDatabase: MyRoomDatabase,
 ): LocalImageDataDiriSource {
+
+    private val imageDao = myRoomDatabase.getImageDataDiriDao()
 
     override suspend fun getByKavlingKode(
         kavlingKode: String,
@@ -38,7 +41,7 @@ class ImageDataDiriRoomSource @Inject constructor(
     ) {
         try {
             val imageDataDiri = imageDataDiriModel.let {
-                ImageDataDiriRoom(
+                ImageDataDiriRoomEntity(
                     kavlingKode = it.kavlingKode,
                     imgUri = it.imgUri,
                 )
@@ -58,7 +61,7 @@ class ImageDataDiriRoomSource @Inject constructor(
     ) {
         try {
             val imageDataDiri = imageDataDiriModel.let {
-                ImageDataDiriRoom(
+                ImageDataDiriRoomEntity(
                     kavlingKode = it.kavlingKode,
                     imgUri = it.imgUri,
                 )
