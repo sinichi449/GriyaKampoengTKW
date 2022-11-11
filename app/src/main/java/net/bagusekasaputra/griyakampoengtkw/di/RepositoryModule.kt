@@ -12,6 +12,8 @@ import net.bagusekasaputra.griyakampoengtkw.data.source.local.block.LocalBlockRe
 import net.bagusekasaputra.griyakampoengtkw.data.source.local.block.room.RoomBlockRepository
 import net.bagusekasaputra.griyakampoengtkw.data.source.local.datadiri.LocalDataDiriRepository
 import net.bagusekasaputra.griyakampoengtkw.data.source.local.datadiri.room.RoomDataDiriRepository
+import net.bagusekasaputra.griyakampoengtkw.data.source.local.fotoKuitansi.LocalFotoKuitansiRepository
+import net.bagusekasaputra.griyakampoengtkw.data.source.local.fotoKuitansi.room.RoomFotoKuitansiRepository
 import net.bagusekasaputra.griyakampoengtkw.data.source.local.imageDataDiri.LocalImageDataDiriSource
 import net.bagusekasaputra.griyakampoengtkw.data.source.local.imageDataDiri.room.RoomLocalImageDataDiriRepository
 import net.bagusekasaputra.griyakampoengtkw.data.source.local.kavling.LocalKavlingRepository
@@ -141,5 +143,16 @@ object RepositoryModule {
     @Provides
     fun provideLocalImageDataDiriSource(roomDatabase: MyRoomDatabase): LocalImageDataDiriSource {
         return RoomLocalImageDataDiriRepository(roomDatabase)
+    }
+
+    // Foto Kuitansi
+    @Provides
+    fun provideFotoKuitansiRepository(localFotoKuitansiRepository: LocalFotoKuitansiRepository, contentResolver: ContentResolver): FotoKuitansiRepository {
+        return FotoKuitansiRepositoryImpl(localFotoKuitansiRepository, contentResolver)
+    }
+
+    @Provides
+    fun provideLocalFotoKuitansiRepository(roomDatabase: MyRoomDatabase): LocalFotoKuitansiRepository {
+        return RoomFotoKuitansiRepository(roomDatabase)
     }
 }

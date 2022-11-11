@@ -17,10 +17,10 @@ class NetworkStatusHelper(
     ctx: Context
 ): LiveData<NetworkStatus>() {
 
-    private val validateNetworkConnections = ArrayList<Network>()
-    var connectivityManager = ctx.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+    private var connectivityManager = ctx.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
     private lateinit var connectivityManagerCallback: ConnectivityManager.NetworkCallback
-    private val isOnline = AtomicBoolean(false)
+
+    val isOnline = AtomicBoolean(false)
 
     private fun announceOnline() {
         if (!isOnline.get()) {

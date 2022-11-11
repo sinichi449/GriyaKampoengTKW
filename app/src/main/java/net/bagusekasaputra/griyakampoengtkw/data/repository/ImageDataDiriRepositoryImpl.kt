@@ -1,8 +1,6 @@
 package net.bagusekasaputra.griyakampoengtkw.data.repository
 
 import android.content.ContentResolver
-import android.graphics.Bitmap
-import android.graphics.BitmapFactory
 import android.net.Uri
 import androidx.core.net.toFile
 import kotlinx.coroutines.channels.awaitClose
@@ -13,6 +11,7 @@ import net.bagusekasaputra.griyakampoengtkw.data.model.ImageDataDiriModel
 import net.bagusekasaputra.griyakampoengtkw.data.source.local.imageDataDiri.LocalImageDataDiriSource
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.ImageDataDiri
 import net.bagusekasaputra.griyakampoengtkw.domain.repository.ImageDataDiriRepository
+import net.bagusekasaputra.griyakampoengtkw.util.ImageUtil
 import java.io.File
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -94,7 +93,7 @@ class ImageDataDiriRepositoryImpl @Inject constructor(
         return imageDataDiriModel.let {
             ImageDataDiri(
                 kavlingKode = it.kavlingKode,
-                bitmap = getBitmapFromUri(Uri.parse(it.imgUri))
+                bitmap = ImageUtil.getBitmapFromUri(contentResolver, Uri.parse(it.imgUri))
             )
         }
     }
@@ -106,13 +105,5 @@ class ImageDataDiriRepositoryImpl @Inject constructor(
         )
     }
 
-    private fun getBitmapFromUri(uri: Uri): Bitmap {
-        val parcelFileDescriptor = contentResolver.openFileDescriptor(uri, "r")
-        val fileDescriptor = parcelFileDescriptor?.fileDescriptor
-        val image = BitmapFactory.decodeFileDescriptor(fileDescriptor)
 
-        parcelFileDescriptor?.close()
-
-        return image
-    }
 }

@@ -6,6 +6,9 @@ class GriyaNodes {
         const val INTENT_IS_ONLINE = "is_online"
         const val INTENT_KAVLING_KODE = "kavling_kode"
         const val INTENT_BITMAP = "image_uri"
+        const val INTENT_SOURCE_IMAGE = "source_image"
+        const val INTENT_DATA_DIRI = "data_diri"
+        const val INTENT_FOTO_KUITANSI = "foto_kuitansi"
 
         const val SHARED_PREFS_NEW_FEATURE = "new_feature"
 

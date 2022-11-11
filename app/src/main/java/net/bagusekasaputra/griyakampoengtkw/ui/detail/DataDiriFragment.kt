@@ -19,6 +19,8 @@ import net.bagusekasaputra.griyakampoengtkw.R
 import net.bagusekasaputra.griyakampoengtkw.databinding.DialogTambahDataDiriBinding
 import net.bagusekasaputra.griyakampoengtkw.databinding.FragmentDataDiriBinding
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.DataDiri
+import net.bagusekasaputra.griyakampoengtkw.ui.detail.viewmodel.DetailViewModel
+import net.bagusekasaputra.griyakampoengtkw.ui.detail.viewmodel.ImageViewModel
 import net.bagusekasaputra.griyakampoengtkw.util.DialogUtil
 import net.bagusekasaputra.griyakampoengtkw.util.GriyaNodes
 import net.bagusekasaputra.griyakampoengtkw.util.InputUtil
@@ -28,6 +30,7 @@ class DataDiriFragment : Fragment() {
 
     private lateinit var binding: FragmentDataDiriBinding
     private val viewModel: DetailViewModel by viewModels()
+    private val imageViewModel: ImageViewModel by viewModels()
     private var currentKavlingKode: String? = null
     private lateinit var arrayAdapter: ArrayAdapter<String>
 
@@ -36,14 +39,18 @@ class DataDiriFragment : Fragment() {
             val resultCode = result.resultCode
             val data = result.data
 
-            if (resultCode == Activity.RESULT_OK) {
-                viewModel.addImageDataDiri(currentKavlingKode!!, data?.data!!) {
-                    Toast.makeText(requireContext(), it, Toast.LENGTH_SHORT).show()
+            when (resultCode) {
+                Activity.RESULT_OK -> {
+                    imageViewModel.addImageDataDiri(currentKavlingKode!!, data?.data!!) {
+                        Toast.makeText(requireContext(), it, Toast.LENGTH_SHORT).show()
+                    }
                 }
-            } else if (resultCode == ImagePicker.RESULT_ERROR) {
-                Toast.makeText(requireContext(), ImagePicker.getError(data), Toast.LENGTH_SHORT).show()
-            } else {
-                Toast.makeText(requireContext(), "Task Cancelled", Toast.LENGTH_SHORT).show()
+                ImagePicker.RESULT_ERROR -> {
+                    Toast.makeText(requireContext(), ImagePicker.getError(data), Toast.LENGTH_SHORT).show()
+                }
+                else -> {
+                    Toast.makeText(requireContext(), "Task Cancelled", Toast.LENGTH_SHORT).show()
+                }
             }
         }
 
@@ -80,12 +87,16 @@ class DataDiriFragment : Fragment() {
 
         binding.imgProfile.setOnClickListener {
             Intent(requireContext(), FullImageFotoDataDiriActivity::class.java).let { intent ->
-                viewModel.imageDataDiriLive.value.let { img ->
+                imageViewModel.imageDataDiriLive.value.let { img ->
                     if (img == null) {
                         Toast.makeText(requireContext(), "Foto masih kosong!", Toast.LENGTH_SHORT)
                             .show()
                     } else {
-                        intent.putExtra(GriyaNodes.INTENT_BITMAP, img.bitmap)
+                        val stringExtra = ArrayList<String>().apply {
+                            add(GriyaNodes.INTENT_DATA_DIRI)
+                            add(currentKavlingKode!!)
+                        }
+                        intent.putExtra(GriyaNodes.INTENT_SOURCE_IMAGE, stringExtra)
                         startActivity(intent)
                     }
                 }
@@ -101,14 +112,12 @@ class DataDiriFragment : Fragment() {
         syncDataDiri()
     }
 
-
-
     private fun syncDataDiri() {
         viewModel.getDataDiri(currentKavlingKode!!) { failMsg ->
             Toast.makeText(requireContext(), failMsg, Toast.LENGTH_LONG).show()
         }
 
-        viewModel.getImageDataDiri(currentKavlingKode!!) { }
+        imageViewModel.getImageDataDiri(currentKavlingKode!!) { }
     }
 
     private fun setupViewModel() {
@@ -118,7 +127,7 @@ class DataDiriFragment : Fragment() {
             }
         }
 
-        viewModel.imageDataDiriLive.observe(requireActivity()) { imageDataDiri ->
+        imageViewModel.imageDataDiriLive.observe(requireActivity()) { imageDataDiri ->
             imageDataDiri?.let {
                 binding.imgProfile.setImageBitmap(imageDataDiri.bitmap)
             }
@@ -136,7 +145,7 @@ class DataDiriFragment : Fragment() {
 
         viewModel.isFinishAddImage.observe(requireActivity()) { finished ->
             finished?.let {
-                if (it) viewModel.getImageDataDiri(currentKavlingKode!!) { failMsg ->
+                if (it) imageViewModel.getImageDataDiri(currentKavlingKode!!) { failMsg ->
                     Toast.makeText(requireContext(), failMsg, Toast.LENGTH_SHORT).show()
                 }
             }
@@ -279,7 +288,7 @@ class DataDiriFragment : Fragment() {
             .setTitle("Hapus Foto")
             .setMessage("Apakah Anda yakin akan menghapus foto?")
             .setPositiveButton("Ya") { dialog, _ ->
-                viewModel.deleteImageDataDiri { completeMsg ->
+                imageViewModel.deleteImageDataDiri { completeMsg ->
                     ResourcesCompat.getDrawable(resources, R.drawable.avatar_1, null).let {
                         binding.imgProfile.setImageDrawable(it)
                     }

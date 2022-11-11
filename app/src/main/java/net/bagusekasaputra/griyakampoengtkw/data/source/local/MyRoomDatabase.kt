@@ -6,6 +6,8 @@ import net.bagusekasaputra.griyakampoengtkw.data.source.local.block.room.BlockRo
 import net.bagusekasaputra.griyakampoengtkw.data.source.local.block.room.BlockRoomEntity
 import net.bagusekasaputra.griyakampoengtkw.data.source.local.datadiri.room.DataDiriRoomDao
 import net.bagusekasaputra.griyakampoengtkw.data.source.local.datadiri.room.DataDiriRoomEntity
+import net.bagusekasaputra.griyakampoengtkw.data.source.local.fotoKuitansi.room.FotoKuitansiRoomDao
+import net.bagusekasaputra.griyakampoengtkw.data.source.local.fotoKuitansi.room.FotoKuitansiRoomEntity
 import net.bagusekasaputra.griyakampoengtkw.data.source.local.imageDataDiri.room.ImageDataDiriDao
 import net.bagusekasaputra.griyakampoengtkw.data.source.local.imageDataDiri.room.ImageDataDiriRoomEntity
 import net.bagusekasaputra.griyakampoengtkw.data.source.local.kavling.room.KavlingRoomDao
@@ -13,8 +15,8 @@ import net.bagusekasaputra.griyakampoengtkw.data.source.local.kavling.room.Kavli
 
 @Database(
     entities = [KavlingRoomEntity::class, ImageDataDiriRoomEntity::class, BlockRoomEntity::class,
-               DataDiriRoomEntity::class],
-    version = 1,
+               DataDiriRoomEntity::class, FotoKuitansiRoomEntity::class],
+    version = 2,
     exportSchema = false
 )
 abstract class MyRoomDatabase: RoomDatabase() {
@@ -27,4 +29,5 @@ abstract class MyRoomDatabase: RoomDatabase() {
 
     abstract fun getDataDiriDao(): DataDiriRoomDao
 
+    abstract fun getFotoKuitansiDao(): FotoKuitansiRoomDao
 }

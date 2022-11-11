@@ -1,18 +1,23 @@
 package net.bagusekasaputra.griyakampoengtkw.ui.detail
 
+import android.app.Activity
 import android.app.AlertDialog
 import android.app.DatePickerDialog
+import android.content.Intent
 import android.content.res.Configuration
 import android.os.Bundle
 import android.view.*
 import android.widget.TableRow
 import android.widget.Toast
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.github.dhaval2404.imagepicker.ImagePicker
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.textview.MaterialTextView
 import dagger.hilt.android.AndroidEntryPoint
 import net.bagusekasaputra.griyakampoengtkw.R
@@ -24,6 +29,8 @@ import net.bagusekasaputra.griyakampoengtkw.domain.entity.HargaKavling
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.Pembayaran
 import net.bagusekasaputra.griyakampoengtkw.ui.custom.ThousandSeparatorTextWatcher
 import net.bagusekasaputra.griyakampoengtkw.ui.detail.adapter.TerminRecyclerAdapter
+import net.bagusekasaputra.griyakampoengtkw.ui.detail.viewmodel.DetailViewModel
+import net.bagusekasaputra.griyakampoengtkw.ui.detail.viewmodel.ImageViewModel
 import net.bagusekasaputra.griyakampoengtkw.util.DialogUtil.additionalDialogSetting
 import net.bagusekasaputra.griyakampoengtkw.util.GriyaNodes
 import net.bagusekasaputra.griyakampoengtkw.util.InputUtil
@@ -37,8 +44,35 @@ class FormPembayaranFragment : Fragment() {
 
     private lateinit var binding: FragmentFormPembayaranBinding
     private val viewModel: DetailViewModel by viewModels()
+    private val imageViewModel: ImageViewModel by viewModels()
+
     private var currentKavlingKode: String? = null
     private var isAllFabsVisible = false
+
+    private val startForFotoKuitansiResult =
+        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+            val resultCode = result.resultCode
+            val intent = result.data
+
+            when (resultCode) {
+                Activity.RESULT_OK -> {
+                    val uri = intent?.data
+
+                    uri?.let {
+                        imageViewModel.addFotoKuitansi(currentKavlingKode!!, it) { completeMsg ->
+                            Snackbar.make(binding.root, completeMsg, Snackbar.LENGTH_SHORT).show()
+                        }
+                    }
+                }
+                ImagePicker.RESULT_ERROR -> {
+                    Toast.makeText(requireContext(), ImagePicker.getError(intent), Toast.LENGTH_SHORT).show()
+                }
+                else -> {
+                    Toast.makeText(requireContext(), "Operasi dibatalkan", Toast.LENGTH_SHORT)
+                        .show()
+                }
+            }
+        }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -92,6 +126,9 @@ class FormPembayaranFragment : Fragment() {
         }
         viewModel.getAllPembayaran(currentKavlingKode!!) { failMsg ->
             Toast.makeText(requireContext(), failMsg, Toast.LENGTH_LONG).show()
+        }
+        imageViewModel.getFotoKuitansi(currentKavlingKode!!) { failMsg ->
+            Toast.makeText(requireContext(), failMsg, Toast.LENGTH_SHORT).show()
         }
     }
 
@@ -561,6 +598,16 @@ class FormPembayaranFragment : Fragment() {
                 showDeleteAllPembayaranDialog()
                 true
             }
+            R.id.tambahkan_foto -> {
+                showImagePickerDialog()
+
+                true
+            }
+            R.id.lihat_foto -> {
+                lihatFotoKuitansi()
+
+                true
+            }
             else -> return super.onOptionsItemSelected(item)
         }
     }
@@ -622,6 +669,34 @@ class FormPembayaranFragment : Fragment() {
             }
 
             true
+        }
+    }
+
+    private fun showImagePickerDialog() {
+        ImagePicker.with(this)
+            .crop()
+            .compress(1024)
+            .createIntent {
+                startForFotoKuitansiResult.launch(it)
+            }
+    }
+
+    private fun lihatFotoKuitansi() {
+        Intent(requireContext(), FullImageFotoDataDiriActivity::class.java).let { intent ->
+            imageViewModel.fotoKuitansiLive.value.let { fotoKuitansi ->
+                if (fotoKuitansi == null) {
+                    Toast.makeText(requireContext(),
+                        "Bukti kuitansi tidak ditemukan",
+                        Toast.LENGTH_SHORT).show()
+                } else {
+                    val stringExtra = ArrayList<String>().apply {
+                        add(GriyaNodes.INTENT_FOTO_KUITANSI)
+                        add(currentKavlingKode!!)
+                    }
+                    intent.putExtra(GriyaNodes.INTENT_SOURCE_IMAGE, stringExtra)
+                    startActivity(intent)
+                }
+            }
         }
     }
 }

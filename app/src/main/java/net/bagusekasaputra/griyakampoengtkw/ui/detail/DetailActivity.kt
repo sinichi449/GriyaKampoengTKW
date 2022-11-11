@@ -14,6 +14,7 @@ import net.bagusekasaputra.griyakampoengtkw.R
 import net.bagusekasaputra.griyakampoengtkw.databinding.ActivityDetailBinding
 import net.bagusekasaputra.griyakampoengtkw.ui.custom.DepthPageTransformer
 import net.bagusekasaputra.griyakampoengtkw.ui.detail.adapter.ViewPagerAdapter
+import net.bagusekasaputra.griyakampoengtkw.ui.detail.viewmodel.DetailViewModel
 import net.bagusekasaputra.griyakampoengtkw.ui.main.MainActivity
 import net.bagusekasaputra.griyakampoengtkw.ui.network.ConnectivityAnimation
 import net.bagusekasaputra.griyakampoengtkw.ui.network.InternetAvailability

@@ -1,8 +1,27 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <item
+        android:id="@+id/foto_kuitansi"
+        android:title="Foto Kuitansi"
+        android:icon="@drawable/ic_baseline_camera_white_24"
+        app:showAsAction="always">
+
+        <menu>
+            <item
+                android:id="@+id/lihat_foto"
+                android:title="Lihat Foto"/>
+            <item
+                android:id="@+id/tambahkan_foto"
+                android:title="Tambahkan Foto"/>
+        </menu>
+
+    </item>
+
     <item
         android:id="@+id/hapus_semua_pembayaran"
         android:title="Hapus semua pembayaran"
         app:showAsAction="never"/>
+
 </menu>
