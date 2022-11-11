@@ -1,4 +1,4 @@
-package net.bagusekasaputra.griyakampoengtkw.ui.custom
+package net.bagusekasaputra.griyakampoengtkw.ui.network
 
 import android.app.Activity
 import android.view.View
@@ -21,6 +21,8 @@ class ConnectivityAnimation(
     private var currentAnimation: Animation? = null
     private var currentTimer: Timer? = null
 
+    private val isOffline = AtomicBoolean(false)
+
     enum class Status {
         Online, Offline
     }
@@ -31,7 +33,11 @@ class ConnectivityAnimation(
             currentAnimation?.cancel()
             animationDone.set(true)
         }
-        enterAnimation(Status.Online)
+
+        if (isOffline.get()) {
+            enterAnimation(Status.Online)
+            isOffline.set(false)
+        }
     }
 
     fun onOfflineAnimation() {
@@ -40,7 +46,11 @@ class ConnectivityAnimation(
             currentAnimation?.cancel()
             animationDone.set(true)
         }
-        enterAnimation(Status.Offline)
+
+        if (!isOffline.get()) {
+            enterAnimation(Status.Offline)
+            isOffline.set(true)
+        }
     }
 
     private fun enterAnimation(status: Status) {

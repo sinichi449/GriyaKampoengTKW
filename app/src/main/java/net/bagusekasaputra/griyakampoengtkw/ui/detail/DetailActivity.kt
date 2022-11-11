@@ -5,12 +5,20 @@ import android.view.MenuItem
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.lifecycleScope
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import net.bagusekasaputra.griyakampoengtkw.R
 import net.bagusekasaputra.griyakampoengtkw.databinding.ActivityDetailBinding
 import net.bagusekasaputra.griyakampoengtkw.ui.custom.DepthPageTransformer
 import net.bagusekasaputra.griyakampoengtkw.ui.detail.adapter.ViewPagerAdapter
 import net.bagusekasaputra.griyakampoengtkw.ui.main.MainActivity
+import net.bagusekasaputra.griyakampoengtkw.ui.network.ConnectivityAnimation
+import net.bagusekasaputra.griyakampoengtkw.ui.network.InternetAvailability
+import net.bagusekasaputra.griyakampoengtkw.ui.network.NetworkStatus
+import net.bagusekasaputra.griyakampoengtkw.ui.network.NetworkStatusHelper
 import net.bagusekasaputra.griyakampoengtkw.util.GriyaNodes
 
 @AndroidEntryPoint
@@ -20,6 +28,7 @@ class DetailActivity : AppCompatActivity() {
     private lateinit var pagerAdapter: ViewPagerAdapter
     private val viewModel: DetailViewModel by viewModels()
 
+    private lateinit var connectivityAnimation: ConnectivityAnimation
     private lateinit var currentKavlingKode: String
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -30,6 +39,9 @@ class DetailActivity : AppCompatActivity() {
         supportActionBar?.setHomeAsUpIndicator(R.drawable.keyboard_arrow_left_36px)
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
 
+        // set connectivity
+        connectivityAnimation = ConnectivityAnimation(this, binding.root, binding.connectivityStatus)
+
         val kavlingKode = intent.getStringExtra(MainActivity.INTENT_KAVLING_KODE)
         kavlingKode?.let {
             supportActionBar?.title = "Kavling $it"
@@ -38,6 +50,38 @@ class DetailActivity : AppCompatActivity() {
         }
 
         setupViewPager()
+
+        initialInternetCheck()
+
+        setupInternetMonitoring()
+    }
+
+    private fun setupInternetMonitoring() {
+        val networkHelper = NetworkStatusHelper(this)
+
+        networkHelper.observe(this) { status ->
+            status?.let {
+                if (it == NetworkStatus.Available) {
+                    connectivityAnimation.onOnlineAnimation()
+                    // TODO on internet available
+                } else if (it == NetworkStatus.Unavailable) {
+                    connectivityAnimation.onOfflineAnimation()
+                    // TODO on internet unavailable
+                }
+            }
+        }
+    }
+
+    private fun initialInternetCheck() {
+        lifecycleScope.launch {
+            val hasInternet = InternetAvailability.check()
+
+            if (!hasInternet) {
+                withContext(Dispatchers.Main) {
+                    connectivityAnimation.onOfflineAnimation()
+                }
+            }
+        }
     }
 
     private fun setupViewPager() {

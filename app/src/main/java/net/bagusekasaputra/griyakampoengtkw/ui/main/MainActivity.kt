@@ -23,10 +23,12 @@ import net.bagusekasaputra.griyakampoengtkw.databinding.*
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.AppUpdate
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.Block
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.Kavling
-import net.bagusekasaputra.griyakampoengtkw.ui.custom.ConnectivityAnimation
 import net.bagusekasaputra.griyakampoengtkw.ui.detail.DetailActivity
 import net.bagusekasaputra.griyakampoengtkw.ui.main.adapter.BlockRecyclerAdapter
 import net.bagusekasaputra.griyakampoengtkw.ui.main.adapter.KavlingRecyclerAdapter
+import net.bagusekasaputra.griyakampoengtkw.ui.network.ConnectivityAnimation
+import net.bagusekasaputra.griyakampoengtkw.ui.network.NetworkStatus
+import net.bagusekasaputra.griyakampoengtkw.ui.network.NetworkStatusHelper
 import net.bagusekasaputra.griyakampoengtkw.util.DialogUtil
 import net.bagusekasaputra.griyakampoengtkw.util.GriyaNodes
 import net.bagusekasaputra.griyakampoengtkw.util.InputUtil
@@ -41,6 +43,8 @@ class MainActivity : AppCompatActivity() {
     private lateinit var binding: ActivityMainBinding
     private val viewModel: MainViewModel by viewModels()
     private lateinit var connectivityAnimation: ConnectivityAnimation
+
+    private var isAllFabsVisible = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -58,6 +62,7 @@ class MainActivity : AppCompatActivity() {
         if (!deviceOnline) {
             Toast.makeText(this, "Device terdeteksi offline, data tidak akan tersinkronisasi!", Toast.LENGTH_LONG).show()
             connectivityAnimation.onOfflineAnimation()
+            onOfflineState()
         }
 
 
@@ -86,6 +91,24 @@ class MainActivity : AppCompatActivity() {
             syncData()
         }
 
+        setupInternetMonitoring()
+
+    }
+
+    private fun setupInternetMonitoring() {
+        val networkStatusHelper = NetworkStatusHelper(this)
+
+        networkStatusHelper.observe(this) { status ->
+            status?.let {
+                if (it == NetworkStatus.Available) {
+                    connectivityAnimation.onOnlineAnimation()
+                    onOnlineState()
+                } else if (it == NetworkStatus.Unavailable) {
+                    connectivityAnimation.onOfflineAnimation()
+                    onOfflineState()
+                }
+            }
+        }
     }
 
     private fun setupViewModel() {
@@ -122,26 +145,31 @@ class MainActivity : AppCompatActivity() {
 
         binding.fabActions.shrink()
 
-        var isAllFabsVisible = false
-
         binding.fabActions.setOnClickListener {
             if (isAllFabsVisible) {
-
-                binding.fabActions.shrink()
-
-                binding.fabAddKavling.hide()
-                binding.fabAddBlock.hide()
-
-                isAllFabsVisible = false
+                hideFabs()
             } else {
-                binding.fabActions.extend()
-
-                binding.fabAddKavling.show()
-                binding.fabAddBlock.show()
-
-                isAllFabsVisible = true
+                showFabs()
             }
         }
+    }
+
+    private fun hideFabs() {
+        binding.fabActions.shrink()
+
+        binding.fabAddKavling.hide()
+        binding.fabAddBlock.hide()
+
+        isAllFabsVisible = false
+    }
+
+    private fun showFabs() {
+        binding.fabActions.extend()
+
+        binding.fabAddKavling.show()
+        binding.fabAddBlock.show()
+
+        isAllFabsVisible = true
     }
 
     private fun setupBlockRecyclerview(blocks: List<Block>) {
@@ -412,5 +440,14 @@ class MainActivity : AppCompatActivity() {
         viewModel.getAllBlocks { failMsg ->
             Snackbar.make(binding.root, failMsg, Snackbar.LENGTH_SHORT).show()
         }
+    }
+
+    private fun onOfflineState() {
+        hideFabs()
+        binding.fabActions.hide()
+    }
+
+    private fun onOnlineState() {
+        binding.fabActions.show()
     }
 }
