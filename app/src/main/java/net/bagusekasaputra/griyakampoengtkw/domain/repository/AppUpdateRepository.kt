@@ -5,6 +5,6 @@ import net.bagusekasaputra.griyakampoengtkw.domain.entity.AppUpdate
 
 interface AppUpdateRepository {
 
-    fun getUpdateInformation(): Flow<Result<AppUpdate>>
+    fun getUpdateInformation(): Flow<Result<AppUpdate?>>
 
 }

@@ -26,7 +26,7 @@ class GetUpdateInformationUseCase @Inject constructor(
         }
     }
 
-    private fun mapResult(result: Result<AppUpdate>): Response {
+    private fun mapResult(result: Result<AppUpdate?>): Response {
         val appUpdate = result.getOrNull()
 
         return if (appUpdate != null) {

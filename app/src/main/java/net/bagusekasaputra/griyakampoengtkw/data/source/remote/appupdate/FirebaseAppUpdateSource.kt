@@ -2,6 +2,10 @@ package net.bagusekasaputra.griyakampoengtkw.data.source.remote.appupdate
 
 import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.ktx.getValue
+import kotlinx.coroutines.channels.awaitClose
+import kotlinx.coroutines.channels.trySendBlocking
+import kotlinx.coroutines.flow.callbackFlow
+import kotlinx.coroutines.flow.first
 import net.bagusekasaputra.griyakampoengtkw.data.model.AppUpdateModel
 import net.bagusekasaputra.griyakampoengtkw.util.GriyaNodes
 import javax.inject.Inject
@@ -14,26 +18,29 @@ class FirebaseAppUpdateSource @Inject constructor(
 
     private val updateRef = databaseReference.child(GriyaNodes.update)
 
-    override suspend fun getUpdateInformation(
-        onSuccess: (appUpdateModel: AppUpdateModel) -> Unit,
-        onFailure: (throwable: Throwable) -> Unit,
-    ) {
-        updateRef.get()
-            .addOnSuccessListener { snapshot ->
-                snapshot.getValue<FirebaseAppUpdateModel>()?.let {
-                    onSuccess(
-                        AppUpdateModel(
-                            latestVersion = it.latestVersion,
-                            latestVersionCode = it.latestVersionCode,
-                            url = it.url,
-                            releaseNotes = it.releaseNotes
-                        )
-                    )
+    override suspend fun getUpdateInformation(): Result<AppUpdateModel?> {
+        return callbackFlow<Result<AppUpdateModel?>> {
+            updateRef.get()
+                .addOnSuccessListener { snapshot ->
+//                    snapshot.getValue<FirebaseAppUpdateModel>()?.let {
+//                        val appUpdateModel = AppUpdateModel(
+//                            latestVersion = it.latestVersion,
+//                            latestVersionCode = it.latestVersionCode,
+//                            url = it.url,
+//                            releaseNotes = it.releaseNotes
+//                        )
+//                    }
+                    val appUpdateModel = snapshot.getValue<AppUpdateModel>()
+
+                    trySendBlocking(Result.success(appUpdateModel))
+
                 }
-            }
-            .addOnFailureListener {
-                onFailure(it.cause?: UnknownError("Terjadi kesalahan saat mendapatkan update"))
-            }
+                .addOnFailureListener {
+                    trySendBlocking(Result.failure(it))
+                }
+
+            awaitClose {  }
+        }.first()
     }
 
     private fun mapReleaseNotes(firebaseReleaseNotes: Map<String, String>): List<String> {

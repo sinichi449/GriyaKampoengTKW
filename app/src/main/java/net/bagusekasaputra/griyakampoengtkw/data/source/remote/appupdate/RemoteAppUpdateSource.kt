@@ -4,9 +4,6 @@ import net.bagusekasaputra.griyakampoengtkw.data.model.AppUpdateModel
 
 interface RemoteAppUpdateSource {
 
-    suspend fun getUpdateInformation(
-        onSuccess: (appUpdateModel: AppUpdateModel) -> Unit,
-        onFailure: (throwable: Throwable) -> Unit,
-    )
+    suspend fun getUpdateInformation(): Result<AppUpdateModel?>
 
 }
