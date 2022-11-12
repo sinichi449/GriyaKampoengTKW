@@ -6,7 +6,7 @@
         android:id="@+id/foto_kuitansi"
         android:title="Foto Kuitansi"
         android:icon="@drawable/ic_baseline_camera_white_24"
-        app:showAsAction="always">
+        app:showAsAction="ifRoom">
 
         <menu>
             <item
@@ -18,6 +18,25 @@
         </menu>
 
     </item>
+
+
+    <item
+        android:id="@+id/share_form_pembayaran"
+        android:title="Share Form"
+        android:icon="@drawable/ic_baseline_share_24"
+        app:showAsAction="ifRoom">
+
+        <menu>
+            <item
+                android:id="@+id/export_excel"
+                android:title="Export ke Excel"/>
+            <item
+                android:id="@+id/share_ui_pembayaran"
+                android:title="Share Form"/>
+        </menu>
+
+    </item>
+
 
     <item
         android:id="@+id/hapus_semua_pembayaran"

@@ -1,5 +1,6 @@
 package net.bagusekasaputra.griyakampoengtkw.ui.detail
 
+import android.Manifest
 import android.app.Activity
 import android.app.AlertDialog
 import android.app.DatePickerDialog
@@ -12,6 +13,7 @@ import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -32,6 +34,7 @@ import net.bagusekasaputra.griyakampoengtkw.ui.detail.adapter.TerminRecyclerAdap
 import net.bagusekasaputra.griyakampoengtkw.ui.detail.viewmodel.DetailViewModel
 import net.bagusekasaputra.griyakampoengtkw.ui.detail.viewmodel.ImageViewModel
 import net.bagusekasaputra.griyakampoengtkw.util.DialogUtil.additionalDialogSetting
+import net.bagusekasaputra.griyakampoengtkw.util.ExcelExporter
 import net.bagusekasaputra.griyakampoengtkw.util.GriyaNodes
 import net.bagusekasaputra.griyakampoengtkw.util.InputUtil
 import net.bagusekasaputra.griyakampoengtkw.util.NumberUtil
@@ -42,8 +45,13 @@ import kotlin.math.max
 @AndroidEntryPoint
 class FormPembayaranFragment : Fragment() {
 
+    companion object {
+        private const val WRITE_CSV_PERMISSION_REQUEST_CODE = 250
+    }
+
     private lateinit var binding: FragmentFormPembayaranBinding
-    private val viewModel: DetailViewModel by viewModels()
+//    private val viewModel: DetailViewModel by viewModels()
+    private val viewModel: DetailViewModel by activityViewModels()
     private val imageViewModel: ImageViewModel by viewModels()
 
     private var currentKavlingKode: String? = null
@@ -73,6 +81,12 @@ class FormPembayaranFragment : Fragment() {
                 }
             }
         }
+
+    private val startStorageRequest =
+        registerForActivityResult(ActivityResultContracts.RequestMultiplePermissions()) { result ->
+
+        }
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -112,6 +126,13 @@ class FormPembayaranFragment : Fragment() {
         binding.swipeRefreshFormPembayaran.setOnRefreshListener {
             syncPembayaran()
         }
+
+        startStorageRequest.launch(
+            Array<String>(2) {
+                Manifest.permission.WRITE_EXTERNAL_STORAGE
+                Manifest.permission.READ_EXTERNAL_STORAGE
+            }
+        )
     }
 
     override fun onResume() {
@@ -608,6 +629,14 @@ class FormPembayaranFragment : Fragment() {
 
                 true
             }
+            R.id.export_excel -> {
+                exportExcel()
+                true
+            }
+            R.id.share_ui_pembayaran -> {
+                shareUiPembayaran()
+                true
+            }
             else -> return super.onOptionsItemSelected(item)
         }
     }
@@ -699,4 +728,55 @@ class FormPembayaranFragment : Fragment() {
             }
         }
     }
+
+    private fun exportExcel() {
+        val blockKode = currentKavlingKode!!.substring(0)
+        val kavlingNum = currentKavlingKode!!.substring(1)
+
+        val dataPembayaran = viewModel.listPembayaranLive.value
+        val dataDiri = viewModel.dataDiriLive.value
+
+        if ((dataDiri == null) and (dataPembayaran == null)) {
+            Snackbar.make(binding.root, "Data Diri costumer atau Form Pembayaran masih kosong", Snackbar.LENGTH_SHORT)
+                .show()
+        } else {
+            val excelExporter = ExcelExporter(
+                blockKode = blockKode,
+                kavlingNumber = kavlingNum,
+                namaPembayar = viewModel.dataDiriLive.value?.nama ?: "Null",
+                hargaKavling = binding.tvHarga?.text.toString(),
+                tambahLuasan = binding.tvTambahanLuas?.text.toString(),
+                totalHarga = binding.tvTotalHarga?.text.toString(),
+                sisaBelumTerbayar = binding.tvSisaBlmTerbayar?.text.toString(),
+                dataPembayaran = viewModel.listPembayaranLive.value ?: emptyList()
+            )
+            val workbook = excelExporter.createPembayaranSpreadsheet()
+
+            excelExporter.storeExcelInStorage(requireContext(),workbook, "pembayaran_$currentKavlingKode.xls")
+        }
+    }
+
+    private fun shareUiPembayaran() {
+        // TODO
+    }
+
+    private fun parseFormPembayaranToCsv(listPembayaran: List<Pembayaran>): List<String> {
+        val parsedPembayaran = ArrayList<String>()
+
+        listPembayaran.forEach { pembayaran ->
+            val dataString = StringBuilder().apply {
+                append("${pembayaran.termin}.")
+                append("${pembayaran.tanggal}.")
+                append("${pembayaran.jumlahUangDibayar}.")
+                append("${pembayaran.totalUangMasuk}.")
+                append("${pembayaran.presentase}%.")
+                append("${pembayaran.keterangan}-")
+            }.toString()
+
+            parsedPembayaran.add(dataString)
+        }
+
+        return parsedPembayaran
+    }
+
 }
