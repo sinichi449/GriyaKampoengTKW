@@ -51,7 +51,7 @@ class KavlingRecyclerAdapter(
             true
         }
 
-        setAnimation(holder.binding.root, position)
+//        setAnimation(holder.binding.root, position)
     }
 
     private fun getColor(colorId: Int): Int {

@@ -18,6 +18,7 @@ import com.github.dhaval2404.colorpicker.model.ColorSwatch
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
+import jp.wasabeef.recyclerview.adapters.ScaleInAnimationAdapter
 import net.bagusekasaputra.griyakampoengtkw.R
 import net.bagusekasaputra.griyakampoengtkw.databinding.*
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.AppUpdate
@@ -193,7 +194,9 @@ class MainActivity : AppCompatActivity() {
         }, {
             showActionKavlingDialog(kavlings[it])
         })
-        binding.recyclerKavlings.adapter = adapter
+        val customAdapter = ScaleInAnimationAdapter(adapter)
+
+        binding.recyclerKavlings.adapter = customAdapter
         binding.recyclerKavlings.layoutManager = GridLayoutManager(this, 3)
     }
 
