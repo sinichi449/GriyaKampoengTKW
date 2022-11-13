@@ -15,6 +15,7 @@ import net.bagusekasaputra.griyakampoengtkw.databinding.ActivityDetailBinding
 import net.bagusekasaputra.griyakampoengtkw.ui.custom.DepthPageTransformer
 import net.bagusekasaputra.griyakampoengtkw.ui.detail.adapter.ViewPagerAdapter
 import net.bagusekasaputra.griyakampoengtkw.ui.detail.viewmodel.DetailViewModel
+import net.bagusekasaputra.griyakampoengtkw.ui.detail.viewmodel.ImageViewModel
 import net.bagusekasaputra.griyakampoengtkw.ui.main.MainActivity
 import net.bagusekasaputra.griyakampoengtkw.ui.network.ConnectivityAnimation
 import net.bagusekasaputra.griyakampoengtkw.ui.network.InternetAvailability
@@ -28,6 +29,7 @@ class DetailActivity : AppCompatActivity() {
     private lateinit var binding: ActivityDetailBinding
     private lateinit var pagerAdapter: ViewPagerAdapter
     private val viewModel: DetailViewModel by viewModels()
+    private val imageViewModel: ImageViewModel by viewModels()
 
     private lateinit var connectivityAnimation: ConnectivityAnimation
     private lateinit var currentKavlingKode: String

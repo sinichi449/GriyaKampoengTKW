@@ -12,7 +12,6 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.content.res.ResourcesCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
-import androidx.fragment.app.viewModels
 import com.github.dhaval2404.imagepicker.ImagePicker
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import dagger.hilt.android.AndroidEntryPoint
@@ -32,7 +31,7 @@ class DataDiriFragment : Fragment() {
     private lateinit var binding: FragmentDataDiriBinding
 //    private val viewModel: DetailViewModel by viewModels()
     private val viewModel: DetailViewModel by activityViewModels()
-    private val imageViewModel: ImageViewModel by viewModels()
+    private val imageViewModel: ImageViewModel by activityViewModels()
     private var currentKavlingKode: String? = null
     private lateinit var arrayAdapter: ArrayAdapter<String>
 

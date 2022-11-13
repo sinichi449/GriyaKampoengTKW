@@ -11,10 +11,10 @@
         <menu>
             <item
                 android:id="@+id/lihat_foto"
-                android:title="Lihat Foto"/>
+                android:title="Lihat Foto Pembayaran"/>
             <item
                 android:id="@+id/tambahkan_foto"
-                android:title="Tambahkan Foto"/>
+                android:title="Tambahkan Foto Pembayaran"/>
         </menu>
 
     </item>

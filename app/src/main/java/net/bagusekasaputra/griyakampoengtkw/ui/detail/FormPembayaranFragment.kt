@@ -14,7 +14,6 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
-import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.github.dhaval2404.imagepicker.ImagePicker
@@ -52,7 +51,7 @@ class FormPembayaranFragment : Fragment() {
     private lateinit var binding: FragmentFormPembayaranBinding
 //    private val viewModel: DetailViewModel by viewModels()
     private val viewModel: DetailViewModel by activityViewModels()
-    private val imageViewModel: ImageViewModel by viewModels()
+    private val imageViewModel: ImageViewModel by activityViewModels()
 
     private var currentKavlingKode: String? = null
     private var isAllFabsVisible = false
@@ -621,6 +620,7 @@ class FormPembayaranFragment : Fragment() {
             }
             R.id.tambahkan_foto -> {
                 showImagePickerDialog()
+                imageViewModel.getFotoKuitansi(currentKavlingKode!!) { _ -> }
 
                 true
             }

@@ -7,6 +7,14 @@ plugins {
 }
 
 android {
+    signingConfigs {
+        debug {
+            storeFile file('/home/bagus/Documents/keystore.jks')
+            storePassword 'r4h4s14d3cH!'
+            keyAlias 'key0'
+            keyPassword 'r4h4s14d3cH!'
+        }
+    }
     namespace 'net.bagusekasaputra.griyakampoengtkw'
     compileSdk 32
 
@@ -18,6 +26,7 @@ android {
         versionName "1.7.9"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+        signingConfig signingConfigs.debug
     }
 
     buildTypes {
