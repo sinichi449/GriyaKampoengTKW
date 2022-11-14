@@ -80,6 +80,13 @@ class FirebasePembayaranSource @Inject constructor(
         onSuccess: () -> Unit,
         onFailure: (throwable: Throwable) -> Unit,
     ) {
+        // First we need to delete the old data first
+        pembayaranRef
+            .child(kavlingKode)
+            .child(getTerminChild(oldPembayaranModel.termin, oldPembayaranModel.urutan))
+            .removeValue()
+
+        // Then we set new pembayaran value
         pembayaranRef
             .child(kavlingKode)
             .child(getTerminChild(oldPembayaranModel.termin, oldPembayaranModel.urutan))

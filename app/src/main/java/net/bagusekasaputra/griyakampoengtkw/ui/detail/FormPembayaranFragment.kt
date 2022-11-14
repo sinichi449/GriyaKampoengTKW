@@ -294,6 +294,127 @@ class FormPembayaranFragment : Fragment() {
         }
     }
 
+    private fun showEditPembayaranDialog(pembayaran: Pembayaran) {
+        // inflate
+        val dialogBinding = DialogAddFormPembayaranBinding.inflate(layoutInflater)
+        val dialogView = AlertDialog.Builder(requireContext()).apply {
+            setView(dialogBinding.root)
+            setCancelable(false)
+        }.create()
+
+        // setting layout
+        dialogBinding.edtJumlahUangDibayar.apply {
+            addTextChangedListener(ThousandSeparatorTextWatcher(this))
+        }
+        dialogBinding.tilTermin.isEnabled = true
+        dialogBinding.edtTermin.isEnabled = true
+        dialogBinding.btnHapus.visibility = View.VISIBLE
+        dialogBinding.btnTambahkan.text = "Simpan Perubahan"
+
+        setDateDefaulOrPickEdtTanggal(false, dialogBinding)
+        additionalDialogSetting(requireContext(), dialogView)
+        dialogView.show()
+
+
+        // misc
+        fun getJenisPembayaranAndUrutan(termin: String): Map<String, String> {
+            val terminDanUrutan = termin.split(" ")
+            return mapOf(
+                Pair("jenis", terminDanUrutan[0]),
+                Pair("urutan", terminDanUrutan[1]),
+            )
+        }
+
+        // populate fields with available pembayaran data
+        dialogBinding.tvTitle.text = "Ubah Form"
+        dialogBinding.apply {
+            val mapTermin = getJenisPembayaranAndUrutan(pembayaran.termin)
+            val jenisPembayaran = mapTermin["jenis"]!!
+
+            when (jenisPembayaran) {
+                "ITJ" -> rbItj.isChecked = true
+                "DP" -> rbDp.isChecked = true
+                "Termin" -> rbTermin.isChecked = true
+            }
+        } // which RadioButton is clicked
+        dialogBinding.edtTermin.apply {
+            val mapTermin = getJenisPembayaranAndUrutan(pembayaran.termin)
+            setText(mapTermin["urutan"])
+        }
+        dialogBinding.edtTanggal.setText(pembayaran.tanggal)
+        dialogBinding.edtJumlahUangDibayar.setText(pembayaran.jumlahUangDibayar.toString())
+        dialogBinding.edtKeteranganProgress.setText(pembayaran.keterangan)
+
+        fun getPembayaranFromEdt(): Pembayaran? {
+            val isInvalidEdt = InputUtil.isNullOrEmptyEditTexts(dialogBinding.edtTermin, dialogBinding.edtTanggal, dialogBinding.edtJumlahUangDibayar, dialogBinding.edtKeteranganProgress)
+
+            return if (!isInvalidEdt) {
+                Pembayaran(
+                    termin = dialogBinding.edtTermin.text.toString().let { urutanTermin ->
+                        if (dialogBinding.rbItj.isChecked) "ITJ $urutanTermin"
+                        else if (dialogBinding.rbDp.isChecked) "DP ${urutanTermin}"
+                        else if (dialogBinding.rbTermin.isChecked) "Termin ${urutanTermin}"
+                        else "Termin 999" // this is ridiciously wrong
+                    },
+                    tanggal = dialogBinding.edtTanggal.text.toString(),
+                    jumlahUangDibayar = dialogBinding.edtJumlahUangDibayar.text.toString(),
+                    totalUangMasuk = pembayaran.totalUangMasuk,
+                    presentase = pembayaran.presentase,
+                    keterangan = dialogBinding.edtKeteranganProgress.text.toString(),
+                    timeMillis = System.currentTimeMillis(),
+                )
+            } else {
+                null
+            }
+        }
+
+        dialogBinding.btnTambahkan.setOnClickListener {
+            // onclick view
+            dialogBinding.btnTambahkan.text = "Menyimpan data ..."
+            dialogBinding.btnTambahkan.isEnabled = false
+            dialogBinding.btnHapus.isEnabled = false
+
+            getPembayaranFromEdt()?.let { newPembayaran ->
+                viewModel.updatePembayaran(currentKavlingKode!!, pembayaran, newPembayaran) { msg ->
+                    Toast.makeText(requireContext(), msg, Toast.LENGTH_SHORT).show()
+                    dialogView.dismiss()
+                    syncPembayaran()
+                }
+            }
+        }
+
+        dialogBinding.btnBatal.setOnClickListener {
+            dialogView.dismiss()
+        }
+
+        dialogBinding.btnHapus.setOnClickListener {
+            val confirmDialog = AlertDialog.Builder(requireContext())
+                .setTitle("Hapus Pembayaran")
+                .setMessage("Apakah Anda yakin menghapus pembayaran ${pembayaran.termin}?")
+                .setPositiveButton("Ya") { dialog, _ ->
+                    dialogBinding.btnTambahkan.text = "Menghapus data ..."
+                    dialogBinding.btnTambahkan.isEnabled = false
+                    dialogBinding.btnHapus.isEnabled = false
+
+                    dialog.dismiss()
+                    getPembayaranFromEdt()?.let { pembayaran ->
+                        viewModel.deletePembayaranByTermin(currentKavlingKode!!, pembayaran.termin) { msg ->
+                            Toast.makeText(requireContext(), msg, Toast.LENGTH_SHORT).show()
+                            dialogView.dismiss()
+                            syncPembayaran()
+                        }
+                    }
+                }
+                .setNegativeButton("Tidak") { dialog, _ ->
+                    dialog.dismiss()
+                }.create()
+
+            confirmDialog.show()
+        }
+
+        imgVisibilityOnClick(dialogView, dialogBinding)
+    }
+
     private fun getTodayDate(): Calendar {
         val calendar = Calendar.getInstance()
         val currentYear = calendar.get(Calendar.YEAR)
@@ -484,127 +605,6 @@ class FormPembayaranFragment : Fragment() {
         }
         recyclerTermin.adapter = adapter
         recyclerTermin.layoutManager = LinearLayoutManager(requireContext())
-    }
-
-    private fun showEditPembayaranDialog(pembayaran: Pembayaran) {
-        // inflate
-        val dialogBinding = DialogAddFormPembayaranBinding.inflate(layoutInflater)
-        val dialogView = AlertDialog.Builder(requireContext()).apply {
-            setView(dialogBinding.root)
-            setCancelable(false)
-        }.create()
-
-        // setting layout
-        dialogBinding.edtJumlahUangDibayar.apply {
-            addTextChangedListener(ThousandSeparatorTextWatcher(this))
-        }
-        dialogBinding.tilTermin.isEnabled = true
-        dialogBinding.edtTermin.isEnabled = true
-        dialogBinding.btnHapus.visibility = View.VISIBLE
-        dialogBinding.btnTambahkan.text = "Simpan Perubahan"
-
-        setDateDefaulOrPickEdtTanggal(false, dialogBinding)
-        additionalDialogSetting(requireContext(), dialogView)
-        dialogView.show()
-
-
-        // misc
-        fun getJenisPembayaranAndUrutan(termin: String): Map<String, String> {
-            val terminDanUrutan = termin.split(" ")
-            return mapOf(
-                Pair("jenis", terminDanUrutan[0]),
-                Pair("urutan", terminDanUrutan[1]),
-            )
-        }
-
-        // populate fields with available pembayaran data
-        dialogBinding.tvTitle.text = "Ubah Form"
-        dialogBinding.apply {
-            val mapTermin = getJenisPembayaranAndUrutan(pembayaran.termin)
-            val jenisPembayaran = mapTermin["jenis"]!!
-
-            when (jenisPembayaran) {
-                "ITJ" -> rbItj.isChecked = true
-                "DP" -> rbDp.isChecked = true
-                "Termin" -> rbTermin.isChecked = true
-            }
-        } // which RadioButton is clicked
-        dialogBinding.edtTermin.apply {
-            val mapTermin = getJenisPembayaranAndUrutan(pembayaran.termin)
-            setText(mapTermin["urutan"])
-        }
-        dialogBinding.edtTanggal.setText(pembayaran.tanggal)
-        dialogBinding.edtJumlahUangDibayar.setText(pembayaran.jumlahUangDibayar.toString())
-        dialogBinding.edtKeteranganProgress.setText(pembayaran.keterangan)
-
-        fun getPembayaranFromEdt(): Pembayaran? {
-            val isInvalidEdt = InputUtil.isNullOrEmptyEditTexts(dialogBinding.edtTermin, dialogBinding.edtTanggal, dialogBinding.edtJumlahUangDibayar, dialogBinding.edtKeteranganProgress)
-
-            return if (!isInvalidEdt) {
-                Pembayaran(
-                    termin = dialogBinding.edtTermin.text.toString().let { urutanTermin ->
-                        if (dialogBinding.rbItj.isChecked) "ITJ $urutanTermin"
-                        else if (dialogBinding.rbDp.isChecked) "DP ${urutanTermin}"
-                        else if (dialogBinding.rbTermin.isChecked) "Termin ${urutanTermin}"
-                        else "Termin 999" // this is ridiciously wrong
-                    },
-                    tanggal = dialogBinding.edtTanggal.text.toString(),
-                    jumlahUangDibayar = dialogBinding.edtJumlahUangDibayar.text.toString(),
-                    totalUangMasuk = pembayaran.totalUangMasuk,
-                    presentase = pembayaran.presentase,
-                    keterangan = dialogBinding.edtKeteranganProgress.text.toString(),
-                    timeMillis = System.currentTimeMillis(),
-                )
-            } else {
-                null
-            }
-        }
-
-        dialogBinding.btnTambahkan.setOnClickListener {
-            // onclick view
-            dialogBinding.btnTambahkan.text = "Menyimpan data ..."
-            dialogBinding.btnTambahkan.isEnabled = false
-            dialogBinding.btnHapus.isEnabled = false
-
-            getPembayaranFromEdt()?.let { newPembayaran ->
-                viewModel.updatePembayaran(currentKavlingKode!!, pembayaran, newPembayaran) { msg ->
-                    Toast.makeText(requireContext(), msg, Toast.LENGTH_SHORT).show()
-                    dialogView.dismiss()
-                    syncPembayaran()
-                }
-            }
-        }
-
-        dialogBinding.btnBatal.setOnClickListener {
-            dialogView.dismiss()
-        }
-
-        dialogBinding.btnHapus.setOnClickListener {
-            val confirmDialog = AlertDialog.Builder(requireContext())
-                .setTitle("Hapus Pembayaran")
-                .setMessage("Apakah Anda yakin menghapus pembayaran ${pembayaran.termin}?")
-                .setPositiveButton("Ya") { dialog, _ ->
-                    dialogBinding.btnTambahkan.text = "Menghapus data ..."
-                    dialogBinding.btnTambahkan.isEnabled = false
-                    dialogBinding.btnHapus.isEnabled = false
-
-                    dialog.dismiss()
-                    getPembayaranFromEdt()?.let { pembayaran ->
-                        viewModel.deletePembayaranByTermin(currentKavlingKode!!, pembayaran.termin) { msg ->
-                            Toast.makeText(requireContext(), msg, Toast.LENGTH_SHORT).show()
-                            dialogView.dismiss()
-                            syncPembayaran()
-                        }
-                    }
-                }
-                .setNegativeButton("Tidak") { dialog, _ ->
-                    dialog.dismiss()
-                }.create()
-
-            confirmDialog.show()
-        }
-
-        imgVisibilityOnClick(dialogView, dialogBinding)
     }
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
