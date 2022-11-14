@@ -12,4 +12,6 @@ interface RemoteKavlingRepository {
     fun editKavling(blockKode: String, oldKavling: KavlingModel, newKavling: KavlingModel): Flow<Result<Boolean>>
 
     fun removeKavling(blockKode: String, kavlingKode: String): Flow<Result<Boolean>>
+
+    suspend fun setKavlingBelumDiisi(kavlingKode: String, belumIsi: Boolean)
 }

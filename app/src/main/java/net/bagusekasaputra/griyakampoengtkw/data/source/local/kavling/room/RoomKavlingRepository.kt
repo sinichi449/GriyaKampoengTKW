@@ -54,7 +54,7 @@ class RoomKavlingRepository @Inject constructor(
             KavlingModel(
                 kode = it.kode,
                 warna = it.warna,
-                isActive = it.isActive,
+                active = it.isActive,
                 ukuran = it.ukuran,
                 type = it.type,
             )
@@ -67,7 +67,7 @@ class RoomKavlingRepository @Inject constructor(
                 blockKode = blockKode,
                 kode = it.kode,
                 warna = it.warna,
-                isActive = it.isActive,
+                isActive = it.active,
                 ukuran = it.ukuran,
                 type = it.type,
             )

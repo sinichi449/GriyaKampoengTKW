@@ -80,9 +80,10 @@ object RepositoryModule {
     @Provides
     fun provideDataDiriRepository(
         localDataDiriRepository: LocalDataDiriRepository,
-        remoteDataDiriRepository: RemoteDataDiriRepository
+        remoteDataDiriRepository: RemoteDataDiriRepository,
+        remoteKavlingRepository: RemoteKavlingRepository,
     ): DataDiriRepository {
-        return DataDiriRepositoryImpl(localDataDiriRepository, remoteDataDiriRepository)
+        return DataDiriRepositoryImpl(localDataDiriRepository, remoteDataDiriRepository, remoteKavlingRepository)
     }
 
     @Provides

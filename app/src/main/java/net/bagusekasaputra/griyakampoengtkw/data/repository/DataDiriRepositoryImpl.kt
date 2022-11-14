@@ -7,6 +7,7 @@ import net.bagusekasaputra.griyakampoengtkw.data.DataUtil
 import net.bagusekasaputra.griyakampoengtkw.data.model.DataDiriModel
 import net.bagusekasaputra.griyakampoengtkw.data.source.local.datadiri.LocalDataDiriRepository
 import net.bagusekasaputra.griyakampoengtkw.data.source.remote.datadiri.RemoteDataDiriRepository
+import net.bagusekasaputra.griyakampoengtkw.data.source.remote.kavling.RemoteKavlingRepository
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.DataDiri
 import net.bagusekasaputra.griyakampoengtkw.domain.repository.DataDiriRepository
 import javax.inject.Inject
@@ -16,6 +17,7 @@ import javax.inject.Singleton
 class DataDiriRepositoryImpl @Inject constructor(
     private val localDataDiriRepository: LocalDataDiriRepository,
     private val remoteDataDiriRepository: RemoteDataDiriRepository,
+    private val remoteKavlingRepository: RemoteKavlingRepository,
 ): DataDiriRepository {
 
     override fun getDataDiri(kavlingKode: String): Flow<Result<DataDiri?>> {
@@ -50,12 +52,18 @@ class DataDiriRepositoryImpl @Inject constructor(
         return flow {
             val model = mapDataDiri(dataDiri)
 
+            // Whenever data diri added, let the kavling set "sudah Isi Data Diri"
+            remoteKavlingRepository.setKavlingBelumDiisi(kavlingKode, false)
+
             emitAll(remoteDataDiriRepository.addDataDiri(kavlingKode, model))
         }
     }
 
     override fun deleteDataDiri(kavlingKode: String): Flow<Result<Boolean>> {
         return flow {
+            // Whenever data diri deleted, let kavling "sudah isi Data Diri" to be false
+            remoteKavlingRepository.setKavlingBelumDiisi(kavlingKode, true)
+
             remoteDataDiriRepository.deleteDataDiri(kavlingKode).collect {
                 emit(it)
             }

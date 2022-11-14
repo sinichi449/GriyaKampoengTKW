@@ -66,10 +66,6 @@ class MainActivity : AppCompatActivity() {
             onOfflineState()
         }
 
-
-        // Syncing data, if offline it will pull from local database
-        syncData()
-
         viewModel.checkUpdates({
             showUpdateDialog(it)
         }, { msg ->
@@ -94,6 +90,12 @@ class MainActivity : AppCompatActivity() {
 
         setupInternetMonitoring()
 
+    }
+
+    override fun onResume() {
+        super.onResume()
+
+        syncData()
     }
 
     private fun setupInternetMonitoring() {
@@ -383,7 +385,7 @@ class MainActivity : AppCompatActivity() {
                 val lebar = dialogBinding.edtLebar.text.toString()
                 val newUkuran = panjang + "x" + lebar
                 val tipeRumah = dialogBinding.edtTipeRumah.text.toString()
-                val newKavling = Kavling(kavling.kode, kavling.isActive, kavling.warna, newUkuran, tipeRumah)
+                val newKavling = Kavling(kavling.kode, kavling.belumIsi, kavling.warna, newUkuran, tipeRumah)
                 val blockCode = viewModel.currentBlock.value!!
 
                 viewModel.editKavling(blockCode, kavling, newKavling)

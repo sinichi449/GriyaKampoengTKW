@@ -94,7 +94,7 @@ class KavlingRepositoryImpl @Inject constructor(
     private fun mapKavling(kavlingModel: KavlingModel): Kavling {
         return Kavling(
             kavlingModel.kode,
-            kavlingModel.isActive,
+            kavlingModel.active,
             kavlingModel.warna,
             kavlingModel.ukuran,
             kavlingModel.type
@@ -105,7 +105,7 @@ class KavlingRepositoryImpl @Inject constructor(
         return KavlingModel(
             kavling.kode,
             kavling.warna,
-            kavling.isActive,
+            kavling.belumIsi,
             kavling.ukuran,
             kavling.type
         )

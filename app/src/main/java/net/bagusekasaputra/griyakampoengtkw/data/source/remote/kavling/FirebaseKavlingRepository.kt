@@ -10,6 +10,7 @@ import kotlinx.coroutines.flow.callbackFlow
 import kotlinx.coroutines.flow.first
 import net.bagusekasaputra.griyakampoengtkw.data.ConnectionUtil
 import net.bagusekasaputra.griyakampoengtkw.data.model.KavlingModel
+import net.bagusekasaputra.griyakampoengtkw.logEvent
 import net.bagusekasaputra.griyakampoengtkw.util.GriyaNodes
 import net.bagusekasaputra.griyakampoengtkw.util.GriyaNodes.Companion.LOG_TAG
 import java.util.concurrent.atomic.AtomicBoolean
@@ -132,6 +133,25 @@ class FirebaseKavlingRepository @Inject constructor(
 
             awaitClose {  }
         }
+    }
+
+    override suspend fun setKavlingBelumDiisi(kavlingKode: String, belumIsi: Boolean) {
+        val blockKode = kavlingKode.substring(0, 1)
+
+        // active -> true       : would mean that the kavling doesn't have data diri
+        // active -> false      : would mean that the kavling filled with data diri
+        logEvent("Changing active in block $blockKode and kavling $kavlingKode as $belumIsi")
+        kavlingRef
+            .child(blockKode)
+            .child(kavlingKode)
+            .child("active")
+            .setValue(belumIsi)
+            .addOnCompleteListener {
+                logEvent("Change active is successfull")
+            }
+            .addOnFailureListener {
+                logEvent("Change is failed ${it.message}")
+            }
     }
 
     private fun isKavlingExists(blockKode: String, kavling: KavlingModel): Flow<Boolean> {

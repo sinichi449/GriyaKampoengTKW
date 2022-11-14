@@ -316,6 +316,7 @@ class DataDiriFragment : Fragment() {
             add("Hongkong")
             add("Macau")
             add("Taiwan")
+            add("Jepang")
             add("Singapore")
             add("Malaysia")
             add("Arab Saudi")
