@@ -32,7 +32,8 @@
                 android:id="@+id/edt_panjang"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:inputType="numberDecimal"/>
+                android:inputType="numberDecimal"
+                android:digits="0123456789.,"/>
 
         </com.google.android.material.textfield.TextInputLayout>
 
@@ -57,7 +58,8 @@
                 android:id="@+id/edt_lebar"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:inputType="numberDecimal"/>
+                android:inputType="numberDecimal"
+                android:digits="0123456789.,"/>
 
         </com.google.android.material.textfield.TextInputLayout>
 
