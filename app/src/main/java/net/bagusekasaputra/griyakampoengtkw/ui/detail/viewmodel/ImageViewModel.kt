@@ -10,11 +10,14 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.FotoKuitansi
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.ImageDataDiri
+import net.bagusekasaputra.griyakampoengtkw.domain.entity.ImageSpr
 import net.bagusekasaputra.griyakampoengtkw.domain.usecase.fotoKuitansi.AddFotoKuitansiUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.usecase.fotoKuitansi.GetFotoKuitansiUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.usecase.imageDataDiri.AddImageDataDiriUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.usecase.imageDataDiri.DeleteImageDataDiriUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.usecase.imageDataDiri.GetImageDataDiriByKavlingKodeUseCase
+import net.bagusekasaputra.griyakampoengtkw.domain.usecase.imageSpr.AddImageSprUseCase
+import net.bagusekasaputra.griyakampoengtkw.domain.usecase.imageSpr.GetImageSprByKavlingKodeUseCase
 import javax.inject.Inject
 
 @HiltViewModel
@@ -22,11 +25,15 @@ class ImageViewModel @Inject constructor(
     private val getImageDataDiriByKavlingKodeUseCase: GetImageDataDiriByKavlingKodeUseCase,
     private val addImageDataDiriUseCase: AddImageDataDiriUseCase,
     private val deleteImageDataDiriUseCase: DeleteImageDataDiriUseCase,
+    private val getImageSprByKavlingKodeUseCase: GetImageSprByKavlingKodeUseCase,
+    private val addImageSprUseCase: AddImageSprUseCase,
     private val getFotoKuitansiUseCase: GetFotoKuitansiUseCase,
     private val addFotoKuitansiUseCase: AddFotoKuitansiUseCase,
 ): ViewModel() {
 
     val fotoKuitansiLive = MutableLiveData<FotoKuitansi>()
+
+    val imageSprLive = MutableLiveData<ImageSpr>()
 
     val imageDataDiriLive = MutableLiveData<ImageDataDiri?>()
 
@@ -104,6 +111,50 @@ class ImageViewModel @Inject constructor(
         }
     }
 
+
+    // SPR
+    fun getSprImage(kavlingKode: String, onFailure: (msg: String) -> Unit) {
+        val request = GetImageSprByKavlingKodeUseCase.Request(kavlingKode)
+
+        CoroutineScope(Dispatchers.IO).launch {
+            getImageSprByKavlingKodeUseCase.execute(request).collect { response ->
+                val result = response.data.result
+
+                if (result.isSuccess) {
+                    result.getOrNull()?.let { imageSprLive.postValue(it) }
+                } else {
+                    withContext(Dispatchers.Main) {
+                        result.exceptionOrNull()?.let {
+                            onFailure(it.message ?: "null")
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    fun addSprImage(
+        kavlingKode: String,
+        uri: Uri,
+        onComplete: (msg: String) -> Unit,
+        onFailure: (msg: String) -> Unit
+    ) {
+        val request = AddImageSprUseCase.Request(kavlingKode, uri)
+
+        CoroutineScope(Dispatchers.IO).launch {
+            addImageSprUseCase.execute(request).collect { response ->
+                val result = response.data.result
+
+                if (result.isSuccess) {
+                    onComplete("Berhasil menambahkan foto SPR")
+                } else {
+                    result.exceptionOrNull()?.let {
+                        onFailure(it.message ?: "null")
+                    }
+                }
+            }
+        }
+    }
 
 
 

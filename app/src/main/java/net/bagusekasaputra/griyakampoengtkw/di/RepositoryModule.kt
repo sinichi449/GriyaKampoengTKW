@@ -16,6 +16,8 @@ import net.bagusekasaputra.griyakampoengtkw.data.source.local.fotoKuitansi.Local
 import net.bagusekasaputra.griyakampoengtkw.data.source.local.fotoKuitansi.room.RoomFotoKuitansiRepository
 import net.bagusekasaputra.griyakampoengtkw.data.source.local.imageDataDiri.LocalImageDataDiriSource
 import net.bagusekasaputra.griyakampoengtkw.data.source.local.imageDataDiri.room.RoomLocalImageDataDiriRepository
+import net.bagusekasaputra.griyakampoengtkw.data.source.local.imageSpr.LocalImageSprDataSource
+import net.bagusekasaputra.griyakampoengtkw.data.source.local.imageSpr.room.RoomImageSprDataSource
 import net.bagusekasaputra.griyakampoengtkw.data.source.local.kavling.LocalKavlingRepository
 import net.bagusekasaputra.griyakampoengtkw.data.source.local.kavling.room.RoomKavlingRepository
 import net.bagusekasaputra.griyakampoengtkw.data.source.remote.appupdate.FirebaseAppUpdateSource
@@ -31,7 +33,6 @@ import net.bagusekasaputra.griyakampoengtkw.data.source.remote.kavling.RemoteKav
 import net.bagusekasaputra.griyakampoengtkw.data.source.remote.pembayaran.FirebasePembayaranSource
 import net.bagusekasaputra.griyakampoengtkw.data.source.remote.pembayaran.RemotePembayaranSource
 import net.bagusekasaputra.griyakampoengtkw.domain.repository.*
-import java.io.File
 
 @Module
 @InstallIn(SingletonComponent::class)
@@ -136,9 +137,8 @@ object RepositoryModule {
     fun provideImageDataDiriRepository(
         localImageDataDiriSource: LocalImageDataDiriSource,
         contentResolver: ContentResolver,
-        externalFileDir: File?,
     ): ImageDataDiriRepository {
-        return ImageDataDiriRepositoryImpl(localImageDataDiriSource, contentResolver, externalFileDir)
+        return ImageDataDiriRepositoryImpl(localImageDataDiriSource, contentResolver)
     }
 
     @Provides
@@ -155,5 +155,20 @@ object RepositoryModule {
     @Provides
     fun provideLocalFotoKuitansiRepository(roomDatabase: MyRoomDatabase): LocalFotoKuitansiRepository {
         return RoomFotoKuitansiRepository(roomDatabase)
+    }
+
+
+    // Image SPR
+    @Provides
+    fun provideImageSprRepository(
+        localImageSprDataSource: LocalImageSprDataSource,
+        contentResolver: ContentResolver
+    ): ImageSprRepository {
+        return ImageSprRepositoryImpl(localImageSprDataSource, contentResolver)
+    }
+
+    @Provides
+    fun provideLocalImageSprDataSource(roomDatabase: MyRoomDatabase): LocalImageSprDataSource {
+        return RoomImageSprDataSource(roomDatabase)
     }
 }

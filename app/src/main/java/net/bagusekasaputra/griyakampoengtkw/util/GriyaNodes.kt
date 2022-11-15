@@ -9,6 +9,7 @@ class GriyaNodes {
         const val INTENT_SOURCE_IMAGE = "source_image"
         const val INTENT_DATA_DIRI = "data_diri"
         const val INTENT_FOTO_KUITANSI = "foto_kuitansi"
+        const val INTENT_FOTO_SPR = "foto_spr"
 
         const val SHARED_PREFS_NEW_FEATURE = "new_feature"
 

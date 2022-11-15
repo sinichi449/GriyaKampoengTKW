@@ -12,7 +12,6 @@ import net.bagusekasaputra.griyakampoengtkw.data.source.local.imageDataDiri.Loca
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.ImageDataDiri
 import net.bagusekasaputra.griyakampoengtkw.domain.repository.ImageDataDiriRepository
 import net.bagusekasaputra.griyakampoengtkw.util.ImageUtil
-import java.io.File
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -20,7 +19,6 @@ import javax.inject.Singleton
 class ImageDataDiriRepositoryImpl @Inject constructor(
     private val localImageDataDiriSource: LocalImageDataDiriSource,
     private val contentResolver: ContentResolver,
-    private val externalFileDir: File?,
 ): ImageDataDiriRepository {
 
     override fun getByKavlingKode(kavlingKode: String): Flow<Result<ImageDataDiri>> {

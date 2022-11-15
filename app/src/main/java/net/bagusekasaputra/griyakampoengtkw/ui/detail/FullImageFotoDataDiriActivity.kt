@@ -42,6 +42,7 @@ class FullImageFotoDataDiriActivity : AppCompatActivity() {
         binding = ActivityFullImageFotoDataDiriBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
+        // Chipering the code from another activity :D
         val stringsExtra = intent.getStringArrayListExtra(GriyaNodes.INTENT_SOURCE_IMAGE)
         val sender = stringsExtra?.get(0)!!
         val kavlingKode = stringsExtra[1]!!
@@ -63,6 +64,16 @@ class FullImageFotoDataDiriActivity : AppCompatActivity() {
 
             imageViewModel.fotoKuitansiLive.observe(this) { fotoKuitansi ->
                 fotoKuitansi?.let {
+                    createLoupe(it.bitmap)
+                }
+            }
+        } else if (sender == GriyaNodes.INTENT_FOTO_SPR) {
+            imageViewModel.getSprImage(kavlingKode) { failMsg ->
+                Toast.makeText(this, failMsg, Toast.LENGTH_SHORT).show()
+            }
+
+            imageViewModel.imageSprLive.observe(this) { imageSpr ->
+                imageSpr?.let {
                     createLoupe(it.bitmap)
                 }
             }

@@ -21,8 +21,10 @@ class AddImageDataDiriUseCase @Inject constructor(
     data class Response(val result: Result<Boolean>): UseCase.Response
 
     override fun process(request: Request): Flow<Response> {
+        // First copy file to our apps storage on Android/data/<package>/Pictures
         val dstUri = ImageUtil.copyImageAndGetUri(externalFileDir, request.uri, "img_${request.kavlingKode}")
 
+        // Delete the leftovers from ImagePicker library
         ImageUtil.deleteImagePickerLeftOver(externalFileDir)
 
         return imageDataDiriRepository.addImage(request.kavlingKode, dstUri).map {

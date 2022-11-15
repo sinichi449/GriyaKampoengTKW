@@ -3,17 +3,20 @@ package net.bagusekasaputra.griyakampoengtkw.ui.detail
 import android.app.Activity
 import android.app.AlertDialog
 import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
 import android.text.InputType
 import android.view.*
 import android.widget.ArrayAdapter
 import android.widget.Toast
+import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.content.res.ResourcesCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import com.github.dhaval2404.imagepicker.ImagePicker
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
 import net.bagusekasaputra.griyakampoengtkw.R
 import net.bagusekasaputra.griyakampoengtkw.databinding.DialogTambahDataDiriBinding
@@ -35,16 +38,14 @@ class DataDiriFragment : Fragment() {
     private var currentKavlingKode: String? = null
     private lateinit var arrayAdapter: ArrayAdapter<String>
 
-    private val startProfileImageForResult =
-        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+    private fun createImagePickerResultLauncher(onResultOk: (uri: Uri?) -> Unit): ActivityResultLauncher<Intent> {
+        return registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
             val resultCode = result.resultCode
             val data = result.data
 
             when (resultCode) {
                 Activity.RESULT_OK -> {
-                    imageViewModel.addImageDataDiri(currentKavlingKode!!, data?.data!!) {
-                        Toast.makeText(requireContext(), it, Toast.LENGTH_SHORT).show()
-                    }
+                    onResultOk(data?.data)
                 }
                 ImagePicker.RESULT_ERROR -> {
                     Toast.makeText(requireContext(), ImagePicker.getError(data), Toast.LENGTH_SHORT).show()
@@ -54,6 +55,19 @@ class DataDiriFragment : Fragment() {
                 }
             }
         }
+    }
+
+    private val startProfileImageForResult = createImagePickerResultLauncher { uri ->
+        imageViewModel.addImageDataDiri(currentKavlingKode!!, uri!!) {
+            Toast.makeText(requireContext(), it, Toast.LENGTH_SHORT).show()
+        }
+    }
+    private val startSPRImageForResult = createImagePickerResultLauncher { uri ->
+        imageViewModel.addSprImage(currentKavlingKode!!, uri!!,
+            onComplete = { Snackbar.make(binding.root, it, Snackbar.LENGTH_SHORT).show() },
+            onFailure = { Toast.makeText(requireContext(), it, Toast.LENGTH_SHORT).show() }
+        )
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -119,6 +133,8 @@ class DataDiriFragment : Fragment() {
         }
 
         imageViewModel.getImageDataDiri(currentKavlingKode!!) { }
+
+        imageViewModel.getSprImage(currentKavlingKode!!) { }
     }
 
     private fun setupViewModel() {
@@ -180,7 +196,7 @@ class DataDiriFragment : Fragment() {
             showAddDataDiriDialog()
         }
 
-        binding.fabTambahFoto.setOnClickListener { showImagePicker() }
+        binding.fabTambahFoto.setOnClickListener { showImagePicker(startProfileImageForResult) }
     }
 
     private fun showAddDataDiriDialog() {
@@ -302,12 +318,12 @@ class DataDiriFragment : Fragment() {
         dialogView.show()
     }
 
-    private fun showImagePicker() {
+    private fun showImagePicker(launcher: ActivityResultLauncher<Intent>) {
         ImagePicker.with(this)
             .crop()
             .compress(1024)
             .createIntent { intent ->
-                startProfileImageForResult.launch(intent)
+                launcher.launch(intent)
             }
     }
 
@@ -345,11 +361,29 @@ class DataDiriFragment : Fragment() {
                 showDeleteDataDiriDialog()
                 true
             }
-            R.id.refresh -> {
-                syncDataDiri()
+            R.id.lihat_foto_spr -> {
+                lihatFotoSpr()
+
                 true
             }
+            R.id.tambahkan_spr -> {
+                showImagePicker(startSPRImageForResult)
+                true
+            }
+
             else -> super.onOptionsItemSelected(item)
         }
+    }
+
+    private fun lihatFotoSpr() {
+        val intent = Intent(requireContext(), FullImageFotoDataDiriActivity::class.java)
+        ArrayList<String>().apply {
+            add(GriyaNodes.INTENT_FOTO_SPR)
+            add(currentKavlingKode!!)
+
+            intent.putExtra(GriyaNodes.INTENT_SOURCE_IMAGE, this)
+        }
+
+        startActivity(intent)
     }
 }
