@@ -573,6 +573,16 @@ class FormPembayaranFragment : Fragment() {
         }
     }
 
+    private fun createTextViewForTableRows(): MaterialTextView {
+        return MaterialTextView(
+            requireContext(),
+            null,
+            com.google.android.material.R.style.TextAppearance_MaterialComponents_Body1
+        ).apply {
+            setPadding(8, 4, 8, 4)
+        }
+    }
+
     private fun showDeleteAllPembayaranDialog() {
         val dialogView = MaterialAlertDialogBuilder(requireContext())
             .setTitle("Hapus Semua Pembayaran")
@@ -691,12 +701,6 @@ class FormPembayaranFragment : Fragment() {
             dialogBinding.edtTermin.isEnabled = true
             dialogBinding.tilTermin.isEnabled = true
             dialogBinding.tilTermin.hint = "Masukkan urutan Termin"
-        }
-    }
-
-    private fun createTextViewForTableRows(): MaterialTextView {
-        return MaterialTextView(requireContext(), null, com.google.android.material.R.style.TextAppearance_MaterialComponents_Body1).apply {
-            setPadding(8, 4, 8, 4)
         }
     }
 
