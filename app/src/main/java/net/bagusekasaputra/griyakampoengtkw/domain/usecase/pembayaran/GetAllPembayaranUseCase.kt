@@ -3,6 +3,7 @@ package net.bagusekasaputra.griyakampoengtkw.domain.usecase.pembayaran
 import android.util.Log
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.*
+import net.bagusekasaputra.griyakampoengtkw.domain.PembayaranSorterUtil
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.HargaKavling
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.Pembayaran
 import net.bagusekasaputra.griyakampoengtkw.domain.repository.PembayaranRepository
@@ -10,7 +11,6 @@ import net.bagusekasaputra.griyakampoengtkw.domain.usecase.UseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.usecase.hargakavling.GetSingleHargaKavlingForPembayaranUseCase
 import net.bagusekasaputra.griyakampoengtkw.util.GriyaNodes.Companion.LOG_TAG
 import net.bagusekasaputra.griyakampoengtkw.util.NumberUtil
-import net.bagusekasaputra.griyakampoengtkw.util.PembayaranSorterUtil
 import java.math.BigDecimal
 import java.math.RoundingMode
 import javax.inject.Inject
@@ -32,6 +32,19 @@ class GetAllPembayaranUseCase @Inject constructor(
                 val listPembayaran = resultListPembayaran.getOrNull()
 
                 if (listPembayaran != null) {
+                    /**
+                     * We need to "mask" the pembayaran:
+                     *
+                     * 1. Sort the pembayaran according to ITJ, DP, and Termin order.
+                     *
+                     * 2. Calculate the "Total Uang Masuk".
+                     *
+                     * 3. Calculate the "presentase".
+                     *
+                     * 4. Calculate the "Sisa Belum Bayar".
+                     *
+                     * So... we need a "GetSingleHargaKavlingUseCase" to do the operation number 2 - 4.
+                     */
                     val maskedPembayaran = maskPembayaran(listPembayaran, hargaKavling)
 
                     return@zip Result.success(maskedPembayaran)

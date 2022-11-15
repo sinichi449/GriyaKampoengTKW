@@ -1,8 +1,20 @@
-package net.bagusekasaputra.griyakampoengtkw.util
+package net.bagusekasaputra.griyakampoengtkw.domain
 
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.JenisPembayaran
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.Pembayaran
 
+/**
+ * This class contains a full-fledged made-by-me algorithm to sort pembayaran according to ITJ, DP, and Termin order.
+ *
+ * Briefly, a "Pembayaran" object have a "Jenis" and an "Urutan" components. For example,
+ * a "Pembayaran DP 5" has a "jenis" of "DP" and "5" of urutan components. In this algorithm, we need to sort
+ * both of these components via two differents subroutines: Grouping the "Jenis" and Ordering the "Urutan".
+ *
+ * Given set of pembayaran, represented a List<Pembayaran>, we need to group them into "Jenis Pembayaran".
+ * The result are three groups of List<Pembayaran> -> ITJ Group, DP Group, and Termin Group.
+ *
+ * After we group the pembayaran, we need to further sort each group according to their numerical order.
+ */
 class PembayaranSorterUtil(private val pembayaranList: List<Pembayaran>) {
 
     fun getSortedList(): List<Pembayaran> {
@@ -54,7 +66,7 @@ class PembayaranSorterUtil(private val pembayaranList: List<Pembayaran>) {
             this.listPembayaran = listPembayaran.sortedBy {
                 val termin = pisahkanTerminDanUrutan(it.termin)
 
-                return@sortedBy termin[Komponen.URUTAN]!!
+                return@sortedBy termin[Komponen.URUTAN]!!.toInt()
             }
         }
     }
