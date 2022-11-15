@@ -22,6 +22,8 @@ import net.bagusekasaputra.griyakampoengtkw.data.source.local.kavling.LocalKavli
 import net.bagusekasaputra.griyakampoengtkw.data.source.local.kavling.room.RoomKavlingRepository
 import net.bagusekasaputra.griyakampoengtkw.data.source.remote.appupdate.FirebaseAppUpdateSource
 import net.bagusekasaputra.griyakampoengtkw.data.source.remote.appupdate.RemoteAppUpdateSource
+import net.bagusekasaputra.griyakampoengtkw.data.source.remote.biayaMarketing.FirebaseBiayaMarketingDataSource
+import net.bagusekasaputra.griyakampoengtkw.data.source.remote.biayaMarketing.RemoteBiayaMarketingDataSource
 import net.bagusekasaputra.griyakampoengtkw.data.source.remote.block.FirebaseBlockRepository
 import net.bagusekasaputra.griyakampoengtkw.data.source.remote.block.RemoteBlockRepository
 import net.bagusekasaputra.griyakampoengtkw.data.source.remote.datadiri.FirebaseDataDiriRepository
@@ -174,7 +176,12 @@ object RepositoryModule {
 
     // Biaya Marketing
     @Provides
-    fun provideBiayaMarketingRepository(): BiayaMarketingRepository {
-        return BiayaMarketingRepositoryImpl()
+    fun provideBiayaMarketingRepository(remoteBiayaMarketDataSource: RemoteBiayaMarketingDataSource): BiayaMarketingRepository {
+        return BiayaMarketingRepositoryImpl(remoteBiayaMarketDataSource)
+    }
+
+    @Provides
+    fun provideRemoteBiayaMarketingDataSource(databaseReference: DatabaseReference): RemoteBiayaMarketingDataSource {
+        return FirebaseBiayaMarketingDataSource(databaseReference)
     }
 }

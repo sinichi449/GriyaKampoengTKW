@@ -399,8 +399,10 @@ class DetailViewModel @Inject constructor(
         return if (listBiayaMarketing != null) {
             val numberList = ArrayList<String>()
 
-            listBiayaMarketing.forEach { biayaMarketing ->
-                numberList.add(biayaMarketing.nomor.toString())
+            listBiayaMarketing.forEachIndexed { index, _ ->
+                // The index start from zero, so to make it start from number one,
+                // I added plus(1) method
+                numberList.add(index.plus(1).toString())
             }
 
             numberList

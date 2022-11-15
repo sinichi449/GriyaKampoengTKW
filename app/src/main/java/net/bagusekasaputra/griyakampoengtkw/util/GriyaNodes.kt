@@ -33,9 +33,6 @@ class GriyaNodes {
         const val tipe = "type"
         const val ukuran = "ukuran"
 
-        // Marketing
-        const val biayaMarketing = "biayaMarketing"
-
         // Data Diri
         const val dataDiri = "dataDiri"
         const val alamatIndo = "alamatIndo"
@@ -66,5 +63,8 @@ class GriyaNodes {
         const val latestVersionCode = "latestVersionCode"
         const val url = "url"
         const val releaseNotes = "releaseNotes"
+
+        // Biaya Marketing
+        const val biayaMarketing = "biayaMarketing"
     }
 }

@@ -2,46 +2,40 @@ package net.bagusekasaputra.griyakampoengtkw.data.repository
 
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
+import net.bagusekasaputra.griyakampoengtkw.data.DataUtil
+import net.bagusekasaputra.griyakampoengtkw.data.model.BiayaMarketingModel
+import net.bagusekasaputra.griyakampoengtkw.data.source.remote.biayaMarketing.RemoteBiayaMarketingDataSource
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.BiayaMarketing
 import net.bagusekasaputra.griyakampoengtkw.domain.repository.BiayaMarketingRepository
+import net.bagusekasaputra.griyakampoengtkw.util.NumberUtil
 import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
 class BiayaMarketingRepositoryImpl @Inject constructor(
-
+    private val remoteBiayaMarketingDataSource: RemoteBiayaMarketingDataSource,
 ): BiayaMarketingRepository {
-
-    // Still mock!
-    private val listBiayaMarketing = ArrayList<BiayaMarketing>()
-
-    private fun generateListBiayaMarketing() =
-        mutableListOf<BiayaMarketing>(
-            BiayaMarketing(1, "D1", "Sofa", "500000"),
-            BiayaMarketing(2, "D1", "Item 1", "5000"),
-            BiayaMarketing(3, "D1", "Item 2", "20000"),
-            BiayaMarketing(4, "D1", "Lorem ipsum dolor sit amet", "31500")
-        )
-
-    init {
-        if (listBiayaMarketing.isEmpty()) {
-            generateListBiayaMarketing().forEach {
-                listBiayaMarketing.add(it)
-            }
-        }
-    }
 
     override fun getAllByKavlingKode(kavlingKode: String): Flow<Result<List<BiayaMarketing>?>> {
         return flow {
-            emit(Result.success(listBiayaMarketing))
+            val remoteResult = remoteBiayaMarketingDataSource.getAllBiayaMarketing(kavlingKode)
+            val mapped = DataUtil.mapListResult(
+                originResult = remoteResult,
+                targetMapper = ::mapBiayaMarketing
+            )
+
+            emit(mapped)
         }
     }
 
     override fun addBiayaMarketing(biayaMarketing: BiayaMarketing): Flow<Result<Nothing?>> {
         return flow {
-            listBiayaMarketing.add(biayaMarketing)
+            val resultRemote = remoteBiayaMarketingDataSource.addBiayaMarketing(
+                kavlingKode = biayaMarketing.kavlingKode,
+                biayaMarketingModel = mapBiayaMarketing(biayaMarketing),
+            )
 
-            emit(Result.success(null))
+            emit(resultRemote)
         }
     }
 
@@ -54,5 +48,27 @@ class BiayaMarketingRepositoryImpl @Inject constructor(
 
     override fun deleteByKavlingKode(kavlingKode: String): Flow<Result<Nothing?>> {
         TODO("Not yet implemented")
+    }
+
+    private fun mapBiayaMarketing(biayaMarketingModel: BiayaMarketingModel): BiayaMarketing {
+        return biayaMarketingModel.let {
+            BiayaMarketing(
+                timeMillis = it.timeMillis,
+                kavlingKode = it.kavlingKode,
+                jenisBiaya = it.jenisBiaya,
+                harga = it.harga.toString(),
+            )
+        }
+    }
+
+    private fun mapBiayaMarketing(biayaMarketing: BiayaMarketing): BiayaMarketingModel {
+        return biayaMarketing.let {
+            BiayaMarketingModel(
+                timeMillis = it.timeMillis ?: System.currentTimeMillis(),
+                kavlingKode = it.kavlingKode,
+                jenisBiaya = it.jenisBiaya,
+                harga = NumberUtil.formatStringToLong(it.harga),
+            )
+        }
     }
 }

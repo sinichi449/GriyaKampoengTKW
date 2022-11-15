@@ -1,5 +1,6 @@
 package net.bagusekasaputra.griyakampoengtkw.ui.detail.tableview
 
+import android.graphics.Typeface
 import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.View
@@ -47,6 +48,7 @@ class MyTableViewAdapter: AbstractTableAdapter<ColumnHeader, RowHeader, Cell>() 
         // set to right alignment for Harga, because Harga is numeric type
         if (columnPosition == BiayaMarketingColumns.Harga) {
             viewHolder.cellText.gravity = Gravity.END or Gravity.CENTER
+            viewHolder.cellText.typeface = Typeface.SERIF
         }
 
         // remeasure for auto size cell & columns

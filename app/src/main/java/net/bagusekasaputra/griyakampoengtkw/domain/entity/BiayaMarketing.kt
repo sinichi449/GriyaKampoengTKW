@@ -1,7 +1,7 @@
 package net.bagusekasaputra.griyakampoengtkw.domain.entity
 
 data class BiayaMarketing(
-    var nomor: Int? = null,
+    var timeMillis: Long? = null,
     val kavlingKode: String,
     val jenisBiaya: String,
     val harga: String,

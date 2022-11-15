@@ -104,6 +104,8 @@ class BiayaMarketingFragment : Fragment() {
     }
 
     private fun setupTableView() {
+        binding.tableviewBiayaMarketing.invalidate()
+
         val adapter = MyTableViewAdapter()
         val columnHeaders = viewModel.getBiayaMarketingColumnHeaders().map { ColumnHeader(it) }
         val rowHeaders = viewModel.getBiayaMarketingRowHeaders().map { RowHeader(it) }
