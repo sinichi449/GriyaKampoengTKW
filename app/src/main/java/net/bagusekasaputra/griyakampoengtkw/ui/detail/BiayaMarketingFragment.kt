@@ -7,13 +7,19 @@ import android.view.ViewGroup
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
+import net.bagusekasaputra.griyakampoengtkw.databinding.DialogActionsBiayaMarketingBinding
 import net.bagusekasaputra.griyakampoengtkw.databinding.FragmentBiayaMarketingBinding
+import net.bagusekasaputra.griyakampoengtkw.ui.custom.ThousandSeparatorTextWatcher
 import net.bagusekasaputra.griyakampoengtkw.ui.detail.tableview.Cell
 import net.bagusekasaputra.griyakampoengtkw.ui.detail.tableview.ColumnHeader
 import net.bagusekasaputra.griyakampoengtkw.ui.detail.tableview.MyTableViewAdapter
 import net.bagusekasaputra.griyakampoengtkw.ui.detail.tableview.RowHeader
 import net.bagusekasaputra.griyakampoengtkw.ui.detail.viewmodel.DetailViewModel
+import net.bagusekasaputra.griyakampoengtkw.util.DialogUtil
+import net.bagusekasaputra.griyakampoengtkw.util.InputUtil
 
 @AndroidEntryPoint
 class BiayaMarketingFragment : Fragment() {
@@ -48,6 +54,10 @@ class BiayaMarketingFragment : Fragment() {
 
         // Setup swipe refresh layout
         binding.root.setOnRefreshListener { syncData() }
+
+        binding.fabTambahBiayaMarketing.setOnClickListener {
+            showTambahBiayaMarketingDialog()
+        }
     }
 
     override fun onResume() {
@@ -91,6 +101,8 @@ class BiayaMarketingFragment : Fragment() {
     }
 
     private fun setupExtendedFab() {
+        binding.fabTambahBiayaMarketing.visibility = View.GONE
+        binding.fabEditBiayaMarketing.visibility = View.GONE
         binding.fabActionsBiayaMarketing.shrink()
 
         binding.fabActionsBiayaMarketing.setOnClickListener {
@@ -109,10 +121,59 @@ class BiayaMarketingFragment : Fragment() {
     }
 
     private fun hideFabs() {
-        // TODO
+        binding.fabTambahBiayaMarketing.hide()
+        binding.fabEditBiayaMarketing.hide()
     }
 
     private fun showFabs() {
-        // TODO
+        binding.fabTambahBiayaMarketing.show()
+        binding.fabEditBiayaMarketing.show()
+    }
+
+    private fun showTambahBiayaMarketingDialog() {
+        val dialogBinding = DialogActionsBiayaMarketingBinding.inflate(layoutInflater)
+        val dialogView = MaterialAlertDialogBuilder(requireContext()).apply {
+            setView(dialogBinding.root)
+        }.create()
+
+        DialogUtil.additionalDialogSetting(requireContext(), dialogView)
+
+        dialogBinding.edtHarga.apply {
+            val harga = this.text.toString()
+
+            if (harga != "0")
+                this.setText(harga)
+
+            addTextChangedListener(ThousandSeparatorTextWatcher(this))
+        }
+
+
+        dialogView.show()
+
+
+
+        dialogBinding.btnTambahkan.setOnClickListener {
+            val isInvalidEdt = InputUtil.isNullOrEmptyEditTexts(dialogBinding.edtJenisBiaya, dialogBinding.edtHarga)
+
+            if (!isInvalidEdt) {
+                val jenisBiaya = dialogBinding.edtJenisBiaya.text.toString()
+                val harga = dialogBinding.edtHarga.text.toString()
+
+                viewModel.addBiayaMarketing(
+                    kavlingKode = currentKavlingKode!!,
+                    jenisBiaya = jenisBiaya,
+                    harga = harga,
+                    onComplete = { msg ->
+                        dialogView.dismiss()
+                        syncData()
+                        Snackbar.make(binding.root, msg, Snackbar.LENGTH_SHORT).show()
+                    }
+                )
+            }
+        }
+
+        dialogBinding.btnBatal.setOnClickListener {
+            dialogView.dismiss()
+        }
     }
 }

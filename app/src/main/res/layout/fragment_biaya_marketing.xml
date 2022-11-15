@@ -32,12 +32,33 @@
             android:id="@+id/fab_actions_biaya_marketing"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            app:icon="@drawable/ic_baseline_edit_24"
+            app:icon="@drawable/ic_baseline_add_24"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             android:layout_marginEnd="24dp"
             android:layout_marginBottom="24dp"
             android:text="Ubah"/>
+
+        <com.google.android.material.floatingactionbutton.FloatingActionButton
+            android:id="@+id/fab_tambah_biaya_marketing"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintEnd_toEndOf="@id/fab_actions_biaya_marketing"
+            app:layout_constraintBottom_toTopOf="@id/fab_actions_biaya_marketing"
+            android:layout_marginBottom="24dp"
+            android:src="@drawable/ic_baseline_create_new_folder_24"
+            android:contentDescription="Tambah Biaya Marketing"/>
+
+        <com.google.android.material.floatingactionbutton.FloatingActionButton
+            android:id="@+id/fab_edit_biaya_marketing"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintEnd_toEndOf="@id/fab_tambah_biaya_marketing"
+            app:layout_constraintBottom_toTopOf="@id/fab_tambah_biaya_marketing"
+            android:layout_marginBottom="24dp"
+            android:src="@drawable/ic_baseline_edit_24"
+            android:contentDescription="Edit Biaya Marketing"/>
+
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

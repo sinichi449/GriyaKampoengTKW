@@ -23,8 +23,10 @@ class BiayaMarketingRepositoryImpl @Inject constructor(
         )
 
     init {
-        generateListBiayaMarketing().forEach {
-            listBiayaMarketing.add(it)
+        if (listBiayaMarketing.isEmpty()) {
+            generateListBiayaMarketing().forEach {
+                listBiayaMarketing.add(it)
+            }
         }
     }
 

@@ -1,5 +1,6 @@
 package net.bagusekasaputra.griyakampoengtkw.ui.detail.tableview
 
+import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -14,6 +15,11 @@ import net.bagusekasaputra.griyakampoengtkw.databinding.TableviewViewCornerLayou
 class MyTableViewAdapter: AbstractTableAdapter<ColumnHeader, RowHeader, Cell>() {
 
     private val NO_DATA = "No Data"
+
+    private object BiayaMarketingColumns {
+        const val JenisPembayaran = 0
+        const val Harga = 1
+    }
 
     private class MyCellViewHolder(binding: TableViewCellLayoutBinding): AbstractViewHolder(binding.root) {
         val cellContainer = binding.root
@@ -37,6 +43,11 @@ class MyTableViewAdapter: AbstractTableAdapter<ColumnHeader, RowHeader, Cell>() 
         val viewHolder = holder as MyCellViewHolder
 
         viewHolder.cellText.text = cellItemModel?.text ?: NO_DATA
+
+        // set to right alignment for Harga, because Harga is numeric type
+        if (columnPosition == BiayaMarketingColumns.Harga) {
+            viewHolder.cellText.gravity = Gravity.END or Gravity.CENTER
+        }
 
         // remeasure for auto size cell & columns
         viewHolder.cellContainer.layoutParams.width = LinearLayout.LayoutParams.WRAP_CONTENT

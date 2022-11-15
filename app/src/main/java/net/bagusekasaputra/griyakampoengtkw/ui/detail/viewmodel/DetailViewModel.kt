@@ -19,6 +19,7 @@ import net.bagusekasaputra.griyakampoengtkw.domain.usecase.datadiri.GetDataDiriU
 import net.bagusekasaputra.griyakampoengtkw.domain.usecase.hargakavling.AddHargaKavlingUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.usecase.hargakavling.GetHargaKavlingUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.usecase.pembayaran.*
+import net.bagusekasaputra.griyakampoengtkw.util.NumberUtil
 import javax.inject.Inject
 
 @HiltViewModel
@@ -417,7 +418,10 @@ class DetailViewModel @Inject constructor(
                 val secondOrderItemList = ArrayList<String>()
 
                 secondOrderItemList.add(biayaMarketing.jenisBiaya)
-                secondOrderItemList.add(biayaMarketing.harga)
+
+                // We need to transform this currency type into a comma separated number
+                val transformHarga = NumberUtil.formatLongToString(biayaMarketing.harga.toLong())
+                secondOrderItemList.add(transformHarga)
 
                 firstOrderItemList.add(secondOrderItemList)
             }
