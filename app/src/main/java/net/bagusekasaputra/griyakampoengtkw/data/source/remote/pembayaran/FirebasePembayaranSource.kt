@@ -86,10 +86,10 @@ class FirebasePembayaranSource @Inject constructor(
             .child(getTerminChild(oldPembayaranModel.termin, oldPembayaranModel.urutan))
             .removeValue()
 
-        // Then we set new pembayaran value
+        // Then we set new pembayaran value, and set the child as new child
         pembayaranRef
             .child(kavlingKode)
-            .child(getTerminChild(oldPembayaranModel.termin, oldPembayaranModel.urutan))
+            .child(getTerminChild(newPembayaranModel.termin, newPembayaranModel.urutan))
             .setValue(newPembayaranModel)
             .addOnSuccessListener { onSuccess() }
             .addOnFailureListener{ onFailure(it.cause?: UnknownError("Terjadi kesalahan mengubah pembayaran")) }
