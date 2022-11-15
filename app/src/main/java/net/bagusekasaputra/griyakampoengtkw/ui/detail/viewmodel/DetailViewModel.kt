@@ -301,6 +301,7 @@ class DetailViewModel @Inject constructor(
 
                 if (result.isSuccess) {
                     withContext(Dispatchers.Main) {
+                        listPembayaranLive.postValue(null)
                         onComplete("Berhasil menghapus semua pembayaran di $kavlingKode")
                     }
                     listPembayaranLive.postValue(null)

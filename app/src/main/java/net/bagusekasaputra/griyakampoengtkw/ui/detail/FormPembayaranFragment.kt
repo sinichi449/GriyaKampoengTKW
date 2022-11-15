@@ -140,6 +140,15 @@ class FormPembayaranFragment : Fragment() {
         syncPembayaran()
     }
 
+    /**
+     * Synchronizations of:
+     *
+     * 1. Harga Kavling
+     *
+     * 2. List Pembayaran
+     *
+     * 3. Foto Kuitansi
+     */
     private fun syncPembayaran() {
         viewModel.getHargaKavling(currentKavlingKode!!) { failMsg ->
             Toast.makeText(requireContext(), failMsg, Toast.LENGTH_LONG).show()
@@ -175,9 +184,12 @@ class FormPembayaranFragment : Fragment() {
         }
 
         viewModel.listPembayaranLive.observe(requireActivity()) { listPembayaran ->
-            listPembayaran?.let {
-                populateTableLayout(it)
-                binding.tvSisaBlmTerbayar?.text = it.last().sisaBelumTerbayar
+            if (listPembayaran != null) {
+                populateTableLayout(listPembayaran)
+                binding.tvSisaBlmTerbayar?.text = listPembayaran.last().sisaBelumTerbayar
+            } else {
+                clearTableLayout()
+                clearPembayaranField()
             }
         }
     }
@@ -502,12 +514,29 @@ class FormPembayaranFragment : Fragment() {
         }
     }
 
-    private fun populateTableLayout(listPembayaran: List<Pembayaran>) {
-        // avoiding multiple table, so we need to clear the table for each
-        // "populateTableLayout()" function call
+    private fun clearTableLayout() {
         binding.tableLayout.apply {
             removeViews(1, max(0, this.childCount - 1))
         }
+    }
+
+    /**
+     * This is clearing the pembayaran field: TableLayout, TvSisaBelumBayar,
+     * TvTambahanLuas, and TvTotalHarga.
+     */
+    private fun clearPembayaranField() {
+        binding.tableLayout.apply {
+            removeViews(1, max(0, this.childCount - 1))
+        }
+        binding.tvSisaBlmTerbayar?.text = "0"
+        binding.tvTambahanLuas?.text = "0"
+        binding.tvTotalHarga?.text = "0"
+    }
+
+    private fun populateTableLayout(listPembayaran: List<Pembayaran>) {
+        // avoiding multiple table, so we need to clear the table for each
+        // "populateTableLayout()" function call
+        clearTableLayout()
 
         listPembayaran.forEach {
             // Creating Textview for each rows
@@ -549,10 +578,16 @@ class FormPembayaranFragment : Fragment() {
             .setTitle("Hapus Semua Pembayaran")
             .setMessage("Apakah Anda yakin ingin menghapus semua pembayaran di kavling $currentKavlingKode?")
             .setPositiveButton("Ya") { dialog, _ ->
+                viewModel.deleteAllPembayaran(
+                    kavlingKode = currentKavlingKode!!,
+                    onComplete = { msg ->
+                        Toast.makeText(requireContext(), msg, Toast.LENGTH_SHORT).show()
+                        dialog.dismiss()
+                        syncPembayaran()
+                    }
+                )
                 viewModel.deleteAllPembayaran(currentKavlingKode!!) { msg ->
-                    Toast.makeText(requireContext(), msg, Toast.LENGTH_SHORT).show()
-                    dialog.dismiss()
-                    syncPembayaran()
+
                 }
             }
             .setNegativeButton("Tidak") { dialog, _ ->
