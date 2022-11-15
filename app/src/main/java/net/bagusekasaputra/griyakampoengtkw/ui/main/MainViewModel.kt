@@ -104,14 +104,13 @@ class MainViewModel @Inject constructor(
             getKavlingsByBlockUseCase.execute(request).collect {
                 val result = it.data.result
 
-                if (result.isSuccess) {
-                    val unsortedKavlings = result.getOrNull()
-                    unsortedKavlings?.let { kavling ->
-                        _kavlings.postValue(sortKavling(kavling))
-                    }
-                } else {
+                result.onSuccess {  kavlingList ->
+                    _kavlings.postValue(kavlingList)
+                }
+
+                result.onFailure { throwable ->
                     withContext(Dispatchers.Main) {
-                        result.exceptionOrNull()?.message?.let(onFailure)
+                        throwable.message?.let(onFailure)
                     }
                 }
 
@@ -214,17 +213,5 @@ class MainViewModel @Inject constructor(
         }
     }
 
-    private fun sortKavling(kavlings: List<Kavling>): List<Kavling> {
-        val mutableKavling = mutableListOf<Kavling>()
 
-        kavlings.forEach {
-            mutableKavling.add(it)
-        }
-
-        mutableKavling.sortBy {
-            it.kode.substring(1).toInt()
-        }
-
-        return mutableKavling
-    }
 }

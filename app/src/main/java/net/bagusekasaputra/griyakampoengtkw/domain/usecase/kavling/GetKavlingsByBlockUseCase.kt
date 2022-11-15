@@ -18,8 +18,30 @@ class GetKavlingsByBlockUseCase @Inject constructor(
     data class Response(val result: Result<List<Kavling>?>): UseCase.Response
 
     override fun process(request: Request): Flow<Response> {
-        return repository.getKavlingByBlock(request.blockKode).map {
-            Response(it)
+        return repository.getKavlingByBlock(request.blockKode).map { result ->
+            Response(
+                result = result.map { kavlingList ->
+                    if (kavlingList != null)
+                        sortKavling(kavlingList)
+                    else
+                        kavlingList
+                }
+            )
         }
+    }
+
+    private fun sortKavling(kavlings: List<Kavling>): List<Kavling> {
+        // We need a mutable list first for sorting the kavlings
+        val mutableKavling = mutableListOf<Kavling>()
+
+        kavlings.forEach {
+            mutableKavling.add(it)
+        }
+
+        mutableKavling.sortBy {
+            it.kode.substring(1).toInt()
+        }
+
+        return mutableKavling
     }
 }
