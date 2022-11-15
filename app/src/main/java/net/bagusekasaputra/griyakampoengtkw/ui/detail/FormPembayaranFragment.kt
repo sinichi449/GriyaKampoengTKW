@@ -346,7 +346,7 @@ class FormPembayaranFragment : Fragment() {
         dialogBinding.edtKeteranganProgress.setText(pembayaran.keterangan)
 
         fun getPembayaranFromEdt(): Pembayaran? {
-            val isInvalidEdt = InputUtil.isNullOrEmptyEditTexts(dialogBinding.edtTermin, dialogBinding.edtTanggal, dialogBinding.edtJumlahUangDibayar, dialogBinding.edtKeteranganProgress)
+            val isInvalidEdt = InputUtil.isNullOrEmptyEditTexts(dialogBinding.edtTermin, dialogBinding.edtTanggal, dialogBinding.edtJumlahUangDibayar)
 
             return if (!isInvalidEdt) {
                 Pembayaran(
