@@ -7,9 +7,12 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import net.bagusekasaputra.griyakampoengtkw.domain.entity.BiayaMarketing
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.DataDiri
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.HargaKavling
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.Pembayaran
+import net.bagusekasaputra.griyakampoengtkw.domain.usecase.biayaMarketing.AddBiayaMarketingUseCase
+import net.bagusekasaputra.griyakampoengtkw.domain.usecase.biayaMarketing.GetAllBiayaMarketingByKavlingKodeUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.usecase.datadiri.AddDataDiriUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.usecase.datadiri.DeleteDataDiriUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.usecase.datadiri.GetDataDiriUseCase
@@ -30,6 +33,8 @@ class DetailViewModel @Inject constructor(
     private val updatePembayaranUseCase: UpdatePembayaranUseCase,
     private val deletePembayaranByTerminUseCase: DeletePembayaranByTerminUseCase,
     private val deleteAllPembayaranUseCase: DeleteAllPembayaranUseCase,
+    private val getAllBiayaMarketingByKavlingKodeUseCase: GetAllBiayaMarketingByKavlingKodeUseCase,
+    private val addBiayaMarketingUseCase: AddBiayaMarketingUseCase,
 ): ViewModel() {
 
     val dataDiriLive = MutableLiveData<DataDiri?>()
@@ -37,6 +42,8 @@ class DetailViewModel @Inject constructor(
     val hargaKavlingLive = MutableLiveData<HargaKavling>()
 
     val listPembayaranLive = MutableLiveData<List<Pembayaran>?>()
+
+    val listBiayaMarketingLive = MutableLiveData<List<BiayaMarketing>?>()
 
     val currentKavlingKode = MutableLiveData<String>()
 
@@ -314,5 +321,117 @@ class DetailViewModel @Inject constructor(
                 isFinishOperation.postValue(true)
             }
         }
+    }
+
+
+    // Biaya Marketing
+    fun getAllBiayaMarketing(kavlingKode: String, onFailure: (cause: String) -> Unit) {
+        isFinishOperation.value = false
+
+        val request = GetAllBiayaMarketingByKavlingKodeUseCase.Request(kavlingKode)
+
+        CoroutineScope(Dispatchers.IO).launch {
+            getAllBiayaMarketingByKavlingKodeUseCase.execute(request).collect { response ->
+                val result = response.data.result
+
+                result.onSuccess { biayaMarketingList ->
+                    listBiayaMarketingLive.postValue(biayaMarketingList)
+                }
+
+                result.onFailure { throwable ->
+                    withContext(Dispatchers.Main) {
+                        onFailure("Gagal mendapatkan biaya marketing: ${throwable.message}")
+                    }
+                }
+
+                isFinishOperation.postValue(true)
+            }
+        }
+    }
+
+    fun addBiayaMarketing(
+        kavlingKode: String,
+        jenisBiaya: String,
+        harga: String,
+        onComplete: (msg: String) -> Unit,
+    ) {
+        isFinishOperation.value = false
+
+        val biayaMarketing = BiayaMarketing(
+            kavlingKode = kavlingKode,
+            jenisBiaya = jenisBiaya,
+            harga = harga,
+        )
+        val request = AddBiayaMarketingUseCase.Request(biayaMarketing)
+
+        CoroutineScope(Dispatchers.IO).launch {
+            addBiayaMarketingUseCase.execute(request).collect { response ->
+                val result = response.data.result
+
+                result.onSuccess {
+                    withContext(Dispatchers.Main) {
+                        onComplete("Berhasil menambahkan biaya marketing.")
+                    }
+                }
+
+                result.onFailure { throwable ->
+                    withContext(Dispatchers.Main) {
+                        onComplete("Gagal menambahkan biaya marketing: ${throwable.message}")
+                    }
+                }
+
+                isFinishOperation.postValue(true)
+            }
+        }
+    }
+
+    fun getBiayaMarketingColumnHeaders(): ArrayList<String> {
+        return ArrayList<String>().apply {
+            add("Jenis Biaya")
+            add("Harga")
+        }
+    }
+
+    fun getBiayaMarketingRowHeaders(): ArrayList<String> {
+        val listBiayaMarketing = listBiayaMarketingLive.value
+
+        return if (listBiayaMarketing != null) {
+            val numberList = ArrayList<String>()
+
+            listBiayaMarketing.forEach { biayaMarketing ->
+                numberList.add(biayaMarketing.nomor.toString())
+            }
+
+            numberList
+        } else {
+            ArrayList<String>().apply { add("0") }
+        }
+    }
+
+    fun getBiayaMarketingCellItems(): ArrayList<ArrayList<String>> {
+        val listBiayaMarketing = listBiayaMarketingLive.value
+        val firstOrderItemList = ArrayList<ArrayList<String>>()
+
+        if (listBiayaMarketing != null) {
+            for (biayaMarketing in listBiayaMarketing) {
+                val secondOrderItemList = ArrayList<String>()
+
+                secondOrderItemList.add(biayaMarketing.jenisBiaya)
+                secondOrderItemList.add(biayaMarketing.harga)
+
+                firstOrderItemList.add(secondOrderItemList)
+            }
+        } else {
+            val secondOrderItemList = ArrayList<String>()
+
+            secondOrderItemList.apply {
+                add("-")
+                add("-")
+            }
+
+            firstOrderItemList.add(secondOrderItemList)
+        }
+
+        return firstOrderItemList
     }
 }

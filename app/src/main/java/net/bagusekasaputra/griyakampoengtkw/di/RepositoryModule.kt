@@ -171,4 +171,10 @@ object RepositoryModule {
     fun provideLocalImageSprDataSource(roomDatabase: MyRoomDatabase): LocalImageSprDataSource {
         return RoomImageSprDataSource(roomDatabase)
     }
+
+    // Biaya Marketing
+    @Provides
+    fun provideBiayaMarketingRepository(): BiayaMarketingRepository {
+        return BiayaMarketingRepositoryImpl()
+    }
 }
