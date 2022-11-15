@@ -20,6 +20,7 @@ import net.bagusekasaputra.griyakampoengtkw.ui.detail.tableview.RowHeader
 import net.bagusekasaputra.griyakampoengtkw.ui.detail.viewmodel.DetailViewModel
 import net.bagusekasaputra.griyakampoengtkw.util.DialogUtil
 import net.bagusekasaputra.griyakampoengtkw.util.InputUtil
+import net.bagusekasaputra.griyakampoengtkw.util.NumberUtil
 
 @AndroidEntryPoint
 class BiayaMarketingFragment : Fragment() {
@@ -83,8 +84,23 @@ class BiayaMarketingFragment : Fragment() {
         viewModel.listBiayaMarketingLive.observe(requireActivity()) {
             if (it != null) {
                 setupTableView()
+                setupHeaderText()
             }
         }
+
+
+    }
+
+    /**
+     * The total biaya marketing and Cuan texts
+     */
+    private fun setupHeaderText() {
+        binding.tvTotalBiaya.text = NumberUtil.formatLongToString(
+            viewModel.getTotalBiayaMarketing()
+        )
+        binding.tvCuan.text = NumberUtil.formatLongToString(
+            viewModel.getCuanBiayaMarketing()
+        )
     }
 
     private fun setupTableView() {

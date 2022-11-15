@@ -438,4 +438,23 @@ class DetailViewModel @Inject constructor(
 
         return firstOrderItemList
     }
+
+    fun getTotalBiayaMarketing(): Long {
+        return listBiayaMarketingLive.value!!.last().totalBiaya.toLong()
+    }
+
+    fun getCuanBiayaMarketing(): Long {
+        val listPembayaran = listPembayaranLive.value
+
+        return if (listPembayaran != null) {
+            // The "totalUangMasuk" which got from List<Pembayaran> are already parsed into 0,000,000
+            // format by the Use Case, so we can't parse it directly by .toLong() method.
+            val totalUangMasukTerakhir = NumberUtil.formatStringToLong(listPembayaran.last().totalUangMasuk)
+            val totalBiayaMarketing = getTotalBiayaMarketing()
+
+            totalUangMasukTerakhir - totalBiayaMarketing
+        } else {
+            0L
+        }
+    }
 }

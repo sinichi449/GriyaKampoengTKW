@@ -17,9 +17,10 @@ class BiayaMarketingRepositoryImpl @Inject constructor(
 
     private fun generateListBiayaMarketing() =
         mutableListOf<BiayaMarketing>(
-            BiayaMarketing(1, "D1", "Sofa", "50000000"),
+            BiayaMarketing(1, "D1", "Sofa", "500000"),
             BiayaMarketing(2, "D1", "Item 1", "5000"),
             BiayaMarketing(3, "D1", "Item 2", "20000"),
+            BiayaMarketing(4, "D1", "Lorem ipsum dolor sit amet", "31500")
         )
 
     init {

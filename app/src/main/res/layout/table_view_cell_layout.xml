@@ -16,6 +16,6 @@
         style="@style/TextAppearance.MaterialComponents.Body1"
         android:textSize="@dimen/default_table_text_size"
         android:gravity="center"
-        android:layout_marginHorizontal="2dp"/>
+        android:layout_marginHorizontal="8dp"/>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

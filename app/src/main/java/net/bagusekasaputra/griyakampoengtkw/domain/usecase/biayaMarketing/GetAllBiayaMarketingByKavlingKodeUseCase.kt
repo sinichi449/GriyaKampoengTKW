@@ -18,8 +18,27 @@ class GetAllBiayaMarketingByKavlingKodeUseCase @Inject constructor(
     data class Response(val result: Result<List<BiayaMarketing>?>): UseCase.Response
 
     override fun process(request: Request): Flow<Response> {
-        return biayaMarketingRepository.getAllByKavlingKode(request.kavlingKode).map {
-            Response(it)
+        return biayaMarketingRepository.getAllByKavlingKode(request.kavlingKode).map { result ->
+            Response(result.map { listBiayaMarketing ->
+                listBiayaMarketing?.let {
+                    hitungTotalBiaya(it)
+                }
+            })
         }
+    }
+
+    private fun hitungTotalBiaya(listBiayaMarketing: List<BiayaMarketing>): List<BiayaMarketing> {
+        val newBiayaMarketingList = ArrayList<BiayaMarketing>()
+        var totalBiaya = 0L
+
+        listBiayaMarketing.forEach { biayaMarketing ->
+            totalBiaya += biayaMarketing.harga.toLong()
+
+            biayaMarketing.totalBiaya = totalBiaya.toString()
+
+            newBiayaMarketingList.add(biayaMarketing)
+        }
+
+        return newBiayaMarketingList
     }
 }

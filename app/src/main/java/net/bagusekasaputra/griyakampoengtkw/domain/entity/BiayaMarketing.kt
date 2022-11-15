@@ -5,5 +5,6 @@ data class BiayaMarketing(
     val kavlingKode: String,
     val jenisBiaya: String,
     val harga: String,
+    var totalBiaya: String = "",
 ) {
 }
