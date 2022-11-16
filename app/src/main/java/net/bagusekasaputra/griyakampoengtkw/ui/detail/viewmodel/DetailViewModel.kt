@@ -7,18 +7,20 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import net.bagusekasaputra.griyakampoengtkw.domain.entity.BiayaMarketing
-import net.bagusekasaputra.griyakampoengtkw.domain.entity.DataDiri
-import net.bagusekasaputra.griyakampoengtkw.domain.entity.HargaKavling
-import net.bagusekasaputra.griyakampoengtkw.domain.entity.Pembayaran
+import net.bagusekasaputra.griyakampoengtkw.domain.entity.*
 import net.bagusekasaputra.griyakampoengtkw.domain.usecase.biayaMarketing.*
 import net.bagusekasaputra.griyakampoengtkw.domain.usecase.datadiri.AddDataDiriUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.usecase.datadiri.DeleteDataDiriUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.usecase.datadiri.GetDataDiriUseCase
+import net.bagusekasaputra.griyakampoengtkw.domain.usecase.feeMarketing.AddFeeMarketingUseCase
+import net.bagusekasaputra.griyakampoengtkw.domain.usecase.feeMarketing.DeleteFeeMarketingUseCase
+import net.bagusekasaputra.griyakampoengtkw.domain.usecase.feeMarketing.GetFeeMarketingByKavlingKode
+import net.bagusekasaputra.griyakampoengtkw.domain.usecase.feeMarketing.UpdateFeeMarketingUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.usecase.hargakavling.AddHargaKavlingUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.usecase.hargakavling.GetHargaKavlingUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.usecase.pembayaran.*
 import net.bagusekasaputra.griyakampoengtkw.ui.detail.tableview.TableBiayaMarketingHelper
+import net.bagusekasaputra.griyakampoengtkw.util.NumberUtil
 import javax.inject.Inject
 
 @HiltViewModel
@@ -38,6 +40,10 @@ class DetailViewModel @Inject constructor(
     private val editBiayaMarketingUseCase: EditBiayaMarketingUseCase,
     private val deleteSingleBiayaMarketingUseCase: DeleteSingleBiayaMarketingUseCase,
     private val deleteAllBiayaMarketingUseCase: DeleteAllBiayaMarketingUseCase,
+    private val getFeeMarketingByKavlingKode: GetFeeMarketingByKavlingKode,
+    private val addFeeMarketingUseCase: AddFeeMarketingUseCase,
+    private val updateFeeMarketingUseCase: UpdateFeeMarketingUseCase,
+    private val deleteFeeMarketingUseCase: DeleteFeeMarketingUseCase,
 ): ViewModel() {
 
     val dataDiriLive = MutableLiveData<DataDiri?>()
@@ -45,6 +51,8 @@ class DetailViewModel @Inject constructor(
     val hargaKavlingLive = MutableLiveData<HargaKavling>()
 
     val listPembayaranLive = MutableLiveData<List<Pembayaran>?>()
+
+    val feeMarketingLive = MutableLiveData<FeeMarketing?>()
 
     val listBiayaMarketingLive = MutableLiveData<List<BiayaMarketing>?>()
 
@@ -326,6 +334,149 @@ class DetailViewModel @Inject constructor(
         }
     }
 
+    // Fee Marketing
+    fun getFeeMarketing(kavlingKode: String, onFailure: (cause: String) -> Unit) {
+        isFinishOperation.value = false
+
+        val request = GetFeeMarketingByKavlingKode.Request(kavlingKode)
+
+        CoroutineScope(Dispatchers.IO).launch {
+            getFeeMarketingByKavlingKode.execute(request).collect { response ->
+                val result = response.data.result
+
+                result.onSuccess { feeMarketing ->
+                    // We need to transform the biayaAfiliasi into comma separated value here
+                    feeMarketing?.biayaMarketer = NumberUtil
+                        .formatLongToString(feeMarketing?.biayaMarketer?.toLong() ?: 0)
+
+                    feeMarketingLive.postValue(feeMarketing)
+                }
+
+                result.onFailure { throwable ->
+                    withContext(Dispatchers.Main) {
+                        onFailure("Gagal mendapatkan biaya afiliasi: ${throwable.message}")
+                    }
+                }
+
+                isFinishOperation.postValue(true)
+            }
+        }
+    }
+
+    fun addFeeMarketing(
+        kavlingKode: String,
+        namaMarketer: String,
+        biayaMarketer: String,
+        onComplete: (msg: String) -> Unit,
+    ) {
+        isFinishOperation.value = false
+
+        val feeMarketing = FeeMarketing(
+            kavlingKode = kavlingKode,
+            namaMarketer = namaMarketer,
+            biayaMarketer = biayaMarketer,
+        )
+        val request = AddFeeMarketingUseCase.Request(feeMarketing)
+
+        CoroutineScope(Dispatchers.IO).launch {
+            addFeeMarketingUseCase.execute(request).collect { response ->
+                val result = response.data.result
+
+                result.onSuccess {
+                    withContext(Dispatchers.Main) {
+                        onComplete("Berhasil menambahkan Fee Marketing")
+                    }
+                }
+                result.onFailure { throwable ->
+                    withContext(Dispatchers.Main) {
+                        onComplete("Gagal menambahkan Fee Marketing: ${throwable.message}")
+                    }
+                }
+
+                isFinishOperation.postValue(true)
+            }
+        }
+    }
+
+    fun updateFeeMarketing(
+        kavlingKode: String,
+        newNamaMarketer: String,
+        newBiayaMarketer: String,
+        onComplete: (msg: String) -> Unit
+    ) {
+        // Check null
+        if (feeMarketingLive.value == null) {
+            onComplete("Gagal mengupdate Fee Marketing: Null feeMarketingLive value")
+        } else {
+            // Check must be a same kavling kode between the current live data and the potential new fee marketing
+            if (kavlingKode != feeMarketingLive.value!!.kavlingKode) {
+                onComplete("Gagal mengupdate Fee Marketing: kavlingKode mismatch between old and new Fee Marketing.")
+
+            } else {
+                isFinishOperation.value = false
+
+                val newFeeMarketing = FeeMarketing(
+                    kavlingKode = kavlingKode,
+                    namaMarketer = newNamaMarketer,
+                    biayaMarketer = newBiayaMarketer,
+                )
+                val request = UpdateFeeMarketingUseCase.Request(
+                    oldFeeMarketing = feeMarketingLive.value!!,
+                    newFeeMarketing = newFeeMarketing,
+                )
+
+                CoroutineScope(Dispatchers.IO).launch {
+                    updateFeeMarketingUseCase.execute(request).collect { response ->
+                        val result = response.data.result
+
+                        result.onSuccess {
+                            withContext(Dispatchers.Main) {
+                                onComplete("Berhasil mengubah Fee Marketing")
+                            }
+                        }
+
+                        result.onFailure { throwable ->
+                            withContext(Dispatchers.Main) {
+                                onComplete("Gagal mengubah Fee Marketing: ${throwable.message}")
+                            }
+                        }
+
+                        isFinishOperation.postValue(true)
+                    }
+                }
+            }
+        }
+    }
+
+    fun deleteFeeMarketing(kavlingKode: String, onComplete: (msg: String) -> Unit) {
+        isFinishOperation.value = false
+
+        val request = DeleteFeeMarketingUseCase.Request(kavlingKode)
+
+        CoroutineScope(Dispatchers.IO).launch {
+            deleteFeeMarketingUseCase.execute(request).collect { response ->
+                val result = response.data.result
+
+                result.onSuccess {
+                    withContext(Dispatchers.Main) {
+                        onComplete("Berhasil menghapus Fee Marketing")
+                    }
+
+                    feeMarketingLive.postValue(null)
+                }
+
+                result.onFailure { throwable ->
+                    withContext(Dispatchers.Main) {
+                        onComplete("Gagal menghapus Fee Marketing: ${throwable.message}")
+                    }
+                }
+
+                isFinishOperation.postValue(true)
+            }
+        }
+    }
+
+
 
     // Biaya Marketing
     fun getAllBiayaMarketing(kavlingKode: String, onFailure: (cause: String) -> Unit) {
@@ -502,7 +653,8 @@ class DetailViewModel @Inject constructor(
     fun getCuanBiayaMarketing() =
         TableBiayaMarketingHelper(listBiayaMarketingLive.value)
             .getCuanBiayaMarketing(
-                lastTotalUangMasuk = listPembayaranLive.value?.last()?.totalUangMasuk
+                lastTotalUangMasuk = listPembayaranLive.value?.last()?.totalUangMasuk ?: "0",
+                biayaMarketer = feeMarketingLive.value?.biayaMarketer ?: "0",
             )
 
 }

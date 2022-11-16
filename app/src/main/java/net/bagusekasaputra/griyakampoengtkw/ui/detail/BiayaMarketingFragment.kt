@@ -12,6 +12,7 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
 import net.bagusekasaputra.griyakampoengtkw.R
+import net.bagusekasaputra.griyakampoengtkw.databinding.DialogActionFeeMarketingBinding
 import net.bagusekasaputra.griyakampoengtkw.databinding.DialogActionsBiayaMarketingBinding
 import net.bagusekasaputra.griyakampoengtkw.databinding.DialogPilihJenisBiayaBinding
 import net.bagusekasaputra.griyakampoengtkw.databinding.FragmentBiayaMarketingBinding
@@ -74,6 +75,19 @@ class BiayaMarketingFragment : Fragment() {
         binding.fabEditBiayaMarketing.setOnClickListener {
             showJenisPembayaranSelectionDialog()
         }
+
+        binding.imgEditBiayaAfiliasi.setOnClickListener {
+            val tidakAdaData = requireContext().getString(R.string.biaya_marketing_tidak_ada_marketer)
+
+            if (binding.tvNamaMarketer.text.toString() == tidakAdaData) {
+                showAddFeeMarketing()
+            } else {
+                val namaMarketer = binding.tvNamaMarketer.text.toString()
+                val biayaMarketer = binding.tvBiayaMarketer.text.toString() // comma separated
+
+                showEditFeeMarketing(namaMarketer, biayaMarketer)
+            }
+        }
     }
 
     override fun onResume() {
@@ -83,6 +97,13 @@ class BiayaMarketingFragment : Fragment() {
     }
 
     private fun syncData() {
+        viewModel.getFeeMarketing(
+            kavlingKode = currentKavlingKode!!,
+            onFailure = { failMsg ->
+                Toast.makeText(requireContext(), failMsg, Toast.LENGTH_SHORT).show()
+            }
+        )
+
         viewModel.getAllBiayaMarketing(
             kavlingKode = currentKavlingKode!!,
             onFailure = { failMsg ->
@@ -96,12 +117,20 @@ class BiayaMarketingFragment : Fragment() {
             binding.root.isRefreshing = !finish
         }
 
+        viewModel.feeMarketingLive.observe(requireActivity()) { biayaAfiliasi ->
+            if (biayaAfiliasi != null) {
+                binding.tvNamaMarketer.text = biayaAfiliasi.namaMarketer
+                binding.tvBiayaMarketer.text = biayaAfiliasi.biayaMarketer
+            } else {
+                binding.tvNamaMarketer.text = requireContext().getString(R.string.biaya_marketing_tidak_ada_marketer)
+                binding.tvBiayaMarketer.text = "0"
+            }
+        }
+
         viewModel.listBiayaMarketingLive.observe(requireActivity()) { _ ->
             setupTableView()
             setupHeaderText()
         }
-
-
     }
 
     /**
@@ -237,6 +266,127 @@ class BiayaMarketingFragment : Fragment() {
         } else {
             Snackbar.make(binding.root, "Daftar biaya marketing masih kosong", Snackbar.LENGTH_SHORT)
                 .show()
+        }
+    }
+
+    private fun showAddFeeMarketing() {
+        val dialogBinding = DialogActionFeeMarketingBinding.inflate(layoutInflater)
+        val dialogView = MaterialAlertDialogBuilder(requireContext()).apply {
+            setView(dialogBinding.root)
+        }.create()
+
+        DialogUtil.additionalDialogSetting(requireContext(), dialogView)
+
+        dialogBinding.edtBiayaMarketer.apply {
+            val harga = this.text.toString()
+
+            if (harga != "0")
+                this.setText(harga)
+
+            addTextChangedListener(ThousandSeparatorTextWatcher(this))
+        }
+
+        dialogView.show()
+
+
+
+        dialogBinding.btnTambahkanBiayaAfiliasi.setOnClickListener {
+            val isInvalidEdt = InputUtil.isNullOrEmptyEditTexts(
+                dialogBinding.edtNamaMarketer,
+                dialogBinding.edtBiayaMarketer,
+            )
+
+            if (!isInvalidEdt) {
+                dialogBinding.btnTambahkanBiayaAfiliasi.text = "Menyimpan data ..."
+                dialogBinding.btnTambahkanBiayaAfiliasi.isEnabled = false
+
+                val namaMarketer = dialogBinding.edtNamaMarketer.text.toString()
+                val biayaMarketer = dialogBinding.edtBiayaMarketer.text.toString()
+
+                viewModel.addFeeMarketing(
+                    kavlingKode = currentKavlingKode!!,
+                    namaMarketer = namaMarketer,
+                    biayaMarketer = biayaMarketer,
+                    onComplete = { msg ->
+                        syncData()
+                        dialogView.dismiss()
+                        Snackbar.make(binding.root, msg, Snackbar.LENGTH_SHORT).show()
+                    }
+                )
+            }
+        }
+
+        dialogBinding.btnBatal.setOnClickListener {
+            dialogView.dismiss()
+        }
+    }
+
+    private fun showEditFeeMarketing(namaMarketer: String, biayaMarketer: String) {
+        val dialogBinding = DialogActionFeeMarketingBinding.inflate(layoutInflater)
+        val dialogView = MaterialAlertDialogBuilder(requireContext()).apply {
+            setView(dialogBinding.root)
+        }.create()
+
+        DialogUtil.additionalDialogSetting(requireContext(), dialogView)
+
+        dialogBinding.edtBiayaMarketer.apply {
+            val harga = this.text.toString()
+
+            if (harga != "0")
+                this.setText(harga)
+
+            addTextChangedListener(ThousandSeparatorTextWatcher(this))
+        }
+        dialogBinding.edtNamaMarketer.setText(namaMarketer)
+        dialogBinding.edtBiayaMarketer.setText(biayaMarketer)
+        // enable delete button
+        dialogBinding.btnHapusBiayaAfiliasi.visibility = View.VISIBLE
+
+        dialogView.show()
+
+
+        dialogBinding.btnTambahkanBiayaAfiliasi.setOnClickListener {
+            val isInvalidEdt = InputUtil.isNullOrEmptyEditTexts(
+                dialogBinding.edtNamaMarketer,
+                dialogBinding.edtBiayaMarketer,
+            )
+
+            if (!isInvalidEdt) {
+                dialogBinding.btnTambahkanBiayaAfiliasi.text = "Menyimpan data ..."
+                dialogBinding.btnTambahkanBiayaAfiliasi.isEnabled = false
+
+                val newNamaMarketer = dialogBinding.edtNamaMarketer.text.toString()
+                val newBiayaMarketer = dialogBinding.edtBiayaMarketer.text.toString()
+
+                viewModel.updateFeeMarketing(
+                    kavlingKode = currentKavlingKode!!,
+                    newBiayaMarketer = newBiayaMarketer,
+                    newNamaMarketer = newNamaMarketer,
+                    onComplete = { msg ->
+                        syncData()
+                        dialogView.dismiss()
+                        Snackbar.make(binding.root, msg, Snackbar.LENGTH_SHORT).show()
+                    }
+                )
+            }
+        }
+
+        dialogBinding.btnHapusBiayaAfiliasi.setOnClickListener {
+            dialogBinding.btnTambahkanBiayaAfiliasi.text = "Menghapus data ..."
+            dialogBinding.btnTambahkanBiayaAfiliasi.isEnabled = false
+
+            viewModel.deleteFeeMarketing(
+                kavlingKode = currentKavlingKode!!,
+                onComplete = { msg ->
+                    syncData()
+                    dialogView.dismiss()
+                    Snackbar.make(binding.root, msg, Snackbar.LENGTH_SHORT).show()
+                }
+            )
+        }
+
+        dialogBinding.btnBatal.setOnClickListener {
+            dialogView.dismiss()
         }
     }
 

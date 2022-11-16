@@ -66,16 +66,13 @@ class TableBiayaMarketingHelper(
             0L
     }
 
-    fun getCuanBiayaMarketing(lastTotalUangMasuk: String?): Long {
-        return if (lastTotalUangMasuk != null) {
-            // The "totalUangMasuk" which got from List<Pembayaran> are already parsed into 0,000,000
-            // format by the Use Case, so we can't parse it directly by .toLong() method.
-            val totalBiayaMarketing = getTotalBiayaMarketing()
-            val totalUangMasukTerakhir = NumberUtil.formatStringToLong(lastTotalUangMasuk)
+    fun getCuanBiayaMarketing(lastTotalUangMasuk: String, biayaMarketer: String): Long {
+        // The "totalUangMasuk" which got from List<Pembayaran> are already parsed into 0,000,000
+        // format by the Use Case, so we can't parse it directly by .toLong() method.
+        val totalBiayaMarketing = getTotalBiayaMarketing()
+        val totalUangMasukTerakhir = NumberUtil.formatStringToLong(lastTotalUangMasuk)
+        val parsedBiayaMarketer = NumberUtil.formatStringToLong(biayaMarketer)
 
-            totalUangMasukTerakhir - totalBiayaMarketing
-        } else {
-            0L
-        }
+        return totalUangMasukTerakhir - parsedBiayaMarketer - totalBiayaMarketing
     }
 }

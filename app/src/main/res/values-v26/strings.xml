@@ -2,4 +2,5 @@
 <resources>
     <string name="sharedprefs_key_moveable_fab">moveable_floating_action_button</string>
     <string name="shared_prefs_enlarge_photo">enlarge_photo</string>
+    <string name="biaya_marketing_tidak_ada_marketer">Tidak Ada</string>
 </resources>

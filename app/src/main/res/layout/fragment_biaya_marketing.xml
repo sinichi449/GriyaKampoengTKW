@@ -19,13 +19,57 @@
             android:orientation="vertical"
             app:layout_constraintGuide_percent="0.5"/>
 
+        <com.google.android.material.textview.MaterialTextView
+            android:id="@+id/tv_info_title_fee_marketing"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            android:text="Fee Marketing"
+            style="@style/TextAppearance.MaterialComponents.Headline6"
+            android:textSize="@dimen/form_pembayaran_title_text_size"/>
+
+        <com.google.android.material.textview.MaterialTextView
+            android:id="@+id/tv_nama_marketer"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            app:layout_constraintTop_toBottomOf="@id/tv_info_title_fee_marketing"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toStartOf="@id/guideline_vertical"
+            android:gravity="start"
+            android:layout_marginTop="8dp"
+            android:text="@string/biaya_marketing_tidak_ada_marketer"
+            style="@style/TextAppearance.MaterialComponents.Subtitle1"/>
+
+        <com.google.android.material.textview.MaterialTextView
+            android:id="@+id/tv_biaya_marketer"
+            style="@style/TextAppearance.MaterialComponents.Subtitle1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="40dp"
+            android:text="0"
+            app:layout_constraintBottom_toBottomOf="@+id/tv_nama_marketer"
+            app:layout_constraintStart_toEndOf="@+id/tv_nama_marketer"
+            app:layout_constraintTop_toTopOf="@+id/tv_nama_marketer" />
+
+
+        <ImageView
+            android:id="@+id/img_edit_biaya_afiliasi"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/ic_baseline_edit_24"
+            app:layout_constraintBottom_toBottomOf="@+id/tv_biaya_marketer"
+            app:layout_constraintStart_toEndOf="@+id/tv_biaya_marketer"
+            app:layout_constraintTop_toTopOf="@+id/tv_biaya_marketer"
+            android:layout_marginStart="24dp"/>
+
         <com.evrencoskun.tableview.TableView
             android:id="@+id/tableview_biaya_marketing"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/tv_nama_marketer"
             app:column_header_height="@dimen/column_header_height"
             app:row_header_width="@dimen/default_row_header_width"
             app:shadow_color="@color/table_view_default_shadow_background_color"

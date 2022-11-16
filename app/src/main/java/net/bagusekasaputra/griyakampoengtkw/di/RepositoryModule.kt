@@ -28,6 +28,8 @@ import net.bagusekasaputra.griyakampoengtkw.data.source.remote.block.FirebaseBlo
 import net.bagusekasaputra.griyakampoengtkw.data.source.remote.block.RemoteBlockRepository
 import net.bagusekasaputra.griyakampoengtkw.data.source.remote.datadiri.FirebaseDataDiriRepository
 import net.bagusekasaputra.griyakampoengtkw.data.source.remote.datadiri.RemoteDataDiriRepository
+import net.bagusekasaputra.griyakampoengtkw.data.source.remote.feeMarketing.FirebaseFeeMarketingDataSource
+import net.bagusekasaputra.griyakampoengtkw.data.source.remote.feeMarketing.RemoteFeeMarketingDataSource
 import net.bagusekasaputra.griyakampoengtkw.data.source.remote.hargakavling.FirebaseHargaKavlingSource
 import net.bagusekasaputra.griyakampoengtkw.data.source.remote.hargakavling.RemoteHargaKavlingSource
 import net.bagusekasaputra.griyakampoengtkw.data.source.remote.kavling.FirebaseKavlingRepository
@@ -172,6 +174,17 @@ object RepositoryModule {
     @Provides
     fun provideLocalImageSprDataSource(roomDatabase: MyRoomDatabase): LocalImageSprDataSource {
         return RoomImageSprDataSource(roomDatabase)
+    }
+
+    // Fee Marketing
+    @Provides
+    fun provideFeeMarketingRepository(remoteFeeMarketingDataSource: RemoteFeeMarketingDataSource): FeeMarketingRepository {
+        return FeeMarketingRepositoryImpl(remoteFeeMarketingDataSource)
+    }
+
+    @Provides
+    fun provideRemoteFeeMarketingDataSource(databaseReference: DatabaseReference): RemoteFeeMarketingDataSource {
+        return FirebaseFeeMarketingDataSource(databaseReference)
     }
 
     // Biaya Marketing

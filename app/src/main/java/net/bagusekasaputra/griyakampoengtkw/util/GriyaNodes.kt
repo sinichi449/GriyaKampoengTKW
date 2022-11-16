@@ -66,5 +66,8 @@ class GriyaNodes {
 
         // Biaya Marketing
         const val biayaMarketing = "biayaMarketing"
+
+        // Fee Marketing
+        const val feeMarketing = "feeMarketing"
     }
 }
