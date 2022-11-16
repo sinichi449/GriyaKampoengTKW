@@ -17,7 +17,7 @@ interface RemoteBiayaMarketingDataSource {
         newBiayaMarketingModel: BiayaMarketingModel
     ): Result<Nothing?>
 
-    suspend fun deleteSingle(kavlingKode: String, nomor: Int): Result<Nothing?>
+    suspend fun deleteSingle(kavlingKode: String, timeMillis: Long): Result<Nothing?>
 
     suspend fun deleteAllBiayaMarketing(kavlingKode: String): Result<Nothing?>
 }

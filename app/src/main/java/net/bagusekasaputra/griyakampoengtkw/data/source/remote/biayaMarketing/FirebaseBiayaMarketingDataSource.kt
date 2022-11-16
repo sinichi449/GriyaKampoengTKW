@@ -89,11 +89,36 @@ class FirebaseBiayaMarketingDataSource @Inject constructor(
         }.first()
     }
 
-    override suspend fun deleteSingle(kavlingKode: String, nomor: Int): Result<Nothing?> {
-        TODO("Not yet implemented")
+    override suspend fun deleteSingle(kavlingKode: String, timeMillis: Long): Result<Nothing?> {
+        return callbackFlow<Result<Nothing?>> {
+            biayaMarketingRef
+                .child(kavlingKode)
+                .child(timeMillis.toString())
+                .removeValue()
+                .addOnSuccessListener {
+                    trySendBlocking(Result.success(null))
+                }
+                .addOnFailureListener {
+                    trySendBlocking(Result.failure(it))
+                }
+
+            awaitClose {  }
+        }.first()
     }
 
     override suspend fun deleteAllBiayaMarketing(kavlingKode: String): Result<Nothing?> {
-        TODO("Not yet implemented")
+        return callbackFlow<Result<Nothing?>> {
+            biayaMarketingRef
+                .child(kavlingKode)
+                .removeValue()
+                .addOnSuccessListener {
+                    trySendBlocking(Result.success(null))
+                }
+                .addOnFailureListener {
+                    trySendBlocking(Result.failure(it))
+                }
+
+            awaitClose {  }
+        }.first()
     }
 }

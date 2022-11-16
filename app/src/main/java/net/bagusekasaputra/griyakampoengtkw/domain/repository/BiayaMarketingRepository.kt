@@ -11,5 +11,7 @@ interface BiayaMarketingRepository {
 
     fun update(oldBiayaMarketing: BiayaMarketing, newBiayaMarketing: BiayaMarketing): Flow<Result<Nothing?>>
 
-    fun deleteByKavlingKode(kavlingKode: String): Flow<Result<Nothing?>>
+    fun deleteSingle(kavlingKode: String, biayaMarketing: BiayaMarketing): Flow<Result<Nothing?>>
+
+    fun deleteAll(kavlingKode: String): Flow<Result<Nothing?>>
 }

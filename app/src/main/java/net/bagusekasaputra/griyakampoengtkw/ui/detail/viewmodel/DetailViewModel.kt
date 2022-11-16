@@ -11,9 +11,7 @@ import net.bagusekasaputra.griyakampoengtkw.domain.entity.BiayaMarketing
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.DataDiri
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.HargaKavling
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.Pembayaran
-import net.bagusekasaputra.griyakampoengtkw.domain.usecase.biayaMarketing.AddBiayaMarketingUseCase
-import net.bagusekasaputra.griyakampoengtkw.domain.usecase.biayaMarketing.EditBiayaMarketingUseCase
-import net.bagusekasaputra.griyakampoengtkw.domain.usecase.biayaMarketing.GetAllBiayaMarketingByKavlingKodeUseCase
+import net.bagusekasaputra.griyakampoengtkw.domain.usecase.biayaMarketing.*
 import net.bagusekasaputra.griyakampoengtkw.domain.usecase.datadiri.AddDataDiriUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.usecase.datadiri.DeleteDataDiriUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.usecase.datadiri.GetDataDiriUseCase
@@ -38,6 +36,8 @@ class DetailViewModel @Inject constructor(
     private val getAllBiayaMarketingByKavlingKodeUseCase: GetAllBiayaMarketingByKavlingKodeUseCase,
     private val addBiayaMarketingUseCase: AddBiayaMarketingUseCase,
     private val editBiayaMarketingUseCase: EditBiayaMarketingUseCase,
+    private val deleteSingleBiayaMarketingUseCase: DeleteSingleBiayaMarketingUseCase,
+    private val deleteAllBiayaMarketingUseCase: DeleteAllBiayaMarketingUseCase,
 ): ViewModel() {
 
     val dataDiriLive = MutableLiveData<DataDiri?>()
@@ -426,6 +426,63 @@ class DetailViewModel @Inject constructor(
         }
     }
 
+    fun deleteBiayaMarketing(
+        kavlingKode: String,
+        biayaMarketing: BiayaMarketing,
+        onComplete: (msg: String) -> Unit,
+    ) {
+        isFinishOperation.value = false
+
+        val request = DeleteSingleBiayaMarketingUseCase.Request(kavlingKode, biayaMarketing)
+
+        CoroutineScope(Dispatchers.IO).launch {
+            deleteSingleBiayaMarketingUseCase.execute(request).collect { response ->
+                val result = response.data.result
+
+                result.onSuccess {
+                    withContext(Dispatchers.Main) {
+                        onComplete("Berhasil menghapus ${biayaMarketing.jenisBiaya}")
+                    }
+                }
+                result.onFailure { throwable ->
+                    withContext(Dispatchers.Main) {
+                        onComplete("Gagal menghapus ${biayaMarketing.jenisBiaya}: ${throwable.message}")
+                    }
+                }
+            }
+
+            isFinishOperation.postValue(true)
+        }
+    }
+
+    fun deleteAllBiayaMarketing(kavlingKode: String, onComplete: (msg: String) -> Unit) {
+        isFinishOperation.value = false
+
+        val request = DeleteAllBiayaMarketingUseCase.Request(kavlingKode)
+
+        CoroutineScope(Dispatchers.IO).launch {
+            deleteAllBiayaMarketingUseCase.execute(request).collect { response ->
+                val result = response.data.result
+
+                result.onSuccess {
+                    withContext(Dispatchers.Main) {
+                        listBiayaMarketingLive.postValue(null)
+                        onComplete("Berhasil menghapus semua biaya marketing")
+                    }
+                }
+
+                result.onFailure {
+                    withContext(Dispatchers.Main) {
+                        onComplete("Gagal menghapus biaya marketing: ${it.message}")
+                    }
+                }
+            }
+
+            isFinishOperation.postValue(true)
+        }
+    }
+
+    // Table View Biaya Marketing
     fun getBiayaMarketingColumnHeaders(): ArrayList<String> {
         return ArrayList<String>().apply {
             add("Jenis Biaya")
@@ -491,8 +548,8 @@ class DetailViewModel @Inject constructor(
         return if (listPembayaran != null) {
             // The "totalUangMasuk" which got from List<Pembayaran> are already parsed into 0,000,000
             // format by the Use Case, so we can't parse it directly by .toLong() method.
-            val totalUangMasukTerakhir = NumberUtil.formatStringToLong(listPembayaran.last().totalUangMasuk)
             val totalBiayaMarketing = getTotalBiayaMarketing()
+            val totalUangMasukTerakhir = NumberUtil.formatStringToLong(listPembayaran.last().totalUangMasuk)
 
             totalUangMasukTerakhir - totalBiayaMarketing
         } else {

@@ -58,8 +58,31 @@ class BiayaMarketingRepositoryImpl @Inject constructor(
         }
     }
 
-    override fun deleteByKavlingKode(kavlingKode: String): Flow<Result<Nothing?>> {
-        TODO("Not yet implemented")
+    override fun deleteSingle(
+        kavlingKode: String,
+        biayaMarketing: BiayaMarketing
+    ): Flow<Result<Nothing?>> {
+        return flow {
+            // If time millis is null from BiayaMarketing entity, I will send the error instead.
+            if (biayaMarketing.timeMillis == null) {
+                emit(Result.failure(Exception("ERROR: Time millis tidak ditemukan")))
+            } else {
+                val remoteResult = remoteBiayaMarketingDataSource.deleteSingle(
+                    kavlingKode = kavlingKode,
+                    timeMillis = biayaMarketing.timeMillis!!,
+                )
+
+                emit(remoteResult)
+            }
+        }
+    }
+
+    override fun deleteAll(kavlingKode: String): Flow<Result<Nothing?>> {
+        return flow {
+            val remoteResult = remoteBiayaMarketingDataSource.deleteAllBiayaMarketing(kavlingKode)
+
+            emit(remoteResult)
+        }
     }
 
     private fun mapBiayaMarketing(biayaMarketingModel: BiayaMarketingModel): BiayaMarketing {

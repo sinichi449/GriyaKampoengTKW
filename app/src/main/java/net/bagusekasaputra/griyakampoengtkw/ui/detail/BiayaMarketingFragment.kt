@@ -1,9 +1,7 @@
 package net.bagusekasaputra.griyakampoengtkw.ui.detail
 
 import android.os.Bundle
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
+import android.view.*
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.Fragment
@@ -13,6 +11,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
+import net.bagusekasaputra.griyakampoengtkw.R
 import net.bagusekasaputra.griyakampoengtkw.databinding.DialogActionsBiayaMarketingBinding
 import net.bagusekasaputra.griyakampoengtkw.databinding.DialogPilihJenisBiayaBinding
 import net.bagusekasaputra.griyakampoengtkw.databinding.FragmentBiayaMarketingBinding
@@ -36,6 +35,12 @@ class BiayaMarketingFragment : Fragment() {
     private var areAllFabsVisible: Boolean = false
 
     private val viewModel: DetailViewModel by activityViewModels()
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+
+        setHasOptionsMenu(true)
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -91,10 +96,13 @@ class BiayaMarketingFragment : Fragment() {
             binding.root.isRefreshing = !finish
         }
 
-        viewModel.listBiayaMarketingLive.observe(requireActivity()) {
-            if (it != null) {
+        viewModel.listBiayaMarketingLive.observe(requireActivity()) { listBiayaMarketing ->
+            if (listBiayaMarketing != null) {
                 setupTableView()
                 setupHeaderText()
+            } else {
+                binding.tvTotalBiaya.text = "0"
+                setupTableView()
             }
         }
 
@@ -117,15 +125,17 @@ class BiayaMarketingFragment : Fragment() {
         binding.tableviewBiayaMarketing.invalidate()
 
         val adapter = MyTableViewAdapter()
+
+        binding.tableviewBiayaMarketing.setAdapter(adapter)
+
         val columnHeaders = viewModel.getBiayaMarketingColumnHeaders().map { ColumnHeader(it) }
         val rowHeaders = viewModel.getBiayaMarketingRowHeaders().map { RowHeader(it) }
         val cellItems = viewModel.getBiayaMarketingCellItems().map { firstOrder ->
             firstOrder.map { Cell(it) }
         }
 
-        binding.tableviewBiayaMarketing.setAdapter(adapter)
-
         adapter.setAllItems(columnHeaders, rowHeaders, cellItems)
+        adapter.notifyDataSetChanged()
     }
 
     private fun setupExtendedFab() {
@@ -310,8 +320,73 @@ class BiayaMarketingFragment : Fragment() {
             }
         }
 
+        dialogBinding.btnHapusBiayaMarketing.setOnClickListener {
+            dialogView.dismiss()
+
+            val hapusAlert = MaterialAlertDialogBuilder(requireContext()).apply {
+                setTitle("Hapus ${biayaMarketing.jenisBiaya}?")
+                setMessage("Apakah Anda yakin menghapus biaya marketing ini?")
+                setPositiveButton("Ya") { hapusDialog, _ ->
+                    viewModel.deleteBiayaMarketing(
+                        kavlingKode = currentKavlingKode!!,
+                        biayaMarketing = biayaMarketing,
+                        onComplete = { msg ->
+                            syncData()
+                            hapusDialog.dismiss()
+                            Snackbar.make(binding.root, msg, Snackbar.LENGTH_SHORT)
+                                .show()
+                        }
+                    )
+                }
+                setNegativeButton("Tidak") { hapusDialog, _ ->
+                    hapusDialog.dismiss()
+                }
+            }.create()
+
+            hapusAlert.show()
+        }
+
         dialogBinding.btnBatal.setOnClickListener {
             dialogView.dismiss()
+        }
+    }
+
+    private fun showHapusSemuaBiayaMarketingDialog() {
+        MaterialAlertDialogBuilder(requireContext()).apply {
+            setTitle("Hapus Semua Biaya Marketing?")
+            setMessage("Apakah Anda yakin menghapus semua biaya marketing?")
+            setPositiveButton("Ya") { hapusSemuaDialog, _ ->
+                viewModel.deleteAllBiayaMarketing(
+                    kavlingKode = currentKavlingKode!!,
+                    onComplete = { msg ->
+                        syncData()
+                        hapusSemuaDialog.dismiss()
+                        Snackbar.make(binding.root, msg, Snackbar.LENGTH_SHORT)
+                            .show()
+                    }
+                )
+            }
+            setNegativeButton("Tidak") { hapusSemuaDialog, _ ->
+                hapusSemuaDialog.dismiss()
+            }
+        }.create()
+            .show()
+    }
+
+
+    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
+        inflater.inflate(R.menu.menu_biaya_marketing, menu)
+        super.onCreateOptionsMenu(menu, inflater)
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        return when (item.itemId) {
+            R.id.hapus_semua_biaya_marketing -> {
+                showHapusSemuaBiayaMarketingDialog()
+
+                true
+            }
+            else -> super.onOptionsItemSelected(item)
         }
     }
 }
