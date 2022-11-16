@@ -22,21 +22,16 @@ import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.textview.MaterialTextView
 import dagger.hilt.android.AndroidEntryPoint
 import net.bagusekasaputra.griyakampoengtkw.R
-import net.bagusekasaputra.griyakampoengtkw.databinding.DialogAddFormPembayaranBinding
-import net.bagusekasaputra.griyakampoengtkw.databinding.DialogEditHargaBinding
-import net.bagusekasaputra.griyakampoengtkw.databinding.DialogPilihTerminBinding
-import net.bagusekasaputra.griyakampoengtkw.databinding.FragmentFormPembayaranBinding
+import net.bagusekasaputra.griyakampoengtkw.databinding.*
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.HargaKavling
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.Pembayaran
+import net.bagusekasaputra.griyakampoengtkw.ui.UiUtils
 import net.bagusekasaputra.griyakampoengtkw.ui.custom.ThousandSeparatorTextWatcher
 import net.bagusekasaputra.griyakampoengtkw.ui.detail.adapter.TerminRecyclerAdapter
 import net.bagusekasaputra.griyakampoengtkw.ui.detail.viewmodel.DetailViewModel
 import net.bagusekasaputra.griyakampoengtkw.ui.detail.viewmodel.ImageViewModel
+import net.bagusekasaputra.griyakampoengtkw.util.*
 import net.bagusekasaputra.griyakampoengtkw.util.DialogUtil.additionalDialogSetting
-import net.bagusekasaputra.griyakampoengtkw.util.ExcelExporter
-import net.bagusekasaputra.griyakampoengtkw.util.GriyaNodes
-import net.bagusekasaputra.griyakampoengtkw.util.InputUtil
-import net.bagusekasaputra.griyakampoengtkw.util.NumberUtil
 import java.text.SimpleDateFormat
 import java.util.*
 import kotlin.math.max
@@ -126,6 +121,25 @@ class FormPembayaranFragment : Fragment() {
             syncPembayaran()
         }
 
+        binding.imgEditCatatan?.setOnClickListener {
+            val currentCatatan = binding.tvCatatan?.text.toString()
+            val tidakAdaCatatan = requireContext().getString(R.string.tidak_ada_catatan)
+
+            // If tidak ada catatan, then open the add catatan, which means we need to disable
+            // delete button
+            if (currentCatatan == tidakAdaCatatan) {
+                showActionsCatatanDialog(editMode = false)
+            } else {
+                showActionsCatatanDialog(editMode = true)
+            }
+        }
+
+        // Hide fabs on scroll
+        UiUtils.hideExtendedFabOnVerticalScroll(
+            nestedScrollView = binding.nestedScrollMain,
+            extendedFabs = binding.fabActions,
+        )
+
         startStorageRequest.launch(
             Array<String>(2) {
                 Manifest.permission.WRITE_EXTERNAL_STORAGE
@@ -148,6 +162,8 @@ class FormPembayaranFragment : Fragment() {
      * 2. List Pembayaran
      *
      * 3. Foto Kuitansi
+     *
+     * 4. Catatan Pembayaran
      */
     private fun syncPembayaran() {
         viewModel.getHargaKavling(currentKavlingKode!!) { failMsg ->
@@ -157,6 +173,9 @@ class FormPembayaranFragment : Fragment() {
             Toast.makeText(requireContext(), failMsg, Toast.LENGTH_LONG).show()
         }
         imageViewModel.getFotoKuitansi(currentKavlingKode!!) { failMsg ->
+            Toast.makeText(requireContext(), failMsg, Toast.LENGTH_SHORT).show()
+        }
+        viewModel.getCatatanPembayaran(currentKavlingKode!!) { failMsg ->
             Toast.makeText(requireContext(), failMsg, Toast.LENGTH_SHORT).show()
         }
     }
@@ -192,13 +211,21 @@ class FormPembayaranFragment : Fragment() {
                 clearPembayaranField()
             }
         }
+
+        viewModel.catatanPembayaranLive.observe(requireActivity()) { catatanPembayaran ->
+            if (catatanPembayaran != null) {
+                binding.tvCatatan?.text = catatanPembayaran.content
+            } else {
+                binding.tvCatatan?.text = requireContext().getString(R.string.tidak_ada_catatan)
+            }
+        }
     }
 
     private fun setupExtendedFloatingButton() {
         binding.fabAddPembayaranData?.visibility = View.GONE
         binding.fabEditData?.visibility = View.GONE
-        binding.tvInfoAddPembayaranData?.visibility = View.GONE
-        binding.tvInfoEditData?.visibility = View.GONE
+//        binding.tvInfoAddPembayaranData?.visibility = View.GONE
+//        binding.tvInfoEditData?.visibility = View.GONE
 
         binding.fabActions?.shrink()
 
@@ -635,6 +662,7 @@ class FormPembayaranFragment : Fragment() {
         }
     }
 
+
     private fun setupTerminRecyclerView(
         listPembayaran: List<Pembayaran>,
         terminDialog: AlertDialog,
@@ -650,6 +678,60 @@ class FormPembayaranFragment : Fragment() {
         }
         recyclerTermin.adapter = adapter
         recyclerTermin.layoutManager = LinearLayoutManager(requireContext())
+    }
+
+    private fun showActionsCatatanDialog(editMode: Boolean) {
+        val dialogBinding = DialogActionCatatanPembayaranBinding.inflate(layoutInflater)
+        val dialogView = MaterialAlertDialogBuilder(requireContext()).apply {
+            setView(dialogBinding.root)
+        }.create()
+
+        DialogUtil.additionalDialogSetting(requireContext(), dialogView)
+
+        // if Edit Mode, ENABLE the Delete Button, set the text as the one before,and change the Dialog Title
+        if (editMode) {
+            dialogBinding.tvInfoTitleTambahCatatan.text = "Ubah Catatan"
+            dialogBinding.edtCatatan.setText(binding.tvCatatan?.text)
+            dialogBinding.btnHapusCatatan.visibility = View.VISIBLE
+        }
+
+        dialogView.show()
+
+        dialogBinding.btnTambahkan.setOnClickListener {
+            val isInvalidEdt = InputUtil.isNullOrEmptyEditTexts(dialogBinding.edtCatatan)
+
+            if (!isInvalidEdt) {
+                dialogBinding.btnTambahkan.text = "Menyimpan data ..."
+                dialogBinding.btnTambahkan.isEnabled = false
+
+                val catatan = dialogBinding.edtCatatan.text.toString()
+
+                viewModel.addCatatanPembayaran(
+                    kavlingKode = currentKavlingKode!!,
+                    catatan = catatan,
+                    onComplete = { msg ->
+                        syncPembayaran()
+                        dialogView.dismiss()
+                        Snackbar.make(binding.root, msg, Snackbar.LENGTH_SHORT).show()
+                    }
+                )
+            }
+        }
+
+        dialogBinding.btnHapusCatatan.setOnClickListener {
+            viewModel.deleteCatatanPembayaran(
+                kavlingKode = currentKavlingKode!!,
+                onComplete = { msg ->
+                    syncPembayaran()
+                    dialogView.dismiss()
+                    Snackbar.make(binding.root, msg, Snackbar.LENGTH_SHORT).show()
+                }
+            )
+        }
+
+        dialogBinding.btnBatal.setOnClickListener {
+            dialogView.dismiss()
+        }
     }
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
@@ -707,8 +789,8 @@ class FormPembayaranFragment : Fragment() {
     private fun showFabs() {
         binding.fabAddPembayaranData?.show()
         binding.fabEditData?.show()
-        binding.tvInfoAddPembayaranData?.visibility = View.VISIBLE
-        binding.tvInfoEditData?.visibility = View.VISIBLE
+//        binding.tvInfoAddPembayaranData?.visibility = View.VISIBLE
+//        binding.tvInfoEditData?.visibility = View.VISIBLE
 
         binding.fabActions?.extend()
 
@@ -718,8 +800,8 @@ class FormPembayaranFragment : Fragment() {
     private fun hideFabs() {
         binding.fabAddPembayaranData?.hide()
         binding.fabEditData?.hide()
-        binding.tvInfoAddPembayaranData?.visibility = View.GONE
-        binding.tvInfoEditData?.visibility = View.GONE
+//        binding.tvInfoAddPembayaranData?.visibility = View.GONE
+//        binding.tvInfoEditData?.visibility = View.GONE
 
         binding.fabActions?.shrink()
 

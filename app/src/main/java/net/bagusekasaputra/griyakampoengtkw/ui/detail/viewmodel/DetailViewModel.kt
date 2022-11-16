@@ -9,6 +9,9 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.*
 import net.bagusekasaputra.griyakampoengtkw.domain.usecase.biayaMarketing.*
+import net.bagusekasaputra.griyakampoengtkw.domain.usecase.catatanPembayaran.AddCatatanPembayaranUseCase
+import net.bagusekasaputra.griyakampoengtkw.domain.usecase.catatanPembayaran.DeleteCatatanPembayaranUseCase
+import net.bagusekasaputra.griyakampoengtkw.domain.usecase.catatanPembayaran.GetCatatanPembayaranUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.usecase.datadiri.AddDataDiriUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.usecase.datadiri.DeleteDataDiriUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.usecase.datadiri.GetDataDiriUseCase
@@ -44,6 +47,9 @@ class DetailViewModel @Inject constructor(
     private val addFeeMarketingUseCase: AddFeeMarketingUseCase,
     private val updateFeeMarketingUseCase: UpdateFeeMarketingUseCase,
     private val deleteFeeMarketingUseCase: DeleteFeeMarketingUseCase,
+    private val getCatatanPembayaranUseCase: GetCatatanPembayaranUseCase,
+    private val addCatatanPembayaranUseCase: AddCatatanPembayaranUseCase,
+    private val deleteCatatanPembayaranUseCase: DeleteCatatanPembayaranUseCase,
 ): ViewModel() {
 
     val dataDiriLive = MutableLiveData<DataDiri?>()
@@ -55,6 +61,8 @@ class DetailViewModel @Inject constructor(
     val feeMarketingLive = MutableLiveData<FeeMarketing?>()
 
     val listBiayaMarketingLive = MutableLiveData<List<BiayaMarketing>?>()
+
+    val catatanPembayaranLive = MutableLiveData<CatatanPembayaran?>()
 
     val currentKavlingKode = MutableLiveData<String>()
 
@@ -632,6 +640,90 @@ class DetailViewModel @Inject constructor(
             isFinishOperation.postValue(true)
         }
     }
+
+
+    // Catatan Pembayaran
+    fun getCatatanPembayaran(kavlingKode: String, onFailure: (cause: String) -> Unit) {
+        isFinishOperation.value = false
+
+        val request = GetCatatanPembayaranUseCase.Request(kavlingKode)
+
+        CoroutineScope(Dispatchers.IO).launch {
+            getCatatanPembayaranUseCase.execute(request).collect { response ->
+                val result = response.data.result
+
+                result.onSuccess {
+                    catatanPembayaranLive.postValue(result.getOrNull())
+                }
+                result.onFailure { throwable ->
+                    withContext(Dispatchers.Main) {
+                        onFailure("Gagal mendapatkan catatan pembayaran: ${throwable.message}")
+                    }
+                }
+
+                isFinishOperation.postValue(true)
+            }
+        }
+    }
+
+    fun addCatatanPembayaran(
+        kavlingKode: String,
+        catatan: String,
+        onComplete: (msg: String) -> Unit,
+    ) {
+        isFinishOperation.value = false
+
+        val catatanPembayaran = CatatanPembayaran(kavlingKode, catatan)
+        val request = AddCatatanPembayaranUseCase.Request(kavlingKode, catatanPembayaran)
+
+        CoroutineScope(Dispatchers.IO).launch {
+            addCatatanPembayaranUseCase.execute(request).collect { response ->
+                val result = response.data.result
+
+                result.onSuccess {
+                    withContext(Dispatchers.Main) {
+                        onComplete("Berhasil menambahkan catatan pembayaran")
+                    }
+                }
+                result.onFailure { throwable ->
+                    withContext(Dispatchers.Main) {
+                        onComplete("Gagal menambahkan catatan: ${throwable.message}")
+                    }
+                }
+
+                isFinishOperation.postValue(true)
+            }
+        }
+    }
+
+    fun deleteCatatanPembayaran(kavlingKode: String, onComplete: (msg: String) -> Unit) {
+        isFinishOperation.value = false
+
+        val request = DeleteCatatanPembayaranUseCase.Request(kavlingKode)
+
+        CoroutineScope(Dispatchers.IO).launch {
+            deleteCatatanPembayaranUseCase.execute(request).collect { response ->
+                val result = response.data.result
+
+                result.onSuccess {
+                    catatanPembayaranLive.postValue(null)
+
+                    withContext(Dispatchers.Main) {
+                        onComplete("Berhasil menghapus catatan pembayaran")
+                    }
+                }
+
+                result.onFailure { throwable ->
+                    withContext(Dispatchers.Main) {
+                        onComplete("Gagal menghapus catatan pembayaran: ${throwable.message}")
+                    }
+                }
+
+                isFinishOperation.postValue(true)
+            }
+        }
+    }
+
 
     // Wrapper functions for table view
     fun getBiayaMarketingColumnHeaders() =

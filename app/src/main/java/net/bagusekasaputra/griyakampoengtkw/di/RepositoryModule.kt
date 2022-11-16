@@ -26,6 +26,8 @@ import net.bagusekasaputra.griyakampoengtkw.data.source.remote.biayaMarketing.Fi
 import net.bagusekasaputra.griyakampoengtkw.data.source.remote.biayaMarketing.RemoteBiayaMarketingDataSource
 import net.bagusekasaputra.griyakampoengtkw.data.source.remote.block.FirebaseBlockRepository
 import net.bagusekasaputra.griyakampoengtkw.data.source.remote.block.RemoteBlockRepository
+import net.bagusekasaputra.griyakampoengtkw.data.source.remote.catatanPembayaran.FirebaseCatatanPembayaranDataSource
+import net.bagusekasaputra.griyakampoengtkw.data.source.remote.catatanPembayaran.RemoteCatatanPembayaranDataSource
 import net.bagusekasaputra.griyakampoengtkw.data.source.remote.datadiri.FirebaseDataDiriRepository
 import net.bagusekasaputra.griyakampoengtkw.data.source.remote.datadiri.RemoteDataDiriRepository
 import net.bagusekasaputra.griyakampoengtkw.data.source.remote.feeMarketing.FirebaseFeeMarketingDataSource
@@ -196,5 +198,17 @@ object RepositoryModule {
     @Provides
     fun provideRemoteBiayaMarketingDataSource(databaseReference: DatabaseReference): RemoteBiayaMarketingDataSource {
         return FirebaseBiayaMarketingDataSource(databaseReference)
+    }
+
+
+    // Catatan Pembayaran
+    @Provides
+    fun provideCatatanPembayaranRepository(remoteCatatanPembayaranDataSource: RemoteCatatanPembayaranDataSource): CatatanPembayaranRepository {
+        return CatatanPembayaranRepositoryImpl(remoteCatatanPembayaranDataSource)
+    }
+
+    @Provides
+    fun provideRemoteCatatanPembayaranDataSource(databaseReference: DatabaseReference): RemoteCatatanPembayaranDataSource {
+        return FirebaseCatatanPembayaranDataSource(databaseReference)
     }
 }
