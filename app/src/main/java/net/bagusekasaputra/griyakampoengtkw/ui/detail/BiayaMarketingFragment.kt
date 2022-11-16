@@ -5,14 +5,20 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
 import net.bagusekasaputra.griyakampoengtkw.databinding.DialogActionsBiayaMarketingBinding
+import net.bagusekasaputra.griyakampoengtkw.databinding.DialogPilihJenisBiayaBinding
 import net.bagusekasaputra.griyakampoengtkw.databinding.FragmentBiayaMarketingBinding
+import net.bagusekasaputra.griyakampoengtkw.domain.entity.BiayaMarketing
 import net.bagusekasaputra.griyakampoengtkw.ui.custom.ThousandSeparatorTextWatcher
+import net.bagusekasaputra.griyakampoengtkw.ui.detail.adapter.JenisBiayaMarketingRecyclerAdapter
 import net.bagusekasaputra.griyakampoengtkw.ui.detail.tableview.Cell
 import net.bagusekasaputra.griyakampoengtkw.ui.detail.tableview.ColumnHeader
 import net.bagusekasaputra.griyakampoengtkw.ui.detail.tableview.MyTableViewAdapter
@@ -58,6 +64,10 @@ class BiayaMarketingFragment : Fragment() {
 
         binding.fabTambahBiayaMarketing.setOnClickListener {
             showTambahBiayaMarketingDialog()
+        }
+
+        binding.fabEditBiayaMarketing.setOnClickListener {
+            showJenisPembayaranSelectionDialog()
         }
     }
 
@@ -174,6 +184,9 @@ class BiayaMarketingFragment : Fragment() {
             val isInvalidEdt = InputUtil.isNullOrEmptyEditTexts(dialogBinding.edtJenisBiaya, dialogBinding.edtHarga)
 
             if (!isInvalidEdt) {
+                dialogBinding.btnTambahkan.text = "Menyimpan data ..."
+                dialogBinding.btnTambahkan.isEnabled = false
+
                 val jenisBiaya = dialogBinding.edtJenisBiaya.text.toString()
                 val harga = dialogBinding.edtHarga.text.toString()
 
@@ -194,4 +207,113 @@ class BiayaMarketingFragment : Fragment() {
             dialogView.dismiss()
         }
     }
+
+    private fun showJenisPembayaranSelectionDialog() {
+        val listBiayaMarketing = viewModel.listBiayaMarketingLive.value
+
+        if (listBiayaMarketing != null) {
+            val dialogBinding = DialogPilihJenisBiayaBinding.inflate(layoutInflater)
+            val dialogView = MaterialAlertDialogBuilder(requireContext()).apply {
+                setView(dialogBinding.root)
+            }.create()
+
+            DialogUtil.additionalDialogSetting(requireContext(), dialogView)
+            dialogView.show()
+
+            dialogBinding.btnBatal.setOnClickListener {
+                dialogView.dismiss()
+            }
+
+            setupJenisBiayaRecyclerView(
+                listBiayaMarketing = listBiayaMarketing,
+                jenisBiayaDialog = dialogView,
+                recyclerJenisBiaya = dialogBinding.recyclerJenisBiaya,
+            )
+        } else {
+            Snackbar.make(binding.root, "Daftar biaya marketing masih kosong", Snackbar.LENGTH_SHORT)
+                .show()
+        }
+    }
+
+    private fun setupJenisBiayaRecyclerView(
+        listBiayaMarketing: List<BiayaMarketing>,
+        jenisBiayaDialog: AlertDialog,
+        recyclerJenisBiaya: RecyclerView,
+    ) {
+        val jenisBiayaList = ArrayList<String>()
+
+        listBiayaMarketing.forEach { jenisBiayaList.add(it.jenisBiaya) }
+
+        val adapter = JenisBiayaMarketingRecyclerAdapter(jenisBiayaList) {
+            jenisBiayaDialog.dismiss()
+            showEditBiayaMarketingDialog(listBiayaMarketing[it])
+        }
+        recyclerJenisBiaya.adapter = adapter
+        recyclerJenisBiaya.layoutManager = LinearLayoutManager(requireContext())
+    }
+
+    private fun showEditBiayaMarketingDialog(biayaMarketing: BiayaMarketing) {
+        val dialogBinding = DialogActionsBiayaMarketingBinding.inflate(layoutInflater)
+        val dialogView = MaterialAlertDialogBuilder(requireContext()).apply {
+            setView(dialogBinding.root)
+        }.create()
+
+        DialogUtil.additionalDialogSetting(requireContext(), dialogView)
+
+        // Setup edit layout
+        dialogBinding.tvInfoTitleTambahBiayaMarketing.text = "Ubah Biaya Marketing"
+        dialogBinding.edtJenisBiaya.setText(biayaMarketing.jenisBiaya)
+        // Harga in this case isn't formatted into a comma separated value as expected
+        // So I will transform here.
+        dialogBinding.edtHarga.setText(NumberUtil.formatLongToString(biayaMarketing.harga.toLong()))
+        dialogBinding.btnTambahkan.text = "Ubah Data"
+        // Set hapus button visible
+        dialogBinding.btnHapusBiayaMarketing.visibility = View.VISIBLE
+        // I almost forgot to add textwatcher for comma separated value
+        dialogBinding.edtHarga.apply {
+            val harga = this.text.toString()
+
+            if (harga != "0")
+                this.setText(harga)
+
+            addTextChangedListener(ThousandSeparatorTextWatcher(this))
+        }
+
+        dialogView.show()
+
+
+        dialogBinding.btnTambahkan.setOnClickListener {
+            val isInvalidEdt = InputUtil.isNullOrEmptyEditTexts(
+                dialogBinding.edtJenisBiaya,
+                dialogBinding.edtHarga,
+            )
+
+            if (!isInvalidEdt) {
+                dialogBinding.btnTambahkan.text = "Menyimpan data ..."
+                dialogBinding.btnTambahkan.isEnabled = false
+
+                val newJenisBiaya = dialogBinding.edtJenisBiaya.text.toString()
+                val newHarga = dialogBinding.edtHarga.text.toString()
+
+                viewModel.editBiayaMarketing(
+                    oldBiayaMarketing = biayaMarketing,
+                    kavlingKode = currentKavlingKode!!,
+                    newJenisHarga = newJenisBiaya,
+                    newHarga = newHarga,
+                    onComplete = { msg ->
+                        dialogView.dismiss()
+                        syncData()
+
+                        Snackbar.make(binding.root, msg, Snackbar.LENGTH_SHORT).show()
+                    },
+                )
+            }
+        }
+
+        dialogBinding.btnBatal.setOnClickListener {
+            dialogView.dismiss()
+        }
+    }
 }
+
+

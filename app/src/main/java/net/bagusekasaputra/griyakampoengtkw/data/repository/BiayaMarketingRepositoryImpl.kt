@@ -43,7 +43,19 @@ class BiayaMarketingRepositoryImpl @Inject constructor(
         oldBiayaMarketing: BiayaMarketing,
         newBiayaMarketing: BiayaMarketing
     ): Flow<Result<Nothing?>> {
-        TODO("Not yet implemented")
+        return flow {
+            // We need to set the timeMillis of newBiayaMarketing to prevent
+            // a difference of timeMillis with the oldBiayaMarketing
+            newBiayaMarketing.timeMillis = oldBiayaMarketing.timeMillis
+
+            val resultRemote = remoteBiayaMarketingDataSource.update(
+                kavlingKode = oldBiayaMarketing.kavlingKode,
+                oldBiayaMarketingModel = mapBiayaMarketing(oldBiayaMarketing),
+                newBiayaMarketingModel = mapBiayaMarketing(newBiayaMarketing),
+            )
+
+            emit(resultRemote)
+        }
     }
 
     override fun deleteByKavlingKode(kavlingKode: String): Flow<Result<Nothing?>> {

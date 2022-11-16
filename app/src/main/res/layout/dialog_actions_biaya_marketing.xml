@@ -65,7 +65,8 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         android:layout_marginTop="24dp"
-        android:text="Tambahkan"/>
+        android:text="Tambahkan"
+        app:cornerRadius="8dp"/>
 
     <com.google.android.material.button.MaterialButton
         android:id="@+id/btn_batal"
@@ -74,6 +75,21 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toBottomOf="@id/btn_tambahkan"
-        android:text="Batal"/>
+        android:text="Batal"
+        app:cornerRadius="8dp"/>
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/btn_hapus_biaya_marketing"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toBottomOf="@id/btn_batal"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginTop="24dp"
+        app:cornerRadius="8dp"
+        android:textColor="@color/abang"
+        style="@style/Widget.MaterialComponents.Button.TextButton"
+        android:text="Hapus Biaya Marketing"
+        android:visibility="gone"/>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

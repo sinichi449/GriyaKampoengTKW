@@ -12,6 +12,7 @@ import net.bagusekasaputra.griyakampoengtkw.domain.entity.DataDiri
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.HargaKavling
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.Pembayaran
 import net.bagusekasaputra.griyakampoengtkw.domain.usecase.biayaMarketing.AddBiayaMarketingUseCase
+import net.bagusekasaputra.griyakampoengtkw.domain.usecase.biayaMarketing.EditBiayaMarketingUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.usecase.biayaMarketing.GetAllBiayaMarketingByKavlingKodeUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.usecase.datadiri.AddDataDiriUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.usecase.datadiri.DeleteDataDiriUseCase
@@ -36,6 +37,7 @@ class DetailViewModel @Inject constructor(
     private val deleteAllPembayaranUseCase: DeleteAllPembayaranUseCase,
     private val getAllBiayaMarketingByKavlingKodeUseCase: GetAllBiayaMarketingByKavlingKodeUseCase,
     private val addBiayaMarketingUseCase: AddBiayaMarketingUseCase,
+    private val editBiayaMarketingUseCase: EditBiayaMarketingUseCase,
 ): ViewModel() {
 
     val dataDiriLive = MutableLiveData<DataDiri?>()
@@ -380,6 +382,44 @@ class DetailViewModel @Inject constructor(
                         onComplete("Gagal menambahkan biaya marketing: ${throwable.message}")
                     }
                 }
+
+                isFinishOperation.postValue(true)
+            }
+        }
+    }
+
+    fun editBiayaMarketing(
+        oldBiayaMarketing: BiayaMarketing,
+        kavlingKode: String,
+        newJenisHarga: String,
+        newHarga: String,
+        onComplete: (msg: String) -> Unit,
+    ) {
+        isFinishOperation.value = false
+
+        val newBiayaMarketing = BiayaMarketing(
+            kavlingKode = kavlingKode,
+            jenisBiaya = newJenisHarga,
+            harga = newHarga,
+        )
+        val request = EditBiayaMarketingUseCase.Request(oldBiayaMarketing, newBiayaMarketing)
+
+        CoroutineScope(Dispatchers.IO).launch {
+            editBiayaMarketingUseCase.execute(request).collect { response ->
+                val result = response.data.result
+
+                result.onSuccess {
+                    withContext(Dispatchers.Main) {
+                        onComplete("Berhasil mengubah biaya pembayaran")
+                    }
+                }
+
+                result.onFailure { throwable ->
+                    withContext(Dispatchers.Main) {
+                        onComplete("Gagal mengubah biaya pembayaran: ${throwable.message}")
+                    }
+                }
+
 
                 isFinishOperation.postValue(true)
             }
