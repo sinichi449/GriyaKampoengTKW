@@ -18,7 +18,7 @@ import net.bagusekasaputra.griyakampoengtkw.domain.usecase.datadiri.GetDataDiriU
 import net.bagusekasaputra.griyakampoengtkw.domain.usecase.hargakavling.AddHargaKavlingUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.usecase.hargakavling.GetHargaKavlingUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.usecase.pembayaran.*
-import net.bagusekasaputra.griyakampoengtkw.util.NumberUtil
+import net.bagusekasaputra.griyakampoengtkw.ui.detail.tableview.TableBiayaMarketingHelper
 import javax.inject.Inject
 
 @HiltViewModel
@@ -482,81 +482,27 @@ class DetailViewModel @Inject constructor(
         }
     }
 
-    // Table View Biaya Marketing
-    fun getBiayaMarketingColumnHeaders(): ArrayList<String> {
-        return ArrayList<String>().apply {
-            add("Jenis Biaya")
-            add("Harga")
-        }
-    }
+    // Wrapper functions for table view
+    fun getBiayaMarketingColumnHeaders() =
+        TableBiayaMarketingHelper(listBiayaMarketingLive.value)
+            .getBiayaMarketingColumnHeaders()
 
-    fun getBiayaMarketingRowHeaders(): ArrayList<String> {
-        val listBiayaMarketing = listBiayaMarketingLive.value
+    fun getBiayaMarketingRowHeaders() =
+        TableBiayaMarketingHelper(listBiayaMarketingLive.value)
+            .getBiayaMarketingRowHeaders()
 
-        return if (listBiayaMarketing != null) {
-            val numberList = ArrayList<String>()
+    fun getBiayaMarketingCellItems() =
+        TableBiayaMarketingHelper(listBiayaMarketingLive.value)
+            .getBiayaMarketingCellItems()
 
-            listBiayaMarketing.forEachIndexed { index, _ ->
-                // The index start from zero, so to make it start from number one,
-                // I added plus(1) method
-                numberList.add(index.plus(1).toString())
-            }
+    fun getTotalBiayaMarketing() =
+        TableBiayaMarketingHelper(listBiayaMarketingLive.value)
+            .getTotalBiayaMarketing()
 
-            numberList
-        } else {
-            ArrayList<String>().apply { add("0") }
-        }
-    }
+    fun getCuanBiayaMarketing() =
+        TableBiayaMarketingHelper(listBiayaMarketingLive.value)
+            .getCuanBiayaMarketing(
+                lastTotalUangMasuk = listPembayaranLive.value?.last()?.totalUangMasuk
+            )
 
-    fun getBiayaMarketingCellItems(): ArrayList<ArrayList<String>> {
-        val listBiayaMarketing = listBiayaMarketingLive.value
-        val firstOrderItemList = ArrayList<ArrayList<String>>()
-
-        if (listBiayaMarketing != null) {
-            for (biayaMarketing in listBiayaMarketing) {
-                val secondOrderItemList = ArrayList<String>()
-
-                secondOrderItemList.add(biayaMarketing.jenisBiaya)
-
-                // We need to transform this currency type into a comma separated number
-                val transformHarga = NumberUtil.formatLongToString(biayaMarketing.harga.toLong())
-                secondOrderItemList.add(transformHarga)
-
-                firstOrderItemList.add(secondOrderItemList)
-            }
-        } else {
-            val secondOrderItemList = ArrayList<String>()
-
-            secondOrderItemList.apply {
-                add("-")
-                add("-")
-            }
-
-            firstOrderItemList.add(secondOrderItemList)
-        }
-
-        return firstOrderItemList
-    }
-
-    fun getTotalBiayaMarketing(): Long {
-        return if (listBiayaMarketingLive.value != null)
-            listBiayaMarketingLive.value!!.last().totalBiaya.toLong()
-        else
-            0L
-    }
-
-    fun getCuanBiayaMarketing(): Long {
-        val listPembayaran = listPembayaranLive.value
-
-        return if (listPembayaran != null) {
-            // The "totalUangMasuk" which got from List<Pembayaran> are already parsed into 0,000,000
-            // format by the Use Case, so we can't parse it directly by .toLong() method.
-            val totalBiayaMarketing = getTotalBiayaMarketing()
-            val totalUangMasukTerakhir = NumberUtil.formatStringToLong(listPembayaran.last().totalUangMasuk)
-
-            totalUangMasukTerakhir - totalBiayaMarketing
-        } else {
-            0L
-        }
-    }
 }
