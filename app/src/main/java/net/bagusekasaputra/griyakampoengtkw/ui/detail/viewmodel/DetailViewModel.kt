@@ -539,7 +539,10 @@ class DetailViewModel @Inject constructor(
     }
 
     fun getTotalBiayaMarketing(): Long {
-        return listBiayaMarketingLive.value!!.last().totalBiaya.toLong()
+        return if (listBiayaMarketingLive.value != null)
+            listBiayaMarketingLive.value!!.last().totalBiaya.toLong()
+        else
+            0L
     }
 
     fun getCuanBiayaMarketing(): Long {

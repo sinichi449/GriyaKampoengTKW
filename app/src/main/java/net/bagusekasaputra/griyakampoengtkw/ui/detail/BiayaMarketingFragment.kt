@@ -96,14 +96,9 @@ class BiayaMarketingFragment : Fragment() {
             binding.root.isRefreshing = !finish
         }
 
-        viewModel.listBiayaMarketingLive.observe(requireActivity()) { listBiayaMarketing ->
-            if (listBiayaMarketing != null) {
-                setupTableView()
-                setupHeaderText()
-            } else {
-                binding.tvTotalBiaya.text = "0"
-                setupTableView()
-            }
+        viewModel.listBiayaMarketingLive.observe(requireActivity()) { _ ->
+            setupTableView()
+            setupHeaderText()
         }
 
 
