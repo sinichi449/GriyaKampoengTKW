@@ -7,9 +7,10 @@
     android:padding="24dp">
 
     <com.google.android.material.textview.MaterialTextView
+        android:id="@+id/tv_info_title_tambah_fee_marketing"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Tambah Biaya Afiliasi"
+        android:text="Tambah Fee Marketing"
         android:gravity="center"
         style="@style/TextAppearance.MaterialComponents.Headline6"/>
 
@@ -48,7 +49,7 @@
     </com.google.android.material.textfield.TextInputLayout>
 
     <com.google.android.material.button.MaterialButton
-        android:id="@+id/btn_tambahkan_biaya_afiliasi"
+        android:id="@+id/btn_tambahkan_fee_marketing"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         app:cornerRadius="8dp"
@@ -63,13 +64,13 @@
         app:cornerRadius="8dp"/>
 
     <com.google.android.material.button.MaterialButton
-        android:id="@+id/btn_hapus_biaya_afiliasi"
+        android:id="@+id/btn_hapus_fee_marketing"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="24dp"
         style="@style/Widget.MaterialComponents.Button.TextButton"
         android:textColor="@color/abang"
-        android:text="Hapus Biaya Afiliasi"
+        android:text="Hapus Fee Marketing"
         android:visibility="gone"/>
 
 </androidx.appcompat.widget.LinearLayoutCompat>

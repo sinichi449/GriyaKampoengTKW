@@ -54,7 +54,7 @@
 
 
         <ImageView
-            android:id="@+id/img_edit_biaya_afiliasi"
+            android:id="@+id/img_edit_biaya_marketer"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:src="@drawable/ic_baseline_edit_24"

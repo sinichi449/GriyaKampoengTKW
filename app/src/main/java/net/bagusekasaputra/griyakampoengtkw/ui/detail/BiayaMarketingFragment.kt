@@ -76,7 +76,7 @@ class BiayaMarketingFragment : Fragment() {
             showJenisPembayaranSelectionDialog()
         }
 
-        binding.imgEditBiayaAfiliasi.setOnClickListener {
+        binding.imgEditBiayaMarketer.setOnClickListener {
             val tidakAdaData = requireContext().getString(R.string.biaya_marketing_tidak_ada_marketer)
 
             if (binding.tvNamaMarketer.text.toString() == tidakAdaData) {
@@ -290,15 +290,15 @@ class BiayaMarketingFragment : Fragment() {
 
 
 
-        dialogBinding.btnTambahkanBiayaAfiliasi.setOnClickListener {
+        dialogBinding.btnTambahkanFeeMarketing.setOnClickListener {
             val isInvalidEdt = InputUtil.isNullOrEmptyEditTexts(
                 dialogBinding.edtNamaMarketer,
                 dialogBinding.edtBiayaMarketer,
             )
 
             if (!isInvalidEdt) {
-                dialogBinding.btnTambahkanBiayaAfiliasi.text = "Menyimpan data ..."
-                dialogBinding.btnTambahkanBiayaAfiliasi.isEnabled = false
+                dialogBinding.btnTambahkanFeeMarketing.text = "Menyimpan data ..."
+                dialogBinding.btnTambahkanFeeMarketing.isEnabled = false
 
                 val namaMarketer = dialogBinding.edtNamaMarketer.text.toString()
                 val biayaMarketer = dialogBinding.edtBiayaMarketer.text.toString()
@@ -339,21 +339,24 @@ class BiayaMarketingFragment : Fragment() {
         }
         dialogBinding.edtNamaMarketer.setText(namaMarketer)
         dialogBinding.edtBiayaMarketer.setText(biayaMarketer)
+
+        dialogBinding.tvInfoTitleTambahFeeMarketing.text = "Ubah Fee Marketing"
+        dialogBinding.btnTambahkanFeeMarketing.text = "Ubah"
         // enable delete button
-        dialogBinding.btnHapusBiayaAfiliasi.visibility = View.VISIBLE
+        dialogBinding.btnHapusFeeMarketing.visibility = View.VISIBLE
 
         dialogView.show()
 
 
-        dialogBinding.btnTambahkanBiayaAfiliasi.setOnClickListener {
+        dialogBinding.btnTambahkanFeeMarketing.setOnClickListener {
             val isInvalidEdt = InputUtil.isNullOrEmptyEditTexts(
                 dialogBinding.edtNamaMarketer,
                 dialogBinding.edtBiayaMarketer,
             )
 
             if (!isInvalidEdt) {
-                dialogBinding.btnTambahkanBiayaAfiliasi.text = "Menyimpan data ..."
-                dialogBinding.btnTambahkanBiayaAfiliasi.isEnabled = false
+                dialogBinding.btnTambahkanFeeMarketing.text = "Menyimpan data ..."
+                dialogBinding.btnTambahkanFeeMarketing.isEnabled = false
 
                 val newNamaMarketer = dialogBinding.edtNamaMarketer.text.toString()
                 val newBiayaMarketer = dialogBinding.edtBiayaMarketer.text.toString()
@@ -371,9 +374,9 @@ class BiayaMarketingFragment : Fragment() {
             }
         }
 
-        dialogBinding.btnHapusBiayaAfiliasi.setOnClickListener {
-            dialogBinding.btnTambahkanBiayaAfiliasi.text = "Menghapus data ..."
-            dialogBinding.btnTambahkanBiayaAfiliasi.isEnabled = false
+        dialogBinding.btnHapusFeeMarketing.setOnClickListener {
+            dialogBinding.btnTambahkanFeeMarketing.text = "Menghapus data ..."
+            dialogBinding.btnTambahkanFeeMarketing.isEnabled = false
 
             viewModel.deleteFeeMarketing(
                 kavlingKode = currentKavlingKode!!,
