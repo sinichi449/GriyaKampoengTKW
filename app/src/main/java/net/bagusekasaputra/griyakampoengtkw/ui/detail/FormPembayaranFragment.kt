@@ -2,7 +2,6 @@ package net.bagusekasaputra.griyakampoengtkw.ui.detail
 
 import android.Manifest
 import android.app.Activity
-import android.app.AlertDialog
 import android.app.DatePickerDialog
 import android.content.Intent
 import android.content.res.Configuration
@@ -11,6 +10,7 @@ import android.view.*
 import android.widget.TableRow
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.appcompat.app.AlertDialog
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
@@ -266,7 +266,7 @@ class FormPembayaranFragment : Fragment() {
         } else {
             // inflating
             val dialogBinding = DialogAddFormPembayaranBinding.inflate(layoutInflater)
-            val dialogView = AlertDialog.Builder(requireContext()).apply {
+            val dialogView = MaterialAlertDialogBuilder(requireContext()).apply {
                 setView(dialogBinding.root)
                 setCancelable(false)
             }.create()
@@ -336,7 +336,7 @@ class FormPembayaranFragment : Fragment() {
     private fun showEditPembayaranDialog(pembayaran: Pembayaran) {
         // inflate
         val dialogBinding = DialogAddFormPembayaranBinding.inflate(layoutInflater)
-        val dialogView = AlertDialog.Builder(requireContext()).apply {
+        val dialogView = MaterialAlertDialogBuilder(requireContext()).apply {
             setView(dialogBinding.root)
             setCancelable(false)
         }.create()
@@ -427,7 +427,7 @@ class FormPembayaranFragment : Fragment() {
         }
 
         dialogBinding.btnHapus.setOnClickListener {
-            val confirmDialog = AlertDialog.Builder(requireContext())
+            val confirmDialog = MaterialAlertDialogBuilder(requireContext())
                 .setTitle("Hapus Pembayaran")
                 .setMessage("Apakah Anda yakin menghapus pembayaran ${pembayaran.termin}?")
                 .setPositiveButton("Ya") { dialog, _ ->
@@ -490,7 +490,7 @@ class FormPembayaranFragment : Fragment() {
 
     private fun showEditHargaDialog() {
         val dialogBinding = DialogEditHargaBinding.inflate(layoutInflater)
-        val dialogView = AlertDialog.Builder(requireContext()).apply {
+        val dialogView = MaterialAlertDialogBuilder(requireContext()).apply {
             setView(dialogBinding.root)
         }.create()
 
@@ -645,7 +645,7 @@ class FormPembayaranFragment : Fragment() {
                 .show()
         } else {
             val dialogBinding = DialogPilihTerminBinding.inflate(layoutInflater)
-            val dialogView = AlertDialog.Builder(requireContext()).apply {
+            val dialogView = MaterialAlertDialogBuilder(requireContext()).apply {
                 setView(dialogBinding.root)
             }.create()
 
