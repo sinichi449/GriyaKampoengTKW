@@ -1,7 +1,6 @@
 package net.bagusekasaputra.griyakampoengtkw.data.repository
 
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.emitAll
 import kotlinx.coroutines.flow.flow
 import net.bagusekasaputra.griyakampoengtkw.data.DataUtil
 import net.bagusekasaputra.griyakampoengtkw.data.model.BlockModel
@@ -53,14 +52,11 @@ class BlockRepositoryImpl @Inject constructor(
         }
     }
 
-    override fun addBlock(block: Block): Flow<Result<Boolean>> {
+    override fun addBlock(block: Block): Flow<Result<Nothing?>> {
         return flow {
-            val blockModel = BlockModel(
-                kode = block.kode,
-                warna = block.warna
-            )
+            val remoteResult = remoteBlockRepository.addNewBlock(mapBlockModel(block))
 
-            emitAll(remoteBlockRepository.addNewBlock(blockModel))
+            emit(remoteResult)
         }
     }
 

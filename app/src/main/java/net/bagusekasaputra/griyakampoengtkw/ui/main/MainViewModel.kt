@@ -1,14 +1,10 @@
 package net.bagusekasaputra.griyakampoengtkw.ui.main
 
-import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
+import kotlinx.coroutines.*
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.AppUpdate
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.Block
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.Kavling
@@ -20,7 +16,6 @@ import net.bagusekasaputra.griyakampoengtkw.domain.usecase.kavling.AddKavlingUse
 import net.bagusekasaputra.griyakampoengtkw.domain.usecase.kavling.EditKavlingUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.usecase.kavling.GetKavlingsByBlockUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.usecase.kavling.RemoveKavlingUseCase
-import net.bagusekasaputra.griyakampoengtkw.util.GriyaNodes.Companion.LOG_TAG
 import javax.inject.Inject
 
 @HiltViewModel
@@ -48,11 +43,13 @@ class MainViewModel @Inject constructor(
 
     val operationResult = MutableLiveData<Operation?>()
 
+    private val asyncJobs = ArrayList<Job>()
+
     // Blocks
     fun getAllBlocks(onFailure: (msg: String) -> Unit) {
         isFinishOperation.value = false
 
-        CoroutineScope(Dispatchers.IO).launch {
+        val gettingBlocksJob = CoroutineScope(Dispatchers.IO).launch {
             val request = GetAllBlocksUseCase.Request
             getAllBlocksUseCase.execute(request).collect {
                 val result = it.data.result
@@ -72,26 +69,37 @@ class MainViewModel @Inject constructor(
                 isFinishOperation.postValue(true)
             }
         }
+
+        asyncJobs.add(gettingBlocksJob)
     }
 
-    fun addNewBlock(block: Block) {
+    fun addNewBlock(kode: String, warna: String, onComplete: (msg: String) -> Unit) {
         isFinishOperation.value = false
-        operationResult.value = null
 
-        CoroutineScope(Dispatchers.IO).launch {
-            val request = AddNewBlockUseCase.Request(block)
+        val block = Block(kode, warna)
+        val request = AddNewBlockUseCase.Request(block)
+
+        val addingBlockJob = CoroutineScope(Dispatchers.IO).launch {
             addNewBlockUseCase.execute(request).collect {
                 val result = it.data.result
-                Log.d(LOG_TAG, "Got viewmodel value: ${it.data.result.getOrNull()}")
-                if (result.isSuccess) {
-                    operationResult.postValue(Operation(true, "Blok ${block.kode} berhasil ditambahkan"))
-                } else {
-                    operationResult.postValue(Operation(false, "Gagal: ${result.exceptionOrNull()?.message}"))
+
+                result.onSuccess {
+                    withContext(Dispatchers.Main) {
+                        onComplete("Blok ${block.kode} berhasil ditambahkan")
+                    }
+                }
+
+                result.onFailure { throwable ->
+                    withContext(Dispatchers.Main) {
+                        onComplete("Gagal menambahkan blok: ${throwable.message}")
+                    }
                 }
 
                 isFinishOperation.postValue(true)
             }
         }
+
+        asyncJobs.add(addingBlockJob)
     }
 
     // Kavlings
@@ -211,6 +219,12 @@ class MainViewModel @Inject constructor(
                 }
             }
         }
+    }
+
+    override fun onCleared() {
+        super.onCleared()
+
+        asyncJobs.forEach { it.cancel() }
     }
 
 

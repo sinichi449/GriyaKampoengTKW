@@ -1,19 +1,14 @@
 package net.bagusekasaputra.griyakampoengtkw.data.source.remote.block
 
-import android.util.Log
 import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.ktx.getValue
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.channels.trySendBlocking
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
-import kotlinx.coroutines.flow.first
-import net.bagusekasaputra.griyakampoengtkw.data.ConnectionUtil
 import net.bagusekasaputra.griyakampoengtkw.data.model.BlockModel
-import net.bagusekasaputra.griyakampoengtkw.logEvent
+import net.bagusekasaputra.griyakampoengtkw.data.source.remote.FirebaseRequestHelper
 import net.bagusekasaputra.griyakampoengtkw.util.GriyaNodes
-import net.bagusekasaputra.griyakampoengtkw.util.GriyaNodes.Companion.LOG_TAG
-import java.util.concurrent.atomic.AtomicBoolean
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -25,65 +20,31 @@ class FirebaseBlockRepository @Inject constructor(
     private val blockRef = databaseReference.child(GriyaNodes.blocks)
 
     override suspend fun getAllBlocks(): Result<List<BlockModel>?> {
-        return callbackFlow<Result<List<BlockModel>?>> {
+        return FirebaseRequestHelper.getOperation(
+            pathToChild = blockRef,
+            onGetSnapshot = { snapshot ->
+                val hashMap = snapshot.getValue<HashMap<String, BlockModel>>()
+                // An empty list for container
+                val blockModels = ArrayList<BlockModel>()
 
-            val gotResult = AtomicBoolean(false)
-
-            databaseReference
-                .child(GriyaNodes.blocks)
-                .get()
-                .addOnSuccessListener { snapshot ->
-                    Log.d(LOG_TAG, "Getting blocks success.")
-                    gotResult.set(true)
-
-                    val hashMap = snapshot.getValue<HashMap<String, BlockModel>>()
-                    val blockModels = ArrayList<BlockModel>()
-                    hashMap?.keys?.forEach { keys ->
-                        if (hashMap[keys] != null) {
-                            blockModels.add(hashMap[keys]!!)
-                        }
+                hashMap?.keys?.forEach { keys ->
+                    if (hashMap[keys] != null) {
+                        blockModels.add(hashMap[keys]!!)
                     }
-
-                    trySendBlocking(Result.success(blockModels))
-                }
-                .addOnFailureListener {
-                    Log.d(LOG_TAG, "Error getting blocks: ${it.message}")
-                    trySendBlocking(Result.failure(it))
                 }
 
-            ConnectionUtil.createRequestTimeout(
-                gotResult = gotResult.get(),
-                onTimeOut = {
-                    trySendBlocking(Result.failure(UnknownError("Getting blocks from server timed out")))
-                }
-            )
-
-
-            awaitClose {
-                logEvent("Getting block from server connection closed")
-            }
-        }.first()
+                return@getOperation blockModels
+            },
+            timeOutMsg = "Waktu habis mendapatkan Blocks, periksa koneksi Anda.",
+            onClosedConnection = {},
+        )
     }
 
-    override fun addNewBlock(blockModel: BlockModel): Flow<Result<Boolean>> {
-        Log.d(LOG_TAG, "Sending ${blockModel.kode} to Firebase...")
-
-        return callbackFlow {
-            databaseReference
-                .child(GriyaNodes.blocks)
-                .child(blockModel.kode)
-                .setValue(blockModel)
-                .addOnSuccessListener {
-                    trySendBlocking(Result.success(true))
-                    Log.d(LOG_TAG, "Write new block success")
-                }
-                .addOnFailureListener {
-                    trySendBlocking(Result.failure(it))
-                    Log.d(LOG_TAG, "Write new block failed: ${it.message}")
-                }
-
-            awaitClose {  }
-        }
+    override suspend fun addNewBlock(blockModel: BlockModel): Result<Nothing?> {
+        return FirebaseRequestHelper.insertOperation(
+            targetChild = blockRef.child(blockModel.kode),
+            valueToInsert = blockModel,
+        )
     }
 
     private fun isBlockAlreadyExist(blockKode: String): Flow<Boolean> {

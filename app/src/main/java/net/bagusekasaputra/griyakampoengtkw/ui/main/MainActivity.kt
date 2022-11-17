@@ -235,19 +235,18 @@ class MainActivity : AppCompatActivity() {
 
             if (!isInvalidEdt) {
                 val kode = dialogBinding.edtKode.text.toString()
-                val warna = "#${dialogBinding.edtWarna.text.toString()}"
+                val warna = dialogBinding.edtWarna.text.toString()
 
-                val block = Block(kode, warna)
-
-                viewModel.addNewBlock(block)
-
-                viewModel.operationResult.observe(this) {
-                    it?.let {
-                        Toast.makeText(this, it.message, Toast.LENGTH_SHORT).show()
+                viewModel.addNewBlock(
+                    kode = kode,
+                    warna = warna,
+                    onComplete = { msg ->
                         syncData()
                         dialogView.dismiss()
+                        Snackbar.make(binding.root, msg, Snackbar.LENGTH_SHORT)
+                            .show()
                     }
-                }
+                )
             }
         }
 

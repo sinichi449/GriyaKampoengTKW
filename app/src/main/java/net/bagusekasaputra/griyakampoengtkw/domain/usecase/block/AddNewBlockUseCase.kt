@@ -15,10 +15,16 @@ class AddNewBlockUseCase @Inject constructor(
 
     data class Request(val block: Block): UseCase.Request
 
-    data class Response(val result: Result<Boolean>): UseCase.Response
+    data class Response(val result: Result<Nothing?>): UseCase.Response
 
     override fun process(request: Request): Flow<Response> {
-        return blockRepository.addBlock(request.block).map {
+        // Adding hash sign into the warna
+        val addedHashBlock = Block(
+            kode = request.block.kode,
+            warna = "#${request.block.warna}",
+        )
+
+        return blockRepository.addBlock(addedHashBlock).map {
             Response(it)
         }
     }
