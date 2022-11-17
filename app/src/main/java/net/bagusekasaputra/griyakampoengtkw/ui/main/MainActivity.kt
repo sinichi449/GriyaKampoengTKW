@@ -188,14 +188,18 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun setupKavlingRecyclerView(kavlings: List<Kavling>) {
-        val adapter = KavlingRecyclerAdapter(this, kavlings, {
-            val intent = Intent(this, DetailActivity::class.java).apply {
-                putExtra(INTENT_KAVLING_KODE, kavlings[it].kode)
+        val adapter = KavlingRecyclerAdapter(this, kavlings,
+            onRecyclerItemClick = {
+                val intent = Intent(this, DetailActivity::class.java).apply {
+                    putExtra(INTENT_KAVLING_KODE, kavlings[it].kode)
+                }
+                startActivity(intent)
+            },
+            onRecyclerItemHold = {
+                showActionKavlingDialog(kavlings[it])
             }
-            startActivity(intent)
-        }, {
-            showActionKavlingDialog(kavlings[it])
-        })
+        )
+
         val customAdapter = ScaleInAnimationAdapter(adapter)
 
         binding.recyclerKavlings.adapter = customAdapter
@@ -263,6 +267,7 @@ class MainActivity : AppCompatActivity() {
 
         DialogUtil.additionalDialogSetting(this, dialogView)
 
+        // Setting up spinner which shows a list of available Blocks
         val blockLists = ArrayList<String>()
         viewModel.blocksLive.value?.forEach {
             blockLists.add(it.kode)
@@ -272,34 +277,39 @@ class MainActivity : AppCompatActivity() {
 
         dialogView.show()
 
+
+
         dialogBinding.btnTambahkan.setOnClickListener {
             val isInValidEdt = InputUtil.isNullOrEmptyEditTexts(
                 dialogBinding.edtNoKavling, dialogBinding.edtPanjang, dialogBinding.edtLebar, dialogBinding.edtTipeRumah)
 
             if (!isInValidEdt) {
+                dialogBinding.btnTambahkan.isEnabled = false
+                dialogBinding.btnTambahkan.text = "Menyimpan data ..."
+
+                // Getting blockKode from spinner
                 val spinnerPosition = dialogBinding.spinnerBlocks.selectedItemPosition
-                val kode = blockLists[spinnerPosition]
+                val blockKode = blockLists[spinnerPosition]
+
                 val warna = viewModel.blocksLive.value!![spinnerPosition].warna
                 val noKavling = dialogBinding.edtNoKavling.text.toString()
                 val panjang = dialogBinding.edtPanjang.text.toString()
                 val lebar = dialogBinding.edtLebar.text.toString()
-                val ukuran = panjang + "x" + lebar
                 val type = dialogBinding.edtTipeRumah.text.toString()
 
-                val kavling = Kavling(kode + noKavling, true, warna, ukuran, type)
-
-                viewModel.addKavling(kode, kavling)
-
-                dialogBinding.btnTambahkan.isEnabled = false
-                dialogBinding.btnTambahkan.text = "Menyimpan data ..."
-
-                viewModel.operationResult.observe(this) {
-                    it?.let {
-                        Snackbar.make(this, binding.root, it.message?: "Hasil tak diketahui", Snackbar.LENGTH_SHORT).show()
-                        syncData()
-                        dialogView.dismiss()
-                    }
+                viewModel.addKavling(
+                    blockKode = blockKode,
+                    noKavling = noKavling, // Beware with this. It is just the number, not the kavlingKode.
+                    warna = warna,
+                    type = type,
+                    panjang = panjang,
+                    lebar = lebar
+                ) { msg ->
+                    syncData()
+                    dialogView.dismiss()
+                    Snackbar.make(binding.root, msg, Snackbar.LENGTH_SHORT).show()
                 }
+
             }
         }
 
@@ -318,6 +328,7 @@ class MainActivity : AppCompatActivity() {
 
         dialogView.show()
 
+        // Need to be separated like this ...
         val text = "Kavling ${kavling.kode}"
         dialogBinding.tvKavlingKode.text = text
 
@@ -333,27 +344,26 @@ class MainActivity : AppCompatActivity() {
         dialogBinding.btnHapusKavling.setOnClickListener {
             dialogView.dismiss()
 
-            val alertDialogHapus = MaterialAlertDialogBuilder(this).apply {
+            MaterialAlertDialogBuilder(this).apply {
                 setTitle("Hapus Kavling")
                 setMessage("Apakah Anda yakin menghapus kavling ${kavling.kode}?")
                 setPositiveButton("Ya") { dialog, _ ->
                     val blockKode = viewModel.currentBlock.value!!
-                    val kavlingKode = kavling.kode
 
-                    viewModel.removeKavling(blockKode, kavlingKode)
-
-                    viewModel.operationResult.observe(this@MainActivity) {
-                        it?.let { operation ->
-                            Toast.makeText(this@MainActivity, operation.message?: "Null", Toast.LENGTH_SHORT).show()
+                    viewModel.removeKavling(
+                        blockKode = blockKode,
+                        kavlingKode = kavling.kode,
+                        onComplete = { msg ->
                             syncData()
                             dialog.dismiss()
+                            Snackbar.make(binding.root, msg, Snackbar.LENGTH_SHORT).show()
                         }
-                    }
+                    )
+
                 }
                 setNegativeButton("Tidak") { dialog, _ -> dialog.dismiss() }
             }.create()
-
-            alertDialogHapus.show()
+                .show()
         }
     }
 
@@ -367,9 +377,8 @@ class MainActivity : AppCompatActivity() {
 
         dialogView.show()
 
-        val oldUkuran = kavling.ukuran.split("x")
-        dialogBinding.edtPanjang.setText(oldUkuran[0])
-        dialogBinding.edtLebar.setText(oldUkuran[1])
+        dialogBinding.edtPanjang.setText(kavling.getPanjang())
+        dialogBinding.edtLebar.setText(kavling.getLebar())
         dialogBinding.edtTipeRumah.setText(kavling.type)
 
         dialogBinding.btnSimpan.setOnClickListener {
@@ -380,22 +389,23 @@ class MainActivity : AppCompatActivity() {
                 dialogBinding.edtPanjang, dialogBinding.edtLebar, dialogBinding.edtTipeRumah)
 
             if (!isInvalidEdt) {
-                val panjang = dialogBinding.edtPanjang.text.toString()
-                val lebar = dialogBinding.edtLebar.text.toString()
-                val newUkuran = panjang + "x" + lebar
-                val tipeRumah = dialogBinding.edtTipeRumah.text.toString()
-                val newKavling = Kavling(kavling.kode, kavling.belumIsi, kavling.warna, newUkuran, tipeRumah)
+                val newPanjang = dialogBinding.edtPanjang.text.toString()
+                val newLebar = dialogBinding.edtLebar.text.toString()
+                val newType = dialogBinding.edtTipeRumah.text.toString()
                 val blockCode = viewModel.currentBlock.value!!
 
-                viewModel.editKavling(blockCode, kavling, newKavling)
-                viewModel.operationResult.observe(this) {
-                    it?.let {
-                        Toast.makeText(this, it.message, Toast.LENGTH_SHORT).show()
+                viewModel.editKavling(
+                    blockKode = blockCode,
+                    oldKavling = kavling,
+                    newPanjang = newPanjang,
+                    newLebar = newLebar,
+                    newType = newType,
+                    onComplete = { msg ->
                         syncData()
                         dialogView.dismiss()
+                        Snackbar.make(binding.root, msg, Snackbar.LENGTH_SHORT).show()
                     }
-                }
-
+                )
             }
         }
 

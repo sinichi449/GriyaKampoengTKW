@@ -20,6 +20,7 @@ class GetKavlingsByBlockUseCase @Inject constructor(
     override fun process(request: Request): Flow<Response> {
         return repository.getKavlingByBlock(request.blockKode).map { result ->
             Response(
+                // sort the kavling by number
                 result = result.map { kavlingList ->
                     if (kavlingList != null)
                         sortKavling(kavlingList)

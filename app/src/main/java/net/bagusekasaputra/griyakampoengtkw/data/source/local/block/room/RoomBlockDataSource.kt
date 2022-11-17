@@ -2,15 +2,15 @@ package net.bagusekasaputra.griyakampoengtkw.data.source.local.block.room
 
 import net.bagusekasaputra.griyakampoengtkw.data.model.BlockModel
 import net.bagusekasaputra.griyakampoengtkw.data.source.local.MyRoomDatabase
-import net.bagusekasaputra.griyakampoengtkw.data.source.local.block.LocalBlockRepository
+import net.bagusekasaputra.griyakampoengtkw.data.source.local.block.LocalBlockDataSource
 import net.bagusekasaputra.griyakampoengtkw.logEvent
 import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
-class RoomBlockRepository @Inject constructor(
+class RoomBlockDataSource @Inject constructor(
     roomDatabase: MyRoomDatabase,
-): LocalBlockRepository {
+): LocalBlockDataSource {
 
     private val blockRoomDao = roomDatabase.getBlockDao()
 

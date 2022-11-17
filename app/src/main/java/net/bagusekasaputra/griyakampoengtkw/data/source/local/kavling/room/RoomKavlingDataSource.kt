@@ -3,15 +3,15 @@ package net.bagusekasaputra.griyakampoengtkw.data.source.local.kavling.room
 import android.util.Log
 import net.bagusekasaputra.griyakampoengtkw.data.model.KavlingModel
 import net.bagusekasaputra.griyakampoengtkw.data.source.local.MyRoomDatabase
-import net.bagusekasaputra.griyakampoengtkw.data.source.local.kavling.LocalKavlingRepository
+import net.bagusekasaputra.griyakampoengtkw.data.source.local.kavling.LocalKavlingDataSource
 import net.bagusekasaputra.griyakampoengtkw.util.GriyaNodes.Companion.LOG_TAG
 import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
-class RoomKavlingRepository @Inject constructor(
+class RoomKavlingDataSource @Inject constructor(
     roomDatabase: MyRoomDatabase,
-): LocalKavlingRepository {
+): LocalKavlingDataSource {
 
     private val kavlingRoomDao = roomDatabase.getKavlingDao()
 
@@ -45,6 +45,17 @@ class RoomKavlingRepository @Inject constructor(
         } catch (e: Exception) {
             e.printStackTrace()
 
+            Result.failure(e)
+        }
+    }
+
+    override suspend fun deleteKavling(kavlingKode: String): Result<Nothing?> {
+        return try {
+            kavlingRoomDao.deleteKavling(kavlingKode)
+
+            Result.success(null)
+        } catch (e: Exception) {
+            e.printStackTrace()
             Result.failure(e)
         }
     }

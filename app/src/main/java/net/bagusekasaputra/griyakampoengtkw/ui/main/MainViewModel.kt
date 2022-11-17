@@ -8,7 +8,6 @@ import kotlinx.coroutines.*
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.AppUpdate
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.Block
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.Kavling
-import net.bagusekasaputra.griyakampoengtkw.domain.entity.Operation
 import net.bagusekasaputra.griyakampoengtkw.domain.usecase.appupdate.GetUpdateInformationUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.usecase.block.AddNewBlockUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.usecase.block.GetAllBlocksUseCase
@@ -41,8 +40,7 @@ class MainViewModel @Inject constructor(
 
     val isFinishOperation = MutableLiveData<Boolean>()
 
-    val operationResult = MutableLiveData<Operation?>()
-
+    // The collection of jobs which need to be cancelled on onCleared()
     private val asyncJobs = ArrayList<Job>()
 
     // Blocks
@@ -106,8 +104,9 @@ class MainViewModel @Inject constructor(
     fun getKavlings(blockKode: String, onFailure: (msg: String) -> Unit) {
         isFinishOperation.value = false
 
-        CoroutineScope(Dispatchers.IO).launch {
-            val request = GetKavlingsByBlockUseCase.Request(blockKode)
+        val request = GetKavlingsByBlockUseCase.Request(blockKode)
+
+        val getKavlingsJob = CoroutineScope(Dispatchers.IO).launch {
 
             getKavlingsByBlockUseCase.execute(request).collect {
                 val result = it.data.result
@@ -118,82 +117,131 @@ class MainViewModel @Inject constructor(
 
                 result.onFailure { throwable ->
                     withContext(Dispatchers.Main) {
-                        throwable.message?.let(onFailure)
+                        onFailure("Gagal mendapatkan kavling: ${throwable.message}")
                     }
                 }
 
                 isFinishOperation.postValue(true)
             }
         }
+
+        asyncJobs.add(getKavlingsJob)
     }
 
-    fun addKavling(blockKode: String, kavling: Kavling) {
+    fun addKavling(
+        blockKode: String, noKavling: String, warna: String,
+        type: String, panjang: String, lebar: String,
+        onComplete: (msg: String) -> Unit,
+    ) {
         isFinishOperation.value = false
-        operationResult.value = null
 
-        CoroutineScope(Dispatchers.IO).launch {
-            val request = AddKavlingUseCase.Request(blockKode, kavling)
-            addKavlingUseCase.execute(request).collect {
-                val result = it.data.result
+        val request = AddKavlingUseCase.Request(
+            blockKode = blockKode,
+            noKavling = noKavling,
+            warna = warna,
+            type = type,
+            panjang = panjang,
+            lebar = lebar,
+        )
 
-                if (result.isSuccess) {
-                    operationResult.postValue(Operation(true, "Kavling ${kavling.kode} berhasil ditambahkan"))
-                } else {
-                    operationResult.postValue(Operation(false, "Gagal: ${result.exceptionOrNull()?.message}"))
+        val addKavlingJob = CoroutineScope(Dispatchers.IO).launch {
+            addKavlingUseCase.execute(request).collect { response ->
+                val result = response.data.result
+
+                result.onSuccess {
+                    withContext(Dispatchers.Main) {
+                        onComplete("Kavling $blockKode$noKavling berhasil ditambahkan")
+                    }
+                }
+
+                result.onFailure { throwable ->
+                    withContext(Dispatchers.Main) {
+                        onComplete("Gagal menambahkan kavling $blockKode$noKavling: ${throwable.message}")
+                    }
                 }
 
                 isFinishOperation.postValue(true)
             }
         }
+
+        asyncJobs.add(addKavlingJob)
     }
 
-    fun editKavling(blockKode: String, oldKavling: Kavling, newKavling: Kavling) {
+    fun editKavling(
+        blockKode: String,
+        oldKavling: Kavling,
+        newPanjang: String,
+        newLebar: String,
+        newType: String,
+        onComplete: (msg: String) -> Unit,
+    ) {
         isFinishOperation.value = false
-        operationResult.value = null
 
-        CoroutineScope(Dispatchers.IO).launch {
-            val request = EditKavlingUseCase.Request(blockKode, oldKavling, newKavling)
+        val request = EditKavlingUseCase.Request(
+            blockKode = blockKode,
+            oldKavling = oldKavling,
+            newType = newType,
+            newPanjang = newPanjang,
+            newLebar = newLebar,
+        )
+
+        val editKavlingJob = CoroutineScope(Dispatchers.IO).launch {
 
             editKavlingUseCase.execute(request).collect { response ->
                 val result = response.data.result
-                if (result.isSuccess) {
-                    result.getOrNull()?.let {
-                        if (it) {
-                            operationResult.postValue(Operation(true, "Berhasil mengubah data kavling ${oldKavling.kode}"))
-                        } else {
-                            operationResult.postValue(Operation(false, "Data kavling ${oldKavling.kode} tidak ditemukan!"))
-                        }
-                    }
-                } else {
-                    result.exceptionOrNull()?.let {
-                        operationResult.postValue(Operation(false, "Gagal: ${it.message}"))
+
+                result.onSuccess {
+                    withContext(Dispatchers.Main) {
+                        onComplete("Berhasil mengubah data kavling ${oldKavling.kode}")
                     }
                 }
+
+                result.onFailure { throwable ->
+                    withContext(Dispatchers.Main) {
+                        onComplete("Gagal mengubah data kavling: ${throwable.message}")
+                    }
+                }
+
 
                 isFinishOperation.postValue(true)
             }
         }
+
+        asyncJobs.add(editKavlingJob)
     }
 
-    fun removeKavling(blockKode: String, kavlingKode: String) {
+    fun removeKavling(
+        blockKode: String,
+        kavlingKode: String,
+        onComplete: (msg: String) -> Unit
+    ) {
         isFinishOperation.value = false
-        operationResult.value = null
 
-        CoroutineScope(Dispatchers.IO).launch {
-            val request = RemoveKavlingUseCase.Request(blockKode, kavlingKode)
+        val request = RemoveKavlingUseCase.Request(blockKode, kavlingKode)
+
+        val removeKavlingJob = CoroutineScope(Dispatchers.IO).launch {
 
             removeKavlingUseCase.execute(request).collect {
                 val result = it.data.result
 
-                if (result.isSuccess) {
-                    operationResult.postValue(Operation(true, "Berhasil menghapus kavling $kavlingKode"))
-                } else {
-                    operationResult.postValue(Operation(false, "Gagal menghapus kavling $kavlingKode: ${result.exceptionOrNull()}"))
+                result.onSuccess {
+                    withContext(Dispatchers.Main) {
+                        onComplete("Berhasil menghapus kavling $kavlingKode")
+                    }
+                }
+
+                result.onFailure { throwable ->
+                    withContext(Dispatchers.Main) {
+                        onComplete("Gagal menghapus kavling $kavlingKode: ${throwable.message}")
+                    }
                 }
 
                 isFinishOperation.postValue(true)
             }
+
         }
+
+        asyncJobs.add(removeKavlingJob)
     }
 
     fun checkUpdates(
@@ -220,6 +268,7 @@ class MainViewModel @Inject constructor(
             }
         }
     }
+
 
     override fun onCleared() {
         super.onCleared()

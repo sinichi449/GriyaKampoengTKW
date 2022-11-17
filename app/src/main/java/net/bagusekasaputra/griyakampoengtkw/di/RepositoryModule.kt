@@ -8,8 +8,8 @@ import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
 import net.bagusekasaputra.griyakampoengtkw.data.repository.*
 import net.bagusekasaputra.griyakampoengtkw.data.source.local.MyRoomDatabase
-import net.bagusekasaputra.griyakampoengtkw.data.source.local.block.LocalBlockRepository
-import net.bagusekasaputra.griyakampoengtkw.data.source.local.block.room.RoomBlockRepository
+import net.bagusekasaputra.griyakampoengtkw.data.source.local.block.LocalBlockDataSource
+import net.bagusekasaputra.griyakampoengtkw.data.source.local.block.room.RoomBlockDataSource
 import net.bagusekasaputra.griyakampoengtkw.data.source.local.datadiri.LocalDataDiriRepository
 import net.bagusekasaputra.griyakampoengtkw.data.source.local.datadiri.room.RoomDataDiriRepository
 import net.bagusekasaputra.griyakampoengtkw.data.source.local.fotoKuitansi.LocalFotoKuitansiRepository
@@ -18,14 +18,14 @@ import net.bagusekasaputra.griyakampoengtkw.data.source.local.imageDataDiri.Loca
 import net.bagusekasaputra.griyakampoengtkw.data.source.local.imageDataDiri.room.RoomLocalImageDataDiriRepository
 import net.bagusekasaputra.griyakampoengtkw.data.source.local.imageSpr.LocalImageSprDataSource
 import net.bagusekasaputra.griyakampoengtkw.data.source.local.imageSpr.room.RoomImageSprDataSource
-import net.bagusekasaputra.griyakampoengtkw.data.source.local.kavling.LocalKavlingRepository
-import net.bagusekasaputra.griyakampoengtkw.data.source.local.kavling.room.RoomKavlingRepository
+import net.bagusekasaputra.griyakampoengtkw.data.source.local.kavling.LocalKavlingDataSource
+import net.bagusekasaputra.griyakampoengtkw.data.source.local.kavling.room.RoomKavlingDataSource
 import net.bagusekasaputra.griyakampoengtkw.data.source.remote.appupdate.FirebaseAppUpdateSource
 import net.bagusekasaputra.griyakampoengtkw.data.source.remote.appupdate.RemoteAppUpdateSource
 import net.bagusekasaputra.griyakampoengtkw.data.source.remote.biayaMarketing.FirebaseBiayaMarketingDataSource
 import net.bagusekasaputra.griyakampoengtkw.data.source.remote.biayaMarketing.RemoteBiayaMarketingDataSource
-import net.bagusekasaputra.griyakampoengtkw.data.source.remote.block.FirebaseBlockRepository
-import net.bagusekasaputra.griyakampoengtkw.data.source.remote.block.RemoteBlockRepository
+import net.bagusekasaputra.griyakampoengtkw.data.source.remote.block.FirebaseBlockDataSource
+import net.bagusekasaputra.griyakampoengtkw.data.source.remote.block.RemoteBlockDataSource
 import net.bagusekasaputra.griyakampoengtkw.data.source.remote.catatanPembayaran.FirebaseCatatanPembayaranDataSource
 import net.bagusekasaputra.griyakampoengtkw.data.source.remote.catatanPembayaran.RemoteCatatanPembayaranDataSource
 import net.bagusekasaputra.griyakampoengtkw.data.source.remote.datadiri.FirebaseDataDiriRepository
@@ -34,8 +34,8 @@ import net.bagusekasaputra.griyakampoengtkw.data.source.remote.feeMarketing.Fire
 import net.bagusekasaputra.griyakampoengtkw.data.source.remote.feeMarketing.RemoteFeeMarketingDataSource
 import net.bagusekasaputra.griyakampoengtkw.data.source.remote.hargakavling.FirebaseHargaKavlingSource
 import net.bagusekasaputra.griyakampoengtkw.data.source.remote.hargakavling.RemoteHargaKavlingSource
-import net.bagusekasaputra.griyakampoengtkw.data.source.remote.kavling.FirebaseKavlingRepository
-import net.bagusekasaputra.griyakampoengtkw.data.source.remote.kavling.RemoteKavlingRepository
+import net.bagusekasaputra.griyakampoengtkw.data.source.remote.kavling.FirebaseKavlingDataSource
+import net.bagusekasaputra.griyakampoengtkw.data.source.remote.kavling.RemoteKavlingDataSource
 import net.bagusekasaputra.griyakampoengtkw.data.source.remote.pembayaran.FirebasePembayaranSource
 import net.bagusekasaputra.griyakampoengtkw.data.source.remote.pembayaran.RemotePembayaranSource
 import net.bagusekasaputra.griyakampoengtkw.domain.repository.*
@@ -48,39 +48,39 @@ object RepositoryModule {
     // Block Repository
     @Provides
     fun provideBlockRepository(
-        localBlockRepository: LocalBlockRepository,
-        remoteBlockRepository: RemoteBlockRepository,
+        localBlockDataSource: LocalBlockDataSource,
+        remoteBlockDataSource: RemoteBlockDataSource,
     ): BlockRepository {
-        return BlockRepositoryImpl(localBlockRepository, remoteBlockRepository)
+        return BlockRepositoryImpl(localBlockDataSource, remoteBlockDataSource)
     }
 
     @Provides
-    fun provideLocalBlockRepository(roomDatabase: MyRoomDatabase): LocalBlockRepository {
-        return RoomBlockRepository(roomDatabase)
+    fun provideLocalBlockDataSource(roomDatabase: MyRoomDatabase): LocalBlockDataSource {
+        return RoomBlockDataSource(roomDatabase)
     }
 
     @Provides
-    fun provideRemoteBlockRepository(databaseReference: DatabaseReference): RemoteBlockRepository {
-        return FirebaseBlockRepository(databaseReference)
+    fun provideRemoteBlockDataSource(databaseReference: DatabaseReference): RemoteBlockDataSource {
+        return FirebaseBlockDataSource(databaseReference)
     }
 
     // Kavling Repository
     @Provides
     fun provideKavlingRepository(
-        localKavlingRepository: LocalKavlingRepository,
-        remoteKavlingRepository: RemoteKavlingRepository,
+        localKavlingDataSource: LocalKavlingDataSource,
+        remoteKavlingDataSource: RemoteKavlingDataSource,
     ): KavlingRepository {
-        return KavlingRepositoryImpl(localKavlingRepository, remoteKavlingRepository)
+        return KavlingRepositoryImpl(localKavlingDataSource, remoteKavlingDataSource)
     }
 
     @Provides
-    fun provideLocalKavlingRepository(myRoomDatabase: MyRoomDatabase): LocalKavlingRepository {
-        return RoomKavlingRepository(myRoomDatabase)
+    fun provideLocalKavlingDataSource(myRoomDatabase: MyRoomDatabase): LocalKavlingDataSource {
+        return RoomKavlingDataSource(myRoomDatabase)
     }
 
     @Provides
-    fun provideRemoteKavlingRepository(databaseReference: DatabaseReference): RemoteKavlingRepository {
-        return FirebaseKavlingRepository(databaseReference)
+    fun provideRemoteKavlingDataSource(databaseReference: DatabaseReference): RemoteKavlingDataSource {
+        return FirebaseKavlingDataSource(databaseReference)
     }
 
     // Data Diri Repository
@@ -88,9 +88,9 @@ object RepositoryModule {
     fun provideDataDiriRepository(
         localDataDiriRepository: LocalDataDiriRepository,
         remoteDataDiriRepository: RemoteDataDiriRepository,
-        remoteKavlingRepository: RemoteKavlingRepository,
+        remoteKavlingDataSource: RemoteKavlingDataSource,
     ): DataDiriRepository {
-        return DataDiriRepositoryImpl(localDataDiriRepository, remoteDataDiriRepository, remoteKavlingRepository)
+        return DataDiriRepositoryImpl(localDataDiriRepository, remoteDataDiriRepository, remoteKavlingDataSource)
     }
 
     @Provides

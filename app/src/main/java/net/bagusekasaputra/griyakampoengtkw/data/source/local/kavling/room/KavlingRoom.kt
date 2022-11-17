@@ -36,4 +36,7 @@ interface KavlingRoomDao {
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun insert(kavlingRoom: KavlingRoomEntity): Long
+
+    @Query("DELETE FROM kavlings WHERE kode=:kavlingKode")
+    fun deleteKavling(kavlingKode: String)
 }

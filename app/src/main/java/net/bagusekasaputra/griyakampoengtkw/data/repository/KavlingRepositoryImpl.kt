@@ -1,50 +1,56 @@
 package net.bagusekasaputra.griyakampoengtkw.data.repository
 
-import android.util.Log
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.emitAll
 import kotlinx.coroutines.flow.flow
+import net.bagusekasaputra.griyakampoengtkw.data.DataUtil
 import net.bagusekasaputra.griyakampoengtkw.data.model.KavlingModel
-import net.bagusekasaputra.griyakampoengtkw.data.source.local.kavling.LocalKavlingRepository
-import net.bagusekasaputra.griyakampoengtkw.data.source.remote.kavling.RemoteKavlingRepository
+import net.bagusekasaputra.griyakampoengtkw.data.source.local.kavling.LocalKavlingDataSource
+import net.bagusekasaputra.griyakampoengtkw.data.source.remote.kavling.RemoteKavlingDataSource
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.Kavling
 import net.bagusekasaputra.griyakampoengtkw.domain.repository.KavlingRepository
-import net.bagusekasaputra.griyakampoengtkw.util.GriyaNodes.Companion.LOG_TAG
 import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
 class KavlingRepositoryImpl @Inject constructor(
-    private val localKavlingRepository: LocalKavlingRepository,
-    private val remoteKavlingRepository: RemoteKavlingRepository
+    private val localKavlingDataSource: LocalKavlingDataSource,
+    private val remoteKavlingDataSource: RemoteKavlingDataSource
 ): KavlingRepository {
 
-    override fun getKavlingByBlock(blockCode: String): Flow<Result<List<Kavling>>> {
-        return flow<Result<List<Kavling>>> {
+    override fun getKavlingByBlock(blockCode: String): Flow<Result<List<Kavling>?>> {
+        return flow<Result<List<Kavling>?>> {
             // Getting kavling from server first
-            Log.d(LOG_TAG, "Getting kavling from server ...")
-            val getKavlingFromRemote = remoteKavlingRepository.getAllKavlings(blockCode)
+            val remoteResult = remoteKavlingDataSource.getAllKavlings(blockCode)
 
-            if (getKavlingFromRemote.isSuccess) {
+            if (remoteResult.isSuccess) {
                 // Emit the kavling
-                emit(mapKavling(getKavlingFromRemote))
+                val mappedResult = DataUtil.mapListResult(
+                    originResult = remoteResult,
+                    targetMapper = ::mapKavling,
+                )
+
+                emit(mappedResult)
 
                 // Then write kavling to local
-                val kavlingModels = getKavlingFromRemote.getOrNull()?.map { mapKavling(it) }
+                val kavlingModels = remoteResult.getOrNull()?.map { mapKavling(it) }
 
                 kavlingModels?.forEach {
-                    localKavlingRepository.addKavling(blockCode, mapKavling(it))
+                    localKavlingDataSource.addKavling(blockCode, mapKavling(it))
                 }
             } else {
                 // Emit the error
-                getKavlingFromRemote.exceptionOrNull()?.let { emit(Result.failure(it)) }
+                remoteResult.exceptionOrNull()?.let { emit(Result.failure(it)) }
 
                 // Emit kavling from local
-                Log.d(LOG_TAG, "Getting kavling from local ...")
-                val getKavlingFromLocal = localKavlingRepository.getKavlingByBlockKode(blockCode)
+                val localResult = localKavlingDataSource.getKavlingByBlockKode(blockCode)
 
-                if (getKavlingFromLocal.isSuccess) {
-                    emit(mapKavling(getKavlingFromLocal))
+                if (localResult.isSuccess) {
+                    val mappedResult = DataUtil.mapListResult(
+                        originResult = localResult,
+                        targetMapper = ::mapKavling,
+                    )
+
+                    emit(mappedResult)
                 } else {
                     emit(Result.failure(UnknownError("Getting kavling from both server and local failed")))
                 }
@@ -52,42 +58,42 @@ class KavlingRepositoryImpl @Inject constructor(
         }
     }
 
-    private fun mapKavling(result: Result<List<KavlingModel>?>): Result<List<Kavling>> {
-        return result.map { kavlingModels ->
-            kavlingModels?.map {
-                mapKavling(it)
-            } ?: emptyList()
-        }
-    }
-
-    override fun addKavling(blockKode: String, kavling: Kavling): Flow<Result<Boolean>> {
+    override fun addKavling(blockKode: String, kavling: Kavling): Flow<Result<Nothing?>> {
         return flow {
-            emitAll(
-                remoteKavlingRepository.addKavling(blockKode, mapKavling(kavling))
-            )
+            val remoteResult = remoteKavlingDataSource.addKavling(blockKode, mapKavling(kavling))
+
+            emit(remoteResult)
         }
     }
 
-    override fun editKavling(
+    override fun updateKavling(
         blockCode: String,
         oldKavling: Kavling,
         newKavling: Kavling
-    ): Flow<Result<Boolean>> {
-        val firstKavlingModel = mapKavling(oldKavling)
-        val secondKavlingModel = mapKavling(newKavling)
-
+    ): Flow<Result<Nothing?>> {
         return flow {
-            emitAll(
-                remoteKavlingRepository.editKavling(blockCode, firstKavlingModel, secondKavlingModel)
+            val remoteResult = remoteKavlingDataSource.updateKavling(
+                blockKode = blockCode,
+                oldKavling = mapKavling(oldKavling),
+                newKavling = mapKavling(newKavling),
             )
+
+            emit(remoteResult)
         }
     }
 
-    override fun removeKavling(blockCode: String, kavlingKode: String): Flow<Result<Boolean>> {
+    override fun removeKavling(blockCode: String, kavlingKode: String): Flow<Result<Nothing?>> {
         return flow {
-            emitAll(
-                remoteKavlingRepository.removeKavling(blockCode, kavlingKode)
-            )
+            // We need to delete the local data too
+            val localResult = localKavlingDataSource.deleteKavling(kavlingKode)
+
+            localResult.onFailure { throwable ->
+                emit(Result.failure(throwable))
+            }
+
+            val remoteResult = remoteKavlingDataSource.deleteKavling(blockCode, kavlingKode)
+
+            emit(remoteResult)
         }
     }
 

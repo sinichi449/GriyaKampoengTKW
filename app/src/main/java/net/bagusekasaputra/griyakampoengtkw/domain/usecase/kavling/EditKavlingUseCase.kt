@@ -16,13 +16,34 @@ class EditKavlingUseCase @Inject constructor(
     data class Request(
         val blockKode: String,
         val oldKavling: Kavling,
-        val newKavling: Kavling,): UseCase.Request
+        val newType: String,
+        val newPanjang: String,
+        val newLebar: String,
+    ): UseCase.Request
 
-    data class Response(val result: Result<Boolean>): UseCase.Response
+    data class Response(val result: Result<Nothing?>): UseCase.Response
 
     override fun process(request: Request): Flow<Response> {
-        return kavlingRepository.editKavling(request.blockKode,
-            request.oldKavling, request.newKavling).map {
+        val ukuran = Kavling.getCompleteUkuran(request.newPanjang, request.newLebar)
+
+        // Beware with "belumIsi" variable. If the oldKavling object has
+        // "belumIsi" of false, you might get a problem by not PRESERVING
+        // this into the newKavling.
+        val belumIsi  = request.oldKavling.belumIsi
+
+        val newKavling = Kavling(
+            kode = request.oldKavling.kode, // I don't allow to set a new kavlingKode value in edit mode.
+            warna = request.oldKavling.warna, // I don't set an interface for editting "warna".
+            type = request.newType,
+            ukuran = ukuran,
+            belumIsi = belumIsi,
+        )
+
+        return kavlingRepository.updateKavling(
+            blockCode = request.blockKode,
+            oldKavling = request.oldKavling,
+            newKavling = newKavling
+        ).map {
             Response(it)
         }
     }

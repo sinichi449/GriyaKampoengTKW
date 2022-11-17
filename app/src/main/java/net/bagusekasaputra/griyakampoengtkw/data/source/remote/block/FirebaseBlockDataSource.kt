@@ -13,9 +13,9 @@ import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
-class FirebaseBlockRepository @Inject constructor(
+class FirebaseBlockDataSource @Inject constructor(
     private val databaseReference: DatabaseReference
-): RemoteBlockRepository {
+): RemoteBlockDataSource {
 
     private val blockRef = databaseReference.child(GriyaNodes.blocks)
 

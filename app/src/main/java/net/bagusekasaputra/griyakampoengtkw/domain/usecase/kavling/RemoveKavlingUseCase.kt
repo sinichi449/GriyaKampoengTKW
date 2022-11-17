@@ -14,7 +14,7 @@ class RemoveKavlingUseCase @Inject constructor(
 
     data class Request(val blockKode: String, val kavlingKode: String): UseCase.Request
 
-    data class Response(val result: Result<Boolean>): UseCase.Response
+    data class Response(val result: Result<Nothing?>): UseCase.Response
 
     override fun process(request: Request): Flow<Response> {
         return kavlingRepository.removeKavling(request.blockKode, request.kavlingKode).map {

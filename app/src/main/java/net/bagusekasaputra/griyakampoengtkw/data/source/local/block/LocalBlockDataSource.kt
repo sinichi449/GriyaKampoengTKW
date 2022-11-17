@@ -2,7 +2,7 @@ package net.bagusekasaputra.griyakampoengtkw.data.source.local.block
 
 import net.bagusekasaputra.griyakampoengtkw.data.model.BlockModel
 
-interface LocalBlockRepository {
+interface LocalBlockDataSource {
 
     suspend fun getAllBlocks(): Result<List<BlockModel>?>
 

@@ -7,9 +7,9 @@ interface KavlingRepository {
 
     fun getKavlingByBlock(blockCode: String): Flow<Result<List<Kavling>?>>
 
-    fun addKavling(blockKode: String, kavling: Kavling): Flow<Result<Boolean>>
+    fun addKavling(blockKode: String, kavling: Kavling): Flow<Result<Nothing?>>
 
-    fun editKavling(blockCode: String, oldKavling: Kavling, newKavling: Kavling): Flow<Result<Boolean>>
+    fun updateKavling(blockCode: String, oldKavling: Kavling, newKavling: Kavling): Flow<Result<Nothing?>>
 
-    fun removeKavling(blockCode: String, kavlingKode: String): Flow<Result<Boolean>>
+    fun removeKavling(blockCode: String, kavlingKode: String): Flow<Result<Nothing?>>
 }

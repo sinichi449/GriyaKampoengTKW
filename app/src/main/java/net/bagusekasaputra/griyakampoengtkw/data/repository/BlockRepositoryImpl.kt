@@ -4,8 +4,8 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import net.bagusekasaputra.griyakampoengtkw.data.DataUtil
 import net.bagusekasaputra.griyakampoengtkw.data.model.BlockModel
-import net.bagusekasaputra.griyakampoengtkw.data.source.local.block.LocalBlockRepository
-import net.bagusekasaputra.griyakampoengtkw.data.source.remote.block.RemoteBlockRepository
+import net.bagusekasaputra.griyakampoengtkw.data.source.local.block.LocalBlockDataSource
+import net.bagusekasaputra.griyakampoengtkw.data.source.remote.block.RemoteBlockDataSource
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.Block
 import net.bagusekasaputra.griyakampoengtkw.domain.repository.BlockRepository
 import net.bagusekasaputra.griyakampoengtkw.logEvent
@@ -14,14 +14,14 @@ import javax.inject.Singleton
 
 @Singleton
 class BlockRepositoryImpl @Inject constructor(
-    private val localBlockRepository: LocalBlockRepository,
-    private val remoteBlockRepository: RemoteBlockRepository,
+    private val localBlockDataSource: LocalBlockDataSource,
+    private val remoteBlockDataSource: RemoteBlockDataSource,
 ): BlockRepository {
 
     override fun getAllBlocks(): Flow<Result<List<Block>?>> {
         return flow<Result<List<Block>?>> {
             logEvent("Getting blocks from server ...")
-            val getBlocksFromRemote = remoteBlockRepository.getAllBlocks()
+            val getBlocksFromRemote = remoteBlockDataSource.getAllBlocks()
 
             if (getBlocksFromRemote.isSuccess) {
                 // Emit the blocks
@@ -32,7 +32,7 @@ class BlockRepositoryImpl @Inject constructor(
                 val blockModels = getBlocksFromRemote.getOrNull()?.map { mapBlockModel(it) }
 
                 blockModels?.forEach {
-                    localBlockRepository.addBlock(mapBlockModel(it))
+                    localBlockDataSource.addBlock(mapBlockModel(it))
                 }
             } else {
                 // Emit the error
@@ -41,7 +41,7 @@ class BlockRepositoryImpl @Inject constructor(
 
                 // Emit blocks from local instead
                 logEvent("Getting blocks from local ... ")
-                val getBlockFromLocal = localBlockRepository.getAllBlocks()
+                val getBlockFromLocal = localBlockDataSource.getAllBlocks()
 
                 if (getBlockFromLocal.isSuccess) {
                     emit(DataUtil.mapListResult(getBlockFromLocal, ::mapBlockModel))
@@ -54,7 +54,7 @@ class BlockRepositoryImpl @Inject constructor(
 
     override fun addBlock(block: Block): Flow<Result<Nothing?>> {
         return flow {
-            val remoteResult = remoteBlockRepository.addNewBlock(mapBlockModel(block))
+            val remoteResult = remoteBlockDataSource.addNewBlock(mapBlockModel(block))
 
             emit(remoteResult)
         }
