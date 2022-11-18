@@ -1,5 +1,6 @@
 package net.bagusekasaputra.griyakampoengtkw.data.source.local
 
+import androidx.room.AutoMigration
 import androidx.room.Database
 import androidx.room.RoomDatabase
 import net.bagusekasaputra.griyakampoengtkw.data.source.local.block.room.BlockRoomDao
@@ -8,6 +9,8 @@ import net.bagusekasaputra.griyakampoengtkw.data.source.local.datadiri.room.Data
 import net.bagusekasaputra.griyakampoengtkw.data.source.local.datadiri.room.DataDiriRoomEntity
 import net.bagusekasaputra.griyakampoengtkw.data.source.local.fotoKuitansi.room.FotoKuitansiRoomDao
 import net.bagusekasaputra.griyakampoengtkw.data.source.local.fotoKuitansi.room.FotoKuitansiRoomEntity
+import net.bagusekasaputra.griyakampoengtkw.data.source.local.fotoPembayaran.room.FotoPembayaranDao
+import net.bagusekasaputra.griyakampoengtkw.data.source.local.fotoPembayaran.room.FotoPembayaranEntity
 import net.bagusekasaputra.griyakampoengtkw.data.source.local.imageDataDiri.room.ImageDataDiriDao
 import net.bagusekasaputra.griyakampoengtkw.data.source.local.imageDataDiri.room.ImageDataDiriRoomEntity
 import net.bagusekasaputra.griyakampoengtkw.data.source.local.imageSpr.room.ImageSprRoomDao
@@ -17,9 +20,13 @@ import net.bagusekasaputra.griyakampoengtkw.data.source.local.kavling.room.Kavli
 
 @Database(
     entities = [KavlingRoomEntity::class, ImageDataDiriRoomEntity::class, BlockRoomEntity::class,
-               DataDiriRoomEntity::class, FotoKuitansiRoomEntity::class, ImageSprRoomEntity::class],
-    version = 3,
+               DataDiriRoomEntity::class, FotoKuitansiRoomEntity::class, ImageSprRoomEntity::class,
+               FotoPembayaranEntity::class],
+    version = 4,
     exportSchema = true,
+    autoMigrations = [
+        AutoMigration(from = 3, to = 4)
+    ]
 )
 abstract class MyRoomDatabase: RoomDatabase() {
 
@@ -34,4 +41,6 @@ abstract class MyRoomDatabase: RoomDatabase() {
     abstract fun getFotoKuitansiDao(): FotoKuitansiRoomDao
 
     abstract fun getImageSprDao(): ImageSprRoomDao
+
+    abstract fun getFotoPembayaranDao(): FotoPembayaranDao
 }

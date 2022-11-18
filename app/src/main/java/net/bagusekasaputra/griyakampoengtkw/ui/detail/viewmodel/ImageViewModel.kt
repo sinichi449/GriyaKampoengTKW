@@ -1,14 +1,18 @@
 package net.bagusekasaputra.griyakampoengtkw.ui.detail.viewmodel
 
+import android.content.ContentResolver
+import android.graphics.Bitmap
 import android.net.Uri
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
+import kotlinx.coroutines.*
+import net.bagusekasaputra.griyakampoengtkw.domain.AsyncUseCaseHelper
+import net.bagusekasaputra.griyakampoengtkw.domain.ImageUtil
+import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.fotoPembayaran.AddFotoPembayaranAsyncUseCase
+import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.fotoPembayaran.GetFotoPembayaranAsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.FotoKuitansi
+import net.bagusekasaputra.griyakampoengtkw.domain.entity.FotoPembayaran
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.ImageDataDiri
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.ImageSpr
 import net.bagusekasaputra.griyakampoengtkw.domain.usecase.fotoKuitansi.AddFotoKuitansiUseCase
@@ -18,6 +22,7 @@ import net.bagusekasaputra.griyakampoengtkw.domain.usecase.imageDataDiri.DeleteI
 import net.bagusekasaputra.griyakampoengtkw.domain.usecase.imageDataDiri.GetImageDataDiriByKavlingKodeUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.usecase.imageSpr.AddImageSprUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.usecase.imageSpr.GetImageSprByKavlingKodeUseCase
+import net.bagusekasaputra.griyakampoengtkw.ui.ImageTransport
 import javax.inject.Inject
 
 @HiltViewModel
@@ -29,6 +34,8 @@ class ImageViewModel @Inject constructor(
     private val addImageSprUseCase: AddImageSprUseCase,
     private val getFotoKuitansiUseCase: GetFotoKuitansiUseCase,
     private val addFotoKuitansiUseCase: AddFotoKuitansiUseCase,
+    private val getFotoPembayaranAsyncUseCase: GetFotoPembayaranAsyncUseCase,
+    private val addFotoPembayaranAsyncUseCase: AddFotoPembayaranAsyncUseCase,
 ): ViewModel() {
 
     val fotoKuitansiLive = MutableLiveData<FotoKuitansi>()
@@ -37,12 +44,23 @@ class ImageViewModel @Inject constructor(
 
     val imageDataDiriLive = MutableLiveData<ImageDataDiri?>()
 
+    val fotoPembayaranLive = MutableLiveData<FotoPembayaran?>()
+
+    // Shamefully, I need this to be able to pass an argument of AddFotoPembayaranAsyncUseCase ...
+    // This value is updated on "showFotoPembayaranSelectionDialog()" -> FormPembayaranFragment.
+    val currentTermin  = MutableLiveData<String>()
+
     val isFinishAddImage = MutableLiveData<Boolean>()
+
+    private val jobs = ArrayList<Job>()
+
+    private val asyncUseCaseHelper = AsyncUseCaseHelper(isFinishAddImage)
 
 
     // Image Data Diri
     fun getImageDataDiri(kavlingKode: String, onFailure: (cause: String) -> Unit) {
         val request = GetImageDataDiriByKavlingKodeUseCase.Request(kavlingKode)
+        isFinishAddImage.value = false
 
         CoroutineScope(Dispatchers.IO).launch {
             getImageDataDiriByKavlingKodeUseCase.execute(request)
@@ -57,7 +75,7 @@ class ImageViewModel @Inject constructor(
                         }
                     }
 
-                    isFinishAddImage.postValue(false)
+                    isFinishAddImage.postValue(true)
                 }
         }
     }
@@ -203,5 +221,76 @@ class ImageViewModel @Inject constructor(
                 }
             }
         }
+    }
+
+
+    // Foto Pembayaran
+    fun getFotoPembayaran(
+        kavlingKode: String,
+        termin: String,
+        onFailure: (msg: String) -> Unit,
+    ) {
+        val request = GetFotoPembayaranAsyncUseCase.Request(kavlingKode, termin)
+
+        val gettingFotoPembayaranJob = asyncUseCaseHelper.doWork(
+            request = request,
+            asyncUseCase = getFotoPembayaranAsyncUseCase,
+            onSuccess = { fotoPembayaran ->
+                fotoPembayaranLive.postValue(fotoPembayaran)
+            },
+            onFailure = { throwable ->
+                onFailure("Gagal mendapatkan Foto Pembayaran ${termin}: ${throwable.message}")
+            },
+            successMsgOnUiThread = false,
+            failureMsgOnUiThread = true,
+        )
+        
+        jobs.add(gettingFotoPembayaranJob)
+    }
+
+    fun addFotoPembayaran(
+        kavlingKode: String,
+        uri: Uri,
+        onComplete: (msg: String) -> Unit
+    ) {
+        val termin = currentTermin.value
+
+        if (termin != null) {
+            val request = AddFotoPembayaranAsyncUseCase.Request(kavlingKode, termin, uri)
+
+            val insertingFotoPembayaranJob = asyncUseCaseHelper.doWork(
+                request = request,
+                asyncUseCase = addFotoPembayaranAsyncUseCase,
+                onSuccess = {
+                    onComplete("Berhasil menambahkan Foto Pembayaran $termin")
+                },
+                onFailure = { throwable ->
+                    onComplete("Gagal menambahkan Foto Pembayaran: ${throwable.message}")
+                },
+                successMsgOnUiThread = true,
+                failureMsgOnUiThread = true,
+            )
+
+            jobs.add(insertingFotoPembayaranJob)
+        } else {
+            onComplete("ERROR: Null termin argument passed on ImageViewModel.addFotoPembayaran()")
+        }
+    }
+
+
+    fun <T> createImageTransport(sendIntent: String, content: T): ImageTransport<T> {
+        return ImageTransport(sendIntent, content)
+    }
+
+    fun getBitmapFromUri(contentResolver: ContentResolver, uri: Uri): Bitmap {
+        return ImageUtil.getBitmapFromUri(contentResolver, uri)
+    }
+
+
+
+    override fun onCleared() {
+        super.onCleared()
+
+        jobs.forEach { it.cancel() }
     }
 }

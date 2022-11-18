@@ -749,4 +749,14 @@ class DetailViewModel @Inject constructor(
                 biayaMarketer = feeMarketingLive.value?.biayaMarketer ?: "0",
             )
 
+    fun getListTerminPembayaran(): Array<String> {
+        val terminList = ArrayList<String>()
+
+        listPembayaranLive.value?.forEach { pembayaran ->
+            terminList.add(pembayaran.termin)
+        }
+
+        // We need to convert into an Array ... How botherful.
+        return terminList.toTypedArray()
+    }
 }

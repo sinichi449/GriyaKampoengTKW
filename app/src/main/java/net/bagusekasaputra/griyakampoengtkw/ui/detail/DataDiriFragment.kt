@@ -101,17 +101,20 @@ class DataDiriFragment : Fragment() {
         }
 
         binding.imgProfile.setOnClickListener {
-            Intent(requireContext(), FullImageFotoDataDiriActivity::class.java).let { intent ->
+            // Set full picture
+            Intent(requireContext(), FullImageActivity::class.java).let { intent ->
                 imageViewModel.imageDataDiriLive.value.let { img ->
                     if (img == null) {
                         Toast.makeText(requireContext(), "Foto masih kosong!", Toast.LENGTH_SHORT)
                             .show()
                     } else {
-                        val stringExtra = ArrayList<String>().apply {
-                            add(GriyaNodes.INTENT_DATA_DIRI)
-                            add(currentKavlingKode!!)
-                        }
-                        intent.putExtra(GriyaNodes.INTENT_SOURCE_IMAGE, stringExtra)
+                        val imageTransport = imageViewModel.createImageTransport(
+                            sendIntent = GriyaNodes.INTENT_DATA_DIRI,
+                            content = mapOf<String, String>(
+                                Pair("kavlingKode", currentKavlingKode!!)
+                            )
+                        )
+                        intent.putExtra(GriyaNodes.INTENT_SOURCE_IMAGE, imageTransport)
                         startActivity(intent)
                     }
                 }
@@ -376,13 +379,15 @@ class DataDiriFragment : Fragment() {
     }
 
     private fun lihatFotoSpr() {
-        val intent = Intent(requireContext(), FullImageFotoDataDiriActivity::class.java)
-        ArrayList<String>().apply {
-            add(GriyaNodes.INTENT_FOTO_SPR)
-            add(currentKavlingKode!!)
+        val imageTransport = imageViewModel.createImageTransport(
+            sendIntent = GriyaNodes.INTENT_FOTO_SPR,
+            content = mapOf<String, String>(
+                Pair("kavlingKode", currentKavlingKode!!)
+            )
+        )
 
-            intent.putExtra(GriyaNodes.INTENT_SOURCE_IMAGE, this)
-        }
+        val intent = Intent(requireContext(), FullImageActivity::class.java)
+        intent.putExtra(GriyaNodes.INTENT_SOURCE_IMAGE, imageTransport)
 
         startActivity(intent)
     }

@@ -14,6 +14,8 @@ import net.bagusekasaputra.griyakampoengtkw.data.source.local.datadiri.LocalData
 import net.bagusekasaputra.griyakampoengtkw.data.source.local.datadiri.room.RoomDataDiriRepository
 import net.bagusekasaputra.griyakampoengtkw.data.source.local.fotoKuitansi.LocalFotoKuitansiRepository
 import net.bagusekasaputra.griyakampoengtkw.data.source.local.fotoKuitansi.room.RoomFotoKuitansiRepository
+import net.bagusekasaputra.griyakampoengtkw.data.source.local.fotoPembayaran.LocalFotoPembayaranDataSource
+import net.bagusekasaputra.griyakampoengtkw.data.source.local.fotoPembayaran.room.RoomFotoPembayaranDataSource
 import net.bagusekasaputra.griyakampoengtkw.data.source.local.imageDataDiri.LocalImageDataDiriSource
 import net.bagusekasaputra.griyakampoengtkw.data.source.local.imageDataDiri.room.RoomLocalImageDataDiriRepository
 import net.bagusekasaputra.griyakampoengtkw.data.source.local.imageSpr.LocalImageSprDataSource
@@ -210,5 +212,15 @@ object RepositoryModule {
     @Provides
     fun provideRemoteCatatanPembayaranDataSource(databaseReference: DatabaseReference): RemoteCatatanPembayaranDataSource {
         return FirebaseCatatanPembayaranDataSource(databaseReference)
+    }
+
+    @Provides
+    fun provideFotoPembayaranRepository(localFotoPembayaranDataSource: LocalFotoPembayaranDataSource): FotoPembayaranRepository {
+        return FotoPembayaranRepositoryImpl(localFotoPembayaranDataSource)
+    }
+
+    @Provides
+    fun provideLocalFotoPembayaranDataSource(roomDatabase: MyRoomDatabase): LocalFotoPembayaranDataSource {
+        return RoomFotoPembayaranDataSource(roomDatabase)
     }
 }

@@ -10,8 +10,11 @@ class GriyaNodes {
         const val INTENT_DATA_DIRI = "data_diri"
         const val INTENT_FOTO_KUITANSI = "foto_kuitansi"
         const val INTENT_FOTO_SPR = "foto_spr"
+        const val INTENT_FOTO_PEMBAYARAN = "foto_pembayaran"
 
         const val SHARED_PREFS_NEW_FEATURE = "new_feature"
+
+        const val fotoPembayaranFilePath = "fotoPembayaran"
 
         const val SERVER_TIMEOUT_MILLIS = 3000L
 

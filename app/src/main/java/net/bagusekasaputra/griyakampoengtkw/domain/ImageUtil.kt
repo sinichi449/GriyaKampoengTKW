@@ -1,4 +1,4 @@
-package net.bagusekasaputra.griyakampoengtkw.util
+package net.bagusekasaputra.griyakampoengtkw.domain
 
 import android.content.ContentResolver
 import android.graphics.Bitmap

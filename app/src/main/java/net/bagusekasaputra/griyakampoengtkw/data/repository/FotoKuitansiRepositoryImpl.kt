@@ -7,9 +7,9 @@ import kotlinx.coroutines.flow.flow
 import net.bagusekasaputra.griyakampoengtkw.data.DataUtil
 import net.bagusekasaputra.griyakampoengtkw.data.model.FotoKuitansiModel
 import net.bagusekasaputra.griyakampoengtkw.data.source.local.fotoKuitansi.LocalFotoKuitansiRepository
+import net.bagusekasaputra.griyakampoengtkw.domain.ImageUtil
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.FotoKuitansi
 import net.bagusekasaputra.griyakampoengtkw.domain.repository.FotoKuitansiRepository
-import net.bagusekasaputra.griyakampoengtkw.util.ImageUtil
 import javax.inject.Inject
 import javax.inject.Singleton
 

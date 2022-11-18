@@ -51,7 +51,7 @@ class FormPembayaranFragment : Fragment() {
     private var currentKavlingKode: String? = null
     private var isAllFabsVisible = false
 
-    private val startForFotoKuitansiResult =
+    private val startForFotoPembayaranResult =
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
             val resultCode = result.resultCode
             val intent = result.data
@@ -61,9 +61,13 @@ class FormPembayaranFragment : Fragment() {
                     val uri = intent?.data
 
                     uri?.let {
-                        imageViewModel.addFotoKuitansi(currentKavlingKode!!, it) { completeMsg ->
-                            Snackbar.make(binding.root, completeMsg, Snackbar.LENGTH_SHORT).show()
-                        }
+                        imageViewModel.addFotoPembayaran(
+                            kavlingKode = currentKavlingKode!!,
+                            uri = it,
+                            onComplete = { msg ->
+                                Snackbar.make(binding.root, msg, Snackbar.LENGTH_SHORT).show()
+                            }
+                        )
                     }
                 }
                 ImagePicker.RESULT_ERROR -> {
@@ -734,6 +738,29 @@ class FormPembayaranFragment : Fragment() {
         }
     }
 
+    /**
+     * This gotta be used by lihat foto and tambahkan foto.
+     */
+    private fun showFotoPembayaranSelectionDialog(onTerminClick: (selectedTermin: String) -> Unit) {
+        val listTerminPembayaran = viewModel.getListTerminPembayaran()
+
+        MaterialAlertDialogBuilder(requireContext()).apply {
+            setTitle("Pilih Termin")
+            setItems(listTerminPembayaran) { dialog, selectionPosition ->
+                // Go to Full Image Activity
+                val selectedTermin = listTerminPembayaran[selectionPosition]
+
+                // Updated currentTermin here
+                updateSelectedTermin(selectedTermin)
+
+                onTerminClick(selectedTermin)
+
+                dialog.dismiss()
+            }
+        }.create()
+            .show()
+    }
+
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
         inflater.inflate(R.menu.menu_pembayaran, menu)
         super.onCreateOptionsMenu(menu, inflater)
@@ -746,14 +773,28 @@ class FormPembayaranFragment : Fragment() {
                 true
             }
             R.id.tambahkan_foto -> {
-                showImagePickerDialog()
-                imageViewModel.getFotoKuitansi(currentKavlingKode!!) { _ -> }
+                showFotoPembayaranSelectionDialog { selectedTermin ->
+                    showImagePickerDialog()
+                }
 
                 true
             }
             R.id.lihat_foto -> {
-                lihatFotoKuitansi()
+                showFotoPembayaranSelectionDialog(
+                    onTerminClick = { selectedTermin ->
+                        val imageTransport = imageViewModel.createImageTransport(
+                            sendIntent = GriyaNodes.INTENT_FOTO_PEMBAYARAN,
+                            content = mapOf<String, String>(
+                                Pair("kavlingKode", currentKavlingKode!!),
+                                Pair("termin", selectedTermin),
+                            )
+                        )
 
+                        val fullImageIntent = Intent(requireContext(), FullImageActivity::class.java)
+                        fullImageIntent.putExtra(GriyaNodes.INTENT_SOURCE_IMAGE, imageTransport)
+                        startActivity(fullImageIntent)
+                    }
+                )
                 true
             }
             R.id.export_excel -> {
@@ -827,12 +868,12 @@ class FormPembayaranFragment : Fragment() {
             .crop()
             .compress(1024)
             .createIntent {
-                startForFotoKuitansiResult.launch(it)
+                startForFotoPembayaranResult.launch(it)
             }
     }
 
     private fun lihatFotoKuitansi() {
-        Intent(requireContext(), FullImageFotoDataDiriActivity::class.java).let { intent ->
+        Intent(requireContext(), FullImageActivity::class.java).let { intent ->
             imageViewModel.fotoKuitansiLive.value.let { fotoKuitansi ->
                 if (fotoKuitansi == null) {
                     Toast.makeText(requireContext(),
@@ -900,4 +941,7 @@ class FormPembayaranFragment : Fragment() {
         return parsedPembayaran
     }
 
+    private fun updateSelectedTermin(selectedTermin: String) {
+        imageViewModel.currentTermin.value = selectedTermin
+    }
 }
