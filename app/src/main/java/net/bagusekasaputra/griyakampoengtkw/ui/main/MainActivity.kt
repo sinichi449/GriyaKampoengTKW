@@ -27,9 +27,6 @@ import net.bagusekasaputra.griyakampoengtkw.domain.entity.Kavling
 import net.bagusekasaputra.griyakampoengtkw.ui.detail.DetailActivity
 import net.bagusekasaputra.griyakampoengtkw.ui.main.adapter.BlockRecyclerAdapter
 import net.bagusekasaputra.griyakampoengtkw.ui.main.adapter.KavlingRecyclerAdapter
-import net.bagusekasaputra.griyakampoengtkw.ui.network.ConnectivityAnimation
-import net.bagusekasaputra.griyakampoengtkw.ui.network.NetworkStatus
-import net.bagusekasaputra.griyakampoengtkw.ui.network.NetworkStatusHelper
 import net.bagusekasaputra.griyakampoengtkw.util.DialogUtil
 import net.bagusekasaputra.griyakampoengtkw.util.GriyaNodes
 import net.bagusekasaputra.griyakampoengtkw.util.InputUtil
@@ -43,7 +40,7 @@ class MainActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityMainBinding
     private val viewModel: MainViewModel by viewModels()
-    private lateinit var connectivityAnimation: ConnectivityAnimation
+//    private lateinit var connectivityAnimation: ConnectivityAnimation
 
     private var isAllFabsVisible = false
 
@@ -56,14 +53,14 @@ class MainActivity : AppCompatActivity() {
         setSupportActionBar(binding.toolbarMain)
 
         // Check connectivity
-        connectivityAnimation = ConnectivityAnimation(this, binding.root, binding.connectivityStatus)
+//        connectivityAnimation = ConnectivityAnimation(this, binding.root, binding.connectivityStatus)
 
         val deviceOnline = intent.getBooleanExtra(GriyaNodes.INTENT_IS_ONLINE, false)
 
         if (!deviceOnline) {
             Toast.makeText(this, "Device terdeteksi offline, data tidak akan tersinkronisasi!", Toast.LENGTH_LONG).show()
-            connectivityAnimation.onOfflineAnimation()
-            onOfflineState()
+//            connectivityAnimation.onOfflineAnimation()
+//            onOfflineState()
         }
 
         viewModel.checkUpdates({
@@ -88,7 +85,7 @@ class MainActivity : AppCompatActivity() {
             syncData()
         }
 
-        setupInternetMonitoring()
+//        setupInternetMonitoring()
 
     }
 
@@ -98,21 +95,21 @@ class MainActivity : AppCompatActivity() {
         syncData()
     }
 
-    private fun setupInternetMonitoring() {
-        val networkStatusHelper = NetworkStatusHelper(this)
-
-        networkStatusHelper.observe(this) { status ->
-            status?.let {
-                if (it == NetworkStatus.Available) {
-                    connectivityAnimation.onOnlineAnimation()
-                    onOnlineState()
-                } else if (it == NetworkStatus.Unavailable) {
-                    connectivityAnimation.onOfflineAnimation()
-                    onOfflineState()
-                }
-            }
-        }
-    }
+//    private fun setupInternetMonitoring() {
+//        val networkStatusHelper = NetworkStatusHelper(this)
+//
+//        networkStatusHelper.observe(this) { status ->
+//            status?.let {
+//                if (it == NetworkStatus.Available) {
+//                    connectivityAnimation.onOnlineAnimation()
+//                    onOnlineState()
+//                } else if (it == NetworkStatus.Unavailable) {
+//                    connectivityAnimation.onOfflineAnimation()
+//                    onOfflineState()
+//                }
+//            }
+//        }
+//    }
 
     private fun setupViewModel() {
         viewModel.blocksLive.observe(this) {

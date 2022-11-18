@@ -7,6 +7,7 @@ import android.content.Intent
 import android.content.res.Configuration
 import android.os.Bundle
 import android.view.*
+import android.widget.ImageView
 import android.widget.TableRow
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
@@ -594,6 +595,12 @@ class FormPembayaranFragment : Fragment() {
             }
 
             val tableRow = TableRow(requireContext())
+            // test add icon
+            val imageView = ImageView(requireContext())
+            imageView.setImageDrawable(ContextCompat.getDrawable(requireContext(), R.drawable.ic_baseline_assignment_turned_in_24))
+
+            tableRow.addView(imageView)
+
             for (tv in textViews) {
                 tv.gravity = Gravity.CENTER
                 tableRow.addView(tv)
@@ -775,9 +782,9 @@ class FormPembayaranFragment : Fragment() {
                 // WARNING!!: CALLBACK HELL AHEAD
                 //
                 // Summary: First, it will show a list of available Termins which will correspond
-                // to a Foto Pembayaran. When one of those Termins clicked, then checking
-                // whether the Foto Pembayaran associated with that Termin is exist. Finally,
-                // it executes showImagePickerdialog().
+                // to a Foto Pembayaran. When one of those Termins clicked, then it will check
+                // whether the Foto Pembayaran associated with the said Termin indeed exists. Finally,
+                // it executes showImagePickerDialog().
                 showFotoPembayaranSelectionDialog(
                     dialogTitle = "Tambah Foto Kuitansi",
                     onTerminClick = { selectedTermin ->

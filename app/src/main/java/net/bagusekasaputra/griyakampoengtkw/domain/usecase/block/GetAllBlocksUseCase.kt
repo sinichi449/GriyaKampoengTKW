@@ -18,9 +18,18 @@ class GetAllBlocksUseCase @Inject constructor(
     data class Response(val result: Result<List<Block>?>): UseCase.Response
 
     override fun process(request: Request): Flow<Response> {
-        return blockRepository.getAllBlocks().map {
-            Response(it)
+        return blockRepository.getAllBlocks().map { result ->
+            val newResult = result.map { listBlock ->
+                sortBlocks(listBlock)
+            }
+
+            Response(newResult)
         }
     }
 
+    private fun sortBlocks(listBlock: List<Block>?): List<Block>? {
+        return listBlock?.sortedBy {
+            it.kode.lowercase()
+        }
+    }
 }
