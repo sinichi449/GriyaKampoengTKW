@@ -15,8 +15,7 @@ interface FotoPembayaranRepository {
 
     fun deleteFotoPembayaran(
         kavlingKode: String,
-        termin: String,
-        fotoPembayaran: FotoPembayaran
+        termin: String
     ): Flow<Result<Nothing?>>
 
     // This is to prevent an unintentional replacement of existing image, the data is

@@ -40,6 +40,15 @@ class RoomFotoPembayaranDataSource @Inject constructor(
         TODO("Not yet implemented")
     }
 
+    override suspend fun deleteByKavlingKodeAndTermin(
+        kavlingKode: String,
+        termin: String
+    ): Result<Nothing?> {
+        return RoomRequestHelper.doNonGetOperation {
+            fotoPembayaranDao.deleteByKavlingKodeAndTermin(kavlingKode, termin)
+        }
+    }
+
     override suspend fun updateFotoPembayaran(
         oldFotoPembayaranModel: FotoPembayaranModel,
         newFotoPembayaranModel: FotoPembayaranModel

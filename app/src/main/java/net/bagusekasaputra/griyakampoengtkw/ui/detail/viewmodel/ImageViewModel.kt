@@ -10,6 +10,7 @@ import kotlinx.coroutines.*
 import net.bagusekasaputra.griyakampoengtkw.domain.AsyncUseCaseHelper
 import net.bagusekasaputra.griyakampoengtkw.domain.ImageUtil
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.fotoPembayaran.AddFotoPembayaranAsyncUseCase
+import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.fotoPembayaran.DeleteFotoPembayaranAsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.fotoPembayaran.GetFotoPembayaranAsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.FotoKuitansi
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.FotoPembayaran
@@ -36,6 +37,7 @@ class ImageViewModel @Inject constructor(
     private val addFotoKuitansiUseCase: AddFotoKuitansiUseCase,
     private val getFotoPembayaranAsyncUseCase: GetFotoPembayaranAsyncUseCase,
     private val addFotoPembayaranAsyncUseCase: AddFotoPembayaranAsyncUseCase,
+    private val deleteFotoPembayaranAsyncUseCase: DeleteFotoPembayaranAsyncUseCase,
 ): ViewModel() {
 
     val fotoKuitansiLive = MutableLiveData<FotoKuitansi>()
@@ -276,6 +278,29 @@ class ImageViewModel @Inject constructor(
             onComplete("ERROR: Null termin argument passed on ImageViewModel.addFotoPembayaran()")
         }
     }
+
+    fun deleteFotoPembayaran(
+        kavlingKode: String,
+        termin: String,
+        onComplete: (msg: String) -> Unit
+    ) {
+        val request = DeleteFotoPembayaranAsyncUseCase.Request(kavlingKode, termin)
+
+        val deletingFotoPembayaranJob = asyncUseCaseHelper.doWork(
+            request = request,
+            asyncUseCase = deleteFotoPembayaranAsyncUseCase,
+            onSuccess = {
+                onComplete("Berhasil menghapus Foto Pembayaran $termin")
+            },
+            onFailure = { throwable ->
+                onComplete("Gagal menghapus Foto Pembayaran $termin: ${throwable.message}")
+            },
+            // All of success and failure message are in UI Thread.
+        )
+
+        jobs.add(deletingFotoPembayaranJob)
+    }
+
 
 
     fun <T> createImageTransport(sendIntent: String, content: T): ImageTransport<T> {

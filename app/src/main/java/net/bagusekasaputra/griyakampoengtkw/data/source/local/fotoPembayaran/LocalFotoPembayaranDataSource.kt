@@ -10,6 +10,8 @@ interface LocalFotoPembayaranDataSource {
 
     suspend fun deleteById(id: Long): Result<Nothing?>
 
+    suspend fun deleteByKavlingKodeAndTermin(kavlingKode: String, termin: String): Result<Nothing?>
+
     suspend fun updateFotoPembayaran(
         oldFotoPembayaranModel: FotoPembayaranModel,
         newFotoPembayaranModel: FotoPembayaranModel,

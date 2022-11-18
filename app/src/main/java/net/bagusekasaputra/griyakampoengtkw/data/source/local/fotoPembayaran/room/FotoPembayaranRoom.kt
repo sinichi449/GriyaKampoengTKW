@@ -26,6 +26,9 @@ interface FotoPembayaranDao {
     @Query("DELETE FROM foto_pembayaran WHERE id=:id")
     fun deleteById(id: Long)
 
+    @Query("DELETE FROM foto_pembayaran WHERE kavling_kode=:kavlingKode AND termin=:termin")
+    fun deleteByKavlingKodeAndTermin(kavlingKode: String, termin: String)
+
     @Update
     fun update(oldFotoPembayaranEntity: FotoPembayaranEntity, newPembayaranEntity: FotoPembayaranEntity)
 }

@@ -47,12 +47,12 @@ class FotoPembayaranRepositoryImpl @Inject constructor(
         }
     }
 
-    override fun deleteFotoPembayaran(
-        kavlingKode: String,
-        termin: String,
-        fotoPembayaran: FotoPembayaran
-    ): Flow<Result<Nothing?>> {
-        TODO("Not yet implemented")
+    override fun deleteFotoPembayaran(kavlingKode: String, termin: String): Flow<Result<Nothing?>> {
+        return flow {
+            val localResult = localFotoPembayaranDataSource.deleteByKavlingKodeAndTermin(kavlingKode, termin)
+
+            emit(localResult)
+        }
     }
 
     override fun isFotoPembayaranExist(kavlingKode: String, termin: String): Flow<Result<Boolean>> {

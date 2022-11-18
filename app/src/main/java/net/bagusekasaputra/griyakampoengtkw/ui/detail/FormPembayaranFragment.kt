@@ -44,7 +44,6 @@ class FormPembayaranFragment : Fragment() {
     }
 
     private lateinit var binding: FragmentFormPembayaranBinding
-//    private val viewModel: DetailViewModel by viewModels()
     private val viewModel: DetailViewModel by activityViewModels()
     private val imageViewModel: ImageViewModel by activityViewModels()
 
@@ -741,11 +740,11 @@ class FormPembayaranFragment : Fragment() {
     /**
      * This gotta be used by lihat foto and tambahkan foto.
      */
-    private fun showFotoPembayaranSelectionDialog(onTerminClick: (selectedTermin: String) -> Unit) {
+    private fun showFotoPembayaranSelectionDialog(dialogTitle: String, onTerminClick: (selectedTermin: String) -> Unit) {
         val listTerminPembayaran = viewModel.getListTerminPembayaran()
 
         MaterialAlertDialogBuilder(requireContext()).apply {
-            setTitle("Pilih Termin")
+            setTitle(dialogTitle)
             setItems(listTerminPembayaran) { dialog, selectionPosition ->
                 // Go to Full Image Activity
                 val selectedTermin = listTerminPembayaran[selectionPosition]
@@ -753,9 +752,9 @@ class FormPembayaranFragment : Fragment() {
                 // Updated currentTermin here
                 updateSelectedTermin(selectedTermin)
 
-                onTerminClick(selectedTermin)
-
                 dialog.dismiss()
+
+                onTerminClick(selectedTermin)
             }
         }.create()
             .show()
@@ -773,14 +772,16 @@ class FormPembayaranFragment : Fragment() {
                 true
             }
             R.id.tambahkan_foto -> {
-                showFotoPembayaranSelectionDialog { selectedTermin ->
-                    showImagePickerDialog()
-                }
+                showFotoPembayaranSelectionDialog(
+                    dialogTitle = "Tambah Foto Kuitansi",
+                    onTerminClick = { showImagePickerDialog() }
+                )
 
                 true
             }
             R.id.lihat_foto -> {
                 showFotoPembayaranSelectionDialog(
+                    dialogTitle = "Lihat Foto Pembayaran",
                     onTerminClick = { selectedTermin ->
                         val imageTransport = imageViewModel.createImageTransport(
                             sendIntent = GriyaNodes.INTENT_FOTO_PEMBAYARAN,
@@ -793,6 +794,31 @@ class FormPembayaranFragment : Fragment() {
                         val fullImageIntent = Intent(requireContext(), FullImageActivity::class.java)
                         fullImageIntent.putExtra(GriyaNodes.INTENT_SOURCE_IMAGE, imageTransport)
                         startActivity(fullImageIntent)
+                    }
+                )
+                true
+            }
+            R.id.hapus_foto -> {
+                showFotoPembayaranSelectionDialog(
+                    dialogTitle = "Hapus Foto Pembayaran",
+                    onTerminClick = { selectedTermin ->
+                        // Show delete confirmation
+                        MaterialAlertDialogBuilder(requireContext()).apply {
+                            setTitle("Hapus Foto Pembayaran $selectedTermin?")
+                            setMessage("Apakah Anda yakin menghapus Foto Pembayaran pada termin $selectedTermin?")
+                            setPositiveButton("Ya") { dialog, _ ->
+                                imageViewModel.deleteFotoPembayaran(
+                                    kavlingKode = currentKavlingKode!!,
+                                    termin = selectedTermin,
+                                    onComplete = { msg ->
+                                        dialog.dismiss()
+                                        Snackbar.make(binding.root, msg, Snackbar.LENGTH_SHORT).show()
+                                    }
+                                )
+                            }
+                            setNegativeButton("Tidak") { dialog, _ -> dialog.dismiss()}
+                        }.create()
+                            .show()
                     }
                 )
                 true
@@ -920,25 +946,6 @@ class FormPembayaranFragment : Fragment() {
 
     private fun shareUiPembayaran() {
         // TODO
-    }
-
-    private fun parseFormPembayaranToCsv(listPembayaran: List<Pembayaran>): List<String> {
-        val parsedPembayaran = ArrayList<String>()
-
-        listPembayaran.forEach { pembayaran ->
-            val dataString = StringBuilder().apply {
-                append("${pembayaran.termin}.")
-                append("${pembayaran.tanggal}.")
-                append("${pembayaran.jumlahUangDibayar}.")
-                append("${pembayaran.totalUangMasuk}.")
-                append("${pembayaran.presentase}%.")
-                append("${pembayaran.keterangan}-")
-            }.toString()
-
-            parsedPembayaran.add(dataString)
-        }
-
-        return parsedPembayaran
     }
 
     private fun updateSelectedTermin(selectedTermin: String) {
