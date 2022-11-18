@@ -162,6 +162,9 @@
                                 android:background="@color/abang">
 
                                 <TextView
+                                    android:text="   "/>
+
+                                <TextView
                                     android:text="Termin"
                                     android:textColor="@color/white"
                                     android:padding="4dp"

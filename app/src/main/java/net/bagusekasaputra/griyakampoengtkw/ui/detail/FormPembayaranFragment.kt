@@ -65,6 +65,7 @@ class FormPembayaranFragment : Fragment() {
                             kavlingKode = currentKavlingKode!!,
                             uri = it,
                             onComplete = { msg ->
+                                syncPembayaran()
                                 Snackbar.make(binding.root, msg, Snackbar.LENGTH_SHORT).show()
                             }
                         )
@@ -595,11 +596,16 @@ class FormPembayaranFragment : Fragment() {
             }
 
             val tableRow = TableRow(requireContext())
-            // test add icon
-            val imageView = ImageView(requireContext())
-            imageView.setImageDrawable(ContextCompat.getDrawable(requireContext(), R.drawable.ic_baseline_assignment_turned_in_24))
 
-            tableRow.addView(imageView)
+            // Do not show this image if "sudahIsiFotoPembayaran" is FALSE
+            val imgSudahIsiFotoPembayaran = ImageView(requireContext())
+            imgSudahIsiFotoPembayaran.setImageDrawable(ContextCompat.getDrawable(requireContext(), R.drawable.ic_baseline_assignment_turned_in_24))
+
+            if (!it.sudahIsiFotoPembayaran) {
+                imgSudahIsiFotoPembayaran.visibility = View.INVISIBLE
+            }
+
+            tableRow.addView(imgSudahIsiFotoPembayaran)
 
             for (tv in textViews) {
                 tv.gravity = Gravity.CENTER
@@ -744,16 +750,20 @@ class FormPembayaranFragment : Fragment() {
         }
     }
 
-    /**
-     * This gotta be used by lihat foto and tambahkan foto.
-     */
-    private fun showFotoPembayaranSelectionDialog(dialogTitle: String, onTerminClick: (selectedTermin: String) -> Unit) {
-        val listTerminPembayaran = viewModel.getListTerminPembayaran()
+    private fun showFotoPembayaranSelectionDialog(
+        dialogTitle: String,
+        mode: OperasiFotoPembayaran,
+        onTerminClick: (selectedTermin: String) -> Unit,
+    ) {
+        val listTerminPembayaran = when (mode) {
+            OperasiFotoPembayaran.TAMBAH -> viewModel.getBelumIsiFotoTerminPembayaran()
+            OperasiFotoPembayaran.HAPUS -> viewModel.getSudahIsiFotoTerminPembayaran()
+            OperasiFotoPembayaran.LIHAT -> viewModel.getSudahIsiFotoTerminPembayaran()
+        }
 
         MaterialAlertDialogBuilder(requireContext()).apply {
             setTitle(dialogTitle)
             setItems(listTerminPembayaran) { dialog, selectionPosition ->
-                // Go to Full Image Activity
                 val selectedTermin = listTerminPembayaran[selectionPosition]
 
                 // Updated currentTermin here
@@ -779,48 +789,11 @@ class FormPembayaranFragment : Fragment() {
                 true
             }
             R.id.tambahkan_foto -> {
-                // WARNING!!: CALLBACK HELL AHEAD
-                //
-                // Summary: First, it will show a list of available Termins which will correspond
-                // to a Foto Pembayaran. When one of those Termins clicked, then it will check
-                // whether the Foto Pembayaran associated with the said Termin indeed exists. Finally,
-                // it executes showImagePickerDialog().
                 showFotoPembayaranSelectionDialog(
-                    dialogTitle = "Tambah Foto Kuitansi",
+                    dialogTitle = "Tambah Foto Pembayaran",
+                    mode = OperasiFotoPembayaran.TAMBAH,
                     onTerminClick = { selectedTermin ->
-
-                        // I hope that this anonymous functions will reduce the CALLBACK HELL!
-                        val onExistFotoPembayaran = {
-                            MaterialAlertDialogBuilder(requireContext()).apply {
-                                setTitle("Ganti Foto Pembayaran?")
-                                setMessage("Foto Pembayaran sudah ada di pembayaran $selectedTermin. Apakah Anda yakin ingin mengubahnya?")
-                                setPositiveButton("Ya") { dialog, _ ->
-                                    dialog.dismiss()
-
-                                    showImagePickerDialog()
-                                }
-                                setNegativeButton("Tidak") { dialog, _ -> dialog.dismiss() }
-                            }.create()
-                                .show()
-                        }
-
-                        // First we need to know whether the Foto Pembayaran in question is
-                        // either exist or not.
-                        imageViewModel.checkIsExistFotoPembayaran(
-                            kavlingKode = currentKavlingKode!!,
-                            termin = selectedTermin,
-                            onComplete = { isExistFotoPembayaran ->
-                                // Show confirmation to replace the existing foto pembayaran.
-                                // Proceed to showImagePickerDialog() when user click the positive button.
-                                if (isExistFotoPembayaran)
-                                    onExistFotoPembayaran()
-                                else
-                                    showImagePickerDialog()
-
-                            },
-                            onFailure = { Toast.makeText(requireContext(), it, Toast.LENGTH_SHORT).show() }
-                        )
-
+                        showImagePickerDialog()
                     }
                 )
 
@@ -829,6 +802,7 @@ class FormPembayaranFragment : Fragment() {
             R.id.lihat_foto -> {
                 showFotoPembayaranSelectionDialog(
                     dialogTitle = "Lihat Foto Pembayaran",
+                    mode = OperasiFotoPembayaran.LIHAT,
                     onTerminClick = { selectedTermin ->
                         val imageTransport = imageViewModel.createImageTransport(
                             sendIntent = GriyaNodes.INTENT_FOTO_PEMBAYARAN,
@@ -848,6 +822,7 @@ class FormPembayaranFragment : Fragment() {
             R.id.hapus_foto -> {
                 showFotoPembayaranSelectionDialog(
                     dialogTitle = "Hapus Foto Pembayaran",
+                    mode = OperasiFotoPembayaran.HAPUS,
                     onTerminClick = { selectedTermin ->
                         // Show delete confirmation
                         MaterialAlertDialogBuilder(requireContext()).apply {
@@ -859,6 +834,7 @@ class FormPembayaranFragment : Fragment() {
                                     termin = selectedTermin,
                                     onComplete = { msg ->
                                         dialog.dismiss()
+                                        syncPembayaran()
                                         Snackbar.make(binding.root, msg, Snackbar.LENGTH_SHORT).show()
                                     }
                                 )
@@ -997,5 +973,9 @@ class FormPembayaranFragment : Fragment() {
 
     private fun updateSelectedTermin(selectedTermin: String) {
         imageViewModel.currentTermin.value = selectedTermin
+    }
+
+    private enum class OperasiFotoPembayaran {
+        LIHAT, TAMBAH, HAPUS
     }
 }

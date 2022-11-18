@@ -9,5 +9,6 @@ data class Pembayaran(
     var sisaBelumTerbayar: String = "",
     val keterangan: String,
     val timeMillis: Long,
+    var sudahIsiFotoPembayaran: Boolean = false,
 ) {
 }

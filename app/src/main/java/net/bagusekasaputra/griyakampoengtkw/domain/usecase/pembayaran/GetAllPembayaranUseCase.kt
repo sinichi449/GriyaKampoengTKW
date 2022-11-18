@@ -2,13 +2,17 @@ package net.bagusekasaputra.griyakampoengtkw.domain.usecase.pembayaran
 
 import android.util.Log
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.channels.awaitClose
+import kotlinx.coroutines.channels.trySendBlocking
 import kotlinx.coroutines.flow.*
 import net.bagusekasaputra.griyakampoengtkw.domain.PembayaranSorterUtil
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.HargaKavling
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.Pembayaran
+import net.bagusekasaputra.griyakampoengtkw.domain.repository.FotoPembayaranRepository
 import net.bagusekasaputra.griyakampoengtkw.domain.repository.PembayaranRepository
 import net.bagusekasaputra.griyakampoengtkw.domain.usecase.UseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.usecase.hargakavling.GetSingleHargaKavlingForPembayaranUseCase
+import net.bagusekasaputra.griyakampoengtkw.logEvent
 import net.bagusekasaputra.griyakampoengtkw.util.GriyaNodes.Companion.LOG_TAG
 import net.bagusekasaputra.griyakampoengtkw.util.NumberUtil
 import java.math.BigDecimal
@@ -20,6 +24,7 @@ import javax.inject.Singleton
 class GetAllPembayaranUseCase @Inject constructor(
     private val pembayaranRepository: PembayaranRepository,
     private val getSingleHargaKavlingForPembayaranUseCase: GetSingleHargaKavlingForPembayaranUseCase,
+    private val fotoPembayaranRepository: FotoPembayaranRepository,
 ): UseCase<GetAllPembayaranUseCase.Request, GetAllPembayaranUseCase.Response>() {
 
     data class Request(val kavlingKode: String): UseCase.Request
@@ -47,11 +52,22 @@ class GetAllPembayaranUseCase @Inject constructor(
                      */
                     val maskedPembayaran = maskPembayaran(listPembayaran, hargaKavling)
 
+                    // Check sudah isi form pembayaran
+                    maskedPembayaran.forEach { pembayaran ->
+                        val sudahIsiFormPembayaran = checkSudahIsiFormPembayaran(
+                            kavlingKode = request.kavlingKode,
+                            termin = pembayaran.termin,
+                        )
+
+                        pembayaran.sudahIsiFotoPembayaran = sudahIsiFormPembayaran
+                    }
+
                     return@zip Result.success(maskedPembayaran)
                 } else {
                     return@zip resultListPembayaran
                 }
             }
+
             .map {
                 Response(it)
             }
@@ -104,5 +120,23 @@ class GetAllPembayaranUseCase @Inject constructor(
             }
         }
             .flowOn(Dispatchers.IO)
+    }
+
+    private suspend fun checkSudahIsiFormPembayaran(kavlingKode: String, termin: String): Boolean {
+        return callbackFlow<Boolean> {
+            fotoPembayaranRepository.isFotoPembayaranExist(
+                kavlingKode = kavlingKode,
+                termin = termin,
+            ).collect { result ->
+                result.onSuccess {
+                    trySendBlocking(it)
+                }
+                result.onFailure {
+                    logEvent("ERROR: Batch checking sudahIsiFormPembayaran ${it.message}")
+                }
+            }
+
+            awaitClose {  }
+        }.first()
     }
 }

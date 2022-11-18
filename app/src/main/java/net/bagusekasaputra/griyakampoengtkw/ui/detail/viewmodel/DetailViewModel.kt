@@ -749,7 +749,7 @@ class DetailViewModel @Inject constructor(
                 biayaMarketer = feeMarketingLive.value?.biayaMarketer ?: "0",
             )
 
-    fun getListTerminPembayaran(): Array<String> {
+    fun getAllArrayTerminPembayaran(): Array<String> {
         val terminList = ArrayList<String>()
 
         listPembayaranLive.value?.forEach { pembayaran ->
@@ -757,6 +757,29 @@ class DetailViewModel @Inject constructor(
         }
 
         // We need to convert into an Array ... How botherful.
+        return terminList.toTypedArray()
+    }
+
+    fun getBelumIsiFotoTerminPembayaran(): Array<String> {
+        val terminList = ArrayList<String>()
+
+        listPembayaranLive.value?.forEach { pembayaran ->
+            if (pembayaran.sudahIsiFotoPembayaran.not()) {
+                terminList.add(pembayaran.termin)
+            }
+        }
+
+        return terminList.toTypedArray()
+    }
+
+    fun getSudahIsiFotoTerminPembayaran(): Array<String> {
+        val terminList = ArrayList<String>()
+
+        listPembayaranLive.value?.forEach { pembayaran ->
+            if (pembayaran.sudahIsiFotoPembayaran)
+                terminList.add(pembayaran.termin)
+        }
+
         return terminList.toTypedArray()
     }
 }
