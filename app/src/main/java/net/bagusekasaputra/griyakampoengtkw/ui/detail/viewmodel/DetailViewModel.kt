@@ -23,6 +23,9 @@ import net.bagusekasaputra.griyakampoengtkw.domain.usecase.hargakavling.AddHarga
 import net.bagusekasaputra.griyakampoengtkw.domain.usecase.hargakavling.GetHargaKavlingUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.usecase.pembayaran.*
 import net.bagusekasaputra.griyakampoengtkw.ui.detail.tableview.TableBiayaMarketingHelper
+import net.bagusekasaputra.griyakampoengtkw.ui.detail.tableview.formPembayaran.PembayaranCell
+import net.bagusekasaputra.griyakampoengtkw.ui.detail.tableview.formPembayaran.PembayaranColumnHeader
+import net.bagusekasaputra.griyakampoengtkw.ui.detail.tableview.formPembayaran.PembayaranRowHeader
 import net.bagusekasaputra.griyakampoengtkw.util.NumberUtil
 import javax.inject.Inject
 
@@ -781,5 +784,65 @@ class DetailViewModel @Inject constructor(
         }
 
         return terminList.toTypedArray()
+    }
+
+
+    fun getPembayaranTableColumnHeaders(): List<PembayaranColumnHeader> {
+        return listOf(
+            PembayaranColumnHeader(text = "Tanggal"),
+            PembayaranColumnHeader(text = "Jumlah Uang dibayar"),
+            PembayaranColumnHeader(text = "Total Uang Masuk"),
+            PembayaranColumnHeader(text = "Persentase"),
+            PembayaranColumnHeader(text = "Keterangan Progress"),
+        )
+    }
+
+    fun getPembayaranTableRowHeaders(): List<PembayaranRowHeader> {
+        // In this case the row headers of Pembayaran table are the Termins.
+        // First we populate the termins in a list, then return that list as Row Headers.
+        val termins = mutableListOf<PembayaranRowHeader>()
+
+        val listPembayaran = listPembayaranLive.value
+        if (listPembayaran != null) {
+            listPembayaran.forEach { pembayaran ->
+                termins.add(PembayaranRowHeader(text = pembayaran.termin))
+            }
+        } else {
+            // If null, return "-" character, I think ...
+            termins.add(PembayaranRowHeader(text = "-"))
+        }
+
+        return termins
+    }
+
+    fun getPembayaranTableCellItems(): List<List<PembayaranCell>> {
+        val firstOrderList = mutableListOf<List<PembayaranCell>>()
+
+        val listPembayaran = listPembayaranLive.value
+        if (listPembayaran != null) {
+            listPembayaran.forEach { pembayaran ->
+                val secondOrderList = mutableListOf<PembayaranCell>().apply {
+                    add(PembayaranCell(mData = pembayaran.tanggal))
+                    add(PembayaranCell(mData = pembayaran.jumlahUangDibayar))
+                    add(PembayaranCell(mData = pembayaran.totalUangMasuk))
+                    add(PembayaranCell(mData = pembayaran.presentase.toString()))
+                    add(PembayaranCell(mData = pembayaran.keterangan))
+                }
+
+                firstOrderList.add(secondOrderList)
+            }
+        } else {
+            firstOrderList.add(
+                listOf(
+                    PembayaranCell(mData = "-"), // Tanggal
+                    PembayaranCell(mData = "-"), // Jumlah Uang dibayar
+                    PembayaranCell(mData = "-"), // Total uang masuk
+                    PembayaranCell(mData = "-"), // Persentase
+                    PembayaranCell(mData = "-"), // Keterangan Progress
+                )
+            )
+        }
+
+        return firstOrderList
     }
 }

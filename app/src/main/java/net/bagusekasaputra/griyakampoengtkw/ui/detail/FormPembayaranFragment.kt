@@ -29,6 +29,10 @@ import net.bagusekasaputra.griyakampoengtkw.domain.entity.Pembayaran
 import net.bagusekasaputra.griyakampoengtkw.ui.UiUtils
 import net.bagusekasaputra.griyakampoengtkw.ui.custom.ThousandSeparatorTextWatcher
 import net.bagusekasaputra.griyakampoengtkw.ui.detail.adapter.TerminRecyclerAdapter
+import net.bagusekasaputra.griyakampoengtkw.ui.detail.tableview.formPembayaran.PembayaranCell
+import net.bagusekasaputra.griyakampoengtkw.ui.detail.tableview.formPembayaran.PembayaranColumnHeader
+import net.bagusekasaputra.griyakampoengtkw.ui.detail.tableview.formPembayaran.PembayaranRowHeader
+import net.bagusekasaputra.griyakampoengtkw.ui.detail.tableview.formPembayaran.PembayaranTableViewAdapter
 import net.bagusekasaputra.griyakampoengtkw.ui.detail.viewmodel.DetailViewModel
 import net.bagusekasaputra.griyakampoengtkw.ui.detail.viewmodel.ImageViewModel
 import net.bagusekasaputra.griyakampoengtkw.util.*
@@ -210,11 +214,20 @@ class FormPembayaranFragment : Fragment() {
         viewModel.listPembayaranLive.observe(requireActivity()) { listPembayaran ->
             if (listPembayaran != null) {
                 populateTableLayout(listPembayaran)
+
                 binding.tvSisaBlmTerbayar?.text = listPembayaran.last().sisaBelumTerbayar
             } else {
                 clearTableLayout()
                 clearPembayaranField()
             }
+
+            // I think this will immune to the null value, since I set default values
+            //  to Column and Row Headers, and the Cell Items.
+            val pembayaranColumnHeaders = viewModel.getPembayaranTableColumnHeaders()
+            val pembayaranRowHeaders = viewModel.getPembayaranTableRowHeaders()
+            val pembayaranCellItems = viewModel.getPembayaranTableCellItems()
+
+            populateTableView(pembayaranColumnHeaders, pembayaranRowHeaders, pembayaranCellItems)
         }
 
         viewModel.catatanPembayaranLive.observe(requireActivity()) { catatanPembayaran ->
@@ -548,7 +561,7 @@ class FormPembayaranFragment : Fragment() {
 
     private fun clearTableLayout() {
         binding.tableLayout.apply {
-            removeViews(1, max(0, this.childCount - 1))
+            this?.removeViews(1, max(0, this.childCount - 1))
         }
     }
 
@@ -558,7 +571,7 @@ class FormPembayaranFragment : Fragment() {
      */
     private fun clearPembayaranField() {
         binding.tableLayout.apply {
-            removeViews(1, max(0, this.childCount - 1))
+            this?.removeViews(1, max(0, this.childCount - 1))
         }
         binding.tvSisaBlmTerbayar?.text = "0"
         binding.tvTambahanLuas?.text = "0"
@@ -612,8 +625,21 @@ class FormPembayaranFragment : Fragment() {
                 tableRow.addView(tv)
             }
 
-            binding.tableLayout.addView(tableRow)
+            binding.tableLayout?.addView(tableRow)
         }
+    }
+
+    private fun populateTableView(
+        columnHeaders: List<PembayaranColumnHeader>,
+        rowHeaders: List<PembayaranRowHeader>,
+        cellLists: List<List<PembayaranCell>>,
+    ) {
+        val pembayaranTableViewAdapter = PembayaranTableViewAdapter()
+
+        binding.tableFormPembayaran?.setAdapter(pembayaranTableViewAdapter)
+
+        pembayaranTableViewAdapter.setAllItems(columnHeaders, rowHeaders, cellLists)
+        pembayaranTableViewAdapter.notifyDataSetChanged()
     }
 
     private fun createTextViewForTableRows(): MaterialTextView {
