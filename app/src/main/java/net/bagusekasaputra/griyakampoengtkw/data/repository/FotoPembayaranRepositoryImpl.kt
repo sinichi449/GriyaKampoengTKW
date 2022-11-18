@@ -56,7 +56,22 @@ class FotoPembayaranRepositoryImpl @Inject constructor(
     }
 
     override fun isFotoPembayaranExist(kavlingKode: String, termin: String): Flow<Result<Boolean>> {
-        TODO("Not yet implemented")
+        return flow {
+            // We can take advantage of GET operation. Simply, if it returns null, then
+            // Foto Pembayaran isn't exist.
+            val getFotoPembayaran = localFotoPembayaranDataSource.getFotoPembayaran(kavlingKode, termin)
+
+            getFotoPembayaran.onSuccess { fotoPembayaran ->
+                if (fotoPembayaran != null)
+                    emit(Result.success(true))
+                else
+                    emit(Result.success(false))
+            }
+
+            getFotoPembayaran.onFailure {
+                emit(Result.failure(getFotoPembayaran.exceptionOrNull() ?: UnknownError("ERROR: Gagal mengecek apakah Foto Pembayaran tersedia.")))
+            }
+        }
     }
 
     private fun mapFotoPembayaranModel(fotoPembayaran: FotoPembayaran, uriStr: String): FotoPembayaranModel {

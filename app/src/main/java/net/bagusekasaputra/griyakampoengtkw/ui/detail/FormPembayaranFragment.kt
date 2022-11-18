@@ -772,9 +772,49 @@ class FormPembayaranFragment : Fragment() {
                 true
             }
             R.id.tambahkan_foto -> {
+                // WARNING!!: CALLBACK HELL AHEAD
+                //
+                // Summary: First, it will show a list of available Termins which will correspond
+                // to a Foto Pembayaran. When one of those Termins clicked, then checking
+                // whether the Foto Pembayaran associated with that Termin is exist. Finally,
+                // it executes showImagePickerdialog().
                 showFotoPembayaranSelectionDialog(
                     dialogTitle = "Tambah Foto Kuitansi",
-                    onTerminClick = { showImagePickerDialog() }
+                    onTerminClick = { selectedTermin ->
+
+                        // I hope that this anonymous functions will reduce the CALLBACK HELL!
+                        val onExistFotoPembayaran = {
+                            MaterialAlertDialogBuilder(requireContext()).apply {
+                                setTitle("Ganti Foto Pembayaran?")
+                                setMessage("Foto Pembayaran sudah ada di pembayaran $selectedTermin. Apakah Anda yakin ingin mengubahnya?")
+                                setPositiveButton("Ya") { dialog, _ ->
+                                    dialog.dismiss()
+
+                                    showImagePickerDialog()
+                                }
+                                setNegativeButton("Tidak") { dialog, _ -> dialog.dismiss() }
+                            }.create()
+                                .show()
+                        }
+
+                        // First we need to know whether the Foto Pembayaran in question is
+                        // either exist or not.
+                        imageViewModel.checkIsExistFotoPembayaran(
+                            kavlingKode = currentKavlingKode!!,
+                            termin = selectedTermin,
+                            onComplete = { isExistFotoPembayaran ->
+                                // Show confirmation to replace the existing foto pembayaran.
+                                // Proceed to showImagePickerDialog() when user click the positive button.
+                                if (isExistFotoPembayaran)
+                                    onExistFotoPembayaran()
+                                else
+                                    showImagePickerDialog()
+
+                            },
+                            onFailure = { Toast.makeText(requireContext(), it, Toast.LENGTH_SHORT).show() }
+                        )
+
+                    }
                 )
 
                 true

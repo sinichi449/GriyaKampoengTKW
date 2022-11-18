@@ -12,6 +12,7 @@ import net.bagusekasaputra.griyakampoengtkw.domain.ImageUtil
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.fotoPembayaran.AddFotoPembayaranAsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.fotoPembayaran.DeleteFotoPembayaranAsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.fotoPembayaran.GetFotoPembayaranAsyncUseCase
+import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.fotoPembayaran.IsFotoPembayaranExistAsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.FotoKuitansi
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.FotoPembayaran
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.ImageDataDiri
@@ -38,6 +39,7 @@ class ImageViewModel @Inject constructor(
     private val getFotoPembayaranAsyncUseCase: GetFotoPembayaranAsyncUseCase,
     private val addFotoPembayaranAsyncUseCase: AddFotoPembayaranAsyncUseCase,
     private val deleteFotoPembayaranAsyncUseCase: DeleteFotoPembayaranAsyncUseCase,
+    private val isFotoPembayaranExistAsyncUseCase: IsFotoPembayaranExistAsyncUseCase,
 ): ViewModel() {
 
     val fotoKuitansiLive = MutableLiveData<FotoKuitansi>()
@@ -299,6 +301,24 @@ class ImageViewModel @Inject constructor(
         )
 
         jobs.add(deletingFotoPembayaranJob)
+    }
+
+    fun checkIsExistFotoPembayaran(
+        kavlingKode: String,
+        termin: String,
+        onComplete: (exist: Boolean) -> Unit,
+        onFailure: (msg: String) -> Unit,
+    ) {
+        val request = IsFotoPembayaranExistAsyncUseCase.Request(kavlingKode, termin)
+
+        val checkingFotoPembayaranJob = asyncUseCaseHelper.doWork(
+            request = request,
+            asyncUseCase = isFotoPembayaranExistAsyncUseCase,
+            onSuccess = { onComplete(it ?: false) },
+            onFailure = { onFailure(it.message ?: "null") },
+        )
+
+        jobs.add(checkingFotoPembayaranJob)
     }
 
 
