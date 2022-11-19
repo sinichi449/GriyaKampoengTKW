@@ -8,8 +8,6 @@ import android.content.Intent
 import android.content.res.Configuration
 import android.os.Bundle
 import android.view.*
-import android.widget.ImageView
-import android.widget.TableRow
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AlertDialog
@@ -40,7 +38,6 @@ import net.bagusekasaputra.griyakampoengtkw.util.*
 import net.bagusekasaputra.griyakampoengtkw.util.DialogUtil.additionalDialogSetting
 import java.text.SimpleDateFormat
 import java.util.*
-import kotlin.math.max
 
 @AndroidEntryPoint
 class FormPembayaranFragment : Fragment() {
@@ -105,6 +102,11 @@ class FormPembayaranFragment : Fragment() {
         }
 
         setHasOptionsMenu(true)
+    }
+
+    private fun onFullScreenLandscapeMode() {
+        requireActivity().requestWindowFeature(Window.FEATURE_NO_TITLE)
+        requireActivity().window.setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
     }
 
     override fun onCreateView(
@@ -214,11 +216,8 @@ class FormPembayaranFragment : Fragment() {
 
         viewModel.listPembayaranLive.observe(requireActivity()) { listPembayaran ->
             if (listPembayaran != null) {
-                populateTableLayout(listPembayaran)
-
                 binding.tvSisaBlmTerbayar?.text = listPembayaran.last().sisaBelumTerbayar
             } else {
-                clearTableLayout()
                 clearPembayaranField()
             }
 
@@ -265,11 +264,6 @@ class FormPembayaranFragment : Fragment() {
             showTerminSelectionButtonsDialog()
             hideFabs()
         }
-    }
-
-    private fun onFullScreenLandscapeMode() {
-        requireActivity().requestWindowFeature(Window.FEATURE_NO_TITLE)
-        requireActivity().window.setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
     }
 
     private fun showAddFormPembayaranDialog() {
@@ -609,74 +603,14 @@ class FormPembayaranFragment : Fragment() {
         }
     }
 
-    private fun clearTableLayout() {
-        binding.tableLayout.apply {
-            this?.removeViews(1, max(0, this.childCount - 1))
-        }
-    }
-
     /**
      * This is clearing the pembayaran field: TableLayout, TvSisaBelumBayar,
      * TvTambahanLuas, and TvTotalHarga.
      */
     private fun clearPembayaranField() {
-        binding.tableLayout.apply {
-            this?.removeViews(1, max(0, this.childCount - 1))
-        }
         binding.tvSisaBlmTerbayar?.text = "0"
         binding.tvTambahanLuas?.text = "0"
         binding.tvTotalHarga?.text = "0"
-    }
-
-    private fun populateTableLayout(listPembayaran: List<Pembayaran>) {
-        // avoiding multiple table, so we need to clear the table for each
-        // "populateTableLayout()" function call
-        clearTableLayout()
-
-        listPembayaran.forEach {
-            // Creating Textview for each rows
-            val termin = createTextViewForTableRows()
-            val tanggal = createTextViewForTableRows()
-            val jumlahUangDibayar = createTextViewForTableRows()
-            val totalUangMasuk = createTextViewForTableRows()
-            val presentase = createTextViewForTableRows()
-            val keterangan = createTextViewForTableRows().apply { textAlignment = View.TEXT_ALIGNMENT_VIEW_START }
-
-            termin.text = it.termin
-            tanggal.text = it.tanggal
-            jumlahUangDibayar.text = it.jumlahUangDibayar.toString()
-            totalUangMasuk.text = it.totalUangMasuk.toString()
-            presentase.text = it.presentase.toString()
-            keterangan.text = it.keterangan
-
-            val textViews = ArrayList<MaterialTextView>().apply {
-                add(termin)
-                add(tanggal)
-                add(jumlahUangDibayar)
-                add(totalUangMasuk)
-                add(presentase)
-                add(keterangan)
-            }
-
-            val tableRow = TableRow(requireContext())
-
-            // Do not show this image if "sudahIsiFotoPembayaran" is FALSE
-            val imgSudahIsiFotoPembayaran = ImageView(requireContext())
-            imgSudahIsiFotoPembayaran.setImageDrawable(ContextCompat.getDrawable(requireContext(), R.drawable.ic_baseline_assignment_turned_in_24))
-
-            if (!it.sudahIsiFotoPembayaran) {
-                imgSudahIsiFotoPembayaran.visibility = View.INVISIBLE
-            }
-
-            tableRow.addView(imgSudahIsiFotoPembayaran)
-
-            for (tv in textViews) {
-                tv.gravity = Gravity.CENTER
-                tableRow.addView(tv)
-            }
-
-            binding.tableLayout?.addView(tableRow)
-        }
     }
 
     private fun populateTableView(

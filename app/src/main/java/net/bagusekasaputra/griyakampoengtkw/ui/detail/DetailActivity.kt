@@ -1,7 +1,9 @@
 package net.bagusekasaputra.griyakampoengtkw.ui.detail
 
+import android.content.res.Configuration
 import android.os.Bundle
 import android.view.MenuItem
+import android.view.View
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
@@ -29,6 +31,14 @@ class DetailActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityDetailBinding.inflate(layoutInflater)
+        // For removing app bar on landscape mode.
+        // The Pembayaran table, in the FormPembayaranFragment need this.
+        val orientation = resources.configuration.orientation
+        if (orientation == Configuration.ORIENTATION_LANDSCAPE) {
+            supportActionBar?.hide()
+            binding.tabLayout.visibility = View.GONE
+        }
+
         setContentView(binding.root)
 
         supportActionBar?.setHomeAsUpIndicator(R.drawable.keyboard_arrow_left_36px)
