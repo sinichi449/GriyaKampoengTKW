@@ -25,7 +25,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 tools:context=".ui.detail.FormPembayaranFragment"
-                android:padding="16dp">
+                android:paddingVertical="16dp">
 
                 <androidx.constraintlayout.widget.Guideline
                     android:id="@+id/guideline_vertical"
@@ -43,7 +43,8 @@
                     app:layout_constraintTop_toTopOf="parent"
                     app:layout_constraintEnd_toStartOf="@id/guideline_vertical"
                     style="@style/TextAppearance.MaterialComponents.Headline6"
-                    android:textSize="@dimen/form_pembayaran_title_text_size"/>
+                    android:textSize="@dimen/form_pembayaran_title_text_size"
+                    android:layout_marginStart="16dp"/>
 
                 <com.google.android.material.textview.MaterialTextView
                     android:id="@+id/tv_harga"
@@ -148,7 +149,8 @@
                     app:row_header_width="@dimen/table_pembayaran_row_header_wdith"
                     app:show_horizontal_separator="true"
                     app:show_vertical_separator="true"
-                    app:separator_color="@color/black" />
+                    app:separator_color="@color/black"
+                    android:layout_marginStart="16dp"/>
 
                 <com.google.android.material.textview.MaterialTextView
                     android:id="@+id/tv_info_catatan"
@@ -159,7 +161,8 @@
                     android:layout_marginTop="24dp"
                     android:text="Catatan"
                     style="@style/TextAppearance.MaterialComponents.Headline6"
-                    android:textSize="@dimen/form_pembayaran_title_text_size"/>
+                    android:textSize="@dimen/form_pembayaran_title_text_size"
+                    android:layout_marginStart="16dp"/>
 
                 <ImageView
                     android:id="@+id/img_edit_catatan"
@@ -181,7 +184,8 @@
                     android:text="@string/tidak_ada_catatan"
                     android:layout_marginTop="8dp"
                     style="@style/TextAppearance.MaterialComponents.Subtitle1"
-                    android:textSize="14sp"/>
+                    android:textSize="14sp"
+                    android:layout_marginStart="16dp"/>
 
 
             </androidx.constraintlayout.widget.ConstraintLayout>
