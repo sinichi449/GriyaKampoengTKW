@@ -970,6 +970,13 @@ class FormPembayaranFragment : Fragment() {
         }
     }
 
+    /**
+     * On click Radio Button of Jenis Pembayaran (ITJ, DP, Termin) selection.
+     *
+     * Once clicked, it automates the next sequence of selected Jenis Pembayaran. See "getNextPembayaranSequence()".
+     *
+     * It also automates for filling the Jumlah Uang Dibayar for Termin case.
+     */
     private fun onRadioButtonJenisPembayaranClick(dialogBinding: DialogAddFormPembayaranBinding) {
         dialogBinding.rbItj.setOnClickListener {
             dialogBinding.edtTermin.isEnabled = true
@@ -996,7 +1003,12 @@ class FormPembayaranFragment : Fragment() {
             dialogBinding.edtTermin.setText(
                 viewModel.getNextPembayaranSequence(DetailViewModel.JenisPembayaran.TERMIN)
             )
-//            dialogBinding.tilTermin.hint = "Masukkan urutan Termin"
+
+            // Set automatic Jumlah Uang Dibayar for Termin type
+            val jumlahUangDibayar = viewModel.getTerminJumlahUangDibayar()
+            if (jumlahUangDibayar != null) {
+                dialogBinding.edtJumlahUangDibayar.setText(jumlahUangDibayar)
+            }
         }
     }
 

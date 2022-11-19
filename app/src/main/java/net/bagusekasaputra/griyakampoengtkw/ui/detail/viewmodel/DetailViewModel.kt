@@ -884,27 +884,15 @@ class DetailViewModel @Inject constructor(
         }
     }
 
-    fun getNextItjSequence(): String {
+    fun getTerminJumlahUangDibayar(): String? {
         val listPembayaran = listPembayaranLive.value
 
-        if (listPembayaran != null) {
-            // Check if any ITJ exist
-            val itjList = listPembayaran.filter { it.termin.startsWith("ITJ") }
-            return if (itjList.isNotEmpty()) {
-                // If exists, then get the last index of ITJ.
-                // I speculate that the UseCase already do the sorting, so
-                // the last ITJ Sequence should be on the last index.
-                val lastItj = itjList.last()
+        val listTermins = listPembayaran?.filter { it.termin.startsWith("Termin") }
 
-                // +1 on the last number of ITJ
-                val urutan = lastItj.getUrutan()
-                urutan.plus(1).toString()
-
-            } else {
-                "1"
-            }
+        if (listTermins?.isNotEmpty() == true) {
+            return listTermins.last().jumlahUangDibayar
         } else {
-            return "1"
+            return null
         }
     }
 }
