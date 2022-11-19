@@ -7,6 +7,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import net.bagusekasaputra.griyakampoengtkw.domain.NumberUtil
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.*
 import net.bagusekasaputra.griyakampoengtkw.domain.usecase.biayaMarketing.*
 import net.bagusekasaputra.griyakampoengtkw.domain.usecase.catatanPembayaran.AddCatatanPembayaranUseCase
@@ -26,7 +27,6 @@ import net.bagusekasaputra.griyakampoengtkw.ui.detail.tableview.biayaMarketing.T
 import net.bagusekasaputra.griyakampoengtkw.ui.detail.tableview.formPembayaran.PembayaranCell
 import net.bagusekasaputra.griyakampoengtkw.ui.detail.tableview.formPembayaran.PembayaranColumnHeader
 import net.bagusekasaputra.griyakampoengtkw.ui.detail.tableview.formPembayaran.PembayaranRowHeader
-import net.bagusekasaputra.griyakampoengtkw.util.NumberUtil
 import javax.inject.Inject
 
 @HiltViewModel

@@ -16,6 +16,7 @@ import net.bagusekasaputra.griyakampoengtkw.databinding.DialogActionFeeMarketing
 import net.bagusekasaputra.griyakampoengtkw.databinding.DialogActionsBiayaMarketingBinding
 import net.bagusekasaputra.griyakampoengtkw.databinding.DialogPilihJenisBiayaBinding
 import net.bagusekasaputra.griyakampoengtkw.databinding.FragmentBiayaMarketingBinding
+import net.bagusekasaputra.griyakampoengtkw.domain.NumberUtil
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.BiayaMarketing
 import net.bagusekasaputra.griyakampoengtkw.ui.custom.ThousandSeparatorTextWatcher
 import net.bagusekasaputra.griyakampoengtkw.ui.detail.adapter.JenisBiayaMarketingRecyclerAdapter
@@ -26,7 +27,6 @@ import net.bagusekasaputra.griyakampoengtkw.ui.detail.tableview.biayaMarketing.R
 import net.bagusekasaputra.griyakampoengtkw.ui.detail.viewmodel.DetailViewModel
 import net.bagusekasaputra.griyakampoengtkw.util.DialogUtil
 import net.bagusekasaputra.griyakampoengtkw.util.InputUtil
-import net.bagusekasaputra.griyakampoengtkw.util.NumberUtil
 
 @AndroidEntryPoint
 class BiayaMarketingFragment : Fragment() {

@@ -7,8 +7,6 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.*
-import net.bagusekasaputra.griyakampoengtkw.domain.AsyncUseCaseHelper
-import net.bagusekasaputra.griyakampoengtkw.domain.ImageUtil
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.fotoPembayaran.AddFotoPembayaranAsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.fotoPembayaran.DeleteFotoPembayaranAsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.fotoPembayaran.GetFotoPembayaranAsyncUseCase
@@ -58,7 +56,8 @@ class ImageViewModel @Inject constructor(
 
     private val jobs = ArrayList<Job>()
 
-    private val asyncUseCaseHelper = AsyncUseCaseHelper(isFinishAddImage)
+    private val asyncUseCaseHelper =
+        net.bagusekasaputra.griyakampoengtkw.domain.AsyncUseCaseHelper(isFinishAddImage)
 
 
     // Image Data Diri
@@ -328,7 +327,7 @@ class ImageViewModel @Inject constructor(
     }
 
     fun getBitmapFromUri(contentResolver: ContentResolver, uri: Uri): Bitmap {
-        return ImageUtil.getBitmapFromUri(contentResolver, uri)
+        return net.bagusekasaputra.griyakampoengtkw.domain.ImageUtil.getBitmapFromUri(contentResolver, uri)
     }
 
 

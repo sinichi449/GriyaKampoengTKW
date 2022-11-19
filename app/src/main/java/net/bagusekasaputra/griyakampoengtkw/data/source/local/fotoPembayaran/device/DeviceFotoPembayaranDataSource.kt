@@ -6,7 +6,6 @@ import androidx.core.net.toFile
 import androidx.core.net.toUri
 import net.bagusekasaputra.griyakampoengtkw.data.model.FotoPembayaranModel
 import net.bagusekasaputra.griyakampoengtkw.data.source.local.fotoPembayaran.LocalFotoPembayaranDataSource
-import net.bagusekasaputra.griyakampoengtkw.domain.ImageUtil
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.FotoPembayaran
 import net.bagusekasaputra.griyakampoengtkw.util.GriyaNodes
 import java.io.File
@@ -34,7 +33,7 @@ class DeviceFotoPembayaranDataSource @Inject constructor(
 
         fileSrc.copyTo(fileDest, true)
 
-        ImageUtil.deleteImagePickerLeftOver(externalFilesDir)
+        net.bagusekasaputra.griyakampoengtkw.domain.ImageUtil.deleteImagePickerLeftOver(externalFilesDir)
 
         return Result.success(null)
     }

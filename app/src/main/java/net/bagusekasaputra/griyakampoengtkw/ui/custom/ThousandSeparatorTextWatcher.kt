@@ -3,7 +3,7 @@ package net.bagusekasaputra.griyakampoengtkw.ui.custom
 import android.text.Editable
 import android.text.TextWatcher
 import com.google.android.material.textfield.TextInputEditText
-import net.bagusekasaputra.griyakampoengtkw.util.NumberUtil
+import net.bagusekasaputra.griyakampoengtkw.domain.NumberUtil
 
 class ThousandSeparatorTextWatcher(private val editText: TextInputEditText): TextWatcher {
 

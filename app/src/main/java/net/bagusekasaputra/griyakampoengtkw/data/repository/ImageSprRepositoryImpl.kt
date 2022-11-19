@@ -8,7 +8,6 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
 import net.bagusekasaputra.griyakampoengtkw.data.model.ImageSprModel
 import net.bagusekasaputra.griyakampoengtkw.data.source.local.imageSpr.LocalImageSprDataSource
-import net.bagusekasaputra.griyakampoengtkw.domain.ImageUtil
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.ImageSpr
 import net.bagusekasaputra.griyakampoengtkw.domain.repository.ImageSprRepository
 import javax.inject.Inject
@@ -48,7 +47,7 @@ class ImageSprRepositoryImpl @Inject constructor(
         return imageSprModel.let {
             ImageSpr(
                 kavlingKode = it.kavlingKode,
-                bitmap = ImageUtil.getBitmapFromUri(contentResolver, Uri.parse(it.dstUri))
+                bitmap = net.bagusekasaputra.griyakampoengtkw.domain.ImageUtil.getBitmapFromUri(contentResolver, Uri.parse(it.dstUri))
             )
         }
     }

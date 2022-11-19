@@ -5,9 +5,9 @@ import kotlinx.coroutines.flow.flow
 import net.bagusekasaputra.griyakampoengtkw.data.DataUtil
 import net.bagusekasaputra.griyakampoengtkw.data.model.BiayaMarketingModel
 import net.bagusekasaputra.griyakampoengtkw.data.source.remote.biayaMarketing.RemoteBiayaMarketingDataSource
+import net.bagusekasaputra.griyakampoengtkw.domain.NumberUtil
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.BiayaMarketing
 import net.bagusekasaputra.griyakampoengtkw.domain.repository.BiayaMarketingRepository
-import net.bagusekasaputra.griyakampoengtkw.util.NumberUtil
 import javax.inject.Inject
 import javax.inject.Singleton
 

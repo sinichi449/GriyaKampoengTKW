@@ -8,9 +8,9 @@ import kotlinx.coroutines.flow.emitAll
 import kotlinx.coroutines.flow.flow
 import net.bagusekasaputra.griyakampoengtkw.data.model.HargaKavlingModel
 import net.bagusekasaputra.griyakampoengtkw.data.source.remote.hargakavling.RemoteHargaKavlingSource
+import net.bagusekasaputra.griyakampoengtkw.domain.NumberUtil
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.HargaKavling
 import net.bagusekasaputra.griyakampoengtkw.domain.repository.HargaKavlingRepository
-import net.bagusekasaputra.griyakampoengtkw.util.NumberUtil
 import javax.inject.Inject
 import javax.inject.Singleton
 

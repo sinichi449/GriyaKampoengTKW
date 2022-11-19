@@ -1,7 +1,7 @@
 package net.bagusekasaputra.griyakampoengtkw.ui.detail.tableview.biayaMarketing
 
+import net.bagusekasaputra.griyakampoengtkw.domain.NumberUtil
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.BiayaMarketing
-import net.bagusekasaputra.griyakampoengtkw.util.NumberUtil
 
 class TableBiayaMarketingHelper(
     private val listBiayaMarketing: List<BiayaMarketing>?,

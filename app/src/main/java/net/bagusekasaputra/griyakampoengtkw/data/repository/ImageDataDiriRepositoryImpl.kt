@@ -9,7 +9,6 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
 import net.bagusekasaputra.griyakampoengtkw.data.model.ImageDataDiriModel
 import net.bagusekasaputra.griyakampoengtkw.data.source.local.imageDataDiri.LocalImageDataDiriSource
-import net.bagusekasaputra.griyakampoengtkw.domain.ImageUtil
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.ImageDataDiri
 import net.bagusekasaputra.griyakampoengtkw.domain.repository.ImageDataDiriRepository
 import javax.inject.Inject
@@ -91,7 +90,7 @@ class ImageDataDiriRepositoryImpl @Inject constructor(
         return imageDataDiriModel.let {
             ImageDataDiri(
                 kavlingKode = it.kavlingKode,
-                bitmap = ImageUtil.getBitmapFromUri(contentResolver, Uri.parse(it.imgUri))
+                bitmap = net.bagusekasaputra.griyakampoengtkw.domain.ImageUtil.getBitmapFromUri(contentResolver, Uri.parse(it.imgUri))
             )
         }
     }

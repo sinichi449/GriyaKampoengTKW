@@ -245,11 +245,17 @@ class MainViewModel @Inject constructor(
     }
 
     fun checkUpdates(
+        versionName: String,
+        versionCode: Int,
         onAvailable: (appUpdate: AppUpdate) -> Unit,
         onFailure: (msg: String) -> Unit,
     ) {
         CoroutineScope(Dispatchers.IO).launch {
-            val request = GetUpdateInformationUseCase.Request
+            val currentBuildConfig = GetUpdateInformationUseCase.CurrentBuildConfig(
+                versionName = versionName,
+                versionCode = versionCode,
+            )
+            val request = GetUpdateInformationUseCase.Request(currentBuildConfig)
 
             getAppUpdateInformationUseCase.execute(request).collect { response ->
                 val result = response.data.result

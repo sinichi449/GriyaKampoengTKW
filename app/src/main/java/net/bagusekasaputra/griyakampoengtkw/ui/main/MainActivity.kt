@@ -19,6 +19,7 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
 import jp.wasabeef.recyclerview.adapters.ScaleInAnimationAdapter
+import net.bagusekasaputra.griyakampoengtkw.BuildConfig
 import net.bagusekasaputra.griyakampoengtkw.R
 import net.bagusekasaputra.griyakampoengtkw.databinding.*
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.AppUpdate
@@ -63,11 +64,16 @@ class MainActivity : AppCompatActivity() {
 //            onOfflineState()
         }
 
-        viewModel.checkUpdates({
-            showUpdateDialog(it)
-        }, { msg ->
-            Toast.makeText(this, msg, Toast.LENGTH_SHORT).show()
-        })
+        viewModel.checkUpdates(
+            versionCode = BuildConfig.VERSION_CODE,
+            versionName = BuildConfig.VERSION_NAME,
+            onAvailable = {
+                showUpdateDialog(it)
+            },
+            onFailure = { msg ->
+                Toast.makeText(this, msg, Toast.LENGTH_SHORT).show()
+            },
+        )
 
         setupViewModel()
 
