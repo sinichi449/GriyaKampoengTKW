@@ -119,6 +119,17 @@ class PembayaranTableViewAdapter(): AbstractTableAdapter<PembayaranColumnHeader,
     class PembayaranRowHeaderViewHolder(binding: TablePembayaranRowHeaderLayoutBinding): AbstractViewHolder(binding.root) {
         val container = binding.root
         val content = binding.tvRowHeader
+        var colorId = R.color.white
+
+        override fun setSelected(selectionState: SelectionState) {
+            super.setSelected(selectionState)
+
+            if (selectionState != SelectionState.SELECTED) {
+                setBackgroundColor(
+                    ContextCompat.getColor(container.context, colorId)
+                )
+            }
+        }
     }
 
     override fun onCreateRowHeaderViewHolder(parent: ViewGroup, viewType: Int): AbstractViewHolder {
@@ -135,6 +146,19 @@ class PembayaranTableViewAdapter(): AbstractTableAdapter<PembayaranColumnHeader,
         rowPosition: Int
     ) {
         val viewHolder = holder as PembayaranRowHeaderViewHolder
+
+        // Set background color according to sudahIsiFoto
+        // True -> set to yellow background
+        // False -> default white
+        val sudahIsiFoto = rowHeaderItemModel?.sudahIsiFoto ?: false
+        val rowHeaderBackgroundColor = if (sudahIsiFoto)
+            com.evrencoskun.tableview.R.color.table_view_default_selected_background_color
+        else
+            R.color.white
+        viewHolder.colorId = rowHeaderBackgroundColor
+
+
+
 
         viewHolder.content.text = rowHeaderItemModel?.text ?: "N/A"
     }

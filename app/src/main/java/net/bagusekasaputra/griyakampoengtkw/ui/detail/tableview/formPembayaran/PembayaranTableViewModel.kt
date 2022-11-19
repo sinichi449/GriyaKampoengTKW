@@ -1,7 +1,7 @@
 package net.bagusekasaputra.griyakampoengtkw.ui.detail.tableview.formPembayaran
 
 data class PembayaranCell(
-    val mData: Any?
+    val mData: Any?,
 )
 
 data class PembayaranColumnHeader(
@@ -10,4 +10,5 @@ data class PembayaranColumnHeader(
 
 data class PembayaranRowHeader(
     val text: String?,
+    val sudahIsiFoto: Boolean = false,
 )

@@ -805,7 +805,13 @@ class DetailViewModel @Inject constructor(
         val listPembayaran = listPembayaranLive.value
         if (listPembayaran != null) {
             listPembayaran.forEach { pembayaran ->
-                termins.add(PembayaranRowHeader(text = pembayaran.termin))
+                // Sudah Isi Foto property means to be used as a marker.
+                // In this case I will mark a yellow background color on the row headers
+                // whenever sudahIsiFoto is true.
+                termins.add(PembayaranRowHeader(
+                    text = pembayaran.termin,
+                    sudahIsiFoto = pembayaran.sudahIsiFotoPembayaran
+                ))
             }
         } else {
             // If null, return "-" character, I think ...
