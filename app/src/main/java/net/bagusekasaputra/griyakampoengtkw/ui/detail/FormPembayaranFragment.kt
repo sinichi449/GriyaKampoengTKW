@@ -446,28 +446,76 @@ class FormPembayaranFragment : Fragment() {
         }
 
         dialogBinding.btnHapus.setOnClickListener {
-            val confirmDialog = MaterialAlertDialogBuilder(requireContext())
-                .setTitle("Hapus Pembayaran")
-                .setMessage("Apakah Anda yakin menghapus pembayaran ${pembayaran.termin}?")
-                .setPositiveButton("Ya") { dialog, _ ->
-                    dialogBinding.btnTambahkan.text = "Menghapus data ..."
-                    dialogBinding.btnTambahkan.isEnabled = false
-                    dialogBinding.btnHapus.isEnabled = false
+            dialogBinding.btnTambahkan.text = "Menghapus data ..."
+            dialogBinding.btnTambahkan.isEnabled = false
+            dialogBinding.btnHapus.isEnabled = false
 
-                    dialog.dismiss()
-                    getPembayaranFromEdt()?.let { pembayaran ->
-                        viewModel.deletePembayaranByTermin(currentKavlingKode!!, pembayaran.termin) { msg ->
-                            Toast.makeText(requireContext(), msg, Toast.LENGTH_SHORT).show()
-                            dialogView.dismiss()
-                            syncPembayaran()
-                        }
+            // Anonymous function to delete Pembayaran, which will be executed in both
+            // positive or negative response to Delete Foto Pembayaran Dialog below.
+            val deletePembayaran = { kavlingKode: String, termin: String ->
+                // Deleting Pembayaran
+                viewModel.deletePembayaranByTermin(
+                    kavlingKode = kavlingKode,
+                    termin = termin,
+                    onComplete = { msg ->
+                        syncPembayaran()
+                        dialogView.dismiss()
+                        Toast.makeText(requireContext(), msg, Toast.LENGTH_SHORT).show()
                     }
+                )
+            }
+
+            val kavlingKode = currentKavlingKode!!
+            val termin = pembayaran.termin
+            val sudahIsiFotoPembayaran = pembayaran.sudahIsiFotoPembayaran
+
+            // Show hapus Pembayaran confirmation.
+            // This will also shows a confirmation to delete the Foto Pembayaran,
+            // if "Pembayaran.sudahIsiFotoPembayaran == true".
+            MaterialAlertDialogBuilder(requireContext())
+                .setTitle("Hapus Pembayaran")
+                .setMessage("Apakah Anda yakin menghapus pembayaran $termin?")
+                .setPositiveButton("Ya") { dialogHapus, _ ->
+                    dialogHapus.dismiss()
+
+                    if (sudahIsiFotoPembayaran) {
+                        // Show the confirmation to delete the Foto Pembayaran
+                        MaterialAlertDialogBuilder(requireContext())
+                            .setTitle("Hapus Foto Pembayaran?")
+                            .setMessage("Apakah Anda juga ingin menghapus Foto Pembayaran $termin?")
+                            .setPositiveButton("Ya") { dialogFoto, _ ->
+                                dialogFoto.dismiss()
+
+                                // Deleting Foto Pembayaran
+                                imageViewModel.deleteFotoPembayaran(
+                                    kavlingKode = kavlingKode,
+                                    termin = termin,
+                                    onComplete = {
+                                        // TODO: What might be here?
+                                    }
+                                )
+
+                                // Deleting Pembayaran
+                                deletePembayaran(kavlingKode, termin)
+
+                            }
+                            .setNegativeButton("Tidak") { dialogFoto, _ ->
+                                dialogFoto.dismiss()
+
+                                deletePembayaran(kavlingKode, termin)
+                            }
+                            .create()
+                            .show()
+                    } else {
+                        deletePembayaran(kavlingKode, termin)
+                    }
+
                 }
                 .setNegativeButton("Tidak") { dialog, _ ->
                     dialog.dismiss()
-                }.create()
-
-            confirmDialog.show()
+                }
+                .create()
+                .show()
         }
 
         imgVisibilityOnClick(dialogView, dialogBinding)
@@ -653,31 +701,6 @@ class FormPembayaranFragment : Fragment() {
         }
     }
 
-    private fun showDeleteAllPembayaranDialog() {
-        val dialogView = MaterialAlertDialogBuilder(requireContext())
-            .setTitle("Hapus Semua Pembayaran")
-            .setMessage("Apakah Anda yakin ingin menghapus semua pembayaran di kavling $currentKavlingKode?")
-            .setPositiveButton("Ya") { dialog, _ ->
-                viewModel.deleteAllPembayaran(
-                    kavlingKode = currentKavlingKode!!,
-                    onComplete = { msg ->
-                        Toast.makeText(requireContext(), msg, Toast.LENGTH_SHORT).show()
-                        dialog.dismiss()
-                        syncPembayaran()
-                    }
-                )
-                viewModel.deleteAllPembayaran(currentKavlingKode!!) { msg ->
-
-                }
-            }
-            .setNegativeButton("Tidak") { dialog, _ ->
-                dialog.dismiss()
-            }
-            .create()
-
-        dialogView.show()
-    }
-
     private fun showTerminSelectionButtonsDialog() {
         val hargaKavling = binding.tvHarga?.text.toString().let {
             NumberUtil.formatStringToLong(it)
@@ -783,7 +806,7 @@ class FormPembayaranFragment : Fragment() {
         onTerminClick: (selectedTermin: String) -> Unit,
     ) {
         val listTerminPembayaran = when (mode) {
-            OperasiFotoPembayaran.TAMBAH -> viewModel.getBelumIsiFotoTerminPembayaran()
+            OperasiFotoPembayaran.TAMBAH -> viewModel.getAllArrayTerminPembayaran()
             OperasiFotoPembayaran.HAPUS -> viewModel.getSudahIsiFotoTerminPembayaran()
             OperasiFotoPembayaran.LIHAT -> viewModel.getSudahIsiFotoTerminPembayaran()
         }
@@ -812,15 +835,76 @@ class FormPembayaranFragment : Fragment() {
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         return when (item.itemId) {
             R.id.hapus_semua_pembayaran -> {
-                showDeleteAllPembayaranDialog()
+                // Show confirmation to delete all Pembayaran.
+                // This is also showing an alert that this action will delete the Foto Pembayaran too.
+                MaterialAlertDialogBuilder(requireContext())
+                    .setTitle("Hapus Semua Pembayaran")
+                    .setMessage("Apakah Anda yakin ingin menghapus semua pembayaran di kavling $currentKavlingKode?")
+                    .setPositiveButton("Ya") { dialogPembayaran, _ ->
+                        dialogPembayaran.dismiss()
+
+                        // Show the confirmation to delete all Foto Pembayaran
+                        MaterialAlertDialogBuilder(requireContext())
+                            .setTitle("Hapus Semua Foto Pembayaran?")
+                            .setMessage("Perhatian! Menghapus seluruh Pembayaran juga akan menghapus seluruh Foto Pembayaran yang tersimpan. Apakah Anda yakin?")
+                            .setPositiveButton("Ya") { dialogFoto, _ ->
+                                dialogFoto.dismiss()
+
+                                viewModel.deleteAllPembayaran(
+                                    kavlingKode = currentKavlingKode!!,
+                                    onComplete = { msg ->
+                                        dialogFoto.dismiss()
+                                        syncPembayaran()
+                                        Toast.makeText(requireContext(), msg, Toast.LENGTH_SHORT).show()
+                                    }
+                                )
+                                viewModel.deleteAllPembayaran(currentKavlingKode!!) { msg ->
+
+                                }
+                            }
+                            .setNegativeButton("Tidak") {
+                                    dialogFoto, _ -> dialogFoto.dismiss()
+                            }
+                            .create()
+                            .show()
+                    }
+                    .setNegativeButton("Tidak") { dialog, _ ->
+                        dialog.dismiss()
+                    }
+                    .create()
+                    .show()
+
                 true
             }
             R.id.tambahkan_foto -> {
+                // Tambahkan foto will ask for confirmation to overwrite the
+                // existing Foto Pembayaran if it already Exists.
                 showFotoPembayaranSelectionDialog(
                     dialogTitle = "Tambah Foto Pembayaran",
                     mode = OperasiFotoPembayaran.TAMBAH,
                     onTerminClick = { selectedTermin ->
-                        showImagePickerDialog()
+                        // Checking if "selectedTermin" is exist in the list of Sudah Isi Foto Pembayaran.
+                        val listSudahIsiFoto = viewModel.getSudahIsiFotoTerminPembayaran()
+                            .filter { it == selectedTermin }
+                        val sudahIsiFoto = listSudahIsiFoto.isNotEmpty()
+
+                        if (sudahIsiFoto) {
+                            // Show the confirmation dialog to overwrite
+                            MaterialAlertDialogBuilder(requireContext())
+                                .setTitle("Timpa Foto Pembayaran?")
+                                .setMessage("Foto Pembayaran $selectedTermin sudah terisi. Apakah Anda yakin akan mengganti Foto Pembayaran?")
+                                .setPositiveButton("Ya") { dialogOverwrite, _ ->
+                                    dialogOverwrite.dismiss()
+                                    showImagePickerDialog()
+                                }
+                                .setNegativeButton("Tidak") { dialogOverwrite, _ ->
+                                    dialogOverwrite.dismiss()
+                                }
+                                .create()
+                                .show()
+                        } else {
+                            showImagePickerDialog()
+                        }
                     }
                 )
 

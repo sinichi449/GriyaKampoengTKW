@@ -24,6 +24,7 @@ class DeleteAllPembayaranUseCase @Inject constructor(
         // Because this is a delete all operation, so we will also delete all the
         // Foto Pembayaran.
         return pembayaranRepository.deleteAllPembayaran(request.kavlingKode)
+            // Deleting all Foto Pembayaran along with deleting all Pembayaran.
             .zip(fotoPembayaranRepository.deleteAllFotoPembayaran(request.kavlingKode)) { deletePembayaran, deleteFoto ->
                 // Both operation success
                 if ((deletePembayaran.isSuccess) and (deleteFoto.isSuccess)) {
