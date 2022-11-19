@@ -22,7 +22,7 @@ import net.bagusekasaputra.griyakampoengtkw.domain.usecase.feeMarketing.UpdateFe
 import net.bagusekasaputra.griyakampoengtkw.domain.usecase.hargakavling.AddHargaKavlingUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.usecase.hargakavling.GetHargaKavlingUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.usecase.pembayaran.*
-import net.bagusekasaputra.griyakampoengtkw.ui.detail.tableview.TableBiayaMarketingHelper
+import net.bagusekasaputra.griyakampoengtkw.ui.detail.tableview.biayaMarketing.TableBiayaMarketingHelper
 import net.bagusekasaputra.griyakampoengtkw.ui.detail.tableview.formPembayaran.PembayaranCell
 import net.bagusekasaputra.griyakampoengtkw.ui.detail.tableview.formPembayaran.PembayaranColumnHeader
 import net.bagusekasaputra.griyakampoengtkw.ui.detail.tableview.formPembayaran.PembayaranRowHeader

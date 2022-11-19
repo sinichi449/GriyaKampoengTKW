@@ -1,6 +1,7 @@
 package net.bagusekasaputra.griyakampoengtkw.ui.detail
 
 import android.Manifest
+import android.annotation.SuppressLint
 import android.app.Activity
 import android.app.DatePickerDialog
 import android.content.Intent
@@ -924,6 +925,7 @@ class FormPembayaranFragment : Fragment() {
         isAllFabsVisible = false
     }
 
+    @SuppressLint("ClickableViewAccessibility")
     private fun imgVisibilityOnClick(dialogView: AlertDialog, dialogBinding: DialogAddFormPembayaranBinding) {
         dialogBinding.imgVisibility.setOnTouchListener { view, motionEvent ->
             if (motionEvent.action == MotionEvent.ACTION_DOWN) {
@@ -945,25 +947,6 @@ class FormPembayaranFragment : Fragment() {
             .createIntent {
                 startForFotoPembayaranResult.launch(it)
             }
-    }
-
-    private fun lihatFotoKuitansi() {
-        Intent(requireContext(), FullImageActivity::class.java).let { intent ->
-            imageViewModel.fotoKuitansiLive.value.let { fotoKuitansi ->
-                if (fotoKuitansi == null) {
-                    Toast.makeText(requireContext(),
-                        "Bukti kuitansi tidak ditemukan",
-                        Toast.LENGTH_SHORT).show()
-                } else {
-                    val stringExtra = ArrayList<String>().apply {
-                        add(GriyaNodes.INTENT_FOTO_KUITANSI)
-                        add(currentKavlingKode!!)
-                    }
-                    intent.putExtra(GriyaNodes.INTENT_SOURCE_IMAGE, stringExtra)
-                    startActivity(intent)
-                }
-            }
-        }
     }
 
     private fun exportExcel() {

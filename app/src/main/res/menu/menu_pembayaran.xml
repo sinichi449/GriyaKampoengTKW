@@ -11,13 +11,13 @@
         <menu>
             <item
                 android:id="@+id/lihat_foto"
-                android:title="Lihat Foto Pembayaran"/>
+                android:title="Lihat Foto"/>
             <item
                 android:id="@+id/tambahkan_foto"
-                android:title="Tambahkan Foto Pembayaran"/>
+                android:title="Tambahkan Foton"/>
             <item
                 android:id="@+id/hapus_foto"
-                android:title="Hapus Foto Pembayaran"/>
+                android:title="Hapus Foto"/>
 
         </menu>
 

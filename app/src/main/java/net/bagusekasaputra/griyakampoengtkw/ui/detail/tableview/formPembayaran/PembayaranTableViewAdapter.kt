@@ -56,9 +56,9 @@ class PembayaranTableViewAdapter(): AbstractTableAdapter<PembayaranColumnHeader,
         val alignCenter = { viewHolder.content.textAlignment = View.TEXT_ALIGNMENT_CENTER }
 
         when (columnPosition) {
-            Kolom.TANGGAL, Kolom.PERSENTASE ->  alignCenter()
+//            Kolom.TANGGAL, Kolom.PERSENTASE ->  alignCenter()
             Kolom.JUMLAH_UANG_DIBAYAR, Kolom.TOTAL_UANG_MASUK -> {
-                alignEnd()
+//                alignEnd()
                 viewHolder.content.typeface = Typeface.SERIF
             }
             Kolom.KETERANGAN_PROSES -> alignStart()

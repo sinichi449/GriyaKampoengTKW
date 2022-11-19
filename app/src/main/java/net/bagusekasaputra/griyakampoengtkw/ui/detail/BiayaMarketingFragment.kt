@@ -19,10 +19,10 @@ import net.bagusekasaputra.griyakampoengtkw.databinding.FragmentBiayaMarketingBi
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.BiayaMarketing
 import net.bagusekasaputra.griyakampoengtkw.ui.custom.ThousandSeparatorTextWatcher
 import net.bagusekasaputra.griyakampoengtkw.ui.detail.adapter.JenisBiayaMarketingRecyclerAdapter
-import net.bagusekasaputra.griyakampoengtkw.ui.detail.tableview.Cell
-import net.bagusekasaputra.griyakampoengtkw.ui.detail.tableview.ColumnHeader
-import net.bagusekasaputra.griyakampoengtkw.ui.detail.tableview.MyTableViewAdapter
-import net.bagusekasaputra.griyakampoengtkw.ui.detail.tableview.RowHeader
+import net.bagusekasaputra.griyakampoengtkw.ui.detail.tableview.biayaMarketing.Cell
+import net.bagusekasaputra.griyakampoengtkw.ui.detail.tableview.biayaMarketing.ColumnHeader
+import net.bagusekasaputra.griyakampoengtkw.ui.detail.tableview.biayaMarketing.MyTableViewAdapter
+import net.bagusekasaputra.griyakampoengtkw.ui.detail.tableview.biayaMarketing.RowHeader
 import net.bagusekasaputra.griyakampoengtkw.ui.detail.viewmodel.DetailViewModel
 import net.bagusekasaputra.griyakampoengtkw.util.DialogUtil
 import net.bagusekasaputra.griyakampoengtkw.util.InputUtil

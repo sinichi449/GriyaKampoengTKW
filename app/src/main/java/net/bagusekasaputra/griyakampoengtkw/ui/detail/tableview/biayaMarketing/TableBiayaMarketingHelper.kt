@@ -1,4 +1,4 @@
-package net.bagusekasaputra.griyakampoengtkw.ui.detail.tableview
+package net.bagusekasaputra.griyakampoengtkw.ui.detail.tableview.biayaMarketing
 
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.BiayaMarketing
 import net.bagusekasaputra.griyakampoengtkw.util.NumberUtil

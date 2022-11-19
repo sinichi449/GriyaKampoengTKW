@@ -1,4 +1,4 @@
-package net.bagusekasaputra.griyakampoengtkw.ui.detail.tableview
+package net.bagusekasaputra.griyakampoengtkw.ui.detail.tableview.biayaMarketing
 
 import android.graphics.Typeface
 import android.view.Gravity
