@@ -4,15 +4,15 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.emitAll
 import kotlinx.coroutines.flow.flow
 import net.bagusekasaputra.griyakampoengtkw.data.DataUtil
+import net.bagusekasaputra.griyakampoengtkw.data.interfaces.local.LocalDataDiriDataSource
+import net.bagusekasaputra.griyakampoengtkw.data.interfaces.remote.RemoteDataDiriRepository
+import net.bagusekasaputra.griyakampoengtkw.data.interfaces.remote.RemoteKavlingDataSource
 import net.bagusekasaputra.griyakampoengtkw.data.model.DataDiriModel
-import net.bagusekasaputra.griyakampoengtkw.data.source.local.datadiri.LocalDataDiriRepository
-import net.bagusekasaputra.griyakampoengtkw.data.source.remote.datadiri.RemoteDataDiriRepository
-import net.bagusekasaputra.griyakampoengtkw.data.source.remote.kavling.RemoteKavlingDataSource
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.DataDiri
 import net.bagusekasaputra.griyakampoengtkw.domain.repository.DataDiriRepository
 
 class DataDiriRepositoryImpl(
-    private val localDataDiriRepository: LocalDataDiriRepository,
+    private val localDataDiriDataSource: LocalDataDiriDataSource,
     private val remoteDataDiriRepository: RemoteDataDiriRepository,
     private val remoteKavlingDataSource: RemoteKavlingDataSource,
 ): DataDiriRepository {
@@ -28,14 +28,14 @@ class DataDiriRepositoryImpl(
 
                 // Then save to local
                 getDataDiriRemote.getOrNull()?.let {
-                    localDataDiriRepository.addDataDiri(kavlingKode, it)
+                    localDataDiriDataSource.addDataDiri(kavlingKode, it)
                 }
             } else {
                 // Emit the error
                 getDataDiriRemote.exceptionOrNull()?.let { emit(Result.failure(it)) }
 
                 // Emit from local instead
-                val getDataDiriFromLocal = localDataDiriRepository.getDataDiri(kavlingKode)
+                val getDataDiriFromLocal = localDataDiriDataSource.getDataDiri(kavlingKode)
 
                 if (getDataDiriFromLocal.isSuccess)
                     emit(DataUtil.mapSingleResult(getDataDiriFromLocal, ::mapDataDiri))

@@ -5,20 +5,20 @@ import android.net.Uri
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import net.bagusekasaputra.griyakampoengtkw.data.DataUtil
+import net.bagusekasaputra.griyakampoengtkw.data.interfaces.local.LocalFotoKuitansiDataSource
 import net.bagusekasaputra.griyakampoengtkw.data.model.FotoKuitansiModel
-import net.bagusekasaputra.griyakampoengtkw.data.source.local.fotoKuitansi.LocalFotoKuitansiRepository
 import net.bagusekasaputra.griyakampoengtkw.domain.ImageUtil
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.FotoKuitansi
 import net.bagusekasaputra.griyakampoengtkw.domain.repository.FotoKuitansiRepository
 
 class FotoKuitansiRepositoryImpl(
-    private val localFotoKuitansiRepository: LocalFotoKuitansiRepository,
+    private val localFotoKuitansiDataSource: LocalFotoKuitansiDataSource,
     private val contentResolver: ContentResolver,
 ): FotoKuitansiRepository {
 
     override fun getFoto(kavlingKode: String): Flow<Result<FotoKuitansi?>> {
         return flow<Result<FotoKuitansi?>> {
-            val resultLocal = localFotoKuitansiRepository.getFotoKuitansi(kavlingKode)
+            val resultLocal = localFotoKuitansiDataSource.getFotoKuitansi(kavlingKode)
 
             val mappedResult = DataUtil.mapSingleResult(resultLocal, ::mapFotoKuitansi)
 
@@ -33,7 +33,7 @@ class FotoKuitansiRepositoryImpl(
                 fotoUri = dstUri.toString(),
             )
 
-            val resultLocal = localFotoKuitansiRepository.addFotoKuitansi(model)
+            val resultLocal = localFotoKuitansiDataSource.addFotoKuitansi(model)
 
             emit(resultLocal)
         }

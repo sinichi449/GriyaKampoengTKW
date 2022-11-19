@@ -1,0 +1,41 @@
+package net.bagusekasaputra.griyakampoengtkw.data.interfaces.remote
+
+import net.bagusekasaputra.griyakampoengtkw.data.model.PembayaranModel
+
+interface RemotePembayaranSource {
+
+    suspend fun getAllPembayaran(
+        kavlingKode: String,
+        onSuccess: (listPembayaranModel: List<PembayaranModel>?) -> Unit,
+        onFailure: (throwable: Throwable) -> Unit,
+    )
+
+    suspend fun addPembayaranModel(
+        kavlingKode: String,
+        hargaKavling: Long,
+        pembayaranModel: PembayaranModel,
+        onSuccess: () -> Unit,
+        onFailure: (throwable: Throwable) -> Unit,
+    )
+
+    suspend fun updatePembayaranModel(
+        kavlingKode: String,
+        oldPembayaranModel: PembayaranModel,
+        newPembayaranModel: PembayaranModel,
+        onSuccess: () -> Unit,
+        onFailure: (throwable: Throwable) -> Unit,
+    )
+
+    suspend fun deletePembayaranModelByTermin(
+        kavlingKode: String,
+        termin: String,
+        onSuccess: () -> Unit,
+        onFailure: (throwable: Throwable) -> Unit,
+    )
+
+    suspend fun deleteAllPembayaranModel(
+        kavlingKode: String,
+        onSuccess: () -> Unit,
+        onFailure: (throwable: Throwable) -> Unit,
+    )
+}

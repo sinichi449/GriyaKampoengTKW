@@ -3,8 +3,8 @@ package net.bagusekasaputra.griyakampoengtkw.data.repository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import net.bagusekasaputra.griyakampoengtkw.data.DataUtil
+import net.bagusekasaputra.griyakampoengtkw.data.interfaces.remote.RemoteCatatanPembayaranDataSource
 import net.bagusekasaputra.griyakampoengtkw.data.model.CatatanPembayaranModel
-import net.bagusekasaputra.griyakampoengtkw.data.source.remote.catatanPembayaran.RemoteCatatanPembayaranDataSource
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.CatatanPembayaran
 import net.bagusekasaputra.griyakampoengtkw.domain.repository.CatatanPembayaranRepository
 

@@ -1,10 +1,6 @@
 <resources>
     <string name="app_name">Griya Kampoeng TKW</string>
     <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
-    <string name="sharedprefs_key_moveable_fab">moveable_floating_action_button</string>
-    <string name="shared_prefs_enlarge_photo">enlarge_photo</string>
     <string name="biaya_marketing_tidak_ada_marketer">Tidak Ada</string>
-    <string name="long_lorem_ipsum">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt et labore et dolore magna aliqua.</string>
     <string name="tidak_ada_catatan">Tidak ada catatan.</string>
 </resources>

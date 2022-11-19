@@ -3,8 +3,8 @@ package net.bagusekasaputra.griyakampoengtkw.data.repository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import net.bagusekasaputra.griyakampoengtkw.data.DataUtil
+import net.bagusekasaputra.griyakampoengtkw.data.interfaces.remote.RemoteFeeMarketingDataSource
 import net.bagusekasaputra.griyakampoengtkw.data.model.FeeMarketingModel
-import net.bagusekasaputra.griyakampoengtkw.data.source.remote.feeMarketing.RemoteFeeMarketingDataSource
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.FeeMarketing
 import net.bagusekasaputra.griyakampoengtkw.domain.repository.FeeMarketingRepository
 

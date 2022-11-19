@@ -1,44 +1,13 @@
 package net.bagusekasaputra.griyakampoengtkw.di
 
 import android.content.ContentResolver
-import com.google.firebase.database.DatabaseReference
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
+import net.bagusekasaputra.griyakampoengtkw.data.interfaces.local.*
+import net.bagusekasaputra.griyakampoengtkw.data.interfaces.remote.*
 import net.bagusekasaputra.griyakampoengtkw.data.repository.*
-import net.bagusekasaputra.griyakampoengtkw.data.source.local.MyRoomDatabase
-import net.bagusekasaputra.griyakampoengtkw.data.source.local.block.LocalBlockDataSource
-import net.bagusekasaputra.griyakampoengtkw.data.source.local.block.room.RoomBlockDataSource
-import net.bagusekasaputra.griyakampoengtkw.data.source.local.datadiri.LocalDataDiriRepository
-import net.bagusekasaputra.griyakampoengtkw.data.source.local.datadiri.room.RoomDataDiriRepository
-import net.bagusekasaputra.griyakampoengtkw.data.source.local.fotoKuitansi.LocalFotoKuitansiRepository
-import net.bagusekasaputra.griyakampoengtkw.data.source.local.fotoKuitansi.room.RoomFotoKuitansiRepository
-import net.bagusekasaputra.griyakampoengtkw.data.source.local.fotoPembayaran.LocalFotoPembayaranDataSource
-import net.bagusekasaputra.griyakampoengtkw.data.source.local.imageDataDiri.LocalImageDataDiriSource
-import net.bagusekasaputra.griyakampoengtkw.data.source.local.imageDataDiri.room.RoomLocalImageDataDiriRepository
-import net.bagusekasaputra.griyakampoengtkw.data.source.local.imageSpr.LocalImageSprDataSource
-import net.bagusekasaputra.griyakampoengtkw.data.source.local.imageSpr.room.RoomImageSprDataSource
-import net.bagusekasaputra.griyakampoengtkw.data.source.local.kavling.LocalKavlingDataSource
-import net.bagusekasaputra.griyakampoengtkw.data.source.local.kavling.room.RoomKavlingDataSource
-import net.bagusekasaputra.griyakampoengtkw.data.source.remote.appupdate.FirebaseAppUpdateSource
-import net.bagusekasaputra.griyakampoengtkw.data.source.remote.appupdate.RemoteAppUpdateSource
-import net.bagusekasaputra.griyakampoengtkw.data.source.remote.biayaMarketing.FirebaseBiayaMarketingDataSource
-import net.bagusekasaputra.griyakampoengtkw.data.source.remote.biayaMarketing.RemoteBiayaMarketingDataSource
-import net.bagusekasaputra.griyakampoengtkw.data.source.remote.block.FirebaseBlockDataSource
-import net.bagusekasaputra.griyakampoengtkw.data.source.remote.block.RemoteBlockDataSource
-import net.bagusekasaputra.griyakampoengtkw.data.source.remote.catatanPembayaran.FirebaseCatatanPembayaranDataSource
-import net.bagusekasaputra.griyakampoengtkw.data.source.remote.catatanPembayaran.RemoteCatatanPembayaranDataSource
-import net.bagusekasaputra.griyakampoengtkw.data.source.remote.datadiri.FirebaseDataDiriRepository
-import net.bagusekasaputra.griyakampoengtkw.data.source.remote.datadiri.RemoteDataDiriRepository
-import net.bagusekasaputra.griyakampoengtkw.data.source.remote.feeMarketing.FirebaseFeeMarketingDataSource
-import net.bagusekasaputra.griyakampoengtkw.data.source.remote.feeMarketing.RemoteFeeMarketingDataSource
-import net.bagusekasaputra.griyakampoengtkw.data.source.remote.hargakavling.FirebaseHargaKavlingSource
-import net.bagusekasaputra.griyakampoengtkw.data.source.remote.hargakavling.RemoteHargaKavlingSource
-import net.bagusekasaputra.griyakampoengtkw.data.source.remote.kavling.FirebaseKavlingDataSource
-import net.bagusekasaputra.griyakampoengtkw.data.source.remote.kavling.RemoteKavlingDataSource
-import net.bagusekasaputra.griyakampoengtkw.data.source.remote.pembayaran.FirebasePembayaranSource
-import net.bagusekasaputra.griyakampoengtkw.data.source.remote.pembayaran.RemotePembayaranSource
 import net.bagusekasaputra.griyakampoengtkw.domain.repository.*
 
 @Module
@@ -55,16 +24,6 @@ object RepositoryModule {
         return BlockRepositoryImpl(localBlockDataSource, remoteBlockDataSource)
     }
 
-    @Provides
-    fun provideLocalBlockDataSource(roomDatabase: MyRoomDatabase): LocalBlockDataSource {
-        return RoomBlockDataSource(roomDatabase)
-    }
-
-    @Provides
-    fun provideRemoteBlockDataSource(databaseReference: DatabaseReference): RemoteBlockDataSource {
-        return FirebaseBlockDataSource(databaseReference)
-    }
-
     // Kavling Repository
     @Provides
     fun provideKavlingRepository(
@@ -74,35 +33,18 @@ object RepositoryModule {
         return KavlingRepositoryImpl(localKavlingDataSource, remoteKavlingDataSource)
     }
 
-    @Provides
-    fun provideLocalKavlingDataSource(myRoomDatabase: MyRoomDatabase): LocalKavlingDataSource {
-        return RoomKavlingDataSource(myRoomDatabase)
-    }
-
-    @Provides
-    fun provideRemoteKavlingDataSource(databaseReference: DatabaseReference): RemoteKavlingDataSource {
-        return FirebaseKavlingDataSource(databaseReference)
-    }
 
     // Data Diri Repository
     @Provides
     fun provideDataDiriRepository(
-        localDataDiriRepository: LocalDataDiriRepository,
+        localDataDiriDataSource: LocalDataDiriDataSource,
         remoteDataDiriRepository: RemoteDataDiriRepository,
         remoteKavlingDataSource: RemoteKavlingDataSource,
     ): DataDiriRepository {
-        return DataDiriRepositoryImpl(localDataDiriRepository, remoteDataDiriRepository, remoteKavlingDataSource)
+        return DataDiriRepositoryImpl(localDataDiriDataSource, remoteDataDiriRepository, remoteKavlingDataSource)
     }
 
-    @Provides
-    fun provideLocalDataDiriRepository(roomDatabase: MyRoomDatabase): LocalDataDiriRepository {
-        return RoomDataDiriRepository(roomDatabase)
-    }
 
-    @Provides
-    fun provideRemoteDataDiriRepository(databaseReference: DatabaseReference): RemoteDataDiriRepository {
-        return FirebaseDataDiriRepository(databaseReference)
-    }
 
     // Pembayaran Repository
     @Provides
@@ -112,10 +54,7 @@ object RepositoryModule {
         return PembayaranRepositoryImpl(remotePembayaranSource)
     }
 
-    @Provides
-    fun provideRemotePembayaranSource(databaseReference: DatabaseReference): RemotePembayaranSource {
-        return FirebasePembayaranSource(databaseReference)
-    }
+
 
     // Harga Kavling Repository
     @Provides
@@ -123,10 +62,6 @@ object RepositoryModule {
         return HargaKavlingRepositoryImpl(remoteHargaKavlingSource)
     }
 
-    @Provides
-    fun provideRemoteHargaKavlingSource(databaseReference: DatabaseReference): RemoteHargaKavlingSource {
-        return FirebaseHargaKavlingSource(databaseReference)
-    }
 
     // App Update Repository
     @Provides
@@ -134,34 +69,21 @@ object RepositoryModule {
         return AppUpdateRepositoryImpl(remoteAppUpdateSource)
     }
 
-    @Provides
-    fun provideRemoteAppUpdateSource(databaseReference: DatabaseReference): RemoteAppUpdateSource {
-        return FirebaseAppUpdateSource(databaseReference)
-    }
 
     // Image Data Diri
     @Provides
     fun provideImageDataDiriRepository(
-        localImageDataDiriSource: LocalImageDataDiriSource,
+        localImageDataDiriDataSource: LocalImageDataDiriDataSource,
         contentResolver: ContentResolver,
     ): ImageDataDiriRepository {
-        return ImageDataDiriRepositoryImpl(localImageDataDiriSource, contentResolver)
+        return ImageDataDiriRepositoryImpl(localImageDataDiriDataSource, contentResolver)
     }
 
-    @Provides
-    fun provideLocalImageDataDiriSource(roomDatabase: MyRoomDatabase): LocalImageDataDiriSource {
-        return RoomLocalImageDataDiriRepository(roomDatabase)
-    }
 
     // Foto Kuitansi
     @Provides
-    fun provideFotoKuitansiRepository(localFotoKuitansiRepository: LocalFotoKuitansiRepository, contentResolver: ContentResolver): FotoKuitansiRepository {
-        return FotoKuitansiRepositoryImpl(localFotoKuitansiRepository, contentResolver)
-    }
-
-    @Provides
-    fun provideLocalFotoKuitansiRepository(roomDatabase: MyRoomDatabase): LocalFotoKuitansiRepository {
-        return RoomFotoKuitansiRepository(roomDatabase)
+    fun provideFotoKuitansiRepository(localFotoKuitansiDataSource: LocalFotoKuitansiDataSource, contentResolver: ContentResolver): FotoKuitansiRepository {
+        return FotoKuitansiRepositoryImpl(localFotoKuitansiDataSource, contentResolver)
     }
 
 
@@ -174,10 +96,7 @@ object RepositoryModule {
         return ImageSprRepositoryImpl(localImageSprDataSource, contentResolver)
     }
 
-    @Provides
-    fun provideLocalImageSprDataSource(roomDatabase: MyRoomDatabase): LocalImageSprDataSource {
-        return RoomImageSprDataSource(roomDatabase)
-    }
+
 
     // Fee Marketing
     @Provides
@@ -185,10 +104,6 @@ object RepositoryModule {
         return FeeMarketingRepositoryImpl(remoteFeeMarketingDataSource)
     }
 
-    @Provides
-    fun provideRemoteFeeMarketingDataSource(databaseReference: DatabaseReference): RemoteFeeMarketingDataSource {
-        return FirebaseFeeMarketingDataSource(databaseReference)
-    }
 
     // Biaya Marketing
     @Provides
@@ -196,21 +111,11 @@ object RepositoryModule {
         return BiayaMarketingRepositoryImpl(remoteBiayaMarketDataSource)
     }
 
-    @Provides
-    fun provideRemoteBiayaMarketingDataSource(databaseReference: DatabaseReference): RemoteBiayaMarketingDataSource {
-        return FirebaseBiayaMarketingDataSource(databaseReference)
-    }
-
 
     // Catatan Pembayaran
     @Provides
     fun provideCatatanPembayaranRepository(remoteCatatanPembayaranDataSource: RemoteCatatanPembayaranDataSource): CatatanPembayaranRepository {
         return CatatanPembayaranRepositoryImpl(remoteCatatanPembayaranDataSource)
-    }
-
-    @Provides
-    fun provideRemoteCatatanPembayaranDataSource(databaseReference: DatabaseReference): RemoteCatatanPembayaranDataSource {
-        return FirebaseCatatanPembayaranDataSource(databaseReference)
     }
 
 

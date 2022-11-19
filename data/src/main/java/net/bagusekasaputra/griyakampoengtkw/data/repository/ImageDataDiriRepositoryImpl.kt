@@ -7,19 +7,19 @@ import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.channels.trySendBlocking
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
+import net.bagusekasaputra.griyakampoengtkw.data.interfaces.local.LocalImageDataDiriDataSource
 import net.bagusekasaputra.griyakampoengtkw.data.model.ImageDataDiriModel
-import net.bagusekasaputra.griyakampoengtkw.data.source.local.imageDataDiri.LocalImageDataDiriSource
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.ImageDataDiri
 import net.bagusekasaputra.griyakampoengtkw.domain.repository.ImageDataDiriRepository
 
 class ImageDataDiriRepositoryImpl(
-    private val localImageDataDiriSource: LocalImageDataDiriSource,
+    private val localImageDataDiriDataSource: LocalImageDataDiriDataSource,
     private val contentResolver: ContentResolver,
 ): ImageDataDiriRepository {
 
     override fun getByKavlingKode(kavlingKode: String): Flow<Result<ImageDataDiri>> {
         return callbackFlow {
-            localImageDataDiriSource.getByKavlingKode(
+            localImageDataDiriDataSource.getByKavlingKode(
                 kavlingKode = kavlingKode,
                 onSuccess = { trySendBlocking(Result.success(mapImageDataDiri(it))) },
                 onFailure = { trySendBlocking(Result.failure(it?: UnknownError("Terjadi kesalahan mendapatkan gambar"))) }
@@ -32,7 +32,7 @@ class ImageDataDiriRepositoryImpl(
     override fun addImage(kavlingKode: String, uri: Uri): Flow<Result<Boolean>> {
         return callbackFlow {
             val model = mapImageDataDiri(kavlingKode, uri)
-            localImageDataDiriSource.insert(
+            localImageDataDiriDataSource.insert(
                 imageDataDiriModel = model,
                 onSuccess = { trySendBlocking(Result.success(true)) },
                 onFailure = { trySendBlocking(Result.failure(it ?: UnknownError("Terjadi kesalahan menambahkan gambar"))) },
@@ -51,7 +51,7 @@ class ImageDataDiriRepositoryImpl(
 
     override fun deleteImage(imageDataDiri: ImageDataDiri): Flow<Result<Boolean>> {
         return callbackFlow {
-            localImageDataDiriSource.getUriByKavlingKode(
+            localImageDataDiriDataSource.getUriByKavlingKode(
                 kavlingKode = imageDataDiri.kavlingKode,
                 onSuccess = {
                     it.toFile().delete()
@@ -59,7 +59,7 @@ class ImageDataDiriRepositoryImpl(
                 onFailure = { trySendBlocking(Result.failure(it ?: UnknownError("Terjadi kesalahan mendapatkan ID")))}
             )
 
-            localImageDataDiriSource.deleteByKavlingKode(
+            localImageDataDiriDataSource.deleteByKavlingKode(
                 kavlingKode = imageDataDiri.kavlingKode,
                 onSuccess = { trySendBlocking(Result.success(true)) },
                 onFailure = { trySendBlocking(Result.failure(it ?: UnknownError("Terjadi kesalahan menghapus gambar"))) },
@@ -73,7 +73,7 @@ class ImageDataDiriRepositoryImpl(
         return callbackFlow {
 
 
-            localImageDataDiriSource.getUriByKavlingKode(
+            localImageDataDiriDataSource.getUriByKavlingKode(
                 kavlingKode = kavlingKode,
                 onSuccess = { trySendBlocking(Result.success(it)) },
                 onFailure = { trySendBlocking(Result.failure(it ?: UnknownError("Gagal mendapatkan uri"))) },

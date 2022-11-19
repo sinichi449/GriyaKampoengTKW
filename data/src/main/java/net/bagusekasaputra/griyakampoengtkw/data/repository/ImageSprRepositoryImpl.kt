@@ -6,8 +6,8 @@ import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.channels.trySendBlocking
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
+import net.bagusekasaputra.griyakampoengtkw.data.interfaces.local.LocalImageSprDataSource
 import net.bagusekasaputra.griyakampoengtkw.data.model.ImageSprModel
-import net.bagusekasaputra.griyakampoengtkw.data.source.local.imageSpr.LocalImageSprDataSource
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.ImageSpr
 import net.bagusekasaputra.griyakampoengtkw.domain.repository.ImageSprRepository
 

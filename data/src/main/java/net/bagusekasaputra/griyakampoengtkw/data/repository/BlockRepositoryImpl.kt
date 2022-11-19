@@ -3,9 +3,9 @@ package net.bagusekasaputra.griyakampoengtkw.data.repository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import net.bagusekasaputra.griyakampoengtkw.data.DataUtil
+import net.bagusekasaputra.griyakampoengtkw.data.interfaces.local.LocalBlockDataSource
+import net.bagusekasaputra.griyakampoengtkw.data.interfaces.remote.RemoteBlockDataSource
 import net.bagusekasaputra.griyakampoengtkw.data.model.BlockModel
-import net.bagusekasaputra.griyakampoengtkw.data.source.local.block.LocalBlockDataSource
-import net.bagusekasaputra.griyakampoengtkw.data.source.remote.block.RemoteBlockDataSource
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.Block
 import net.bagusekasaputra.griyakampoengtkw.domain.repository.BlockRepository
 
