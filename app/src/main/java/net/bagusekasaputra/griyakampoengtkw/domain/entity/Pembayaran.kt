@@ -11,4 +11,12 @@ data class Pembayaran(
     val timeMillis: Long,
     var sudahIsiFotoPembayaran: Boolean = false,
 ) {
+
+    fun getUrutan(): Int {
+        return termin.split(" ")[1].toInt()
+    }
+
+    fun getJenisTermin(): String {
+        return termin.split(" ")[0]
+    }
 }

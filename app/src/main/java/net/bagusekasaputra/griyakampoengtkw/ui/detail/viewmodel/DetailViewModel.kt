@@ -851,4 +851,60 @@ class DetailViewModel @Inject constructor(
 
         return firstOrderList
     }
+
+
+    enum class JenisPembayaran(val text: String) {
+        ITJ("ITJ"),
+        DP("DP"),
+        TERMIN("Termin"),
+    }
+
+    fun getNextPembayaranSequence(jenisPembayaran: JenisPembayaran): String {
+        // Check if not null listPembayaran.
+        // If null returns "1"
+        val listPembayaran = listPembayaranLive.value
+
+        if (listPembayaran != null) {
+            // Check if any requested jenis pembayaran Exists
+            val requestedJenisPembayaranList = listPembayaran.filter { it.termin.startsWith(jenisPembayaran.text) }
+            return if (requestedJenisPembayaranList.isNotEmpty()) {
+                // If exists, then get the last index of the requested pembayaran.
+                // I speculate that the UseCase already do the sorting, so
+                // the last of Any Pembayaran Sequence should be on the last index.
+                val lastPembayaran = requestedJenisPembayaranList.last()
+
+                // +1 on the last number of urutan
+                val urutan = lastPembayaran.getUrutan()
+                urutan.plus(1).toString()
+            } else {
+                "1"
+            }
+        } else {
+            return "1"
+        }
+    }
+
+    fun getNextItjSequence(): String {
+        val listPembayaran = listPembayaranLive.value
+
+        if (listPembayaran != null) {
+            // Check if any ITJ exist
+            val itjList = listPembayaran.filter { it.termin.startsWith("ITJ") }
+            return if (itjList.isNotEmpty()) {
+                // If exists, then get the last index of ITJ.
+                // I speculate that the UseCase already do the sorting, so
+                // the last ITJ Sequence should be on the last index.
+                val lastItj = itjList.last()
+
+                // +1 on the last number of ITJ
+                val urutan = lastItj.getUrutan()
+                urutan.plus(1).toString()
+
+            } else {
+                "1"
+            }
+        } else {
+            return "1"
+        }
+    }
 }

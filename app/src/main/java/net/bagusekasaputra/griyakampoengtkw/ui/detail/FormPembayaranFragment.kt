@@ -291,6 +291,7 @@ class FormPembayaranFragment : Fragment() {
             }.create()
 
             // Set Action for TextInputLayout everytime Radio Button Clicked
+            // including auto add Jenis Pembayaran Sequence.
             onRadioButtonJenisPembayaranClick(dialogBinding)
 
             // setting layout
@@ -973,17 +974,29 @@ class FormPembayaranFragment : Fragment() {
         dialogBinding.rbItj.setOnClickListener {
             dialogBinding.edtTermin.isEnabled = true
             dialogBinding.tilTermin.isEnabled = true
-            dialogBinding.tilTermin.hint = "Masukkan urutan ITJ"
+
+            dialogBinding.edtTermin.setText(
+                viewModel.getNextPembayaranSequence(DetailViewModel.JenisPembayaran.ITJ)
+            )
+//            dialogBinding.tilTermin.hint = "Masukkan urutan ITJ"
         }
         dialogBinding.rbDp.setOnClickListener {
             dialogBinding.edtTermin.isEnabled = true
             dialogBinding.tilTermin.isEnabled = true
-            dialogBinding.tilTermin.hint = "Masukkan urutan DP"
+
+            dialogBinding.edtTermin.setText(
+                viewModel.getNextPembayaranSequence(DetailViewModel.JenisPembayaran.DP)
+            )
+//            dialogBinding.tilTermin.hint = "Masukkan urutan DP"
         }
         dialogBinding.rbTermin.setOnClickListener {
             dialogBinding.edtTermin.isEnabled = true
             dialogBinding.tilTermin.isEnabled = true
-            dialogBinding.tilTermin.hint = "Masukkan urutan Termin"
+
+            dialogBinding.edtTermin.setText(
+                viewModel.getNextPembayaranSequence(DetailViewModel.JenisPembayaran.TERMIN)
+            )
+//            dialogBinding.tilTermin.hint = "Masukkan urutan Termin"
         }
     }
 
