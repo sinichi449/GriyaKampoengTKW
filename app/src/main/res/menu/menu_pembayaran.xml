@@ -14,7 +14,7 @@
                 android:title="Lihat Foto"/>
             <item
                 android:id="@+id/tambahkan_foto"
-                android:title="Tambahkan Foton"/>
+                android:title="Tambahkan Foto"/>
             <item
                 android:id="@+id/hapus_foto"
                 android:title="Hapus Foto"/>

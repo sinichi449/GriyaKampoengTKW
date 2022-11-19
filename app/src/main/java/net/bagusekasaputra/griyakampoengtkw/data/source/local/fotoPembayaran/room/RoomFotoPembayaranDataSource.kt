@@ -1,5 +1,6 @@
 package net.bagusekasaputra.griyakampoengtkw.data.source.local.fotoPembayaran.room
 
+import android.net.Uri
 import net.bagusekasaputra.griyakampoengtkw.data.model.FotoPembayaranModel
 import net.bagusekasaputra.griyakampoengtkw.data.source.local.MyRoomDatabase
 import net.bagusekasaputra.griyakampoengtkw.data.source.local.RoomRequestHelper
@@ -49,10 +50,20 @@ class RoomFotoPembayaranDataSource @Inject constructor(
         }
     }
 
+    override suspend fun deleteAllFotoPembayaran(kavlingKode: String): Result<Nothing?> {
+        return RoomRequestHelper.doNonGetOperation {
+            fotoPembayaranDao.deleteAllInKavling(kavlingKode)
+        }
+    }
+
     override suspend fun updateFotoPembayaran(
         oldFotoPembayaranModel: FotoPembayaranModel,
         newFotoPembayaranModel: FotoPembayaranModel
     ): Result<Nothing?> {
+        TODO("Not yet implemented")
+    }
+
+    override suspend fun getFotoUri(kavlingKode: String, termin: String): Result<Uri?> {
         TODO("Not yet implemented")
     }
 

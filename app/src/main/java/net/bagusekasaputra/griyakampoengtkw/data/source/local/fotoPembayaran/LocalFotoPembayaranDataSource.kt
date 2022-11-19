@@ -1,5 +1,6 @@
 package net.bagusekasaputra.griyakampoengtkw.data.source.local.fotoPembayaran
 
+import android.net.Uri
 import net.bagusekasaputra.griyakampoengtkw.data.model.FotoPembayaranModel
 
 interface LocalFotoPembayaranDataSource {
@@ -12,8 +13,12 @@ interface LocalFotoPembayaranDataSource {
 
     suspend fun deleteByKavlingKodeAndTermin(kavlingKode: String, termin: String): Result<Nothing?>
 
+    suspend fun deleteAllFotoPembayaran(kavlingKode: String): Result<Nothing?>
+
     suspend fun updateFotoPembayaran(
         oldFotoPembayaranModel: FotoPembayaranModel,
         newFotoPembayaranModel: FotoPembayaranModel,
     ): Result<Nothing?>
+
+    suspend fun getFotoUri(kavlingKode: String, termin: String): Result<Uri?>
 }

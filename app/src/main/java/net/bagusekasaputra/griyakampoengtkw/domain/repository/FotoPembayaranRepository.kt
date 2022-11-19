@@ -21,4 +21,6 @@ interface FotoPembayaranRepository {
     // This is to prevent an unintentional replacement of existing image, the data is
     // important after all ...
     fun isFotoPembayaranExist(kavlingKode: String, termin: String): Flow<Result<Boolean>>
+
+    fun deleteAllFotoPembayaran(kavlingKode: String): Flow<Result<Nothing?>>
 }
