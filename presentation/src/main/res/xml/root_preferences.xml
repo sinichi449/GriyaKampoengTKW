@@ -1,0 +1,12 @@
+<PreferenceScreen xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <PreferenceCategory app:title="Konektivitas">
+
+        <SwitchPreferenceCompat
+            app:key="offline_mode"
+            app:title="Mode Offline"
+            app:icon="@drawable/ic_baseline_cloud_off_24_black"/>
+
+    </PreferenceCategory>
+
+</PreferenceScreen>

@@ -23,6 +23,7 @@ import jp.wasabeef.recyclerview.adapters.ScaleInAnimationAdapter
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.Block
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.Kavling
 import net.bagusekasaputra.griyakampoengtkw.presentation.R
+import net.bagusekasaputra.griyakampoengtkw.presentation.SettingsActivity
 import net.bagusekasaputra.griyakampoengtkw.presentation.databinding.*
 import net.bagusekasaputra.griyakampoengtkw.presentation.detail.DetailActivity
 import net.bagusekasaputra.griyakampoengtkw.presentation.main.adapter.BlockRecyclerAdapter
@@ -107,6 +108,12 @@ class MainActivity : AppCompatActivity() {
 
         binding.swipeRefreshMain.setOnRefreshListener {
             syncData()
+        }
+
+        // On setting icon listener
+        binding.toolbarMain.setNavigationOnClickListener {
+            val settingIntent = Intent(this, SettingsActivity::class.java)
+            startActivity(settingIntent)
         }
 
     }
