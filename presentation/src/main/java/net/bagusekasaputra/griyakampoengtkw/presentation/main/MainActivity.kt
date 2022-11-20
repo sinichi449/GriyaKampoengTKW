@@ -1,6 +1,7 @@
 package net.bagusekasaputra.griyakampoengtkw.presentation.main
 
 import android.content.Intent
+import android.content.SharedPreferences
 import android.content.res.Configuration
 import android.net.Uri
 import android.os.Bundle
@@ -11,7 +12,6 @@ import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
-import androidx.preference.PreferenceManager
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.github.dhaval2404.colorpicker.MaterialColorPickerDialog
@@ -32,6 +32,7 @@ import net.bagusekasaputra.griyakampoengtkw.presentation.main.adapter.KavlingRec
 import net.bagusekasaputra.griyakampoengtkw.presentation.util.DialogUtil
 import net.bagusekasaputra.griyakampoengtkw.presentation.util.GriyaNodes
 import net.bagusekasaputra.griyakampoengtkw.presentation.util.InputUtil
+import javax.inject.Inject
 
 @AndroidEntryPoint
 class MainActivity : AppCompatActivity() {
@@ -44,6 +45,10 @@ class MainActivity : AppCompatActivity() {
     private val viewModel: MainViewModel by viewModels()
 
     private var isAllFabsVisible = false
+
+    // SharedPreferences to load the user settings, such as offline mode
+    @Inject
+    lateinit var sharedPrefs: SharedPreferences
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -59,7 +64,6 @@ class MainActivity : AppCompatActivity() {
         if (!deviceOnline) {
             Toast.makeText(this, "Device terdeteksi offline, data tidak akan tersinkronisasi!", Toast.LENGTH_LONG).show()
         }
-        val sharedPrefs = PreferenceManager.getDefaultSharedPreferences(this)
         val offlineMode = sharedPrefs.getBoolean("offline_mode", false)
         if (offlineMode) {
             binding.connectivityStatus.constraintConnectivity.visibility = View.VISIBLE

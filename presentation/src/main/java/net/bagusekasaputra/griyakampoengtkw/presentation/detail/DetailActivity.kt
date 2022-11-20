@@ -1,5 +1,6 @@
 package net.bagusekasaputra.griyakampoengtkw.presentation.detail
 
+import android.content.SharedPreferences
 import android.content.res.Configuration
 import android.os.Bundle
 import android.view.MenuItem
@@ -7,7 +8,6 @@ import android.view.View
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
-import androidx.preference.PreferenceManager
 import dagger.hilt.android.AndroidEntryPoint
 import net.bagusekasaputra.griyakampoengtkw.presentation.R
 import net.bagusekasaputra.griyakampoengtkw.presentation.custom.DepthPageTransformer
@@ -17,6 +17,7 @@ import net.bagusekasaputra.griyakampoengtkw.presentation.detail.viewmodel.Detail
 import net.bagusekasaputra.griyakampoengtkw.presentation.detail.viewmodel.ImageViewModel
 import net.bagusekasaputra.griyakampoengtkw.presentation.main.MainActivity
 import net.bagusekasaputra.griyakampoengtkw.presentation.util.GriyaNodes
+import javax.inject.Inject
 
 @AndroidEntryPoint
 class DetailActivity : AppCompatActivity() {
@@ -25,6 +26,10 @@ class DetailActivity : AppCompatActivity() {
     private lateinit var pagerAdapter: ViewPagerAdapter
     private val viewModel: DetailViewModel by viewModels()
     private val imageViewModel: ImageViewModel by viewModels()
+
+    // SharedPreferences to load the user settings, such as offline mode
+    @Inject
+    lateinit var sharedPrefs: SharedPreferences
 
 //    private lateinit var connectivityAnimation: ConnectivityAnimation
     private lateinit var currentKavlingKode: String
@@ -46,9 +51,7 @@ class DetailActivity : AppCompatActivity() {
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
 
         // Connectivity Check
-        val offlineMode = PreferenceManager
-            .getDefaultSharedPreferences(this)
-            .getBoolean("offline_mode", false)
+        val offlineMode = sharedPrefs.getBoolean("offline_mode", false)
         if (offlineMode)
             binding.connectivityStatus.constraintConnectivity.visibility = View.VISIBLE
 
