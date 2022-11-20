@@ -69,6 +69,9 @@ class DataDiriFragment : Fragment() {
         )
     }
 
+    private var offlineMode = false
+
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -93,6 +96,8 @@ class DataDiriFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        offlineMode = viewModel.offlineMode
 
         setupExtendedFloatingButton()
 
@@ -122,6 +127,15 @@ class DataDiriFragment : Fragment() {
         }
 
         setupViewModel()
+
+        binding.fabTambahDataDiri.setOnClickListener {
+            if (offlineMode)
+                showDialogOnOfflineMode()
+            else
+                showAddDataDiriDialog()
+        }
+
+        binding.fabTambahFoto.setOnClickListener { showImagePicker(startProfileImageForResult) }
     }
 
     override fun onResume() {
@@ -194,12 +208,6 @@ class DataDiriFragment : Fragment() {
                 isAllFabVisible = true
             }
         }
-
-        binding.fabTambahDataDiri.setOnClickListener {
-            showAddDataDiriDialog()
-        }
-
-        binding.fabTambahFoto.setOnClickListener { showImagePicker(startProfileImageForResult) }
     }
 
     private fun showAddDataDiriDialog() {
@@ -361,7 +369,11 @@ class DataDiriFragment : Fragment() {
                 true
             }
             R.id.hapus_data_diri -> {
-                showDeleteDataDiriDialog()
+                if (offlineMode)
+                    showDialogOnOfflineMode()
+                else
+                    showDeleteDataDiriDialog()
+
                 true
             }
             R.id.lihat_foto_spr -> {
@@ -391,4 +403,18 @@ class DataDiriFragment : Fragment() {
 
         startActivity(intent)
     }
+
+    /**
+     * This AlertDialog will appear when the user trying to interact with
+     * operations interface when the offlineMode is enabled in the Pengaturan.
+     */
+    private fun showDialogOnOfflineMode() {
+        MaterialAlertDialogBuilder(requireContext())
+            .setTitle("Nonaktifkan Mode Offline")
+            .setMessage("Pada mode offline, Anda tidak dapat melakukan operasi penambahan atau penghapusan data. Untuk melakukan operasi ini, silakan nonaktifkan Mode Offline pada layar Pengaturan.")
+            .setPositiveButton("Tutup") { dialog, _ -> dialog.dismiss() }
+            .create()
+            .show()
+    }
+
 }

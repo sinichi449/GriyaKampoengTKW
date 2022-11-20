@@ -51,4 +51,7 @@ interface DataDiriRoomDao {
         alamatIndo: String?,
         noHp: String?
     ): Int
+
+    @Query("DELETE FROM data_diri WHERE kavling_kode=:kavlingKode")
+    fun deleteByKavlingKode(kavlingKode: String)
 }

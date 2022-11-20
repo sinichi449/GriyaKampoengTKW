@@ -31,18 +31,17 @@ class DetailActivity : AppCompatActivity() {
     @Inject
     lateinit var sharedPrefs: SharedPreferences
 
-//    private lateinit var connectivityAnimation: ConnectivityAnimation
     private lateinit var currentKavlingKode: String
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityDetailBinding.inflate(layoutInflater)
+
         // For removing app bar on landscape mode.
         // The Pembayaran table, in the FormPembayaranFragment need this.
         val orientation = resources.configuration.orientation
         if (orientation == Configuration.ORIENTATION_LANDSCAPE) {
             supportActionBar?.hide()
-//            binding.tabLayout.visibility = View.GONE
         }
 
         setContentView(binding.root)
@@ -54,6 +53,8 @@ class DetailActivity : AppCompatActivity() {
         val offlineMode = sharedPrefs.getBoolean("offline_mode", false)
         if (offlineMode)
             binding.connectivityStatus.constraintConnectivity.visibility = View.VISIBLE
+        // Update offline mode state in viewModel
+        viewModel.offlineMode = offlineMode
 
         val kavlingKode = intent.getStringExtra(MainActivity.INTENT_KAVLING_KODE)
         kavlingKode?.let {
@@ -63,38 +64,6 @@ class DetailActivity : AppCompatActivity() {
         }
 
         setupViewPager()
-
-//        initialInternetCheck()
-
-//        setupInternetMonitoring()
-    }
-
-    private fun setupInternetMonitoring() {
-//        val networkHelper = NetworkStatusHelper(this)
-//
-//        networkHelper.observe(this) { status ->
-//            status?.let {
-//                if (it == NetworkStatus.Available) {
-//                    connectivityAnimation.onOnlineAnimation()
-//                    // TODO on internet available
-//                } else if (it == NetworkStatus.Unavailable) {
-//                    connectivityAnimation.onOfflineAnimation()
-//                    // TODO on internet unavailable
-//                }
-//            }
-//        }
-    }
-
-    private fun initialInternetCheck() {
-//        lifecycleScope.launch {
-//            val hasInternet = InternetAvailability.check()
-//
-//            if (!hasInternet) {
-//                withContext(Dispatchers.Main) {
-//                    connectivityAnimation.onOfflineAnimation()
-//                }
-//            }
-//        }
     }
 
     private fun setupViewPager() {
@@ -130,14 +99,6 @@ class DetailActivity : AppCompatActivity() {
         } else {
             super.onOptionsItemSelected(item)
         }
-    }
-
-    override fun onResume() {
-        super.onResume()
-
-//        viewModel.currentKavlingKode.value?.let {
-//            viewModel.getDataDiri(it)
-//        }
     }
 
 }

@@ -17,31 +17,42 @@ class DataDiriRepositoryImpl(
     private val remoteKavlingDataSource: RemoteKavlingDataSource,
 ): DataDiriRepository {
 
-    override fun getDataDiri(kavlingKode: String): Flow<Result<DataDiri?>> {
+    override fun getDataDiri(kavlingKode: String, offline: Boolean): Flow<Result<DataDiri?>> {
         return flow {
-            // First, get from remote server.
-            val getDataDiriRemote = remoteDataDiriRepository.getDataDiri(kavlingKode)
-
-            if (getDataDiriRemote.isSuccess) {
-                // Emit the data diri
-                emit(DataUtil.mapSingleResult(getDataDiriRemote, ::mapDataDiri))
-
-                // Then save to local
-                getDataDiriRemote.getOrNull()?.let {
-                    localDataDiriDataSource.addDataDiri(kavlingKode, it)
-                }
-            } else {
-                // Emit the error
-                getDataDiriRemote.exceptionOrNull()?.let { emit(Result.failure(it)) }
-
-                // Emit from local instead
+            val flowOffline = flow<Result<DataDiri?>> {
                 val getDataDiriFromLocal = localDataDiriDataSource.getDataDiri(kavlingKode)
 
                 if (getDataDiriFromLocal.isSuccess)
                     emit(DataUtil.mapSingleResult(getDataDiriFromLocal, ::mapDataDiri))
                 else
-                    emit(Result.failure(UnknownError("Gagal mendapatkan data diri")))
+                    emit(Result.failure(Throwable("Error tak diketahui")))
             }
+
+            val flowOnline = flow<Result<DataDiri?>> {
+                // Get from remote
+                val getDataDiriRemote = remoteDataDiriRepository.getDataDiri(kavlingKode)
+
+                if (getDataDiriRemote.isSuccess) {
+                    // Emit the data diri
+                    emit(DataUtil.mapSingleResult(getDataDiriRemote, ::mapDataDiri))
+
+                    // Then save to local
+                    getDataDiriRemote.getOrNull()?.let {
+                        localDataDiriDataSource.addDataDiri(kavlingKode, it)
+                    }
+                } else {
+                    // Emit the error
+                    getDataDiriRemote.exceptionOrNull()?.let { emit(Result.failure(it)) }
+
+                    // Emit from local instead
+                    emitAll(flowOffline)
+                }
+            }
+
+            if (offline)
+                emitAll(flowOffline)
+            else
+                emitAll(flowOnline)
         }
     }
 
@@ -52,6 +63,8 @@ class DataDiriRepositoryImpl(
             // Whenever data diri added, let the kavling set "sudah Isi Data Diri"
             remoteKavlingDataSource.setKavlingBelumDiisi(kavlingKode, false)
 
+            // Adding mechanism on Local Data Source already available on getDataDiri() method.
+
             emitAll(remoteDataDiriRepository.addDataDiri(kavlingKode, model))
         }
     }
@@ -61,9 +74,14 @@ class DataDiriRepositoryImpl(
             // Whenever data diri deleted, let kavling "sudah isi Data Diri" to be false
             remoteKavlingDataSource.setKavlingBelumDiisi(kavlingKode, true)
 
-            remoteDataDiriRepository.deleteDataDiri(kavlingKode).collect {
-                emit(it)
+            // Also, delete the data diri on Local!
+            val deleteLocal = localDataDiriDataSource.deleteDataDiri(kavlingKode)
+            deleteLocal.onFailure {
+                emit(Result.failure(it))
             }
+
+            // Then, delete on the remote ...
+            emitAll(remoteDataDiriRepository.deleteDataDiri(kavlingKode))
         }
     }
 

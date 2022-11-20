@@ -5,7 +5,7 @@ import net.bagusekasaputra.griyakampoengtkw.domain.entity.DataDiri
 
 interface DataDiriRepository {
 
-    fun getDataDiri(kavlingKode: String): Flow<Result<DataDiri?>>
+    fun getDataDiri(kavlingKode: String, offline: Boolean): Flow<Result<DataDiri?>>
 
     fun addDataDiri(kavlingKode: String, dataDiri: DataDiri): Flow<Result<Boolean>>
 

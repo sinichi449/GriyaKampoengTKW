@@ -1,6 +1,7 @@
 package net.bagusekasaputra.griyakampoeng.tkw.data.local.datadiri
 
 import net.bagusekasaputra.griyakampoeng.tkw.data.local.MyRoomDatabase
+import net.bagusekasaputra.griyakampoeng.tkw.data.local.RoomRequestHelper
 import net.bagusekasaputra.griyakampoengtkw.data.interfaces.local.LocalDataDiriDataSource
 import net.bagusekasaputra.griyakampoengtkw.data.model.DataDiriModel
 
@@ -37,6 +38,12 @@ class RoomDataDiriDataSource(
             e.printStackTrace()
 
             Result.failure(e)
+        }
+    }
+
+    override suspend fun deleteDataDiri(kavlingKode: String): Result<Nothing?> {
+        return RoomRequestHelper.doNonGetOperation {
+            dataDiriRoomDao.deleteByKavlingKode(kavlingKode)
         }
     }
 

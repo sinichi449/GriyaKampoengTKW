@@ -3,11 +3,10 @@ package net.bagusekasaputra.griyakampoengtkw.presentation.detail.viewmodel
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
+import kotlinx.coroutines.*
+import net.bagusekasaputra.griyakampoengtkw.domain.AsyncUseCaseHelper
 import net.bagusekasaputra.griyakampoengtkw.domain.NumberUtil
+import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.dataDiri.GetDataDiriAsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.*
 import net.bagusekasaputra.griyakampoengtkw.domain.usecase.biayaMarketing.*
 import net.bagusekasaputra.griyakampoengtkw.domain.usecase.catatanPembayaran.AddCatatanPembayaranUseCase
@@ -15,7 +14,6 @@ import net.bagusekasaputra.griyakampoengtkw.domain.usecase.catatanPembayaran.Del
 import net.bagusekasaputra.griyakampoengtkw.domain.usecase.catatanPembayaran.GetCatatanPembayaranUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.usecase.datadiri.AddDataDiriUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.usecase.datadiri.DeleteDataDiriUseCase
-import net.bagusekasaputra.griyakampoengtkw.domain.usecase.datadiri.GetDataDiriUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.usecase.feeMarketing.AddFeeMarketingUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.usecase.feeMarketing.DeleteFeeMarketingUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.usecase.feeMarketing.GetFeeMarketingByKavlingKode
@@ -32,7 +30,7 @@ import javax.inject.Inject
 @HiltViewModel
 class DetailViewModel @Inject constructor(
     private val addDataDiriUseCase: AddDataDiriUseCase,
-    private val getDataDiriUseCase: GetDataDiriUseCase,
+    private val getDataDiriAsyncUseCase: GetDataDiriAsyncUseCase,
     private val deleteDataDiriUseCase: DeleteDataDiriUseCase,
     private val getHargaKavlingUseCase: GetHargaKavlingUseCase,
     private val addHargaKavlingUseCase: AddHargaKavlingUseCase,
@@ -73,33 +71,35 @@ class DetailViewModel @Inject constructor(
 
     val isFinishAddImage = MutableLiveData<Boolean>()
 
+    // Need to be put on UseCase argument
+    var offlineMode = false
 
-    // Data Diri
+    private val asyncHelper = AsyncUseCaseHelper(isFinishOperation)
+
+    // The list of Coroutines/Flows job that need to be cleared on
+    // the onCleared() callback. See below.
+    private val asyncJobs = ArrayList<Job>()
+
+
+    /**
+     * Data Diri
+     */
     fun getDataDiri(kavlingKode: String, onFailure: (cause: String) -> Unit) {
-        isFinishOperation.value = false
+        val request = GetDataDiriAsyncUseCase.Request(kavlingKode, offlineMode)
 
-        CoroutineScope(Dispatchers.IO).launch {
-            val request = GetDataDiriUseCase.Request(kavlingKode)
+        val gettingDataDiriJob = asyncHelper.doWork(
+            request = request,
+            asyncUseCase = getDataDiriAsyncUseCase,
+            onSuccess = {
+                dataDiriLive.postValue(it)
+            },
+            onFailure = {
+                onFailure("Gagal mendapatkan data diri: ${it.message}")
+            },
+            successMsgOnUiThread = false,
+        )
 
-            getDataDiriUseCase.execute(request).collect { response ->
-                val result = response.data.dataDiri
-
-                if (result.isSuccess) {
-                    val dataDiri = result.getOrNull()
-
-                    dataDiri?.let {
-                        dataDiriLive.postValue(it)
-                    }
-
-                } else {
-                    withContext(Dispatchers.Main) {
-                        onFailure("Gagal mendapatkan data diri: ${result.exceptionOrNull()?.message ?: "null"}")
-                    }
-                }
-
-                isFinishOperation.postValue(true)
-            }
-        }
+        asyncJobs.add(gettingDataDiriJob)
     }
 
     fun addDataDiri(kavlingKode: String, dataDiri: DataDiri, onComplete: (msg: String) -> Unit) {
@@ -896,5 +896,11 @@ class DetailViewModel @Inject constructor(
         } else {
             return null
         }
+    }
+
+    override fun onCleared() {
+        super.onCleared()
+
+        asyncJobs.forEach { it.cancel() }
     }
 }
