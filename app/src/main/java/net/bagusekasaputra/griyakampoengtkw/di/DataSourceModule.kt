@@ -11,6 +11,7 @@ import net.bagusekasaputra.griyakampoeng.tkw.data.local.datadiri.RoomDataDiriDat
 import net.bagusekasaputra.griyakampoeng.tkw.data.local.fotoKuitansi.RoomFotoKuitansiDataSource
 import net.bagusekasaputra.griyakampoeng.tkw.data.local.fotoPembayaran.RoomFotoPembayaranDataSource
 import net.bagusekasaputra.griyakampoeng.tkw.data.local.fotoPembayaran.device.DeviceFotoPembayaranDataSource
+import net.bagusekasaputra.griyakampoeng.tkw.data.local.hargaKavling.RoomHargaKavlingDataSource
 import net.bagusekasaputra.griyakampoeng.tkw.data.local.imageDataDiri.RoomLocalImageDataDiriDataRepository
 import net.bagusekasaputra.griyakampoeng.tkw.data.local.imageSpr.RoomImageSprDataSource
 import net.bagusekasaputra.griyakampoeng.tkw.data.local.kavling.RoomKavlingDataSource
@@ -167,6 +168,11 @@ object DataSourceModule {
         return net.bagusekasaputra.griyakampoengtkw.data.remote.hargakavling.FirebaseHargaKavlingSource(
             databaseReference
         )
+    }
+
+    @Provides
+    fun provideLocalHargaKavlingDataSource(roomDatabase: MyRoomDatabase): LocalHargaKavlingDataSource {
+        return RoomHargaKavlingDataSource(roomDatabase)
     }
 
 

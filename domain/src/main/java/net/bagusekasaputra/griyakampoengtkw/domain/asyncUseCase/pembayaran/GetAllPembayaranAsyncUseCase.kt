@@ -29,7 +29,7 @@ class GetAllPembayaranAsyncUseCase(
 
     override fun process(request: Request): Flow<Result<List<Pembayaran>?>> {
         return pembayaranRepository.getAllPembayaran(request.kavlingKode, request.offline)
-            .zip(getHargaKavling(request.kavlingKode)) { resultListPembayaran, hargaKavling ->
+            .zip(getHargaKavling(request.kavlingKode, request.offline)) { resultListPembayaran, hargaKavling ->
                 val listPembayaran = resultListPembayaran.getOrNull()
 
                 if (listPembayaran != null) {
@@ -101,8 +101,8 @@ class GetAllPembayaranAsyncUseCase(
         return PembayaranSorterUtil(listPembayaran).getSortedList()
     }
 
-    private fun getHargaKavling(kavlingKode: String): Flow<HargaKavling> {
-        return hargaKavlingRepository.getHargaKavling(kavlingKode).map {
+    private fun getHargaKavling(kavlingKode: String, offline: Boolean): Flow<HargaKavling> {
+        return hargaKavlingRepository.getHargaKavling(kavlingKode, offline).map {
             it.getOrNull()
                 // If null, return a dummy HargaKavling object
                 ?: HargaKavling(kavlingKode = kavlingKode, harga = "0", tambahanLuas = "0")

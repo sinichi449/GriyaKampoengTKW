@@ -6,6 +6,8 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
 import kotlinx.coroutines.flow.emitAll
 import kotlinx.coroutines.flow.flow
+import net.bagusekasaputra.griyakampoengtkw.data.DataUtil
+import net.bagusekasaputra.griyakampoengtkw.data.interfaces.local.LocalHargaKavlingDataSource
 import net.bagusekasaputra.griyakampoengtkw.data.interfaces.remote.RemoteHargaKavlingSource
 import net.bagusekasaputra.griyakampoengtkw.data.model.HargaKavlingModel
 import net.bagusekasaputra.griyakampoengtkw.domain.NumberUtil
@@ -13,35 +15,86 @@ import net.bagusekasaputra.griyakampoengtkw.domain.entity.HargaKavling
 import net.bagusekasaputra.griyakampoengtkw.domain.repository.HargaKavlingRepository
 
 class HargaKavlingRepositoryImpl(
-    private val remoteHargaKavlingSource: RemoteHargaKavlingSource
+    private val localHargaKavlingDataSource: LocalHargaKavlingDataSource,
+    private val remoteHargaKavlingSource: RemoteHargaKavlingSource,
 ): HargaKavlingRepository {
 
-    override fun getHargaKavling(kavlingKode: String): Flow<Result<HargaKavling?>> {
+    override fun getHargaKavling(
+        kavlingKode: String,
+        offline: Boolean
+    ): Flow<Result<HargaKavling?>> {
         return flow {
-            remoteHargaKavlingSource.getHargaKavlingModel(kavlingKode).collect { result ->
-                if (result.isSuccess) {
-                    val hargaKavlingModel = result.getOrNull()
+            val flowOffline = flow<Result<HargaKavling?>> {
+                val localResult = localHargaKavlingDataSource.getHargaKavlingModel(kavlingKode)
 
-                    if (hargaKavlingModel != null) {
-                        emit(Result.success(mapHargaKavling(hargaKavlingModel)))
-                    }
-                    else {
-                        emit(Result.success(null))
+                emit(
+                    DataUtil.mapSingleResult(localResult, ::mapHargaKavling)
+                )
+            }
+
+            val flowOnline = flow<Result<HargaKavling?>> {
+                // First get from remote
+                val remoteResult = remoteHargaKavlingSource.getHargaKavlingModel(kavlingKode)
+
+                remoteResult.onSuccess {
+                    // Then we write it to the local data source
+                    if (it != null) {
+                        val writeLocal = localHargaKavlingDataSource.addHargaKavlingModel(it)
+                        writeLocal.onFailure { errorLocal ->
+                            emit(Result.failure(errorLocal))
+                        }
                     }
 
-                } else {
-                    result.exceptionOrNull()?.let { throwable ->
-                        emit(Result.failure(throwable))
-                    }
+                    // Finally, emit the result
+                    emit(
+                        DataUtil.mapSingleResult(remoteResult, ::mapHargaKavling)
+                    )
                 }
+
+                remoteResult.onFailure {
+                    // When error, firstly emit the cause
+                    emit(Result.failure(it))
+
+                    // Then, get from local instead
+                    emitAll(flowOffline)
+                }
+            }
+
+            if (offline)
+                emitAll(flowOffline)
+            else
+                emitAll(flowOnline)
+        }
+    }
+
+
+    override fun addHargaKavling(hargaKavling: HargaKavling): Flow<Result<Boolean>> {
+        return flow {
+            val mapHargaKavling = mapHargaKavling(hargaKavling)
+            val remoteResult = remoteHargaKavlingSource.addHargaKavlingModel(mapHargaKavling)
+
+            remoteResult.onSuccess {
+                emit(Result.success(true))
+            }
+
+            remoteResult.onFailure {
+                emit(Result.failure(it))
             }
         }
     }
 
-    override fun addHargaKavling(hargaKavling: HargaKavling): Flow<Result<Boolean>> {
+
+    override fun deleteHargaKavling(kavlingKode: String): Flow<Result<Nothing?>> {
         return flow {
-            emitAll(remoteHargaKavlingSource.addHargaKavlingModel(
-                mapHargaKavling(hargaKavling)))
+            // We need to delete the data on the local data source too
+            val localDelete = localHargaKavlingDataSource.deleteHargaKavlingModel(kavlingKode)
+            localDelete.onFailure {
+                emit(Result.failure(it))
+            }
+
+            val remoteDelete = remoteHargaKavlingSource.deleteHargaKavlingModel(kavlingKode)
+
+            emit(remoteDelete)
         }
     }
 

@@ -1,8 +1,8 @@
-package net.bagusekasaputra.griyakampoengtkw.data.interfaces.remote
+package net.bagusekasaputra.griyakampoengtkw.data.interfaces.local
 
 import net.bagusekasaputra.griyakampoengtkw.data.model.HargaKavlingModel
 
-interface RemoteHargaKavlingSource {
+interface LocalHargaKavlingDataSource {
 
     suspend fun getHargaKavlingModel(kavlingKode: String): Result<HargaKavlingModel?>
 
@@ -10,5 +10,4 @@ interface RemoteHargaKavlingSource {
 
     suspend fun deleteHargaKavlingModel(kavlingKode: String): Result<Nothing?>
 
-    fun getSingleHargaKavlingForPembayaran(kavlingKode: String, onSuccess: (hargaKavlingModel: HargaKavlingModel?) -> Unit)
 }

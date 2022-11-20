@@ -68,8 +68,11 @@ object RepositoryModule {
      * Harga Kavling
      */
     @Provides
-    fun provideHargaKavlingRepository(remoteHargaKavlingSource: RemoteHargaKavlingSource): HargaKavlingRepository {
-        return HargaKavlingRepositoryImpl(remoteHargaKavlingSource)
+    fun provideHargaKavlingRepository(
+        localHargaKavlingDataSource: LocalHargaKavlingDataSource,
+        remoteHargaKavlingSource: RemoteHargaKavlingSource
+    ): HargaKavlingRepository {
+        return HargaKavlingRepositoryImpl(localHargaKavlingDataSource, remoteHargaKavlingSource)
     }
 
 

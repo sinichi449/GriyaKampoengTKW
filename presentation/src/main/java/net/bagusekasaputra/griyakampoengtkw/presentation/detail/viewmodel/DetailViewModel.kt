@@ -7,6 +7,7 @@ import kotlinx.coroutines.*
 import net.bagusekasaputra.griyakampoengtkw.domain.AsyncUseCaseHelper
 import net.bagusekasaputra.griyakampoengtkw.domain.NumberUtil
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.dataDiri.GetDataDiriAsyncUseCase
+import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.hargaKavling.GetHargaKavlingAsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.pembayaran.GetAllPembayaranAsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.*
 import net.bagusekasaputra.griyakampoengtkw.domain.usecase.biayaMarketing.*
@@ -20,7 +21,6 @@ import net.bagusekasaputra.griyakampoengtkw.domain.usecase.feeMarketing.DeleteFe
 import net.bagusekasaputra.griyakampoengtkw.domain.usecase.feeMarketing.GetFeeMarketingByKavlingKode
 import net.bagusekasaputra.griyakampoengtkw.domain.usecase.feeMarketing.UpdateFeeMarketingUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.usecase.hargakavling.AddHargaKavlingUseCase
-import net.bagusekasaputra.griyakampoengtkw.domain.usecase.hargakavling.GetHargaKavlingUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.usecase.pembayaran.AddPembayaranUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.usecase.pembayaran.DeleteAllPembayaranUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.usecase.pembayaran.DeletePembayaranByTerminUseCase
@@ -29,6 +29,7 @@ import net.bagusekasaputra.griyakampoengtkw.presentation.detail.tableview.biayaM
 import net.bagusekasaputra.griyakampoengtkw.presentation.detail.tableview.formPembayaran.PembayaranCell
 import net.bagusekasaputra.griyakampoengtkw.presentation.detail.tableview.formPembayaran.PembayaranColumnHeader
 import net.bagusekasaputra.griyakampoengtkw.presentation.detail.tableview.formPembayaran.PembayaranRowHeader
+import net.bagusekasaputra.griyakampoengtkw.presentation.logEvent
 import javax.inject.Inject
 
 @HiltViewModel
@@ -36,7 +37,7 @@ class DetailViewModel @Inject constructor(
     private val addDataDiriUseCase: AddDataDiriUseCase,
     private val getDataDiriAsyncUseCase: GetDataDiriAsyncUseCase,
     private val deleteDataDiriUseCase: DeleteDataDiriUseCase,
-    private val getHargaKavlingUseCase: GetHargaKavlingUseCase,
+    private val getHargaKavlingAsyncUseCase: GetHargaKavlingAsyncUseCase,
     private val addHargaKavlingUseCase: AddHargaKavlingUseCase,
     private val getAllPembayaranAsyncUseCase: GetAllPembayaranAsyncUseCase,
     private val addPembayaranUseCase: AddPembayaranUseCase,
@@ -160,30 +161,24 @@ class DetailViewModel @Inject constructor(
      * Harga Kavling
      */
     fun getHargaKavling(kavlingKode: String, onFailure: (cause: String) -> Unit) {
-        isFinishOperation.value = false
+        val request = GetHargaKavlingAsyncUseCase.Request(kavlingKode, offlineMode)
 
-        CoroutineScope(Dispatchers.IO).launch {
-            val request = GetHargaKavlingUseCase.Request(kavlingKode)
+        val gettingHargaKavlingJob = asyncHelper.doWork(
+            request = request,
+            asyncUseCase = getHargaKavlingAsyncUseCase,
+            onSuccess = {
+                hargaKavlingLive.postValue(it ?: HargaKavling(kavlingKode, "0", "0"))
+            },
+            onFailure = {
+                onFailure("Gagal mendapatkan harga kavling: ${it.message}")
+            },
+            successMsgOnUiThread = false,
+        )
 
-            getHargaKavlingUseCase.execute(request).collect { response ->
-                val result = response.data.result
+        asyncJobs.add(gettingHargaKavlingJob)
 
-                if (result.isSuccess) {
-                    val hargaKavling = result.getOrNull()
-
-                    if (hargaKavling == null) {
-                        hargaKavlingLive.postValue(HargaKavling(kavlingKode, "0", "0"))
-                    } else {
-                        hargaKavlingLive.postValue(hargaKavling!!)
-                    }
-                } else {
-                    withContext(Dispatchers.Main) {
-                        onFailure("Gagal mendapatkan harga kavling: ${result.exceptionOrNull()?.message ?: "null"}")
-                    }
-                }
-
-                isFinishOperation.postValue(true)
-            }
+        gettingHargaKavlingJob.invokeOnCompletion {
+            logEvent("Getting harga kavling completed!")
         }
     }
 
