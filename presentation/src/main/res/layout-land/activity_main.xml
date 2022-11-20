@@ -29,6 +29,11 @@
 
     </com.google.android.material.appbar.AppBarLayout>
 
+    <include
+        android:id="@+id/connectivity_status"
+        layout="@layout/layout_connectivity_status"
+        android:visibility="gone"/>
+
     <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
         android:id="@+id/swipe_refresh_main"
         android:layout_width="0dp"

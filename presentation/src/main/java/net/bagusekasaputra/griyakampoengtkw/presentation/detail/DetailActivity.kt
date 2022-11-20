@@ -3,9 +3,11 @@ package net.bagusekasaputra.griyakampoengtkw.presentation.detail
 import android.content.res.Configuration
 import android.os.Bundle
 import android.view.MenuItem
+import android.view.View
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
+import androidx.preference.PreferenceManager
 import dagger.hilt.android.AndroidEntryPoint
 import net.bagusekasaputra.griyakampoengtkw.presentation.R
 import net.bagusekasaputra.griyakampoengtkw.presentation.custom.DepthPageTransformer
@@ -43,8 +45,12 @@ class DetailActivity : AppCompatActivity() {
         supportActionBar?.setHomeAsUpIndicator(R.drawable.keyboard_arrow_left_36px)
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
 
-        // set connectivity
-//        connectivityAnimation = ConnectivityAnimation(this, binding.root, binding.connectivityStatus)
+        // Connectivity Check
+        val offlineMode = PreferenceManager
+            .getDefaultSharedPreferences(this)
+            .getBoolean("offline_mode", false)
+        if (offlineMode)
+            binding.connectivityStatus.constraintConnectivity.visibility = View.VISIBLE
 
         val kavlingKode = intent.getStringExtra(MainActivity.INTENT_KAVLING_KODE)
         kavlingKode?.let {

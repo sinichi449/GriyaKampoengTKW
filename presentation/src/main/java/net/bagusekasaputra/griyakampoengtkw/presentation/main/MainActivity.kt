@@ -11,6 +11,7 @@ import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
+import androidx.preference.PreferenceManager
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.github.dhaval2404.colorpicker.MaterialColorPickerDialog
@@ -52,10 +53,16 @@ class MainActivity : AppCompatActivity() {
         // Setup toolbar
         setSupportActionBar(binding.toolbarMain)
 
-        val deviceOnline = intent.getBooleanExtra(GriyaNodes.INTENT_IS_ONLINE, false)
+        // Connectivity check
+        val deviceOnline = intent.getBooleanExtra(GriyaNodes.INTENT_IS_ONLINE, true)
 
         if (!deviceOnline) {
             Toast.makeText(this, "Device terdeteksi offline, data tidak akan tersinkronisasi!", Toast.LENGTH_LONG).show()
+        }
+        val sharedPrefs = PreferenceManager.getDefaultSharedPreferences(this)
+        val offlineMode = sharedPrefs.getBoolean("offline_mode", false)
+        if (offlineMode) {
+            binding.connectivityStatus.constraintConnectivity.visibility = View.VISIBLE
         }
 
         // Getting BuildConfig from Splash Activity, and check available update.
@@ -114,6 +121,7 @@ class MainActivity : AppCompatActivity() {
         binding.toolbarMain.setNavigationOnClickListener {
             val settingIntent = Intent(this, SettingsActivity::class.java)
             startActivity(settingIntent)
+            finish()
         }
 
     }
