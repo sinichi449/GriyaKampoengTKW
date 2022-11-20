@@ -7,6 +7,7 @@ import kotlinx.coroutines.*
 import net.bagusekasaputra.griyakampoengtkw.domain.AsyncUseCaseHelper
 import net.bagusekasaputra.griyakampoengtkw.domain.NumberUtil
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.dataDiri.GetDataDiriAsyncUseCase
+import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.pembayaran.GetAllPembayaranAsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.*
 import net.bagusekasaputra.griyakampoengtkw.domain.usecase.biayaMarketing.*
 import net.bagusekasaputra.griyakampoengtkw.domain.usecase.catatanPembayaran.AddCatatanPembayaranUseCase
@@ -20,7 +21,10 @@ import net.bagusekasaputra.griyakampoengtkw.domain.usecase.feeMarketing.GetFeeMa
 import net.bagusekasaputra.griyakampoengtkw.domain.usecase.feeMarketing.UpdateFeeMarketingUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.usecase.hargakavling.AddHargaKavlingUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.usecase.hargakavling.GetHargaKavlingUseCase
-import net.bagusekasaputra.griyakampoengtkw.domain.usecase.pembayaran.*
+import net.bagusekasaputra.griyakampoengtkw.domain.usecase.pembayaran.AddPembayaranUseCase
+import net.bagusekasaputra.griyakampoengtkw.domain.usecase.pembayaran.DeleteAllPembayaranUseCase
+import net.bagusekasaputra.griyakampoengtkw.domain.usecase.pembayaran.DeletePembayaranByTerminUseCase
+import net.bagusekasaputra.griyakampoengtkw.domain.usecase.pembayaran.UpdatePembayaranUseCase
 import net.bagusekasaputra.griyakampoengtkw.presentation.detail.tableview.biayaMarketing.TableBiayaMarketingHelper
 import net.bagusekasaputra.griyakampoengtkw.presentation.detail.tableview.formPembayaran.PembayaranCell
 import net.bagusekasaputra.griyakampoengtkw.presentation.detail.tableview.formPembayaran.PembayaranColumnHeader
@@ -34,7 +38,7 @@ class DetailViewModel @Inject constructor(
     private val deleteDataDiriUseCase: DeleteDataDiriUseCase,
     private val getHargaKavlingUseCase: GetHargaKavlingUseCase,
     private val addHargaKavlingUseCase: AddHargaKavlingUseCase,
-    private val getAllPembayaranUseCase: GetAllPembayaranUseCase,
+    private val getAllPembayaranAsyncUseCase: GetAllPembayaranAsyncUseCase,
     private val addPembayaranUseCase: AddPembayaranUseCase,
     private val updatePembayaranUseCase: UpdatePembayaranUseCase,
     private val deletePembayaranByTerminUseCase: DeletePembayaranByTerminUseCase,
@@ -152,7 +156,9 @@ class DetailViewModel @Inject constructor(
     }
 
 
-    // Harga Kavling
+    /**
+     * Harga Kavling
+     */
     fun getHargaKavling(kavlingKode: String, onFailure: (cause: String) -> Unit) {
         isFinishOperation.value = false
 
@@ -206,7 +212,27 @@ class DetailViewModel @Inject constructor(
     }
 
 
-    // Pembayaran
+    /**
+     * Pembayaran
+     */
+    fun getAllPembayaran(kavlingKode: String, onFailure: (cause: String) -> Unit) {
+        val request = GetAllPembayaranAsyncUseCase.Request(kavlingKode, offlineMode)
+
+        val gettingAllPembayaranJob = asyncHelper.doWork(
+            request = request,
+            asyncUseCase = getAllPembayaranAsyncUseCase,
+            onSuccess = {
+                listPembayaranLive.postValue(it)
+            },
+            onFailure = {
+                onFailure("Gagal mendapatkan pembayaran: ${it.message}")
+            },
+            successMsgOnUiThread = false,
+        )
+
+        asyncJobs.add(gettingAllPembayaranJob)
+    }
+
     fun addPembayaran(
         kavlingKode: String,
         hargaKavling: Long,
@@ -228,32 +254,6 @@ class DetailViewModel @Inject constructor(
                 } else {
                     withContext(Dispatchers.Main) {
                         onComplete("Gagal menambahkan pembayaran: ${result.exceptionOrNull()?.message?: "null"}")
-                    }
-                }
-
-                isFinishOperation.postValue(true)
-            }
-        }
-    }
-
-    fun getAllPembayaran(kavlingKode: String, onFailure: (cause: String) -> Unit) {
-        isFinishOperation.value = false
-
-        CoroutineScope(Dispatchers.IO).launch {
-            val request = GetAllPembayaranUseCase.Request(kavlingKode)
-
-            getAllPembayaranUseCase.execute(request).collect { response ->
-                val result = response.data.result
-
-                if (result.isSuccess) {
-                    val listPembayaran = result.getOrNull()
-
-                    listPembayaran?.let {
-                        listPembayaranLive.postValue(it)
-                    }
-                } else {
-                    withContext(Dispatchers.IO) {
-                        onFailure("Gagal mendapatkan pembayaran: ${result.exceptionOrNull()?.message ?: "null"}")
                     }
                 }
 

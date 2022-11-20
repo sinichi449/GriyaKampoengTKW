@@ -1,8 +1,8 @@
-package net.bagusekasaputra.griyakampoengtkw.data.interfaces.remote
+package net.bagusekasaputra.griyakampoengtkw.data.interfaces.local
 
 import net.bagusekasaputra.griyakampoengtkw.data.model.PembayaranModel
 
-interface RemotePembayaranSource {
+interface LocalPembayaranDataSource {
 
     suspend fun getAllPembayaran(kavlingKode: String): Result<List<PembayaranModel>?>
 
@@ -13,5 +13,4 @@ interface RemotePembayaranSource {
     suspend fun deletePembayaranModelByTermin(kavlingKode: String, termin: String): Result<Nothing?>
 
     suspend fun deleteAllPembayaranModel(kavlingKode: String): Result<Nothing?>
-
 }

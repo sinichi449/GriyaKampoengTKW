@@ -11,6 +11,7 @@ import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.fotoPembayaran.D
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.fotoPembayaran.GetFotoPembayaranAsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.fotoPembayaran.IsFotoPembayaranExistAsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.kavling.GetKavlingByBlockAsyncUseCase
+import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.pembayaran.GetAllPembayaranAsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.repository.*
 import net.bagusekasaputra.griyakampoengtkw.domain.usecase.appupdate.GetUpdateInformationUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.usecase.biayaMarketing.*
@@ -126,15 +127,10 @@ object UseCaseModule {
     @Provides
     fun provideGetAllPembayaran(
         pembayaranRepository: PembayaranRepository,
-        getSingleHargaKavlingForPembayaranUseCase: GetSingleHargaKavlingForPembayaranUseCase,
+        hargaKavlingRepository: HargaKavlingRepository,
         fotoPembayaranRepository: FotoPembayaranRepository,
-    ): GetAllPembayaranUseCase {
-        return GetAllPembayaranUseCase(
-            pembayaranRepository,
-            getSingleHargaKavlingForPembayaranUseCase,
-            fotoPembayaranRepository
-        )
-    }
+    )
+        = GetAllPembayaranAsyncUseCase(pembayaranRepository, hargaKavlingRepository, fotoPembayaranRepository)
 
     @Provides
     fun provideAddPembayaranUseCase(pembayaranRepository: PembayaranRepository): AddPembayaranUseCase {

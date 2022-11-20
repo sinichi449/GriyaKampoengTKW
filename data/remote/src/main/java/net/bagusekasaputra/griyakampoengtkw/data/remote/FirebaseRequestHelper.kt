@@ -2,10 +2,12 @@ package net.bagusekasaputra.griyakampoengtkw.data.remote
 
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseReference
+import com.google.firebase.database.ktx.getValue
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.channels.trySendBlocking
 import kotlinx.coroutines.flow.callbackFlow
 import kotlinx.coroutines.flow.first
+import net.bagusekasaputra.griyakampoengtkw.data.model.PembayaranModel
 import java.util.concurrent.atomic.AtomicBoolean
 
 object FirebaseRequestHelper {
@@ -62,6 +64,34 @@ object FirebaseRequestHelper {
         }.first()
     }
 
+    /**
+     * Notify the user will he/she want to overwrite the existing data.
+     * This is, I think, important in the data sensitive context.
+     */
+    suspend fun insertOperationAlertOverwrite(
+        targetChild: DatabaseReference,
+        valueToInsert: Any?,
+        existMsg: String,
+    ): Result<Nothing?> {
+        return callbackFlow<Result<Nothing?>> {
+            val childExist = isDataExist(targetChild)
+
+            if (childExist) {
+                trySendBlocking(Result.failure(Exception(existMsg)))
+            } else {
+                targetChild.setValue(valueToInsert)
+                    .addOnSuccessListener {
+                        trySendBlocking(Result.success(null))
+                    }
+                    .addOnFailureListener {
+                        trySendBlocking(Result.failure(it))
+                    }
+            }
+
+            awaitClose { }
+        }.first()
+    }
+
     suspend fun updateOperation(
         targetChild: DatabaseReference,
         newValue: Any?,
@@ -97,6 +127,22 @@ object FirebaseRequestHelper {
                 }
 
             awaitClose {  }
+        }.first()
+    }
+
+    private suspend fun isDataExist(target: DatabaseReference): Boolean {
+        return callbackFlow<Boolean> {
+            target.get()
+                .addOnSuccessListener { snapshot ->
+                    val data = snapshot.getValue<PembayaranModel>()
+
+                    // If null, then the data isn't exist. SAFE!
+                    if (data == null)
+                        trySendBlocking(false)
+                    else
+                        // If not null, then the data is indeed already exist. BEWARE!
+                        trySendBlocking(true)
+                }
         }.first()
     }
 }

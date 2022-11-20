@@ -1,9 +1,10 @@
 package net.bagusekasaputra.griyakampoengtkw.data.repository
 
-import kotlinx.coroutines.channels.awaitClose
-import kotlinx.coroutines.channels.trySendBlocking
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.callbackFlow
+import kotlinx.coroutines.flow.emitAll
+import kotlinx.coroutines.flow.flow
+import net.bagusekasaputra.griyakampoengtkw.data.DataUtil
+import net.bagusekasaputra.griyakampoengtkw.data.interfaces.local.LocalPembayaranDataSource
 import net.bagusekasaputra.griyakampoengtkw.data.interfaces.remote.RemotePembayaranSource
 import net.bagusekasaputra.griyakampoengtkw.data.model.PembayaranModel
 import net.bagusekasaputra.griyakampoengtkw.domain.NumberUtil
@@ -11,28 +12,56 @@ import net.bagusekasaputra.griyakampoengtkw.domain.entity.Pembayaran
 import net.bagusekasaputra.griyakampoengtkw.domain.repository.PembayaranRepository
 
 class PembayaranRepositoryImpl(
-    private val remotePembayaranSource: RemotePembayaranSource
+    private val localPembayaranDataSource: LocalPembayaranDataSource,
+    private val remotePembayaranSource: RemotePembayaranSource,
 ): PembayaranRepository {
 
-    override fun getAllPembayaran(kavlingKode: String): Flow<Result<List<Pembayaran>?>> {
-        return callbackFlow {
-            remotePembayaranSource.getAllPembayaran(
-                kavlingKode = kavlingKode,
-                onSuccess = { listPembayaranModel ->
-                    val listPembayaran = listPembayaranModel?.map { mapPembayaran(it) }
+    override fun getAllPembayaran(
+        kavlingKode: String,
+        offline: Boolean
+    ): Flow<Result<List<Pembayaran>?>> {
+        return flow {
+            val flowOffline = flow<Result<List<Pembayaran>?>> {
+                val localResult = localPembayaranDataSource.getAllPembayaran(kavlingKode)
+                val mapResult = DataUtil.mapListResult(
+                    originResult = localResult,
+                    targetMapper = ::mapPembayaran,
+                )
 
-                    if (listPembayaran != null) {
-                        trySendBlocking(Result.success(listPembayaran))
-                    } else {
-                        trySendBlocking(Result.success(null))
+                emit(mapResult)
+            }
+
+            val flowOnline = flow<Result<List<Pembayaran>?>> {
+                // First, we request to the remote
+                val remoteResult = remotePembayaranSource.getAllPembayaran(kavlingKode)
+
+                if (remoteResult.isSuccess) {
+                    // If success, then we write to the local data
+                    remoteResult.getOrNull()?.forEach {
+                        localPembayaranDataSource.addPembayaranModel(kavlingKode, 0L, it)
                     }
-                },
-                onFailure = {
-                    trySendBlocking(Result.failure(it))
-                }
-            )
 
-            awaitClose {  }
+                    // Then emit the result
+                    val mapResult = DataUtil.mapListResult(
+                        originResult = remoteResult,
+                        targetMapper = ::mapPembayaran,
+                    )
+                    emit(mapResult)
+                } else {
+                    // If remote request is failed, we emit the error
+                    val errorCause = remoteResult.exceptionOrNull()
+                        ?: Throwable("Terjadi kesalahan tak diketahui pada server saat mendapatkan data Pembayaran!")
+                    emit(Result.failure(errorCause))
+
+                    // Then get from local instead
+                    emitAll(flowOffline)
+                }
+            }
+
+            if (offline)
+                emitAll(flowOffline)
+            else
+                emitAll(flowOnline)
         }
     }
 
@@ -41,18 +70,20 @@ class PembayaranRepositoryImpl(
         hargaKavling: Long,
         pembayaran: Pembayaran,
     ): Flow<Result<Boolean>> {
-        return callbackFlow {
-            val pembayaranModel = mapPembayaran(pembayaran)
-
-            remotePembayaranSource.addPembayaranModel(
-                kavlingKode = kavlingKode,
-                hargaKavling = hargaKavling,
-                pembayaranModel = pembayaranModel,
-                onSuccess = { trySendBlocking(Result.success(true)) },
-                onFailure = {  trySendBlocking(Result.failure(it)) },
+        return flow {
+            val remoteResult = remotePembayaranSource.addPembayaranModel(
+                kavlingKode,
+                hargaKavling,
+                pembayaranModel = mapPembayaran(pembayaran)
             )
 
-            awaitClose {  }
+            if (remoteResult.isSuccess) {
+                emit(Result.success(true))
+            } else {
+                val errorCause = remoteResult.exceptionOrNull()
+                    ?: Throwable("Terjadi kesalahan tak diketahui saat menambah data Pembayaran!")
+                emit(Result.failure(errorCause))
+            }
         }
     }
 
@@ -61,16 +92,28 @@ class PembayaranRepositoryImpl(
         oldPembayaran: Pembayaran,
         newPembayaran: Pembayaran,
     ): Flow<Result<Boolean>> {
-        return callbackFlow {
-            remotePembayaranSource.updatePembayaranModel(
-                kavlingKode = kavlingKode,
-                oldPembayaranModel = mapPembayaran(oldPembayaran),
-                newPembayaranModel = mapPembayaran(newPembayaran),
-                onSuccess = { trySendBlocking(Result.success(true)) },
-                onFailure = { trySendBlocking(Result.failure(it)) },
+        return flow {
+            // We need to update the local too!
+            val localResult = localPembayaranDataSource.updatePembayaranModel(
+                kavlingKode, mapPembayaran(oldPembayaran), mapPembayaran(newPembayaran)
             )
+            localResult.onFailure {
+                emit(Result.failure(it))
+            }
 
-            awaitClose {  }
+
+            val remoteResult = remotePembayaranSource.updatePembayaranModel(
+                kavlingKode,
+                oldPembayaranModel = mapPembayaran(oldPembayaran),
+                newPembayaranModel = mapPembayaran(newPembayaran)
+            )
+            remoteResult.onSuccess {
+                emit(Result.success(true))
+            }
+
+            remoteResult.onFailure {
+                emit(Result.failure(it))
+            }
         }
     }
 
@@ -78,35 +121,38 @@ class PembayaranRepositoryImpl(
         kavlingKode: String,
         termin: String,
     ): Flow<Result<Boolean>> {
-        return callbackFlow {
-            remotePembayaranSource.deletePembayaranModelByTermin(
-                kavlingKode = kavlingKode,
-                termin = termin,
-                onSuccess = {
-                    trySendBlocking(Result.success(true))
-                },
-                onFailure = {
-                    trySendBlocking(Result.failure(it))
-                }
-            )
+        return flow {
+            // delete both from local and remote
+            val localResult = localPembayaranDataSource.deletePembayaranModelByTermin(kavlingKode, termin)
+            localResult.onFailure {
+                emit(Result.failure(it))
+            }
 
-            awaitClose {  }
+            val remoteResult = remotePembayaranSource.deletePembayaranModelByTermin(kavlingKode, termin)
+            remoteResult.onSuccess {
+                emit(Result.success(true))
+            }
+            remoteResult.onFailure {
+                emit(Result.failure(it))
+            }
         }
     }
 
     override fun deleteAllPembayaran(kavlingKode: String): Flow<Result<Boolean>> {
-        return callbackFlow {
-            remotePembayaranSource.deleteAllPembayaranModel(
-                kavlingKode = kavlingKode,
-                onSuccess = {
-                    trySendBlocking(Result.success(true))
-                },
-                onFailure = {
-                    trySendBlocking(Result.failure(it))
-                }
-            )
+        return flow {
+            // delete both from local and remote
+            val localResult = localPembayaranDataSource.deleteAllPembayaranModel(kavlingKode)
+            localResult.onFailure {
+                emit(Result.failure(it))
+            }
 
-            awaitClose {  }
+            val remoteResult = remotePembayaranSource.deleteAllPembayaranModel(kavlingKode)
+            remoteResult.onSuccess {
+                emit(Result.success(true))
+            }
+            remoteResult.onFailure {
+                emit(Result.failure(it))
+            }
         }
     }
 

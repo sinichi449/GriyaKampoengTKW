@@ -5,22 +5,18 @@ import com.google.firebase.database.ktx.getValue
 import net.bagusekasaputra.griyakampoengtkw.data.interfaces.remote.RemotePembayaranSource
 import net.bagusekasaputra.griyakampoengtkw.data.model.PembayaranModel
 import net.bagusekasaputra.griyakampoengtkw.data.remote.FirebaseNodes
+import net.bagusekasaputra.griyakampoengtkw.data.remote.FirebaseRequestHelper
 
 class FirebasePembayaranSource(
-    private val databaseReference: DatabaseReference
+    databaseReference: DatabaseReference
 ): RemotePembayaranSource {
 
     private val pembayaranRef = databaseReference.child(FirebaseNodes.FORM_PEMBAYARAN)
 
-    override suspend fun getAllPembayaran(
-        kavlingKode: String,
-        onSuccess: (listPembayaranModel: List<PembayaranModel>?) -> Unit,
-        onFailure: (throwable: Throwable) -> Unit,
-    ) {
-        pembayaranRef
-            .child(kavlingKode)
-            .get()
-            .addOnSuccessListener { snapshot ->
+    override suspend fun getAllPembayaran(kavlingKode: String): Result<List<PembayaranModel>?> {
+        return FirebaseRequestHelper.getOperation(
+            pathToChild = pembayaranRef.child(kavlingKode),
+            onGetSnapshot = { snapshot ->
                 val terminHashMap = snapshot.getValue<HashMap<String, PembayaranModel>>()
 
                 if (terminHashMap != null) {
@@ -30,96 +26,63 @@ class FirebasePembayaranSource(
                             listPembayaranModel.add(it)
                         }
                     }
-
-                    onSuccess(listPembayaranModel)
+                    return@getOperation listPembayaranModel
                 } else {
-                    onSuccess(null)
+                    return@getOperation null
                 }
-            }
-            .addOnFailureListener {
-                onFailure(it)
-            }
+            },
+            timeOutMsg = "Waktu habis mendapatkan data pembayaran",
+            onClosedConnection = {},
+        )
     }
 
     override suspend fun addPembayaranModel(
         kavlingKode: String,
         hargaKavling: Long,
-        pembayaranModel: PembayaranModel,
-        onSuccess: () -> Unit,
-        onFailure: (throwable: Throwable) -> Unit
-    ) {
+        pembayaranModel: PembayaranModel
+    ): Result<Nothing?> {
         val terminChild = getTerminChild(pembayaranModel.termin, pembayaranModel.urutan)
 
-        // check if child is available to avoid replacing the available data.
+        // Check if child is available to avoid replacing the available data.
         // if the user intended to replace, he must go through edit.
-        isTerminChildAvailable(kavlingKode, terminChild) { available ->
-            if (available) {
-                onFailure(UnknownError("Child sudah ada di database!"))
-            } else {
-                pembayaranRef
-                    .child(kavlingKode)
-                    .child(terminChild)
-                    .setValue(pembayaranModel)
-                    .addOnSuccessListener {
-                        onSuccess()
-                    }
-                    .addOnFailureListener {
-                        onFailure(it.cause?: UnknownError("Terjadi kesalahan!"))
-                    }
-            }
-        }
+        return FirebaseRequestHelper.insertOperationAlertOverwrite(
+            targetChild = pembayaranRef
+                .child(kavlingKode)
+                .child(terminChild),
+            valueToInsert = pembayaranModel,
+            existMsg = "Termin sudah ada!",
+        )
     }
 
     override suspend fun updatePembayaranModel(
         kavlingKode: String,
         oldPembayaranModel: PembayaranModel,
-        newPembayaranModel: PembayaranModel,
-        onSuccess: () -> Unit,
-        onFailure: (throwable: Throwable) -> Unit,
-    ) {
-        // First we need to delete the old data first
-        pembayaranRef
-            .child(kavlingKode)
-            .child(getTerminChild(oldPembayaranModel.termin, oldPembayaranModel.urutan))
-            .removeValue()
+        newPembayaranModel: PembayaranModel
+    ): Result<Nothing?> {
+        val terminChild = getTerminChild(oldPembayaranModel.termin, oldPembayaranModel.urutan)
 
-        // Then we set new pembayaran value, and set the child as new child
-        pembayaranRef
-            .child(kavlingKode)
-            .child(getTerminChild(newPembayaranModel.termin, newPembayaranModel.urutan))
-            .setValue(newPembayaranModel)
-            .addOnSuccessListener { onSuccess() }
-            .addOnFailureListener{ onFailure(it.cause?: UnknownError("Terjadi kesalahan mengubah pembayaran")) }
+        // This helper automatically remove the existing data before adding the new one.
+        return FirebaseRequestHelper.updateOperation(
+            targetChild = pembayaranRef
+                .child(kavlingKode)
+                .child(terminChild),
+            newValue = newPembayaranModel,
+        )
     }
 
     override suspend fun deletePembayaranModelByTermin(
         kavlingKode: String,
-        termin: String,
-        onSuccess: () -> Unit,
-        onFailure: (throwable: Throwable) -> Unit
-    ) {
-        pembayaranRef
-            .child(kavlingKode)
-            .child(termin)
-            .removeValue()
-            .addOnSuccessListener { onSuccess() }
-            .addOnFailureListener {
-                onFailure(it.cause?: UnknownError("Terjadi kesalahan menghapus pembayaran"))
-            }
+        termin: String
+    ): Result<Nothing?> {
+        return FirebaseRequestHelper.deleteOperation(
+            targetChild = pembayaranRef.child(kavlingKode).child(termin)
+        )
     }
 
-    override suspend fun deleteAllPembayaranModel(
-        kavlingKode: String,
-        onSuccess: () -> Unit,
-        onFailure: (throwable: Throwable) -> Unit,
-    ) {
-        pembayaranRef
-            .child(kavlingKode)
-            .removeValue()
-            .addOnSuccessListener { onSuccess() }
-            .addOnFailureListener {
-                onFailure(it.cause?: UnknownError("Terjadi kesalahan menghapus semua pembayaran kalving $kavlingKode"))
-            }
+    override suspend fun deleteAllPembayaranModel(kavlingKode: String): Result<Nothing?> {
+        return FirebaseRequestHelper.deleteOperation(
+            targetChild = pembayaranRef.child(kavlingKode),
+        )
     }
 
     private fun isTerminChildAvailable(

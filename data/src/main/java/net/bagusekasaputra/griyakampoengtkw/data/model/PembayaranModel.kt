@@ -7,4 +7,7 @@ data class PembayaranModel(
     val jumlahUangDibayar: Long = 0L,
     val keterangan: String = "",
     val timeMillis: Long = 0L,
-)
+) {
+    fun getFullTermin()
+        = "$termin $urutan"
+}

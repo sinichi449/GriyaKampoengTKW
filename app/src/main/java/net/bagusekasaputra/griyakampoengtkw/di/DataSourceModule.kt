@@ -14,6 +14,7 @@ import net.bagusekasaputra.griyakampoeng.tkw.data.local.fotoPembayaran.device.De
 import net.bagusekasaputra.griyakampoeng.tkw.data.local.imageDataDiri.RoomLocalImageDataDiriDataRepository
 import net.bagusekasaputra.griyakampoeng.tkw.data.local.imageSpr.RoomImageSprDataSource
 import net.bagusekasaputra.griyakampoeng.tkw.data.local.kavling.RoomKavlingDataSource
+import net.bagusekasaputra.griyakampoeng.tkw.data.local.pembayaran.RoomPembayaranLocalDataSource
 import net.bagusekasaputra.griyakampoengtkw.data.interfaces.local.*
 import net.bagusekasaputra.griyakampoengtkw.data.interfaces.remote.*
 import net.bagusekasaputra.griyakampoengtkw.data.remote.kavling.FirebaseKavlingDataSource
@@ -150,6 +151,11 @@ object DataSourceModule {
         return net.bagusekasaputra.griyakampoengtkw.data.remote.pembayaran.FirebasePembayaranSource(
             databaseReference
         )
+    }
+
+    @Provides
+    fun provideLocalPembayaranDataSource(roomDatabase: MyRoomDatabase): LocalPembayaranDataSource {
+        return RoomPembayaranLocalDataSource(roomDatabase)
     }
 
 

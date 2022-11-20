@@ -5,7 +5,7 @@ import net.bagusekasaputra.griyakampoengtkw.domain.entity.Pembayaran
 
 interface PembayaranRepository {
 
-    fun getAllPembayaran(kavlingKode: String): Flow<Result<List<Pembayaran>?>>
+    fun getAllPembayaran(kavlingKode: String, offline: Boolean): Flow<Result<List<Pembayaran>?>>
 
     fun addPembayaran(kavlingKode: String, hargaKavling: Long, pembayaran: Pembayaran): Flow<Result<Boolean>>
 

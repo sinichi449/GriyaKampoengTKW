@@ -17,15 +17,18 @@ import net.bagusekasaputra.griyakampoeng.tkw.data.local.imageSpr.ImageSprRoomDao
 import net.bagusekasaputra.griyakampoeng.tkw.data.local.imageSpr.ImageSprRoomEntity
 import net.bagusekasaputra.griyakampoeng.tkw.data.local.kavling.KavlingRoomDao
 import net.bagusekasaputra.griyakampoeng.tkw.data.local.kavling.KavlingRoomEntity
+import net.bagusekasaputra.griyakampoeng.tkw.data.local.pembayaran.PembayaranRoomDao
+import net.bagusekasaputra.griyakampoeng.tkw.data.local.pembayaran.PembayaranRoomEntity
 
 @Database(
     entities = [KavlingRoomEntity::class, ImageDataDiriRoomEntity::class, BlockRoomEntity::class,
                DataDiriRoomEntity::class, FotoKuitansiRoomEntity::class, ImageSprRoomEntity::class,
-               FotoPembayaranEntity::class],
-    version = 4,
+               FotoPembayaranEntity::class, PembayaranRoomEntity::class],
+    version = 5,
     exportSchema = true,
     autoMigrations = [
-        AutoMigration(from = 3, to = 4)
+        AutoMigration(from = 3, to = 4),
+        AutoMigration(from = 4, to = 5),
     ]
 )
 abstract class MyRoomDatabase: RoomDatabase() {
@@ -43,4 +46,6 @@ abstract class MyRoomDatabase: RoomDatabase() {
     abstract fun getImageSprDao(): ImageSprRoomDao
 
     abstract fun getFotoPembayaranDao(): FotoPembayaranDao
+
+    abstract fun getPembayaranDao(): PembayaranRoomDao
 }

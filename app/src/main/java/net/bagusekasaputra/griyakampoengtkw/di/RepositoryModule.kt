@@ -15,7 +15,9 @@ import net.bagusekasaputra.griyakampoengtkw.domain.repository.*
 
 object RepositoryModule {
 
-    // Block Repository
+    /**
+     * Block
+     */
     @Provides
     fun provideBlockRepository(
         localBlockDataSource: LocalBlockDataSource,
@@ -24,7 +26,10 @@ object RepositoryModule {
         return BlockRepositoryImpl(localBlockDataSource, remoteBlockDataSource)
     }
 
-    // Kavling Repository
+
+    /**
+     * Kavling
+     */
     @Provides
     fun provideKavlingRepository(
         localKavlingDataSource: LocalKavlingDataSource,
@@ -34,7 +39,9 @@ object RepositoryModule {
     }
 
 
-    // Data Diri Repository
+    /**
+     * Data Diri
+     */
     @Provides
     fun provideDataDiriRepository(
         localDataDiriDataSource: LocalDataDiriDataSource,
@@ -45,25 +52,30 @@ object RepositoryModule {
     }
 
 
-
-    // Pembayaran Repository
+    /**
+     * Pembayaran
+     */
     @Provides
     fun providePembayaranRepository(
+        localPembayaranDataSource: LocalPembayaranDataSource,
         remotePembayaranSource: RemotePembayaranSource,
     ): PembayaranRepository {
-        return PembayaranRepositoryImpl(remotePembayaranSource)
+        return PembayaranRepositoryImpl(localPembayaranDataSource, remotePembayaranSource)
     }
 
 
-
-    // Harga Kavling Repository
+    /**
+     * Harga Kavling
+     */
     @Provides
     fun provideHargaKavlingRepository(remoteHargaKavlingSource: RemoteHargaKavlingSource): HargaKavlingRepository {
         return HargaKavlingRepositoryImpl(remoteHargaKavlingSource)
     }
 
 
-    // App Update Repository
+    /**
+     * App Update
+     */
     @Provides
     fun provideAppUpdateRepository(remoteAppUpdateSource: RemoteAppUpdateSource): AppUpdateRepository {
         return AppUpdateRepositoryImpl(remoteAppUpdateSource)

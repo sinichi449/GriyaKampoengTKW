@@ -8,6 +8,7 @@ data class Pembayaran(
     var presentase: Double = 0.0,
     var sisaBelumTerbayar: String = "",
     val keterangan: String,
+    // Timemillis is used as a Primary Key in the Room Database
     val timeMillis: Long,
     var sudahIsiFotoPembayaran: Boolean = false,
 ) {

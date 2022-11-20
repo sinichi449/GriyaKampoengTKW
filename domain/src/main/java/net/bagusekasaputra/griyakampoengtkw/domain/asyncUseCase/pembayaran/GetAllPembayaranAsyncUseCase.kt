@@ -1,37 +1,34 @@
-package net.bagusekasaputra.griyakampoengtkw.domain.usecase.pembayaran
+package net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.pembayaran
 
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.channels.trySendBlocking
 import kotlinx.coroutines.flow.*
 import net.bagusekasaputra.griyakampoengtkw.domain.NumberUtil
 import net.bagusekasaputra.griyakampoengtkw.domain.PembayaranSorterUtil
+import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.AsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.HargaKavling
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.Pembayaran
 import net.bagusekasaputra.griyakampoengtkw.domain.repository.FotoPembayaranRepository
+import net.bagusekasaputra.griyakampoengtkw.domain.repository.HargaKavlingRepository
 import net.bagusekasaputra.griyakampoengtkw.domain.repository.PembayaranRepository
-import net.bagusekasaputra.griyakampoengtkw.domain.usecase.UseCase
-import net.bagusekasaputra.griyakampoengtkw.domain.usecase.hargakavling.GetSingleHargaKavlingForPembayaranUseCase
 import java.math.BigDecimal
 import java.math.RoundingMode
 
-/**
- * DEPRECATED!
- * This is already replaced by GetAllPembayaranAsyncUseCase in
- * DetailViewModel.
- */
-class GetAllPembayaranUseCase(
+class GetAllPembayaranAsyncUseCase(
     private val pembayaranRepository: PembayaranRepository,
-    private val getSingleHargaKavlingForPembayaranUseCase: GetSingleHargaKavlingForPembayaranUseCase,
+    private val hargaKavlingRepository: HargaKavlingRepository,
+
+    // Below Foto Pembayaran repository is used to mark whether a specific Pembayaran
+    // already filled with Foto Pembayaran. To know that, I will modify the
+    // "sudahIsiFotoPembayaran" property in Pembayaran entity.
     private val fotoPembayaranRepository: FotoPembayaranRepository,
-): UseCase<GetAllPembayaranUseCase.Request, GetAllPembayaranUseCase.Response>() {
+): AsyncUseCase<GetAllPembayaranAsyncUseCase.Request, List<Pembayaran>?>() {
 
-    data class Request(val kavlingKode: String): UseCase.Request
+    data class Request(val kavlingKode: String, val offline: Boolean): AsyncUseCase.Request
 
-    data class Response(val result: Result<List<Pembayaran>?>): UseCase.Response
 
-    override fun process(request: Request): Flow<Response> {
-        return pembayaranRepository.getAllPembayaran(request.kavlingKode, false)
+    override fun process(request: Request): Flow<Result<List<Pembayaran>?>> {
+        return pembayaranRepository.getAllPembayaran(request.kavlingKode, request.offline)
             .zip(getHargaKavling(request.kavlingKode)) { resultListPembayaran, hargaKavling ->
                 val listPembayaran = resultListPembayaran.getOrNull()
 
@@ -62,13 +59,10 @@ class GetAllPembayaranUseCase(
                     }
 
                     return@zip Result.success(maskedPembayaran)
+
                 } else {
                     return@zip resultListPembayaran
                 }
-            }
-
-            .map {
-                Response(it)
             }
     }
 
@@ -108,16 +102,11 @@ class GetAllPembayaranUseCase(
     }
 
     private fun getHargaKavling(kavlingKode: String): Flow<HargaKavling> {
-        return flow<HargaKavling> {
-            val request = GetSingleHargaKavlingForPembayaranUseCase.Request(kavlingKode)
-
-            getSingleHargaKavlingForPembayaranUseCase.execute(request).collect { response ->
-                val result = response.data.hargaKavling
-
-                emit(result)
-            }
+        return hargaKavlingRepository.getHargaKavling(kavlingKode).map {
+            it.getOrNull()
+                // If null, return a dummy HargaKavling object
+                ?: HargaKavling(kavlingKode = kavlingKode, harga = "0", tambahanLuas = "0")
         }
-            .flowOn(Dispatchers.IO)
     }
 
     private suspend fun checkSudahIsiFormPembayaran(kavlingKode: String, termin: String): Boolean {
@@ -137,4 +126,5 @@ class GetAllPembayaranUseCase(
             awaitClose {  }
         }.first()
     }
+
 }
