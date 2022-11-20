@@ -12,7 +12,7 @@ import dagger.hilt.InstallIn
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
 import net.bagusekasaputra.griyakampoeng.tkw.data.local.MyRoomDatabase
-import net.bagusekasaputra.griyakampoengtkw.util.GriyaNodes.Companion.firebaseUrl
+import net.bagusekasaputra.griyakampoengtkw.presentation.util.GriyaNodes.Companion.firebaseUrl
 
 @Module
 @InstallIn(SingletonComponent::class)
