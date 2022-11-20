@@ -10,7 +10,8 @@
     app:cardBackgroundColor="@color/abang"
     android:layout_marginHorizontal="8dp"
     android:layout_marginVertical="16dp"
-    app:cardElevation="8dp">
+    app:cardElevation="8dp"
+    android:theme="@style/Theme.GriyaKampung">
 
     <androidx.appcompat.widget.LinearLayoutCompat
         android:layout_width="match_parent"

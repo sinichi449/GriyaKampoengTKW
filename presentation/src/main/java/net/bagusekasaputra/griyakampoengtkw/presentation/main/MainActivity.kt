@@ -1,6 +1,7 @@
 package net.bagusekasaputra.griyakampoengtkw.presentation.main
 
 import android.content.Intent
+import android.content.res.Configuration
 import android.net.Uri
 import android.os.Bundle
 import android.view.Menu
@@ -39,7 +40,6 @@ class MainActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityMainBinding
     private val viewModel: MainViewModel by viewModels()
-//    private lateinit var connectivityAnimation: ConnectivityAnimation
 
     private var isAllFabsVisible = false
 
@@ -51,15 +51,10 @@ class MainActivity : AppCompatActivity() {
         // Setup toolbar
         setSupportActionBar(binding.toolbarMain)
 
-        // Check connectivity
-//        connectivityAnimation = ConnectivityAnimation(this, binding.root, binding.connectivityStatus)
-
         val deviceOnline = intent.getBooleanExtra(GriyaNodes.INTENT_IS_ONLINE, false)
 
         if (!deviceOnline) {
             Toast.makeText(this, "Device terdeteksi offline, data tidak akan tersinkronisasi!", Toast.LENGTH_LONG).show()
-//            connectivityAnimation.onOfflineAnimation()
-//            onOfflineState()
         }
 
         // Getting BuildConfig from Splash Activity, and check available update.
@@ -114,8 +109,6 @@ class MainActivity : AppCompatActivity() {
             syncData()
         }
 
-//        setupInternetMonitoring()
-
     }
 
     override fun onResume() {
@@ -124,21 +117,6 @@ class MainActivity : AppCompatActivity() {
         syncData()
     }
 
-//    private fun setupInternetMonitoring() {
-//        val networkStatusHelper = NetworkStatusHelper(this)
-//
-//        networkStatusHelper.observe(this) { status ->
-//            status?.let {
-//                if (it == NetworkStatus.Available) {
-//                    connectivityAnimation.onOnlineAnimation()
-//                    onOnlineState()
-//                } else if (it == NetworkStatus.Unavailable) {
-//                    connectivityAnimation.onOfflineAnimation()
-//                    onOfflineState()
-//                }
-//            }
-//        }
-//    }
 
     private fun setupViewModel() {
         viewModel.blocksLive.observe(this) {
@@ -210,7 +188,14 @@ class MainActivity : AppCompatActivity() {
         }
 
         binding.recyclerBlocks.adapter = adapter
-        binding.recyclerBlocks.layoutManager = LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false)
+        // If screen orientation is Landscape, then set the
+        // Block Recycler orientation to be Vertical instead, with a GridView
+        val screenOrientation = resources.configuration.orientation
+//        binding.recyclerBlocks.layoutManager = LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false)
+        binding.recyclerBlocks.layoutManager = if (screenOrientation == Configuration.ORIENTATION_LANDSCAPE)
+            GridLayoutManager(this, 2)
+        else
+            LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false)
     }
 
     private fun setupKavlingRecyclerView(kavlings: List<Kavling>) {
@@ -229,7 +214,10 @@ class MainActivity : AppCompatActivity() {
         val customAdapter = ScaleInAnimationAdapter(adapter)
 
         binding.recyclerKavlings.adapter = customAdapter
-        binding.recyclerKavlings.layoutManager = GridLayoutManager(this, 3)
+        // If screen is in Landscape mode, I want to show more spans number in the kavling
+        val screenOrientation = resources.configuration.orientation
+        val spansCount = if (screenOrientation == Configuration.ORIENTATION_LANDSCAPE) 5 else 3
+        binding.recyclerKavlings.layoutManager = GridLayoutManager(this, spansCount)
     }
 
     private fun showAddBlockDialog() {
