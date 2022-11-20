@@ -5,7 +5,6 @@ import android.annotation.SuppressLint
 import android.app.Activity
 import android.app.DatePickerDialog
 import android.content.Intent
-import android.content.res.Configuration
 import android.os.Bundle
 import android.view.*
 import android.widget.Toast
@@ -93,10 +92,10 @@ class FormPembayaranFragment : Fragment() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        val orientation = requireActivity().resources.configuration.orientation
-        if (orientation == Configuration.ORIENTATION_LANDSCAPE) {
-            onFullScreenLandscapeMode()
-        }
+//        val orientation = requireActivity().resources.configuration.orientation
+//        if (orientation == Configuration.ORIENTATION_LANDSCAPE) {
+//            onFullScreenLandscapeMode()
+//        }
 
         arguments?.getString(GriyaNodes.INTENT_KAVLING_KODE)?.let {
             currentKavlingKode = it

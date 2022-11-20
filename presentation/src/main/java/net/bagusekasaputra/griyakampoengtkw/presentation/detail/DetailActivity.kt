@@ -3,7 +3,6 @@ package net.bagusekasaputra.griyakampoengtkw.presentation.detail
 import android.content.res.Configuration
 import android.os.Bundle
 import android.view.MenuItem
-import android.view.View
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
@@ -36,7 +35,7 @@ class DetailActivity : AppCompatActivity() {
         val orientation = resources.configuration.orientation
         if (orientation == Configuration.ORIENTATION_LANDSCAPE) {
             supportActionBar?.hide()
-            binding.tabLayout.visibility = View.GONE
+//            binding.tabLayout.visibility = View.GONE
         }
 
         setContentView(binding.root)
