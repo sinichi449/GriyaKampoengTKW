@@ -6,8 +6,10 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.LinearLayout
+import androidx.core.content.ContextCompat
 import com.evrencoskun.tableview.adapter.AbstractTableAdapter
 import com.evrencoskun.tableview.adapter.recyclerview.holder.AbstractViewHolder
+import net.bagusekasaputra.griyakampoengtkw.presentation.R
 import net.bagusekasaputra.griyakampoengtkw.presentation.databinding.TableViewCellLayoutBinding
 import net.bagusekasaputra.griyakampoengtkw.presentation.databinding.TableViewColumnHeaderLayoutBinding
 import net.bagusekasaputra.griyakampoengtkw.presentation.databinding.TableViewRowHeaderLayoutBinding
@@ -59,6 +61,19 @@ class MyTableViewAdapter: AbstractTableAdapter<ColumnHeader, RowHeader, Cell>() 
     private class MyColumnHeaderViewHolder(binding: TableViewColumnHeaderLayoutBinding): AbstractViewHolder(binding.root) {
         val columnHeaderContainer = binding.root
         val columnHeaderText = binding.tvColumnHeaderData
+
+        override fun setSelected(selectionState: SelectionState) {
+            super.setSelected(selectionState)
+
+            if (isSelected.not()) {
+                columnHeaderContainer.setBackgroundColor(
+                    ContextCompat.getColor(columnHeaderContainer.context, R.color.abang)
+                )
+                columnHeaderText.setTextColor(
+                    ContextCompat.getColor(columnHeaderContainer.context, R.color.white)
+                )
+            }
+        }
     }
 
     override fun onCreateColumnHeaderViewHolder(

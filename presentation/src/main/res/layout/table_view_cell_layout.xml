@@ -12,7 +12,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintBottom_toBottomOf="parent"
-        android:text="Ca"
+        android:text="Lorem Ipsum Dolor"
         style="@style/TextAppearance.MaterialComponents.Body1"
         android:textSize="@dimen/default_table_text_size"
         android:gravity="center"
