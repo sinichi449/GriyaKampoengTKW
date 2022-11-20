@@ -4,7 +4,10 @@ import java.util.*
 
 object ConnectionUtil {
 
-    var serverTimeout = 3000L
+    // Here I have increased the timeout because I have setup the offline mode,
+    // so only when the user has a really broken connectivity the system then
+    // emitting from local.
+    var serverTimeout = 5000L
 
     fun createRequestTimeout(gotResult: Boolean, onTimeOut: () -> Unit) {
         val timer = Timer()

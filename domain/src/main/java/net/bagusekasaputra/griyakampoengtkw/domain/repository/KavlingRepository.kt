@@ -5,7 +5,7 @@ import net.bagusekasaputra.griyakampoengtkw.domain.entity.Kavling
 
 interface KavlingRepository {
 
-    fun getKavlingByBlock(blockCode: String): Flow<Result<List<Kavling>?>>
+    fun getKavlingByBlock(blockCode: String, offline: Boolean): Flow<Result<List<Kavling>?>>
 
     fun addKavling(blockKode: String, kavling: Kavling): Flow<Result<Nothing?>>
 

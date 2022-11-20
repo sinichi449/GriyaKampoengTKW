@@ -1,6 +1,7 @@
 package net.bagusekasaputra.griyakampoengtkw.data.repository
 
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.emitAll
 import kotlinx.coroutines.flow.flow
 import net.bagusekasaputra.griyakampoengtkw.data.DataUtil
 import net.bagusekasaputra.griyakampoengtkw.data.interfaces.local.LocalKavlingDataSource
@@ -14,44 +15,59 @@ class KavlingRepositoryImpl(
     private val remoteKavlingDataSource: RemoteKavlingDataSource
 ): KavlingRepository {
 
-    override fun getKavlingByBlock(blockCode: String): Flow<Result<List<Kavling>?>> {
+    override fun getKavlingByBlock(
+        blockCode: String,
+        offline: Boolean,
+    ): Flow<Result<List<Kavling>?>> {
         return flow<Result<List<Kavling>?>> {
-            // Getting kavling from server first
-            val remoteResult = remoteKavlingDataSource.getAllKavlings(blockCode)
-
-            if (remoteResult.isSuccess) {
-                // Emit the kavling
-                val mappedResult = DataUtil.mapListResult(
-                    originResult = remoteResult,
-                    targetMapper = ::mapKavling,
-                )
-
-                emit(mappedResult)
-
-                // Then write kavling to local
-                val kavlingModels = remoteResult.getOrNull()?.map { mapKavling(it) }
-
-                kavlingModels?.forEach {
-                    localKavlingDataSource.addKavling(blockCode, mapKavling(it))
-                }
-            } else {
-                // Emit the error
-                remoteResult.exceptionOrNull()?.let { emit(Result.failure(it)) }
-
-                // Emit kavling from local
+            val flowLocal = flow<Result<List<Kavling>?>> {
+                // Getting from local
                 val localResult = localKavlingDataSource.getKavlingByBlockKode(blockCode)
 
                 if (localResult.isSuccess) {
+                    // Emit from local
                     val mappedResult = DataUtil.mapListResult(
                         originResult = localResult,
                         targetMapper = ::mapKavling,
                     )
-
                     emit(mappedResult)
                 } else {
-                    emit(Result.failure(UnknownError("Getting kavling from both server and local failed")))
+                    // Emit local error
+                    emit(Result.failure(Throwable("Getting kavling from both server and local failed")))
                 }
             }
+
+            // Getting from Remote means when the user connectivity somewhat interrupted,
+            // I can pull the data out of Local instead. See below.
+            val flowRemote = flow<Result<List<Kavling>?>> {
+                // Getting kavling from server
+                val remoteResult = remoteKavlingDataSource.getAllKavlings(blockCode)
+
+                if (remoteResult.isSuccess) {
+                    // Emit the kavling
+                    val mappedResult = DataUtil.mapListResult(
+                        originResult = remoteResult,
+                        targetMapper = ::mapKavling,
+                    )
+                    emit(mappedResult)
+
+                    // Then write kavling to local
+                    val kavlingModels = remoteResult.getOrNull()?.map { mapKavling(it) }
+                    kavlingModels?.forEach {
+                        localKavlingDataSource.addKavling(blockCode, mapKavling(it))
+                    }
+                } else {
+                    // Emit the error
+                    remoteResult.exceptionOrNull()?.let { emit(Result.failure(it)) }
+
+                    emitAll(flowLocal)
+                }
+            }
+
+            if (offline)
+                emitAll(flowLocal)
+            else
+                emitAll(flowRemote)
         }
     }
 

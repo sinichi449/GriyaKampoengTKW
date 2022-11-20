@@ -4,15 +4,16 @@ import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.android.components.ViewModelComponent
+import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.block.GetAllBlocksAsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.fotoPembayaran.AddFotoPembayaranAsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.fotoPembayaran.DeleteFotoPembayaranAsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.fotoPembayaran.GetFotoPembayaranAsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.fotoPembayaran.IsFotoPembayaranExistAsyncUseCase
+import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.kavling.GetKavlingByBlockAsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.repository.*
 import net.bagusekasaputra.griyakampoengtkw.domain.usecase.appupdate.GetUpdateInformationUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.usecase.biayaMarketing.*
 import net.bagusekasaputra.griyakampoengtkw.domain.usecase.block.AddNewBlockUseCase
-import net.bagusekasaputra.griyakampoengtkw.domain.usecase.block.GetAllBlocksUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.usecase.catatanPembayaran.AddCatatanPembayaranUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.usecase.catatanPembayaran.DeleteCatatanPembayaranUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.usecase.catatanPembayaran.GetCatatanPembayaranUseCase
@@ -35,7 +36,6 @@ import net.bagusekasaputra.griyakampoengtkw.domain.usecase.imageSpr.AddImageSprU
 import net.bagusekasaputra.griyakampoengtkw.domain.usecase.imageSpr.GetImageSprByKavlingKodeUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.usecase.kavling.AddKavlingUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.usecase.kavling.EditKavlingUseCase
-import net.bagusekasaputra.griyakampoengtkw.domain.usecase.kavling.GetKavlingsByBlockUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.usecase.kavling.RemoveKavlingUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.usecase.pembayaran.*
 import java.io.File
@@ -57,7 +57,7 @@ object UseCaseModule {
      */
     @Provides
     fun provideGetAllBlocks(blockRepository: BlockRepository)
-        = GetAllBlocksUseCase(blockRepository)
+        = GetAllBlocksAsyncUseCase(blockRepository)
 
     @Provides
     fun provideAddNewBlock(blockRepository: BlockRepository)
@@ -68,8 +68,8 @@ object UseCaseModule {
      * Kavling
      */
     @Provides
-    fun provideGetKavlingsByBlock(kavlingRepository: KavlingRepository)
-        = GetKavlingsByBlockUseCase(kavlingRepository)
+    fun provideGetKavlingsByBlockAsync(kavlingRepository: KavlingRepository)
+        = GetKavlingByBlockAsyncUseCase(kavlingRepository)
 
     @Provides
     fun provideAddKavlingUseCase(kavlingRepository: KavlingRepository)

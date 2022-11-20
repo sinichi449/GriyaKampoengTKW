@@ -67,7 +67,15 @@ class MainActivity : AppCompatActivity() {
         val offlineMode = sharedPrefs.getBoolean("offline_mode", false)
         if (offlineMode) {
             binding.connectivityStatus.constraintConnectivity.visibility = View.VISIBLE
+
+            // Enable offline mode means disabling the write operation on the data,
+            // which is done, in this case, by the FABS. I've encapsulated the needed to disable
+            // operation interface in this method.
+            onOfflineState()
         }
+        // Update offlineMode state in viewModel
+        viewModel.offlineMode = offlineMode
+
 
         // Getting BuildConfig from Splash Activity, and check available update.
         val appVersionName = intent.getStringExtra("versionName") ?: ""
@@ -158,11 +166,15 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun syncData() {
-        getBlocks()
-
-        viewModel.currentBlock.value?.let {
-            getKavlings(it)
+        viewModel.getAllBlocks { failMsg ->
+            Snackbar.make(binding.root, failMsg, Snackbar.LENGTH_SHORT).show()
         }
+
+        val currentBlock = viewModel.currentBlock.value
+        if (currentBlock != null)
+            viewModel.getKavlings(currentBlock) { failMsg ->
+                Snackbar.make(binding.root, failMsg, Snackbar.LENGTH_SHORT).show()
+            }
     }
 
     private fun setupFloatingButtons() {
@@ -200,17 +212,22 @@ class MainActivity : AppCompatActivity() {
 
     private fun setupBlockRecyclerview(blocks: List<Block>) {
         val adapter = BlockRecyclerAdapter(blocks) { position ->
-            viewModel.currentBlock.value = blocks[position].kode
-            viewModel.currentBlock.value?.let {
-                getKavlings(it)
-            }
+            val selectedBlock = blocks[position].kode
+
+            // Update the selected block in the viewModel
+            viewModel.currentBlock.value = selectedBlock
+
+            viewModel.getKavlings(
+                blockKode = selectedBlock,
+                onFailure = { Toast.makeText(this, it, Toast.LENGTH_SHORT).show() }
+            )
         }
 
         binding.recyclerBlocks.adapter = adapter
+
         // If screen orientation is Landscape, then set the
         // Block Recycler orientation to be Vertical instead, with a GridView
         val screenOrientation = resources.configuration.orientation
-//        binding.recyclerBlocks.layoutManager = LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false)
         binding.recyclerBlocks.layoutManager = if (screenOrientation == Configuration.ORIENTATION_LANDSCAPE)
             GridLayoutManager(this, 2)
         else
@@ -233,6 +250,7 @@ class MainActivity : AppCompatActivity() {
         val customAdapter = ScaleInAnimationAdapter(adapter)
 
         binding.recyclerKavlings.adapter = customAdapter
+
         // If screen is in Landscape mode, I want to show more spans number in the kavling
         val screenOrientation = resources.configuration.orientation
         val spansCount = if (screenOrientation == Configuration.ORIENTATION_LANDSCAPE) 5 else 3
@@ -459,24 +477,8 @@ class MainActivity : AppCompatActivity() {
         return super.onCreateOptionsMenu(menu)
     }
 
-    private fun getKavlings(blockKode: String) {
-        viewModel.getKavlings(blockKode) { failMsg ->
-            Snackbar.make(binding.root, failMsg, Snackbar.LENGTH_SHORT).show()
-        }
-    }
-
-    private fun getBlocks() {
-        viewModel.getAllBlocks { failMsg ->
-            Snackbar.make(binding.root, failMsg, Snackbar.LENGTH_SHORT).show()
-        }
-    }
-
     private fun onOfflineState() {
         hideFabs()
         binding.fabActions.hide()
-    }
-
-    private fun onOnlineState() {
-        binding.fabActions.show()
     }
 }

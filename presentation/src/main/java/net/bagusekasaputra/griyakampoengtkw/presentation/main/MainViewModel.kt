@@ -5,23 +5,24 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.*
+import net.bagusekasaputra.griyakampoengtkw.domain.AsyncUseCaseHelper
+import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.block.GetAllBlocksAsyncUseCase
+import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.kavling.GetKavlingByBlockAsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.AppUpdate
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.Block
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.Kavling
 import net.bagusekasaputra.griyakampoengtkw.domain.usecase.appupdate.GetUpdateInformationUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.usecase.block.AddNewBlockUseCase
-import net.bagusekasaputra.griyakampoengtkw.domain.usecase.block.GetAllBlocksUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.usecase.kavling.AddKavlingUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.usecase.kavling.EditKavlingUseCase
-import net.bagusekasaputra.griyakampoengtkw.domain.usecase.kavling.GetKavlingsByBlockUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.usecase.kavling.RemoveKavlingUseCase
 import javax.inject.Inject
 
 @HiltViewModel
 class MainViewModel @Inject constructor(
-    private val getKavlingsByBlockUseCase: GetKavlingsByBlockUseCase,
-    private val getAllBlocksUseCase: GetAllBlocksUseCase,
+    private val getAllBlocksAsyncUseCase: GetAllBlocksAsyncUseCase,
     private val addNewBlockUseCase: AddNewBlockUseCase,
+    private val getKavlingByBlockAsyncUseCase: GetKavlingByBlockAsyncUseCase,
     private val addKavlingUseCase: AddKavlingUseCase,
     private val editKavlingUseCase: EditKavlingUseCase,
     private val removeKavlingUseCase: RemoveKavlingUseCase,
@@ -40,33 +41,32 @@ class MainViewModel @Inject constructor(
 
     val isFinishOperation = MutableLiveData<Boolean>()
 
+    private val asyncHelper = AsyncUseCaseHelper(isFinishOperation)
+
+    // For use case arguments
+    var offlineMode = false
+
     // The collection of jobs which need to be cancelled on onCleared()
     private val asyncJobs = ArrayList<Job>()
 
-    // Blocks
+
+    /**
+     * Blocks
+     */
     fun getAllBlocks(onFailure: (msg: String) -> Unit) {
-        isFinishOperation.value = false
+        val request = GetAllBlocksAsyncUseCase.Request(offlineMode)
 
-        val gettingBlocksJob = CoroutineScope(Dispatchers.IO).launch {
-            val request = GetAllBlocksUseCase.Request
-            getAllBlocksUseCase.execute(request).collect {
-                val result = it.data.result
-
-                if (result.isSuccess) {
-                    result.getOrNull()?.let { blocks ->
-                        _blocksLive.postValue(blocks)
-                    }
-                } else {
-                    withContext(Dispatchers.Main) {
-                        result.exceptionOrNull()?.message?.let { failMsg ->
-                            onFailure(failMsg)
-                        }
-                    }
-                }
-
-                isFinishOperation.postValue(true)
-            }
-        }
+        val gettingBlocksJob = asyncHelper.doWork(
+            request = request,
+            asyncUseCase = getAllBlocksAsyncUseCase,
+            onSuccess = {
+                _blocksLive.postValue(it)
+            },
+            onFailure = {
+                onFailure("Gagal mendapatkan block: ${it.message}")
+            },
+            successMsgOnUiThread = false,
+        )
 
         asyncJobs.add(gettingBlocksJob)
     }
@@ -100,32 +100,25 @@ class MainViewModel @Inject constructor(
         asyncJobs.add(addingBlockJob)
     }
 
-    // Kavlings
+    /**
+     * Kavlings
+     */
     fun getKavlings(blockKode: String, onFailure: (msg: String) -> Unit) {
-        isFinishOperation.value = false
+        val request = GetKavlingByBlockAsyncUseCase.Request(blockKode, offlineMode)
 
-        val request = GetKavlingsByBlockUseCase.Request(blockKode)
+        val gettingKavlingsJob = asyncHelper.doWork(
+            request = request,
+            asyncUseCase = getKavlingByBlockAsyncUseCase,
+            onSuccess = {
+                _kavlings.postValue(it)
+            },
+            onFailure = {
+                onFailure("Gagal mendapatkan kavling: ${it.message}")
+            },
+            successMsgOnUiThread = false,
+        )
 
-        val getKavlingsJob = CoroutineScope(Dispatchers.IO).launch {
-
-            getKavlingsByBlockUseCase.execute(request).collect {
-                val result = it.data.result
-
-                result.onSuccess {  kavlingList ->
-                    _kavlings.postValue(kavlingList)
-                }
-
-                result.onFailure { throwable ->
-                    withContext(Dispatchers.Main) {
-                        onFailure("Gagal mendapatkan kavling: ${throwable.message}")
-                    }
-                }
-
-                isFinishOperation.postValue(true)
-            }
-        }
-
-        asyncJobs.add(getKavlingsJob)
+        asyncJobs.add(gettingKavlingsJob)
     }
 
     fun addKavling(
