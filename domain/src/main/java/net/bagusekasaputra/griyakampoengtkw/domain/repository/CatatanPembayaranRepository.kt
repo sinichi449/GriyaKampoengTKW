@@ -5,7 +5,7 @@ import net.bagusekasaputra.griyakampoengtkw.domain.entity.CatatanPembayaran
 
 interface CatatanPembayaranRepository {
 
-    fun getCatatan(kavlingKode: String): Flow<Result<CatatanPembayaran?>>
+    fun getCatatan(kavlingKode: String, offline: Boolean): Flow<Result<CatatanPembayaran?>>
 
     fun addCatatan(kavlingKode: String, catatanPembayaran: CatatanPembayaran): Flow<Result<Nothing?>>
 

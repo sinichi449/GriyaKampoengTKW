@@ -5,6 +5,8 @@ import androidx.room.Database
 import androidx.room.RoomDatabase
 import net.bagusekasaputra.griyakampoeng.tkw.data.local.block.BlockRoomDao
 import net.bagusekasaputra.griyakampoeng.tkw.data.local.block.BlockRoomEntity
+import net.bagusekasaputra.griyakampoeng.tkw.data.local.catatanPembayaran.CatatanPembayaranRoomDao
+import net.bagusekasaputra.griyakampoeng.tkw.data.local.catatanPembayaran.CatatanPembayaranRoomEntity
 import net.bagusekasaputra.griyakampoeng.tkw.data.local.datadiri.DataDiriRoomDao
 import net.bagusekasaputra.griyakampoeng.tkw.data.local.datadiri.DataDiriRoomEntity
 import net.bagusekasaputra.griyakampoeng.tkw.data.local.fotoKuitansi.FotoKuitansiRoomDao
@@ -25,13 +27,15 @@ import net.bagusekasaputra.griyakampoeng.tkw.data.local.pembayaran.PembayaranRoo
 @Database(
     entities = [KavlingRoomEntity::class, ImageDataDiriRoomEntity::class, BlockRoomEntity::class,
                DataDiriRoomEntity::class, FotoKuitansiRoomEntity::class, ImageSprRoomEntity::class,
-               FotoPembayaranEntity::class, PembayaranRoomEntity::class, HargaKavlingRoomEntity::class],
-    version = 6,
+               FotoPembayaranEntity::class, PembayaranRoomEntity::class, HargaKavlingRoomEntity::class,
+               CatatanPembayaranRoomEntity::class],
+    version = 7,
     exportSchema = true,
     autoMigrations = [
         AutoMigration(from = 3, to = 4),
         AutoMigration(from = 4, to = 5),
         AutoMigration(from = 5, to = 6),
+        AutoMigration(from = 6, to = 7),
     ]
 )
 abstract class MyRoomDatabase: RoomDatabase() {
@@ -53,5 +57,7 @@ abstract class MyRoomDatabase: RoomDatabase() {
     abstract fun getPembayaranDao(): PembayaranRoomDao
 
     abstract fun getHargaKavlingDao(): HargaKavlingRoomDao
+
+    abstract fun getCatatanPembayaranDao(): CatatanPembayaranRoomDao
 
 }

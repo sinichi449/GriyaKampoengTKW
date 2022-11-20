@@ -127,10 +127,15 @@ object RepositoryModule {
     }
 
 
-    // Catatan Pembayaran
+    /**
+     * Catatan Pembayaran
+     */
     @Provides
-    fun provideCatatanPembayaranRepository(remoteCatatanPembayaranDataSource: RemoteCatatanPembayaranDataSource): CatatanPembayaranRepository {
-        return CatatanPembayaranRepositoryImpl(remoteCatatanPembayaranDataSource)
+    fun provideCatatanPembayaranRepository(
+        localCatatanPembayaranDataSource: LocalCatatanPembayaranDataSource,
+        remoteCatatanPembayaranDataSource: RemoteCatatanPembayaranDataSource
+    ): CatatanPembayaranRepository {
+        return CatatanPembayaranRepositoryImpl(localCatatanPembayaranDataSource, remoteCatatanPembayaranDataSource)
     }
 
 

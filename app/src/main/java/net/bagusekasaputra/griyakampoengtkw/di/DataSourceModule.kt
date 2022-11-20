@@ -7,6 +7,7 @@ import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
 import net.bagusekasaputra.griyakampoeng.tkw.data.local.MyRoomDatabase
 import net.bagusekasaputra.griyakampoeng.tkw.data.local.block.RoomBlockDataSource
+import net.bagusekasaputra.griyakampoeng.tkw.data.local.catatanPembayaran.RoomCatatanPembayaranDataSource
 import net.bagusekasaputra.griyakampoeng.tkw.data.local.datadiri.RoomDataDiriDataSource
 import net.bagusekasaputra.griyakampoeng.tkw.data.local.fotoKuitansi.RoomFotoKuitansiDataSource
 import net.bagusekasaputra.griyakampoeng.tkw.data.local.fotoPembayaran.RoomFotoPembayaranDataSource
@@ -141,6 +142,11 @@ object DataSourceModule {
         return net.bagusekasaputra.griyakampoengtkw.data.remote.catatanPembayaran.FirebaseCatatanPembayaranDataSource(
             databaseReference
         )
+    }
+
+    @Provides
+    fun provideLocalCatatanPembayaranDataSource(roomDatabase: MyRoomDatabase): LocalCatatanPembayaranDataSource {
+        return RoomCatatanPembayaranDataSource(roomDatabase)
     }
 
 

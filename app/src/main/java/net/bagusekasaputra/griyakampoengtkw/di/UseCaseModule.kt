@@ -5,6 +5,7 @@ import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.android.components.ViewModelComponent
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.block.GetAllBlocksAsyncUseCase
+import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.catatanPembayaran.GetCatatanPembayaranAsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.dataDiri.GetDataDiriAsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.fotoPembayaran.AddFotoPembayaranAsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.fotoPembayaran.DeleteFotoPembayaranAsyncUseCase
@@ -19,7 +20,6 @@ import net.bagusekasaputra.griyakampoengtkw.domain.usecase.biayaMarketing.*
 import net.bagusekasaputra.griyakampoengtkw.domain.usecase.block.AddNewBlockUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.usecase.catatanPembayaran.AddCatatanPembayaranUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.usecase.catatanPembayaran.DeleteCatatanPembayaranUseCase
-import net.bagusekasaputra.griyakampoengtkw.domain.usecase.catatanPembayaran.GetCatatanPembayaranUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.usecase.datadiri.AddDataDiriUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.usecase.datadiri.DeleteDataDiriUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.usecase.feeMarketing.AddFeeMarketingUseCase
@@ -211,7 +211,7 @@ object UseCaseModule {
      */
     @Provides
     fun provideGetCatatanPembayaran(catatanPembayaranRepository: CatatanPembayaranRepository)
-        = GetCatatanPembayaranUseCase(catatanPembayaranRepository)
+        = GetCatatanPembayaranAsyncUseCase(catatanPembayaranRepository)
 
     @Provides
     fun provideAddCatatanPembayaran(catatanPembayaranRepository: CatatanPembayaranRepository)

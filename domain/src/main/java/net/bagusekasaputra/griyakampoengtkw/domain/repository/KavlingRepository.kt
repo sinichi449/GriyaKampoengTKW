@@ -12,4 +12,5 @@ interface KavlingRepository {
     fun updateKavling(blockCode: String, oldKavling: Kavling, newKavling: Kavling): Flow<Result<Nothing?>>
 
     fun removeKavling(blockCode: String, kavlingKode: String): Flow<Result<Nothing?>>
+
 }

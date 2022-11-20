@@ -6,6 +6,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.*
 import net.bagusekasaputra.griyakampoengtkw.domain.AsyncUseCaseHelper
 import net.bagusekasaputra.griyakampoengtkw.domain.NumberUtil
+import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.catatanPembayaran.GetCatatanPembayaranAsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.dataDiri.GetDataDiriAsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.hargaKavling.GetHargaKavlingAsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.pembayaran.GetAllPembayaranAsyncUseCase
@@ -13,7 +14,6 @@ import net.bagusekasaputra.griyakampoengtkw.domain.entity.*
 import net.bagusekasaputra.griyakampoengtkw.domain.usecase.biayaMarketing.*
 import net.bagusekasaputra.griyakampoengtkw.domain.usecase.catatanPembayaran.AddCatatanPembayaranUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.usecase.catatanPembayaran.DeleteCatatanPembayaranUseCase
-import net.bagusekasaputra.griyakampoengtkw.domain.usecase.catatanPembayaran.GetCatatanPembayaranUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.usecase.datadiri.AddDataDiriUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.usecase.datadiri.DeleteDataDiriUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.usecase.feeMarketing.AddFeeMarketingUseCase
@@ -53,7 +53,7 @@ class DetailViewModel @Inject constructor(
     private val addFeeMarketingUseCase: AddFeeMarketingUseCase,
     private val updateFeeMarketingUseCase: UpdateFeeMarketingUseCase,
     private val deleteFeeMarketingUseCase: DeleteFeeMarketingUseCase,
-    private val getCatatanPembayaranUseCase: GetCatatanPembayaranUseCase,
+    private val getCatatanPembayaranAsyncUseCase: GetCatatanPembayaranAsyncUseCase,
     private val addCatatanPembayaranUseCase: AddCatatanPembayaranUseCase,
     private val deleteCatatanPembayaranUseCase: DeleteCatatanPembayaranUseCase,
 ): ViewModel() {
@@ -640,28 +640,25 @@ class DetailViewModel @Inject constructor(
     }
 
 
-    // Catatan Pembayaran
+    /**
+     * Catatan Pembayaran
+     */
     fun getCatatanPembayaran(kavlingKode: String, onFailure: (cause: String) -> Unit) {
-        isFinishOperation.value = false
+        val request = GetCatatanPembayaranAsyncUseCase.Request(kavlingKode, offlineMode)
 
-        val request = GetCatatanPembayaranUseCase.Request(kavlingKode)
+        val gettingCatatanPembayaranJob = asyncHelper.doWork(
+            request = request,
+            asyncUseCase = getCatatanPembayaranAsyncUseCase,
+            onSuccess = {
+                catatanPembayaranLive.postValue(it)
+            },
+            onFailure = {
+                onFailure("Gagal mendapatkan catatan pembayaran: ${it.message}")
+            },
+            successMsgOnUiThread = false,
+        )
 
-        CoroutineScope(Dispatchers.IO).launch {
-            getCatatanPembayaranUseCase.execute(request).collect { response ->
-                val result = response.data.result
-
-                result.onSuccess {
-                    catatanPembayaranLive.postValue(result.getOrNull())
-                }
-                result.onFailure { throwable ->
-                    withContext(Dispatchers.Main) {
-                        onFailure("Gagal mendapatkan catatan pembayaran: ${throwable.message}")
-                    }
-                }
-
-                isFinishOperation.postValue(true)
-            }
-        }
+        asyncJobs.add(gettingCatatanPembayaranJob)
     }
 
     fun addCatatanPembayaran(
