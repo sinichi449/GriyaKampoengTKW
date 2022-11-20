@@ -53,6 +53,8 @@ class FormPembayaranFragment : Fragment() {
     private var currentKavlingKode: String? = null
     private var isAllFabsVisible = false
 
+    private var offlineMode = false
+
     private val startForFotoPembayaranResult =
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
             val resultCode = result.resultCode
@@ -125,6 +127,12 @@ class FormPembayaranFragment : Fragment() {
 
         setupViewModel()
 
+        // Disable write operation interfaces on offline mode such as
+        // edit HargaKavling and CatatanPembayaran, and disable Fabs.
+        offlineMode = viewModel.offlineMode
+        if (offlineMode)
+            onOfflineState()
+
         binding.imgEdit?.setOnClickListener {
             showEditHargaDialog()
         }
@@ -146,11 +154,16 @@ class FormPembayaranFragment : Fragment() {
             }
         }
 
-        // Hide fabs on scroll
-        UiUtils.hideExtendedFabOnVerticalScroll(
-            nestedScrollView = binding.nestedScrollMain,
-            extendedFabs = binding.fabActions,
-        )
+        // Even when I already set the visibility of FabAction into View.GONE,
+        // to prevent the user from writing the data on offline mode, it's still
+        // showing when I scroll the screen.
+        // So, I put the conditional here for the scroll operation.
+        if (offlineMode.not())
+            // Hide fabs on scroll
+            UiUtils.hideExtendedFabOnVerticalScroll(
+                nestedScrollView = binding.nestedScrollMain,
+                extendedFabs = binding.fabActions,
+            )
 
         startStorageRequest.launch(
             Array<String>(2) {
@@ -770,44 +783,52 @@ class FormPembayaranFragment : Fragment() {
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         return when (item.itemId) {
             R.id.hapus_semua_pembayaran -> {
-                // Show confirmation to delete all Pembayaran.
-                // This is also showing an alert that this action will delete the Foto Pembayaran too.
-                MaterialAlertDialogBuilder(requireContext())
-                    .setTitle("Hapus Semua Pembayaran")
-                    .setMessage("Apakah Anda yakin ingin menghapus semua pembayaran di kavling $currentKavlingKode?")
-                    .setPositiveButton("Ya") { dialogPembayaran, _ ->
-                        dialogPembayaran.dismiss()
+                if (offlineMode) {
+                    showDialogOnOfflineMode()
+                } else {
+                    // Show confirmation to delete all Pembayaran.
+                    // This is also showing an alert that this action will delete the Foto Pembayaran too.
+                    MaterialAlertDialogBuilder(requireContext())
+                        .setTitle("Hapus Semua Pembayaran")
+                        .setMessage("Apakah Anda yakin ingin menghapus semua pembayaran di kavling $currentKavlingKode?")
+                        .setPositiveButton("Ya") { dialogPembayaran, _ ->
+                            dialogPembayaran.dismiss()
 
-                        // Show the confirmation to delete all Foto Pembayaran
-                        MaterialAlertDialogBuilder(requireContext())
-                            .setTitle("Hapus Semua Foto Pembayaran?")
-                            .setMessage("Perhatian! Menghapus seluruh Pembayaran juga akan menghapus seluruh Foto Pembayaran yang tersimpan. Apakah Anda yakin?")
-                            .setPositiveButton("Ya") { dialogFoto, _ ->
-                                dialogFoto.dismiss()
+                            // Show the confirmation to delete all Foto Pembayaran
+                            MaterialAlertDialogBuilder(requireContext())
+                                .setTitle("Hapus Semua Foto Pembayaran?")
+                                .setMessage("Perhatian! Menghapus seluruh Pembayaran juga akan menghapus seluruh Foto Pembayaran yang tersimpan. Apakah Anda yakin?")
+                                .setPositiveButton("Ya") { dialogFoto, _ ->
+                                    dialogFoto.dismiss()
 
-                                viewModel.deleteAllPembayaran(
-                                    kavlingKode = currentKavlingKode!!,
-                                    onComplete = { msg ->
-                                        dialogFoto.dismiss()
-                                        syncPembayaran()
-                                        Toast.makeText(requireContext(), msg, Toast.LENGTH_SHORT).show()
+                                    viewModel.deleteAllPembayaran(
+                                        kavlingKode = currentKavlingKode!!,
+                                        onComplete = { msg ->
+                                            dialogFoto.dismiss()
+                                            syncPembayaran()
+                                            Toast.makeText(
+                                                requireContext(),
+                                                msg,
+                                                Toast.LENGTH_SHORT
+                                            ).show()
+                                        }
+                                    )
+                                    viewModel.deleteAllPembayaran(currentKavlingKode!!) { msg ->
+
                                     }
-                                )
-                                viewModel.deleteAllPembayaran(currentKavlingKode!!) { msg ->
-
                                 }
-                            }
-                            .setNegativeButton("Tidak") {
-                                    dialogFoto, _ -> dialogFoto.dismiss()
-                            }
-                            .create()
-                            .show()
-                    }
-                    .setNegativeButton("Tidak") { dialog, _ ->
-                        dialog.dismiss()
-                    }
-                    .create()
-                    .show()
+                                .setNegativeButton("Tidak") { dialogFoto, _ ->
+                                    dialogFoto.dismiss()
+                                }
+                                .create()
+                                .show()
+                        }
+                        .setNegativeButton("Tidak") { dialog, _ ->
+                            dialog.dismiss()
+                        }
+                        .create()
+                        .show()
+                }
 
                 true
             }
@@ -1029,5 +1050,27 @@ class FormPembayaranFragment : Fragment() {
 
     private enum class OperasiFotoPembayaran {
         LIHAT, TAMBAH, HAPUS
+    }
+
+    private fun onOfflineState() {
+        // Disable edit Harga icon
+        binding.imgEdit?.visibility = View.GONE
+        // Disable edit Catatan icon
+        binding.imgEditCatatan?.visibility = View.GONE
+        // Hide FABS
+        binding.fabActions?.visibility = View.GONE
+    }
+
+    /**
+     * This AlertDialog will appear when the user trying to interact with
+     * operations interface when the offlineMode is enabled in the Pengaturan.
+     */
+    private fun showDialogOnOfflineMode() {
+        MaterialAlertDialogBuilder(requireContext())
+            .setTitle("Nonaktifkan Mode Offline")
+            .setMessage("Pada mode offline, Anda tidak dapat melakukan operasi penambahan atau penghapusan data. Untuk melakukan operasi ini, silakan nonaktifkan Mode Offline pada layar Pengaturan.")
+            .setPositiveButton("Tutup") { dialog, _ -> dialog.dismiss() }
+            .create()
+            .show()
     }
 }
