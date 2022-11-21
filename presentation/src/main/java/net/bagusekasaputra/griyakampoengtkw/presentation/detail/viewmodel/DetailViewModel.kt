@@ -6,12 +6,16 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.*
 import net.bagusekasaputra.griyakampoengtkw.domain.AsyncUseCaseHelper
 import net.bagusekasaputra.griyakampoengtkw.domain.NumberUtil
+import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.biayaMarketing.GetAllBiayaMarketingByKavlingKodeAsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.catatanPembayaran.GetCatatanPembayaranAsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.dataDiri.GetDataDiriAsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.hargaKavling.GetHargaKavlingAsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.pembayaran.GetAllPembayaranAsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.*
-import net.bagusekasaputra.griyakampoengtkw.domain.usecase.biayaMarketing.*
+import net.bagusekasaputra.griyakampoengtkw.domain.usecase.biayaMarketing.AddBiayaMarketingUseCase
+import net.bagusekasaputra.griyakampoengtkw.domain.usecase.biayaMarketing.DeleteAllBiayaMarketingUseCase
+import net.bagusekasaputra.griyakampoengtkw.domain.usecase.biayaMarketing.DeleteSingleBiayaMarketingUseCase
+import net.bagusekasaputra.griyakampoengtkw.domain.usecase.biayaMarketing.EditBiayaMarketingUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.usecase.catatanPembayaran.AddCatatanPembayaranUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.usecase.catatanPembayaran.DeleteCatatanPembayaranUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.usecase.datadiri.AddDataDiriUseCase
@@ -44,7 +48,7 @@ class DetailViewModel @Inject constructor(
     private val updatePembayaranUseCase: UpdatePembayaranUseCase,
     private val deletePembayaranByTerminUseCase: DeletePembayaranByTerminUseCase,
     private val deleteAllPembayaranUseCase: DeleteAllPembayaranUseCase,
-    private val getAllBiayaMarketingByKavlingKodeUseCase: GetAllBiayaMarketingByKavlingKodeUseCase,
+    private val getAllBiayaMarketingByKavlingKodeAsyncUseCase: GetAllBiayaMarketingByKavlingKodeAsyncUseCase,
     private val addBiayaMarketingUseCase: AddBiayaMarketingUseCase,
     private val editBiayaMarketingUseCase: EditBiayaMarketingUseCase,
     private val deleteSingleBiayaMarketingUseCase: DeleteSingleBiayaMarketingUseCase,
@@ -217,7 +221,9 @@ class DetailViewModel @Inject constructor(
             request = request,
             asyncUseCase = getAllPembayaranAsyncUseCase,
             onSuccess = {
-                listPembayaranLive.postValue(it)
+                // so many bugs caused by this unchecked isNotEmpty()
+                if (it?.isNotEmpty() == true)
+                    listPembayaranLive.postValue(it)
             },
             onFailure = {
                 onFailure("Gagal mendapatkan pembayaran: ${it.message}")
@@ -483,30 +489,25 @@ class DetailViewModel @Inject constructor(
     }
 
 
-
-    // Biaya Marketing
+    /**
+     * Biaya Marketing
+     */
     fun getAllBiayaMarketing(kavlingKode: String, onFailure: (cause: String) -> Unit) {
-        isFinishOperation.value = false
+        val request = GetAllBiayaMarketingByKavlingKodeAsyncUseCase.Request(kavlingKode, offlineMode)
 
-        val request = GetAllBiayaMarketingByKavlingKodeUseCase.Request(kavlingKode)
+        val gettingAllBiayaMarketingJob = asyncHelper.doWork(
+            request = request,
+            asyncUseCase = getAllBiayaMarketingByKavlingKodeAsyncUseCase,
+            onSuccess = {
+                listBiayaMarketingLive.postValue(it)
+            },
+            onFailure = {
+                onFailure("Gagal mendapatkan biaya marketing: ${it.message}")
+            },
+            successMsgOnUiThread = false,
+        )
 
-        CoroutineScope(Dispatchers.IO).launch {
-            getAllBiayaMarketingByKavlingKodeUseCase.execute(request).collect { response ->
-                val result = response.data.result
-
-                result.onSuccess { biayaMarketingList ->
-                    listBiayaMarketingLive.postValue(biayaMarketingList)
-                }
-
-                result.onFailure { throwable ->
-                    withContext(Dispatchers.Main) {
-                        onFailure("Gagal mendapatkan biaya marketing: ${throwable.message}")
-                    }
-                }
-
-                isFinishOperation.postValue(true)
-            }
-        }
+        asyncJobs.add(gettingAllBiayaMarketingJob)
     }
 
     fun addBiayaMarketing(

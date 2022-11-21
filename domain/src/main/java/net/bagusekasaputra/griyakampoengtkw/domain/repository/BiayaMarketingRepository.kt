@@ -5,7 +5,7 @@ import net.bagusekasaputra.griyakampoengtkw.domain.entity.BiayaMarketing
 
 interface BiayaMarketingRepository {
 
-    fun getAllByKavlingKode(kavlingKode: String): Flow<Result<List<BiayaMarketing>?>>
+    fun getAllByKavlingKode(kavlingKode: String, offline: Boolean): Flow<Result<List<BiayaMarketing>?>>
 
     fun addBiayaMarketing(biayaMarketing: BiayaMarketing): Flow<Result<Nothing?>>
 

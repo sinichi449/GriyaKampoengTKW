@@ -1,24 +1,22 @@
-package net.bagusekasaputra.griyakampoengtkw.domain.usecase.biayaMarketing
+package net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.biayaMarketing
 
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.zip
+import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.AsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.BiayaMarketing
 import net.bagusekasaputra.griyakampoengtkw.domain.repository.BiayaMarketingRepository
 import net.bagusekasaputra.griyakampoengtkw.domain.repository.FeeMarketingRepository
-import net.bagusekasaputra.griyakampoengtkw.domain.usecase.UseCase
 
-class GetAllBiayaMarketingByKavlingKodeUseCase(
+class GetAllBiayaMarketingByKavlingKodeAsyncUseCase(
     private val biayaMarketingRepository: BiayaMarketingRepository,
     private val feeMarketingRepository: FeeMarketingRepository,
-): UseCase<GetAllBiayaMarketingByKavlingKodeUseCase.Request, GetAllBiayaMarketingByKavlingKodeUseCase.Response>() {
+): AsyncUseCase<GetAllBiayaMarketingByKavlingKodeAsyncUseCase.Request, List<BiayaMarketing>?>() {
 
-    data class Request(val kavlingKode: String): UseCase.Request
+    data class Request(val kavlingKode: String, val offline: Boolean): AsyncUseCase.Request
 
-    data class Response(val result: Result<List<BiayaMarketing>?>): UseCase.Response
-
-    override fun process(request: Request): Flow<Response> {
-        return biayaMarketingRepository.getAllByKavlingKode(request.kavlingKode)
+    override fun process(request: Request): Flow<Result<List<BiayaMarketing>?>> {
+        return biayaMarketingRepository.getAllByKavlingKode(request.kavlingKode, request.offline)
             .zip(getBiayaMarketer(request.kavlingKode)) { resultBiayaMarketing, biayaMarketer ->
                 val listBiayaMarketing = resultBiayaMarketing.getOrNull()
 
@@ -30,9 +28,6 @@ class GetAllBiayaMarketingByKavlingKodeUseCase(
                     return@zip resultBiayaMarketing
                 }
             }
-            .map {
-                Response(it)
-            }
     }
 
     private fun maskBiayaMarketing(
@@ -40,7 +35,8 @@ class GetAllBiayaMarketingByKavlingKodeUseCase(
         biayaMarketer: Long?,
     ): List<BiayaMarketing> {
         val newBiayaMarketingList = ArrayList<BiayaMarketing>()
-        // We add biaya marketer firstly
+
+        // Calculate total biaya, together with biayaMarketer
         var totalBiaya = biayaMarketer ?: 0L
 
         listBiayaMarketing.forEach { biayaMarketing ->

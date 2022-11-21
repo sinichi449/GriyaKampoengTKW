@@ -122,8 +122,11 @@ object RepositoryModule {
 
     // Biaya Marketing
     @Provides
-    fun provideBiayaMarketingRepository(remoteBiayaMarketDataSource: RemoteBiayaMarketingDataSource): BiayaMarketingRepository {
-        return BiayaMarketingRepositoryImpl(remoteBiayaMarketDataSource)
+    fun provideBiayaMarketingRepository(
+        localBiayaMarketingDataSource: LocalBiayaMarketingDataSource,
+        remoteBiayaMarketDataSource: RemoteBiayaMarketingDataSource,
+    ): BiayaMarketingRepository {
+        return BiayaMarketingRepositoryImpl(localBiayaMarketingDataSource, remoteBiayaMarketDataSource)
     }
 
 

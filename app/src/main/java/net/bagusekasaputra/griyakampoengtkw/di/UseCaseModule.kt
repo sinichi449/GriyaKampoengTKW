@@ -4,6 +4,7 @@ import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.android.components.ViewModelComponent
+import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.biayaMarketing.GetAllBiayaMarketingByKavlingKodeAsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.block.GetAllBlocksAsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.catatanPembayaran.GetCatatanPembayaranAsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.dataDiri.GetDataDiriAsyncUseCase
@@ -164,7 +165,7 @@ object UseCaseModule {
         biayaMarketingRepository: BiayaMarketingRepository,
         feeMarketingRepository: FeeMarketingRepository
     )
-        = GetAllBiayaMarketingByKavlingKodeUseCase(biayaMarketingRepository, feeMarketingRepository)
+        = GetAllBiayaMarketingByKavlingKodeAsyncUseCase(biayaMarketingRepository, feeMarketingRepository)
 
 
     @Provides

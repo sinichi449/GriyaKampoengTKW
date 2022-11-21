@@ -60,8 +60,8 @@ class TableBiayaMarketingHelper(
     }
 
     fun getTotalBiayaMarketing(): Long {
-        return if (listBiayaMarketing != null)
-            listBiayaMarketing.last().totalBiaya.toLong()
+        return if ((listBiayaMarketing != null) and (listBiayaMarketing?.isNotEmpty() == true))
+            listBiayaMarketing?.last()?.totalBiaya?.toLong() ?: 0L
         else
             0L
     }

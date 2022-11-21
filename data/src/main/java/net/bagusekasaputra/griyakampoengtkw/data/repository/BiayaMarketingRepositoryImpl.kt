@@ -1,8 +1,10 @@
 package net.bagusekasaputra.griyakampoengtkw.data.repository
 
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.emitAll
 import kotlinx.coroutines.flow.flow
 import net.bagusekasaputra.griyakampoengtkw.data.DataUtil
+import net.bagusekasaputra.griyakampoengtkw.data.interfaces.local.LocalBiayaMarketingDataSource
 import net.bagusekasaputra.griyakampoengtkw.data.interfaces.remote.RemoteBiayaMarketingDataSource
 import net.bagusekasaputra.griyakampoengtkw.data.model.BiayaMarketingModel
 import net.bagusekasaputra.griyakampoengtkw.domain.NumberUtil
@@ -10,18 +12,56 @@ import net.bagusekasaputra.griyakampoengtkw.domain.entity.BiayaMarketing
 import net.bagusekasaputra.griyakampoengtkw.domain.repository.BiayaMarketingRepository
 
 class BiayaMarketingRepositoryImpl(
+    private val localBiayaMarketingDataSource: LocalBiayaMarketingDataSource,
     private val remoteBiayaMarketingDataSource: RemoteBiayaMarketingDataSource,
 ): BiayaMarketingRepository {
 
-    override fun getAllByKavlingKode(kavlingKode: String): Flow<Result<List<BiayaMarketing>?>> {
+    override fun getAllByKavlingKode(
+        kavlingKode: String,
+        offline: Boolean
+    ): Flow<Result<List<BiayaMarketing>?>> {
         return flow {
-            val remoteResult = remoteBiayaMarketingDataSource.getAllBiayaMarketing(kavlingKode)
-            val mapped = DataUtil.mapListResult(
-                originResult = remoteResult,
-                targetMapper = ::mapBiayaMarketing
-            )
+            val flowOffline = flow<Result<List<BiayaMarketing>?>> {
+                val localResult = localBiayaMarketingDataSource.getAllBiayaMarketing(kavlingKode)
 
-            emit(mapped)
+                emit(
+                    DataUtil.mapListResult(localResult, ::mapBiayaMarketing)
+                )
+            }
+
+            val flowOnline = flow<Result<List<BiayaMarketing>?>> {
+                // First, fetch from the remote
+                val remoteResult = remoteBiayaMarketingDataSource.getAllBiayaMarketing(kavlingKode)
+
+                remoteResult.onSuccess {
+                    // if successfully fetching the data from the remote repository,
+                    // first, save to local data source
+                    val biayaMarketingModel = remoteResult.getOrNull()
+                    biayaMarketingModel?.forEach {
+                        localBiayaMarketingDataSource.addBiayaMarketing(kavlingKode, it)
+                    }
+
+                    // Then emit the result
+                    val mapped = DataUtil.mapListResult(
+                        originResult = remoteResult,
+                        targetMapper = ::mapBiayaMarketing
+                    )
+                    emit(mapped)
+                }
+
+                remoteResult.onFailure {
+                    // if fetching from remote fails, emit the error message
+                    emit(Result.failure(it))
+
+                    // Then, fetch from local data source instead
+                    emitAll(flowOffline)
+                }
+            }
+
+            if (offline)
+                emitAll(flowOffline)
+            else
+                emitAll(flowOnline)
         }
     }
 
@@ -45,13 +85,27 @@ class BiayaMarketingRepositoryImpl(
             // a difference of timeMillis with the oldBiayaMarketing
             newBiayaMarketing.timeMillis = oldBiayaMarketing.timeMillis
 
-            val resultRemote = remoteBiayaMarketingDataSource.update(
+            val mappedOld = mapBiayaMarketing(oldBiayaMarketing)
+            val mappedNew = mapBiayaMarketing(newBiayaMarketing)
+
+            // We need to update the data on the local data source too
+            val updateLocal = localBiayaMarketingDataSource.update(
                 kavlingKode = oldBiayaMarketing.kavlingKode,
-                oldBiayaMarketingModel = mapBiayaMarketing(oldBiayaMarketing),
-                newBiayaMarketingModel = mapBiayaMarketing(newBiayaMarketing),
+                oldBiayaMarketingModel = mappedOld,
+                newBiayaMarketingModel = mappedNew,
+            )
+            updateLocal.onFailure {
+                emit(Result.failure(it))
+            }
+
+
+            val remoteUpdate = remoteBiayaMarketingDataSource.update(
+                kavlingKode = oldBiayaMarketing.kavlingKode,
+                oldBiayaMarketingModel = mappedOld,
+                newBiayaMarketingModel = mappedNew,
             )
 
-            emit(resultRemote)
+            emit(remoteUpdate)
         }
     }
 
@@ -64,21 +118,37 @@ class BiayaMarketingRepositoryImpl(
             if (biayaMarketing.timeMillis == null) {
                 emit(Result.failure(Exception("ERROR: Time millis tidak ditemukan")))
             } else {
-                val remoteResult = remoteBiayaMarketingDataSource.deleteSingle(
+                // We need to delete from local data source too
+                val deleteLocal = localBiayaMarketingDataSource.deleteSingle(
+                    kavlingKode = kavlingKode,
+                    timeMillis = biayaMarketing.timeMillis!!,
+                )
+                deleteLocal.onFailure {
+                    emit(Result.failure(it))
+                }
+
+
+                val deleteRemote = remoteBiayaMarketingDataSource.deleteSingle(
                     kavlingKode = kavlingKode,
                     timeMillis = biayaMarketing.timeMillis!!,
                 )
 
-                emit(remoteResult)
+                emit(deleteRemote)
             }
         }
     }
 
     override fun deleteAll(kavlingKode: String): Flow<Result<Nothing?>> {
         return flow {
-            val remoteResult = remoteBiayaMarketingDataSource.deleteAllBiayaMarketing(kavlingKode)
+            // We need to delete from the local data source too
+            val deleteAllLocal = localBiayaMarketingDataSource.deleteAllBiayaMarketing(kavlingKode)
+            deleteAllLocal.onFailure {
+                emit(Result.failure(it))
+            }
 
-            emit(remoteResult)
+            val deleteAllRemote = remoteBiayaMarketingDataSource.deleteAllBiayaMarketing(kavlingKode)
+
+            emit(deleteAllRemote)
         }
     }
 
