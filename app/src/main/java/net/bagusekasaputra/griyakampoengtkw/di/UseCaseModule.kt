@@ -8,6 +8,7 @@ import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.biayaMarketing.G
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.block.GetAllBlocksAsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.catatanPembayaran.GetCatatanPembayaranAsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.dataDiri.GetDataDiriAsyncUseCase
+import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.feeMarketing.GetFeeMarketingByKavlingKodeAsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.fotoPembayaran.AddFotoPembayaranAsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.fotoPembayaran.DeleteFotoPembayaranAsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.fotoPembayaran.GetFotoPembayaranAsyncUseCase
@@ -25,7 +26,6 @@ import net.bagusekasaputra.griyakampoengtkw.domain.usecase.datadiri.AddDataDiriU
 import net.bagusekasaputra.griyakampoengtkw.domain.usecase.datadiri.DeleteDataDiriUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.usecase.feeMarketing.AddFeeMarketingUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.usecase.feeMarketing.DeleteFeeMarketingUseCase
-import net.bagusekasaputra.griyakampoengtkw.domain.usecase.feeMarketing.GetFeeMarketingByKavlingKode
 import net.bagusekasaputra.griyakampoengtkw.domain.usecase.feeMarketing.UpdateFeeMarketingUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.usecase.fotoKuitansi.AddFotoKuitansiUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.usecase.fotoKuitansi.GetFotoKuitansiUseCase
@@ -192,7 +192,7 @@ object UseCaseModule {
      */
     @Provides
     fun provideGetFeeMarketingByKavlingKode(feeMarketingRepository: FeeMarketingRepository)
-        = GetFeeMarketingByKavlingKode(feeMarketingRepository)
+        = GetFeeMarketingByKavlingKodeAsyncUseCase(feeMarketingRepository)
 
     @Provides
     fun provideAddFeeMarketing(feeMarketingRepository: FeeMarketingRepository)

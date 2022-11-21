@@ -9,6 +9,7 @@ import net.bagusekasaputra.griyakampoengtkw.domain.NumberUtil
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.biayaMarketing.GetAllBiayaMarketingByKavlingKodeAsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.catatanPembayaran.GetCatatanPembayaranAsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.dataDiri.GetDataDiriAsyncUseCase
+import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.feeMarketing.GetFeeMarketingByKavlingKodeAsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.hargaKavling.GetHargaKavlingAsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.pembayaran.GetAllPembayaranAsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.*
@@ -22,7 +23,6 @@ import net.bagusekasaputra.griyakampoengtkw.domain.usecase.datadiri.AddDataDiriU
 import net.bagusekasaputra.griyakampoengtkw.domain.usecase.datadiri.DeleteDataDiriUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.usecase.feeMarketing.AddFeeMarketingUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.usecase.feeMarketing.DeleteFeeMarketingUseCase
-import net.bagusekasaputra.griyakampoengtkw.domain.usecase.feeMarketing.GetFeeMarketingByKavlingKode
 import net.bagusekasaputra.griyakampoengtkw.domain.usecase.feeMarketing.UpdateFeeMarketingUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.usecase.hargakavling.AddHargaKavlingUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.usecase.pembayaran.AddPembayaranUseCase
@@ -53,7 +53,7 @@ class DetailViewModel @Inject constructor(
     private val editBiayaMarketingUseCase: EditBiayaMarketingUseCase,
     private val deleteSingleBiayaMarketingUseCase: DeleteSingleBiayaMarketingUseCase,
     private val deleteAllBiayaMarketingUseCase: DeleteAllBiayaMarketingUseCase,
-    private val getFeeMarketingByKavlingKode: GetFeeMarketingByKavlingKode,
+    private val getFeeMarketingByKavlingKodeAsyncUseCase: GetFeeMarketingByKavlingKodeAsyncUseCase,
     private val addFeeMarketingUseCase: AddFeeMarketingUseCase,
     private val updateFeeMarketingUseCase: UpdateFeeMarketingUseCase,
     private val deleteFeeMarketingUseCase: DeleteFeeMarketingUseCase,
@@ -346,33 +346,29 @@ class DetailViewModel @Inject constructor(
         }
     }
 
-    // Fee Marketing
+    /**
+     * Fee Marketing
+     */
     fun getFeeMarketing(kavlingKode: String, onFailure: (cause: String) -> Unit) {
-        isFinishOperation.value = false
+        val request = GetFeeMarketingByKavlingKodeAsyncUseCase.Request(kavlingKode, offlineMode)
 
-        val request = GetFeeMarketingByKavlingKode.Request(kavlingKode)
+        val gettingFeeMarketingJob = asyncHelper.doWork(
+            request = request,
+            asyncUseCase = getFeeMarketingByKavlingKodeAsyncUseCase,
+            onSuccess = {
+                // We need to transform fee marketing into a comma separated value
+                it?.biayaMarketer =
+                    NumberUtil.formatLongToString(it?.biayaMarketer?.toLong() ?: 0)
 
-        CoroutineScope(Dispatchers.IO).launch {
-            getFeeMarketingByKavlingKode.execute(request).collect { response ->
-                val result = response.data.result
+                feeMarketingLive.postValue(it)
+            },
+            onFailure = {
+                onFailure("Gagal mendapatkan biaya afiliasi: ${it.message}")
+            },
+            successMsgOnUiThread = false,
+        )
 
-                result.onSuccess { feeMarketing ->
-                    // We need to transform the biayaAfiliasi into comma separated value here
-                    feeMarketing?.biayaMarketer = NumberUtil
-                        .formatLongToString(feeMarketing?.biayaMarketer?.toLong() ?: 0)
-
-                    feeMarketingLive.postValue(feeMarketing)
-                }
-
-                result.onFailure { throwable ->
-                    withContext(Dispatchers.Main) {
-                        onFailure("Gagal mendapatkan biaya afiliasi: ${throwable.message}")
-                    }
-                }
-
-                isFinishOperation.postValue(true)
-            }
-        }
+        asyncJobs.add(gettingFeeMarketingJob)
     }
 
     fun addFeeMarketing(

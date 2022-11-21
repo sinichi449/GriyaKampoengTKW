@@ -112,15 +112,21 @@ object RepositoryModule {
     }
 
 
-
-    // Fee Marketing
+    /**
+     * FeeMarketing
+     */
     @Provides
-    fun provideFeeMarketingRepository(remoteFeeMarketingDataSource: RemoteFeeMarketingDataSource): FeeMarketingRepository {
-        return FeeMarketingRepositoryImpl(remoteFeeMarketingDataSource)
+    fun provideFeeMarketingRepository(
+        localFeeMarketingDataSource: LocalFeeMarketingDataSource,
+        remoteFeeMarketingDataSource: RemoteFeeMarketingDataSource
+    ): FeeMarketingRepository {
+        return FeeMarketingRepositoryImpl(localFeeMarketingDataSource, remoteFeeMarketingDataSource)
     }
 
 
-    // Biaya Marketing
+    /**
+     * Biaya Marketing
+     */
     @Provides
     fun provideBiayaMarketingRepository(
         localBiayaMarketingDataSource: LocalBiayaMarketingDataSource,

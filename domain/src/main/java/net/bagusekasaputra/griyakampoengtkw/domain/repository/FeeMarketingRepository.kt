@@ -5,7 +5,7 @@ import net.bagusekasaputra.griyakampoengtkw.domain.entity.FeeMarketing
 
 interface FeeMarketingRepository {
 
-    fun getByKavlingKode(kavlingKode: String): Flow<Result<FeeMarketing?>>
+    fun getByKavlingKode(kavlingKode: String, offline: Boolean): Flow<Result<FeeMarketing?>>
 
     fun addFeeMarketing(feeMarketing: FeeMarketing): Flow<Result<Nothing?>>
 

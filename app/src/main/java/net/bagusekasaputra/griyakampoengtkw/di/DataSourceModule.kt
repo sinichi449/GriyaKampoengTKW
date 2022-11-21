@@ -10,6 +10,7 @@ import net.bagusekasaputra.griyakampoeng.tkw.data.local.biayaMarketing.RoomBiaya
 import net.bagusekasaputra.griyakampoeng.tkw.data.local.block.RoomBlockDataSource
 import net.bagusekasaputra.griyakampoeng.tkw.data.local.catatanPembayaran.RoomCatatanPembayaranDataSource
 import net.bagusekasaputra.griyakampoeng.tkw.data.local.datadiri.RoomDataDiriDataSource
+import net.bagusekasaputra.griyakampoeng.tkw.data.local.feeMarketing.RoomFeeMarketingDataSource
 import net.bagusekasaputra.griyakampoeng.tkw.data.local.fotoKuitansi.RoomFotoKuitansiDataSource
 import net.bagusekasaputra.griyakampoeng.tkw.data.local.fotoPembayaran.RoomFotoPembayaranDataSource
 import net.bagusekasaputra.griyakampoeng.tkw.data.local.fotoPembayaran.device.DeviceFotoPembayaranDataSource
@@ -121,6 +122,11 @@ object DataSourceModule {
         return net.bagusekasaputra.griyakampoengtkw.data.remote.feeMarketing.FirebaseFeeMarketingDataSource(
             databaseReference
         )
+    }
+
+    @Provides
+    fun provideLocalFeeMarketingDataSource(roomDatabase: MyRoomDatabase): LocalFeeMarketingDataSource {
+        return RoomFeeMarketingDataSource(roomDatabase)
     }
 
 

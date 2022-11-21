@@ -11,6 +11,8 @@ import net.bagusekasaputra.griyakampoeng.tkw.data.local.catatanPembayaran.Catata
 import net.bagusekasaputra.griyakampoeng.tkw.data.local.catatanPembayaran.CatatanPembayaranRoomEntity
 import net.bagusekasaputra.griyakampoeng.tkw.data.local.datadiri.DataDiriRoomDao
 import net.bagusekasaputra.griyakampoeng.tkw.data.local.datadiri.DataDiriRoomEntity
+import net.bagusekasaputra.griyakampoeng.tkw.data.local.feeMarketing.FeeMarketingRoomDao
+import net.bagusekasaputra.griyakampoeng.tkw.data.local.feeMarketing.FeeMarketingRoomEntity
 import net.bagusekasaputra.griyakampoeng.tkw.data.local.fotoKuitansi.FotoKuitansiRoomDao
 import net.bagusekasaputra.griyakampoeng.tkw.data.local.fotoKuitansi.FotoKuitansiRoomEntity
 import net.bagusekasaputra.griyakampoeng.tkw.data.local.fotoPembayaran.FotoPembayaranDao
@@ -30,8 +32,8 @@ import net.bagusekasaputra.griyakampoeng.tkw.data.local.pembayaran.PembayaranRoo
     entities = [KavlingRoomEntity::class, ImageDataDiriRoomEntity::class, BlockRoomEntity::class,
                DataDiriRoomEntity::class, FotoKuitansiRoomEntity::class, ImageSprRoomEntity::class,
                FotoPembayaranEntity::class, PembayaranRoomEntity::class, HargaKavlingRoomEntity::class,
-               CatatanPembayaranRoomEntity::class, BiayaMarketingRoomEntity::class],
-    version = 8,
+               CatatanPembayaranRoomEntity::class, BiayaMarketingRoomEntity::class, FeeMarketingRoomEntity::class],
+    version = 9,
     exportSchema = true,
     autoMigrations = [
         AutoMigration(from = 3, to = 4),
@@ -39,6 +41,7 @@ import net.bagusekasaputra.griyakampoeng.tkw.data.local.pembayaran.PembayaranRoo
         AutoMigration(from = 5, to = 6),
         AutoMigration(from = 6, to = 7),
         AutoMigration(from = 7, to = 8),
+        AutoMigration(from = 8, to = 9),
     ]
 )
 abstract class MyRoomDatabase: RoomDatabase() {
@@ -64,4 +67,6 @@ abstract class MyRoomDatabase: RoomDatabase() {
     abstract fun getCatatanPembayaranDao(): CatatanPembayaranRoomDao
 
     abstract fun getBiayaMarketingDao(): BiayaMarketingRoomDao
+
+    abstract fun getFeeMarketingDao(): FeeMarketingRoomDao
 }
