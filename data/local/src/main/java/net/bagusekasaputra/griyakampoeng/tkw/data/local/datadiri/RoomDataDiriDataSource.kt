@@ -30,15 +30,23 @@ class RoomDataDiriDataSource(
         kavlingKode: String,
         dataDiriModel: DataDiriModel,
     ): Result<Nothing?> {
-        return try {
-            dataDiriRoomDao.insert(mapDataDiri(kavlingKode, dataDiriModel))
-
-            Result.success(null)
-        } catch (e: Exception) {
-            e.printStackTrace()
-
-            Result.failure(e)
-        }
+        val targetData = dataDiriRoomDao.getByKavlingKode(kavlingKode)
+        return RoomRequestHelper.doInsertPreventDuplicateOperation(
+            outerData = dataDiriModel,
+            targetData = targetData,
+            equalityPredicate = { m, e ->
+                ((m.nama == e.nama)
+                        and (m.jenisIdentitas == e.jenisIdentitas)
+                        and (m.noIdentitas == e.noIdentitas)
+                        and (m.negaraBekerja == e.negaraBekerja)
+                        and (m.alamatKerja == e.alamatKerja)
+                        and (m.alamatIndo == e.alamatIndo)
+                        and (m.noHp == e.noHp))
+            },
+            insertWork = {
+                dataDiriRoomDao.insert(mapDataDiri(kavlingKode, it))
+            }
+        )
     }
 
     override suspend fun deleteDataDiri(kavlingKode: String): Result<Nothing?> {
