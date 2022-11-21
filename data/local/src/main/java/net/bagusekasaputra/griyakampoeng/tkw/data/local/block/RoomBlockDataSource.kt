@@ -1,6 +1,7 @@
 package net.bagusekasaputra.griyakampoeng.tkw.data.local.block
 
 import net.bagusekasaputra.griyakampoeng.tkw.data.local.MyRoomDatabase
+import net.bagusekasaputra.griyakampoeng.tkw.data.local.RoomRequestHelper
 import net.bagusekasaputra.griyakampoengtkw.data.interfaces.local.LocalBlockDataSource
 import net.bagusekasaputra.griyakampoengtkw.data.model.BlockModel
 
@@ -23,15 +24,18 @@ class RoomBlockDataSource(
     }
 
     override suspend fun addBlock(blockModel: BlockModel): Result<Nothing?> {
-        return try {
-            blockRoomDao.insert(mapBlockRoomEntity(blockModel))
-
-            Result.success(null)
-        } catch (e: Exception) {
-            e.printStackTrace()
-
-            Result.failure(e)
-        }
+        val targetData = blockRoomDao.getSingleBlock(blockModel.kode)
+        return RoomRequestHelper.doInsertPreventDuplicateOperation(
+            outerData = blockModel,
+            targetData = targetData,
+            equalityPredicate = { m, e ->
+                ((m.kode == e.kode)
+                        and (m.warna == e.warna))
+            },
+            insertWork = {
+                blockRoomDao.insert(mapBlockRoomEntity(it))
+            }
+        )
     }
 
 

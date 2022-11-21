@@ -1,6 +1,7 @@
 package net.bagusekasaputra.griyakampoeng.tkw.data.local.kavling
 
 import net.bagusekasaputra.griyakampoeng.tkw.data.local.MyRoomDatabase
+import net.bagusekasaputra.griyakampoeng.tkw.data.local.RoomRequestHelper
 import net.bagusekasaputra.griyakampoengtkw.data.interfaces.local.LocalKavlingDataSource
 import net.bagusekasaputra.griyakampoengtkw.data.model.KavlingModel
 
@@ -27,15 +28,21 @@ class RoomKavlingDataSource(
         blockKode: String,
         kavlingModel: KavlingModel,
     ): Result<Nothing?> {
-        return try {
-            val id = kavlingRoomDao.insert(mapKavlingRoomEntity(blockKode, kavlingModel))
-
-            Result.success(null)
-        } catch (e: Exception) {
-            e.printStackTrace()
-
-            Result.failure(e)
-        }
+        val targetData = kavlingRoomDao.getSingleKavling(blockKode, kavlingModel.kode)
+        return RoomRequestHelper.doInsertPreventDuplicateOperation(
+            outerData = kavlingModel,
+            targetData = targetData,
+            equalityPredicate = { m, e ->
+                ((m.kode == e.kode)
+                        and (m.warna == e.warna)
+                        and (m.active == e.isActive)
+                        and (m.ukuran == e.ukuran)
+                        and (m.type == e.type))
+            },
+            insertWork = {
+                kavlingRoomDao.insert(mapKavlingRoomEntity(blockKode, it))
+            }
+        )
     }
 
     override suspend fun deleteKavling(kavlingKode: String): Result<Nothing?> {
@@ -73,6 +80,5 @@ class RoomKavlingDataSource(
             )
         }
     }
-
 
 }

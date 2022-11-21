@@ -31,6 +31,9 @@ interface KavlingRoomDao {
     @Query("SELECT * FROM kavlings WHERE block_kode=:blockKode")
     fun getKavlingsByBlockKode(blockKode: String): List<KavlingRoomEntity>?
 
+    @Query("SELECT * FROM kavlings WHERE block_kode=:blockKode AND kode=:kode")
+    fun getSingleKavling(blockKode: String, kode: String): KavlingRoomEntity?
+
     @Query("UPDATE kavlings SET warna=:warna, is_active=:isActive, ukuran=:ukuran, type=:type WHERE kode=:kode")
     fun updateKavling(kode: String, warna: String, isActive: Boolean, ukuran: String, type: String): Int
 

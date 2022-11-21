@@ -24,6 +24,9 @@ interface BlockRoomDao {
     @Query("SELECT * FROM blocks")
     fun getAllBlocks(): List<BlockRoomEntity>?
 
+    @Query("SELECT * FROM blocks WHERE kode=:kode")
+    fun getSingleBlock(kode: String): BlockRoomEntity?
+
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun insert(blockRoom: BlockRoomEntity): Long
 

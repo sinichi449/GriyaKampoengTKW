@@ -25,4 +25,28 @@ object RoomRequestHelper {
             Result.failure(e)
         }
     }
+
+    fun <O, T> doInsertPreventDuplicateOperation(
+        outerData: O,
+        targetData: T?,
+        equalityPredicate: (O, T) -> Boolean,
+        insertWork: (toBeInserted: O) -> Unit
+    ): Result<Nothing?> {
+        return try {
+            if (targetData == null) {
+                insertWork(outerData)
+            } else {
+                val isIdentical = equalityPredicate(outerData, targetData)
+
+                if (isIdentical.not())
+                    insertWork(outerData)
+            }
+
+            Result.success(null)
+        } catch (e: Exception) {
+            e.printStackTrace()
+
+            Result.failure(e)
+        }
+    }
 }
