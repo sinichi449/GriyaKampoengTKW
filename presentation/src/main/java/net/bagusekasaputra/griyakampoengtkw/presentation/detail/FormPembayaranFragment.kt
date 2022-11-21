@@ -228,8 +228,8 @@ class FormPembayaranFragment : Fragment() {
         }
 
         viewModel.listPembayaranLive.observe(requireActivity()) { listPembayaran ->
-            if (listPembayaran != null) {
-                binding.tvSisaBlmTerbayar?.text = listPembayaran.last().sisaBelumTerbayar
+            if ((listPembayaran != null) and (listPembayaran?.isNotEmpty() == true)) {
+                binding.tvSisaBlmTerbayar?.text = listPembayaran?.last()?.sisaBelumTerbayar
             } else {
                 clearPembayaranField()
             }
