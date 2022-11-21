@@ -143,6 +143,7 @@ object FirebaseRequestHelper {
                         // If not null, then the data is indeed already exist. BEWARE!
                         trySendBlocking(true)
                 }
+            awaitClose {  }
         }.first()
     }
 }

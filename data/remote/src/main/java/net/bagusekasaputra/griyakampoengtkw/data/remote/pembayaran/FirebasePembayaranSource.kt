@@ -41,7 +41,7 @@ class FirebasePembayaranSource(
         hargaKavling: Long,
         pembayaranModel: PembayaranModel
     ): Result<Nothing?> {
-        val terminChild = getTerminChild(pembayaranModel.termin, pembayaranModel.urutan)
+        val terminChild = pembayaranModel.getFullTermin()
 
         // Check if child is available to avoid replacing the available data.
         // if the user intended to replace, he must go through edit.

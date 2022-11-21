@@ -1,5 +1,6 @@
 package net.bagusekasaputra.griyakampoengtkw.data.repository
 
+import android.util.Log
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.emitAll
 import kotlinx.coroutines.flow.flow
@@ -76,6 +77,7 @@ class PembayaranRepositoryImpl(
                 hargaKavling,
                 pembayaranModel = mapPembayaran(pembayaran)
             )
+            Log.d("DEBUG_ME", "Inserting pembayaran blblbl")
 
             if (remoteResult.isSuccess) {
                 emit(Result.success(true))
