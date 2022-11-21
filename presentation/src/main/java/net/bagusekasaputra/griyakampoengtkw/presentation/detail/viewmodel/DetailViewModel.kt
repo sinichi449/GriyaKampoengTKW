@@ -515,6 +515,7 @@ class DetailViewModel @Inject constructor(
         isFinishOperation.value = false
 
         val biayaMarketing = BiayaMarketing(
+            timeMillis = System.currentTimeMillis(),
             kavlingKode = kavlingKode,
             jenisBiaya = jenisBiaya,
             harga = harga,

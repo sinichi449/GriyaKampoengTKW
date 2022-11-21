@@ -12,12 +12,11 @@ interface LocalBiayaMarketingDataSource {
     ): Result<Nothing?>
 
     suspend fun update(
-        kavlingKode: String,
-        oldBiayaMarketingModel: BiayaMarketingModel,
+        id: Long,
         newBiayaMarketingModel: BiayaMarketingModel
     ): Result<Nothing?>
 
-    suspend fun deleteSingle(kavlingKode: String, timeMillis: Long): Result<Nothing?>
+    suspend fun deleteSingle(id: Long): Result<Nothing?>
 
     suspend fun deleteAllBiayaMarketing(kavlingKode: String): Result<Nothing?>
 

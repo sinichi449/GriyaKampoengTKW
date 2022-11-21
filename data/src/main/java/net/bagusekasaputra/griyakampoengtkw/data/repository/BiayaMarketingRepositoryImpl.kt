@@ -42,11 +42,13 @@ class BiayaMarketingRepositoryImpl(
                     }
 
                     // Then emit the result
-                    val mapped = DataUtil.mapListResult(
-                        originResult = remoteResult,
-                        targetMapper = ::mapBiayaMarketing
-                    )
-                    emit(mapped)
+//                    val mapped = DataUtil.mapListResult(
+//                        originResult = remoteResult,
+//                        targetMapper = ::mapBiayaMarketing
+//                    )
+//                    emit(mapped)
+                    // To get a proper Id, I need to emit from local instead
+                    emitAll(flowOffline)
                 }
 
                 remoteResult.onFailure {
@@ -81,22 +83,27 @@ class BiayaMarketingRepositoryImpl(
         newBiayaMarketing: BiayaMarketing
     ): Flow<Result<Nothing?>> {
         return flow {
+            // We need to update the data on the local data source too
+            val id = oldBiayaMarketing.id
+            if (id == null) {
+                // If id is null, emit fails
+                emit(Result.failure(Throwable("Id untuk ${oldBiayaMarketing.jenisBiaya} tidak ditemukan!")))
+            } else {
+                val updateLocal = localBiayaMarketingDataSource.update(
+                    id = id,
+                    newBiayaMarketingModel = mapBiayaMarketing(newBiayaMarketing),
+                )
+                updateLocal.onFailure {
+                    emit(Result.failure(it))
+                }
+            }
+
             // We need to set the timeMillis of newBiayaMarketing to prevent
             // a difference of timeMillis with the oldBiayaMarketing
             newBiayaMarketing.timeMillis = oldBiayaMarketing.timeMillis
 
             val mappedOld = mapBiayaMarketing(oldBiayaMarketing)
             val mappedNew = mapBiayaMarketing(newBiayaMarketing)
-
-            // We need to update the data on the local data source too
-            val updateLocal = localBiayaMarketingDataSource.update(
-                kavlingKode = oldBiayaMarketing.kavlingKode,
-                oldBiayaMarketingModel = mappedOld,
-                newBiayaMarketingModel = mappedNew,
-            )
-            updateLocal.onFailure {
-                emit(Result.failure(it))
-            }
 
 
             val remoteUpdate = remoteBiayaMarketingDataSource.update(
@@ -119,12 +126,16 @@ class BiayaMarketingRepositoryImpl(
                 emit(Result.failure(Exception("ERROR: Time millis tidak ditemukan")))
             } else {
                 // We need to delete from local data source too
-                val deleteLocal = localBiayaMarketingDataSource.deleteSingle(
-                    kavlingKode = kavlingKode,
-                    timeMillis = biayaMarketing.timeMillis!!,
-                )
-                deleteLocal.onFailure {
-                    emit(Result.failure(it))
+                val id = biayaMarketing.id
+                if (id == null) {
+                    // If id not found, emit error
+                    emit(Result.failure(Throwable("Id untuk ${biayaMarketing.jenisBiaya} tidak ditemukan!")))
+                } else {
+                    val deleteLocal = localBiayaMarketingDataSource.deleteSingle(id)
+
+                    deleteLocal.onFailure {
+                        emit(Result.failure(it))
+                    }
                 }
 
 
@@ -155,6 +166,7 @@ class BiayaMarketingRepositoryImpl(
     private fun mapBiayaMarketing(biayaMarketingModel: BiayaMarketingModel): BiayaMarketing {
         return biayaMarketingModel.let {
             BiayaMarketing(
+                id = it.id,
                 timeMillis = it.timeMillis,
                 kavlingKode = it.kavlingKode,
                 jenisBiaya = it.jenisBiaya,
@@ -166,6 +178,7 @@ class BiayaMarketingRepositoryImpl(
     private fun mapBiayaMarketing(biayaMarketing: BiayaMarketing): BiayaMarketingModel {
         return biayaMarketing.let {
             BiayaMarketingModel(
+                id = it.id,
                 timeMillis = it.timeMillis ?: System.currentTimeMillis(),
                 kavlingKode = it.kavlingKode,
                 jenisBiaya = it.jenisBiaya,

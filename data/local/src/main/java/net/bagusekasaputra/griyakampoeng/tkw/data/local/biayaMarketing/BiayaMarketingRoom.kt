@@ -47,4 +47,14 @@ interface BiayaMarketingRoomDao {
 
     @Query("DELETE FROM biaya_marketing WHERE kavling_kode=:kavlingKode")
     fun deleteAll(kavlingKode: String)
+
+
+    @Query("UPDATE biaya_marketing SET " +
+            "jenis_biaya=:jenisBiaya, harga=:harga " +
+            "WHERE id=:id")
+    fun updateById(id: Long, jenisBiaya: String, harga: Long)
+
+
+    @Query("DELETE FROM biaya_marketing WHERE id=:id")
+    fun deleteById(id: Long)
 }

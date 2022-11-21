@@ -13,6 +13,7 @@ import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
 import net.bagusekasaputra.griyakampoengtkw.domain.NumberUtil
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.BiayaMarketing
+//import net.bagusekasaputra.griyakampoengtkw.domain.entity.BiayaMarketing
 import net.bagusekasaputra.griyakampoengtkw.presentation.R
 import net.bagusekasaputra.griyakampoengtkw.presentation.custom.ThousandSeparatorTextWatcher
 import net.bagusekasaputra.griyakampoengtkw.presentation.databinding.DialogActionFeeMarketingBinding
@@ -36,6 +37,8 @@ class BiayaMarketingFragment : Fragment() {
     private var areAllFabsVisible: Boolean = false
 
     private val viewModel: DetailViewModel by activityViewModels()
+
+    private var offlineMode = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -64,6 +67,10 @@ class BiayaMarketingFragment : Fragment() {
         setupViewModel()
 
         setupExtendedFab()
+
+        offlineMode = viewModel.offlineMode
+        if (offlineMode)
+            onOfflineState()
 
         // Setup swipe refresh layout
         binding.root.setOnRefreshListener { syncData() }
@@ -530,12 +537,33 @@ class BiayaMarketingFragment : Fragment() {
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         return when (item.itemId) {
             R.id.hapus_semua_biaya_marketing -> {
-                showHapusSemuaBiayaMarketingDialog()
+                if (offlineMode)
+                    showDialogOnOfflineMode()
+                else
+                    showHapusSemuaBiayaMarketingDialog()
 
                 true
             }
             else -> super.onOptionsItemSelected(item)
         }
+    }
+
+    private fun onOfflineState() {
+        binding.imgEditBiayaMarketer.visibility = View.GONE
+        binding.fabActionsBiayaMarketing.visibility = View.GONE
+    }
+
+    /**
+     * This AlertDialog will appear when the user trying to interact with
+     * operations interface when the offlineMode is enabled in the Pengaturan.
+     */
+    private fun showDialogOnOfflineMode() {
+        MaterialAlertDialogBuilder(requireContext())
+            .setTitle("Nonaktifkan Mode Offline")
+            .setMessage("Pada mode offline, Anda tidak dapat melakukan operasi penambahan atau penghapusan data. Untuk melakukan operasi ini, silakan nonaktifkan Mode Offline pada layar Pengaturan.")
+            .setPositiveButton("Tutup") { dialog, _ -> dialog.dismiss() }
+            .create()
+            .show()
     }
 }
 
