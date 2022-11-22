@@ -1,55 +1,55 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="@dimen/default_row_header_width"
-    android:layout_height="@dimen/column_header_height"
+    android:layout_height="@dimen/table_pembayaran_column_header_height"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:background="@color/abang">
 
-    <View
-        android:layout_width="@dimen/table_corner_line_weight"
-        android:layout_height="0dp"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintBottom_toBottomOf="parent"
-        android:background="@color/black"/>
-
-    <View
-        android:layout_width="@dimen/table_corner_line_weight"
-        android:layout_height="0dp"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintBottom_toBottomOf="parent"
-        android:background="@color/black"/>
-
-    <View
-        android:layout_width="0dp"
-        android:layout_height="@dimen/table_corner_line_weight"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintBottom_toBottomOf="parent"
-        android:background="@color/black"/>
-
-    <View
-        android:layout_width="0dp"
-        android:layout_height="@dimen/table_corner_line_weight"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        android:background="@color/black"/>
-
     <com.google.android.material.textview.MaterialTextView
-        android:id="@+id/tv_corner_data"
+        android:id="@+id/tv_corner"
         android:layout_width="0dp"
-        android:layout_height="0dp"
+        android:layout_height="wrap_content"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintBottom_toBottomOf="parent"
-        android:gravity="center"
-        android:text="No."
+        android:text="No"
+        android:textStyle="bold"
+        android:textSize="@dimen/table_pembayaran_column_header_text_size"
         android:textColor="@color/white"
-        style="@style/TextAppearance.MaterialComponents.Body1"
-        android:textSize="@dimen/default_table_text_size"
-        android:textStyle="bold"/>
+        android:gravity="center"
+        style="@style/TextAppearance.MaterialComponents.Body1" />
+
+    <View
+        android:layout_width="@dimen/table_pembayaran_separator_weight"
+        android:layout_height="0dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        android:background="@color/black"/>
+
+    <View
+        android:layout_width="0dp"
+        android:layout_height="@dimen/table_pembayaran_separator_weight"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:background="@color/black"/>
+
+    <View
+        android:layout_width="@dimen/table_pembayaran_separator_weight"
+        android:layout_height="0dp"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:background="@color/black"/>
+
+    <View
+        android:layout_width="0dp"
+        android:layout_height="@dimen/table_pembayaran_separator_weight"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        android:background="@color/black"/>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

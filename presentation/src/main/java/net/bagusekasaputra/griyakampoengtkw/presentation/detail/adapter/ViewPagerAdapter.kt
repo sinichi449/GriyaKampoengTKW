@@ -21,6 +21,8 @@ class ViewPagerAdapter(fm: FragmentManager): FragmentStatePagerAdapter(fm) {
         return titles[position]
     }
 
+
+
     fun addFragment(fragment: Fragment, title: String) {
         this.fragments.add(fragment)
         this.titles.add(title)

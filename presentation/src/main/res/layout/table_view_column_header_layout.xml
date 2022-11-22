@@ -1,27 +1,27 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="wrap_content"
-    android:layout_height="@dimen/column_header_height"
+    android:layout_height="@dimen/table_pembayaran_column_header_height"
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <com.google.android.material.textview.MaterialTextView
-        android:id="@+id/tv_column_header_data"
+        android:id="@+id/tv_column_header"
         android:layout_width="wrap_content"
-        android:layout_height="match_parent"
-        android:text="Header Data"
-        android:textStyle="bold"
-        style="@style/TextAppearance.MaterialComponents.Body1"
+        android:layout_height="wrap_content"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintBottom_toBottomOf="parent"
-        android:gravity="center"
+        android:text="Header Data"
+        android:textSize="@dimen/table_pembayaran_column_header_text_size"
+        android:textColor="@color/black"
         android:layout_marginHorizontal="8dp"
-        android:textSize="@dimen/default_table_text_size"/>
+        style="@style/TextAppearance.MaterialComponents.Body1"
+        android:textStyle="bold"/>
 
     <View
         android:layout_width="0dp"
-        android:layout_height="@dimen/table_corner_line_weight"
+        android:layout_height="@dimen/table_pembayaran_separator_weight"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent"
@@ -29,10 +29,10 @@
 
     <View
         android:layout_width="0dp"
-        android:layout_height="@dimen/table_corner_line_weight"
+        android:layout_height="@dimen/table_pembayaran_separator_weight"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintBottom_toBottomOf="parent"
         android:background="@color/black"/>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -10,6 +10,7 @@ import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
+import com.google.android.material.tabs.TabLayout
 import dagger.hilt.android.AndroidEntryPoint
 import net.bagusekasaputra.griyakampoengtkw.presentation.R
 import net.bagusekasaputra.griyakampoengtkw.presentation.databinding.ActivityDetailBinding
@@ -86,9 +87,18 @@ class DetailActivity : AppCompatActivity() {
             addFragment(putKavlingKode(BiayaMarketingFragment(), currentKavlingKode), "Biaya Marketing")
         }
 
-        binding.viewPager.adapter = pagerAdapter
-//        binding.viewPager.setPageTransformer(true, DepthPageTransformer(0.75f))
-        binding.tabLayout.setupWithViewPager(binding.viewPager)
+        binding.viewPager.apply {
+            adapter = pagerAdapter
+//            setPageTransformer(true, DepthPageTransformer(0.75f))
+        }
+        binding.tabLayout.apply {
+            setupWithViewPager(binding.viewPager)
+            tabIndicatorAnimationMode = TabLayout.INDICATOR_ANIMATION_MODE_ELASTIC
+//            val getIcon = { iconId: Int -> ContextCompat.getDrawable(this@DetailActivity, iconId) }
+//            getTabAt(0)?.icon = getIcon(R.drawable.ic_baseline_person_24)
+//            getTabAt(1)?.icon = getIcon(R.drawable.ic_baseline_attach_money_24)
+//            getTabAt(2)?.icon = getIcon(R.drawable.ic_baseline_account_balance_wallet_24)
+        }
     }
 
     private fun putKavlingKode(fragment: Fragment, kavlingKode: String): Fragment {

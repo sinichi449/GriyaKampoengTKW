@@ -1,7 +1,5 @@
 package net.bagusekasaputra.griyakampoengtkw.presentation.detail.tableview.biayaMarketing
 
-import android.graphics.Typeface
-import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -15,7 +13,7 @@ import net.bagusekasaputra.griyakampoengtkw.presentation.databinding.TableViewCo
 import net.bagusekasaputra.griyakampoengtkw.presentation.databinding.TableViewRowHeaderLayoutBinding
 import net.bagusekasaputra.griyakampoengtkw.presentation.databinding.TableviewViewCornerLayoutBinding
 
-class MyTableViewAdapter: AbstractTableAdapter<ColumnHeader, RowHeader, Cell>() {
+class BiayaMarketingTableViewAdapter: AbstractTableAdapter<ColumnHeader, RowHeader, Cell>() {
 
     private val NO_DATA = "No Data"
 
@@ -24,6 +22,9 @@ class MyTableViewAdapter: AbstractTableAdapter<ColumnHeader, RowHeader, Cell>() 
         const val Harga = 1
     }
 
+    /**
+     * Cell
+     */
     private class MyCellViewHolder(binding: TableViewCellLayoutBinding): AbstractViewHolder(binding.root) {
         val cellContainer = binding.root
         val cellText = binding.tvCellData
@@ -47,10 +48,8 @@ class MyTableViewAdapter: AbstractTableAdapter<ColumnHeader, RowHeader, Cell>() 
 
         viewHolder.cellText.text = cellItemModel?.text ?: NO_DATA
 
-        // set to right alignment for Harga, because Harga is numeric type
-        if (columnPosition == BiayaMarketingColumns.Harga) {
-            viewHolder.cellText.gravity = Gravity.END or Gravity.CENTER
-            viewHolder.cellText.typeface = Typeface.SERIF
+        if (columnPosition == 0) {
+            viewHolder.cellText.textAlignment = View.TEXT_ALIGNMENT_VIEW_START
         }
 
         // remeasure for auto size cell & columns
@@ -58,9 +57,13 @@ class MyTableViewAdapter: AbstractTableAdapter<ColumnHeader, RowHeader, Cell>() 
         viewHolder.cellText.requestLayout()
     }
 
-    private class MyColumnHeaderViewHolder(binding: TableViewColumnHeaderLayoutBinding): AbstractViewHolder(binding.root) {
+
+    /**
+     * Column Header
+     */
+    private class MyColumnHeaderViewHolder(val binding: TableViewColumnHeaderLayoutBinding): AbstractViewHolder(binding.root) {
         val columnHeaderContainer = binding.root
-        val columnHeaderText = binding.tvColumnHeaderData
+        val columnHeaderText = binding.tvColumnHeader
 
         override fun setSelected(selectionState: SelectionState) {
             super.setSelected(selectionState)
@@ -69,9 +72,7 @@ class MyTableViewAdapter: AbstractTableAdapter<ColumnHeader, RowHeader, Cell>() 
                 columnHeaderContainer.setBackgroundColor(
                     ContextCompat.getColor(columnHeaderContainer.context, R.color.abang)
                 )
-                columnHeaderText.setTextColor(
-                    ContextCompat.getColor(columnHeaderContainer.context, R.color.white)
-                )
+                columnHeaderText.setTextColor(ContextCompat.getColor(binding.root.context, R.color.white))
             }
         }
     }
@@ -101,8 +102,24 @@ class MyTableViewAdapter: AbstractTableAdapter<ColumnHeader, RowHeader, Cell>() 
         viewHolder.columnHeaderText.requestLayout()
     }
 
+
+    /**
+     * Row Header
+     */
     private class MyRowHeaderViewHolder(binding: TableViewRowHeaderLayoutBinding): AbstractViewHolder(binding.root) {
-        val rowHeaderText = binding.tvRowHeaderData
+        val container = binding.root
+        val rowHeaderText = binding.tvRowHeader
+        var colorId = R.color.white
+
+        override fun setSelected(selectionState: SelectionState) {
+            super.setSelected(selectionState)
+
+            if (selectionState != SelectionState.SELECTED) {
+                setBackgroundColor(
+                    ContextCompat.getColor(container.context, colorId)
+                )
+            }
+        }
     }
 
     override fun onCreateRowHeaderViewHolder(parent: ViewGroup, viewType: Int): AbstractViewHolder {
@@ -124,6 +141,10 @@ class MyTableViewAdapter: AbstractTableAdapter<ColumnHeader, RowHeader, Cell>() 
         viewHolder.rowHeaderText.text = rowHeaderItemModel?.text ?: "-"
     }
 
+
+    /**
+     * Corner
+     */
     override fun onCreateCornerView(parent: ViewGroup): View {
         return LayoutInflater.from(parent.context).let { layoutInflater ->
             TableviewViewCornerLayoutBinding.inflate(layoutInflater, parent, false).let { binding ->

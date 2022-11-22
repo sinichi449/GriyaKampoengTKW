@@ -770,9 +770,10 @@ class DetailViewModel @Inject constructor(
         TableBiayaMarketingHelper(listBiayaMarketingLive.value)
             .getBiayaMarketingRowHeaders()
 
-    fun getBiayaMarketingCellItems() =
-        TableBiayaMarketingHelper(listBiayaMarketingLive.value)
+    fun getBiayaMarketingCellItems(): List<List<String>> {
+        return TableBiayaMarketingHelper(listBiayaMarketingLive.value)
             .getBiayaMarketingCellItems()
+    }
 
     fun getTotalBiayaMarketing() =
         TableBiayaMarketingHelper(listBiayaMarketingLive.value)

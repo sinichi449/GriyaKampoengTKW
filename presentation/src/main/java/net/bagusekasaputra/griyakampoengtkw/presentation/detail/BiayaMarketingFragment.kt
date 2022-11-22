@@ -1,5 +1,6 @@
 package net.bagusekasaputra.griyakampoengtkw.presentation.detail
 
+//import net.bagusekasaputra.griyakampoengtkw.domain.entity.BiayaMarketing
 import android.os.Bundle
 import android.view.*
 import android.widget.Toast
@@ -13,7 +14,6 @@ import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
 import net.bagusekasaputra.griyakampoengtkw.domain.NumberUtil
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.BiayaMarketing
-//import net.bagusekasaputra.griyakampoengtkw.domain.entity.BiayaMarketing
 import net.bagusekasaputra.griyakampoengtkw.presentation.R
 import net.bagusekasaputra.griyakampoengtkw.presentation.custom.ThousandSeparatorTextWatcher
 import net.bagusekasaputra.griyakampoengtkw.presentation.databinding.DialogActionFeeMarketingBinding
@@ -21,9 +21,9 @@ import net.bagusekasaputra.griyakampoengtkw.presentation.databinding.DialogActio
 import net.bagusekasaputra.griyakampoengtkw.presentation.databinding.DialogPilihJenisBiayaBinding
 import net.bagusekasaputra.griyakampoengtkw.presentation.databinding.FragmentBiayaMarketingBinding
 import net.bagusekasaputra.griyakampoengtkw.presentation.detail.adapter.JenisBiayaMarketingRecyclerAdapter
+import net.bagusekasaputra.griyakampoengtkw.presentation.detail.tableview.biayaMarketing.BiayaMarketingTableViewAdapter
 import net.bagusekasaputra.griyakampoengtkw.presentation.detail.tableview.biayaMarketing.Cell
 import net.bagusekasaputra.griyakampoengtkw.presentation.detail.tableview.biayaMarketing.ColumnHeader
-import net.bagusekasaputra.griyakampoengtkw.presentation.detail.tableview.biayaMarketing.MyTableViewAdapter
 import net.bagusekasaputra.griyakampoengtkw.presentation.detail.tableview.biayaMarketing.RowHeader
 import net.bagusekasaputra.griyakampoengtkw.presentation.detail.viewmodel.DetailViewModel
 import net.bagusekasaputra.griyakampoengtkw.presentation.util.DialogUtil
@@ -142,6 +142,7 @@ class BiayaMarketingFragment : Fragment() {
             setupTableView()
             setupHeaderText()
         }
+
     }
 
     /**
@@ -157,20 +158,24 @@ class BiayaMarketingFragment : Fragment() {
     }
 
     private fun setupTableView() {
-        binding.tableviewBiayaMarketing.invalidate()
-
-        val adapter = MyTableViewAdapter()
+        val adapter = BiayaMarketingTableViewAdapter()
 
         binding.tableviewBiayaMarketing.setAdapter(adapter)
 
-        val columnHeaders = viewModel.getBiayaMarketingColumnHeaders().map { ColumnHeader(it) }
-        val rowHeaders = viewModel.getBiayaMarketingRowHeaders().map { RowHeader(it) }
-        val cellItems = viewModel.getBiayaMarketingCellItems().map { firstOrder ->
-            firstOrder.map { Cell(it) }
+        adapter.apply {
+            val columnHeaders = viewModel.getBiayaMarketingColumnHeaders().map { ColumnHeader(it) }
+            val rowHeaders = viewModel.getBiayaMarketingRowHeaders().map { RowHeader(it) }
+            val cellItems = viewModel.getBiayaMarketingCellItems().map { firstOrder ->
+                firstOrder.map { Cell(it) }
+            }
+
+            setAllItems(columnHeaders, rowHeaders, cellItems)
+
+            notifyDataSetChanged()
         }
 
-        adapter.setAllItems(columnHeaders, rowHeaders, cellItems)
-        adapter.notifyDataSetChanged()
+        binding.tableviewBiayaMarketing.setColumnWidth(0, 500)
+        binding.tableviewBiayaMarketing.setColumnWidth(1, 300)
     }
 
     private fun setupExtendedFab() {
