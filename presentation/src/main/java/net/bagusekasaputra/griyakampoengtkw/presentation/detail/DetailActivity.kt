@@ -10,7 +10,6 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import dagger.hilt.android.AndroidEntryPoint
 import net.bagusekasaputra.griyakampoengtkw.presentation.R
-import net.bagusekasaputra.griyakampoengtkw.presentation.custom.DepthPageTransformer
 import net.bagusekasaputra.griyakampoengtkw.presentation.databinding.ActivityDetailBinding
 import net.bagusekasaputra.griyakampoengtkw.presentation.detail.adapter.ViewPagerAdapter
 import net.bagusekasaputra.griyakampoengtkw.presentation.detail.viewmodel.DetailViewModel
@@ -75,7 +74,7 @@ class DetailActivity : AppCompatActivity() {
         }
 
         binding.viewPager.adapter = pagerAdapter
-        binding.viewPager.setPageTransformer(true, DepthPageTransformer())
+//        binding.viewPager.setPageTransformer(true, DepthPageTransformer(0.75f))
         binding.tabLayout.setupWithViewPager(binding.viewPager)
     }
 

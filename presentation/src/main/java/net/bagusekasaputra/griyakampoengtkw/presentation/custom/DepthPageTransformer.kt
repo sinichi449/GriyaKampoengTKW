@@ -3,8 +3,9 @@ package net.bagusekasaputra.griyakampoengtkw.presentation.custom
 import android.view.View
 import androidx.viewpager.widget.ViewPager
 
-class DepthPageTransformer: ViewPager.PageTransformer {
-    private val MIN_SCALE = 0.75f
+class DepthPageTransformer(
+    private val MIN_SCALE: Float = 0.75f,
+): ViewPager.PageTransformer {
 
     override fun transformPage(view: View, position: Float) {
 
