@@ -80,6 +80,24 @@ class DetailViewModel @Inject constructor(
 
     val isFinishAddImage = MutableLiveData<Boolean>()
 
+    /**
+     * To ensure just one time loading of Data Diri, Pembayaran, and Biaya Marketing.
+     *
+     * Currently I'm prioritizing the List<?> data, which require larger amount of bandwidth
+     * and possibly impacting the device performance.
+     *
+     * For write operations such as edit, delete, and add, the UI need to be refreshed.
+     * In such operations, we need to set "xRefreshed" to be false.
+     *
+     * Also, when user invokes refresh command, like swipe-to-refresh,
+     * we also need to update these value into FALSE.
+     *
+     * Whenever the "GET" operation is success, we need to update these value into TRUE.
+     */
+    val dataDiriRefreshed = MutableLiveData(false)
+    val formPembayaranRefreshed = MutableLiveData(false)
+    val biayaMarketingRefreshed = MutableLiveData(false)
+
     // Need to be put on UseCase argument
     var offlineMode = false
 
@@ -94,24 +112,29 @@ class DetailViewModel @Inject constructor(
      * Data Diri
      */
     fun getDataDiri(kavlingKode: String, onFailure: (cause: String) -> Unit) {
-        val request = GetDataDiriAsyncUseCase.Request(kavlingKode, offlineMode)
+        if (dataDiriRefreshed.value != true) {
+            logEvent("Syncing data diri ...")
+            val request = GetDataDiriAsyncUseCase.Request(kavlingKode, offlineMode)
 
-        val gettingDataDiriJob = asyncHelper.doWork(
-            request = request,
-            asyncUseCase = getDataDiriAsyncUseCase,
-            onSuccess = {
-                dataDiriLive.postValue(it)
-            },
-            onFailure = {
-                onFailure("Gagal mendapatkan data diri: ${it.message}")
-            },
-            successMsgOnUiThread = false,
-        )
+            val gettingDataDiriJob = asyncHelper.doWork(
+                request = request,
+                asyncUseCase = getDataDiriAsyncUseCase,
+                onSuccess = {
+                    dataDiriLive.postValue(it)
+                    dataDiriRefreshed.postValue(true)
+                },
+                onFailure = {
+                    onFailure("Gagal mendapatkan data diri: ${it.message}")
+                },
+                successMsgOnUiThread = false,
+            )
 
-        asyncJobs.add(gettingDataDiriJob)
+            asyncJobs.add(gettingDataDiriJob)
+        }
     }
 
     fun addDataDiri(kavlingKode: String, dataDiri: DataDiri, onComplete: (msg: String) -> Unit) {
+        dataDiriRefreshed.value = false
         isFinishOperation.value  = false
 
         CoroutineScope(Dispatchers.IO).launch {
@@ -122,7 +145,7 @@ class DetailViewModel @Inject constructor(
 
                 if (result.isSuccess) {
                     withContext(Dispatchers.Main) {
-                       onComplete( "Berhasil menambahakan data ${dataDiri.nama}")
+                       onComplete( "Berhasil menambahkan data ${dataDiri.nama}")
                     }
                 } else {
                     withContext(Dispatchers.Main) {
@@ -136,6 +159,7 @@ class DetailViewModel @Inject constructor(
     }
 
     fun deleteDataDiri(kavlingKode: String, onComplete: (msg: String) -> Unit) {
+        dataDiriRefreshed.value = false
         isFinishOperation.value = false
 
         CoroutineScope(Dispatchers.IO).launch {
@@ -215,23 +239,28 @@ class DetailViewModel @Inject constructor(
      * Pembayaran
      */
     fun getAllPembayaran(kavlingKode: String, onFailure: (cause: String) -> Unit) {
-        val request = GetAllPembayaranAsyncUseCase.Request(kavlingKode, offlineMode)
+        if (formPembayaranRefreshed.value != true) {
+            logEvent("Syncing pembayaran ...")
+            val request = GetAllPembayaranAsyncUseCase.Request(kavlingKode, offlineMode)
 
-        val gettingAllPembayaranJob = asyncHelper.doWork(
-            request = request,
-            asyncUseCase = getAllPembayaranAsyncUseCase,
-            onSuccess = {
-                // so many bugs caused by this unchecked isNotEmpty()
-                if (it?.isNotEmpty() == true)
-                    listPembayaranLive.postValue(it)
-            },
-            onFailure = {
-                onFailure("Gagal mendapatkan pembayaran: ${it.message}")
-            },
-            successMsgOnUiThread = false,
-        )
+            val gettingAllPembayaranJob = asyncHelper.doWork(
+                request = request,
+                asyncUseCase = getAllPembayaranAsyncUseCase,
+                onSuccess = {
+                    // so many bugs caused by this unchecked isNotEmpty()
+                    if (it?.isNotEmpty() == true)
+                        listPembayaranLive.postValue(it)
 
-        asyncJobs.add(gettingAllPembayaranJob)
+                    formPembayaranRefreshed.postValue(true)
+                },
+                onFailure = {
+                    onFailure("Gagal mendapatkan pembayaran: ${it.message}")
+                },
+                successMsgOnUiThread = false,
+            )
+
+            asyncJobs.add(gettingAllPembayaranJob)
+        }
     }
 
     fun addPembayaran(
@@ -240,6 +269,7 @@ class DetailViewModel @Inject constructor(
         pembayaran: Pembayaran,
         onComplete: (msg: String) -> Unit,
     ) {
+        formPembayaranRefreshed.value = false
         isFinishOperation.value = false
 
         CoroutineScope(Dispatchers.IO).launch {
@@ -269,6 +299,7 @@ class DetailViewModel @Inject constructor(
         newPembayaran: Pembayaran,
         onComplete: (msg: String) -> Unit,
     ) {
+        formPembayaranRefreshed.value = false
         isFinishOperation.value = false
 
         CoroutineScope(Dispatchers.IO).launch {
@@ -297,6 +328,7 @@ class DetailViewModel @Inject constructor(
         termin: String,
         onComplete: (msg: String) -> Unit,
     ) {
+        formPembayaranRefreshed.value = false
         isFinishOperation.value = false
 
         CoroutineScope(Dispatchers.IO).launch {
@@ -321,6 +353,7 @@ class DetailViewModel @Inject constructor(
     }
 
     fun deleteAllPembayaran(kavlingKode: String, onComplete: (msg: String) -> Unit) {
+        formPembayaranRefreshed.value = false
         isFinishOperation.value = false
 
         CoroutineScope(Dispatchers.IO).launch {
@@ -489,21 +522,27 @@ class DetailViewModel @Inject constructor(
      * Biaya Marketing
      */
     fun getAllBiayaMarketing(kavlingKode: String, onFailure: (cause: String) -> Unit) {
-        val request = GetAllBiayaMarketingByKavlingKodeAsyncUseCase.Request(kavlingKode, offlineMode)
+        if (biayaMarketingRefreshed.value != true) {
+            logEvent("Syncing biaya marketing ...")
+            val request =
+                GetAllBiayaMarketingByKavlingKodeAsyncUseCase.Request(kavlingKode, offlineMode)
 
-        val gettingAllBiayaMarketingJob = asyncHelper.doWork(
-            request = request,
-            asyncUseCase = getAllBiayaMarketingByKavlingKodeAsyncUseCase,
-            onSuccess = {
-                listBiayaMarketingLive.postValue(it)
-            },
-            onFailure = {
-                onFailure("Gagal mendapatkan biaya marketing: ${it.message}")
-            },
-            successMsgOnUiThread = false,
-        )
+            val gettingAllBiayaMarketingJob = asyncHelper.doWork(
+                request = request,
+                asyncUseCase = getAllBiayaMarketingByKavlingKodeAsyncUseCase,
+                onSuccess = {
+                    listBiayaMarketingLive.postValue(it)
 
-        asyncJobs.add(gettingAllBiayaMarketingJob)
+                    biayaMarketingRefreshed.postValue(true)
+                },
+                onFailure = {
+                    onFailure("Gagal mendapatkan biaya marketing: ${it.message}")
+                },
+                successMsgOnUiThread = false,
+            )
+
+            asyncJobs.add(gettingAllBiayaMarketingJob)
+        }
     }
 
     fun addBiayaMarketing(
@@ -512,6 +551,7 @@ class DetailViewModel @Inject constructor(
         harga: String,
         onComplete: (msg: String) -> Unit,
     ) {
+        biayaMarketingRefreshed.value = false
         isFinishOperation.value = false
 
         val biayaMarketing = BiayaMarketing(
@@ -550,6 +590,7 @@ class DetailViewModel @Inject constructor(
         newHarga: String,
         onComplete: (msg: String) -> Unit,
     ) {
+        biayaMarketingRefreshed.value = false
         isFinishOperation.value = false
 
         val newBiayaMarketing = BiayaMarketing(
@@ -586,6 +627,7 @@ class DetailViewModel @Inject constructor(
         biayaMarketing: BiayaMarketing,
         onComplete: (msg: String) -> Unit,
     ) {
+        biayaMarketingRefreshed.value = false
         isFinishOperation.value = false
 
         val request = DeleteSingleBiayaMarketingUseCase.Request(kavlingKode, biayaMarketing)
@@ -611,6 +653,7 @@ class DetailViewModel @Inject constructor(
     }
 
     fun deleteAllBiayaMarketing(kavlingKode: String, onComplete: (msg: String) -> Unit) {
+        biayaMarketingRefreshed.value = false
         isFinishOperation.value = false
 
         val request = DeleteAllBiayaMarketingUseCase.Request(kavlingKode)

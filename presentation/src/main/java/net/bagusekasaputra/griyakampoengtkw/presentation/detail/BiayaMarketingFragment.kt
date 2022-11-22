@@ -72,8 +72,12 @@ class BiayaMarketingFragment : Fragment() {
         if (offlineMode)
             onOfflineState()
 
-        // Setup swipe refresh layout
-        binding.root.setOnRefreshListener { syncData() }
+        binding.swipeRefreshBiayaMarketing.setOnRefreshListener {
+            // When user invokes refresh, we need to update the "xRefreshed" value in viewModel
+            // to be FALSE.
+            viewModel.biayaMarketingRefreshed.value = false
+            syncData()
+        }
 
         binding.fabTambahBiayaMarketing.setOnClickListener {
             showTambahBiayaMarketingDialog()

@@ -106,11 +106,6 @@ class FormPembayaranFragment : Fragment() {
         setHasOptionsMenu(true)
     }
 
-    private fun onFullScreenLandscapeMode() {
-        requireActivity().requestWindowFeature(Window.FEATURE_NO_TITLE)
-        requireActivity().window.setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
-    }
-
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?,
@@ -138,6 +133,9 @@ class FormPembayaranFragment : Fragment() {
         }
 
         binding.swipeRefreshFormPembayaran.setOnRefreshListener {
+            // When user invokes refresh, we need to update the "xRefreshed" value in viewModel
+            // to be FALSE.
+            viewModel.formPembayaranRefreshed.value = false
             syncPembayaran()
         }
 

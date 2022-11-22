@@ -102,6 +102,9 @@ class DataDiriFragment : Fragment() {
         setupExtendedFloatingButton()
 
         binding.swipeRefreshDataDiri.setOnRefreshListener {
+            // When user invokes refresh, we need to update the "xRefreshed" value in viewModel
+            // to be FALSE.
+            viewModel.dataDiriRefreshed.value = false
             syncDataDiri()
         }
 
