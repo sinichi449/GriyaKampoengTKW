@@ -27,12 +27,17 @@
             android:theme="@style/ThemeOverlay.MaterialComponents.Toolbar.Primary"
             app:menu="@menu/menu_main"/>
 
-    </com.google.android.material.appbar.AppBarLayout>
+        <include
+            android:id="@+id/connectivity_status"
+            layout="@layout/layout_connectivity_status"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/appbar_main"
+            android:visibility="gone"/>
 
-    <include
-        android:id="@+id/connectivity_status"
-        layout="@layout/layout_connectivity_status"
-        android:visibility="gone"/>
+    </com.google.android.material.appbar.AppBarLayout>
 
     <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
         android:id="@+id/swipe_refresh_main"

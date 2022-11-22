@@ -36,6 +36,8 @@ class DetailActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         binding = ActivityDetailBinding.inflate(layoutInflater)
 
+        setSupportActionBar(binding.toolbarDetail)
+
         // For removing app bar on landscape mode.
         // The Pembayaran table, in the FormPembayaranFragment need this.
         val orientation = resources.configuration.orientation

@@ -29,7 +29,8 @@
         </activity>
         <activity
             android:name=".presentation.detail.DetailActivity"
-            android:exported="false">
+            android:exported="false"
+            android:theme="@style/Theme.MaterialComponents.DayNight.NoActionBar">
             <meta-data
                 android:name="android.app.lib_name"
                 android:value="" />

@@ -5,10 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:background="@drawable/background_connectivity_offline"
-    app:layout_constraintEnd_toEndOf="parent"
-    android:padding="3dp"
-    app:layout_constraintStart_toStartOf="parent"
-    app:layout_constraintTop_toBottomOf="@id/appbar_main">
+    android:padding="3dp">
 
     <ImageView
         android:id="@+id/img_cloud"
