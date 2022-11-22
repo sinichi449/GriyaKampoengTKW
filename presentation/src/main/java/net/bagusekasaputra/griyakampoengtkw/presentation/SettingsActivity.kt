@@ -2,6 +2,7 @@ package net.bagusekasaputra.griyakampoengtkw.presentation
 
 import android.content.Intent
 import android.os.Bundle
+import android.view.MenuItem
 import androidx.appcompat.app.AppCompatActivity
 import androidx.preference.PreferenceFragmentCompat
 import dagger.hilt.android.AndroidEntryPoint
@@ -29,11 +30,26 @@ class SettingsActivity : AppCompatActivity() {
         }
     }
 
-    override fun onBackPressed() {
-        super.onBackPressed()
-
+    private fun goMainActivity() {
         val mainActivityIntent = Intent(this, MainActivity::class.java)
         startActivity(mainActivityIntent)
         finish()
+    }
+
+    override fun onBackPressed() {
+        super.onBackPressed()
+
+        goMainActivity()
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        return when (item.itemId) {
+            android.R.id.home -> {
+                goMainActivity()
+
+                true
+            }
+            else -> super.onOptionsItemSelected(item)
+        }
     }
 }
