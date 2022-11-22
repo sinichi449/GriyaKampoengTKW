@@ -38,6 +38,18 @@ class DataDiriFragment : Fragment() {
     private var currentKavlingKode: String? = null
     private lateinit var arrayAdapter: ArrayAdapter<String>
 
+    private val negaraBekerjaList = ArrayList<String>().apply {
+        add("Hongkong")
+        add("Macau")
+        add("Taiwan")
+        add("Jepang")
+        add("Singapore")
+        add("Malaysia")
+        add("Arab Saudi")
+        add("Abu Dhabi")
+        add("Bangladesh")
+    }
+
     private fun createImagePickerResultLauncher(onResultOk: (uri: Uri?) -> Unit): ActivityResultLauncher<Intent> {
         return registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
             val resultCode = result.resultCode
@@ -342,16 +354,6 @@ class DataDiriFragment : Fragment() {
     }
 
     private fun setupSpinner(dialogBinding: DialogTambahDataDiriBinding) {
-        val negaraBekerjaList = ArrayList<String>().apply {
-            add("Hongkong")
-            add("Macau")
-            add("Taiwan")
-            add("Jepang")
-            add("Singapore")
-            add("Malaysia")
-            add("Arab Saudi")
-            add("Abu Dhabi")
-        }
 
         arrayAdapter = ArrayAdapter<String>(
             requireContext(), android.R.layout.simple_spinner_dropdown_item, negaraBekerjaList
