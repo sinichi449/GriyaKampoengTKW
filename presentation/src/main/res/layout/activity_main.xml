@@ -14,7 +14,7 @@
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:elevation="0dp">
+        android:background="@color/primaryColor">
 
         <com.google.android.material.appbar.MaterialToolbar
             android:id="@+id/toolbar_main"
@@ -25,36 +25,48 @@
             app:layout_constraintTop_toTopOf="parent"
             app:title="Site Plan"
             app:titleCentered="true"
-            app:titleTextColor="@color/white"
+            app:titleTextColor="@color/primaryTextColor"
             app:navigationIcon="@drawable/settings_24px"
-            app:navigationIconTint="@color/white"
+            app:navigationIconTint="@color/black"
             android:theme="@style/ThemeOverlay.MaterialComponents.Toolbar.Primary"
             app:menu="@menu/menu_main"/>
 
     </com.google.android.material.appbar.AppBarLayout>
 
 
-    <com.google.android.material.tabs.TabLayout
-        android:id="@+id/tab_layout_main"
+    <com.google.android.material.card.MaterialCardView
+        android:id="@+id/card_tab"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toBottomOf="@id/appbar_main"
-        android:background="@color/purple_500"
-        app:tabBackground="@color/purple_500"
-        app:tabTextColor="@color/white"
-        app:tabIndicatorHeight="3dp"
-        app:tabIndicatorColor="@color/white"
-        app:tabIconTint="@color/white"
-        app:tabMode="fixed" />
+        android:theme="@style/Theme.GriyaKampung.BlackWhite"
+        app:cardElevation="4dp">
+
+        <com.google.android.material.tabs.TabLayout
+            android:id="@+id/tab_layout_main"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/appbar_main"
+            android:background="@color/primaryColor"
+            app:tabBackground="@color/primaryColor"
+            app:tabTextColor="@color/primaryTextColor"
+            app:tabIndicatorHeight="2dp"
+            app:tabIndicatorColor="@color/black"
+            app:tabIconTint="@color/black"
+            app:tabMode="fixed"/>
+
+    </com.google.android.material.card.MaterialCardView>
 
     <include
         android:id="@+id/connectivity_status"
         layout="@layout/layout_connectivity_status"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        app:layout_constraintTop_toBottomOf="@id/tab_layout_main"
+        app:layout_constraintTop_toBottomOf="@id/card_tab"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         android:visibility="gone"/>

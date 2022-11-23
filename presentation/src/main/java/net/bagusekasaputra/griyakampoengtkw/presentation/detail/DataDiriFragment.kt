@@ -20,6 +20,7 @@ import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.DataDiri
 import net.bagusekasaputra.griyakampoengtkw.presentation.R
+import net.bagusekasaputra.griyakampoengtkw.presentation.UiUtils
 import net.bagusekasaputra.griyakampoengtkw.presentation.databinding.DialogTambahDataDiriBinding
 import net.bagusekasaputra.griyakampoengtkw.presentation.databinding.FragmentDataDiriBinding
 import net.bagusekasaputra.griyakampoengtkw.presentation.detail.viewmodel.DetailViewModel
@@ -151,6 +152,17 @@ class DataDiriFragment : Fragment() {
         }
 
         binding.fabTambahFoto.setOnClickListener { showImagePicker(startProfileImageForResult) }
+
+        // Even when I already set the visibility of FabAction into View.GONE,
+        // to prevent the user from writing the data on offline mode, it's probably still
+        // showing when I scroll the screen.
+        // So, I put the conditional here for the scroll operation.
+        if (offlineMode.not())
+        // Hide fabs on scroll
+            UiUtils.hideExtendedFabOnVerticalScroll(
+                nestedScrollView = binding.scrollViewImageviewAndCard,
+                extendedFabs = binding.fabActions,
+            )
     }
 
     override fun onResume() {

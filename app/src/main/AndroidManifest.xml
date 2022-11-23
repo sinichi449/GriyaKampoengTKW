@@ -30,7 +30,7 @@
         <activity
             android:name=".presentation.detail.DetailActivity"
             android:exported="false"
-            android:theme="@style/Theme.MaterialComponents.DayNight.NoActionBar">
+            android:theme="@style/Theme.GriyaKampung.BlackWhite">
             <meta-data
                 android:name="android.app.lib_name"
                 android:value="" />
@@ -52,7 +52,7 @@
         <activity
             android:name=".presentation.main.MainActivity"
             android:exported="false"
-            android:theme="@style/Theme.MaterialComponents.DayNight.NoActionBar">
+            android:theme="@style/Theme.GriyaKampung.BlackWhite">
             <meta-data
                 android:name="android.app.lib_name"
                 android:value="" />

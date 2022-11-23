@@ -6,12 +6,12 @@
         android:id="@+id/search"
         android:icon="@drawable/search_24px"
         android:title="Search"
-        app:showAsAction="ifRoom"/>
+        app:showAsAction="ifRoom" />
 
     <item
         android:id="@+id/help"
         android:icon="@drawable/live_help_24px"
         android:title="Help"
-        app:showAsAction="ifRoom"/>
+        app:showAsAction="ifRoom" />
 
 </menu>

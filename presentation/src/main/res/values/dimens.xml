@@ -15,4 +15,5 @@
     <dimen name="report_item_elevation">16dp</dimen>
     <dimen name="report_item_padding">16dp</dimen>
     <dimen name="report_divider_negative_margin">0dp</dimen>
+    <dimen name="data_diri_padding_horizontal">16dp</dimen>
 </resources>

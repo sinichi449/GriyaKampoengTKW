@@ -11,22 +11,16 @@
     android:layout_marginHorizontal="8dp"
     android:layout_marginTop="16dp"
     app:cardBackgroundColor="@color/abang"
-    app:cardElevation="16dp">
+    app:cardElevation="16dp"
+    android:checkable="true"
+    android:animateLayoutChanges="true"
+    app:checkedIcon="@drawable/ic_baseline_check_circle_18"
+    app:checkedIconMargin="-1dp">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:gravity="center">
-
-        <ImageView
-            android:id="@+id/img_sudah_isi_data_diri"
-            android:layout_width="18dp"
-            android:layout_height="18dp"
-            android:src="@drawable/ic_baseline_circle_24"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            android:layout_marginEnd="4dp"
-            android:layout_marginTop="4dp"/>
 
         <com.google.android.material.textview.MaterialTextView
             android:id="@+id/tv_card_block_name"
@@ -36,17 +30,17 @@
             style="@style/TextAppearance.MaterialComponents.Headline5"
             android:paddingHorizontal="16dp"
             android:paddingTop="8dp"
-            android:textColor="@color/white"
+            android:textColor="@color/secondaryTextColor"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"/>
+            app:layout_constraintEnd_toEndOf="parent" />
 
         <com.google.android.material.textview.MaterialTextView
             android:id="@+id/tv_ukuran"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="6x11"
-            android:textColor="@color/white"
+            android:textColor="@color/secondaryTextColor"
             style="@style/TextAppearance.MaterialComponents.Subtitle1"
             android:gravity="center"
             android:layout_marginTop="8dp"
@@ -60,12 +54,12 @@
             android:layout_height="wrap_content"
             android:text="Type 36"
             android:gravity="center"
-            android:textColor="@color/white"
+            android:textColor="@color/secondaryTextColor"
             android:paddingBottom="8dp"
             android:textStyle="italic"
             app:layout_constraintTop_toBottomOf="@id/tv_ukuran"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toStartOf="@id/img_sudah_isi_data_diri"/>
+            app:layout_constraintEnd_toEndOf="parent"/>
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

@@ -39,8 +39,9 @@ class KavlingRecyclerAdapter(
         holder.binding.tvCardBlockName.text = kavlings[position].kode
         holder.binding.tvUkuran.text = kavlings[position].ukuran
         holder.binding.tvTypeRumah.text = kavlings[position].type
-        holder.binding.imgSudahIsiDataDiri.visibility = if (kavlings[position].belumIsi)
-            View.GONE else View.VISIBLE
+//        holder.binding.imgSudahIsiDataDiri.visibility = if (kavlings[position].belumIsi)
+//            View.GONE else View.VISIBLE
+        holder.binding.cardKavling.isChecked = kavlings[position].getSudahIsi()
 
         holder.binding.cardKavling.setCardBackgroundColor(Color.parseColor(kavlings[position].warna))
 

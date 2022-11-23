@@ -6,7 +6,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".detail.DataDiriFragment"
-    android:theme="@style/Theme.GriyaKampung">
+    android:theme="@style/Theme.GriyaKampung.BlackWhite">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/constrain_root"
@@ -29,8 +29,8 @@
 
                 <ImageView
                     android:id="@+id/img_profile"
-                    android:layout_width="200dp"
-                    android:layout_height="200dp"
+                    android:layout_width="250dp"
+                    android:layout_height="300dp"
                     android:layout_marginTop="24dp"
                     android:src="@drawable/avatar_1"
                     app:layout_constraintEnd_toEndOf="parent"
@@ -44,7 +44,7 @@
                     android:layout_marginHorizontal="16dp"
                     android:layout_marginTop="24dp"
                     app:cardCornerRadius="8dp"
-                    app:cardElevation="4dp"
+                    android:background="@color/primaryColor"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@id/img_profile">
@@ -53,24 +53,24 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:orientation="vertical"
-                        android:paddingBottom="2dp">
+                        android:paddingBottom="0dp">
 
 
                         <androidx.appcompat.widget.LinearLayoutCompat
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:background="#E3F2FD"
                             android:orientation="horizontal"
-                            android:padding="8dp">
+                            android:paddingVertical="8dp"
+                            android:paddingHorizontal="@dimen/data_diri_padding_horizontal">
 
                             <com.google.android.material.textview.MaterialTextView
-                                style="@style/TextAppearance.MaterialComponents.Subtitle2"
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
                                 android:layout_weight="0.5"
                                 android:gravity="start"
                                 android:text="Nama"
-                                android:textSize="@dimen/data_diri_text_size" />
+                                android:textSize="@dimen/data_diri_text_size"
+                                android:textColor="@color/primaryTextColor"/>
 
                             <com.google.android.material.textview.MaterialTextView
                                 android:id="@+id/tv_nama"
@@ -79,8 +79,10 @@
                                 android:layout_weight="0.5"
                                 android:gravity="end"
                                 android:text="-"
-                                android:textColor="@color/black"
-                                android:textSize="@dimen/data_diri_text_size" />
+                                tools:text="Zeus bin Chronus bin Gaia"
+                                android:textSize="@dimen/data_diri_text_size"
+                                android:textColor="@color/primaryTextColor"
+                                style="@style/TextAppearance.MaterialComponents.Subtitle1"/>
 
                         </androidx.appcompat.widget.LinearLayoutCompat>
 
@@ -89,16 +91,17 @@
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:orientation="horizontal"
-                            android:padding="8dp">
+                            android:paddingVertical="8dp"
+                            android:paddingHorizontal="@dimen/data_diri_padding_horizontal">
 
                             <com.google.android.material.textview.MaterialTextView
-                                style="@style/TextAppearance.MaterialComponents.Subtitle2"
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
                                 android:layout_weight="0.5"
                                 android:gravity="start"
                                 android:text="Jenis Identitas"
-                                android:textSize="@dimen/data_diri_text_size" />
+                                android:textSize="@dimen/data_diri_text_size"
+                                android:textColor="@color/primaryTextColor"/>
 
                             <com.google.android.material.textview.MaterialTextView
                                 android:id="@+id/tv_jenis_identitas"
@@ -107,7 +110,9 @@
                                 android:layout_weight="0.5"
                                 android:gravity="end"
                                 android:text="-"
-                                android:textColor="@color/black"
+                                tools:text="KTP"
+                                android:textColor="@color/primaryTextColor"
+                                style="@style/TextAppearance.MaterialComponents.Subtitle1"
                                 android:textSize="@dimen/data_diri_text_size" />
 
                         </androidx.appcompat.widget.LinearLayoutCompat>
@@ -116,18 +121,18 @@
                         <androidx.appcompat.widget.LinearLayoutCompat
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:background="#E3F2FD"
                             android:orientation="horizontal"
-                            android:padding="8dp">
+                            android:paddingVertical="8dp"
+                            android:paddingHorizontal="@dimen/data_diri_padding_horizontal">
 
                             <com.google.android.material.textview.MaterialTextView
-                                style="@style/TextAppearance.MaterialComponents.Subtitle2"
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
                                 android:layout_weight="0.5"
                                 android:gravity="start"
                                 android:text="No. Identitas"
-                                android:textSize="@dimen/data_diri_text_size" />
+                                android:textSize="@dimen/data_diri_text_size"
+                                android:textColor="@color/primaryTextColor"/>
 
                             <com.google.android.material.textview.MaterialTextView
                                 android:id="@+id/tv_no_identitas"
@@ -136,26 +141,33 @@
                                 android:layout_weight="0.5"
                                 android:gravity="end"
                                 android:text="-"
-                                android:textColor="@color/black"
+                                tools:text="3507043007010001"
+                                android:textColor="@color/primaryTextColor"
+                                style="@style/TextAppearance.MaterialComponents.Subtitle1"
                                 android:textSize="@dimen/data_diri_text_size" />
 
                         </androidx.appcompat.widget.LinearLayoutCompat>
 
-
+                        <com.google.android.material.divider.MaterialDivider
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginVertical="8dp"/>
+                        <!-- -->
                         <androidx.appcompat.widget.LinearLayoutCompat
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:orientation="horizontal"
-                            android:padding="8dp">
+                            android:paddingVertical="8dp"
+                            android:paddingHorizontal="@dimen/data_diri_padding_horizontal">
 
                             <com.google.android.material.textview.MaterialTextView
-                                style="@style/TextAppearance.MaterialComponents.Subtitle2"
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
                                 android:layout_weight="0.5"
                                 android:gravity="start"
                                 android:text="Negara Bekerja"
-                                android:textSize="@dimen/data_diri_text_size" />
+                                android:textSize="@dimen/data_diri_text_size"
+                                android:textColor="@color/primaryTextColor" />
 
                             <com.google.android.material.textview.MaterialTextView
                                 android:id="@+id/tv_negara_bekerja"
@@ -164,8 +176,10 @@
                                 android:layout_weight="0.5"
                                 android:gravity="end"
                                 android:text="-"
-                                android:textColor="@color/black"
-                                android:textSize="@dimen/data_diri_text_size" />
+                                tools:text="Hongkong"
+                                android:textColor="@color/primaryTextColor"
+                                android:textSize="@dimen/data_diri_text_size"
+                                style="@style/TextAppearance.MaterialComponents.Subtitle1"/>
 
                         </androidx.appcompat.widget.LinearLayoutCompat>
 
@@ -173,18 +187,18 @@
                         <androidx.appcompat.widget.LinearLayoutCompat
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:background="#E3F2FD"
                             android:orientation="horizontal"
-                            android:padding="8dp">
+                            android:paddingVertical="8dp"
+                            android:paddingHorizontal="@dimen/data_diri_padding_horizontal">
 
                             <com.google.android.material.textview.MaterialTextView
-                                style="@style/TextAppearance.MaterialComponents.Subtitle2"
                                 android:layout_width="match_parent"
-                                android:layout_height="wrap_content"
+                                android:layout_height="match_parent"
                                 android:layout_weight="0.5"
-                                android:gravity="start"
+                                android:gravity="center_vertical"
                                 android:text="Alamat Kerja"
-                                android:textSize="@dimen/data_diri_text_size" />
+                                android:textSize="@dimen/data_diri_text_size"
+                                android:textColor="@color/primaryTextColor"/>
 
                             <com.google.android.material.textview.MaterialTextView
                                 android:id="@+id/tv_alamat_kerja"
@@ -193,25 +207,33 @@
                                 android:layout_weight="0.5"
                                 android:gravity="end"
                                 android:text="-"
-                                android:textColor="@color/black"
+                                tools:text="Jl. Rabat Beton No. 21 Harjokuncaran RT.14/05 Sumbermanjing Wetan"
+                                android:textColor="@color/primaryTextColor"
+                                style="@style/TextAppearance.MaterialComponents.Subtitle1"
                                 android:textSize="@dimen/data_diri_text_size" />
 
                         </androidx.appcompat.widget.LinearLayoutCompat>
+
+                        <com.google.android.material.divider.MaterialDivider
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginVertical="8dp"/>
 
                         <androidx.appcompat.widget.LinearLayoutCompat
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:orientation="horizontal"
-                            android:padding="8dp">
+                            android:paddingVertical="8dp"
+                            android:paddingHorizontal="@dimen/data_diri_padding_horizontal">
 
                             <com.google.android.material.textview.MaterialTextView
-                                style="@style/TextAppearance.MaterialComponents.Subtitle2"
                                 android:layout_width="match_parent"
-                                android:layout_height="wrap_content"
+                                android:layout_height="match_parent"
                                 android:layout_weight="0.5"
-                                android:gravity="start"
+                                android:gravity="center_vertical"
                                 android:text="Alamat Indo"
-                                android:textSize="@dimen/data_diri_text_size" />
+                                android:textSize="@dimen/data_diri_text_size"
+                                android:textColor="@color/primaryTextColor"/>
 
                             <com.google.android.material.textview.MaterialTextView
                                 android:id="@+id/tv_alamat_indo"
@@ -220,27 +242,28 @@
                                 android:layout_weight="0.5"
                                 android:gravity="end"
                                 android:text="-"
-                                android:textColor="@color/black"
-                                android:textSize="@dimen/data_diri_text_size" />
+                                tools:text="Lorem Ipsum, Dolor Sit 225, AMET CONSECTETUR, Hong Kong"
+                                android:textColor="@color/primaryTextColor"
+                                android:textSize="@dimen/data_diri_text_size"
+                                style="@style/TextAppearance.MaterialComponents.Subtitle1"/>
 
                         </androidx.appcompat.widget.LinearLayoutCompat>
-
 
                         <androidx.appcompat.widget.LinearLayoutCompat
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:background="#E3F2FD"
                             android:orientation="horizontal"
-                            android:padding="8dp">
+                            android:paddingVertical="8dp"
+                            android:paddingHorizontal="@dimen/data_diri_padding_horizontal">
 
                             <com.google.android.material.textview.MaterialTextView
-                                style="@style/TextAppearance.MaterialComponents.Subtitle2"
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
                                 android:layout_weight="0.5"
                                 android:gravity="start"
                                 android:text="No. Hp"
-                                android:textSize="@dimen/data_diri_text_size" />
+                                android:textSize="@dimen/data_diri_text_size"
+                                android:textColor="@color/primaryTextColor"/>
 
                             <com.google.android.material.textview.MaterialTextView
                                 android:id="@+id/tv_no_hp"
@@ -249,7 +272,9 @@
                                 android:layout_weight="0.5"
                                 android:gravity="end"
                                 android:text="-"
-                                android:textColor="@color/black"
+                                tools:text="+60 1-5578-9987-4"
+                                android:textColor="@color/primaryTextColor"
+                                style="@style/TextAppearance.MaterialComponents.Subtitle1"
                                 android:textSize="@dimen/data_diri_text_size" />
 
                         </androidx.appcompat.widget.LinearLayoutCompat>
