@@ -11,7 +11,7 @@
             android:name=".SettingsActivity"
             android:exported="false"
             android:label="@string/title_activity_settings"
-            android:theme="@style/Theme.GriyaKampung">
+            android:theme="@style/Theme.GriyaKampung.BlackWhite">
             <meta-data
                 android:name="android.app.lib_name"
                 android:value="" />

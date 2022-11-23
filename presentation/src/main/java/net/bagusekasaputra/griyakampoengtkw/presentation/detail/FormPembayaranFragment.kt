@@ -169,6 +169,16 @@ class FormPembayaranFragment : Fragment() {
                 Manifest.permission.READ_EXTERNAL_STORAGE
             }
         )
+
+        binding.fabAddPembayaranData?.setOnClickListener {
+            showAddFormPembayaranDialog()
+            hideFabs()
+        }
+
+        binding.fabEditData?.setOnClickListener {
+            showTerminSelectionButtonsDialog()
+            hideFabs()
+        }
     }
 
     override fun onResume() {
@@ -264,16 +274,6 @@ class FormPembayaranFragment : Fragment() {
             } else {
                 hideFabs()
             }
-        }
-
-        binding.fabAddPembayaranData?.setOnClickListener {
-            showAddFormPembayaranDialog()
-            hideFabs()
-        }
-
-        binding.fabEditData?.setOnClickListener {
-            showTerminSelectionButtonsDialog()
-            hideFabs()
         }
     }
 

@@ -8,6 +8,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ArrayAdapter
 import android.widget.Toast
+import androidx.appcompat.widget.PopupMenu
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.recyclerview.widget.GridLayoutManager
@@ -183,7 +184,8 @@ class KavlingFragment : Fragment() {
                 startActivity(intent)
             },
             onRecyclerItemHold = {
-                showActionKavlingDialog(kavlings[it])
+//                showActionKavlingDialog(kavlings[it])
+                showPopupActionKalvingDialog(kavlings[it])
             }
         )
 
@@ -366,6 +368,53 @@ class KavlingFragment : Fragment() {
                 setNegativeButton("Tidak") { dialog, _ -> dialog.dismiss() }
             }.create()
                 .show()
+        }
+    }
+
+    private fun showPopupActionKalvingDialog(kavling: Kavling) {
+        val popupMenu = PopupMenu(requireContext(), binding.recyclerKavlings)
+        popupMenu.menuInflater.inflate(R.menu.menu_actions_kavling, popupMenu.menu)
+
+        popupMenu.show()
+
+        // On Click menu
+        popupMenu.setOnMenuItemClickListener {
+            popupMenu.dismiss()
+
+            when (it.itemId) {
+                R.id.popup_kavling_edit -> {
+
+                    showEditKavlingDialog(kavling)
+
+                    true
+                }
+                R.id.popup_kalving_hapus -> {
+                    // Show delete kavling confirmation
+                    MaterialAlertDialogBuilder(requireContext()).apply {
+                        setTitle("Hapus Kavling")
+                        setMessage("Apakah Anda yakin menghapus kavling ${kavling.kode}?")
+                        setPositiveButton("Ya") { dialog, _ ->
+                            val blockKode = viewModel.currentBlock.value!!
+
+                            viewModel.removeKavling(
+                                blockKode = blockKode,
+                                kavlingKode = kavling.kode,
+                                onComplete = { msg ->
+                                    syncData()
+                                    dialog.dismiss()
+                                    Snackbar.make(binding.root, msg, Snackbar.LENGTH_SHORT).show()
+                                }
+                            )
+
+                        }
+                        setNegativeButton("Tidak") { dialog, _ -> dialog.dismiss() }
+                    }.create()
+                        .show()
+
+                    true
+                }
+                else -> false
+            }
         }
     }
 

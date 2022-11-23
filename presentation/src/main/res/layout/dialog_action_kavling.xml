@@ -20,14 +20,16 @@
         android:layout_height="wrap_content"
         android:text="Edit Kavling"
         app:cornerRadius="8dp"
-        android:layout_marginTop="24dp" />
+        android:layout_marginTop="24dp"
+        style="@style/NormalDialogButton"/>
 
     <com.google.android.material.button.MaterialButton
         android:id="@+id/btn_hapus_kavling"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="Hapus Kavling"
-        app:cornerRadius="8dp"/>
+        app:cornerRadius="8dp"
+        style="@style/NormalDialogButton"/>
 
     <com.google.android.material.button.MaterialButton
         android:id="@+id/btn_batal"

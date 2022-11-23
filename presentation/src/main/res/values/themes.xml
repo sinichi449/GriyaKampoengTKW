@@ -44,6 +44,7 @@
         <item name="colorPrimaryInverse">@color/md_theme_light_inversePrimary</item>
     </style>
 
+    <!-- BRAND NEW!! -->
     <style name="Theme.GriyaKampung.BlackWhite" parent="Theme.MaterialComponents.DayNight.DarkActionBar">
         <item name="colorPrimary">@color/primaryColor</item>
         <item name="colorPrimaryVariant">@color/primaryDarkColor</item>
@@ -57,7 +58,11 @@
         <item name="windowNoTitle">true</item>
         <item name="android:windowLightStatusBar" tools:targetApi="m">true</item>
         <item name="android:statusBarColor">@color/primaryColor</item>
+
+        <item name="alertDialogTheme">@style/AlertDialogTheme</item>
+        <item name="materialAlertDialogTheme">@style/AlertDialogTheme</item>
     </style>
+
 
     <style name="DataDiriCard" parent="Theme.GriyaKampung.BlackWhite">
         <item name="colorPrimary">@color/secondaryLightColor</item>
@@ -80,4 +85,46 @@
         <item name="android:windowEnterAnimation">@anim/dialog_fade_in</item>
         <item name="android:windowExitAnimation">@anim/dialog_fade_out</item>
     </style>
+
+
+    <!-- Widgets -->
+    <style name="OutlinedTextInputLayout" parent="Widget.Material3.TextInputLayout.OutlinedBox">
+        <item name="theme">@style/Theme.GriyaKampung.Material3</item>
+    </style>
+    <style name="OutlineEditText" parent="Widget.Material3.TextInputEditText.OutlinedBox">
+        <item name="theme">@style/Theme.GriyaKampung.Material3</item>
+    </style>
+
+    <style name="DenseOutlinedTextInputLayout" parent="Widget.Material3.TextInputLayout.OutlinedBox.Dense">
+        <item name="theme">@style/Theme.GriyaKampung.Material3</item>
+    </style>
+    <style name="DenseOutlineEditText" parent="Widget.Material3.TextInputEditText.OutlinedBox.Dense">
+        <item name="theme">@style/Theme.GriyaKampung.Material3</item>
+    </style>
+
+    <style name="NormalDialogButton" parent="Widget.MaterialComponents.Button.UnelevatedButton">
+        <item name="theme">@style/Theme.GriyaKampung</item>
+        <item name="backgroundTint">@color/secondaryColor</item>
+        <item name="android:textColor">@color/secondaryTextColor</item>
+    </style>
+    <style name="TextDialogButton" parent="Widget.MaterialComponents.Button.TextButton">
+        <item name="theme">@style/Theme.GriyaKampung</item>
+        <item name="android:textColor">@color/abang</item>
+    </style>
+
+    <style name="AlertDialogTheme" parent="Theme.MaterialComponents.Light.Dialog.Alert">
+        <item name="buttonBarPositiveButtonStyle">@style/AlertButton</item>
+        <item name="buttonBarNegativeButtonStyle">@style/AlertButton</item>
+        <item name="buttonBarNeutralButtonStyle">@style/AlertButton</item>
+    </style>
+
+    <style name="AlertButton" parent="Widget.MaterialComponents.Button.TextButton">
+        <item name="backgroundTint">@android:color/transparent</item>
+        <item name="rippleColor">@color/purple_500</item>
+        <item name="android:textColor">@color/purple_500</item>
+        <item name="android:textSize">14sp</item>
+        <item name="android:textAllCaps">true</item>
+    </style>
+
+
 </resources>

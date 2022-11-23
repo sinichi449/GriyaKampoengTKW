@@ -26,13 +26,14 @@
         android:hint="Nomor Kavling"
         android:layout_marginTop="8dp"
         app:startIconDrawable="@drawable/ic_baseline_kavling_24"
-        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense">
+        style="@style/DenseOutlinedTextInputLayout">
 
         <com.google.android.material.textfield.TextInputEditText
             android:id="@+id/edt_no_kavling"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:inputType="number"/>
+            android:inputType="number"
+            style="@style/DenseOutlineEditText"/>
 
     </com.google.android.material.textfield.TextInputLayout>
 
@@ -49,14 +50,15 @@
             android:layout_weight="0.4"
             android:hint="Panjang"
             app:startIconDrawable="@drawable/ic_baseline_align_horizontal_left_24"
-            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense">
+            style="@style/DenseOutlinedTextInputLayout">
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/edt_panjang"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:inputType="numberDecimal"
-                android:digits="0123456789.,"/>
+                android:digits="0123456789.,"
+                style="@style/DenseOutlineEditText"/>
 
         </com.google.android.material.textfield.TextInputLayout>
 
@@ -75,14 +77,15 @@
             android:layout_weight="0.4"
             android:hint="Lebar"
             app:startIconDrawable="@drawable/ic_baseline_align_horizontal_left_24"
-            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense">
+            style="@style/DenseOutlinedTextInputLayout">
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/edt_lebar"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:inputType="numberDecimal"
-                android:digits="0123456789.,"/>
+                android:digits="0123456789.,"
+                style="@style/DenseOutlineEditText"/>
 
         </com.google.android.material.textfield.TextInputLayout>
 
@@ -95,13 +98,14 @@
         android:layout_marginTop="8dp"
         app:startIconDrawable="@drawable/ic_baseline_add_home_24"
         app:endIconMode="clear_text"
-        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+        style="@style/OutlinedTextInputLayout">
 
         <com.google.android.material.textfield.TextInputEditText
             android:id="@+id/edt_tipe_rumah"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:inputType="text"/>
+            android:inputType="text"
+            style="@style/OutlineEditText"/>
 
     </com.google.android.material.textfield.TextInputLayout>
 
@@ -111,13 +115,15 @@
         android:layout_height="wrap_content"
         android:text="Tambahkan"
         android:layout_marginTop="24dp"
-        app:cornerRadius="8dp"/>
+        app:cornerRadius="8dp"
+        style="@style/NormalDialogButton"/>
 
     <com.google.android.material.button.MaterialButton
         android:id="@+id/btn_batal"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="Batal"
-        app:cornerRadius="8dp"/>
+        app:cornerRadius="8dp"
+        style="@style/NormalDialogButton"/>
 
 </androidx.appcompat.widget.LinearLayoutCompat>

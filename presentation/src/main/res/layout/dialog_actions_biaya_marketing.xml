@@ -23,16 +23,17 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toBottomOf="@id/tv_info_title_tambah_biaya_marketing"
         android:layout_marginTop="24dp"
-        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
         app:startIconDrawable="@drawable/ic_baseline_add_card_24"
         app:endIconMode="clear_text"
-        android:hint="Jenis Biaya">
+        android:hint="Jenis Biaya"
+        style="@style/OutlinedTextInputLayout">
 
         <com.google.android.material.textfield.TextInputEditText
             android:id="@+id/edt_jenis_biaya"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:inputType="textMultiLine"/>
+            android:inputType="textMultiLine"
+            style="@style/OutlineEditText"/>
 
     </com.google.android.material.textfield.TextInputLayout>
 
@@ -44,16 +45,17 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toBottomOf="@id/til_jenis_biaya"
         android:layout_marginTop="8dp"
-        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense"
         app:startIconDrawable="@drawable/ic_baseline_attach_money_24"
         android:hint="Harga"
-        app:endIconMode="clear_text">
+        app:endIconMode="clear_text"
+        style="@style/DenseOutlinedTextInputLayout">
 
         <com.google.android.material.textfield.TextInputEditText
             android:id="@+id/edt_harga"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:inputType="number"/>
+            android:inputType="number"
+            style="@style/DenseOutlineEditText"/>
 
     </com.google.android.material.textfield.TextInputLayout>
 
@@ -66,7 +68,8 @@
         app:layout_constraintEnd_toEndOf="parent"
         android:layout_marginTop="24dp"
         android:text="Tambahkan"
-        app:cornerRadius="8dp"/>
+        app:cornerRadius="8dp"
+        style="@style/NormalDialogButton"/>
 
     <com.google.android.material.button.MaterialButton
         android:id="@+id/btn_batal"
@@ -76,7 +79,8 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toBottomOf="@id/btn_tambahkan"
         android:text="Batal"
-        app:cornerRadius="8dp"/>
+        app:cornerRadius="8dp"
+        style="@style/NormalDialogButton"/>
 
     <com.google.android.material.button.MaterialButton
         android:id="@+id/btn_hapus_biaya_marketing"
@@ -88,8 +92,8 @@
         android:layout_marginTop="24dp"
         app:cornerRadius="8dp"
         android:textColor="@color/abang"
-        style="@style/Widget.MaterialComponents.Button.TextButton"
         android:text="Hapus Biaya Marketing"
-        android:visibility="gone"/>
+        android:visibility="gone"
+        style="@style/TextDialogButton"/>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

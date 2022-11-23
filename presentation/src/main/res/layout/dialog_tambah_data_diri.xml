@@ -27,13 +27,14 @@
             android:hint="Nama Costumer"
             app:startIconDrawable="@drawable/ic_baseline_person_24"
             app:endIconMode="clear_text"
-            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense">
+            style="@style/DenseOutlinedTextInputLayout">
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/edt_nama_costumer"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:inputType="textPersonName"/>
+                android:inputType="textPersonName"
+                style="@style/DenseOutlineEditText"/>
 
         </com.google.android.material.textfield.TextInputLayout>
 
@@ -75,13 +76,14 @@
             android:hint="No. Identitas"
             app:startIconDrawable="@drawable/ic_baseline_add_card_24"
             app:endIconMode="clear_text"
-            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense">
+            style="@style/DenseOutlinedTextInputLayout">
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/edt_no_identitas"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:inputType="number"/>
+                android:inputType="number"
+                style="@style/DenseOutlineEditText"/>
 
         </com.google.android.material.textfield.TextInputLayout>
 
@@ -118,13 +120,15 @@
             android:hint="Alamat Kerja"
             app:startIconDrawable="@drawable/ic_baseline_home_work_24"
             app:endIconMode="clear_text"
-            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+            style="@style/OutlinedTextInputLayout">
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/edt_alamat_kerja"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:inputType="textMultiLine"/>
+                android:inputType="textMultiLine"
+                style="@style/OutlineEditText"
+                android:minLines="3"/>
 
         </com.google.android.material.textfield.TextInputLayout>
 
@@ -137,13 +141,15 @@
             android:hint="Alamat Indo"
             app:endIconMode="clear_text"
             app:startIconDrawable="@drawable/ic_baseline_home_24"
-            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+            style="@style/OutlinedTextInputLayout">
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/edt_alamat_indo"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:inputType="textMultiLine"/>
+                android:inputType="textMultiLine"
+                style="@style/OutlineEditText"
+                android:minLines="3"/>
 
         </com.google.android.material.textfield.TextInputLayout>
 
@@ -156,13 +162,14 @@
             android:hint="No Telpon Seluler / WhatsApp"
             app:endIconMode="clear_text"
             app:startIconDrawable="@drawable/ic_baseline_phone_24"
-            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense">
+            style="@style/DenseOutlinedTextInputLayout">
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/edt_no_handphone"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:inputType="phone|number"/>
+                android:inputType="phone|number"
+                style="@style/DenseOutlineEditText"/>
 
         </com.google.android.material.textfield.TextInputLayout>
 
@@ -175,7 +182,7 @@
             android:layout_marginTop="24dp"
             android:text="Tambahkan"
             app:cornerRadius="8dp"
-            android:theme="@style/Theme.GriyaKampung"/>
+            style="@style/NormalDialogButton"/>
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/btn_batal"
@@ -183,7 +190,8 @@
             android:layout_height="wrap_content"
             android:text="Batal"
             app:cornerRadius="8dp"
-            android:theme="@style/Theme.GriyaKampung"/>
+            android:theme="@style/Theme.GriyaKampung"
+            style="@style/NormalDialogButton"/>
 
     </androidx.appcompat.widget.LinearLayoutCompat>
 

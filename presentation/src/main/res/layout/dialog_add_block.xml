@@ -19,14 +19,15 @@
         android:hint="Kode"
         app:startIconDrawable="@drawable/ic_baseline_block_24"
         android:layout_marginTop="24dp"
-        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense">
+        style="@style/DenseOutlinedTextInputLayout">
 
         <com.google.android.material.textfield.TextInputEditText
             android:id="@+id/edt_kode"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:inputType="textCapWords"
-            android:maxLength="1"/>
+            android:maxLength="1"
+            style="@style/DenseOutlineEditText"/>
 
         </com.google.android.material.textfield.TextInputLayout>
 
@@ -46,13 +47,14 @@
             app:layout_constraintEnd_toStartOf="@id/btn_pilih_warna"
             android:layout_marginEnd="24dp"
             app:startIconDrawable="@drawable/ic_baseline_palette_24"
-            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+            style="@style/DenseOutlinedTextInputLayout">
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/edt_warna"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:inputType="textCapCharacters"/>
+                android:inputType="textCapCharacters"
+                style="@style/DenseOutlineEditText"/>
 
         </com.google.android.material.textfield.TextInputLayout>
 
@@ -64,7 +66,8 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintBottom_toBottomOf="@id/til_warna"
             app:layout_constraintTop_toTopOf="@id/til_warna"
-            style="@style/Widget.MaterialComponents.Button.TextButton"/>
+            style="@style/TextDialogButton"
+            android:textColor="@color/secondaryColor"/>
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
@@ -74,13 +77,15 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="24dp"
         android:text="Tambahkan"
-        app:cornerRadius="8dp"/>
+        app:cornerRadius="8dp"
+        style="@style/NormalDialogButton"/>
 
     <com.google.android.material.button.MaterialButton
         android:id="@+id/btn_batal"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="Batal"
-        app:cornerRadius="8dp"/>
+        app:cornerRadius="8dp"
+        style="@style/NormalDialogButton"/>
 
 </androidx.appcompat.widget.LinearLayoutCompat>
