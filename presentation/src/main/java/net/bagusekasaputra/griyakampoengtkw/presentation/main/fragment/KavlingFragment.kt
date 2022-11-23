@@ -13,6 +13,7 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.github.dhaval2404.colorpicker.MaterialColorPickerDialog
 import com.github.dhaval2404.colorpicker.model.ColorShape
 import com.github.dhaval2404.colorpicker.model.ColorSwatch
@@ -60,6 +61,9 @@ class KavlingFragment : Fragment() {
         setupViewModel()
 
         setupFloatingButtons()
+
+        // Hide Fab Action on Kavling RecyclerView scrolling down
+        hideFabActionsOnKavlingScroll()
 
         val offlineMode = viewModel.offlineMode
         if (offlineMode)
@@ -194,9 +198,9 @@ class KavlingFragment : Fragment() {
                 }
                 startActivity(intent)
             },
-            onRecyclerItemHold = {
+            onRecyclerItemHold = { anchor, position ->
 //                showActionKavlingDialog(kavlings[it])
-                showPopupActionKalvingDialog(kavlings[it])
+                showPopupActionKalvingDialog(anchor, kavlings[position])
             }
         )
 
@@ -382,8 +386,8 @@ class KavlingFragment : Fragment() {
         }
     }
 
-    private fun showPopupActionKalvingDialog(kavling: Kavling) {
-        val popupMenu = PopupMenu(requireContext(), binding.recyclerKavlings)
+    private fun showPopupActionKalvingDialog(anchor: View, kavling: Kavling) {
+        val popupMenu = PopupMenu(requireContext(), anchor)
         popupMenu.menuInflater.inflate(R.menu.menu_actions_kavling, popupMenu.menu)
 
         popupMenu.show()
@@ -484,5 +488,21 @@ class KavlingFragment : Fragment() {
     private fun onOfflineState() {
         hideFabs()
         binding.fabActions.hide()
+    }
+
+    private fun hideFabActionsOnKavlingScroll() {
+        binding.recyclerKavlings.addOnScrollListener(object : RecyclerView.OnScrollListener() {
+            override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
+                val scrollDown = dy > 0
+
+                if (scrollDown) {
+                    // show fab action
+                    binding.fabActions.hide()
+                } else {
+                    // hide fab action
+                    binding.fabActions.show()
+                }
+            }
+        })
     }
 }

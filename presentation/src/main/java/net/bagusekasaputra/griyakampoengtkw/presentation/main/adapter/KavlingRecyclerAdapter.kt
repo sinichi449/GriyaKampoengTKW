@@ -14,7 +14,7 @@ class KavlingRecyclerAdapter(
     private val ctx: Context,
     private val kavlings: List<Kavling>,
     private val onRecyclerItemClick: (position: Int) -> Unit,
-    private val onRecyclerItemHold: (position: Int) -> Unit,
+    private val onRecyclerItemHold: (anchor: View, position: Int) -> Unit,
 ): RecyclerView.Adapter<KavlingRecyclerAdapter.MyViewHolder>() {
 
     private lateinit var context: Context
@@ -50,7 +50,7 @@ class KavlingRecyclerAdapter(
         }
 
         holder.binding.cardKavling.setOnLongClickListener {
-            onRecyclerItemHold(position)
+            onRecyclerItemHold(it, position)
             true
         }
 
