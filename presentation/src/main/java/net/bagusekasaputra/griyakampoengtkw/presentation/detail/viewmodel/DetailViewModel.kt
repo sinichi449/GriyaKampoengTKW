@@ -941,6 +941,17 @@ class DetailViewModel @Inject constructor(
     /**
      * Total Uang Masuk Table in ReportFragment's helpers
      */
+    fun getOverallTotalMasuk(): String {
+        val listReportTum = listReportTotalUangMasukLive.value
+        var overallTotalUangMasuk = 0L
+
+        listReportTum?.forEach {
+            overallTotalUangMasuk += it.uangMasuk
+        }
+
+        return NumberUtil.formatLongToString(overallTotalUangMasuk)
+    }
+
     fun getTotalUangMasukColumnHeaders(): List<TumColumnHeaders> {
         return listOf(
             TumColumnHeaders(text = "Kavling"),

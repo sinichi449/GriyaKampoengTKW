@@ -88,6 +88,11 @@ class ReportFragment : Fragment() {
         }
 
         detailViewModel.listReportTotalUangMasukLive.observe(requireActivity()) {
+            if (it != null) {
+                val overallTotalUangMasuk = "Rp. ${detailViewModel.getOverallTotalMasuk()}"
+                binding.tvRekapTotalUangMasuk.text = overallTotalUangMasuk
+            }
+
             val columnHeaders = detailViewModel.getTotalUangMasukColumnHeaders()
             val rowHeaders = detailViewModel.getTotalUangMasukRowHeaders()
             val cellItems = detailViewModel.getTotalUangMasukCellItems()
