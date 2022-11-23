@@ -31,18 +31,37 @@ class RoomBiayaMarketingDataSource(
         kavlingKode: String,
         biayaMarketingModel: BiayaMarketingModel
     ): Result<Nothing?> {
-        return RoomRequestHelper.doNonGetOperation {
-            biayaMarketingDao.insertBiayaMarketing(
-                biayaMarketingModel.let {
-                    BiayaMarketingRoomEntity(
-                        timeMillis = it.timeMillis,
-                        kavlingKode = it.kavlingKode,
-                        jenisBiaya = it.jenisBiaya,
-                        harga = it.harga,
-                    )
-                }
+//        return RoomRequestHelper.doNonGetOperation {
+//            biayaMarketingDao.insertBiayaMarketing(
+//                biayaMarketingModel.let {
+//                    BiayaMarketingRoomEntity(
+//                        timeMillis = it.timeMillis,
+//                        kavlingKode = it.kavlingKode,
+//                        jenisBiaya = it.jenisBiaya,
+//                        harga = it.harga,
+//                    )
+//                }
+//            )
+//        }
+        val targetData = biayaMarketingModel.let {
+            biayaMarketingDao.getBiayaMarketing(
+                kavlingKode = it.kavlingKode,
+                jenisBiaya = it.jenisBiaya,
+                harga = it.harga,
             )
         }
+        return RoomRequestHelper.doInsertPreventDuplicateOperation(
+            outerData = biayaMarketingModel,
+            targetData = targetData,
+            equalityPredicate = { m, e ->
+                ((m.kavlingKode == e.kavlingKode)
+                        and (m.jenisBiaya == e.jenisBiaya)
+                        and (m.harga == e.harga))
+            },
+            insertWork = {
+                biayaMarketingDao.insertBiayaMarketing(mapBiayaMarketing(biayaMarketingModel))
+            }
+        )
     }
 
     override suspend fun update(
@@ -67,6 +86,17 @@ class RoomBiayaMarketingDataSource(
     override suspend fun deleteAllBiayaMarketing(kavlingKode: String): Result<Nothing?> {
         return RoomRequestHelper.doNonGetOperation {
             biayaMarketingDao.deleteAll(kavlingKode)
+        }
+    }
+
+    private fun mapBiayaMarketing(biayaMarketingModel: BiayaMarketingModel): BiayaMarketingRoomEntity {
+        return biayaMarketingModel.let {
+            BiayaMarketingRoomEntity(
+                timeMillis = it.timeMillis,
+                kavlingKode = it.kavlingKode,
+                jenisBiaya = it.jenisBiaya,
+                harga = it.harga,
+            )
         }
     }
 }
