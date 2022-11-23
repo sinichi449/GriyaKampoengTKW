@@ -1,4 +1,4 @@
-package net.bagusekasaputra.griyakampoengtkw.presentation.main
+package net.bagusekasaputra.griyakampoengtkw.presentation.main.fragment
 
 import android.content.Intent
 import android.content.res.Configuration
@@ -25,6 +25,8 @@ import net.bagusekasaputra.griyakampoengtkw.domain.entity.Kavling
 import net.bagusekasaputra.griyakampoengtkw.presentation.R
 import net.bagusekasaputra.griyakampoengtkw.presentation.databinding.*
 import net.bagusekasaputra.griyakampoengtkw.presentation.detail.DetailActivity
+import net.bagusekasaputra.griyakampoengtkw.presentation.main.MainActivity
+import net.bagusekasaputra.griyakampoengtkw.presentation.main.MainViewModel
 import net.bagusekasaputra.griyakampoengtkw.presentation.main.adapter.BlockRecyclerAdapter
 import net.bagusekasaputra.griyakampoengtkw.presentation.main.adapter.KavlingRecyclerAdapter
 import net.bagusekasaputra.griyakampoengtkw.presentation.util.DialogUtil

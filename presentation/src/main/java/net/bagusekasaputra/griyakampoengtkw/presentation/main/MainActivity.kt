@@ -18,6 +18,8 @@ import net.bagusekasaputra.griyakampoengtkw.presentation.R
 import net.bagusekasaputra.griyakampoengtkw.presentation.SettingsActivity
 import net.bagusekasaputra.griyakampoengtkw.presentation.databinding.ActivityMainBinding
 import net.bagusekasaputra.griyakampoengtkw.presentation.main.adapter.MainViewPagerAdapter
+import net.bagusekasaputra.griyakampoengtkw.presentation.main.fragment.KavlingFragment
+import net.bagusekasaputra.griyakampoengtkw.presentation.main.fragment.ReportFragment
 import net.bagusekasaputra.griyakampoengtkw.presentation.util.GriyaNodes
 import javax.inject.Inject
 

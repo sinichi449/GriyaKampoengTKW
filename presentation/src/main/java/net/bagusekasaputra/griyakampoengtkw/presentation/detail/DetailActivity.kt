@@ -13,6 +13,9 @@ import dagger.hilt.android.AndroidEntryPoint
 import net.bagusekasaputra.griyakampoengtkw.presentation.R
 import net.bagusekasaputra.griyakampoengtkw.presentation.databinding.ActivityDetailBinding
 import net.bagusekasaputra.griyakampoengtkw.presentation.detail.adapter.ViewPagerAdapter
+import net.bagusekasaputra.griyakampoengtkw.presentation.detail.fragment.BiayaMarketingFragment
+import net.bagusekasaputra.griyakampoengtkw.presentation.detail.fragment.DataDiriFragment
+import net.bagusekasaputra.griyakampoengtkw.presentation.detail.fragment.FormPembayaranFragment
 import net.bagusekasaputra.griyakampoengtkw.presentation.detail.viewmodel.DetailViewModel
 import net.bagusekasaputra.griyakampoengtkw.presentation.detail.viewmodel.ImageViewModel
 import net.bagusekasaputra.griyakampoengtkw.presentation.main.MainActivity

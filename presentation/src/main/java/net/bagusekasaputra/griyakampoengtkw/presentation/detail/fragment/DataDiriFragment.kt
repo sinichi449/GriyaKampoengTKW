@@ -1,4 +1,4 @@
-package net.bagusekasaputra.griyakampoengtkw.presentation.detail
+package net.bagusekasaputra.griyakampoengtkw.presentation.detail.fragment
 
 import android.app.Activity
 import android.app.AlertDialog
@@ -23,6 +23,7 @@ import net.bagusekasaputra.griyakampoengtkw.presentation.R
 import net.bagusekasaputra.griyakampoengtkw.presentation.UiUtils
 import net.bagusekasaputra.griyakampoengtkw.presentation.databinding.DialogTambahDataDiriBinding
 import net.bagusekasaputra.griyakampoengtkw.presentation.databinding.FragmentDataDiriBinding
+import net.bagusekasaputra.griyakampoengtkw.presentation.detail.FullImageActivity
 import net.bagusekasaputra.griyakampoengtkw.presentation.detail.viewmodel.DetailViewModel
 import net.bagusekasaputra.griyakampoengtkw.presentation.detail.viewmodel.ImageViewModel
 import net.bagusekasaputra.griyakampoengtkw.presentation.util.DialogUtil

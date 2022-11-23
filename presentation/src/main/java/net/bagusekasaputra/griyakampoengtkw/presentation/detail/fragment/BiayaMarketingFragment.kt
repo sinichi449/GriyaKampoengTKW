@@ -1,4 +1,4 @@
-package net.bagusekasaputra.griyakampoengtkw.presentation.detail
+package net.bagusekasaputra.griyakampoengtkw.presentation.detail.fragment
 
 //import net.bagusekasaputra.griyakampoengtkw.domain.entity.BiayaMarketing
 import android.os.Bundle

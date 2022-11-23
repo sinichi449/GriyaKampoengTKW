@@ -1,4 +1,4 @@
-package net.bagusekasaputra.griyakampoengtkw.presentation.detail
+package net.bagusekasaputra.griyakampoengtkw.presentation.detail.fragment
 
 import android.Manifest
 import android.annotation.SuppressLint
@@ -27,6 +27,7 @@ import net.bagusekasaputra.griyakampoengtkw.presentation.R
 import net.bagusekasaputra.griyakampoengtkw.presentation.UiUtils
 import net.bagusekasaputra.griyakampoengtkw.presentation.custom.ThousandSeparatorTextWatcher
 import net.bagusekasaputra.griyakampoengtkw.presentation.databinding.*
+import net.bagusekasaputra.griyakampoengtkw.presentation.detail.FullImageActivity
 import net.bagusekasaputra.griyakampoengtkw.presentation.detail.adapter.TerminRecyclerAdapter
 import net.bagusekasaputra.griyakampoengtkw.presentation.detail.tableview.formPembayaran.PembayaranCell
 import net.bagusekasaputra.griyakampoengtkw.presentation.detail.tableview.formPembayaran.PembayaranColumnHeader
