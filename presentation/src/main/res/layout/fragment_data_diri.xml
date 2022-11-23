@@ -47,7 +47,9 @@
                     android:background="@color/primaryColor"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@id/img_profile">
+                    app:layout_constraintTop_toBottomOf="@id/img_profile"
+                    app:strokeColor="@color/grey_300"
+                    app:strokeWidth="1dp">
 
                     <androidx.appcompat.widget.LinearLayoutCompat
                         android:layout_width="match_parent"
@@ -60,6 +62,7 @@
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:orientation="horizontal"
+                            android:layout_marginTop="8dp"
                             android:paddingVertical="8dp"
                             android:paddingHorizontal="@dimen/data_diri_padding_horizontal">
 
@@ -82,7 +85,7 @@
                                 tools:text="Zeus bin Chronus bin Gaia"
                                 android:textSize="@dimen/data_diri_text_size"
                                 android:textColor="@color/primaryTextColor"
-                                style="@style/TextAppearance.MaterialComponents.Subtitle1"/>
+                                style="@style/TextAppearance.MaterialComponents.Headline6"/>
 
                         </androidx.appcompat.widget.LinearLayoutCompat>
 
@@ -260,6 +263,7 @@
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
                                 android:layout_weight="0.5"
+                                android:layout_marginBottom="8dp"
                                 android:gravity="start"
                                 android:text="No. Hp"
                                 android:textSize="@dimen/data_diri_text_size"

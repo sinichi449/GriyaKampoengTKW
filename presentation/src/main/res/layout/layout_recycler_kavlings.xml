@@ -13,6 +13,7 @@
     app:cardBackgroundColor="@color/abang"
     app:cardElevation="16dp"
     android:checkable="true"
+    android:focusable="true"
     android:animateLayoutChanges="true"
     app:checkedIcon="@drawable/ic_baseline_check_circle_18"
     app:checkedIconMargin="-1dp">
