@@ -40,12 +40,6 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-//        window.apply {
-//            addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS)
-//            clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS)
-//            statusBarColor = ContextCompat.getColor(this@MainActivity, R.color.primaryColor)
-//        }
-
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
@@ -119,11 +113,11 @@ class MainActivity : AppCompatActivity() {
             fragments = fragments,
         )
 
-        binding.viewpagerMain?.apply {
+        binding.viewpagerMain.apply {
             adapter = pagerAdapter
         }
 
-        binding.tabLayoutMain?.apply {
+        binding.tabLayoutMain.apply {
             setupWithViewPager(binding.viewpagerMain)
             tabIndicatorAnimationMode = TabLayout.INDICATOR_ANIMATION_MODE_ELASTIC
 
