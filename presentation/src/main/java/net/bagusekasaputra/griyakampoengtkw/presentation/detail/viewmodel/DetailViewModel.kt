@@ -34,6 +34,9 @@ import net.bagusekasaputra.griyakampoengtkw.presentation.detail.tableview.formPe
 import net.bagusekasaputra.griyakampoengtkw.presentation.detail.tableview.formPembayaran.PembayaranColumnHeader
 import net.bagusekasaputra.griyakampoengtkw.presentation.detail.tableview.formPembayaran.PembayaranRowHeader
 import net.bagusekasaputra.griyakampoengtkw.presentation.logEvent
+import net.bagusekasaputra.griyakampoengtkw.presentation.main.tableview.TumCell
+import net.bagusekasaputra.griyakampoengtkw.presentation.main.tableview.TumColumnHeaders
+import net.bagusekasaputra.griyakampoengtkw.presentation.main.tableview.TumRowHeaders
 import javax.inject.Inject
 
 @HiltViewModel
@@ -73,6 +76,8 @@ class DetailViewModel @Inject constructor(
     val listBiayaMarketingLive = MutableLiveData<List<BiayaMarketing>?>()
 
     val catatanPembayaranLive = MutableLiveData<CatatanPembayaran?>()
+
+    val listReportTotalUangMasukLive = MutableLiveData<List<ReportTotalUangMasuk>>()
 
     val currentKavlingKode = MutableLiveData<String>()
 
@@ -930,6 +935,76 @@ class DetailViewModel @Inject constructor(
         } else {
             return null
         }
+    }
+
+
+    /**
+     * Total Uang Masuk Table in ReportFragment's helpers
+     */
+    fun getTotalUangMasukColumnHeaders(): List<TumColumnHeaders> {
+        return listOf(
+            TumColumnHeaders(text = "Kavling"),
+            TumColumnHeaders(text = "Uang Masuk"),
+        )
+    }
+
+    fun getTotalUangMasukRowHeaders(): List<TumRowHeaders> {
+        val listReportTum = listReportTotalUangMasukLive.value
+        return if (listReportTum != null) {
+            val rowHeaders = mutableListOf<TumRowHeaders>()
+
+            listReportTum.indices.forEach {
+                // I forgot that the index of the list always starts from zero ...
+                rowHeaders.add(TumRowHeaders(it.plus(1).toString()))
+            }
+
+            rowHeaders
+        } else {
+            listOf(TumRowHeaders("0"))
+        }
+    }
+
+    fun getTotalUangMasukCellItems(): List<List<TumCell>> {
+        val listReportTum = listReportTotalUangMasukLive.value
+
+        return if (listReportTum != null) {
+            val firstOrderList = mutableListOf<List<TumCell>>()
+
+            listReportTum.forEach {
+                val secondOrderList = mutableListOf<TumCell>().apply {
+                    add(TumCell(it.kavling))
+
+                    // parse uang masuk
+                    val parsedUangMasuk = NumberUtil.formatLongToString(it.uangMasuk)
+                    add(TumCell(parsedUangMasuk))
+                }
+
+                firstOrderList.add(secondOrderList)
+            }
+
+            firstOrderList
+
+        } else {
+            listOf(
+                listOf(
+                    TumCell("-"),
+                    TumCell("-"),
+                )
+            )
+        }
+    }
+
+    /**
+     * Mocking uang masuk
+     */
+    fun provideReportUangMasuk() {
+        listReportTotalUangMasukLive.value = listOf(
+            ReportTotalUangMasuk("A1", 50000000),
+            ReportTotalUangMasuk("A2", 12500000),
+            ReportTotalUangMasuk("A3", 35600000),
+        )
+
+        isFinishOperation.value = true
     }
 
     override fun onCleared() {
