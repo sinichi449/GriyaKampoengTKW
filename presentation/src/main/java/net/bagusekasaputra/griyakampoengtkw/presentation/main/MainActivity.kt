@@ -2,38 +2,24 @@ package net.bagusekasaputra.griyakampoengtkw.presentation.main
 
 import android.content.Intent
 import android.content.SharedPreferences
-import android.content.res.Configuration
 import android.net.Uri
 import android.os.Bundle
 import android.view.Menu
 import android.view.View
 import android.view.WindowManager
-import android.widget.ArrayAdapter
 import android.widget.Toast
 import androidx.activity.viewModels
-import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
-import androidx.recyclerview.widget.GridLayoutManager
-import androidx.recyclerview.widget.LinearLayoutManager
-import com.github.dhaval2404.colorpicker.MaterialColorPickerDialog
-import com.github.dhaval2404.colorpicker.model.ColorShape
-import com.github.dhaval2404.colorpicker.model.ColorSwatch
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.snackbar.Snackbar
+import com.google.android.material.tabs.TabLayout
 import dagger.hilt.android.AndroidEntryPoint
-import jp.wasabeef.recyclerview.adapters.ScaleInAnimationAdapter
-import net.bagusekasaputra.griyakampoengtkw.domain.entity.Block
-import net.bagusekasaputra.griyakampoengtkw.domain.entity.Kavling
 import net.bagusekasaputra.griyakampoengtkw.presentation.R
 import net.bagusekasaputra.griyakampoengtkw.presentation.SettingsActivity
-import net.bagusekasaputra.griyakampoengtkw.presentation.databinding.*
-import net.bagusekasaputra.griyakampoengtkw.presentation.detail.DetailActivity
-import net.bagusekasaputra.griyakampoengtkw.presentation.main.adapter.BlockRecyclerAdapter
-import net.bagusekasaputra.griyakampoengtkw.presentation.main.adapter.KavlingRecyclerAdapter
-import net.bagusekasaputra.griyakampoengtkw.presentation.util.DialogUtil
+import net.bagusekasaputra.griyakampoengtkw.presentation.databinding.ActivityMainBinding
+import net.bagusekasaputra.griyakampoengtkw.presentation.main.adapter.MainViewPagerAdapter
 import net.bagusekasaputra.griyakampoengtkw.presentation.util.GriyaNodes
-import net.bagusekasaputra.griyakampoengtkw.presentation.util.InputUtil
 import javax.inject.Inject
 
 @AndroidEntryPoint
@@ -76,11 +62,6 @@ class MainActivity : AppCompatActivity() {
         val offlineMode = sharedPrefs.getBoolean("offline_mode", false)
         if (offlineMode) {
             binding.connectivityStatus.constraintConnectivity.visibility = View.VISIBLE
-
-            // Enable offline mode means disabling the write operation on the data,
-            // which is done, in this case, by the FABS. I've encapsulated the needed to disable
-            // operation interface in this method.
-            onOfflineState()
         }
         // Update offlineMode state in viewModel
         viewModel.offlineMode = offlineMode
@@ -122,22 +103,6 @@ class MainActivity : AppCompatActivity() {
         }
 
 
-        setupViewModel()
-
-        setupFloatingButtons()
-
-        binding.fabAddKavling.setOnClickListener {
-            showAddKavlingDialog()
-        }
-
-        binding.fabAddBlock.setOnClickListener {
-            showAddBlockDialog()
-        }
-
-        binding.swipeRefreshMain.setOnRefreshListener {
-            syncData()
-        }
-
         // On setting icon listener
         binding.toolbarMain.setNavigationOnClickListener {
             val settingIntent = Intent(this, SettingsActivity::class.java)
@@ -145,332 +110,27 @@ class MainActivity : AppCompatActivity() {
             finish()
         }
 
+        setupViewPager()
     }
 
-    override fun onResume() {
-        super.onResume()
-
-        syncData()
-    }
-
-
-    private fun setupViewModel() {
-        viewModel.blocksLive.observe(this) {
-            it?.let {
-                setupBlockRecyclerview(it)
-            }
-        }
-
-        viewModel.kavlings.observe(this) {
-            it?.let {
-                setupKavlingRecyclerView(it)
-            }
-        }
-
-        viewModel.isFinishOperation.observe(this) {
-            it?.let { finish ->
-                binding.swipeRefreshMain.isRefreshing = !finish
-            }
-        }
-    }
-
-    private fun syncData() {
-        viewModel.getAllBlocks { failMsg ->
-            Snackbar.make(binding.root, failMsg, Snackbar.LENGTH_SHORT).show()
-        }
-
-        val currentBlock = viewModel.currentBlock.value
-        if (currentBlock != null)
-            viewModel.getKavlings(currentBlock) { failMsg ->
-                Snackbar.make(binding.root, failMsg, Snackbar.LENGTH_SHORT).show()
-            }
-    }
-
-    private fun setupFloatingButtons() {
-        binding.fabAddKavling.visibility = View.GONE
-        binding.fabAddBlock.visibility = View.GONE
-
-        binding.fabActions.shrink()
-
-        binding.fabActions.setOnClickListener {
-            if (isAllFabsVisible) {
-                hideFabs()
-            } else {
-                showFabs()
-            }
-        }
-    }
-
-    private fun hideFabs() {
-        binding.fabActions.shrink()
-
-        binding.fabAddKavling.hide()
-        binding.fabAddBlock.hide()
-
-        isAllFabsVisible = false
-    }
-
-    private fun showFabs() {
-        binding.fabActions.extend()
-
-        binding.fabAddKavling.show()
-        binding.fabAddBlock.show()
-
-        isAllFabsVisible = true
-    }
-
-    private fun setupBlockRecyclerview(blocks: List<Block>) {
-        val adapter = BlockRecyclerAdapter(blocks) { position ->
-            val selectedBlock = blocks[position].kode
-
-            // Update the selected block in the viewModel
-            viewModel.currentBlock.value = selectedBlock
-
-            viewModel.getKavlings(
-                blockKode = selectedBlock,
-                onFailure = { Toast.makeText(this, it, Toast.LENGTH_SHORT).show() }
-            )
-        }
-
-        binding.recyclerBlocks.adapter = adapter
-
-        // If screen orientation is Landscape, then set the
-        // Block Recycler orientation to be Vertical instead, with a GridView
-        val screenOrientation = resources.configuration.orientation
-        binding.recyclerBlocks.layoutManager = if (screenOrientation == Configuration.ORIENTATION_LANDSCAPE)
-            GridLayoutManager(this, 2)
-        else
-            LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false)
-    }
-
-    private fun setupKavlingRecyclerView(kavlings: List<Kavling>) {
-        val adapter = KavlingRecyclerAdapter(this, kavlings,
-            onRecyclerItemClick = {
-                val intent = Intent(this, DetailActivity::class.java).apply {
-                    putExtra(INTENT_KAVLING_KODE, kavlings[it].kode)
-                }
-                startActivity(intent)
-            },
-            onRecyclerItemHold = {
-                showActionKavlingDialog(kavlings[it])
-            }
+    private fun setupViewPager() {
+        val fragments = listOf(KavlingFragment(), ReportFragment())
+        val pagerAdapter = MainViewPagerAdapter(
+            fragmentManager = supportFragmentManager,
+            fragments = fragments,
         )
 
-        val customAdapter = ScaleInAnimationAdapter(adapter)
-
-        binding.recyclerKavlings.adapter = customAdapter
-
-        // If screen is in Landscape mode, I want to show more spans number in the kavling
-        val screenOrientation = resources.configuration.orientation
-        val spansCount = if (screenOrientation == Configuration.ORIENTATION_LANDSCAPE) 5 else 3
-        binding.recyclerKavlings.layoutManager = GridLayoutManager(this, spansCount)
-    }
-
-    private fun showAddBlockDialog() {
-        val dialogBinding = DialogAddBlockBinding.inflate(layoutInflater)
-        val dialogView = AlertDialog.Builder(this).apply {
-            setView(dialogBinding.root)
-        }.create()
-
-        DialogUtil.additionalDialogSetting(this, dialogView)
-
-        dialogView.show()
-
-        dialogBinding.btnPilihWarna.setOnClickListener {
-            MaterialColorPickerDialog.Builder(this)
-                .setTitle("Pilih Warna")
-                .setColorShape(ColorShape.CIRCLE)
-                .setColorSwatch(ColorSwatch._500)
-                .setDefaultColor(R.color.abang)
-                .setColorListener { color, colorHex ->
-                    val removeHash = colorHex.substring(1)
-                    dialogBinding.edtWarna.setText(removeHash)
-                }
-                .show()
+        binding.viewpagerMain?.apply {
+            adapter = pagerAdapter
         }
 
-        dialogBinding.btnTambahkan.setOnClickListener {
-            dialogBinding.btnTambahkan.isEnabled = false
-            dialogBinding.btnTambahkan.text = "Menyimpan data ..."
+        binding.tabLayoutMain?.apply {
+            setupWithViewPager(binding.viewpagerMain)
+            tabIndicatorAnimationMode = TabLayout.INDICATOR_ANIMATION_MODE_ELASTIC
 
-            val isInvalidEdt = InputUtil.isNullOrEmptyEditTexts(
-                dialogBinding.edtKode, dialogBinding.edtWarna
-            )
-
-            if (!isInvalidEdt) {
-                val kode = dialogBinding.edtKode.text.toString()
-                val warna = dialogBinding.edtWarna.text.toString()
-
-                viewModel.addNewBlock(
-                    kode = kode,
-                    warna = warna,
-                    onComplete = { msg ->
-                        syncData()
-                        dialogView.dismiss()
-                        Snackbar.make(binding.root, msg, Snackbar.LENGTH_SHORT)
-                            .show()
-                    }
-                )
-            }
-        }
-
-        dialogBinding.btnBatal.setOnClickListener {
-            dialogView.dismiss()
-        }
-    }
-
-    private fun showAddKavlingDialog() {
-        val dialogBinding = DialogAddKavlingBinding.inflate(layoutInflater)
-        val dialogView = AlertDialog.Builder(this).apply {
-            setView(dialogBinding.root)
-        }.create()
-
-        DialogUtil.additionalDialogSetting(this, dialogView)
-
-        // Setting up spinner which shows a list of available Blocks
-        val blockLists = ArrayList<String>()
-        viewModel.blocksLive.value?.forEach {
-            blockLists.add(it.kode)
-        }
-        val spinnerAdapter = ArrayAdapter<String>(this, android.R.layout.simple_spinner_dropdown_item, blockLists)
-        dialogBinding.spinnerBlocks.adapter = spinnerAdapter
-
-        dialogView.show()
-
-
-
-        dialogBinding.btnTambahkan.setOnClickListener {
-            val isInValidEdt = InputUtil.isNullOrEmptyEditTexts(
-                dialogBinding.edtNoKavling, dialogBinding.edtPanjang, dialogBinding.edtLebar, dialogBinding.edtTipeRumah)
-
-            if (!isInValidEdt) {
-                dialogBinding.btnTambahkan.isEnabled = false
-                dialogBinding.btnTambahkan.text = "Menyimpan data ..."
-
-                // Getting blockKode from spinner
-                val spinnerPosition = dialogBinding.spinnerBlocks.selectedItemPosition
-                val blockKode = blockLists[spinnerPosition]
-
-                val warna = viewModel.blocksLive.value!![spinnerPosition].warna
-                val noKavling = dialogBinding.edtNoKavling.text.toString()
-                val panjang = dialogBinding.edtPanjang.text.toString()
-                val lebar = dialogBinding.edtLebar.text.toString()
-                val type = dialogBinding.edtTipeRumah.text.toString()
-
-                viewModel.addKavling(
-                    blockKode = blockKode,
-                    noKavling = noKavling, // Beware with this. It is just the number, not the kavlingKode.
-                    warna = warna,
-                    type = type,
-                    panjang = panjang,
-                    lebar = lebar
-                ) { msg ->
-                    syncData()
-                    dialogView.dismiss()
-                    Snackbar.make(binding.root, msg, Snackbar.LENGTH_SHORT).show()
-                }
-
-            }
-        }
-
-        dialogBinding.btnBatal.setOnClickListener {
-            dialogView.dismiss()
-        }
-    }
-
-    private fun showActionKavlingDialog(kavling: Kavling) {
-        val dialogBinding = DialogActionKavlingBinding.inflate(layoutInflater)
-        val dialogView = AlertDialog.Builder(this).apply {
-            setView(dialogBinding.root)
-        }.create()
-
-        DialogUtil.additionalDialogSetting(this, dialogView)
-
-        dialogView.show()
-
-        // Need to be separated like this ...
-        val text = "Kavling ${kavling.kode}"
-        dialogBinding.tvKavlingKode.text = text
-
-        dialogBinding.btnEdit.setOnClickListener {
-            dialogView.dismiss()
-            showEditKavlingDialog(kavling)
-        }
-
-        dialogBinding.btnBatal.setOnClickListener {
-            dialogView.dismiss()
-        }
-
-        dialogBinding.btnHapusKavling.setOnClickListener {
-            dialogView.dismiss()
-
-            MaterialAlertDialogBuilder(this).apply {
-                setTitle("Hapus Kavling")
-                setMessage("Apakah Anda yakin menghapus kavling ${kavling.kode}?")
-                setPositiveButton("Ya") { dialog, _ ->
-                    val blockKode = viewModel.currentBlock.value!!
-
-                    viewModel.removeKavling(
-                        blockKode = blockKode,
-                        kavlingKode = kavling.kode,
-                        onComplete = { msg ->
-                            syncData()
-                            dialog.dismiss()
-                            Snackbar.make(binding.root, msg, Snackbar.LENGTH_SHORT).show()
-                        }
-                    )
-
-                }
-                setNegativeButton("Tidak") { dialog, _ -> dialog.dismiss() }
-            }.create()
-                .show()
-        }
-    }
-
-    private fun showEditKavlingDialog(kavling: Kavling) {
-        val dialogBinding = DialogEditKavlingBinding.inflate(layoutInflater)
-        val dialogView = AlertDialog.Builder(this).apply {
-            setView(dialogBinding.root)
-        }.create()
-
-        DialogUtil.additionalDialogSetting(this, dialogView)
-
-        dialogView.show()
-
-        dialogBinding.edtPanjang.setText(kavling.getPanjang())
-        dialogBinding.edtLebar.setText(kavling.getLebar())
-        dialogBinding.edtTipeRumah.setText(kavling.type)
-
-        dialogBinding.btnSimpan.setOnClickListener {
-            dialogBinding.btnSimpan.isEnabled = false
-            dialogBinding.btnSimpan.text = "Menyimpan data ..."
-
-            val isInvalidEdt = InputUtil.isNullOrEmptyEditTexts(
-                dialogBinding.edtPanjang, dialogBinding.edtLebar, dialogBinding.edtTipeRumah)
-
-            if (!isInvalidEdt) {
-                val newPanjang = dialogBinding.edtPanjang.text.toString()
-                val newLebar = dialogBinding.edtLebar.text.toString()
-                val newType = dialogBinding.edtTipeRumah.text.toString()
-                val blockCode = viewModel.currentBlock.value!!
-
-                viewModel.editKavling(
-                    blockKode = blockCode,
-                    oldKavling = kavling,
-                    newPanjang = newPanjang,
-                    newLebar = newLebar,
-                    newType = newType,
-                    onComplete = { msg ->
-                        syncData()
-                        dialogView.dismiss()
-                        Snackbar.make(binding.root, msg, Snackbar.LENGTH_SHORT).show()
-                    }
-                )
-            }
-        }
-
-        dialogBinding.btnBatal.setOnClickListener {
-            dialogView.dismiss()
+            val getIcon = { iconId: Int -> ContextCompat.getDrawable(this@MainActivity, iconId) }
+            getTabAt(0)?.icon = getIcon(R.drawable.ic_baseline_kavling_24)
+            getTabAt(1)?.icon = getIcon(R.drawable.ic_baseline_report_24)
         }
     }
 
@@ -484,10 +144,5 @@ class MainActivity : AppCompatActivity() {
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
         menuInflater.inflate(R.menu.menu_main, menu)
         return super.onCreateOptionsMenu(menu)
-    }
-
-    private fun onOfflineState() {
-        hideFabs()
-        binding.fabActions.hide()
     }
 }

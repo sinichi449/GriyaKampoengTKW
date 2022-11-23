@@ -1,0 +1,272 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.swiperefreshlayout.widget.SwipeRefreshLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/swipe_refresh_report"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:context=".main.ReportFragment">
+
+    <androidx.core.widget.NestedScrollView
+        android:id="@+id/nested_scroll_report"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            tools:context=".main.ReportFragment">
+
+            <!-- Periode Spinner -->
+            <com.google.android.material.card.MaterialCardView
+                android:id="@+id/card_periode"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:cardElevation="@dimen/report_item_elevation">
+
+                <androidx.appcompat.widget.LinearLayoutCompat
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    android:orientation="vertical"
+                    android:padding="@dimen/report_item_padding">
+
+                    <com.google.android.material.textview.MaterialTextView
+                        android:id="@+id/tv_info_pilih_periode"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Pilih periode"
+                        style="@style/TextAppearance.MaterialComponents.Body2"/>
+
+                    <Spinner
+                        android:id="@+id/spinner_periode"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="8dp"
+                        android:spinnerMode="dropdown"/>
+
+                </androidx.appcompat.widget.LinearLayoutCompat>
+
+            </com.google.android.material.card.MaterialCardView>
+
+            <!-- Rekap Besar -->
+            <androidx.appcompat.widget.LinearLayoutCompat
+                android:id="@+id/linear_layout_total_masuk"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/card_periode"
+                android:elevation="0dp"
+                android:padding="@dimen/report_item_padding"
+                android:background="#E3F2FD"
+                android:orientation="horizontal">
+
+                <com.google.android.material.textview.MaterialTextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Rekap Besar"
+                    android:textStyle="bold"
+                    android:layout_weight="0.5"
+                    style="@style/TextAppearance.MaterialComponents.Body2"/>
+
+                <com.google.android.material.textview.MaterialTextView
+                    android:id="@+id/tv_rekap_besar"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Rp. 130,000,000"
+                    android:layout_weight="0.5"
+                    android:gravity="end"
+                    android:textStyle="bold"
+                    style="@style/TextAppearance.MaterialComponents.Body2"/>
+
+            </androidx.appcompat.widget.LinearLayoutCompat>
+
+            <!-- Total Uang Masuk + Pengeluaran -->
+            <com.google.android.material.card.MaterialCardView
+                android:id="@+id/card_uang_masuk"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/linear_layout_total_masuk"
+                android:elevation="@dimen/report_item_elevation">
+
+                <androidx.appcompat.widget.LinearLayoutCompat
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical">
+
+                    <!-- Total Uang Masuk -->
+                    <androidx.constraintlayout.widget.ConstraintLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:paddingHorizontal="@dimen/report_item_padding"
+                        android:paddingTop="@dimen/report_item_padding">
+
+                        <com.google.android.material.textview.MaterialTextView
+                            android:id="@+id/tv_info_total_uang_masuk"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintTop_toTopOf="parent"
+                            android:text="Total Uang Masuk"
+                            style="@style/TextAppearance.MaterialComponents.Subtitle1"/>
+
+                        <com.google.android.material.textview.MaterialTextView
+                            android:id="@+id/tv_info_total_uang_masuk_desc"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintTop_toBottomOf="@id/tv_info_total_uang_masuk"
+                            android:text="Uang masuk pada semua kavling"
+                            android:layout_marginTop="8dp" />
+
+                        <com.google.android.material.textview.MaterialTextView
+                            android:id="@+id/tv_total_uang_masuk"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            app:layout_constraintEnd_toEndOf="parent"
+                            app:layout_constraintTop_toTopOf="@id/tv_info_total_uang_masuk"
+                            app:layout_constraintBottom_toBottomOf="@id/tv_info_total_uang_masuk_desc"
+                            android:text="Rp. 80,000,000"
+                            style="@style/TextAppearance.MaterialComponents.Subtitle1"/>
+
+                    </androidx.constraintlayout.widget.ConstraintLayout>
+
+                    <com.google.android.material.divider.MaterialDivider
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="@dimen/report_item_padding"/>
+
+                    <!-- Total Pengeluaran -->
+                    <androidx.constraintlayout.widget.ConstraintLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:paddingTop="@dimen/report_item_padding"
+                        android:paddingHorizontal="@dimen/report_item_padding">
+
+                        <com.google.android.material.textview.MaterialTextView
+                            android:id="@+id/tv_info_total_pengeluaran"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintTop_toTopOf="parent"
+                            android:text="Total Pengeluaran"
+                            style="@style/TextAppearance.MaterialComponents.Subtitle1"/>
+
+                        <com.google.android.material.textview.MaterialTextView
+                            android:id="@+id/tv_info_total_pengeluaran_desc"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Pengeluaran pada semua kavling"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintTop_toBottomOf="@id/tv_info_total_pengeluaran"
+                            android:layout_marginTop="8dp"/>
+
+                        <com.google.android.material.textview.MaterialTextView
+                            android:id="@+id/tv_total_pengeluaran"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            app:layout_constraintEnd_toEndOf="parent"
+                            app:layout_constraintTop_toTopOf="@id/tv_info_total_pengeluaran"
+                            app:layout_constraintBottom_toBottomOf="@id/tv_info_total_pengeluaran_desc"
+                            android:text="- Rp. 10,000,000"
+                            style="@style/TextAppearance.MaterialComponents.Subtitle1"/>
+
+
+                    </androidx.constraintlayout.widget.ConstraintLayout>
+
+                    <com.google.android.material.divider.MaterialDivider
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="@dimen/report_item_padding"/>
+
+                    <!-- Total Cuan -->
+                    <androidx.constraintlayout.widget.ConstraintLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:paddingTop="@dimen/report_item_padding"
+                        android:paddingHorizontal="@dimen/report_item_padding">
+
+                        <com.google.android.material.textview.MaterialTextView
+                            android:id="@+id/tv_info_total_cuan"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintTop_toTopOf="parent"
+                            android:text="Total Cuan"
+                            style="@style/TextAppearance.MaterialComponents.Subtitle1"/>
+
+                        <com.google.android.material.textview.MaterialTextView
+                            android:id="@+id/tv_info_total_cuan_desc"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintTop_toBottomOf="@id/tv_info_total_cuan"
+                            android:text="Cuan pada semua kavling"/>
+
+                        <com.google.android.material.textview.MaterialTextView
+                            android:id="@+id/tv_total_cuan"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            app:layout_constraintEnd_toEndOf="parent"
+                            app:layout_constraintTop_toTopOf="@id/tv_info_total_cuan"
+                            app:layout_constraintBottom_toBottomOf="@id/tv_info_total_cuan_desc"
+                            android:text="Rp. 60,000,000"
+                            style="@style/TextAppearance.MaterialComponents.Subtitle1"/>
+
+                    </androidx.constraintlayout.widget.ConstraintLayout>
+
+                    <com.google.android.material.divider.MaterialDivider
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="@dimen/report_item_padding"/>
+
+                </androidx.appcompat.widget.LinearLayoutCompat>
+
+            </com.google.android.material.card.MaterialCardView>
+
+
+            <!-- Detail  Uang Masuk -->
+            <androidx.appcompat.widget.LinearLayoutCompat
+                android:id="@+id/linearlayout_detail_uang_masuk"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/card_uang_masuk"
+                android:elevation="0dp"
+                android:padding="@dimen/report_item_padding"
+                android:background="#E3F2FD"
+                android:orientation="horizontal">
+
+                <com.google.android.material.textview.MaterialTextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="0.5"
+                    android:text="Detail Uang Masuk"
+                    android:textStyle="bold"
+                    style="@style/TextAppearance.MaterialComponents.Body2"/>
+
+                <com.google.android.material.textview.MaterialTextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="0.5"
+                    android:gravity="end"
+                    android:text="Rp. 80,000,000"
+                    android:textStyle="bold"
+                    style="@style/TextAppearance.MaterialComponents.Body2"/>
+
+            </androidx.appcompat.widget.LinearLayoutCompat>
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+    </androidx.core.widget.NestedScrollView>
+
+</androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
