@@ -324,9 +324,10 @@ class MainViewModel @Inject constructor(
 
 
     override fun onCleared() {
-        super.onCleared()
+        logEvent("MainViewModel is about to be cleared!")
 
         asyncJobs.forEach { it.cancel() }
+        super.onCleared()
     }
 
 
