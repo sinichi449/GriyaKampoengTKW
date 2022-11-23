@@ -33,11 +33,39 @@ class MainActivity : AppCompatActivity() {
     private lateinit var binding: ActivityMainBinding
     private val viewModel: MainViewModel by viewModels()
 
-    private var isAllFabsVisible = false
-
     // SharedPreferences to load the user settings, such as offline mode
     @Inject
     lateinit var sharedPrefs: SharedPreferences
+
+
+    // Hide fabs on Report tabs
+    private val tabSelectedListener = object : TabLayout.OnTabSelectedListener {
+        override fun onTabSelected(tab: TabLayout.Tab?) {
+            // Hide fabs on tab report
+            val tabKavlingPosition = 0
+            val tabReportPosition = 1
+            when (tab?.position) {
+                tabKavlingPosition -> {
+                    // Only show fabActions
+                    binding.fabActions.show()
+                }
+                tabReportPosition -> {
+                    binding.fabActions.hide()
+                    binding.fabAddKavling.hide()
+                    binding.fabAddBlock.hide()
+                }
+            }
+        }
+
+        override fun onTabUnselected(tab: TabLayout.Tab?) {
+
+        }
+
+        override fun onTabReselected(tab: TabLayout.Tab?) {
+
+        }
+
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -60,6 +88,7 @@ class MainActivity : AppCompatActivity() {
         }
         // Update offlineMode state in viewModel
         viewModel.offlineMode = offlineMode
+
 
 
         // Getting BuildConfig from Splash Activity, and check available update.
@@ -127,6 +156,8 @@ class MainActivity : AppCompatActivity() {
             getTabAt(0)?.icon = getIcon(R.drawable.ic_baseline_kavling_24)
             getTabAt(1)?.icon = getIcon(R.drawable.ic_baseline_report_24)
         }
+
+        binding.tabLayoutMain.addOnTabSelectedListener(tabSelectedListener)
     }
 
 
@@ -139,5 +170,11 @@ class MainActivity : AppCompatActivity() {
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
         menuInflater.inflate(R.menu.menu_main, menu)
         return super.onCreateOptionsMenu(menu)
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+
+        binding.tabLayoutMain.removeOnTabSelectedListener(tabSelectedListener)
     }
 }

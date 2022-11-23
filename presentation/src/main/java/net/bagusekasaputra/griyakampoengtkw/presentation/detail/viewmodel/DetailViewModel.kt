@@ -2,6 +2,7 @@ package net.bagusekasaputra.griyakampoengtkw.presentation.detail.viewmodel
 
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.*
 import net.bagusekasaputra.griyakampoengtkw.domain.AsyncUseCaseHelper
@@ -38,6 +39,8 @@ import net.bagusekasaputra.griyakampoengtkw.presentation.main.tableview.TumCell
 import net.bagusekasaputra.griyakampoengtkw.presentation.main.tableview.TumColumnHeaders
 import net.bagusekasaputra.griyakampoengtkw.presentation.main.tableview.TumRowHeaders
 import javax.inject.Inject
+import kotlin.random.Random
+import kotlin.random.nextLong
 
 @HiltViewModel
 class DetailViewModel @Inject constructor(
@@ -1009,13 +1012,32 @@ class DetailViewModel @Inject constructor(
      * Mocking uang masuk
      */
     fun provideReportUangMasuk() {
-        listReportTotalUangMasukLive.value = listOf(
-            ReportTotalUangMasuk("A1", 50000000),
-            ReportTotalUangMasuk("A2", 12500000),
-            ReportTotalUangMasuk("A3", 35600000),
-        )
+        isFinishOperation.value = false
 
-        isFinishOperation.value = true
+        viewModelScope.launch {
+            val sumBlockA = 14
+            val sumBlockB = 20
+            val sumBlockC = 9
+
+            val randomUangMasuk = {
+                Random.nextLong(LongRange(100, 2000)) * 100000L
+            }
+
+            val listTumRandom = mutableListOf<ReportTotalUangMasuk>()
+            (1..sumBlockA).forEach {
+                listTumRandom.add(ReportTotalUangMasuk(kavling = "A$it", uangMasuk = randomUangMasuk()))
+            }
+            (1..sumBlockB).forEach {
+                listTumRandom.add(ReportTotalUangMasuk(kavling = "B$it", uangMasuk = randomUangMasuk()))
+            }
+            (1..sumBlockC).forEach {
+                listTumRandom.add(ReportTotalUangMasuk(kavling = "C$it", uangMasuk = randomUangMasuk()))
+            }
+
+            listReportTotalUangMasukLive.postValue(listTumRandom)
+
+            isFinishOperation.postValue(true)
+        }
     }
 
     override fun onCleared() {

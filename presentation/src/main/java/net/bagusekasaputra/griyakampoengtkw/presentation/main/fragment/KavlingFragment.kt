@@ -18,6 +18,8 @@ import com.github.dhaval2404.colorpicker.MaterialColorPickerDialog
 import com.github.dhaval2404.colorpicker.model.ColorShape
 import com.github.dhaval2404.colorpicker.model.ColorSwatch
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
+import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
 import jp.wasabeef.recyclerview.adapters.ScaleInAnimationAdapter
@@ -41,10 +43,9 @@ class KavlingFragment : Fragment() {
 
     private var isAllFabsVisible = false
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-
-    }
+    private lateinit var fabActions: ExtendedFloatingActionButton
+    private lateinit var fabAddBlock: FloatingActionButton
+    private lateinit var fabAddKavling: FloatingActionButton
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -52,6 +53,11 @@ class KavlingFragment : Fragment() {
     ): View? {
         // Inflate the layout for this fragment
         binding = FragmentKavlingBinding.inflate(inflater, container, false)
+
+        fabActions = requireActivity().findViewById(R.id.fab_actions)
+        fabAddBlock = requireActivity().findViewById(R.id.fab_add_block)
+        fabAddKavling = requireActivity().findViewById(R.id.fab_add_kavling)
+
         return binding.root
     }
 
@@ -73,11 +79,11 @@ class KavlingFragment : Fragment() {
             onOfflineState()
 
 
-        binding.fabAddKavling.setOnClickListener {
+        fabAddKavling.setOnClickListener {
             showAddKavlingDialog()
         }
 
-        binding.fabAddBlock.setOnClickListener {
+        fabAddBlock.setOnClickListener {
             showAddBlockDialog()
         }
 
@@ -134,12 +140,12 @@ class KavlingFragment : Fragment() {
     }
 
     private fun setupFloatingButtons() {
-        binding.fabAddKavling.visibility = View.GONE
-        binding.fabAddBlock.visibility = View.GONE
+        fabAddKavling.visibility = View.GONE
+        fabAddBlock.visibility = View.GONE
 
-        binding.fabActions.shrink()
+        fabActions.shrink()
 
-        binding.fabActions.setOnClickListener {
+        fabActions.setOnClickListener {
             if (isAllFabsVisible) {
                 hideFabs()
             } else {
@@ -149,19 +155,19 @@ class KavlingFragment : Fragment() {
     }
 
     private fun hideFabs() {
-        binding.fabActions.shrink()
+        fabActions.shrink()
 
-        binding.fabAddKavling.hide()
-        binding.fabAddBlock.hide()
+        fabAddKavling.hide()
+        fabAddBlock.hide()
 
         isAllFabsVisible = false
     }
 
     private fun showFabs() {
-        binding.fabActions.extend()
+        fabActions.extend()
 
-        binding.fabAddKavling.show()
-        binding.fabAddBlock.show()
+        fabAddKavling.show()
+        fabAddBlock.show()
 
         isAllFabsVisible = true
     }
@@ -487,7 +493,7 @@ class KavlingFragment : Fragment() {
 
     private fun onOfflineState() {
         hideFabs()
-        binding.fabActions.hide()
+        fabActions.hide()
     }
 
     private fun hideFabActionsOnKavlingScroll() {
@@ -497,10 +503,10 @@ class KavlingFragment : Fragment() {
 
                 if (scrollDown) {
                     // show fab action
-                    binding.fabActions.hide()
+                    fabActions.hide()
                 } else {
                     // hide fab action
-                    binding.fabActions.show()
+                    fabActions.show()
                 }
             }
         })

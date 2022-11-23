@@ -42,10 +42,11 @@ class TotalUangMasukTableViewAdapter: AbstractTableAdapter<TumColumnHeaders, Tum
 
         viewHolder.content.text = cellItemModel?.text ?: "-"
 
+        val columnKavling = 0
         val columnUangMasuk = 1
-        if (columnPosition == columnUangMasuk) {
-            // Setup serif typeface for Uang Masuk
-            viewHolder.content.typeface = Typeface.SERIF
+        when (columnPosition) {
+            columnKavling -> viewHolder.content.typeface = Typeface.DEFAULT_BOLD
+            columnUangMasuk -> viewHolder.content.typeface = Typeface.SERIF
         }
 
         // wrap content

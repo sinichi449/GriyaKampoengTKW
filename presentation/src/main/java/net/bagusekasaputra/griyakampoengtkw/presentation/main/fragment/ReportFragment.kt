@@ -56,18 +56,30 @@ class ReportFragment : Fragment() {
         binding.cardTotalUangMasuk.setOnClickListener {
             if (isCollapsedDetailUangMasuk) {
                 // Show
-                TransitionManager.beginDelayedTransition(binding.layoutTotalUangMasuk, AutoTransition())
-                binding.tableRekapTotalUangMasuk.visibility = View.VISIBLE
-
-                isCollapsedDetailUangMasuk = false
+                showExpandableTumCard()
             } else {
                 // Hide
-                TransitionManager.beginDelayedTransition(binding.layoutTotalUangMasuk, AutoTransition())
-                binding.tableRekapTotalUangMasuk.visibility = View.GONE
-
-                isCollapsedDetailUangMasuk = true
+                hideExpandableTumCard()
             }
         }
+
+        binding.btnTableTotalUangMasukSembunyikan.setOnClickListener {
+            hideExpandableTumCard()
+        }
+    }
+
+    private fun showExpandableTumCard() {
+        TransitionManager.beginDelayedTransition(binding.layoutTotalUangMasuk, AutoTransition())
+        binding.layoutExpandableTotalUangMasuk.visibility = View.VISIBLE
+
+        isCollapsedDetailUangMasuk = false
+    }
+
+    private fun hideExpandableTumCard() {
+        TransitionManager.beginDelayedTransition(binding.layoutTotalUangMasuk, AutoTransition())
+        binding.layoutExpandableTotalUangMasuk.visibility = View.GONE
+
+        isCollapsedDetailUangMasuk = true
     }
 
     override fun onResume() {
