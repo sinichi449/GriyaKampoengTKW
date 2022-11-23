@@ -76,6 +76,15 @@ class KavlingFragment : Fragment() {
         }
 
         binding.swipeRefreshMain.setOnRefreshListener {
+            // When user invokes refresh, we need to update the "xRefreshed" value in viewModel
+            // to be FALSE.
+            viewModel.blockRefreshed.value = false
+
+            // Set the refreshed status of kavling with a corresponding
+            // context Block's code
+            val currentBlockKode = viewModel.currentBlock.value
+            currentBlockKode?.let { viewModel.kavlingsRefreshed[it]?.value = false }
+
             syncData()
         }
     }
