@@ -43,8 +43,11 @@ class TotalUangMasukTableViewAdapter: AbstractTableAdapter<TumColumnHeaders, Tum
         viewHolder.content.text = cellItemModel?.text ?: "-"
         viewHolder.content.typeface = Typeface.SERIF
 
+        val uangMasukColumnPosition = 0
         val cuanColumnPosition = 3
-        if (columnPosition == cuanColumnPosition) {
+        if (columnPosition == uangMasukColumnPosition) {
+            viewHolder.content.typeface = Typeface.create(Typeface.SERIF, Typeface.ITALIC)
+        } else if (columnPosition == cuanColumnPosition) {
             viewHolder.content.typeface = Typeface.DEFAULT_BOLD
         }
 
@@ -105,7 +108,8 @@ class TotalUangMasukTableViewAdapter: AbstractTableAdapter<TumColumnHeaders, Tum
      */
     private class TumRowHeaderViewHolder(binding: TableTotalUangMasukRowHeaderBinding): AbstractViewHolder(binding.root) {
         val container = binding.root
-        val content = binding.tvTumRowHeader
+        val tvNomor = binding.tvTumRowHeaderNomor
+        val tvKavling = binding.tvTumRowHeaderKavling
     }
 
     override fun onCreateRowHeaderViewHolder(parent: ViewGroup, viewType: Int): AbstractViewHolder {
@@ -123,7 +127,8 @@ class TotalUangMasukTableViewAdapter: AbstractTableAdapter<TumColumnHeaders, Tum
     ) {
         val viewHolder = holder as TumRowHeaderViewHolder
 
-        viewHolder.content.text = rowHeaderItemModel?.numStr ?: "-"
+        viewHolder.tvNomor.text = rowHeaderItemModel?.numStr ?: "0"
+        viewHolder.tvKavling.text = rowHeaderItemModel?.kavling ?: "-"
     }
 
 

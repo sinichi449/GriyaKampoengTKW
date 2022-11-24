@@ -90,7 +90,8 @@
         android:text="Tambah"
         app:icon="@drawable/ic_baseline_add_24"
         app:elevation="16dp"
-        android:theme="@style/Theme.GriyaKampung.BlackWhite"/>
+        android:theme="@style/Theme.GriyaKampung.BlackWhite"
+        android:visibility="gone"/>
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/fab_add_kavling"
@@ -102,7 +103,8 @@
         app:fabSize="normal"
         android:layout_marginBottom="24dp"
         app:elevation="16dp"
-        android:theme="@style/Theme.GriyaKampung.BlackWhite"/>
+        android:theme="@style/Theme.GriyaKampung.BlackWhite"
+        android:visibility="gone"/>
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/fab_add_block"
@@ -115,7 +117,8 @@
         app:layout_constraintStart_toStartOf="@id/fab_add_kavling"
         android:src="@drawable/ic_baseline_block_24"
         app:elevation="16dp"
-        android:theme="@style/Theme.GriyaKampung.BlackWhite"/>
+        android:theme="@style/Theme.GriyaKampung.BlackWhite"
+        android:visibility="gone"/>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
 

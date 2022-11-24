@@ -17,6 +17,7 @@ import dagger.hilt.android.AndroidEntryPoint
 import net.bagusekasaputra.griyakampoengtkw.presentation.R
 import net.bagusekasaputra.griyakampoengtkw.presentation.SettingsActivity
 import net.bagusekasaputra.griyakampoengtkw.presentation.databinding.ActivityMainBinding
+import net.bagusekasaputra.griyakampoengtkw.presentation.logEvent
 import net.bagusekasaputra.griyakampoengtkw.presentation.main.adapter.MainViewPagerAdapter
 import net.bagusekasaputra.griyakampoengtkw.presentation.main.fragment.KavlingFragment
 import net.bagusekasaputra.griyakampoengtkw.presentation.main.fragment.ReportFragment
@@ -41,28 +42,17 @@ class MainActivity : AppCompatActivity() {
     // Hide fabs on Report tabs
     private val tabSelectedListener = object : TabLayout.OnTabSelectedListener {
         override fun onTabSelected(tab: TabLayout.Tab?) {
-            // Hide fabs on tab report
-            val tabKavlingPosition = 0
-            val tabReportPosition = 1
-            when (tab?.position) {
-                tabKavlingPosition -> {
-                    // Only show fabActions
-                    binding.fabActions.show()
-                }
-                tabReportPosition -> {
-                    binding.fabActions.hide()
-                    binding.fabAddKavling.hide()
-                    binding.fabAddBlock.hide()
-                }
-            }
+            logEvent("Tab selected -> ${tab?.position}")
+
+            viewModel.tabSelectedLive.value = tab?.position
         }
 
         override fun onTabUnselected(tab: TabLayout.Tab?) {
-
+            logEvent("Tab unselected -> ${tab?.position}")
         }
 
         override fun onTabReselected(tab: TabLayout.Tab?) {
-
+            logEvent("Tab reselected -> ${tab?.position}")
         }
 
     }
@@ -89,7 +79,8 @@ class MainActivity : AppCompatActivity() {
         // Update offlineMode state in viewModel
         viewModel.offlineMode = offlineMode
 
-
+        // For setup the fabs
+        setupViewModel()
 
         // Getting BuildConfig from Splash Activity, and check available update.
         val appVersionName = intent.getStringExtra("versionName") ?: ""
@@ -135,6 +126,35 @@ class MainActivity : AppCompatActivity() {
         }
 
         setupViewPager()
+    }
+
+    private fun setupViewModel() {
+        viewModel.tabSelectedLive.observe(this) {
+            it?.let { tabSelected ->
+                val tabKavling = 0
+                val tabReport = 1
+
+                when (tabSelected) {
+                    tabKavling -> showFabs()
+                    tabReport -> hideFabs()
+                }
+            }
+        }
+    }
+
+    private fun showFabs() {
+        binding.fabActions.visibility = View.VISIBLE
+        binding.fabAddBlock.visibility = View.VISIBLE
+        binding.fabAddKavling.visibility = View.VISIBLE
+
+        binding.fabAddBlock.hide()
+        binding.fabAddKavling.hide()
+    }
+
+    private fun hideFabs() {
+        binding.fabActions.visibility = View.GONE
+        binding.fabAddBlock.visibility = View.GONE
+        binding.fabAddKavling.visibility = View.GONE
     }
 
     private fun setupViewPager() {

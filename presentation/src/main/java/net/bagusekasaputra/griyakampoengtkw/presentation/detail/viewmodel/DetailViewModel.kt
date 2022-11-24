@@ -1000,13 +1000,13 @@ class DetailViewModel @Inject constructor(
         return if (listReportTum != null) {
             val rowHeaders = mutableListOf<TumRowHeaders>()
 
-            listReportTum.forEach {
-                rowHeaders.add(TumRowHeaders(it.kavling))
+            listReportTum.forEachIndexed { index, item ->
+                rowHeaders.add(TumRowHeaders(index.plus(1).toString(), item.kavling))
             }
 
             rowHeaders
         } else {
-            listOf(TumRowHeaders("-"))
+            listOf(TumRowHeaders("0", "-"))
         }
     }
 
@@ -1057,26 +1057,29 @@ class DetailViewModel @Inject constructor(
         val randomMarketing = { Random.nextLong(100L..1000L) * 10000L }
 
         viewModelScope.launch {
-            val blocks = listOf("A", "B", "C")
+            val blocks = listOf("A", "B", "C") // Daftar block
             val listReport = mutableListOf<ReportTotalUangMasuk>()
 
             blocks.forEach { block ->
                 val sumBlock = when (block) {
-                    "A" -> 14
-                    "B" -> 20
-                    "C" -> 9
-                    else -> 0
+                    "A" -> 14 // Jumlah kavling di block A
+                    "B" -> 20 // Jumlah kavling di block B
+                    "C" -> 9 // Jumlah kavling di block C
+                    else -> 0 // Error
                 }
 
-                (1..sumBlock).forEach {
+                (1..sumBlock).forEach { noKavling ->
                     val uangMasuk = randomUangMasuk()
                     val feeMarketing = randomMarketing()
                     val biayaMarketing = randomMarketing()
+
+                    // Perhitungan cuan
                     val totalCuan = uangMasuk - feeMarketing - biayaMarketing
 
+                    // Masukkan data
                     listReport.add(
                         ReportTotalUangMasuk(
-                            kavling = "$block$it",
+                            kavling = "$block$noKavling",
                             uangMasuk = uangMasuk,
                             feeMarketing = feeMarketing,
                             biayaMarketing = biayaMarketing,

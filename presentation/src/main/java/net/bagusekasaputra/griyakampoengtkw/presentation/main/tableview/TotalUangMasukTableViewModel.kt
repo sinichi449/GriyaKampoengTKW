@@ -10,4 +10,5 @@ data class TumColumnHeaders(
 
 data class TumRowHeaders(
     val numStr: String?,
+    val kavling: String?,
 )

@@ -40,6 +40,8 @@ class MainViewModel @Inject constructor(
 
     val currentBlock = MutableLiveData("A")
 
+    val tabSelectedLive = MutableLiveData(0)
+
     val isFinishOperation = MutableLiveData<Boolean>()
 
     private val asyncHelper = AsyncUseCaseHelper(isFinishOperation)
