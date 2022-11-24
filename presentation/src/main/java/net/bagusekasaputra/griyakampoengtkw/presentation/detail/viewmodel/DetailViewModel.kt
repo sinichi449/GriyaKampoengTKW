@@ -952,13 +952,46 @@ class DetailViewModel @Inject constructor(
             overallTotalUangMasuk += it.uangMasuk
         }
 
-        return NumberUtil.formatLongToString(overallTotalUangMasuk)
+        return "Rp. ${NumberUtil.formatLongToString(overallTotalUangMasuk)}"
     }
+
+    fun getOverallTotalPengeluaran(): String {
+        val listReportTum = listReportTotalUangMasukLive.value
+
+        var overallFeeMarketing = 0L
+        var overallBiayaMarketing = 0L
+
+        listReportTum?.forEach {
+            overallFeeMarketing += it.feeMarketing
+            overallBiayaMarketing += it.biayaMarketing
+        }
+
+        val pengeluaran = overallFeeMarketing + overallBiayaMarketing
+
+        return "- Rp. ${NumberUtil.formatLongToString(pengeluaran)}"
+    }
+
+    fun getOverallTotalCuan(): String {
+        val listReportTum = listReportTotalUangMasukLive.value
+
+        var overallCuan = 0L
+
+        listReportTum?.forEach {
+            overallCuan += it.totalCuan
+        }
+
+        return "Rp. ${NumberUtil.formatLongToString(overallCuan)}"
+    }
+
+
+
 
     fun getTotalUangMasukColumnHeaders(): List<TumColumnHeaders> {
         return listOf(
-            TumColumnHeaders(text = "Kavling"),
-            TumColumnHeaders(text = "Uang Masuk"),
+            TumColumnHeaders("Uang Masuk"),
+            TumColumnHeaders("Fee Marketing"),
+            TumColumnHeaders("Biaya Marketing"),
+            TumColumnHeaders("Total Cuan"),
         )
     }
 
@@ -967,14 +1000,13 @@ class DetailViewModel @Inject constructor(
         return if (listReportTum != null) {
             val rowHeaders = mutableListOf<TumRowHeaders>()
 
-            listReportTum.indices.forEach {
-                // I forgot that the index of the list always starts from zero ...
-                rowHeaders.add(TumRowHeaders(it.plus(1).toString()))
+            listReportTum.forEach {
+                rowHeaders.add(TumRowHeaders(it.kavling))
             }
 
             rowHeaders
         } else {
-            listOf(TumRowHeaders("0"))
+            listOf(TumRowHeaders("-"))
         }
     }
 
@@ -986,11 +1018,16 @@ class DetailViewModel @Inject constructor(
 
             listReportTum.forEach {
                 val secondOrderList = mutableListOf<TumCell>().apply {
-                    add(TumCell(it.kavling))
-
-                    // parse uang masuk
+                    // parse numbers
                     val parsedUangMasuk = NumberUtil.formatLongToString(it.uangMasuk)
+                    val parsedFeeMarketing = NumberUtil.formatLongToString(it.feeMarketing)
+                    val parsedBiayaMarketing = NumberUtil.formatLongToString(it.biayaMarketing)
+                    val parsedTotalCuan = NumberUtil.formatLongToString(it.totalCuan)
+
                     add(TumCell(parsedUangMasuk))
+                    add(TumCell(parsedFeeMarketing))
+                    add(TumCell(parsedBiayaMarketing))
+                    add(TumCell(parsedTotalCuan))
                 }
 
                 firstOrderList.add(secondOrderList)
@@ -1001,6 +1038,8 @@ class DetailViewModel @Inject constructor(
         } else {
             listOf(
                 listOf(
+                    TumCell("-"),
+                    TumCell("-"),
                     TumCell("-"),
                     TumCell("-"),
                 )
@@ -1014,27 +1053,42 @@ class DetailViewModel @Inject constructor(
     fun provideReportUangMasuk() {
         isFinishOperation.value = false
 
+        val randomUangMasuk = { Random.nextLong(10L..2500L) * 100000L }
+        val randomMarketing = { Random.nextLong(100L..1000L) * 10000L }
+
         viewModelScope.launch {
-            val sumBlockA = 14
-            val sumBlockB = 20
-            val sumBlockC = 9
+            val blocks = listOf("A", "B", "C")
+            val listReport = mutableListOf<ReportTotalUangMasuk>()
 
-            val randomUangMasuk = {
-                Random.nextLong(LongRange(100, 2000)) * 100000L
+            blocks.forEach { block ->
+                val sumBlock = when (block) {
+                    "A" -> 14
+                    "B" -> 20
+                    "C" -> 9
+                    else -> 0
+                }
+
+                (1..sumBlock).forEach {
+                    val uangMasuk = randomUangMasuk()
+                    val feeMarketing = randomMarketing()
+                    val biayaMarketing = randomMarketing()
+                    val totalCuan = uangMasuk - feeMarketing - biayaMarketing
+
+                    listReport.add(
+                        ReportTotalUangMasuk(
+                            kavling = "$block$it",
+                            uangMasuk = uangMasuk,
+                            feeMarketing = feeMarketing,
+                            biayaMarketing = biayaMarketing,
+                            totalCuan = totalCuan,
+                        )
+                    )
+                }
             }
 
-            val listTumRandom = mutableListOf<ReportTotalUangMasuk>()
-            (1..sumBlockA).forEach {
-                listTumRandom.add(ReportTotalUangMasuk(kavling = "A$it", uangMasuk = randomUangMasuk()))
-            }
-            (1..sumBlockB).forEach {
-                listTumRandom.add(ReportTotalUangMasuk(kavling = "B$it", uangMasuk = randomUangMasuk()))
-            }
-            (1..sumBlockC).forEach {
-                listTumRandom.add(ReportTotalUangMasuk(kavling = "C$it", uangMasuk = randomUangMasuk()))
-            }
 
-            listReportTotalUangMasukLive.postValue(listTumRandom)
+            listReportTotalUangMasukLive.postValue(listReport)
+
 
             isFinishOperation.postValue(true)
         }

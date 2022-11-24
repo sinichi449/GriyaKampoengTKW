@@ -41,12 +41,11 @@ class TotalUangMasukTableViewAdapter: AbstractTableAdapter<TumColumnHeaders, Tum
         val viewHolder = holder as TumCellViewHolder
 
         viewHolder.content.text = cellItemModel?.text ?: "-"
+        viewHolder.content.typeface = Typeface.SERIF
 
-        val columnKavling = 0
-        val columnUangMasuk = 1
-        when (columnPosition) {
-            columnKavling -> viewHolder.content.typeface = Typeface.DEFAULT_BOLD
-            columnUangMasuk -> viewHolder.content.typeface = Typeface.SERIF
+        val cuanColumnPosition = 3
+        if (columnPosition == cuanColumnPosition) {
+            viewHolder.content.typeface = Typeface.DEFAULT_BOLD
         }
 
         // wrap content

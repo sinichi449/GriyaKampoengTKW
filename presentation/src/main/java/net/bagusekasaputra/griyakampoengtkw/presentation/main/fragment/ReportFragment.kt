@@ -5,11 +5,18 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ArrayAdapter
+import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.lifecycleScope
 import androidx.transition.AutoTransition
 import androidx.transition.TransitionManager
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+import net.bagusekasaputra.griyakampoengtkw.presentation.R
 import net.bagusekasaputra.griyakampoengtkw.presentation.databinding.FragmentReportBinding
 import net.bagusekasaputra.griyakampoengtkw.presentation.detail.viewmodel.DetailViewModel
 import net.bagusekasaputra.griyakampoengtkw.presentation.main.tableview.TotalUangMasukTableViewAdapter
@@ -24,7 +31,8 @@ class ReportFragment : Fragment() {
 
     private val detailViewModel: DetailViewModel by viewModels()
 
-    private var isCollapsedDetailUangMasuk = true
+    private var collapsedRekap = false
+    private var collapsedTabel = true
 
     private val periodeReportList = listOf(
         "Minggu ini",
@@ -53,8 +61,20 @@ class ReportFragment : Fragment() {
             syncData()
         }
 
-        binding.cardTotalUangMasuk.setOnClickListener {
-            if (isCollapsedDetailUangMasuk) {
+        binding.layoutRekapBesar.setOnClickListener {
+            if (collapsedRekap) {
+                // Show
+                showExpandableRekap()
+                collapsedRekap = false
+            } else {
+                // Hide
+                hideExpandableRekap()
+                collapsedRekap = true
+            }
+        }
+
+        binding.layoutBukaTabel.setOnClickListener {
+            if (collapsedTabel) {
                 // Show
                 showExpandableTumCard()
             } else {
@@ -68,18 +88,47 @@ class ReportFragment : Fragment() {
         }
     }
 
-    private fun showExpandableTumCard() {
-        TransitionManager.beginDelayedTransition(binding.layoutTotalUangMasuk, AutoTransition())
-        binding.layoutExpandableTotalUangMasuk.visibility = View.VISIBLE
+    private fun showExpandableRekap() {
+        TransitionManager.beginDelayedTransition(binding.root, AutoTransition())
+        binding.cardRekap.visibility = View.VISIBLE
+        binding.imgArrowBukaRekapBesar.setImageDrawable(ContextCompat.getDrawable(requireContext(), R.drawable.ic_baseline_keyboard_arrow_up_24))
+    }
 
-        isCollapsedDetailUangMasuk = false
+    private fun hideExpandableRekap() {
+        TransitionManager.beginDelayedTransition(binding.root, AutoTransition())
+        binding.cardRekap.visibility = View.GONE
+        binding.imgArrowBukaRekapBesar.setImageDrawable(ContextCompat.getDrawable(requireContext(), R.drawable.ic_baseline_keyboard_arrow_right_24))
+    }
+
+    private fun showExpandableTumCard() {
+        detailViewModel.isFinishOperation.value = false
+
+        lifecycleScope.launch {
+            withContext(Dispatchers.Main) {
+                TransitionManager.beginDelayedTransition(binding.root, AutoTransition())
+                binding.layoutFullTabel.visibility = View.VISIBLE
+
+                binding.imgArrowBukaTabel.setImageDrawable(ContextCompat.getDrawable(requireContext(), R.drawable.ic_baseline_keyboard_arrow_up_24))
+                collapsedTabel = false
+                binding.tvInfoBukaTabel.text = "Tutup Tabel"
+
+                detailViewModel.isFinishOperation.postValue(true)
+            }
+        }
     }
 
     private fun hideExpandableTumCard() {
-        TransitionManager.beginDelayedTransition(binding.layoutTotalUangMasuk, AutoTransition())
-        binding.layoutExpandableTotalUangMasuk.visibility = View.GONE
+        CoroutineScope(Dispatchers.IO).launch {
+            withContext(Dispatchers.Main) {
+                TransitionManager.beginDelayedTransition(binding.layoutExpandableTabel, AutoTransition())
+                binding.imgArrowBukaTabel.setImageDrawable(ContextCompat.getDrawable(requireContext(), R.drawable.ic_baseline_keyboard_arrow_right_24))
+                binding.layoutFullTabel.visibility = View.GONE
 
-        isCollapsedDetailUangMasuk = true
+                collapsedTabel = true
+
+                binding.tvInfoBukaTabel.text = "Buka Tabel"
+            }
+        }
     }
 
     override fun onResume() {
@@ -101,8 +150,9 @@ class ReportFragment : Fragment() {
 
         detailViewModel.listReportTotalUangMasukLive.observe(requireActivity()) {
             if (it != null) {
-                val overallTotalUangMasuk = "Rp. ${detailViewModel.getOverallTotalMasuk()}"
-                binding.tvRekapTotalUangMasuk.text = overallTotalUangMasuk
+                binding.tvRekapBesar.text = detailViewModel.getOverallTotalCuan()
+                binding.tvRekapTotalUangMasuk.text = detailViewModel.getOverallTotalMasuk()
+                binding.tvTotalPengeluaran.text = detailViewModel.getOverallTotalPengeluaran()
             }
 
             val columnHeaders = detailViewModel.getTotalUangMasukColumnHeaders()
@@ -135,8 +185,9 @@ class ReportFragment : Fragment() {
             notifyDataSetChanged()
         }
 
-        binding.tableRekapTotalUangMasuk.setColumnWidth(0, 300)
-        binding.tableRekapTotalUangMasuk.setColumnWidth(1, 500)
+        (0..3).forEach {
+            binding.tableRekapTotalUangMasuk.setColumnWidth(it, 350)
+        }
     }
 
 

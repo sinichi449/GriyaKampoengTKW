@@ -8,7 +8,8 @@
 
     <androidx.coordinatorlayout.widget.CoordinatorLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:clipChildren="false">
 
         <com.google.android.material.appbar.AppBarLayout
             android:id="@+id/appbar_main"
@@ -34,34 +35,23 @@
                 app:navigationIcon="@drawable/settings_24px"
                 app:navigationIconTint="@color/black"
                 android:theme="@style/ThemeOverlay.MaterialComponents.Toolbar.Primary"
-                app:menu="@menu/menu_main"/>
+                app:menu="@menu/menu_main"
+                android:elevation="0dp"/>
 
-            <com.google.android.material.card.MaterialCardView
-                android:id="@+id/card_tab"
+            <com.google.android.material.tabs.TabLayout
+                android:id="@+id/tab_layout_main"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/appbar_main"
-                android:theme="@style/Theme.GriyaKampung.BlackWhite"
-                app:cardElevation="4dp">
-
-                <com.google.android.material.tabs.TabLayout
-                    android:id="@+id/tab_layout_main"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintTop_toBottomOf="@id/appbar_main"
-                    android:background="@color/primaryColor"
-                    app:tabBackground="@color/primaryColor"
-                    app:tabTextColor="@color/primaryTextColor"
-                    app:tabIndicatorHeight="2dp"
-                    app:tabIndicatorColor="@color/black"
-                    app:tabIconTint="@color/black"
-                    app:tabMode="fixed"/>
-
-            </com.google.android.material.card.MaterialCardView>
+                android:background="@color/primaryColor"
+                app:tabBackground="@color/primaryColor"
+                app:tabTextColor="@color/primaryTextColor"
+                app:tabIndicatorHeight="2dp"
+                app:tabIndicatorColor="@color/black"
+                app:tabIconTint="@color/black"
+                app:tabMode="fixed"/>
 
             <include
                 android:id="@+id/connectivity_status"
