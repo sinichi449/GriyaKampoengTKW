@@ -799,8 +799,7 @@ class DetailViewModel @Inject constructor(
     fun getCuanBiayaMarketing() =
         TableBiayaMarketingHelper(listBiayaMarketingLive.value)
             .getCuanBiayaMarketing(
-                lastTotalUangMasuk = listPembayaranLive.value?.last()?.totalUangMasuk ?: "0",
-                biayaMarketer = feeMarketingLive.value?.biayaMarketer ?: "0",
+                lastTotalUangMasuk = listPembayaranLive.value?.last()?.totalUangMasuk ?: "0"
             )
 
     fun getAllArrayTerminPembayaran(): Array<String> {
