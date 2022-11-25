@@ -30,7 +30,6 @@ import net.bagusekasaputra.griyakampoengtkw.domain.usecase.pembayaran.AddPembaya
 import net.bagusekasaputra.griyakampoengtkw.domain.usecase.pembayaran.DeleteAllPembayaranUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.usecase.pembayaran.DeletePembayaranByTerminUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.usecase.pembayaran.UpdatePembayaranUseCase
-import net.bagusekasaputra.griyakampoengtkw.presentation.detail.tableview.biayaMarketing.TableBiayaMarketingHelper
 import net.bagusekasaputra.griyakampoengtkw.presentation.detail.tableview.formPembayaran.PembayaranCell
 import net.bagusekasaputra.griyakampoengtkw.presentation.detail.tableview.formPembayaran.PembayaranColumnHeader
 import net.bagusekasaputra.griyakampoengtkw.presentation.detail.tableview.formPembayaran.PembayaranRowHeader
@@ -562,6 +561,44 @@ class DetailViewModel @Inject constructor(
         }
     }
 
+    /**
+     * Helper function to prevent the user for entering the same Jenis Biaya
+     */
+    private fun isJenisBiayaExist(jenisBiaya: String): Boolean {
+        // Prevent user from entering the same Jenis Biaya, since Jenis Biaya will be our main
+        // id in the Firebase. Doing so, will overwrite the old value.
+        val listBiayaMarketing = listBiayaMarketingLive.value
+        var isExist = false
+
+        if (listBiayaMarketing != null) {
+            for (biayaMarketing in listBiayaMarketing) {
+                // Checking for available newHarga in listBiaya marketing
+                if (jenisBiaya == biayaMarketing.jenisBiaya) {
+                    isExist = true
+
+                    break
+                }
+            }
+        }
+
+        return isExist
+    }
+
+    /**
+     * Helper function to remove the last whitespace on the end of jenis biaya
+     */
+    private fun removeLastSpace(inputText: String): String {
+        val inputText = "biaya pengiriman surat "
+
+        val lastIndex = inputText.length - 1
+
+        var newInput = inputText
+        if (inputText[lastIndex] == ' ')
+            newInput = inputText.substring(startIndex = 0, endIndex = lastIndex)
+
+        return newInput
+    }
+
     fun addBiayaMarketing(
         kavlingKode: String,
         jenisBiaya: String,
@@ -569,75 +606,86 @@ class DetailViewModel @Inject constructor(
         tanggal: String,
         onComplete: (msg: String) -> Unit,
     ) {
-        biayaMarketingRefreshed.value = false
-        isFinishOperation.value = false
+        if (isJenisBiayaExist(jenisBiaya)) {
+            onComplete("Jenis biaya sudah ada!")
+        } else {
+            biayaMarketingRefreshed.value = false
+            isFinishOperation.value = false
 
-        val biayaMarketing = BiayaMarketing(
-            timeMillis = BiayaMarketing.getTimeMillisTanggal(tanggal),
-            kavlingKode = kavlingKode,
-            jenisBiaya = jenisBiaya,
-            harga = harga,
-        )
-        val request = AddBiayaMarketingUseCase.Request(biayaMarketing)
+            val biayaMarketing = BiayaMarketing(
+                kavlingKode = kavlingKode,
+                jenisBiaya = removeLastSpace(jenisBiaya),
+                harga = harga,
+                tanggal = tanggal,
+            )
+            val request = AddBiayaMarketingUseCase.Request(biayaMarketing)
 
-        CoroutineScope(Dispatchers.IO).launch {
-            addBiayaMarketingUseCase.execute(request).collect { response ->
-                val result = response.data.result
+            CoroutineScope(Dispatchers.IO).launch {
+                addBiayaMarketingUseCase.execute(request).collect { response ->
+                    val result = response.data.result
 
-                result.onSuccess {
-                    withContext(Dispatchers.Main) {
-                        onComplete("Berhasil menambahkan biaya marketing.")
+                    result.onSuccess {
+                        withContext(Dispatchers.Main) {
+                            onComplete("Berhasil menambahkan biaya marketing.")
+                        }
                     }
-                }
 
-                result.onFailure { throwable ->
-                    withContext(Dispatchers.Main) {
-                        onComplete("Gagal menambahkan biaya marketing: ${throwable.message}")
+                    result.onFailure { throwable ->
+                        withContext(Dispatchers.Main) {
+                            onComplete("Gagal menambahkan biaya marketing: ${throwable.message}")
+                        }
                     }
-                }
 
-                isFinishOperation.postValue(true)
+                    isFinishOperation.postValue(true)
+                }
             }
         }
     }
 
+
+
     fun editBiayaMarketing(
         oldBiayaMarketing: BiayaMarketing,
         kavlingKode: String,
-        newJenisHarga: String,
+        newJenisBiaya: String,
         newHarga: String,
         newTanggal: String,
         onComplete: (msg: String) -> Unit,
     ) {
-        biayaMarketingRefreshed.value = false
-        isFinishOperation.value = false
+        if (isJenisBiayaExist(newJenisBiaya)) {
+            // Alert the user that jenis harga exist
+            onComplete("Jenis biaya sudah ada!")
+        } else {
+            biayaMarketingRefreshed.value = false
+            isFinishOperation.value = false
 
-        val newBiayaMarketing = BiayaMarketing(
-            timeMillis = BiayaMarketing.getTimeMillisTanggal(newTanggal),
-            kavlingKode = kavlingKode,
-            jenisBiaya = newJenisHarga,
-            harga = newHarga,
-        )
-        val request = EditBiayaMarketingUseCase.Request(oldBiayaMarketing, newBiayaMarketing)
+            val newBiayaMarketing = BiayaMarketing(
+                kavlingKode = kavlingKode,
+                jenisBiaya = removeLastSpace(newJenisBiaya),
+                harga = newHarga,
+                tanggal = newTanggal,
+            )
+            val request = EditBiayaMarketingUseCase.Request(oldBiayaMarketing, newBiayaMarketing)
 
-        CoroutineScope(Dispatchers.IO).launch {
-            editBiayaMarketingUseCase.execute(request).collect { response ->
-                val result = response.data.result
+            CoroutineScope(Dispatchers.IO).launch {
+                editBiayaMarketingUseCase.execute(request).collect { response ->
+                    val result = response.data.result
 
-                result.onSuccess {
-                    withContext(Dispatchers.Main) {
-                        onComplete("Berhasil mengubah biaya pembayaran")
+                    result.onSuccess {
+                        withContext(Dispatchers.Main) {
+                            onComplete("Berhasil mengubah biaya pembayaran")
+                        }
                     }
-                }
 
-                result.onFailure { throwable ->
-                    withContext(Dispatchers.Main) {
-                        onComplete("Gagal mengubah biaya pembayaran: ${throwable.message}")
+                    result.onFailure { throwable ->
+                        withContext(Dispatchers.Main) {
+                            onComplete("Gagal mengubah biaya pembayaran: ${throwable.message}")
+                        }
                     }
+
+
+                    isFinishOperation.postValue(true)
                 }
-
-
-                isFinishOperation.postValue(true)
             }
         }
     }
@@ -782,17 +830,64 @@ class DetailViewModel @Inject constructor(
 
 
     // Wrapper functions for table view
-    fun getBiayaMarketingColumnHeaders() =
-        TableBiayaMarketingHelper(listBiayaMarketingLive.value)
-            .getBiayaMarketingColumnHeaders()
+    fun getBiayaMarketingColumnHeaders(): List<String> {
+        return mutableListOf<String>().apply {
+            add("Jenis Biaya")
+            add("Harga")
+            add("Tanggal")
+        }
+    }
 
-    fun getBiayaMarketingRowHeaders() =
-        TableBiayaMarketingHelper(listBiayaMarketingLive.value)
-            .getBiayaMarketingRowHeaders()
+    fun getBiayaMarketingRowHeaders(): List<String> {
+        val listBiayaMarketing = listBiayaMarketingLive.value
+
+        return if (listBiayaMarketing != null) {
+            val numberList = ArrayList<String>()
+
+            listBiayaMarketing.forEachIndexed { index, _ ->
+                // The index start from zero, so to make it start from number one,
+                // I added plus(1) method
+                numberList.add(index.plus(1).toString())
+            }
+
+            numberList
+        } else {
+            ArrayList<String>().apply { add("0") }
+        }
+    }
 
     fun getBiayaMarketingCellItems(): List<List<String>> {
-        return TableBiayaMarketingHelper(listBiayaMarketingLive.value)
-            .getBiayaMarketingCellItems()
+        val listBiayaMarketing = listBiayaMarketingLive.value
+
+        val firstOrderItemList = ArrayList<ArrayList<String>>()
+
+        if (listBiayaMarketing != null) {
+            for (biayaMarketing in listBiayaMarketing) {
+                val secondOrderItemList = ArrayList<String>()
+
+                secondOrderItemList.add(biayaMarketing.jenisBiaya)
+
+                // We need to transform this currency type into a comma separated number
+                val transformHarga = NumberUtil.formatLongToString(biayaMarketing.harga.toLong())
+                secondOrderItemList.add(transformHarga)
+
+                secondOrderItemList.add(biayaMarketing.tanggal)
+
+                firstOrderItemList.add(secondOrderItemList)
+            }
+        } else {
+            val secondOrderItemList = ArrayList<String>()
+
+            secondOrderItemList.apply {
+                add("-")
+                add("-")
+                add("-")
+            }
+
+            firstOrderItemList.add(secondOrderItemList)
+        }
+
+        return firstOrderItemList
     }
 
     fun getTotalBiayaMarketing(): Long {

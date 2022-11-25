@@ -317,7 +317,7 @@ class BiayaMarketingFragment : Fragment() {
         dialogBinding.btnTambahkan.text = "Ubah Data"
         // Set hapus button visible
         dialogBinding.btnHapusBiayaMarketing.visibility = View.VISIBLE
-        dialogBinding.edtTanggalBiayaMarketing.setText(biayaMarketing.getTanggalStr())
+        dialogBinding.edtTanggalBiayaMarketing.setText(biayaMarketing.tanggal)
 
         dialogBinding.edtHarga.apply {
             val harga = this.text.toString()
@@ -355,16 +355,15 @@ class BiayaMarketingFragment : Fragment() {
                 viewModel.editBiayaMarketing(
                     oldBiayaMarketing = biayaMarketing,
                     kavlingKode = currentKavlingKode!!,
-                    newJenisHarga = newJenisBiaya,
+                    newJenisBiaya = newJenisBiaya,
                     newHarga = newHarga,
                     newTanggal = newTanggal,
-                    onComplete = { msg ->
-                        dialogView.dismiss()
-                        syncData()
+                ) { msg ->
+                    dialogView.dismiss()
+                    syncData()
 
-                        Snackbar.make(binding.root, msg, Snackbar.LENGTH_SHORT).show()
-                    },
-                )
+                    Snackbar.make(binding.root, msg, Snackbar.LENGTH_SHORT).show()
+                }
             }
         }
 
