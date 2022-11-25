@@ -65,6 +65,9 @@ class SplashActivity : AppCompatActivity() {
             CoroutineScope(Dispatchers.IO).launch {
                 deviceOnline().collect { online ->
                     if (online) {
+                        withContext(Dispatchers.Main) {
+                            bindingLoading.tvInfoPeriksaInternet.text = "Memeriksa status server"
+                        }
                         // Check Maintenance status
                         val isMaintenance = checkMaintenance()
 
@@ -82,6 +85,8 @@ class SplashActivity : AppCompatActivity() {
                                         .create()
                                         .show()
                                 }
+                            } else {
+                                goToMainActivity(online)
                             }
                         }
 

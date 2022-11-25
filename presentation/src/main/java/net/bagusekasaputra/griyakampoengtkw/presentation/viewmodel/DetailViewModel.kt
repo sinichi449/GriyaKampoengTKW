@@ -650,40 +650,35 @@ class DetailViewModel @Inject constructor(
         newTanggal: String,
         onComplete: (msg: String) -> Unit,
     ) {
-        if (isJenisBiayaExist(newJenisBiaya)) {
-            // Alert the user that jenis harga exist
-            onComplete("Jenis biaya sudah ada!")
-        } else {
-            biayaMarketingRefreshed.value = false
-            isFinishOperation.value = false
+        biayaMarketingRefreshed.value = false
+        isFinishOperation.value = false
 
-            val newBiayaMarketing = BiayaMarketing(
-                kavlingKode = kavlingKode,
-                jenisBiaya = removeLastSpace(newJenisBiaya),
-                harga = newHarga,
-                tanggal = newTanggal,
-            )
-            val request = EditBiayaMarketingUseCase.Request(oldBiayaMarketing, newBiayaMarketing)
+        val newBiayaMarketing = BiayaMarketing(
+            kavlingKode = kavlingKode,
+            jenisBiaya = removeLastSpace(newJenisBiaya),
+            harga = newHarga,
+            tanggal = newTanggal,
+        )
+        val request = EditBiayaMarketingUseCase.Request(oldBiayaMarketing, newBiayaMarketing)
 
-            CoroutineScope(Dispatchers.IO).launch {
-                editBiayaMarketingUseCase.execute(request).collect { response ->
-                    val result = response.data.result
+        CoroutineScope(Dispatchers.IO).launch {
+            editBiayaMarketingUseCase.execute(request).collect { response ->
+                val result = response.data.result
 
-                    result.onSuccess {
-                        withContext(Dispatchers.Main) {
-                            onComplete("Berhasil mengubah biaya pembayaran")
-                        }
+                result.onSuccess {
+                    withContext(Dispatchers.Main) {
+                        onComplete("Berhasil mengubah biaya pembayaran")
                     }
-
-                    result.onFailure { throwable ->
-                        withContext(Dispatchers.Main) {
-                            onComplete("Gagal mengubah biaya pembayaran: ${throwable.message}")
-                        }
-                    }
-
-
-                    isFinishOperation.postValue(true)
                 }
+
+                result.onFailure { throwable ->
+                    withContext(Dispatchers.Main) {
+                        onComplete("Gagal mengubah biaya pembayaran: ${throwable.message}")
+                    }
+                }
+
+
+                isFinishOperation.postValue(true)
             }
         }
     }
