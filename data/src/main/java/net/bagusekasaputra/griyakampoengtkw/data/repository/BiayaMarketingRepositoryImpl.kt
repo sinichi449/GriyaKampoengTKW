@@ -3,7 +3,6 @@ package net.bagusekasaputra.griyakampoengtkw.data.repository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.emitAll
 import kotlinx.coroutines.flow.flow
-import net.bagusekasaputra.griyakampoengtkw.data.DataUtil
 import net.bagusekasaputra.griyakampoengtkw.data.interfaces.local.LocalBiayaMarketingDataSource
 import net.bagusekasaputra.griyakampoengtkw.data.interfaces.remote.RemoteBiayaMarketingDataSource
 import net.bagusekasaputra.griyakampoengtkw.data.model.BiayaMarketingModel
@@ -24,38 +23,57 @@ class BiayaMarketingRepositoryImpl(
             val flowOffline = flow<Result<List<BiayaMarketing>?>> {
                 val localResult = localBiayaMarketingDataSource.getAllBiayaMarketing(kavlingKode)
 
-                emit(
-                    DataUtil.mapListResult(localResult, ::mapBiayaMarketing)
-                )
+                localResult.onSuccess { biayaMarketingWithId ->
+                    // Here we will parse the data from local data source from Map<Id, BiayaMarketing>
+                    // to List<BiayaMarketing>. We need the id because it helps the write operation
+                    // such as update and delete.
+
+                    val mappedResult = mutableListOf<BiayaMarketing>()
+                    biayaMarketingWithId?.keys?.forEach { id ->
+                        val model = biayaMarketingWithId[id]
+
+                        model?.let {
+                            mappedResult.add(
+                                BiayaMarketing(
+                                    id = id,
+                                    tanggal = it.tanggal,
+                                    kavlingKode = it.kavlingKode,
+                                    jenisBiaya = it.jenisBiaya,
+                                    harga = it.harga.toString()
+                                )
+                            )
+                        }
+                    }
+
+                    if (mappedResult.isEmpty())
+                        emit(Result.success(null))
+                    else
+                        emit(Result.success(mappedResult))
+                }
+
+                localResult.onFailure {
+                    emit(Result.failure(it))
+                }
             }
 
             val flowOnline = flow<Result<List<BiayaMarketing>?>> {
-                // First, fetch from the remote
                 val remoteResult = remoteBiayaMarketingDataSource.getAllBiayaMarketing(kavlingKode)
 
                 remoteResult.onSuccess {
-                    // if successfully fetching the data from the remote repository,
-                    // first, save to local data source
-                    val biayaMarketingModel = remoteResult.getOrNull()
-                    biayaMarketingModel?.forEach {
+                    // save to local data source
+                    val models = remoteResult.getOrNull()
+                    models?.forEach {
                         localBiayaMarketingDataSource.addBiayaMarketing(kavlingKode, it)
                     }
 
-                    // Then emit the result
-//                    val mapped = DataUtil.mapListResult(
-//                        originResult = remoteResult,
-//                        targetMapper = ::mapBiayaMarketing
-//                    )
-//                    emit(mapped)
-                    // To get a proper Id, I need to emit from local instead
+                    // emit from local to preserve the id
                     emitAll(flowOffline)
                 }
 
                 remoteResult.onFailure {
-                    // if fetching from remote fails, emit the error message
                     emit(Result.failure(it))
 
-                    // Then, fetch from local data source instead
+                    // on failure, emit from local
                     emitAll(flowOffline)
                 }
             }
@@ -69,12 +87,11 @@ class BiayaMarketingRepositoryImpl(
 
     override fun addBiayaMarketing(biayaMarketing: BiayaMarketing): Flow<Result<Nothing?>> {
         return flow {
-            val resultRemote = remoteBiayaMarketingDataSource.addBiayaMarketing(
+            val remoteResult = remoteBiayaMarketingDataSource.addBiayaMarketing(
                 kavlingKode = biayaMarketing.kavlingKode,
-                biayaMarketingModel = mapBiayaMarketing(biayaMarketing),
+                biayaMarketingModel = mapBiayaMarketing(biayaMarketing)
             )
-
-            emit(resultRemote)
+            emit(remoteResult)
         }
     }
 
@@ -83,36 +100,21 @@ class BiayaMarketingRepositoryImpl(
         newBiayaMarketing: BiayaMarketing
     ): Flow<Result<Nothing?>> {
         return flow {
-            // We need to update the data on the local data source too
-            val id = oldBiayaMarketing.id
-            if (id == null) {
-                // If id is null, emit fails
-                emit(Result.failure(Throwable("Id untuk ${oldBiayaMarketing.jenisBiaya} tidak ditemukan!")))
-            } else {
-                val updateLocal = localBiayaMarketingDataSource.update(
-                    id = id,
-                    newBiayaMarketingModel = mapBiayaMarketing(newBiayaMarketing),
-                )
-                updateLocal.onFailure {
-                    emit(Result.failure(it))
-                }
+            val localResult = localBiayaMarketingDataSource.update(
+                id = oldBiayaMarketing.id ?: -1L,
+                newBiayaMarketingModel = mapBiayaMarketing(newBiayaMarketing),
+            )
+            localResult.onFailure {
+                emit(Result.failure(it))
             }
 
-            // We need to set the timeMillis of newBiayaMarketing to prevent
-            // a difference of timeMillis with the oldBiayaMarketing
-            newBiayaMarketing.timeMillis = oldBiayaMarketing.timeMillis
-
-            val mappedOld = mapBiayaMarketing(oldBiayaMarketing)
-            val mappedNew = mapBiayaMarketing(newBiayaMarketing)
-
-
-            val remoteUpdate = remoteBiayaMarketingDataSource.update(
+            val remoteResult = remoteBiayaMarketingDataSource.update(
                 kavlingKode = oldBiayaMarketing.kavlingKode,
-                oldBiayaMarketingModel = mappedOld,
-                newBiayaMarketingModel = mappedNew,
+                oldBiayaMarketingModel = mapBiayaMarketing(oldBiayaMarketing),
+                newBiayaMarketingModel = mapBiayaMarketing(newBiayaMarketing),
             )
 
-            emit(remoteUpdate)
+            emit(remoteResult)
         }
     }
 
@@ -121,69 +123,43 @@ class BiayaMarketingRepositoryImpl(
         biayaMarketing: BiayaMarketing
     ): Flow<Result<Nothing?>> {
         return flow {
-            // If time millis is null from BiayaMarketing entity, I will send the error instead.
-            if (biayaMarketing.timeMillis == null) {
-                emit(Result.failure(Exception("ERROR: Time millis tidak ditemukan")))
-            } else {
-                // We need to delete from local data source too
-                val id = biayaMarketing.id
-                if (id == null) {
-                    // If id not found, emit error
-                    emit(Result.failure(Throwable("Id untuk ${biayaMarketing.jenisBiaya} tidak ditemukan!")))
-                } else {
-                    val deleteLocal = localBiayaMarketingDataSource.deleteSingle(id)
-
-                    deleteLocal.onFailure {
-                        emit(Result.failure(it))
-                    }
-                }
-
-
-                val deleteRemote = remoteBiayaMarketingDataSource.deleteSingle(
-                    kavlingKode = kavlingKode,
-                    timeMillis = biayaMarketing.timeMillis!!,
-                )
-
-                emit(deleteRemote)
+            val localResult = localBiayaMarketingDataSource.deleteSingle(biayaMarketing.id ?: -1L)
+            localResult.onFailure {
+                emit(Result.failure(it))
             }
+
+            val remoteResult = remoteBiayaMarketingDataSource.deleteSingle(
+                kavlingKode = kavlingKode,
+                biayaMarketingModel = mapBiayaMarketing(biayaMarketing)
+            )
+
+            emit(remoteResult)
         }
     }
 
     override fun deleteAll(kavlingKode: String): Flow<Result<Nothing?>> {
         return flow {
-            // We need to delete from the local data source too
-            val deleteAllLocal = localBiayaMarketingDataSource.deleteAllBiayaMarketing(kavlingKode)
-            deleteAllLocal.onFailure {
+            val localResult = localBiayaMarketingDataSource.deleteAllBiayaMarketing(kavlingKode)
+            localResult.onFailure {
                 emit(Result.failure(it))
             }
 
-            val deleteAllRemote = remoteBiayaMarketingDataSource.deleteAllBiayaMarketing(kavlingKode)
+            val remoteResult = remoteBiayaMarketingDataSource.deleteAllBiayaMarketing(kavlingKode)
 
-            emit(deleteAllRemote)
-        }
-    }
-
-    private fun mapBiayaMarketing(biayaMarketingModel: BiayaMarketingModel): BiayaMarketing {
-        return biayaMarketingModel.let {
-            BiayaMarketing(
-                id = it.id,
-                timeMillis = it.timeMillis,
-                kavlingKode = it.kavlingKode,
-                jenisBiaya = it.jenisBiaya,
-                harga = it.harga.toString(),
-            )
+            emit(remoteResult)
         }
     }
 
     private fun mapBiayaMarketing(biayaMarketing: BiayaMarketing): BiayaMarketingModel {
         return biayaMarketing.let {
             BiayaMarketingModel(
-                id = it.id,
-                timeMillis = it.timeMillis ?: System.currentTimeMillis(),
+                tanggal = it.tanggal,
                 kavlingKode = it.kavlingKode,
                 jenisBiaya = it.jenisBiaya,
-                harga = NumberUtil.formatStringToLong(it.harga),
+                harga = NumberUtil.formatStringToLong(it.harga), // from UI layer, the harga is formatted into comma separated
             )
         }
     }
+
+
 }

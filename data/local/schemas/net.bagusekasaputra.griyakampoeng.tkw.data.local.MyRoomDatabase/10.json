@@ -1,7 +1,7 @@
 {
   "formatVersion": 1,
   "database": {
-    "version": 9,
+    "version": 10,
     "identityHash": "7f0dd10828fc266dfc21fd1c245916a9",
     "entities": [
       {
@@ -485,50 +485,6 @@
         "foreignKeys": []
       },
       {
-        "tableName": "biaya_marketing_v2",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER, `kavling_kode` TEXT NOT NULL, `tanggal` TEXT NOT NULL, `jenis_biaya` TEXT NOT NULL, `harga` INTEGER NOT NULL, PRIMARY KEY(`id`))",
-        "fields": [
-          {
-            "fieldPath": "id",
-            "columnName": "id",
-            "affinity": "INTEGER",
-            "notNull": false
-          },
-          {
-            "fieldPath": "kavlingKode",
-            "columnName": "kavling_kode",
-            "affinity": "TEXT",
-            "notNull": true
-          },
-          {
-            "fieldPath": "tanggal",
-            "columnName": "tanggal",
-            "affinity": "TEXT",
-            "notNull": true
-          },
-          {
-            "fieldPath": "jenisBiaya",
-            "columnName": "jenis_biaya",
-            "affinity": "TEXT",
-            "notNull": true
-          },
-          {
-            "fieldPath": "harga",
-            "columnName": "harga",
-            "affinity": "INTEGER",
-            "notNull": true
-          }
-        ],
-        "primaryKey": {
-          "columnNames": [
-            "id"
-          ],
-          "autoGenerate": false
-        },
-        "indices": [],
-        "foreignKeys": []
-      },
-      {
         "tableName": "fee_marketing",
         "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER, `timeMillis` INTEGER, `kavling_kode` TEXT NOT NULL, `nama_marketer` TEXT NOT NULL, `biaya_marketer` INTEGER NOT NULL, PRIMARY KEY(`id`))",
         "fields": [
@@ -559,6 +515,50 @@
           {
             "fieldPath": "biayaMarketer",
             "columnName": "biaya_marketer",
+            "affinity": "INTEGER",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "columnNames": [
+            "id"
+          ],
+          "autoGenerate": false
+        },
+        "indices": [],
+        "foreignKeys": []
+      },
+      {
+        "tableName": "biaya_marketing_v2",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER, `kavling_kode` TEXT NOT NULL, `tanggal` TEXT NOT NULL, `jenis_biaya` TEXT NOT NULL, `harga` INTEGER NOT NULL, PRIMARY KEY(`id`))",
+        "fields": [
+          {
+            "fieldPath": "id",
+            "columnName": "id",
+            "affinity": "INTEGER",
+            "notNull": false
+          },
+          {
+            "fieldPath": "kavlingKode",
+            "columnName": "kavling_kode",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "tanggal",
+            "columnName": "tanggal",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "jenisBiaya",
+            "columnName": "jenis_biaya",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "harga",
+            "columnName": "harga",
             "affinity": "INTEGER",
             "notNull": true
           }

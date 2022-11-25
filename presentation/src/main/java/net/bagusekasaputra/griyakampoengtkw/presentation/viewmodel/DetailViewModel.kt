@@ -588,8 +588,6 @@ class DetailViewModel @Inject constructor(
      * Helper function to remove the last whitespace on the end of jenis biaya
      */
     private fun removeLastSpace(inputText: String): String {
-        val inputText = "biaya pengiriman surat "
-
         val lastIndex = inputText.length - 1
 
         var newInput = inputText

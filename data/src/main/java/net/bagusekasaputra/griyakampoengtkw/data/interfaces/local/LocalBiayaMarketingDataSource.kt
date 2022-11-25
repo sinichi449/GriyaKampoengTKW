@@ -4,7 +4,7 @@ import net.bagusekasaputra.griyakampoengtkw.data.model.BiayaMarketingModel
 
 interface LocalBiayaMarketingDataSource {
 
-    suspend fun getAllBiayaMarketing(kavlingKode: String): Result<List<BiayaMarketingModel>?>
+    suspend fun getAllBiayaMarketing(kavlingKode: String): Result<Map<Long, BiayaMarketingModel>?>
 
     suspend fun addBiayaMarketing(
         kavlingKode: String,

@@ -116,6 +116,31 @@ object FirebaseRequestHelper {
         }.first()
     }
 
+    suspend fun updateOperationAndSetNewChild(
+        toBeDeletedChild: DatabaseReference,
+        newChild: DatabaseReference,
+        newValue: Any?,
+    ): Result<Nothing?> {
+        return callbackFlow<Result<Nothing?>> {
+            // First, I remove the existing value.
+            toBeDeletedChild.removeValue()
+                .addOnFailureListener {
+                    trySendBlocking(Result.failure(it))
+                }
+
+            // Then, add the new value
+            newChild.setValue(newValue)
+                .addOnSuccessListener {
+                    trySendBlocking(Result.success(null))
+                }
+                .addOnFailureListener {
+                    trySendBlocking(Result.failure(it))
+                }
+
+            awaitClose {  }
+        }.first()
+    }
+
     suspend fun deleteOperation(targetChild: DatabaseReference): Result<Nothing?> {
         return callbackFlow<Result<Nothing?>> {
             targetChild.removeValue()

@@ -13,4 +13,18 @@ class ExampleUnitTest {
     fun addition_isCorrect() {
         assertEquals(4, 2 + 2)
     }
+
+    @Test
+    fun test_menghilangkan_spasi() {
+        val inputText = "biaya pengiriman surat "
+
+        val lastIndex = inputText.length - 1
+
+        var newInput = inputText
+        if (inputText[lastIndex] == ' ')
+            newInput = inputText.substring(startIndex = 0, endIndex = lastIndex)
+
+        val expected = "biaya pengiriman surat"
+        assertEquals(expected, newInput)
+    }
 }

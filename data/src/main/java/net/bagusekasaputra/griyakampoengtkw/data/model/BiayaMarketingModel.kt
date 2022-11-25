@@ -1,9 +1,8 @@
 package net.bagusekasaputra.griyakampoengtkw.data.model
 
 data class BiayaMarketingModel(
-    var id: Long? = null,
-    val timeMillis: Long = 0L,
     val kavlingKode: String = "",
+    val tanggal: String = "",
     val jenisBiaya: String = "",
     val harga: Long = 0L,
 ) {

@@ -32,10 +32,25 @@ object DatabaseModule {
             }
 
         }
+        val MIGRATION_9_10 = object : Migration(9, 10) {
+            override fun migrate(database: SupportSQLiteDatabase) {
+                database.execSQL("DROP TABLE IF EXISTS \"biaya_marketing\";")
+                database.execSQL("CREATE TABLE IF NOT EXISTS `biaya_marketing_v2` (" +
+                        "`id` INTEGER, " +
+                        "`kavling_kode` TEXT NOT NULL, " +
+                        "`tanggal` TEXT NOT NULL, " +
+                        "`jenis_biaya` TEXT NOT NULL, " +
+                        "`harga` INTEGER NOT NULL, " +
+                        "PRIMARY KEY(`id`))" +
+                        "")
+            }
+
+        }
         return Room.databaseBuilder(
             appContext, MyRoomDatabase::class.java, "griya_kampoeng_tkw.db"
         )
             .addMigrations(MIGRATION_2_3)
+            .addMigrations(MIGRATION_9_10)
             .build()
     }
 

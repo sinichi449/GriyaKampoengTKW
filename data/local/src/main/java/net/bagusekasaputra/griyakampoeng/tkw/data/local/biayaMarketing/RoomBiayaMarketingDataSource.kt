@@ -1,6 +1,5 @@
 package net.bagusekasaputra.griyakampoeng.tkw.data.local.biayaMarketing
 
-import android.util.Log
 import net.bagusekasaputra.griyakampoeng.tkw.data.local.MyRoomDatabase
 import net.bagusekasaputra.griyakampoeng.tkw.data.local.RoomRequestHelper
 import net.bagusekasaputra.griyakampoengtkw.data.interfaces.local.LocalBiayaMarketingDataSource
@@ -10,20 +9,17 @@ class RoomBiayaMarketingDataSource(
     roomDatabase: MyRoomDatabase
 ): LocalBiayaMarketingDataSource {
 
-    private val biayaMarketingDao = roomDatabase.getBiayaMarketingDao()
+    private val biayaMarketingDao = roomDatabase.getBiayaMarketingV2Dao()
 
-    override suspend fun getAllBiayaMarketing(kavlingKode: String): Result<List<BiayaMarketingModel>?> {
+    override suspend fun getAllBiayaMarketing(kavlingKode: String): Result<Map<Long, BiayaMarketingModel>?> {
         return RoomRequestHelper.doGetOperation {
+            val biayaMarketingWithId = mutableMapOf<Long, BiayaMarketingModel>()
+
             biayaMarketingDao.getAll(kavlingKode)?.map {
-                Log.d("DEBUG_ME", "Get $it")
-                BiayaMarketingModel(
-                    id = it.id,
-                    timeMillis = it.timeMillis,
-                    kavlingKode = it.kavlingKode,
-                    jenisBiaya = it.jenisBiaya,
-                    harga = it.harga,
-                )
+                biayaMarketingWithId[it.id ?: 0L] = mapBiayaMarketing(it)
             }
+
+            biayaMarketingWithId
         }
     }
 
@@ -31,21 +27,10 @@ class RoomBiayaMarketingDataSource(
         kavlingKode: String,
         biayaMarketingModel: BiayaMarketingModel
     ): Result<Nothing?> {
-//        return RoomRequestHelper.doNonGetOperation {
-//            biayaMarketingDao.insertBiayaMarketing(
-//                biayaMarketingModel.let {
-//                    BiayaMarketingRoomEntity(
-//                        timeMillis = it.timeMillis,
-//                        kavlingKode = it.kavlingKode,
-//                        jenisBiaya = it.jenisBiaya,
-//                        harga = it.harga,
-//                    )
-//                }
-//            )
-//        }
         val targetData = biayaMarketingModel.let {
             biayaMarketingDao.getBiayaMarketing(
                 kavlingKode = it.kavlingKode,
+                tanggal = it.tanggal,
                 jenisBiaya = it.jenisBiaya,
                 harga = it.harga,
             )
@@ -55,6 +40,7 @@ class RoomBiayaMarketingDataSource(
             targetData = targetData,
             equalityPredicate = { m, e ->
                 ((m.kavlingKode == e.kavlingKode)
+                        and (m.tanggal == e.tanggal)
                         and (m.jenisBiaya == e.jenisBiaya)
                         and (m.harga == e.harga))
             },
@@ -69,11 +55,15 @@ class RoomBiayaMarketingDataSource(
         newBiayaMarketingModel: BiayaMarketingModel
     ): Result<Nothing?> {
         return RoomRequestHelper.doNonGetOperation {
-            biayaMarketingDao.updateById(
-                id = id,
-                jenisBiaya = newBiayaMarketingModel.jenisBiaya,
-                harga = newBiayaMarketingModel.harga,
-            )
+            newBiayaMarketingModel.let {
+                biayaMarketingDao.updateBiayaMarketing(
+                    id = id,
+                    newTanggal = it.tanggal,
+                    kavlingKode = it.kavlingKode,
+                    newJenisBiaya = it.jenisBiaya,
+                    newHarga = it.harga,
+                )
+            }
         }
     }
 
@@ -89,11 +79,22 @@ class RoomBiayaMarketingDataSource(
         }
     }
 
-    private fun mapBiayaMarketing(biayaMarketingModel: BiayaMarketingModel): BiayaMarketingRoomEntity {
-        return biayaMarketingModel.let {
-            BiayaMarketingRoomEntity(
-                timeMillis = it.timeMillis,
+    private fun mapBiayaMarketing(biayaMarketingV2RoomEntity: BiayaMarketingV2RoomEntity): BiayaMarketingModel {
+        return biayaMarketingV2RoomEntity.let {
+            BiayaMarketingModel(
                 kavlingKode = it.kavlingKode,
+                tanggal = it.tanggal,
+                jenisBiaya = it.jenisBiaya,
+                harga = it.harga,
+            )
+        }
+    }
+
+    private fun mapBiayaMarketing(biayaMarketingModel: BiayaMarketingModel): BiayaMarketingV2RoomEntity {
+        return biayaMarketingModel.let {
+            BiayaMarketingV2RoomEntity(
+                kavlingKode = it.kavlingKode,
+                tanggal = it.tanggal,
                 jenisBiaya = it.jenisBiaya,
                 harga = it.harga,
             )

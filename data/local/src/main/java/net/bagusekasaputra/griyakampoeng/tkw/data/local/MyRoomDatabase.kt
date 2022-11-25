@@ -1,10 +1,9 @@
 package net.bagusekasaputra.griyakampoeng.tkw.data.local
 
-import androidx.room.AutoMigration
 import androidx.room.Database
 import androidx.room.RoomDatabase
-import net.bagusekasaputra.griyakampoeng.tkw.data.local.biayaMarketing.BiayaMarketingRoomDao
-import net.bagusekasaputra.griyakampoeng.tkw.data.local.biayaMarketing.BiayaMarketingRoomEntity
+import net.bagusekasaputra.griyakampoeng.tkw.data.local.biayaMarketing.BiayaMarketingV2RoomDao
+import net.bagusekasaputra.griyakampoeng.tkw.data.local.biayaMarketing.BiayaMarketingV2RoomEntity
 import net.bagusekasaputra.griyakampoeng.tkw.data.local.block.BlockRoomDao
 import net.bagusekasaputra.griyakampoeng.tkw.data.local.block.BlockRoomEntity
 import net.bagusekasaputra.griyakampoeng.tkw.data.local.catatanPembayaran.CatatanPembayaranRoomDao
@@ -32,17 +31,17 @@ import net.bagusekasaputra.griyakampoeng.tkw.data.local.pembayaran.PembayaranRoo
     entities = [KavlingRoomEntity::class, ImageDataDiriRoomEntity::class, BlockRoomEntity::class,
                DataDiriRoomEntity::class, FotoKuitansiRoomEntity::class, ImageSprRoomEntity::class,
                FotoPembayaranEntity::class, PembayaranRoomEntity::class, HargaKavlingRoomEntity::class,
-               CatatanPembayaranRoomEntity::class, BiayaMarketingRoomEntity::class, FeeMarketingRoomEntity::class],
-    version = 9,
+               CatatanPembayaranRoomEntity::class, FeeMarketingRoomEntity::class, BiayaMarketingV2RoomEntity::class],
+    version = 10,
     exportSchema = true,
-    autoMigrations = [
-        AutoMigration(from = 3, to = 4),
-        AutoMigration(from = 4, to = 5),
-        AutoMigration(from = 5, to = 6),
-        AutoMigration(from = 6, to = 7),
-        AutoMigration(from = 7, to = 8),
-        AutoMigration(from = 8, to = 9),
-    ]
+//    autoMigrations = [
+//        AutoMigration(from = 3, to = 4),
+//        AutoMigration(from = 4, to = 5),
+//        AutoMigration(from = 5, to = 6),
+//        AutoMigration(from = 6, to = 7),
+//        AutoMigration(from = 7, to = 8),
+//        AutoMigration(from = 8, to = 9),
+//    ]
 )
 abstract class MyRoomDatabase: RoomDatabase() {
 
@@ -66,7 +65,7 @@ abstract class MyRoomDatabase: RoomDatabase() {
 
     abstract fun getCatatanPembayaranDao(): CatatanPembayaranRoomDao
 
-    abstract fun getBiayaMarketingDao(): BiayaMarketingRoomDao
+    abstract fun getBiayaMarketingV2Dao(): BiayaMarketingV2RoomDao
 
     abstract fun getFeeMarketingDao(): FeeMarketingRoomDao
 }
