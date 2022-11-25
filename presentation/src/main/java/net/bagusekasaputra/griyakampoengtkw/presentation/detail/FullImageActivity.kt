@@ -10,8 +10,8 @@ import com.igreenwood.loupe.Loupe
 import dagger.hilt.android.AndroidEntryPoint
 import net.bagusekasaputra.griyakampoengtkw.presentation.ImageTransport
 import net.bagusekasaputra.griyakampoengtkw.presentation.databinding.ActivityFullImageBinding
-import net.bagusekasaputra.griyakampoengtkw.presentation.detail.viewmodel.ImageViewModel
 import net.bagusekasaputra.griyakampoengtkw.presentation.util.GriyaNodes
+import net.bagusekasaputra.griyakampoengtkw.presentation.viewmodel.ImageViewModel
 
 @AndroidEntryPoint
 class FullImageActivity : AppCompatActivity() {

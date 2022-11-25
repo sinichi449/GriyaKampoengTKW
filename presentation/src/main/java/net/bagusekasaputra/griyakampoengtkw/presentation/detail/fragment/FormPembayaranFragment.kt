@@ -33,10 +33,10 @@ import net.bagusekasaputra.griyakampoengtkw.presentation.detail.tableview.formPe
 import net.bagusekasaputra.griyakampoengtkw.presentation.detail.tableview.formPembayaran.PembayaranColumnHeader
 import net.bagusekasaputra.griyakampoengtkw.presentation.detail.tableview.formPembayaran.PembayaranRowHeader
 import net.bagusekasaputra.griyakampoengtkw.presentation.detail.tableview.formPembayaran.PembayaranTableViewAdapter
-import net.bagusekasaputra.griyakampoengtkw.presentation.detail.viewmodel.DetailViewModel
-import net.bagusekasaputra.griyakampoengtkw.presentation.detail.viewmodel.ImageViewModel
 import net.bagusekasaputra.griyakampoengtkw.presentation.util.*
 import net.bagusekasaputra.griyakampoengtkw.presentation.util.DialogUtil.additionalDialogSetting
+import net.bagusekasaputra.griyakampoengtkw.presentation.viewmodel.DetailViewModel
+import net.bagusekasaputra.griyakampoengtkw.presentation.viewmodel.ImageViewModel
 import java.text.SimpleDateFormat
 import java.util.*
 

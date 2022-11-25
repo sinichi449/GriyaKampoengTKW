@@ -29,11 +29,11 @@ import net.bagusekasaputra.griyakampoengtkw.presentation.R
 import net.bagusekasaputra.griyakampoengtkw.presentation.databinding.*
 import net.bagusekasaputra.griyakampoengtkw.presentation.detail.DetailActivity
 import net.bagusekasaputra.griyakampoengtkw.presentation.main.MainActivity
-import net.bagusekasaputra.griyakampoengtkw.presentation.main.MainViewModel
 import net.bagusekasaputra.griyakampoengtkw.presentation.main.adapter.BlockRecyclerAdapter
 import net.bagusekasaputra.griyakampoengtkw.presentation.main.adapter.KavlingRecyclerAdapter
 import net.bagusekasaputra.griyakampoengtkw.presentation.util.DialogUtil
 import net.bagusekasaputra.griyakampoengtkw.presentation.util.InputUtil
+import net.bagusekasaputra.griyakampoengtkw.presentation.viewmodel.MainViewModel
 
 @AndroidEntryPoint
 class KavlingFragment : Fragment() {

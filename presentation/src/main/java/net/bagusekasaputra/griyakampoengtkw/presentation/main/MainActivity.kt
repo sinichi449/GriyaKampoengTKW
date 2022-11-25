@@ -22,6 +22,7 @@ import net.bagusekasaputra.griyakampoengtkw.presentation.main.adapter.MainViewPa
 import net.bagusekasaputra.griyakampoengtkw.presentation.main.fragment.KavlingFragment
 import net.bagusekasaputra.griyakampoengtkw.presentation.main.fragment.ReportFragment
 import net.bagusekasaputra.griyakampoengtkw.presentation.util.GriyaNodes
+import net.bagusekasaputra.griyakampoengtkw.presentation.viewmodel.MainViewModel
 import javax.inject.Inject
 
 @AndroidEntryPoint

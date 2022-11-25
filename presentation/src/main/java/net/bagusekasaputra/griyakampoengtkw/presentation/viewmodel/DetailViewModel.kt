@@ -1,4 +1,4 @@
-package net.bagusekasaputra.griyakampoengtkw.presentation.detail.viewmodel
+package net.bagusekasaputra.griyakampoengtkw.presentation.viewmodel
 
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -80,6 +80,11 @@ class DetailViewModel @Inject constructor(
 
     val catatanPembayaranLive = MutableLiveData<CatatanPembayaran?>()
 
+    // This is the all data of ReportTotalUangMasuk. I don't want to repeat the traversing process
+    // of getting all of these data, so I santized them here.
+    private val allListReportTotalUangMasukLive = MutableLiveData<List<ReportTotalUangMasuk>>()
+
+    // And this is the only report which is to be observed by ReportFragment.
     val listReportTotalUangMasukLive = MutableLiveData<List<ReportTotalUangMasuk>>()
 
     val currentKavlingKode = MutableLiveData<String>()
@@ -1095,7 +1100,26 @@ class DetailViewModel @Inject constructor(
 
             isFinishOperation.postValue(true)
         }
+
     }
+
+    fun getRekapSemuaPeriode() {
+        listReportTotalUangMasukLive.value = allListReportTotalUangMasukLive.value
+    }
+
+    fun getRekapMingguIni() {
+        // TODO
+    }
+
+    fun getRekapBulanIni() {
+        // TODO
+    }
+
+    fun getRekapTahunIni() {
+        // TODO
+    }
+
+
 
     override fun onCleared() {
         super.onCleared()

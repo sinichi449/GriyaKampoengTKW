@@ -53,6 +53,7 @@
                     android:gravity="start"
                     android:layout_marginTop="8dp"
                     android:text="@string/biaya_marketing_tidak_ada_marketer"
+                    tools:text="Nuridi"
                     style="@style/TextAppearance.MaterialComponents.Subtitle1"/>
 
                 <com.google.android.material.textview.MaterialTextView
@@ -62,6 +63,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginStart="40dp"
                     android:text="0"
+                    tools:text="4,500,000"
                     app:layout_constraintBottom_toBottomOf="@+id/tv_nama_marketer"
                     app:layout_constraintStart_toEndOf="@+id/tv_nama_marketer"
                     app:layout_constraintTop_toTopOf="@+id/tv_nama_marketer" />
@@ -77,12 +79,24 @@
                     app:layout_constraintTop_toTopOf="@+id/tv_biaya_marketer"
                     android:layout_marginStart="24dp"/>
 
+                <com.google.android.material.textview.MaterialTextView
+                    android:id="@+id/tv_tanggal_penerimaan_fee_marketing"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintEnd_toStartOf="@id/guideline_vertical"
+                    app:layout_constraintTop_toBottomOf="@id/tv_nama_marketer"
+                    android:layout_marginTop="4dp"
+                    android:text="-"
+                    tools:text="14/09/2022"/>
+
+
                 <com.evrencoskun.tableview.TableView
                     android:id="@+id/tableview_biaya_marketing"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@id/tv_nama_marketer"
+                    app:layout_constraintTop_toBottomOf="@id/tv_tanggal_penerimaan_fee_marketing"
                     app:column_header_height="@dimen/table_pembayaran_column_header_height"
                     app:row_header_width="@dimen/default_row_header_width"
                     app:show_horizontal_separator="true"

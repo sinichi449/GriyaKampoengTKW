@@ -4,6 +4,8 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.AdapterView
+import android.widget.AdapterView.OnItemSelectedListener
 import android.widget.ArrayAdapter
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
@@ -18,11 +20,11 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import net.bagusekasaputra.griyakampoengtkw.presentation.R
 import net.bagusekasaputra.griyakampoengtkw.presentation.databinding.FragmentReportBinding
-import net.bagusekasaputra.griyakampoengtkw.presentation.detail.viewmodel.DetailViewModel
 import net.bagusekasaputra.griyakampoengtkw.presentation.main.tableview.TotalUangMasukTableViewAdapter
 import net.bagusekasaputra.griyakampoengtkw.presentation.main.tableview.TumCell
 import net.bagusekasaputra.griyakampoengtkw.presentation.main.tableview.TumColumnHeaders
 import net.bagusekasaputra.griyakampoengtkw.presentation.main.tableview.TumRowHeaders
+import net.bagusekasaputra.griyakampoengtkw.presentation.viewmodel.DetailViewModel
 
 @AndroidEntryPoint
 class ReportFragment : Fragment() {
@@ -35,6 +37,7 @@ class ReportFragment : Fragment() {
     private var collapsedTabel = true
 
     private val periodeReportList = listOf(
+        "Semua",
         "Minggu ini",
         "Bulan ini",
         "Tahun ini",
@@ -61,6 +64,7 @@ class ReportFragment : Fragment() {
             syncData()
         }
 
+        // Rekap besar card when clicked either expand/dismiss
         binding.layoutRekapBesar.setOnClickListener {
             if (collapsedRekap) {
                 // Show
@@ -73,6 +77,7 @@ class ReportFragment : Fragment() {
             }
         }
 
+        // Table card when clicked either expand/dismiss
         binding.layoutBukaTabel.setOnClickListener {
             if (collapsedTabel) {
                 // Show
@@ -83,53 +88,33 @@ class ReportFragment : Fragment() {
             }
         }
 
+        // On sembunyikan table card click
         binding.btnTableTotalUangMasukSembunyikan.setOnClickListener {
             hideExpandableTumCard()
         }
-    }
 
-    private fun showExpandableRekap() {
-        TransitionManager.beginDelayedTransition(binding.root, AutoTransition())
-        binding.cardRekap.visibility = View.VISIBLE
-        binding.imgArrowBukaRekapBesar.setImageDrawable(ContextCompat.getDrawable(requireContext(), R.drawable.ic_baseline_keyboard_arrow_up_24))
-    }
+        binding.spinnerPeriode.onItemSelectedListener = object : OnItemSelectedListener {
+            override fun onItemSelected(p0: AdapterView<*>?, p1: View?, spinnerPosition: Int, p3: Long) {
+                val semuaPeriode = 0
+                val mingguIni = 1
+                val bulanIni = 2
+                val tahunIni = 3
 
-    private fun hideExpandableRekap() {
-        TransitionManager.beginDelayedTransition(binding.root, AutoTransition())
-        binding.cardRekap.visibility = View.GONE
-        binding.imgArrowBukaRekapBesar.setImageDrawable(ContextCompat.getDrawable(requireContext(), R.drawable.ic_baseline_keyboard_arrow_right_24))
-    }
+                when (spinnerPosition) {
+                    semuaPeriode -> { detailViewModel.getRekapSemuaPeriode() }
+//                    mingguIni -> { detailViewModel.getRekapMingguIni() }
+//                    bulanIni -> { detailViewModel.getRekapBulanIni() }
+//                    tahunIni -> { detailViewModel.getRekapTahunIni() }
+                }
+            }
 
-    private fun showExpandableTumCard() {
-        detailViewModel.isFinishOperation.value = false
+            override fun onNothingSelected(p0: AdapterView<*>?) {
 
-        lifecycleScope.launch {
-            withContext(Dispatchers.Main) {
-                TransitionManager.beginDelayedTransition(binding.root, AutoTransition())
-                binding.layoutFullTabel.visibility = View.VISIBLE
-
-                binding.imgArrowBukaTabel.setImageDrawable(ContextCompat.getDrawable(requireContext(), R.drawable.ic_baseline_keyboard_arrow_up_24))
-                collapsedTabel = false
-                binding.tvInfoBukaTabel.text = "Tutup Tabel"
-
-                detailViewModel.isFinishOperation.postValue(true)
             }
         }
     }
 
-    private fun hideExpandableTumCard() {
-        CoroutineScope(Dispatchers.IO).launch {
-            withContext(Dispatchers.Main) {
-                TransitionManager.beginDelayedTransition(binding.layoutExpandableTabel, AutoTransition())
-                binding.imgArrowBukaTabel.setImageDrawable(ContextCompat.getDrawable(requireContext(), R.drawable.ic_baseline_keyboard_arrow_right_24))
-                binding.layoutFullTabel.visibility = View.GONE
 
-                collapsedTabel = true
-
-                binding.tvInfoBukaTabel.text = "Buka Tabel"
-            }
-        }
-    }
 
     override fun onResume() {
         super.onResume()
@@ -190,5 +175,51 @@ class ReportFragment : Fragment() {
         }
     }
 
+
+    /**
+     * Expandable UI elements
+     */
+    private fun showExpandableRekap() {
+        TransitionManager.beginDelayedTransition(binding.root, AutoTransition())
+        binding.cardRekap.visibility = View.VISIBLE
+        binding.imgArrowBukaRekapBesar.setImageDrawable(ContextCompat.getDrawable(requireContext(), R.drawable.ic_baseline_keyboard_arrow_up_24))
+    }
+
+    private fun hideExpandableRekap() {
+        TransitionManager.beginDelayedTransition(binding.root, AutoTransition())
+        binding.cardRekap.visibility = View.GONE
+        binding.imgArrowBukaRekapBesar.setImageDrawable(ContextCompat.getDrawable(requireContext(), R.drawable.ic_baseline_keyboard_arrow_right_24))
+    }
+
+    private fun showExpandableTumCard() {
+        detailViewModel.isFinishOperation.value = false
+
+        lifecycleScope.launch {
+            withContext(Dispatchers.Main) {
+                TransitionManager.beginDelayedTransition(binding.root, AutoTransition())
+                binding.layoutFullTabel.visibility = View.VISIBLE
+
+                binding.imgArrowBukaTabel.setImageDrawable(ContextCompat.getDrawable(requireContext(), R.drawable.ic_baseline_keyboard_arrow_up_24))
+                collapsedTabel = false
+                binding.tvInfoBukaTabel.text = "Tutup Tabel"
+
+                detailViewModel.isFinishOperation.postValue(true)
+            }
+        }
+    }
+
+    private fun hideExpandableTumCard() {
+        CoroutineScope(Dispatchers.IO).launch {
+            withContext(Dispatchers.Main) {
+                TransitionManager.beginDelayedTransition(binding.layoutExpandableTabel, AutoTransition())
+                binding.imgArrowBukaTabel.setImageDrawable(ContextCompat.getDrawable(requireContext(), R.drawable.ic_baseline_keyboard_arrow_right_24))
+                binding.layoutFullTabel.visibility = View.GONE
+
+                collapsedTabel = true
+
+                binding.tvInfoBukaTabel.text = "Buka Tabel"
+            }
+        }
+    }
 
 }

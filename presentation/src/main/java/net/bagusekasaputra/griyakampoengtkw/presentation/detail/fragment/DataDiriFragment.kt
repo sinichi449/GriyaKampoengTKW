@@ -24,11 +24,11 @@ import net.bagusekasaputra.griyakampoengtkw.presentation.UiUtils
 import net.bagusekasaputra.griyakampoengtkw.presentation.databinding.DialogTambahDataDiriBinding
 import net.bagusekasaputra.griyakampoengtkw.presentation.databinding.FragmentDataDiriBinding
 import net.bagusekasaputra.griyakampoengtkw.presentation.detail.FullImageActivity
-import net.bagusekasaputra.griyakampoengtkw.presentation.detail.viewmodel.DetailViewModel
-import net.bagusekasaputra.griyakampoengtkw.presentation.detail.viewmodel.ImageViewModel
 import net.bagusekasaputra.griyakampoengtkw.presentation.util.DialogUtil
 import net.bagusekasaputra.griyakampoengtkw.presentation.util.GriyaNodes
 import net.bagusekasaputra.griyakampoengtkw.presentation.util.InputUtil
+import net.bagusekasaputra.griyakampoengtkw.presentation.viewmodel.DetailViewModel
+import net.bagusekasaputra.griyakampoengtkw.presentation.viewmodel.ImageViewModel
 
 @AndroidEntryPoint
 class DataDiriFragment : Fragment() {

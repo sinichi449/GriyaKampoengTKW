@@ -1,4 +1,4 @@
-package net.bagusekasaputra.griyakampoengtkw.presentation.detail.viewmodel
+package net.bagusekasaputra.griyakampoengtkw.presentation.viewmodel
 
 import android.content.ContentResolver
 import android.graphics.Bitmap

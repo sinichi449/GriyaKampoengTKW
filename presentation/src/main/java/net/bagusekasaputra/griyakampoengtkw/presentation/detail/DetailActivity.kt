@@ -16,10 +16,10 @@ import net.bagusekasaputra.griyakampoengtkw.presentation.detail.adapter.ViewPage
 import net.bagusekasaputra.griyakampoengtkw.presentation.detail.fragment.BiayaMarketingFragment
 import net.bagusekasaputra.griyakampoengtkw.presentation.detail.fragment.DataDiriFragment
 import net.bagusekasaputra.griyakampoengtkw.presentation.detail.fragment.FormPembayaranFragment
-import net.bagusekasaputra.griyakampoengtkw.presentation.detail.viewmodel.DetailViewModel
-import net.bagusekasaputra.griyakampoengtkw.presentation.detail.viewmodel.ImageViewModel
 import net.bagusekasaputra.griyakampoengtkw.presentation.main.MainActivity
 import net.bagusekasaputra.griyakampoengtkw.presentation.util.GriyaNodes
+import net.bagusekasaputra.griyakampoengtkw.presentation.viewmodel.DetailViewModel
+import net.bagusekasaputra.griyakampoengtkw.presentation.viewmodel.ImageViewModel
 import javax.inject.Inject
 
 @AndroidEntryPoint

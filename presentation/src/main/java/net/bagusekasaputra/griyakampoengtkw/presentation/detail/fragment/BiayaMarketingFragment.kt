@@ -1,6 +1,5 @@
 package net.bagusekasaputra.griyakampoengtkw.presentation.detail.fragment
 
-//import net.bagusekasaputra.griyakampoengtkw.domain.entity.BiayaMarketing
 import android.os.Bundle
 import android.view.*
 import android.widget.Toast
@@ -25,9 +24,9 @@ import net.bagusekasaputra.griyakampoengtkw.presentation.detail.tableview.biayaM
 import net.bagusekasaputra.griyakampoengtkw.presentation.detail.tableview.biayaMarketing.Cell
 import net.bagusekasaputra.griyakampoengtkw.presentation.detail.tableview.biayaMarketing.ColumnHeader
 import net.bagusekasaputra.griyakampoengtkw.presentation.detail.tableview.biayaMarketing.RowHeader
-import net.bagusekasaputra.griyakampoengtkw.presentation.detail.viewmodel.DetailViewModel
 import net.bagusekasaputra.griyakampoengtkw.presentation.util.DialogUtil
 import net.bagusekasaputra.griyakampoengtkw.presentation.util.InputUtil
+import net.bagusekasaputra.griyakampoengtkw.presentation.viewmodel.DetailViewModel
 
 @AndroidEntryPoint
 class BiayaMarketingFragment : Fragment() {
