@@ -126,5 +126,11 @@
         <item name="android:textAllCaps">true</item>
     </style>
 
+    <style name="DatePicker" parent="Theme.AppCompat.Light.Dialog">
+        <item name="colorOnPrimary">@color/secondaryColor</item>
+        <item name="colorPrimaryDark">@color/primaryDarkColor</item>
+        <item name="colorAccent">@color/secondaryLightColor</item>
+    </style>
+
 
 </resources>

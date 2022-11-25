@@ -131,9 +131,10 @@
             app:layout_constraintBottom_toBottomOf="@id/til_tanggal"
             app:layout_constraintHorizontal_weight="0.25"
             android:textSize="12sp"
+            android:textColor="@color/secondaryColor"
             android:text="Pilih"
             app:cornerRadius="8dp"
-            style="@style/Widget.MaterialComponents.Button.TextButton"/>
+            style="@style/TextDialogButton"/>
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

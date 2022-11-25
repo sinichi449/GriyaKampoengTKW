@@ -304,8 +304,15 @@ class FormPembayaranFragment : Fragment() {
             dialogBinding.edtJumlahUangDibayar.apply {
                 addTextChangedListener(ThousandSeparatorTextWatcher(this))
             }
-            setDateDefaulOrPickEdtTanggal(true, dialogBinding)
             additionalDialogSetting(requireContext(), dialogView)
+
+            // setup datepicker
+            DatePickerHelper(
+                ctx = requireContext(),
+                triggerButton = dialogBinding.btnPilihTanggal,
+                targetEdt = dialogBinding.edtTanggal,
+            ).setupDateDefaultOrPick(true)
+
             dialogView.show()
 
             // click listeners
@@ -376,7 +383,13 @@ class FormPembayaranFragment : Fragment() {
         dialogBinding.btnHapus.visibility = View.VISIBLE
         dialogBinding.btnTambahkan.text = "Simpan Perubahan"
 
-        setDateDefaulOrPickEdtTanggal(false, dialogBinding)
+        // setup datepicker
+        DatePickerHelper(
+            ctx = requireContext(),
+            triggerButton = dialogBinding.btnPilihTanggal,
+            targetEdt = dialogBinding.edtTanggal,
+        ).setupDateDefaultOrPick(true)
+
         additionalDialogSetting(requireContext(), dialogView)
         dialogView.show()
 
