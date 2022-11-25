@@ -69,10 +69,9 @@ class FeeMarketingRepositoryImpl(
 
     override fun addFeeMarketing(feeMarketing: FeeMarketing): Flow<Result<Nothing?>> {
         return flow {
-            val timeMillis = System.currentTimeMillis()
             val remoteResult = remoteFeeMarketingDataSource.addFeeMarketing(
                 kavlingKode = feeMarketing.kavlingKode,
-                feeMarketingModel = mapFeeMarketing(timeMillis, feeMarketing),
+                feeMarketingModel = mapFeeMarketing(feeMarketing),
             )
 
             emit(remoteResult)
@@ -84,13 +83,11 @@ class FeeMarketingRepositoryImpl(
         newFeeMarketing: FeeMarketing
     ): Flow<Result<Nothing?>> {
         return flow {
-            val timeMillis = System.currentTimeMillis()
-
             // We need to update the local data source too
             val localUpdate = localFeeMarketingDataSource.updateFeeMarketing(
                 kavlingKode = oldFeeMarketing.kavlingKode,
-                oldFeeMarketingModel = mapFeeMarketing(timeMillis, oldFeeMarketing),
-                newFeeMarketingModel = mapFeeMarketing(timeMillis, newFeeMarketing),
+                oldFeeMarketingModel = mapFeeMarketing(oldFeeMarketing),
+                newFeeMarketingModel = mapFeeMarketing(newFeeMarketing),
             )
             localUpdate.onFailure {
                 emit(Result.failure(it))
@@ -99,8 +96,8 @@ class FeeMarketingRepositoryImpl(
 
             val remoteResult = remoteFeeMarketingDataSource.updateFeeMarketing(
                 kavlingKode = oldFeeMarketing.kavlingKode,
-                oldFeeMarketingModel = mapFeeMarketing(timeMillis, oldFeeMarketing),
-                newFeeMarketingModel = mapFeeMarketing(timeMillis, newFeeMarketing),
+                oldFeeMarketingModel = mapFeeMarketing(oldFeeMarketing),
+                newFeeMarketingModel = mapFeeMarketing(newFeeMarketing),
             )
 
             emit(remoteResult)
@@ -120,19 +117,20 @@ class FeeMarketingRepositoryImpl(
         }
     }
 
-    private fun mapFeeMarketing(feeMarketingModel: FeeMarketingModel) =
+    private fun mapFeeMarketing(feeMarketingModel: FeeMarketingModel): FeeMarketing =
         feeMarketingModel.let {
             FeeMarketing(
                 kavlingKode = it.kavlingKode,
                 namaMarketer = it.namaMarketer,
                 biayaMarketer = it.biayaMarketer.toString(),
+                tanggalPenerimaan = it.getTanggalStr(),
             )
         }
 
-    private fun mapFeeMarketing(timeMillis: Long, feeMarketing: FeeMarketing) =
+    private fun mapFeeMarketing(feeMarketing: FeeMarketing) =
         feeMarketing.let {
             FeeMarketingModel(
-                timeMillis = timeMillis,
+                timeMillis = it.getTimemillisTanggalPenerimaan(),
                 kavlingKode = it.kavlingKode,
                 namaMarketer = it.namaMarketer,
                 biayaMarketer = it.biayaMarketer.toLong(),

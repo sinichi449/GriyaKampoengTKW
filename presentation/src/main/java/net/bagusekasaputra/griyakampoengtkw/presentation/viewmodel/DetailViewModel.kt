@@ -421,6 +421,7 @@ class DetailViewModel @Inject constructor(
         kavlingKode: String,
         namaMarketer: String,
         biayaMarketer: String,
+        tanggalPenerimaan: String,
         onComplete: (msg: String) -> Unit,
     ) {
         isFinishOperation.value = false
@@ -429,6 +430,7 @@ class DetailViewModel @Inject constructor(
             kavlingKode = kavlingKode,
             namaMarketer = namaMarketer,
             biayaMarketer = biayaMarketer,
+            tanggalPenerimaan = tanggalPenerimaan,
         )
         val request = AddFeeMarketingUseCase.Request(feeMarketing)
 
@@ -456,6 +458,7 @@ class DetailViewModel @Inject constructor(
         kavlingKode: String,
         newNamaMarketer: String,
         newBiayaMarketer: String,
+        newTanggalPenerimaan: String,
         onComplete: (msg: String) -> Unit
     ) {
         // Check null
@@ -473,6 +476,7 @@ class DetailViewModel @Inject constructor(
                     kavlingKode = kavlingKode,
                     namaMarketer = newNamaMarketer,
                     biayaMarketer = newBiayaMarketer,
+                    tanggalPenerimaan = newTanggalPenerimaan,
                 )
                 val request = UpdateFeeMarketingUseCase.Request(
                     oldFeeMarketing = feeMarketingLive.value!!,

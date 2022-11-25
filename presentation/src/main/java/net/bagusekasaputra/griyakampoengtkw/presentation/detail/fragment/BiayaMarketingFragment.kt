@@ -24,6 +24,7 @@ import net.bagusekasaputra.griyakampoengtkw.presentation.detail.tableview.biayaM
 import net.bagusekasaputra.griyakampoengtkw.presentation.detail.tableview.biayaMarketing.Cell
 import net.bagusekasaputra.griyakampoengtkw.presentation.detail.tableview.biayaMarketing.ColumnHeader
 import net.bagusekasaputra.griyakampoengtkw.presentation.detail.tableview.biayaMarketing.RowHeader
+import net.bagusekasaputra.griyakampoengtkw.presentation.util.DatePickerHelper
 import net.bagusekasaputra.griyakampoengtkw.presentation.util.DialogUtil
 import net.bagusekasaputra.griyakampoengtkw.presentation.util.InputUtil
 import net.bagusekasaputra.griyakampoengtkw.presentation.viewmodel.DetailViewModel
@@ -94,8 +95,9 @@ class BiayaMarketingFragment : Fragment() {
             } else {
                 val namaMarketer = binding.tvNamaMarketer.text.toString()
                 val biayaMarketer = binding.tvBiayaMarketer.text.toString() // comma separated
+                val tanggalPenerimaan = binding.tvTanggalPenerimaanFeeMarketing.text.toString()
 
-                showEditFeeMarketing(namaMarketer, biayaMarketer)
+                showEditFeeMarketing(namaMarketer, biayaMarketer, tanggalPenerimaan)
             }
         }
     }
@@ -127,12 +129,14 @@ class BiayaMarketingFragment : Fragment() {
             binding.root.isRefreshing = !finish
         }
 
-        viewModel.feeMarketingLive.observe(requireActivity()) { biayaAfiliasi ->
-            if (biayaAfiliasi != null) {
-                binding.tvNamaMarketer.text = biayaAfiliasi.namaMarketer
-                binding.tvBiayaMarketer.text = biayaAfiliasi.biayaMarketer
+        viewModel.feeMarketingLive.observe(requireActivity()) { feeMarketing ->
+            if (feeMarketing != null) {
+                binding.tvNamaMarketer.text = feeMarketing.namaMarketer
+                binding.tvBiayaMarketer.text = feeMarketing.biayaMarketer
+                binding.tvTanggalPenerimaanFeeMarketing.text = feeMarketing.tanggalPenerimaan
             } else {
                 binding.tvNamaMarketer.text = requireContext().getString(R.string.biaya_marketing_tidak_ada_marketer)
+                binding.tvTanggalPenerimaanFeeMarketing.text = "-"
                 binding.tvBiayaMarketer.text = "0"
             }
         }
@@ -301,6 +305,14 @@ class BiayaMarketingFragment : Fragment() {
             addTextChangedListener(ThousandSeparatorTextWatcher(this))
         }
 
+        // Setup date picker
+        val datePickerHelper = DatePickerHelper(
+            ctx = requireContext(),
+            triggerButton = dialogBinding.btnPilihTanggalFeeMarketing,
+            targetEdt = dialogBinding.edtTanggalPenerimaanFeeMarketing,
+        )
+        datePickerHelper.setupDateDefaultOrPick(true)
+
         dialogView.show()
 
 
@@ -309,6 +321,7 @@ class BiayaMarketingFragment : Fragment() {
             val isInvalidEdt = InputUtil.isNullOrEmptyEditTexts(
                 dialogBinding.edtNamaMarketer,
                 dialogBinding.edtBiayaMarketer,
+                dialogBinding.edtTanggalPenerimaanFeeMarketing,
             )
 
             if (!isInvalidEdt) {
@@ -317,11 +330,13 @@ class BiayaMarketingFragment : Fragment() {
 
                 val namaMarketer = dialogBinding.edtNamaMarketer.text.toString()
                 val biayaMarketer = dialogBinding.edtBiayaMarketer.text.toString()
+                val tanggalPenerimaan = dialogBinding.edtTanggalPenerimaanFeeMarketing.text.toString()
 
                 viewModel.addFeeMarketing(
                     kavlingKode = currentKavlingKode!!,
                     namaMarketer = namaMarketer,
                     biayaMarketer = biayaMarketer,
+                    tanggalPenerimaan = tanggalPenerimaan,
                     onComplete = { msg ->
                         syncData()
                         dialogView.dismiss()
@@ -336,7 +351,11 @@ class BiayaMarketingFragment : Fragment() {
         }
     }
 
-    private fun showEditFeeMarketing(namaMarketer: String, biayaMarketer: String) {
+    private fun showEditFeeMarketing(
+        namaMarketer: String,
+        biayaMarketer: String,
+        tanggalPenerimaan: String
+    ) {
         val dialogBinding = DialogActionFeeMarketingBinding.inflate(layoutInflater)
         val dialogView = MaterialAlertDialogBuilder(requireContext()).apply {
             setView(dialogBinding.root)
@@ -354,11 +373,18 @@ class BiayaMarketingFragment : Fragment() {
         }
         dialogBinding.edtNamaMarketer.setText(namaMarketer)
         dialogBinding.edtBiayaMarketer.setText(biayaMarketer)
+        dialogBinding.edtTanggalPenerimaanFeeMarketing.setText(tanggalPenerimaan)
 
         dialogBinding.tvInfoTitleTambahFeeMarketing.text = "Ubah Fee Marketing"
         dialogBinding.btnTambahkanFeeMarketing.text = "Ubah"
         // enable delete button
         dialogBinding.btnHapusFeeMarketing.visibility = View.VISIBLE
+        val datePickerHelper = DatePickerHelper(
+            ctx = requireContext(),
+            triggerButton = dialogBinding.btnPilihTanggalFeeMarketing,
+            targetEdt = dialogBinding.edtTanggalPenerimaanFeeMarketing
+        )
+        datePickerHelper.setupDateDefaultOrPick(false)
 
         dialogView.show()
 
@@ -367,6 +393,7 @@ class BiayaMarketingFragment : Fragment() {
             val isInvalidEdt = InputUtil.isNullOrEmptyEditTexts(
                 dialogBinding.edtNamaMarketer,
                 dialogBinding.edtBiayaMarketer,
+                dialogBinding.edtTanggalPenerimaanFeeMarketing,
             )
 
             if (!isInvalidEdt) {
@@ -375,11 +402,13 @@ class BiayaMarketingFragment : Fragment() {
 
                 val newNamaMarketer = dialogBinding.edtNamaMarketer.text.toString()
                 val newBiayaMarketer = dialogBinding.edtBiayaMarketer.text.toString()
+                val newTanggalPenerimaan = dialogBinding.edtTanggalPenerimaanFeeMarketing.text.toString()
 
                 viewModel.updateFeeMarketing(
                     kavlingKode = currentKavlingKode!!,
                     newBiayaMarketer = newBiayaMarketer,
                     newNamaMarketer = newNamaMarketer,
+                    newTanggalPenerimaan = newTanggalPenerimaan,
                     onComplete = { msg ->
                         syncData()
                         dialogView.dismiss()

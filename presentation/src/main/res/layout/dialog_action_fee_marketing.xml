@@ -50,6 +50,47 @@
 
     </com.google.android.material.textfield.TextInputLayout>
 
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/til_tanggal_penerimaan_fee_marketing"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:hint="Tanggal penerimaan"
+            app:startIconDrawable="@drawable/ic_baseline_calendar_month_24"
+            app:endIconMode="clear_text"
+            style="@style/DenseOutlinedTextInputLayout"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toStartOf="@id/btn_pilih_tanggal_fee_marketing"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/edt_tanggal_penerimaan_fee_marketing"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:inputType="date"
+                style="@style/DenseOutlineEditText"/>
+
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btn_pilih_tanggal_fee_marketing"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="@id/til_tanggal_penerimaan_fee_marketing"
+            app:layout_constraintBottom_toBottomOf="@id/til_tanggal_penerimaan_fee_marketing"
+            android:text="Pilih"
+            android:textColor="@color/secondaryColor"
+            style="@style/TextDialogButton"/>
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
     <com.google.android.material.button.MaterialButton
         android:id="@+id/btn_tambahkan_fee_marketing"
         android:layout_width="match_parent"
