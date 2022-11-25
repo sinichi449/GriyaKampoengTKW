@@ -59,11 +59,45 @@
 
     </com.google.android.material.textfield.TextInputLayout>
 
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/til_tanggal_biaya_marketing"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toStartOf="@id/btn_pilih_tanggal_biaya_marketing"
+        app:layout_constraintTop_toBottomOf="@id/til_harga"
+        android:layout_marginTop="8dp"
+        android:hint="Tanggal"
+        app:startIconDrawable="@drawable/ic_baseline_calendar_month_24"
+        app:endIconMode="clear_text"
+        style="@style/DenseOutlinedTextInputLayout">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/edt_tanggal_biaya_marketing"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:inputType="date"
+            style="@style/DenseOutlineEditText"/>
+
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/btn_pilih_tanggal_biaya_marketing"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="@id/til_tanggal_biaya_marketing"
+        app:layout_constraintBottom_toBottomOf="@id/til_tanggal_biaya_marketing"
+        android:text="Pilih"
+        android:textColor="@color/secondaryColor"
+        style="@style/TextDialogButton"/>
+
+
     <com.google.android.material.button.MaterialButton
         android:id="@+id/btn_tambahkan"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        app:layout_constraintTop_toBottomOf="@id/til_harga"
+        app:layout_constraintTop_toBottomOf="@id/til_tanggal_biaya_marketing"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         android:layout_marginTop="24dp"
