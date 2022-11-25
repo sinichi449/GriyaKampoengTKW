@@ -11,6 +11,7 @@ class TableBiayaMarketingHelper(
         return ArrayList<String>().apply {
             add("Jenis Biaya")
             add("Harga")
+            add("Tanggal")
         }
     }
 
@@ -43,12 +44,15 @@ class TableBiayaMarketingHelper(
                 val transformHarga = NumberUtil.formatLongToString(biayaMarketing.harga.toLong())
                 secondOrderItemList.add(transformHarga)
 
+                secondOrderItemList.add(biayaMarketing.getTanggalStr())
+
                 firstOrderItemList.add(secondOrderItemList)
             }
         } else {
             val secondOrderItemList = ArrayList<String>()
 
             secondOrderItemList.apply {
+                add("-")
                 add("-")
                 add("-")
             }
@@ -59,21 +63,4 @@ class TableBiayaMarketingHelper(
         return firstOrderItemList
     }
 
-    fun getTotalBiayaMarketing(): Long {
-        return if ((listBiayaMarketing != null) and (listBiayaMarketing?.isNotEmpty() == true))
-            listBiayaMarketing?.last()?.totalBiaya?.toLong() ?: 0L
-        else
-            0L
-    }
-
-    fun getCuanBiayaMarketing(lastTotalUangMasuk: String): Long {
-        // The "totalUangMasuk" which got from List<Pembayaran> are already parsed into 0,000,000
-        // format by the Use Case, so we can't parse it directly by .toLong() method.
-        val totalBiayaMarketing = getTotalBiayaMarketing()
-        val totalUangMasukTerakhir = NumberUtil.formatStringToLong(lastTotalUangMasuk)
-
-        val result = totalUangMasukTerakhir - totalBiayaMarketing
-
-        return result
-    }
 }

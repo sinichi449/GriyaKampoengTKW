@@ -566,13 +566,14 @@ class DetailViewModel @Inject constructor(
         kavlingKode: String,
         jenisBiaya: String,
         harga: String,
+        tanggal: String,
         onComplete: (msg: String) -> Unit,
     ) {
         biayaMarketingRefreshed.value = false
         isFinishOperation.value = false
 
         val biayaMarketing = BiayaMarketing(
-            timeMillis = System.currentTimeMillis(),
+            timeMillis = BiayaMarketing.getTimeMillisTanggal(tanggal),
             kavlingKode = kavlingKode,
             jenisBiaya = jenisBiaya,
             harga = harga,
@@ -605,12 +606,14 @@ class DetailViewModel @Inject constructor(
         kavlingKode: String,
         newJenisHarga: String,
         newHarga: String,
+        newTanggal: String,
         onComplete: (msg: String) -> Unit,
     ) {
         biayaMarketingRefreshed.value = false
         isFinishOperation.value = false
 
         val newBiayaMarketing = BiayaMarketing(
+            timeMillis = BiayaMarketing.getTimeMillisTanggal(newTanggal),
             kavlingKode = kavlingKode,
             jenisBiaya = newJenisHarga,
             harga = newHarga,
@@ -792,15 +795,25 @@ class DetailViewModel @Inject constructor(
             .getBiayaMarketingCellItems()
     }
 
-    fun getTotalBiayaMarketing() =
-        TableBiayaMarketingHelper(listBiayaMarketingLive.value)
-            .getTotalBiayaMarketing()
+    fun getTotalBiayaMarketing(): Long {
+        val listBiayaMarketing = listBiayaMarketingLive.value
 
-    fun getCuanBiayaMarketing() =
-        TableBiayaMarketingHelper(listBiayaMarketingLive.value)
-            .getCuanBiayaMarketing(
-                lastTotalUangMasuk = listPembayaranLive.value?.last()?.totalUangMasuk ?: "0"
-            )
+        return if ((listBiayaMarketing != null) and (listBiayaMarketing?.isNotEmpty() == true))
+            listBiayaMarketing?.last()?.totalBiaya?.toLong() ?: 0L
+        else
+            0L
+    }
+
+    fun getCuanBiayaMarketing(): Long {
+        val lastTotalUangMasuk = listPembayaranLive.value?.last()?.totalUangMasuk ?: "0"
+
+        // The "totalUangMasuk" which got from List<Pembayaran> are already parsed into 0,000,000
+        // format by the Use Case, so we can't parse it directly by .toLong() method.
+        val totalBiayaMarketing = getTotalBiayaMarketing()
+        val totalUangMasukTerakhir = NumberUtil.formatStringToLong(lastTotalUangMasuk)
+
+        return totalUangMasukTerakhir - totalBiayaMarketing
+    }
 
     fun getAllArrayTerminPembayaran(): Array<String> {
         val terminList = ArrayList<String>()

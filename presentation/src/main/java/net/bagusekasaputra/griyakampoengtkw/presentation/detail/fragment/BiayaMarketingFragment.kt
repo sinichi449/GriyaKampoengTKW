@@ -178,7 +178,8 @@ class BiayaMarketingFragment : Fragment() {
         }
 
         binding.tableviewBiayaMarketing.setColumnWidth(0, 500)
-        binding.tableviewBiayaMarketing.setColumnWidth(1, 300)
+        binding.tableviewBiayaMarketing.setColumnWidth(1, 350)
+        binding.tableviewBiayaMarketing.setColumnWidth(2, 300)
     }
 
     private fun setupExtendedFab() {
@@ -251,11 +252,13 @@ class BiayaMarketingFragment : Fragment() {
 
                 val jenisBiaya = dialogBinding.edtJenisBiaya.text.toString()
                 val harga = dialogBinding.edtHarga.text.toString()
+                val tanggal = dialogBinding.edtTanggalBiayaMarketing.text.toString()
 
                 viewModel.addBiayaMarketing(
                     kavlingKode = currentKavlingKode!!,
                     jenisBiaya = jenisBiaya,
                     harga = harga,
+                    tanggal = tanggal,
                     onComplete = { msg ->
                         dialogView.dismiss()
                         syncData()
@@ -314,7 +317,8 @@ class BiayaMarketingFragment : Fragment() {
         dialogBinding.btnTambahkan.text = "Ubah Data"
         // Set hapus button visible
         dialogBinding.btnHapusBiayaMarketing.visibility = View.VISIBLE
-        // I almost forgot to add textwatcher for comma separated value
+        dialogBinding.edtTanggalBiayaMarketing.setText(biayaMarketing.getTanggalStr())
+
         dialogBinding.edtHarga.apply {
             val harga = this.text.toString()
 
@@ -346,12 +350,14 @@ class BiayaMarketingFragment : Fragment() {
 
                 val newJenisBiaya = dialogBinding.edtJenisBiaya.text.toString()
                 val newHarga = dialogBinding.edtHarga.text.toString()
+                val newTanggal = dialogBinding.edtTanggalBiayaMarketing.text.toString()
 
                 viewModel.editBiayaMarketing(
                     oldBiayaMarketing = biayaMarketing,
                     kavlingKode = currentKavlingKode!!,
                     newJenisHarga = newJenisBiaya,
                     newHarga = newHarga,
+                    newTanggal = newTanggal,
                     onComplete = { msg ->
                         dialogView.dismiss()
                         syncData()
