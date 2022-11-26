@@ -55,6 +55,16 @@
                         android:layout_marginTop="8dp"
                         android:spinnerMode="dropdown"/>
 
+                    <com.google.android.material.textview.MaterialTextView
+                        android:id="@+id/tv_range_periode"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="-"
+                        android:layout_marginTop="4dp"
+                        tools:text="23/04/2022 - 19/10/2022"
+                        android:textSize="14sp"
+                        style="@style/TextAppearance.MaterialComponents.Body1"/>
+
                 </androidx.appcompat.widget.LinearLayoutCompat>
 
             </com.google.android.material.card.MaterialCardView>

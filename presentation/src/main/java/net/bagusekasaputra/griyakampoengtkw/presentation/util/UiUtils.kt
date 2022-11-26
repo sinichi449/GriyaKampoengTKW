@@ -1,4 +1,4 @@
-package net.bagusekasaputra.griyakampoengtkw.presentation
+package net.bagusekasaputra.griyakampoengtkw.presentation.util
 
 import androidx.core.widget.NestedScrollView
 import com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
