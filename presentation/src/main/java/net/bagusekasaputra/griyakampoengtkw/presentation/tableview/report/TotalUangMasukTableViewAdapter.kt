@@ -1,4 +1,4 @@
-package net.bagusekasaputra.griyakampoengtkw.presentation.main.tableview
+package net.bagusekasaputra.griyakampoengtkw.presentation.tableview.report
 
 import android.graphics.Typeface
 import android.view.LayoutInflater

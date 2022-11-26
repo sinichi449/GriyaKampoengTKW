@@ -1,4 +1,4 @@
-package net.bagusekasaputra.griyakampoengtkw.presentation.detail.adapter
+package net.bagusekasaputra.griyakampoengtkw.presentation.adapter.recyclerview
 
 import android.view.LayoutInflater
 import android.view.ViewGroup

@@ -1,4 +1,4 @@
-package net.bagusekasaputra.griyakampoengtkw.presentation.main.fragment
+package net.bagusekasaputra.griyakampoengtkw.presentation.fragment
 
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -20,10 +20,10 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import net.bagusekasaputra.griyakampoengtkw.presentation.R
 import net.bagusekasaputra.griyakampoengtkw.presentation.databinding.FragmentReportBinding
-import net.bagusekasaputra.griyakampoengtkw.presentation.main.tableview.TotalUangMasukTableViewAdapter
-import net.bagusekasaputra.griyakampoengtkw.presentation.main.tableview.TumCell
-import net.bagusekasaputra.griyakampoengtkw.presentation.main.tableview.TumColumnHeaders
-import net.bagusekasaputra.griyakampoengtkw.presentation.main.tableview.TumRowHeaders
+import net.bagusekasaputra.griyakampoengtkw.presentation.tableview.report.TotalUangMasukTableViewAdapter
+import net.bagusekasaputra.griyakampoengtkw.presentation.tableview.report.TumCell
+import net.bagusekasaputra.griyakampoengtkw.presentation.tableview.report.TumColumnHeaders
+import net.bagusekasaputra.griyakampoengtkw.presentation.tableview.report.TumRowHeaders
 import net.bagusekasaputra.griyakampoengtkw.presentation.viewmodel.DetailViewModel
 
 @AndroidEntryPoint
@@ -101,7 +101,7 @@ class ReportFragment : Fragment() {
                 val tahunIni = 3
 
                 when (spinnerPosition) {
-                    semuaPeriode -> { detailViewModel.getRekapSemuaPeriode() }
+//                    semuaPeriode -> { detailViewModel.getRekapSemuaPeriode() }
 //                    mingguIni -> { detailViewModel.getRekapMingguIni() }
 //                    bulanIni -> { detailViewModel.getRekapBulanIni() }
 //                    tahunIni -> { detailViewModel.getRekapTahunIni() }
@@ -123,7 +123,7 @@ class ReportFragment : Fragment() {
     }
 
     private fun syncData() {
-        detailViewModel.provideReportUangMasuk()
+
     }
 
     private fun setupViewModel() {

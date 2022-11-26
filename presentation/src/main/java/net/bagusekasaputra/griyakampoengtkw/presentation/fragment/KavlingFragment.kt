@@ -1,4 +1,4 @@
-package net.bagusekasaputra.griyakampoengtkw.presentation.main.fragment
+package net.bagusekasaputra.griyakampoengtkw.presentation.fragment
 
 import android.content.Intent
 import android.content.res.Configuration
@@ -26,11 +26,11 @@ import jp.wasabeef.recyclerview.adapters.ScaleInAnimationAdapter
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.Block
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.Kavling
 import net.bagusekasaputra.griyakampoengtkw.presentation.R
+import net.bagusekasaputra.griyakampoengtkw.presentation.activities.DetailActivity
+import net.bagusekasaputra.griyakampoengtkw.presentation.activities.MainActivity
+import net.bagusekasaputra.griyakampoengtkw.presentation.adapter.recyclerview.BlockRecyclerAdapter
+import net.bagusekasaputra.griyakampoengtkw.presentation.adapter.recyclerview.KavlingRecyclerAdapter
 import net.bagusekasaputra.griyakampoengtkw.presentation.databinding.*
-import net.bagusekasaputra.griyakampoengtkw.presentation.detail.DetailActivity
-import net.bagusekasaputra.griyakampoengtkw.presentation.main.MainActivity
-import net.bagusekasaputra.griyakampoengtkw.presentation.main.adapter.BlockRecyclerAdapter
-import net.bagusekasaputra.griyakampoengtkw.presentation.main.adapter.KavlingRecyclerAdapter
 import net.bagusekasaputra.griyakampoengtkw.presentation.util.DialogUtil
 import net.bagusekasaputra.griyakampoengtkw.presentation.util.InputUtil
 import net.bagusekasaputra.griyakampoengtkw.presentation.viewmodel.MainViewModel

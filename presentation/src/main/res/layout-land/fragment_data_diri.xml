@@ -5,7 +5,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".detail.fragment.DataDiriFragment"
+    tools:context=".fragment.DataDiriFragment"
     android:theme="@style/Theme.GriyaKampung">
 
     <androidx.constraintlayout.widget.ConstraintLayout

@@ -1,4 +1,4 @@
-package net.bagusekasaputra.griyakampoengtkw.presentation.detail
+package net.bagusekasaputra.griyakampoengtkw.presentation.activities
 
 import android.content.SharedPreferences
 import android.content.res.Configuration
@@ -11,12 +11,11 @@ import androidx.fragment.app.Fragment
 import com.google.android.material.tabs.TabLayout
 import dagger.hilt.android.AndroidEntryPoint
 import net.bagusekasaputra.griyakampoengtkw.presentation.R
+import net.bagusekasaputra.griyakampoengtkw.presentation.adapter.viewpager.DetailViewPagerAdapter
 import net.bagusekasaputra.griyakampoengtkw.presentation.databinding.ActivityDetailBinding
-import net.bagusekasaputra.griyakampoengtkw.presentation.detail.adapter.ViewPagerAdapter
-import net.bagusekasaputra.griyakampoengtkw.presentation.detail.fragment.BiayaMarketingFragment
-import net.bagusekasaputra.griyakampoengtkw.presentation.detail.fragment.DataDiriFragment
-import net.bagusekasaputra.griyakampoengtkw.presentation.detail.fragment.FormPembayaranFragment
-import net.bagusekasaputra.griyakampoengtkw.presentation.main.MainActivity
+import net.bagusekasaputra.griyakampoengtkw.presentation.fragment.BiayaMarketingFragment
+import net.bagusekasaputra.griyakampoengtkw.presentation.fragment.DataDiriFragment
+import net.bagusekasaputra.griyakampoengtkw.presentation.fragment.FormPembayaranFragment
 import net.bagusekasaputra.griyakampoengtkw.presentation.util.GriyaNodes
 import net.bagusekasaputra.griyakampoengtkw.presentation.viewmodel.DetailViewModel
 import net.bagusekasaputra.griyakampoengtkw.presentation.viewmodel.ImageViewModel
@@ -26,7 +25,7 @@ import javax.inject.Inject
 class DetailActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityDetailBinding
-    private lateinit var pagerAdapter: ViewPagerAdapter
+    private lateinit var pagerAdapter: DetailViewPagerAdapter
     private val viewModel: DetailViewModel by viewModels()
     private val imageViewModel: ImageViewModel by viewModels()
 
@@ -81,7 +80,7 @@ class DetailActivity : AppCompatActivity() {
     }
 
     private fun setupViewPager() {
-        pagerAdapter = ViewPagerAdapter(supportFragmentManager)
+        pagerAdapter = DetailViewPagerAdapter(supportFragmentManager)
         pagerAdapter.apply {
             addFragment(putKavlingKode(DataDiriFragment(), currentKavlingKode), "Data Diri")
             addFragment(putKavlingKode(FormPembayaranFragment(), currentKavlingKode), "Form Pembayaran")

@@ -1,4 +1,4 @@
-package net.bagusekasaputra.griyakampoengtkw.presentation.main.adapter
+package net.bagusekasaputra.griyakampoengtkw.presentation.adapter.recyclerview
 
 import android.content.Context
 import android.graphics.Color

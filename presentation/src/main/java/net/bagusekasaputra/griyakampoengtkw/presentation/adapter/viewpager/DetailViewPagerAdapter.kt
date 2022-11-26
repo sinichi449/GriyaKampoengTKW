@@ -1,10 +1,10 @@
-package net.bagusekasaputra.griyakampoengtkw.presentation.detail.adapter
+package net.bagusekasaputra.griyakampoengtkw.presentation.adapter.viewpager
 
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.FragmentStatePagerAdapter
 
-class ViewPagerAdapter(fm: FragmentManager): FragmentStatePagerAdapter(fm) {
+class DetailViewPagerAdapter(fm: FragmentManager): FragmentStatePagerAdapter(fm) {
 
     private val fragments = ArrayList<Fragment>()
     private val titles = ArrayList<String>()

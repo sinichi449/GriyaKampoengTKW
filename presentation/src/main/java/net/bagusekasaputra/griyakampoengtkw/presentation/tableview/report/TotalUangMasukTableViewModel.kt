@@ -1,4 +1,4 @@
-package net.bagusekasaputra.griyakampoengtkw.presentation.main.tableview
+package net.bagusekasaputra.griyakampoengtkw.presentation.tableview.report
 
 data class TumCell(
     val text: String?,

@@ -1,4 +1,4 @@
-package net.bagusekasaputra.griyakampoengtkw.presentation.detail.fragment
+package net.bagusekasaputra.griyakampoengtkw.presentation.fragment
 
 import android.Manifest
 import android.annotation.SuppressLint
@@ -24,15 +24,14 @@ import net.bagusekasaputra.griyakampoengtkw.domain.NumberUtil
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.HargaKavling
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.Pembayaran
 import net.bagusekasaputra.griyakampoengtkw.presentation.R
-import net.bagusekasaputra.griyakampoengtkw.presentation.UiUtils
+import net.bagusekasaputra.griyakampoengtkw.presentation.activities.FullImageActivity
+import net.bagusekasaputra.griyakampoengtkw.presentation.adapter.recyclerview.TerminRecyclerAdapter
 import net.bagusekasaputra.griyakampoengtkw.presentation.custom.ThousandSeparatorTextWatcher
 import net.bagusekasaputra.griyakampoengtkw.presentation.databinding.*
-import net.bagusekasaputra.griyakampoengtkw.presentation.detail.FullImageActivity
-import net.bagusekasaputra.griyakampoengtkw.presentation.detail.adapter.TerminRecyclerAdapter
-import net.bagusekasaputra.griyakampoengtkw.presentation.detail.tableview.formPembayaran.PembayaranCell
-import net.bagusekasaputra.griyakampoengtkw.presentation.detail.tableview.formPembayaran.PembayaranColumnHeader
-import net.bagusekasaputra.griyakampoengtkw.presentation.detail.tableview.formPembayaran.PembayaranRowHeader
-import net.bagusekasaputra.griyakampoengtkw.presentation.detail.tableview.formPembayaran.PembayaranTableViewAdapter
+import net.bagusekasaputra.griyakampoengtkw.presentation.tableview.formPembayaran.PembayaranCell
+import net.bagusekasaputra.griyakampoengtkw.presentation.tableview.formPembayaran.PembayaranColumnHeader
+import net.bagusekasaputra.griyakampoengtkw.presentation.tableview.formPembayaran.PembayaranRowHeader
+import net.bagusekasaputra.griyakampoengtkw.presentation.tableview.formPembayaran.PembayaranTableViewAdapter
 import net.bagusekasaputra.griyakampoengtkw.presentation.util.*
 import net.bagusekasaputra.griyakampoengtkw.presentation.util.DialogUtil.additionalDialogSetting
 import net.bagusekasaputra.griyakampoengtkw.presentation.viewmodel.DetailViewModel

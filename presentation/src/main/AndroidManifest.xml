@@ -8,7 +8,7 @@
 
     <application>
         <activity
-            android:name=".SettingsActivity"
+            android:name=".activities.SettingsActivity"
             android:exported="false"
             android:label="@string/title_activity_settings"
             android:theme="@style/Theme.GriyaKampung.BlackWhite">

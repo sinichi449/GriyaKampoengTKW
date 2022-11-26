@@ -1,4 +1,4 @@
-package net.bagusekasaputra.griyakampoengtkw.presentation.detail.fragment
+package net.bagusekasaputra.griyakampoengtkw.presentation.fragment
 
 import android.os.Bundle
 import android.view.*
@@ -14,16 +14,16 @@ import dagger.hilt.android.AndroidEntryPoint
 import net.bagusekasaputra.griyakampoengtkw.domain.NumberUtil
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.BiayaMarketing
 import net.bagusekasaputra.griyakampoengtkw.presentation.R
+import net.bagusekasaputra.griyakampoengtkw.presentation.adapter.recyclerview.JenisBiayaMarketingRecyclerAdapter
 import net.bagusekasaputra.griyakampoengtkw.presentation.custom.ThousandSeparatorTextWatcher
 import net.bagusekasaputra.griyakampoengtkw.presentation.databinding.DialogActionFeeMarketingBinding
 import net.bagusekasaputra.griyakampoengtkw.presentation.databinding.DialogActionsBiayaMarketingBinding
 import net.bagusekasaputra.griyakampoengtkw.presentation.databinding.DialogPilihJenisBiayaBinding
 import net.bagusekasaputra.griyakampoengtkw.presentation.databinding.FragmentBiayaMarketingBinding
-import net.bagusekasaputra.griyakampoengtkw.presentation.detail.adapter.JenisBiayaMarketingRecyclerAdapter
-import net.bagusekasaputra.griyakampoengtkw.presentation.detail.tableview.biayaMarketing.BiayaMarketingTableViewAdapter
-import net.bagusekasaputra.griyakampoengtkw.presentation.detail.tableview.biayaMarketing.Cell
-import net.bagusekasaputra.griyakampoengtkw.presentation.detail.tableview.biayaMarketing.ColumnHeader
-import net.bagusekasaputra.griyakampoengtkw.presentation.detail.tableview.biayaMarketing.RowHeader
+import net.bagusekasaputra.griyakampoengtkw.presentation.tableview.biayaMarketing.BiayaMarketingTableViewAdapter
+import net.bagusekasaputra.griyakampoengtkw.presentation.tableview.biayaMarketing.Cell
+import net.bagusekasaputra.griyakampoengtkw.presentation.tableview.biayaMarketing.ColumnHeader
+import net.bagusekasaputra.griyakampoengtkw.presentation.tableview.biayaMarketing.RowHeader
 import net.bagusekasaputra.griyakampoengtkw.presentation.util.DatePickerHelper
 import net.bagusekasaputra.griyakampoengtkw.presentation.util.DialogUtil
 import net.bagusekasaputra.griyakampoengtkw.presentation.util.InputUtil

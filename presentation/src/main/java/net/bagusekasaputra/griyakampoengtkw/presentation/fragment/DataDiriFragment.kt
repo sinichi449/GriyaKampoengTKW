@@ -1,4 +1,4 @@
-package net.bagusekasaputra.griyakampoengtkw.presentation.detail.fragment
+package net.bagusekasaputra.griyakampoengtkw.presentation.fragment
 
 import android.app.Activity
 import android.app.AlertDialog
@@ -21,9 +21,9 @@ import dagger.hilt.android.AndroidEntryPoint
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.DataDiri
 import net.bagusekasaputra.griyakampoengtkw.presentation.R
 import net.bagusekasaputra.griyakampoengtkw.presentation.UiUtils
+import net.bagusekasaputra.griyakampoengtkw.presentation.activities.FullImageActivity
 import net.bagusekasaputra.griyakampoengtkw.presentation.databinding.DialogTambahDataDiriBinding
 import net.bagusekasaputra.griyakampoengtkw.presentation.databinding.FragmentDataDiriBinding
-import net.bagusekasaputra.griyakampoengtkw.presentation.detail.FullImageActivity
 import net.bagusekasaputra.griyakampoengtkw.presentation.util.DialogUtil
 import net.bagusekasaputra.griyakampoengtkw.presentation.util.GriyaNodes
 import net.bagusekasaputra.griyakampoengtkw.presentation.util.InputUtil

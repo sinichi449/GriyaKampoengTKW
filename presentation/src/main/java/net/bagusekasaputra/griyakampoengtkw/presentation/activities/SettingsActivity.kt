@@ -1,4 +1,4 @@
-package net.bagusekasaputra.griyakampoengtkw.presentation
+package net.bagusekasaputra.griyakampoengtkw.presentation.activities
 
 import android.content.Intent
 import android.os.Bundle
@@ -6,8 +6,8 @@ import android.view.MenuItem
 import androidx.appcompat.app.AppCompatActivity
 import androidx.preference.PreferenceFragmentCompat
 import dagger.hilt.android.AndroidEntryPoint
+import net.bagusekasaputra.griyakampoengtkw.presentation.R
 import net.bagusekasaputra.griyakampoengtkw.presentation.databinding.SettingsActivityBinding
-import net.bagusekasaputra.griyakampoengtkw.presentation.main.MainActivity
 
 @AndroidEntryPoint
 class SettingsActivity : AppCompatActivity() {

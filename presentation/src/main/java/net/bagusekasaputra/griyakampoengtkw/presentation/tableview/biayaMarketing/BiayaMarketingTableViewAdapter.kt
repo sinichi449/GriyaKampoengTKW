@@ -1,4 +1,4 @@
-package net.bagusekasaputra.griyakampoengtkw.presentation.detail.tableview.biayaMarketing
+package net.bagusekasaputra.griyakampoengtkw.presentation.tableview.biayaMarketing
 
 import android.view.LayoutInflater
 import android.view.View

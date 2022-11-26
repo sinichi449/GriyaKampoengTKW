@@ -1,4 +1,4 @@
-package net.bagusekasaputra.griyakampoengtkw.presentation.main
+package net.bagusekasaputra.griyakampoengtkw.presentation.activities
 
 import android.content.Intent
 import android.content.SharedPreferences
@@ -15,12 +15,11 @@ import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.tabs.TabLayout
 import dagger.hilt.android.AndroidEntryPoint
 import net.bagusekasaputra.griyakampoengtkw.presentation.R
-import net.bagusekasaputra.griyakampoengtkw.presentation.SettingsActivity
+import net.bagusekasaputra.griyakampoengtkw.presentation.adapter.viewpager.MainViewPagerAdapter
 import net.bagusekasaputra.griyakampoengtkw.presentation.databinding.ActivityMainBinding
+import net.bagusekasaputra.griyakampoengtkw.presentation.fragment.KavlingFragment
+import net.bagusekasaputra.griyakampoengtkw.presentation.fragment.ReportFragment
 import net.bagusekasaputra.griyakampoengtkw.presentation.logEvent
-import net.bagusekasaputra.griyakampoengtkw.presentation.main.adapter.MainViewPagerAdapter
-import net.bagusekasaputra.griyakampoengtkw.presentation.main.fragment.KavlingFragment
-import net.bagusekasaputra.griyakampoengtkw.presentation.main.fragment.ReportFragment
 import net.bagusekasaputra.griyakampoengtkw.presentation.util.GriyaNodes
 import net.bagusekasaputra.griyakampoengtkw.presentation.viewmodel.MainViewModel
 import javax.inject.Inject

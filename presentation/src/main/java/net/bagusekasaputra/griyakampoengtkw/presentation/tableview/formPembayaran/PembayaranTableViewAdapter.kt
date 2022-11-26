@@ -1,4 +1,4 @@
-package net.bagusekasaputra.griyakampoengtkw.presentation.detail.tableview.formPembayaran
+package net.bagusekasaputra.griyakampoengtkw.presentation.tableview.formPembayaran
 
 import android.graphics.Typeface
 import android.view.LayoutInflater
