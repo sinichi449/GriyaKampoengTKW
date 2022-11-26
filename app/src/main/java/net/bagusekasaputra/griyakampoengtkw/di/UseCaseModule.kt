@@ -16,6 +16,7 @@ import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.fotoPembayaran.I
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.hargaKavling.GetHargaKavlingAsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.kavling.GetKavlingByBlockAsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.pembayaran.GetAllPembayaranAsyncUseCase
+import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.reportKavling.GetAllReportKavlingAsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.repository.*
 import net.bagusekasaputra.griyakampoengtkw.domain.usecase.appupdate.GetUpdateInformationUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.usecase.biayaMarketing.*
@@ -283,4 +284,12 @@ object UseCaseModule {
 
 
 
+    @Provides
+    fun provideGetAllReportKavlingUseCase(
+        pembayaranRepository: PembayaranRepository,
+        feeMarketingRepository: FeeMarketingRepository,
+        biayaMarketingRepository: BiayaMarketingRepository,
+    ): GetAllReportKavlingAsyncUseCase {
+        return GetAllReportKavlingAsyncUseCase(pembayaranRepository, feeMarketingRepository, biayaMarketingRepository)
+    }
 }

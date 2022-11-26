@@ -7,6 +7,10 @@ interface PembayaranRepository {
 
     fun getAllPembayaran(kavlingKode: String, offline: Boolean): Flow<Result<List<Pembayaran>?>>
 
+    // I need to get a strictly from online/remote data source because the normal get method
+    // will return the data from local if an error occurred.
+    fun getAllOnline(kavlingKode: String): Flow<Result<List<Pembayaran>?>>
+
     fun addPembayaran(kavlingKode: String, hargaKavling: Long, pembayaran: Pembayaran): Flow<Result<Boolean>>
 
     fun updatePembayaran(kavlingKode: String, oldPembayaran: Pembayaran, newPembayaran: Pembayaran): Flow<Result<Boolean>>

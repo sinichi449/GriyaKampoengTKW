@@ -1,8 +1,10 @@
 package net.bagusekasaputra.griyakampoengtkw.domain
 
 import org.junit.Test
+import java.math.BigDecimal
 import java.text.SimpleDateFormat
 import java.util.*
+import kotlin.math.pow
 import kotlin.random.Random
 import kotlin.random.nextInt
 import kotlin.random.nextLong
@@ -65,15 +67,29 @@ class RekapPembayaranTest {
         println("")
     }
 
+    private fun Double.juta(): Long {
+        val bigDecimal = BigDecimal(this)
+        val juta = BigDecimal(10.0.pow(6.0))
+        return bigDecimal.multiply(juta).toLong()
+    }
+
     @Test
     fun test_simsalabim() {
-        val rangePeriode = DateUtil.generateRangeDate(DateUtil.Periode.TAHUN_INI)
-
-        printHeader()
-        rangePeriode.forEach {
-            println(it.toSlashedString())
-        }
-        printHeader()
+        val tanggal = "23/09/2022"
+        val listPembayaranC9 = listOf(
+            PembayaranAlt(tanggal, 1.0.juta()),
+            PembayaranAlt(tanggal, 2.0.juta()),
+            PembayaranAlt(tanggal, 2.0.juta()),
+        )
+        val listBiayaMarketingC9 = listOf(
+            BiayaMarketingAlt(tanggal, 0.45.juta())
+        )
+        val rekapKavling = RekapKavling(
+            kavling = "C9",
+            listPembayaran = listPembayaranC9,
+            feeMarketing = FeeMarketingAlt(tanggal, 4.4.juta()),
+            listBiayaMarketing = listBiayaMarketingC9,
+        )
     }
 
     private object RekapKavlingUtil {

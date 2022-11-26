@@ -7,6 +7,10 @@ interface BiayaMarketingRepository {
 
     fun getAllByKavlingKode(kavlingKode: String, offline: Boolean): Flow<Result<List<BiayaMarketing>?>>
 
+    // I need to get a strictly from online/remote data source because the normal get method
+    // will return the data from local if an error occurred.
+    fun getAllOnline(kavlingKode: String): Flow<Result<List<BiayaMarketing>?>>
+
     fun addBiayaMarketing(biayaMarketing: BiayaMarketing): Flow<Result<Nothing?>>
 
     fun update(oldBiayaMarketing: BiayaMarketing, newBiayaMarketing: BiayaMarketing): Flow<Result<Nothing?>>

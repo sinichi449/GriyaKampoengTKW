@@ -13,7 +13,7 @@ object DateUtil {
     fun filterPeriode(periode: Int, listDate: List<Date>): List<Date> {
         val listRangePeriode = generateRangeDate(periode)
 
-        return listRangePeriode
+        return listDate
             .map {
                 // Set the hours to 00:00:00
                 Calendar.getInstance()
@@ -22,7 +22,7 @@ object DateUtil {
                     .time
             }
             .filter {
-                listDate.contains(it)
+                listRangePeriode.contains(it)
             }
     }
 

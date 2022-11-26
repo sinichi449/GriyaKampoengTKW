@@ -7,397 +7,449 @@
     xmlns:tools="http://schemas.android.com/tools"
     tools:context=".fragment.ReportFragment">
 
-    <androidx.core.widget.NestedScrollView
-        android:id="@+id/nested_scroll_report"
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:scrollbars="vertical"
-        android:scrollbarStyle="outsideOverlay">
+        android:layout_height="match_parent">
 
         <androidx.constraintlayout.widget.ConstraintLayout
-            android:id="@+id/constraint_root_report"
+            android:id="@+id/layout_loading_report"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            tools:context=".fragment.ReportFragment">
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent">
 
-            <!-- Periode Spinner -->
-            <com.google.android.material.card.MaterialCardView
-                android:id="@+id/card_periode"
-                android:layout_width="match_parent"
+            <ProgressBar
+                android:id="@+id/progress_bar_report"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
-                app:cardElevation="@dimen/report_item_elevation">
-
-                <androidx.appcompat.widget.LinearLayoutCompat
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintTop_toTopOf="parent"
-                    android:orientation="vertical"
-                    android:paddingHorizontal="16dp"
-                    android:paddingTop="16dp"
-                    android:paddingBottom="8dp">
-
-                    <com.google.android.material.textview.MaterialTextView
-                        android:id="@+id/tv_info_pilih_periode"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="Pilih periode"
-                        style="@style/TextAppearance.MaterialComponents.Body2"/>
-
-                    <Spinner
-                        android:id="@+id/spinner_periode"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="8dp"
-                        android:spinnerMode="dropdown"/>
-
-                    <com.google.android.material.textview.MaterialTextView
-                        android:id="@+id/tv_range_periode"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="-"
-                        android:layout_marginTop="4dp"
-                        tools:text="23/04/2022 - 19/10/2022"
-                        android:textSize="14sp"
-                        style="@style/TextAppearance.MaterialComponents.Body1"/>
-
-                </androidx.appcompat.widget.LinearLayoutCompat>
-
-            </com.google.android.material.card.MaterialCardView>
-
-            <!-- Rekap Besar -->
-            <androidx.constraintlayout.widget.ConstraintLayout
-                android:id="@+id/layout_rekap_besar"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+                app:layout_constraintBottom_toTopOf="@id/tv_info_loading_report"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/card_periode"
-                android:elevation="0dp"
-                android:padding="@dimen/report_item_padding"
-                android:background="#E3F2FD">
+                app:layout_constraintVertical_chainStyle="packed"
+                android:visibility="gone"/>
 
-                <ImageView
-                    android:id="@+id/img_arrow_buka_rekap_besar"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    android:src="@drawable/ic_baseline_keyboard_arrow_right_24"/>
-
-                <com.google.android.material.textview.MaterialTextView
-                    android:id="@+id/tv_info_rekap_besar"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    app:layout_constraintStart_toEndOf="@id/img_arrow_buka_rekap_besar"
-                    app:layout_constraintTop_toTopOf="parent"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    android:layout_marginStart="8dp"
-                    android:text="Rekap Besar"
-                    android:textStyle="bold"
-                    style="@style/TextAppearance.MaterialComponents.Body2"/>
-
-                <com.google.android.material.textview.MaterialTextView
-                    android:id="@+id/tv_rekap_besar"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintTop_toTopOf="parent"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    android:text="Rp. 130,000,000"
-                    android:layout_weight="0.5"
-                    android:gravity="end"
-                    android:textStyle="bold"
-                    style="@style/TextAppearance.MaterialComponents.Body2"/>
-
-            </androidx.constraintlayout.widget.ConstraintLayout>
-
-            <!-- Card Rekap -->
-            <com.google.android.material.card.MaterialCardView
-                android:id="@+id/card_rekap"
-                android:layout_width="match_parent"
+            <com.google.android.material.textview.MaterialTextView
+                android:id="@+id/tv_info_loading_report"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                app:layout_constraintTop_toBottomOf="@id/progress_bar_report"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toStartOf="@id/progress_bar_report"
+                app:layout_constraintEnd_toEndOf="@id/progress_bar_report"
+                android:text="Memuat ringkasan ..."
+                android:layout_marginTop="16dp"
+                android:visibility="gone"/>
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btn_lihat_ringkasan"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:layout_constraintTop_toTopOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/layout_rekap_besar"
-                android:clickable="true"
-                android:focusable="true"
-                android:elevation="@dimen/report_item_elevation"
-                app:cardBackgroundColor="@color/primaryLightColor">
-
-                <androidx.appcompat.widget.LinearLayoutCompat
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="vertical">
-
-
-
-                    <!-- Total Uang Masuk -->
-                    <androidx.constraintlayout.widget.ConstraintLayout
-                        android:id="@+id/layout_total_uang_masuk"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:paddingTop="16dp">
-
-                        <androidx.constraintlayout.widget.Guideline
-                            android:id="@+id/guideline_vertical_total_uang_masuk"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            app:layout_constraintGuide_percent="0.6"
-                            android:orientation="vertical"/>
-
-                        <com.google.android.material.textview.MaterialTextView
-                            android:id="@+id/tv_info_rekap_total_uang_masuk"
-                            android:layout_width="0dp"
-                            android:layout_height="wrap_content"
-                            app:layout_constraintStart_toStartOf="parent"
-                            app:layout_constraintEnd_toStartOf="@id/guideline_vertical_total_uang_masuk"
-                            app:layout_constraintTop_toTopOf="parent"
-                            android:layout_marginStart="16dp"
-                            android:text="Total Uang Masuk"
-                            style="@style/TextAppearance.MaterialComponents.Subtitle1"/>
-
-                        <com.google.android.material.textview.MaterialTextView
-                            android:id="@+id/tv_info_rekap_total_uang_masuk_desc"
-                            android:layout_width="0dp"
-                            android:layout_height="wrap_content"
-                            app:layout_constraintStart_toStartOf="@id/tv_info_rekap_total_uang_masuk"
-                            app:layout_constraintEnd_toStartOf="@id/guideline_vertical_total_uang_masuk"
-                            app:layout_constraintTop_toBottomOf="@id/tv_info_rekap_total_uang_masuk"
-                            android:layout_marginTop="4dp"
-                            android:paddingBottom="16dp"
-                            android:layout_marginEnd="8dp"
-                            android:text="Uang masuk pada semua kavling"/>
-
-
-                        <com.google.android.material.textview.MaterialTextView
-                            android:id="@+id/tv_rekap_total_uang_masuk"
-                            android:layout_width="0dp"
-                            android:layout_height="wrap_content"
-                            app:layout_constraintStart_toEndOf="@id/guideline_vertical_total_uang_masuk"
-                            app:layout_constraintEnd_toEndOf="parent"
-                            app:layout_constraintTop_toTopOf="@id/tv_info_rekap_total_uang_masuk"
-                            app:layout_constraintBottom_toBottomOf="@id/tv_info_rekap_total_uang_masuk_desc"
-                            android:layout_marginEnd="16dp"
-                            android:text="Rp. 80,000,000"
-                            android:gravity="end"
-                            style="@style/TextAppearance.MaterialComponents.Subtitle1"/>
-
-                    </androidx.constraintlayout.widget.ConstraintLayout>
-
-                    <com.google.android.material.divider.MaterialDivider
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"/>
-
-
-                    <!-- Total Pengeluaran -->
-                    <androidx.constraintlayout.widget.ConstraintLayout
-                        android:id="@+id/layout_total_pengeluaran"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content">
-
-                        <androidx.constraintlayout.widget.Guideline
-                            android:id="@+id/guideline_vertical_total_pengeluaran"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:orientation="vertical"
-                            app:layout_constraintGuide_percent="0.6"/>
-
-                        <com.google.android.material.textview.MaterialTextView
-                            android:id="@+id/tv_info_total_pengeluaran"
-                            android:layout_width="0dp"
-                            android:layout_height="wrap_content"
-                            app:layout_constraintStart_toStartOf="parent"
-                            app:layout_constraintEnd_toStartOf="@id/guideline_vertical_total_pengeluaran"
-                            app:layout_constraintTop_toTopOf="parent"
-                            android:text="Total Pengeluaran"
-                            style="@style/TextAppearance.MaterialComponents.Subtitle1"
-                            android:layout_marginStart="16dp"
-                            android:layout_marginTop="16dp"/>
-
-                        <com.google.android.material.textview.MaterialTextView
-                            android:id="@+id/tv_info_total_pengeluaran_desc"
-                            android:layout_width="0dp"
-                            android:layout_height="wrap_content"
-                            app:layout_constraintStart_toStartOf="@id/tv_info_total_pengeluaran"
-                            app:layout_constraintEnd_toStartOf="@id/guideline_vertical_total_pengeluaran"
-                            app:layout_constraintTop_toBottomOf="@id/tv_info_total_pengeluaran"
-                            android:layout_marginTop="8dp"
-                            android:layout_marginEnd="4dp"
-                            android:text="Fee marketing dan biaya marketing dijumlahkan dari semua kavling"/>
-
-                        <com.google.android.material.textview.MaterialTextView
-                            android:id="@+id/tv_total_pengeluaran"
-                            android:layout_width="0dp"
-                            android:layout_height="wrap_content"
-                            app:layout_constraintStart_toEndOf="@id/guideline_vertical_total_pengeluaran"
-                            app:layout_constraintEnd_toEndOf="parent"
-                            app:layout_constraintTop_toTopOf="@id/tv_info_total_pengeluaran"
-                            app:layout_constraintBottom_toBottomOf="@id/tv_info_total_pengeluaran_desc"
-                            android:layout_marginEnd="16dp"
-                            android:gravity="end"
-                            android:text="- Rp. 8,400,000"
-                            style="@style/TextAppearance.MaterialComponents.Subtitle1"/>
-
-                    </androidx.constraintlayout.widget.ConstraintLayout>
-
-                    <com.google.android.material.divider.MaterialDivider
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="16dp"/>
-
-<!--                    &lt;!&ndash; Total Cuan &ndash;&gt;-->
-<!--                    <androidx.constraintlayout.widget.ConstraintLayout-->
-<!--                        android:id="@+id/layout_total_cuan"-->
-<!--                        android:layout_width="match_parent"-->
-<!--                        android:layout_height="wrap_content">-->
-
-<!--                        <androidx.constraintlayout.widget.Guideline-->
-<!--                            android:id="@+id/guideline_vertical_total_cuan"-->
-<!--                            android:layout_width="wrap_content"-->
-<!--                            android:layout_height="wrap_content"-->
-<!--                            android:orientation="vertical"-->
-<!--                            app:layout_constraintGuide_percent="0.6"/>-->
-
-<!--                        <com.google.android.material.textview.MaterialTextView-->
-<!--                            android:id="@+id/tv_info_total_cuan"-->
-<!--                            android:layout_width="0dp"-->
-<!--                            android:layout_height="wrap_content"-->
-<!--                            app:layout_constraintStart_toStartOf="parent"-->
-<!--                            app:layout_constraintEnd_toStartOf="@id/guideline_vertical_total_cuan"-->
-<!--                            app:layout_constraintTop_toTopOf="parent"-->
-<!--                            android:layout_marginStart="16dp"-->
-<!--                            android:layout_marginTop="16dp"-->
-<!--                            android:text="Total Cuan"-->
-<!--                            style="@style/TextAppearance.MaterialComponents.Subtitle1"/>-->
-
-<!--                        <com.google.android.material.textview.MaterialTextView-->
-<!--                            android:id="@+id/tv_info_total_cuan_desc"-->
-<!--                            android:layout_width="0dp"-->
-<!--                            android:layout_height="wrap_content"-->
-<!--                            app:layout_constraintStart_toStartOf="@id/tv_info_total_cuan"-->
-<!--                            app:layout_constraintEnd_toStartOf="@id/guideline_vertical_total_cuan"-->
-<!--                            app:layout_constraintTop_toBottomOf="@id/tv_info_total_cuan"-->
-<!--                            android:layout_marginEnd="8dp"-->
-<!--                            android:text="Sisa dari total uang masuk dan pengeluaran"/>-->
-
-<!--                        <com.google.android.material.textview.MaterialTextView-->
-<!--                            android:id="@+id/tv_total_cuan"-->
-<!--                            android:layout_width="0dp"-->
-<!--                            android:layout_height="wrap_content"-->
-<!--                            app:layout_constraintStart_toEndOf="@id/guideline_vertical_total_cuan"-->
-<!--                            app:layout_constraintEnd_toEndOf="parent"-->
-<!--                            app:layout_constraintTop_toTopOf="@id/tv_info_total_cuan"-->
-<!--                            app:layout_constraintBottom_toBottomOf="@id/tv_info_total_cuan_desc"-->
-<!--                            android:layout_marginEnd="16dp"-->
-<!--                            android:gravity="end"-->
-<!--                            android:text="Rp. 126,000,000"-->
-<!--                            style="@style/TextAppearance.MaterialComponents.Subtitle1"/>-->
-
-<!--                    </androidx.constraintlayout.widget.ConstraintLayout>-->
-
-                    <com.google.android.material.divider.MaterialDivider
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="16dp"/>
-
-
-                </androidx.appcompat.widget.LinearLayoutCompat>
-
-            </com.google.android.material.card.MaterialCardView>
-
-
-            <!-- Buka Tabel -->
-            <androidx.constraintlayout.widget.ConstraintLayout
-                android:id="@+id/layout_buka_tabel"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                app:layout_constraintTop_toBottomOf="@id/card_rekap"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                android:padding="16dp"
-                android:background="#E3F2FD"
-                android:elevation="0dp">
-
-                <ImageView
-                    android:id="@+id/img_arrow_buka_tabel"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    android:src="@drawable/ic_baseline_keyboard_arrow_right_24"/>
-
-                <com.google.android.material.textview.MaterialTextView
-                    android:id="@+id/tv_info_buka_tabel"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    app:layout_constraintStart_toEndOf="@id/img_arrow_buka_tabel"
-                    app:layout_constraintTop_toTopOf="@id/img_arrow_buka_tabel"
-                    app:layout_constraintBottom_toBottomOf="@id/img_arrow_buka_tabel"
-                    android:layout_marginStart="8dp"
-                    android:text="Buka tabel"
-                    android:textStyle="bold"
-                    style="@style/TextAppearance.MaterialComponents.Body2"/>
-
-
-            </androidx.constraintlayout.widget.ConstraintLayout>
-
-            <!-- Tabel -->
-            <FrameLayout
-                android:id="@+id/layout_expandable_tabel"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/layout_buka_tabel">
-
-                <androidx.constraintlayout.widget.ConstraintLayout
-                    android:id="@+id/layout_full_tabel"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-
-                    android:paddingStart="16dp"
-                    android:orientation="vertical"
-                    android:visibility="gone">
-
-                    <com.evrencoskun.tableview.TableView
-                        android:id="@+id/table_rekap_total_uang_masuk"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toTopOf="parent"
-                        android:layout_marginTop="16dp"
-                        app:column_header_height="@dimen/table_pembayaran_column_header_height"
-                        app:row_header_width="@dimen/table_rekap_double_row_header_width"
-                        app:show_horizontal_separator="true"
-                        app:show_vertical_separator="true"
-                        app:separator_color="@color/black"
-                        />
-
-                    <com.google.android.material.button.MaterialButton
-                        android:id="@+id/btn_table_total_uang_masuk_sembunyikan"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        app:layout_constraintEnd_toEndOf="parent"
-                        app:layout_constraintTop_toBottomOf="@id/table_rekap_total_uang_masuk"
-                        android:layout_marginTop="24dp"
-                        android:layout_marginEnd="16dp"
-                        style="@style/TextDialogButton"
-                        android:textColor="@color/secondaryColor"
-                        android:text="Sembunyikan"/>
-
-                </androidx.constraintlayout.widget.ConstraintLayout>
-
-            </FrameLayout>
-
+                app:layout_constraintBottom_toBottomOf="parent"
+                android:text="Lihat Ringkasan"
+                app:cornerRadius="16dp"
+                style="@style/NormalDialogButton"/>
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 
-    </androidx.core.widget.NestedScrollView>
+        <androidx.core.widget.NestedScrollView
+            android:id="@+id/nested_scroll_report"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            android:scrollbars="vertical"
+            android:scrollbarStyle="outsideOverlay"
+            android:visibility="gone">
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/constraint_root_report"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                tools:context=".fragment.ReportFragment">
+
+                <!-- Periode Spinner -->
+                <com.google.android.material.card.MaterialCardView
+                    android:id="@+id/card_periode"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:cardElevation="@dimen/report_item_elevation">
+
+                    <androidx.appcompat.widget.LinearLayoutCompat
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintTop_toTopOf="parent"
+                        android:orientation="vertical"
+                        android:paddingHorizontal="16dp"
+                        android:paddingTop="16dp"
+                        android:paddingBottom="8dp">
+
+                        <Spinner
+                            android:id="@+id/spinner_periode"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="8dp"
+                            android:spinnerMode="dropdown"/>
+
+                        <com.google.android.material.textview.MaterialTextView
+                            android:id="@+id/tv_range_periode"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="-"
+                            android:layout_marginTop="8dp"
+                            tools:text="23/04/2022 - 19/10/2022"
+                            android:textSize="14sp"
+                            style="@style/TextAppearance.MaterialComponents.Body1"/>
+
+                    </androidx.appcompat.widget.LinearLayoutCompat>
+
+                </com.google.android.material.card.MaterialCardView>
+
+                <!-- Rekap Besar -->
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:id="@+id/layout_rekap_besar"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/card_periode"
+                    android:elevation="0dp"
+                    android:padding="@dimen/report_item_padding"
+                    android:background="#E3F2FD">
+
+                    <ImageView
+                        android:id="@+id/img_arrow_buka_rekap_besar"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        android:src="@drawable/ic_baseline_keyboard_arrow_right_24"/>
+
+                    <com.google.android.material.textview.MaterialTextView
+                        android:id="@+id/tv_info_rekap_besar"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        app:layout_constraintStart_toEndOf="@id/img_arrow_buka_rekap_besar"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        android:layout_marginStart="8dp"
+                        android:text="Rekap Besar"
+                        android:textStyle="bold"
+                        style="@style/TextAppearance.MaterialComponents.Body2"/>
+
+                    <com.google.android.material.textview.MaterialTextView
+                        android:id="@+id/tv_rekap_besar"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        android:text="-"
+                        tools:text="Rp. 130,000,000"
+                        android:layout_weight="0.5"
+                        android:gravity="end"
+                        android:textStyle="bold"
+                        style="@style/TextAppearance.MaterialComponents.Body2"/>
+
+                </androidx.constraintlayout.widget.ConstraintLayout>
+
+                <!-- Card Rekap -->
+                <com.google.android.material.card.MaterialCardView
+                    android:id="@+id/card_rekap"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/layout_rekap_besar"
+                    android:clickable="true"
+                    android:focusable="true"
+                    android:elevation="@dimen/report_item_elevation"
+                    app:cardBackgroundColor="@color/primaryLightColor">
+
+                    <androidx.appcompat.widget.LinearLayoutCompat
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical">
+
+
+
+                        <!-- Total Uang Masuk -->
+                        <androidx.constraintlayout.widget.ConstraintLayout
+                            android:id="@+id/layout_total_uang_masuk"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:paddingTop="16dp">
+
+                            <androidx.constraintlayout.widget.Guideline
+                                android:id="@+id/guideline_vertical_total_uang_masuk"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                app:layout_constraintGuide_percent="0.6"
+                                android:orientation="vertical"/>
+
+                            <com.google.android.material.textview.MaterialTextView
+                                android:id="@+id/tv_info_rekap_total_uang_masuk"
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                app:layout_constraintStart_toStartOf="parent"
+                                app:layout_constraintEnd_toStartOf="@id/guideline_vertical_total_uang_masuk"
+                                app:layout_constraintTop_toTopOf="parent"
+                                android:layout_marginStart="16dp"
+                                android:text="Total Uang Masuk"
+                                style="@style/TextAppearance.MaterialComponents.Subtitle1"/>
+
+                            <com.google.android.material.textview.MaterialTextView
+                                android:id="@+id/tv_info_rekap_total_uang_masuk_desc"
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                app:layout_constraintStart_toStartOf="@id/tv_info_rekap_total_uang_masuk"
+                                app:layout_constraintEnd_toStartOf="@id/guideline_vertical_total_uang_masuk"
+                                app:layout_constraintTop_toBottomOf="@id/tv_info_rekap_total_uang_masuk"
+                                android:layout_marginTop="4dp"
+                                android:paddingBottom="16dp"
+                                android:layout_marginEnd="8dp"
+                                android:text="Uang masuk pada semua kavling"/>
+
+
+                            <com.google.android.material.textview.MaterialTextView
+                                android:id="@+id/tv_rekap_total_uang_masuk"
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                app:layout_constraintStart_toEndOf="@id/guideline_vertical_total_uang_masuk"
+                                app:layout_constraintEnd_toEndOf="parent"
+                                app:layout_constraintTop_toTopOf="@id/tv_info_rekap_total_uang_masuk"
+                                app:layout_constraintBottom_toBottomOf="@id/tv_info_rekap_total_uang_masuk_desc"
+                                android:layout_marginEnd="16dp"
+                                android:text="-"
+                                tools:text="Rp. 80,000,000"
+                                android:gravity="end"
+                                style="@style/TextAppearance.MaterialComponents.Subtitle1"/>
+
+                        </androidx.constraintlayout.widget.ConstraintLayout>
+
+                        <com.google.android.material.divider.MaterialDivider
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"/>
+
+
+                        <!-- Total Pengeluaran -->
+                        <androidx.constraintlayout.widget.ConstraintLayout
+                            android:id="@+id/layout_total_pengeluaran"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content">
+
+                            <androidx.constraintlayout.widget.Guideline
+                                android:id="@+id/guideline_vertical_total_pengeluaran"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:orientation="vertical"
+                                app:layout_constraintGuide_percent="0.6"/>
+
+                            <com.google.android.material.textview.MaterialTextView
+                                android:id="@+id/tv_info_total_pengeluaran"
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                app:layout_constraintStart_toStartOf="parent"
+                                app:layout_constraintEnd_toStartOf="@id/guideline_vertical_total_pengeluaran"
+                                app:layout_constraintTop_toTopOf="parent"
+                                android:text="Total Pengeluaran"
+                                style="@style/TextAppearance.MaterialComponents.Subtitle1"
+                                android:layout_marginStart="16dp"
+                                android:layout_marginTop="16dp"/>
+
+                            <com.google.android.material.textview.MaterialTextView
+                                android:id="@+id/tv_info_total_pengeluaran_desc"
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                app:layout_constraintStart_toStartOf="@id/tv_info_total_pengeluaran"
+                                app:layout_constraintEnd_toStartOf="@id/guideline_vertical_total_pengeluaran"
+                                app:layout_constraintTop_toBottomOf="@id/tv_info_total_pengeluaran"
+                                android:layout_marginTop="8dp"
+                                android:layout_marginEnd="4dp"
+                                android:text="Fee marketing dan biaya marketing dijumlahkan dari semua kavling"/>
+
+                            <com.google.android.material.textview.MaterialTextView
+                                android:id="@+id/tv_total_pengeluaran"
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                app:layout_constraintStart_toEndOf="@id/guideline_vertical_total_pengeluaran"
+                                app:layout_constraintEnd_toEndOf="parent"
+                                app:layout_constraintTop_toTopOf="@id/tv_info_total_pengeluaran"
+                                app:layout_constraintBottom_toBottomOf="@id/tv_info_total_pengeluaran_desc"
+                                android:layout_marginEnd="16dp"
+                                android:gravity="end"
+                                android:text="-"
+                                tools:text="- Rp. 8,400,000"
+                                style="@style/TextAppearance.MaterialComponents.Subtitle1"/>
+
+                        </androidx.constraintlayout.widget.ConstraintLayout>
+
+                        <com.google.android.material.divider.MaterialDivider
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="16dp"/>
+
+                        <!--                    &lt;!&ndash; Total Cuan &ndash;&gt;-->
+                        <!--                    <androidx.constraintlayout.widget.ConstraintLayout-->
+                        <!--                        android:id="@+id/layout_total_cuan"-->
+                        <!--                        android:layout_width="match_parent"-->
+                        <!--                        android:layout_height="wrap_content">-->
+
+                        <!--                        <androidx.constraintlayout.widget.Guideline-->
+                        <!--                            android:id="@+id/guideline_vertical_total_cuan"-->
+                        <!--                            android:layout_width="wrap_content"-->
+                        <!--                            android:layout_height="wrap_content"-->
+                        <!--                            android:orientation="vertical"-->
+                        <!--                            app:layout_constraintGuide_percent="0.6"/>-->
+
+                        <!--                        <com.google.android.material.textview.MaterialTextView-->
+                        <!--                            android:id="@+id/tv_info_total_cuan"-->
+                        <!--                            android:layout_width="0dp"-->
+                        <!--                            android:layout_height="wrap_content"-->
+                        <!--                            app:layout_constraintStart_toStartOf="parent"-->
+                        <!--                            app:layout_constraintEnd_toStartOf="@id/guideline_vertical_total_cuan"-->
+                        <!--                            app:layout_constraintTop_toTopOf="parent"-->
+                        <!--                            android:layout_marginStart="16dp"-->
+                        <!--                            android:layout_marginTop="16dp"-->
+                        <!--                            android:text="Total Cuan"-->
+                        <!--                            style="@style/TextAppearance.MaterialComponents.Subtitle1"/>-->
+
+                        <!--                        <com.google.android.material.textview.MaterialTextView-->
+                        <!--                            android:id="@+id/tv_info_total_cuan_desc"-->
+                        <!--                            android:layout_width="0dp"-->
+                        <!--                            android:layout_height="wrap_content"-->
+                        <!--                            app:layout_constraintStart_toStartOf="@id/tv_info_total_cuan"-->
+                        <!--                            app:layout_constraintEnd_toStartOf="@id/guideline_vertical_total_cuan"-->
+                        <!--                            app:layout_constraintTop_toBottomOf="@id/tv_info_total_cuan"-->
+                        <!--                            android:layout_marginEnd="8dp"-->
+                        <!--                            android:text="Sisa dari total uang masuk dan pengeluaran"/>-->
+
+                        <!--                        <com.google.android.material.textview.MaterialTextView-->
+                        <!--                            android:id="@+id/tv_total_cuan"-->
+                        <!--                            android:layout_width="0dp"-->
+                        <!--                            android:layout_height="wrap_content"-->
+                        <!--                            app:layout_constraintStart_toEndOf="@id/guideline_vertical_total_cuan"-->
+                        <!--                            app:layout_constraintEnd_toEndOf="parent"-->
+                        <!--                            app:layout_constraintTop_toTopOf="@id/tv_info_total_cuan"-->
+                        <!--                            app:layout_constraintBottom_toBottomOf="@id/tv_info_total_cuan_desc"-->
+                        <!--                            android:layout_marginEnd="16dp"-->
+                        <!--                            android:gravity="end"-->
+                        <!--                            android:text="Rp. 126,000,000"-->
+                        <!--                            style="@style/TextAppearance.MaterialComponents.Subtitle1"/>-->
+
+                        <!--                    </androidx.constraintlayout.widget.ConstraintLayout>-->
+
+                        <com.google.android.material.divider.MaterialDivider
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="16dp"/>
+
+
+                    </androidx.appcompat.widget.LinearLayoutCompat>
+
+                </com.google.android.material.card.MaterialCardView>
+
+
+                <!-- Buka Tabel -->
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:id="@+id/layout_buka_tabel"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    app:layout_constraintTop_toBottomOf="@id/card_rekap"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    android:padding="16dp"
+                    android:background="#E3F2FD"
+                    android:elevation="0dp">
+
+                    <ImageView
+                        android:id="@+id/img_arrow_buka_tabel"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        android:src="@drawable/ic_baseline_keyboard_arrow_right_24"/>
+
+                    <com.google.android.material.textview.MaterialTextView
+                        android:id="@+id/tv_info_buka_tabel"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        app:layout_constraintStart_toEndOf="@id/img_arrow_buka_tabel"
+                        app:layout_constraintTop_toTopOf="@id/img_arrow_buka_tabel"
+                        app:layout_constraintBottom_toBottomOf="@id/img_arrow_buka_tabel"
+                        android:layout_marginStart="8dp"
+                        android:text="Buka tabel"
+                        android:textStyle="bold"
+                        style="@style/TextAppearance.MaterialComponents.Body2"/>
+
+
+                </androidx.constraintlayout.widget.ConstraintLayout>
+
+                <!-- Tabel -->
+                <FrameLayout
+                    android:id="@+id/layout_expandable_tabel"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/layout_buka_tabel">
+
+                    <androidx.constraintlayout.widget.ConstraintLayout
+                        android:id="@+id/layout_full_tabel"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+
+                        android:paddingStart="16dp"
+                        android:orientation="vertical"
+                        android:visibility="gone">
+
+                        <com.evrencoskun.tableview.TableView
+                            android:id="@+id/table_rekap_total_uang_masuk"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintTop_toTopOf="parent"
+                            android:layout_marginTop="16dp"
+                            app:column_header_height="@dimen/table_pembayaran_column_header_height"
+                            app:row_header_width="@dimen/table_rekap_double_row_header_width"
+                            app:show_horizontal_separator="true"
+                            app:show_vertical_separator="true"
+                            app:separator_color="@color/black"
+                            />
+
+                        <com.google.android.material.button.MaterialButton
+                            android:id="@+id/btn_table_total_uang_masuk_sembunyikan"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            app:layout_constraintEnd_toEndOf="parent"
+                            app:layout_constraintTop_toBottomOf="@id/table_rekap_total_uang_masuk"
+                            android:layout_marginTop="24dp"
+                            android:layout_marginEnd="16dp"
+                            style="@style/TextDialogButton"
+                            android:textColor="@color/secondaryColor"
+                            android:text="Sembunyikan"/>
+
+                    </androidx.constraintlayout.widget.ConstraintLayout>
+
+                </FrameLayout>
+
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+        </androidx.core.widget.NestedScrollView>
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
 </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>

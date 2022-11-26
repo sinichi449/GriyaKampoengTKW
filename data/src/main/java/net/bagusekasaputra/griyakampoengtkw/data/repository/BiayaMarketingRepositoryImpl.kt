@@ -3,6 +3,7 @@ package net.bagusekasaputra.griyakampoengtkw.data.repository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.emitAll
 import kotlinx.coroutines.flow.flow
+import net.bagusekasaputra.griyakampoengtkw.data.DataUtil
 import net.bagusekasaputra.griyakampoengtkw.data.interfaces.local.LocalBiayaMarketingDataSource
 import net.bagusekasaputra.griyakampoengtkw.data.interfaces.remote.RemoteBiayaMarketingDataSource
 import net.bagusekasaputra.griyakampoengtkw.data.model.BiayaMarketingModel
@@ -85,6 +86,17 @@ class BiayaMarketingRepositoryImpl(
         }
     }
 
+    override fun getAllOnline(kavlingKode: String): Flow<Result<List<BiayaMarketing>?>> {
+        return flow {
+            val remoteResult = remoteBiayaMarketingDataSource.getAllBiayaMarketing(kavlingKode)
+
+            emit(DataUtil.mapListResult(
+                originResult = remoteResult,
+                targetMapper = ::mapBiayaMarketing,
+            ))
+        }
+    }
+
     override fun addBiayaMarketing(biayaMarketing: BiayaMarketing): Flow<Result<Nothing?>> {
         return flow {
             val remoteResult = remoteBiayaMarketingDataSource.addBiayaMarketing(
@@ -157,6 +169,17 @@ class BiayaMarketingRepositoryImpl(
                 kavlingKode = it.kavlingKode,
                 jenisBiaya = it.jenisBiaya,
                 harga = NumberUtil.formatStringToLong(it.harga), // from UI layer, the harga is formatted into comma separated
+            )
+        }
+    }
+
+    private fun mapBiayaMarketing(biayaMarketingModel: BiayaMarketingModel): BiayaMarketing {
+        return biayaMarketingModel.let {
+            BiayaMarketing(
+                kavlingKode = it.kavlingKode,
+                tanggal = it.tanggal,
+                jenisBiaya = it.jenisBiaya,
+                harga = it.harga.toString(),
             )
         }
     }

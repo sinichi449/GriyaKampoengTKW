@@ -7,12 +7,14 @@ import android.view.ViewGroup
 import android.widget.AdapterView
 import android.widget.AdapterView.OnItemSelectedListener
 import android.widget.ArrayAdapter
+import android.widget.Toast
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.transition.AutoTransition
 import androidx.transition.TransitionManager
+import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -37,6 +39,7 @@ class ReportFragment : Fragment() {
     private var collapsedTabel = true
 
     private val periodeReportList = listOf(
+        "Pilih Periode",
         "Semua",
         "Minggu ini",
         "Bulan ini",
@@ -61,6 +64,8 @@ class ReportFragment : Fragment() {
         setupSpinnerPeriode()
 
         binding.swipeRefreshReport.setOnRefreshListener {
+            reportViewModel.reportKavlingRefreshed.value = false
+
             syncData()
         }
 
@@ -95,16 +100,28 @@ class ReportFragment : Fragment() {
 
         binding.spinnerPeriode.onItemSelectedListener = object : OnItemSelectedListener {
             override fun onItemSelected(p0: AdapterView<*>?, p1: View?, spinnerPosition: Int, p3: Long) {
-                val semuaPeriode = 0
-                val mingguIni = 1
-                val bulanIni = 2
-                val tahunIni = 3
+                val semuaPeriode = 1
+                val mingguIni = 2
+                val bulanIni = 3
+                val tahunIni = 4
 
                 when (spinnerPosition) {
-                    semuaPeriode -> { reportViewModel.getRekapSemuaPeriode() }
-                    mingguIni -> { reportViewModel.getRekapMingguIni() }
-                    bulanIni -> { reportViewModel.getRekapBulanIni() }
-                    tahunIni -> { reportViewModel.getRekapTahunIni() }
+                    semuaPeriode -> {
+                        reportViewModel.getRekapSemuaPeriode()
+                        reportViewModel.getRangePeriode()
+                    }
+                    mingguIni -> {
+                        reportViewModel.getRekapMingguIni()
+                        reportViewModel.getRangePeriode()
+                    }
+                    bulanIni -> {
+                        reportViewModel.getRekapBulanIni()
+                        reportViewModel.getRangePeriode()
+                    }
+                    tahunIni -> {
+                        reportViewModel.getRekapTahunIni()
+                        reportViewModel.getRangePeriode()
+                    }
                 }
             }
 
@@ -112,24 +129,52 @@ class ReportFragment : Fragment() {
 
             }
         }
+
+        binding.btnLihatRingkasan.setOnClickListener {
+            binding.btnLihatRingkasan.visibility = View.GONE
+            binding.progressBarReport.visibility = View.VISIBLE
+            binding.tvInfoLoadingReport.visibility = View.VISIBLE
+
+            syncData()
+        }
     }
 
-
-
-    override fun onResume() {
-        super.onResume()
-
-        syncData()
-    }
 
     private fun syncData() {
-        reportViewModel.provideReportUangMasuk()
+        reportViewModel.getAllReportKavling {
+            Toast.makeText(requireContext(), it, Toast.LENGTH_LONG).show()
+        }
     }
 
     private fun setupViewModel() {
         reportViewModel.isFinishOperation.observe(requireActivity()) { finished ->
-            finished?.let {
-                binding.swipeRefreshReport.isRefreshing = it.not()
+            if (finished != null) {
+                binding.swipeRefreshReport.isRefreshing = finished.not()
+            }
+        }
+
+        reportViewModel.isFinishedFetchingReport.observe(requireActivity()) { fetched ->
+            if (fetched != null) {
+                if (fetched) {
+                    binding.layoutLoadingReport.visibility = View.GONE
+                    binding.nestedScrollReport.visibility = View.VISIBLE
+
+                    val snackbarCompletion = Snackbar.make(binding.root, "Memuat data berhasil. Silakan pilih periode.", Snackbar.LENGTH_LONG)
+                    snackbarCompletion.setAction("OK") {
+                        snackbarCompletion.dismiss()
+                    }
+
+                    snackbarCompletion.show()
+                } else {
+                    binding.layoutLoadingReport.visibility = View.VISIBLE
+                    binding.nestedScrollReport.visibility = View.GONE
+                }
+            }
+        }
+
+        reportViewModel.rangeTanggalLive.observe(requireActivity()) {
+            if (it != null) {
+                binding.tvRangePeriode.text = it
             }
         }
 
@@ -138,6 +183,10 @@ class ReportFragment : Fragment() {
                 binding.tvRekapBesar.text = reportViewModel.getOverallTotalCuan()
                 binding.tvRekapTotalUangMasuk.text = reportViewModel.getOverallTotalMasuk()
                 binding.tvTotalPengeluaran.text = reportViewModel.getOverallTotalPengeluaran()
+            } else {
+                binding.tvRekapBesar.text = "-"
+                binding.tvRekapTotalUangMasuk.text = "-"
+                binding.tvTotalPengeluaran.text = "-"
             }
 
             val columnHeaders = reportViewModel.getTotalUangMasukColumnHeaders()

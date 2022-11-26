@@ -66,6 +66,19 @@ class PembayaranRepositoryImpl(
         }
     }
 
+    override fun getAllOnline(kavlingKode: String): Flow<Result<List<Pembayaran>?>> {
+        return flow {
+            // First, we request to the remote
+            val remoteResult = remotePembayaranSource.getAllPembayaran(kavlingKode)
+
+            val mapResult = DataUtil.mapListResult(
+                originResult = remoteResult,
+                targetMapper = ::mapPembayaran,
+            )
+            emit(mapResult)
+        }
+    }
+
     override fun addPembayaran(
         kavlingKode: String,
         hargaKavling: Long,

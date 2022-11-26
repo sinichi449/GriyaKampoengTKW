@@ -2,8 +2,10 @@ package net.bagusekasaputra.griyakampoengtkw.presentation
 
 import android.util.Log
 import net.bagusekasaputra.griyakampoengtkw.presentation.util.GriyaNodes
+import java.math.BigDecimal
 import java.text.SimpleDateFormat
 import java.util.*
+import kotlin.math.pow
 
 fun logEvent(msg: String) {
     Log.d(GriyaNodes.LOG_TAG, msg)
@@ -35,4 +37,10 @@ fun Date.toSlashedDate(): String {
     val formatter = SimpleDateFormat("dd/MM/yyyy", Locale.US)
 
     return formatter.format(this)
+}
+
+fun Double.juta(): Long {
+    val bigDecimal = BigDecimal(this)
+    val juta = BigDecimal(10.0.pow(6.0))
+    return bigDecimal.multiply(juta).toLong()
 }

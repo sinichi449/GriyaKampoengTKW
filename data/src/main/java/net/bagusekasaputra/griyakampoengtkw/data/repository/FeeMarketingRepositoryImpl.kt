@@ -67,6 +67,19 @@ class FeeMarketingRepositoryImpl(
         }
     }
 
+    override fun getAllOnline(kavlingKode: String): Flow<Result<FeeMarketing?>> {
+        return flow {
+            // First, get from remote server
+            val remoteResult = remoteFeeMarketingDataSource.getByKavlingKode(kavlingKode)
+
+            val mappedResult = DataUtil.mapSingleResult(
+                originResult = remoteResult,
+                targetMapper = ::mapFeeMarketing,
+            )
+            emit(mappedResult)
+        }
+    }
+
     override fun addFeeMarketing(feeMarketing: FeeMarketing): Flow<Result<Nothing?>> {
         return flow {
             val remoteResult = remoteFeeMarketingDataSource.addFeeMarketing(
