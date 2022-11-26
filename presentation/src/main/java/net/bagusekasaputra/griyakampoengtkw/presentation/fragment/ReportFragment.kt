@@ -24,14 +24,14 @@ import net.bagusekasaputra.griyakampoengtkw.presentation.tableview.report.TotalU
 import net.bagusekasaputra.griyakampoengtkw.presentation.tableview.report.TumCell
 import net.bagusekasaputra.griyakampoengtkw.presentation.tableview.report.TumColumnHeaders
 import net.bagusekasaputra.griyakampoengtkw.presentation.tableview.report.TumRowHeaders
-import net.bagusekasaputra.griyakampoengtkw.presentation.viewmodel.DetailViewModel
+import net.bagusekasaputra.griyakampoengtkw.presentation.viewmodel.ReportViewModel
 
 @AndroidEntryPoint
 class ReportFragment : Fragment() {
 
     private lateinit var binding: FragmentReportBinding
 
-    private val detailViewModel: DetailViewModel by viewModels()
+    private val reportViewModel: ReportViewModel by viewModels()
 
     private var collapsedRekap = false
     private var collapsedTabel = true
@@ -101,10 +101,10 @@ class ReportFragment : Fragment() {
                 val tahunIni = 3
 
                 when (spinnerPosition) {
-//                    semuaPeriode -> { detailViewModel.getRekapSemuaPeriode() }
-//                    mingguIni -> { detailViewModel.getRekapMingguIni() }
-//                    bulanIni -> { detailViewModel.getRekapBulanIni() }
-//                    tahunIni -> { detailViewModel.getRekapTahunIni() }
+                    semuaPeriode -> { reportViewModel.getRekapSemuaPeriode() }
+                    mingguIni -> { reportViewModel.getRekapMingguIni() }
+                    bulanIni -> { reportViewModel.getRekapBulanIni() }
+                    tahunIni -> { reportViewModel.getRekapTahunIni() }
                 }
             }
 
@@ -123,33 +123,33 @@ class ReportFragment : Fragment() {
     }
 
     private fun syncData() {
-
+        reportViewModel.provideReportUangMasuk()
     }
 
     private fun setupViewModel() {
-        detailViewModel.isFinishOperation.observe(requireActivity()) { finished ->
+        reportViewModel.isFinishOperation.observe(requireActivity()) { finished ->
             finished?.let {
                 binding.swipeRefreshReport.isRefreshing = it.not()
             }
         }
 
-        detailViewModel.listReportTotalUangMasukLive.observe(requireActivity()) {
+        reportViewModel.listReportTotalUangMasukLive.observe(requireActivity()) {
             if (it != null) {
-                binding.tvRekapBesar.text = detailViewModel.getOverallTotalCuan()
-                binding.tvRekapTotalUangMasuk.text = detailViewModel.getOverallTotalMasuk()
-                binding.tvTotalPengeluaran.text = detailViewModel.getOverallTotalPengeluaran()
+                binding.tvRekapBesar.text = reportViewModel.getOverallTotalCuan()
+                binding.tvRekapTotalUangMasuk.text = reportViewModel.getOverallTotalMasuk()
+                binding.tvTotalPengeluaran.text = reportViewModel.getOverallTotalPengeluaran()
             }
 
-            val columnHeaders = detailViewModel.getTotalUangMasukColumnHeaders()
-            val rowHeaders = detailViewModel.getTotalUangMasukRowHeaders()
-            val cellItems = detailViewModel.getTotalUangMasukCellItems()
+            val columnHeaders = reportViewModel.getTotalUangMasukColumnHeaders()
+            val rowHeaders = reportViewModel.getTotalUangMasukRowHeaders()
+            val cellItems = reportViewModel.getTotalUangMasukCellItems()
 
             setupTumTableView(columnHeaders, rowHeaders, cellItems)
         }
     }
 
     private fun setupSpinnerPeriode() {
-        binding.spinnerPeriode.adapter = ArrayAdapter<String>(
+        binding.spinnerPeriode.adapter = ArrayAdapter(
             requireContext(),
             android.R.layout.simple_spinner_dropdown_item,
             periodeReportList
@@ -192,7 +192,7 @@ class ReportFragment : Fragment() {
     }
 
     private fun showExpandableTumCard() {
-        detailViewModel.isFinishOperation.value = false
+        reportViewModel.isFinishOperation.value = false
 
         lifecycleScope.launch {
             withContext(Dispatchers.Main) {
@@ -203,7 +203,7 @@ class ReportFragment : Fragment() {
                 collapsedTabel = false
                 binding.tvInfoBukaTabel.text = "Tutup Tabel"
 
-                detailViewModel.isFinishOperation.postValue(true)
+                reportViewModel.isFinishOperation.postValue(true)
             }
         }
     }
