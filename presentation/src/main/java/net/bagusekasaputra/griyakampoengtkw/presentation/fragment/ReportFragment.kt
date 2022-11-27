@@ -26,6 +26,7 @@ import net.bagusekasaputra.griyakampoengtkw.presentation.tableview.report.TotalU
 import net.bagusekasaputra.griyakampoengtkw.presentation.tableview.report.TumCell
 import net.bagusekasaputra.griyakampoengtkw.presentation.tableview.report.TumColumnHeaders
 import net.bagusekasaputra.griyakampoengtkw.presentation.tableview.report.TumRowHeaders
+import net.bagusekasaputra.griyakampoengtkw.presentation.util.DateUtil
 import net.bagusekasaputra.griyakampoengtkw.presentation.viewmodel.ReportViewModel
 
 @AndroidEntryPoint
@@ -110,13 +111,13 @@ class ReportFragment : Fragment() {
                         reportViewModel.getRekapSemuaPeriode()
                     }
                     mingguIni -> {
-                        reportViewModel.getRekapMingguIni()
+                        reportViewModel.getRekapPeriode(DateUtil.MINGGU_INI)
                     }
                     bulanIni -> {
-                        reportViewModel.getRekapBulanIni()
+                        reportViewModel.getRekapPeriode(DateUtil.BULAN_INI)
                     }
                     tahunIni -> {
-                        reportViewModel.getRekapTahunIni()
+                        reportViewModel.getRekapPeriode(DateUtil.TAHUN_INI)
                     }
                 }
             }
@@ -128,6 +129,8 @@ class ReportFragment : Fragment() {
 
         binding.btnLihatRingkasan.setOnClickListener {
             binding.btnLihatRingkasan.visibility = View.GONE
+            binding.tvInfoWarningLihatRingkasan.visibility = View.GONE
+            
             binding.progressBarReport.visibility = View.VISIBLE
             binding.tvInfoLoadingReport.visibility = View.VISIBLE
 
@@ -155,12 +158,13 @@ class ReportFragment : Fragment() {
                     binding.layoutLoadingReport.visibility = View.GONE
                     binding.nestedScrollReport.visibility = View.VISIBLE
 
-                    val snackbarCompletion = Snackbar.make(binding.root, "Memuat data berhasil. Silakan pilih periode.", Snackbar.LENGTH_LONG)
-                    snackbarCompletion.setAction("OK") {
-                        snackbarCompletion.dismiss()
-                    }
+                    Snackbar.make(binding.root, "Memuat data berhasil. Silakan pilih periode.", Snackbar.LENGTH_LONG)
+                        .apply {
+                            animationMode = Snackbar.ANIMATION_MODE_SLIDE
 
-                    snackbarCompletion.show()
+                            setAction("OK") { dismiss() }
+                        }.show()
+
                 } else {
                     binding.layoutLoadingReport.visibility = View.VISIBLE
                     binding.nestedScrollReport.visibility = View.GONE

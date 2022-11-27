@@ -125,19 +125,14 @@ class ReportViewModel @Inject constructor(
         }
     }
 
-    fun getRekapMingguIni() {
-
-    }
-
-
-    fun getRekapBulanIni() {
+    fun getRekapPeriode(periode: Int) {
         val listReportKavling = listReportKavlingLive.value
 
         if (listReportKavling != null) {
             isFinishOperation.value = false
 
             viewModelScope.launch {
-                val rangeBulanIni = DateUtil.generateRangeDate(DateUtil.BULAN_INI)
+                val listPeriode = DateUtil.generateRangeDate(periode)
                 val listReportTotalUangMasuk = mutableListOf<ReportTotalUangMasuk>()
                 val listTanggal = mutableListOf<Date>()
 
@@ -149,14 +144,14 @@ class ReportViewModel @Inject constructor(
                     reportKavling.listPembayaran?.forEach {
                         val tanggalPembayaran = it.tanggal.toDate()
 
-                        if (rangeBulanIni.contains(tanggalPembayaran)) {
+                        if (listPeriode.contains(tanggalPembayaran)) {
                             uangMasuk += NumberUtil.formatStringToLong(it.jumlahUangDibayar)
                             listTanggal.add(tanggalPembayaran)
                         }
                     }
 
                     reportKavling.feeMarketing?.tanggalPenerimaan?.toDate()?.let {
-                        if (rangeBulanIni.contains(it)) {
+                        if (listPeriode.contains(it)) {
                             feeMarketing += NumberUtil.formatStringToLong(reportKavling.feeMarketing?.biayaMarketer ?: "0")
                             listTanggal.add(it)
                         }
@@ -165,7 +160,7 @@ class ReportViewModel @Inject constructor(
                     reportKavling.listBiayaMarketing?.forEach {
                         val tanggalBiayaMarketing = it.tanggal.toDate()
 
-                        if (rangeBulanIni.contains(tanggalBiayaMarketing)) {
+                        if (listPeriode.contains(tanggalBiayaMarketing)) {
                             biayaMarketing += NumberUtil.formatStringToLong(it.harga)
                             listTanggal.add(tanggalBiayaMarketing)
                         }
@@ -190,21 +185,22 @@ class ReportViewModel @Inject constructor(
         }
     }
 
-    fun getRekapTahunIni() {
-        // TODO
-    }
 
     fun getRangePeriode(listTanggal: List<Date>): String {
         // Get the earliest date and the latest date
         // from List<Pembayaran>, FeeMarketing, and List<BiayaMarketing>
-        val sortedTanggal = listTanggal.sortedWith { firstDate, secondDate ->
-            firstDate.compareTo(secondDate)
+        return if (listTanggal.isNotEmpty()) {
+            val sortedTanggal = listTanggal.sortedWith { firstDate, secondDate ->
+                firstDate.compareTo(secondDate)
+            }
+
+            val earliestDate = sortedTanggal.first()
+            val latestDate = sortedTanggal.last()
+
+            "${earliestDate.toSlashedDate()} - ${latestDate.toSlashedDate()}"
+        } else {
+            "null"
         }
-
-        val earliestDate = sortedTanggal.first()
-        val latestDate = sortedTanggal.last()
-
-        return "${earliestDate.toSlashedDate()} - ${latestDate.toSlashedDate()}"
     }
 
     private fun getAllTanggalFromReportKavling(listReportKavling: List<ReportKavling>): List<Date> {
