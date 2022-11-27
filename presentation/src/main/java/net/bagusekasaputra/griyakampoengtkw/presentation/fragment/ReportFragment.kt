@@ -66,7 +66,8 @@ class ReportFragment : Fragment() {
 
         binding.swipeRefreshReport.setOnRefreshListener {
             reportViewModel.reportKavlingRefreshed.value = false
-
+            // reset spinner to position 0 on refresh
+            binding.spinnerPeriode.setSelection(0)
             syncData()
         }
 
@@ -101,12 +102,18 @@ class ReportFragment : Fragment() {
 
         binding.spinnerPeriode.onItemSelectedListener = object : OnItemSelectedListener {
             override fun onItemSelected(p0: AdapterView<*>?, p1: View?, spinnerPosition: Int, p3: Long) {
+                val pilihPeriode = 0
                 val semuaPeriode = 1
                 val mingguIni = 2
                 val bulanIni = 3
                 val tahunIni = 4
 
                 when (spinnerPosition) {
+                    // reset list report on 0 selection
+                    pilihPeriode -> {
+                        reportViewModel.listReportTotalUangMasukLive.value = null
+                        reportViewModel.rangeTanggalLive.value = null
+                    }
                     semuaPeriode -> {
                         reportViewModel.getRekapSemuaPeriode()
                     }
@@ -130,7 +137,7 @@ class ReportFragment : Fragment() {
         binding.btnLihatRingkasan.setOnClickListener {
             binding.btnLihatRingkasan.visibility = View.GONE
             binding.tvInfoWarningLihatRingkasan.visibility = View.GONE
-            
+
             binding.progressBarReport.visibility = View.VISIBLE
             binding.tvInfoLoadingReport.visibility = View.VISIBLE
 
@@ -175,6 +182,8 @@ class ReportFragment : Fragment() {
         reportViewModel.rangeTanggalLive.observe(requireActivity()) {
             if (it != null) {
                 binding.tvRangePeriode.text = it
+            } else {
+                binding.tvRangePeriode.text = "-"
             }
         }
 
