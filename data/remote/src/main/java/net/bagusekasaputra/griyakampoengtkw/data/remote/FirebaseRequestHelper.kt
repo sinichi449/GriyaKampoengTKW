@@ -44,6 +44,27 @@ object FirebaseRequestHelper {
         }.first()
     }
 
+    // For crawling reports
+    suspend fun <O> getOperationNoTimeout(
+        pathToChild: DatabaseReference,
+        onGetSnapshot: (snapshot: DataSnapshot) -> O?,
+        onClosedConnection: () -> Unit,
+    ): Result<O?> {
+        return callbackFlow<Result<O?>> {
+            pathToChild.get()
+                .addOnSuccessListener { snapshot ->
+                    val resultObject = onGetSnapshot(snapshot)
+
+                    trySendBlocking(Result.success(resultObject))
+                }
+                .addOnFailureListener {
+                    trySendBlocking(Result.failure(it))
+                }
+
+            awaitClose { onClosedConnection() }
+        }.first()
+    }
+
     // Not using time out
     suspend fun insertOperation(
         targetChild: DatabaseReference,

@@ -28,7 +28,9 @@ fun String.toDate(): Date {
     val bulan = this.split("/")[1].toInt() - 1
     val tahun = this.split("/")[2].toInt()
 
-    val calendar = Calendar.getInstance().apply { set(tahun, bulan, tanggal) }
+    val calendar = Calendar.getInstance().apply {
+        set(tahun, bulan, tanggal)
+    }.resetHours()
 
     return calendar.time
 }

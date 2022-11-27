@@ -75,21 +75,13 @@ class RekapPembayaranTest {
 
     @Test
     fun test_simsalabim() {
-        val tanggal = "23/09/2022"
-        val listPembayaranC9 = listOf(
-            PembayaranAlt(tanggal, 1.0.juta()),
-            PembayaranAlt(tanggal, 2.0.juta()),
-            PembayaranAlt(tanggal, 2.0.juta()),
-        )
-        val listBiayaMarketingC9 = listOf(
-            BiayaMarketingAlt(tanggal, 0.45.juta())
-        )
-        val rekapKavling = RekapKavling(
-            kavling = "C9",
-            listPembayaran = listPembayaranC9,
-            feeMarketing = FeeMarketingAlt(tanggal, 4.4.juta()),
-            listBiayaMarketing = listBiayaMarketingC9,
-        )
+        val listRekapKavling = RekapKavlingUtil.generateRandomRekapAllKavling()
+
+        listRekapKavling.forEach {
+            printHeader()
+            println("Rekap ${it.kavling}")
+            println(it)
+        }
     }
 
     private object RekapKavlingUtil {
@@ -100,9 +92,9 @@ class RekapPembayaranTest {
                 listRekapKavling.add(
                     RekapKavling(
                         kavling = kavling,
-                        listPembayaran = PembayaranUtil.generatePembayaran(),
+                        listPembayaran = PembayaranUtil.generatePembayaran(minimum = 2, maximum = 4),
                         feeMarketing = MarketingUtil.generateFeeMarketing(),
-                        listBiayaMarketing = MarketingUtil.generateListBiayaMarketing(),
+                        listBiayaMarketing = MarketingUtil.generateListBiayaMarketing(minimum = 1, maximum = 3),
                     )
                 )
             }
@@ -133,8 +125,8 @@ class RekapPembayaranTest {
     }
 
     private object PembayaranUtil {
-        fun generatePembayaran(): List<PembayaranAlt> {
-            val numPembayaran = Random.nextInt(5..50)
+        fun generatePembayaran(minimum: Int = 5, maximum: Int = 50): List<PembayaranAlt> {
+            val numPembayaran = Random.nextInt(minimum..maximum)
 
             val listPembayaran = mutableListOf<PembayaranAlt>()
             repeat(numPembayaran) {
@@ -170,8 +162,8 @@ class RekapPembayaranTest {
             )
         }
 
-        fun generateListBiayaMarketing(): List<BiayaMarketingAlt> {
-            val jumlahBiayaMarketing = Random.nextInt(1..8)
+        fun generateListBiayaMarketing(minimum: Int = 1, maximum: Int = 8): List<BiayaMarketingAlt> {
+            val jumlahBiayaMarketing = Random.nextInt(minimum..maximum)
 
             val listBiayaMarketing = mutableListOf<BiayaMarketingAlt>()
             (1..jumlahBiayaMarketing).forEach {
@@ -341,11 +333,12 @@ class RekapPembayaranTest {
         }
 
         fun generateRandomTanggal(): String {
-            val listDate = generateListOrderedTanggal()
+//            val listDate = generateListOrderedTanggal()
+            val listDate = generateStart2022()
 
             val randomIndex = Random.nextInt(listDate.indices)
 
-            return listDate[randomIndex]
+            return formatDate(listDate[randomIndex])
         }
 
         private fun formatDate(date: Date): String {

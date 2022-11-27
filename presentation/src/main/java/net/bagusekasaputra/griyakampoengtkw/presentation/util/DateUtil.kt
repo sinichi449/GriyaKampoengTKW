@@ -26,7 +26,7 @@ object DateUtil {
             }
     }
 
-    private fun generateRangeDate(periode: Int): List<Date> {
+    fun generateRangeDate(periode: Int): List<Date> {
         val hariIni = Calendar.getInstance().resetHours()
 
         val specifiedPeriode = Calendar.getInstance().apply {

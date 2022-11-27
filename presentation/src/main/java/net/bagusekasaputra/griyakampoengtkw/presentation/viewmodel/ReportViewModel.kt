@@ -17,6 +17,7 @@ import net.bagusekasaputra.griyakampoengtkw.presentation.tableview.report.TumCol
 import net.bagusekasaputra.griyakampoengtkw.presentation.tableview.report.TumRowHeaders
 import net.bagusekasaputra.griyakampoengtkw.presentation.toDate
 import net.bagusekasaputra.griyakampoengtkw.presentation.toSlashedDate
+import net.bagusekasaputra.griyakampoengtkw.presentation.util.DateUtil
 import java.util.*
 import javax.inject.Inject
 
@@ -93,8 +94,19 @@ class ReportViewModel @Inject constructor(
 
             viewModelScope.launch {
                 val listRekapTotalUangMasuk = mutableListOf<ReportTotalUangMasuk>()
+                val listTanggal = mutableListOf<Date>()
 
                 listReportKavling.forEach {
+                    it.listPembayaran?.forEach { pembayaran ->
+                        listTanggal.add(pembayaran.tanggal.toDate())
+                    }
+                    it.feeMarketing?.tanggalPenerimaan?.let { tanggalFeeMarketing ->
+                        listTanggal.add(tanggalFeeMarketing.toDate())
+                    }
+                    it.listBiayaMarketing?.forEach { biayaMarketing ->
+                        listTanggal.add(biayaMarketing.tanggal.toDate())
+                    }
+
                     val rekapTotalUangMasuk = ReportTotalUangMasuk(
                         kavling = it.kavling,
                         uangMasuk = it.getTotalPembayaran(),
@@ -105,9 +117,8 @@ class ReportViewModel @Inject constructor(
 
                     listRekapTotalUangMasuk.add(rekapTotalUangMasuk)
                 }
-                logEvent("List Rekap total uang masuk -> $listRekapTotalUangMasuk")
-
                 listReportTotalUangMasukLive.postValue(listRekapTotalUangMasuk)
+                rangeTanggalLive.postValue(getRangePeriode(listTanggal))
 
                 isFinishOperation.postValue(true)
             }
@@ -115,37 +126,85 @@ class ReportViewModel @Inject constructor(
     }
 
     fun getRekapMingguIni() {
-        // TODO
+
     }
 
+
     fun getRekapBulanIni() {
-        // TODO
+        val listReportKavling = listReportKavlingLive.value
+
+        if (listReportKavling != null) {
+            isFinishOperation.value = false
+
+            viewModelScope.launch {
+                val rangeBulanIni = DateUtil.generateRangeDate(DateUtil.BULAN_INI)
+                val listReportTotalUangMasuk = mutableListOf<ReportTotalUangMasuk>()
+                val listTanggal = mutableListOf<Date>()
+
+                listReportKavling.forEach { reportKavling ->
+                    var uangMasuk = 0L
+                    var feeMarketing = 0L
+                    var biayaMarketing = 0L
+
+                    reportKavling.listPembayaran?.forEach {
+                        val tanggalPembayaran = it.tanggal.toDate()
+
+                        if (rangeBulanIni.contains(tanggalPembayaran)) {
+                            uangMasuk += NumberUtil.formatStringToLong(it.jumlahUangDibayar)
+                            listTanggal.add(tanggalPembayaran)
+                        }
+                    }
+
+                    reportKavling.feeMarketing?.tanggalPenerimaan?.toDate()?.let {
+                        if (rangeBulanIni.contains(it)) {
+                            feeMarketing += NumberUtil.formatStringToLong(reportKavling.feeMarketing?.biayaMarketer ?: "0")
+                            listTanggal.add(it)
+                        }
+                    }
+
+                    reportKavling.listBiayaMarketing?.forEach {
+                        val tanggalBiayaMarketing = it.tanggal.toDate()
+
+                        if (rangeBulanIni.contains(tanggalBiayaMarketing)) {
+                            biayaMarketing += NumberUtil.formatStringToLong(it.harga)
+                            listTanggal.add(tanggalBiayaMarketing)
+                        }
+                    }
+
+                    listReportTotalUangMasuk.add(
+                        ReportTotalUangMasuk(
+                            kavling = reportKavling.kavling,
+                            uangMasuk = uangMasuk,
+                            feeMarketing = feeMarketing,
+                            biayaMarketing = biayaMarketing,
+                            totalCuan = uangMasuk - feeMarketing - biayaMarketing,
+                        )
+                    )
+                }
+
+                listReportTotalUangMasukLive.postValue(listReportTotalUangMasuk)
+                rangeTanggalLive.postValue(getRangePeriode(listTanggal))
+
+                isFinishOperation.postValue(true)
+            }
+        }
     }
 
     fun getRekapTahunIni() {
         // TODO
     }
 
-    fun getRangePeriode() {
-        val listReportKavling = listReportKavlingLive.value
-
-        if (listReportKavling != null) {
-            // Get the earliest date and the latest date
-            // from List<Pembayaran>, FeeMarketing, and List<BiayaMarketing>
-            viewModelScope.launch {
-                val allTanggal = getAllTanggalFromReportKavling(listReportKavling)
-
-                val sortedTanggal = allTanggal.sortedWith { firstDate, secondDate ->
-                    firstDate.compareTo(secondDate)
-                }
-
-                val earliestDate = sortedTanggal.first()
-                val latestDate = sortedTanggal.last()
-                val rangeTanggal = "${earliestDate.toSlashedDate()} - ${latestDate.toSlashedDate()}"
-
-                rangeTanggalLive.postValue(rangeTanggal)
-            }
+    fun getRangePeriode(listTanggal: List<Date>): String {
+        // Get the earliest date and the latest date
+        // from List<Pembayaran>, FeeMarketing, and List<BiayaMarketing>
+        val sortedTanggal = listTanggal.sortedWith { firstDate, secondDate ->
+            firstDate.compareTo(secondDate)
         }
+
+        val earliestDate = sortedTanggal.first()
+        val latestDate = sortedTanggal.last()
+
+        return "${earliestDate.toSlashedDate()} - ${latestDate.toSlashedDate()}"
     }
 
     private fun getAllTanggalFromReportKavling(listReportKavling: List<ReportKavling>): List<Date> {

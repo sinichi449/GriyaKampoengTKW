@@ -108,19 +108,15 @@ class ReportFragment : Fragment() {
                 when (spinnerPosition) {
                     semuaPeriode -> {
                         reportViewModel.getRekapSemuaPeriode()
-                        reportViewModel.getRangePeriode()
                     }
                     mingguIni -> {
                         reportViewModel.getRekapMingguIni()
-                        reportViewModel.getRangePeriode()
                     }
                     bulanIni -> {
                         reportViewModel.getRekapBulanIni()
-                        reportViewModel.getRangePeriode()
                     }
                     tahunIni -> {
                         reportViewModel.getRekapTahunIni()
-                        reportViewModel.getRangePeriode()
                     }
                 }
             }
