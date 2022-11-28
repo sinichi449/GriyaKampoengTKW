@@ -2,6 +2,7 @@ package net.bagusekasaputra.griyakampoengtkw.presentation.viewmodel
 
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.asFlow
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Job
@@ -9,6 +10,7 @@ import kotlinx.coroutines.launch
 import net.bagusekasaputra.griyakampoengtkw.domain.AsyncUseCaseHelper
 import net.bagusekasaputra.griyakampoengtkw.domain.NumberUtil
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.reportKavling.GetAllReportKavlingAsyncUseCase
+import net.bagusekasaputra.griyakampoengtkw.domain.entity.ProgressState
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.ReportKavling
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.ReportTotalUangMasuk
 import net.bagusekasaputra.griyakampoengtkw.presentation.logEvent
@@ -45,6 +47,8 @@ class ReportViewModel @Inject constructor(
 
     val isFinishedFetchingReport = MutableLiveData<Boolean>()
 
+    val progressStateLive = MutableLiveData<ProgressState>()
+
     private val asyncHelper = AsyncUseCaseHelper(isFinishOperation)
 
     // The list of Coroutines/Flows job that need to be cleared on
@@ -52,6 +56,15 @@ class ReportViewModel @Inject constructor(
     private val asyncJobs = ArrayList<Job>()
 
 
+    fun getLoadingMessage() {
+        val loadingMsg = getAllReportKavlingAsyncUseCase.progressStateLive.asFlow()
+
+        viewModelScope.launch {
+            loadingMsg.collect {
+                progressStateLive.postValue(it)
+            }
+        }
+    }
 
     fun getAllReportKavling(onFailure: (msg: String) -> Unit) {
         val isRefreshed = reportKavlingRefreshed.value ?: false

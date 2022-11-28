@@ -138,7 +138,7 @@ class ReportFragment : Fragment() {
             binding.btnLihatRingkasan.visibility = View.GONE
             binding.tvInfoWarningLihatRingkasan.visibility = View.GONE
 
-            binding.progressBarReport.visibility = View.VISIBLE
+            binding.linearprogressReport.visibility = View.VISIBLE
             binding.tvInfoLoadingReport.visibility = View.VISIBLE
 
             syncData()
@@ -150,6 +150,7 @@ class ReportFragment : Fragment() {
         reportViewModel.getAllReportKavling {
             Toast.makeText(requireContext(), it, Toast.LENGTH_LONG).show()
         }
+        reportViewModel.getLoadingMessage()
     }
 
     private fun setupViewModel() {
@@ -203,6 +204,16 @@ class ReportFragment : Fragment() {
             val cellItems = reportViewModel.getTotalUangMasukCellItems()
 
             setupTumTableView(columnHeaders, rowHeaders, cellItems)
+        }
+
+        reportViewModel.progressStateLive.observe(requireActivity()) { state ->
+            if (state != null) {
+                binding.linearprogressReport.progress = state.percent
+                binding.tvInfoLoadingReport.text = state.message
+            } else {
+                binding.linearprogressReport.progress = 0
+                binding.tvInfoLoadingReport.text = "Memuat ringkasan ..."
+            }
         }
     }
 

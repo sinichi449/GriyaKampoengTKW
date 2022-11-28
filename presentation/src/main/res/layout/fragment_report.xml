@@ -20,25 +20,38 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintBottom_toBottomOf="parent">
 
-            <ProgressBar
-                android:id="@+id/progress_bar_report"
-                android:layout_width="wrap_content"
+<!--            <ProgressBar-->
+<!--                android:id="@+id/progress_bar_report"-->
+<!--                android:layout_width="wrap_content"-->
+<!--                android:layout_height="wrap_content"-->
+<!--                app:layout_constraintTop_toTopOf="parent"-->
+<!--                app:layout_constraintBottom_toTopOf="@id/tv_info_loading_report"-->
+<!--                app:layout_constraintStart_toStartOf="parent"-->
+<!--                app:layout_constraintEnd_toEndOf="parent"-->
+<!--                app:layout_constraintVertical_chainStyle="packed" />-->
+
+            <com.google.android.material.progressindicator.LinearProgressIndicator
+                android:id="@+id/linearprogress_report"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintBottom_toTopOf="@id/tv_info_loading_report"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintBottom_toTopOf="@id/tv_info_loading_report"
                 app:layout_constraintVertical_chainStyle="packed"
+                android:layout_marginHorizontal="36dp"
+                android:progress="0"
+                android:theme="@style/Theme.GriyaKampung"
                 android:visibility="gone"/>
 
             <com.google.android.material.textview.MaterialTextView
                 android:id="@+id/tv_info_loading_report"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                app:layout_constraintTop_toBottomOf="@id/progress_bar_report"
+                app:layout_constraintTop_toBottomOf="@id/linearprogress_report"
                 app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintStart_toStartOf="@id/progress_bar_report"
-                app:layout_constraintEnd_toEndOf="@id/progress_bar_report"
+                app:layout_constraintStart_toStartOf="@id/linearprogress_report"
+                app:layout_constraintEnd_toEndOf="@id/linearprogress_report"
                 android:text="Memuat ringkasan ..."
                 android:layout_marginTop="16dp"
                 android:visibility="gone"/>
