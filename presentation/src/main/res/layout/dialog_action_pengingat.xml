@@ -1,0 +1,145 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.appcompat.widget.LinearLayoutCompat xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical"
+    android:padding="24dp">
+
+    <com.google.android.material.textview.MaterialTextView
+        android:id="@+id/tv_dialog_pengingat_title"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:text="Tambahkan Pengingat"
+        android:textColor="@color/primaryTextColor"
+        style="@style/TextAppearance.MaterialComponents.Headline6"/>
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Judul"
+        app:startIconDrawable="@drawable/ic_baseline_title_24"
+        app:endIconMode="clear_text"
+        style="@style/OutlinedTextInputLayout"
+        android:layout_marginTop="24dp">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/edt_judul_pengingat"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:inputType="text"
+            android:maxLength="50"
+            style="@style/OutlineEditText"/>
+
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/layout_pengingat_pilih_tanggal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp">
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/til_pengingat_pilih_tanggal"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toStartOf="@id/btn_pengingat_pilih_tanggal"
+            app:layout_constraintTop_toTopOf="parent"
+            android:hint="Tanggal"
+            app:startIconDrawable="@drawable/ic_baseline_calendar_month_24"
+            app:endIconMode="clear_text"
+            style="@style/OutlinedTextInputLayout">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/edt_tanggal"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:inputType="text"
+                android:maxLength="10"
+                style="@style/OutlineEditText"/>
+
+        </com.google.android.material.textfield.TextInputLayout>
+
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btn_pengingat_pilih_tanggal"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="@id/til_pengingat_pilih_tanggal"
+            app:layout_constraintBottom_toBottomOf="@id/til_pengingat_pilih_tanggal"
+            android:text="Pilih"
+            android:textColor="@color/secondaryColor"
+            style="@style/TextDialogButton"/>
+
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/layout_pengingat_pilih_waktu"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp">
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/til_pengingat_pilih_waktu"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toStartOf="@id/btn_pengingat_pilih_waktu"
+            app:layout_constraintTop_toTopOf="parent"
+            android:hint="Waktu"
+            app:startIconDrawable="@drawable/ic_baseline_clock_24"
+            app:endIconMode="clear_text"
+            style="@style/OutlinedTextInputLayout">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/edt_waktu"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:inputType="datetime"
+                android:maxLength="5"
+                style="@style/OutlineEditText"/>
+
+        </com.google.android.material.textfield.TextInputLayout>
+
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btn_pengingat_pilih_waktu"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="@id/til_pengingat_pilih_waktu"
+            app:layout_constraintBottom_toBottomOf="@id/til_pengingat_pilih_waktu"
+            android:text="Pilih"
+            android:textColor="@color/secondaryColor"
+            style="@style/TextDialogButton"/>
+
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/btn_tambahkan_pengingat"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="24dp"
+        app:cornerRadius="8dp"
+        android:text="Tambahkan"
+        android:backgroundTint="@color/secondaryColor"
+        android:textColor="@color/secondaryTextColor"/>
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/btn_hapus_pengingat"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        app:cornerRadius="8dp"
+        android:text="Hapus Pengingat"
+        style="@style/TextDialogButton"
+        android:visibility="gone"/>
+
+</androidx.appcompat.widget.LinearLayoutCompat>

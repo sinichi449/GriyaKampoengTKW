@@ -18,6 +18,7 @@ import net.bagusekasaputra.griyakampoengtkw.presentation.R
 import net.bagusekasaputra.griyakampoengtkw.presentation.adapter.viewpager.MainViewPagerAdapter
 import net.bagusekasaputra.griyakampoengtkw.presentation.databinding.ActivityMainBinding
 import net.bagusekasaputra.griyakampoengtkw.presentation.fragment.KavlingFragment
+import net.bagusekasaputra.griyakampoengtkw.presentation.fragment.PengingatFragment
 import net.bagusekasaputra.griyakampoengtkw.presentation.fragment.ReportFragment
 import net.bagusekasaputra.griyakampoengtkw.presentation.logEvent
 import net.bagusekasaputra.griyakampoengtkw.presentation.util.GriyaNodes
@@ -133,10 +134,12 @@ class MainActivity : AppCompatActivity() {
             it?.let { tabSelected ->
                 val tabKavling = 0
                 val tabReport = 1
+                val tabPengingat = 2
 
                 when (tabSelected) {
                     tabKavling -> showFabs()
                     tabReport -> hideFabs()
+                    tabPengingat -> showFabs()
                 }
             }
         }
@@ -158,7 +161,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun setupViewPager() {
-        val fragments = listOf(KavlingFragment(), ReportFragment())
+        val fragments = listOf(KavlingFragment(), ReportFragment(), PengingatFragment())
         val pagerAdapter = MainViewPagerAdapter(
             fragmentManager = supportFragmentManager,
             fragments = fragments,
@@ -175,6 +178,7 @@ class MainActivity : AppCompatActivity() {
             val getIcon = { iconId: Int -> ContextCompat.getDrawable(this@MainActivity, iconId) }
             getTabAt(0)?.icon = getIcon(R.drawable.ic_baseline_kavling_24)
             getTabAt(1)?.icon = getIcon(R.drawable.ic_baseline_report_24)
+            getTabAt(2)?.icon = getIcon(R.drawable.ic_baseline_alarm_24)
         }
 
         binding.tabLayoutMain.addOnTabSelectedListener(tabSelectedListener)

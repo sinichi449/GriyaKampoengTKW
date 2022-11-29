@@ -148,12 +148,22 @@ object RepositoryModule {
     }
 
 
-    // Foto Pembayaran
+    /**
+     * Foto Pembayaran
+     */
     @Provides
     fun provideFotoPembayaranRepository(
         @DataSourceModule.RoomDatabase roomDataSource: LocalFotoPembayaranDataSource,
         @DataSourceModule.DeviceStorage deviceStorageDataSource: LocalFotoPembayaranDataSource,
     ): FotoPembayaranRepository {
         return FotoPembayaranRepositoryImpl(roomDataSource, deviceStorageDataSource)
+    }
+
+    /**
+     * Pengingat
+     */
+    @Provides
+    fun providePengingatRepository(): PengingatRepository {
+        return PengingatRepositoryImpl()
     }
 }

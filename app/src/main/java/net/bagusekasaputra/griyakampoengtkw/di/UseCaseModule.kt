@@ -16,6 +16,10 @@ import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.fotoPembayaran.I
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.hargaKavling.GetHargaKavlingAsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.kavling.GetKavlingByBlockAsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.pembayaran.GetAllPembayaranAsyncUseCase
+import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.pengingat.AddPengingatAsyncUseCase
+import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.pengingat.DeletePengingatAsyncUseCase
+import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.pengingat.GetAllPengingatAsyncUseCase
+import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.pengingat.UpdatePengingatAsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.reportKavling.GetAllReportKavlingAsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.repository.*
 import net.bagusekasaputra.griyakampoengtkw.domain.usecase.appupdate.GetUpdateInformationUseCase
@@ -283,7 +287,9 @@ object UseCaseModule {
         = IsFotoPembayaranExistAsyncUseCase(fotoPembayaranRepository)
 
 
-
+    /**
+     * Report Kavling
+     */
     @Provides
     fun provideGetAllReportKavlingUseCase(
         pembayaranRepository: PembayaranRepository,
@@ -291,5 +297,28 @@ object UseCaseModule {
         biayaMarketingRepository: BiayaMarketingRepository,
     ): GetAllReportKavlingAsyncUseCase {
         return GetAllReportKavlingAsyncUseCase(pembayaranRepository, feeMarketingRepository, biayaMarketingRepository)
+    }
+
+    /**
+     * Pengingat
+     */
+    @Provides
+    fun provideGetAllPengingatUseCase(pengingatRepository: PengingatRepository): GetAllPengingatAsyncUseCase {
+        return GetAllPengingatAsyncUseCase((pengingatRepository))
+    }
+
+    @Provides
+    fun provideAddPengingatUseCase(pengingatRepository: PengingatRepository): AddPengingatAsyncUseCase {
+        return AddPengingatAsyncUseCase(pengingatRepository)
+    }
+
+    @Provides
+    fun provideUpdatePengingatUseCase(pengingatRepository: PengingatRepository): UpdatePengingatAsyncUseCase {
+        return UpdatePengingatAsyncUseCase(pengingatRepository)
+    }
+
+    @Provides
+    fun provideDeletePengingatUseCase(pengingatRepository: PengingatRepository): DeletePengingatAsyncUseCase {
+        return DeletePengingatAsyncUseCase(pengingatRepository)
     }
 }
