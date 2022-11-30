@@ -16,10 +16,7 @@ import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.fotoPembayaran.I
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.hargaKavling.GetHargaKavlingAsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.kavling.GetKavlingByBlockAsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.pembayaran.GetAllPembayaranAsyncUseCase
-import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.pengingat.AddPengingatAsyncUseCase
-import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.pengingat.DeletePengingatAsyncUseCase
-import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.pengingat.GetAllPengingatAsyncUseCase
-import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.pengingat.UpdatePengingatAsyncUseCase
+import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.pengingat.*
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.reportKavling.GetAllReportKavlingAsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.repository.*
 import net.bagusekasaputra.griyakampoengtkw.domain.usecase.appupdate.GetUpdateInformationUseCase
@@ -320,5 +317,10 @@ object UseCaseModule {
     @Provides
     fun provideDeletePengingatUseCase(pengingatRepository: PengingatRepository): DeletePengingatAsyncUseCase {
         return DeletePengingatAsyncUseCase(pengingatRepository)
+    }
+
+    @Provides
+    fun provideTurnOffPengingatUseCase(pengingatRepository: PengingatRepository): TurnOffPengingatAsyncUseCase {
+        return TurnOffPengingatAsyncUseCase(pengingatRepository)
     }
 }

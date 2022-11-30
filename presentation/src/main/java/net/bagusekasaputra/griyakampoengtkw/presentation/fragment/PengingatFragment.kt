@@ -1,5 +1,7 @@
 package net.bagusekasaputra.griyakampoengtkw.presentation.fragment
 
+import android.app.DatePickerDialog
+import android.app.TimePickerDialog
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -10,14 +12,18 @@ import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
+import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.Pengingat
 import net.bagusekasaputra.griyakampoengtkw.presentation.R
 import net.bagusekasaputra.griyakampoengtkw.presentation.adapter.recyclerview.PengingatRecyclerAdapter
 import net.bagusekasaputra.griyakampoengtkw.presentation.databinding.DialogActionPengingatBinding
 import net.bagusekasaputra.griyakampoengtkw.presentation.databinding.FragmentPengingatBinding
+import net.bagusekasaputra.griyakampoengtkw.presentation.toCalendar
+import net.bagusekasaputra.griyakampoengtkw.presentation.toHour
 import net.bagusekasaputra.griyakampoengtkw.presentation.util.DialogUtil
 import net.bagusekasaputra.griyakampoengtkw.presentation.viewmodel.PengingatViewModel
+import java.util.*
 
 @AndroidEntryPoint
 class PengingatFragment : Fragment() {
@@ -74,12 +80,6 @@ class PengingatFragment : Fragment() {
             }
         }
 
-        pengingatViewModel.pengingatRefreshed.observe(requireActivity()) { isRefreshed ->
-            if (isRefreshed != null) {
-                if (isRefreshed.not()) sync()
-            }
-        }
-
         pengingatViewModel.listPengingat.observe(requireActivity()) { listPengingat ->
             if (listPengingat != null) {
                 setupPengingatRecyclerView(listPengingat)
@@ -90,6 +90,16 @@ class PengingatFragment : Fragment() {
     private fun setupPengingatRecyclerView(listPengingat: List<Pengingat>) {
         val adapter = PengingatRecyclerAdapter(
             listPengingat = listPengingat,
+            onImgNotifClick = { position ->
+                pengingatViewModel.turnOffPengingat(
+                    pengingat = listPengingat[position],
+                    onComplete = {
+                        sync()
+
+                        Snackbar.make(binding.root, it, Snackbar.LENGTH_SHORT).show()
+                    }
+                )
+            },
             onItemLongClick = { position ->
                 showActionPengingatDialog(listPengingat[position])
             }
@@ -97,6 +107,8 @@ class PengingatFragment : Fragment() {
 
         binding.recyclerPengingat.adapter = adapter
         binding.recyclerPengingat.layoutManager = LinearLayoutManager(requireContext())
+
+        adapter.notifyDataSetChanged()
     }
 
     private fun showActionPengingatDialog(pengingat: Pengingat?) {
@@ -107,6 +119,73 @@ class PengingatFragment : Fragment() {
 
         DialogUtil.additionalDialogSetting(requireContext(), pengingatDialog)
 
+        val editMode = pengingat != null
+        if (editMode) {
+            dialogBinding.tvDialogPengingatTitle.text = "Ubah Pengingat"
+
+            dialogBinding.edtJudulPengingat.setText(pengingat!!.title)
+            dialogBinding.edtTanggal.setText(pengingat.date)
+            dialogBinding.edtWaktu.setText(pengingat.time)
+
+            dialogBinding.btnTambahkanPengingat.text = "Ubah"
+            dialogBinding.btnHapusPengingat.visibility = View.VISIBLE
+        }
+
         pengingatDialog.show()
+
+
+        dialogBinding.btnPengingatPilihTanggal.setOnClickListener {
+            val inputtedTanggal = dialogBinding.edtTanggal.text.toString()
+
+            val current = if ((editMode) or (inputtedTanggal.isNotEmpty()))
+                    inputtedTanggal.toCalendar()
+                else
+                    Calendar.getInstance()
+            val year = current.get(Calendar.YEAR)
+            val month = current.get(Calendar.MONTH)
+            val day = current.get(Calendar.DAY_OF_MONTH)
+
+
+            val mListener = DatePickerDialog.OnDateSetListener { _, mYear, mMonth, mDay ->
+                val properDay = if (mDay < 10) "0$mDay" else mDay.toString()
+                val properMonth = if (mMonth.plus(1) < 10) "0$mMonth" else mMonth.plus(1).toString()
+
+                val result = "$properDay/$properMonth/$mYear"
+                dialogBinding.edtTanggal.setText(result)
+            }
+
+            DatePickerDialog(requireContext(), R.style.DatePicker,mListener, year, month, day)
+                .show()
+        }
+
+        dialogBinding.btnPengingatPilihWaktu.setOnClickListener {
+            val inputtedWaktu = dialogBinding.edtWaktu.text.toString()
+
+            val current = if ((editMode) or (inputtedWaktu.isNotEmpty()))
+                inputtedWaktu.toHour()
+            else
+                Calendar.getInstance()
+            val hour = current.get(Calendar.HOUR_OF_DAY)
+            val minute = current.get(Calendar.MINUTE)
+
+            val mListener = TimePickerDialog.OnTimeSetListener { _, mHour, mMinute ->
+                val properHour = if (mHour < 10) "0$mHour" else mHour.toString()
+                val properMinute = if (mMinute < 10) "0$mMinute" else mMinute.toString()
+
+                val result = "$properHour:$properMinute"
+                dialogBinding.edtWaktu.setText(result)
+            }
+
+            TimePickerDialog(requireContext(), R.style.DatePicker, mListener, hour, minute, true)
+                .show()
+        }
+
+        dialogBinding.btnTambahkanPengingat.setOnClickListener {
+            // TODO
+        }
+
+        dialogBinding.btnHapusPengingat.setOnClickListener {
+            // TODO
+        }
     }
 }

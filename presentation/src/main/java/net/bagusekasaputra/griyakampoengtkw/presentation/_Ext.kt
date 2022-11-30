@@ -35,10 +35,33 @@ fun String.toDate(): Date {
     return calendar.time
 }
 
+fun String.toCalendar(): Calendar {
+    val tanggal = this.split("/")[0].toInt()
+    val bulan = this.split("/")[1].toInt() - 1
+    val tahun = this.split("/")[2].toInt()
+
+    return Calendar.getInstance().apply {
+        set(tahun, bulan, tanggal)
+    }.resetHours()
+}
+
 fun Date.toSlashedDate(): String {
     val formatter = SimpleDateFormat("dd/MM/yyyy", Locale.US)
 
     return formatter.format(this)
+}
+
+fun String.toHour(): Calendar {
+    val splitHour = this.split(":")
+    val hour = splitHour[0].toInt()
+    val minute = splitHour[1].toInt()
+
+    return Calendar.getInstance().apply {
+        set(Calendar.HOUR_OF_DAY, hour)
+        set(Calendar.MINUTE, minute)
+        set(Calendar.SECOND, 0)
+        set(Calendar.MILLISECOND, 0)
+    }
 }
 
 fun Double.juta(): Long {

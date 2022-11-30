@@ -6,10 +6,7 @@ import androidx.lifecycle.ViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Job
 import net.bagusekasaputra.griyakampoengtkw.domain.AsyncUseCaseHelper
-import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.pengingat.AddPengingatAsyncUseCase
-import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.pengingat.DeletePengingatAsyncUseCase
-import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.pengingat.GetAllPengingatAsyncUseCase
-import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.pengingat.UpdatePengingatAsyncUseCase
+import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.pengingat.*
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.Pengingat
 import javax.inject.Inject
 
@@ -19,6 +16,7 @@ class PengingatViewModel @Inject constructor(
     private val addPengingatAsyncUseCase: AddPengingatAsyncUseCase,
     private val deletePengingatAsyncUseCase: DeletePengingatAsyncUseCase,
     private val updatePengingatAsyncUseCase: UpdatePengingatAsyncUseCase,
+    private val turnOffPengingatAsyncUseCase: TurnOffPengingatAsyncUseCase,
 ): ViewModel() {
 
     val isFinishOperation = MutableLiveData(true)
@@ -140,6 +138,21 @@ class PengingatViewModel @Inject constructor(
         )
 
         asyncJobs.add(deletingPengingatJob)
+    }
+
+    fun turnOffPengingat(pengingat: Pengingat, onComplete: (msg: String) -> Unit) {
+        val request = TurnOffPengingatAsyncUseCase.Request(pengingat)
+
+        pengingatRefreshed.value = false
+
+        val turningOffPengingatJob = asyncHelper.doWork(
+            request = request,
+            asyncUseCase = turnOffPengingatAsyncUseCase,
+            onSuccess = { onComplete("Pengingat telah dimatikan") },
+            onFailure = { onComplete("Gagal mematikan pengingat: ${it.message}") }
+        )
+
+        asyncJobs.add(turningOffPengingatJob)
     }
 
 

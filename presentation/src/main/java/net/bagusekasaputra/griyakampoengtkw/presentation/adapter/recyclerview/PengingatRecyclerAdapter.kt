@@ -3,7 +3,6 @@ package net.bagusekasaputra.griyakampoengtkw.presentation.adapter.recyclerview
 import android.content.Context
 import android.view.LayoutInflater
 import android.view.ViewGroup
-import android.widget.ImageView
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.Pengingat
@@ -12,7 +11,7 @@ import net.bagusekasaputra.griyakampoengtkw.presentation.databinding.LayoutItemP
 
 class PengingatRecyclerAdapter(
     private val listPengingat: List<Pengingat>,
-    private val onImgNotifClick: (position: Int) -> Boolean,
+    private val onImgNotifClick: (position: Int) -> Unit,
     private val onItemLongClick: (position: Int) -> Unit,
 ): RecyclerView.Adapter<PengingatRecyclerAdapter.PengingatViewHolder>() {
 
@@ -41,7 +40,9 @@ class PengingatRecyclerAdapter(
 
         // Set notification off icon when isActive is false
         if (pengingat.isActive.not()) {
-            changeImgNotif(holder.imgNotif, false)
+            holder.imgNotif.setImageDrawable(
+                ContextCompat.getDrawable(mContext, R.drawable.ic_baseline_notifications_off_48)
+            )
         }
         holder.tvTitle.text = pengingat.title
         holder.tvDate.text = pengingat.date
@@ -54,21 +55,7 @@ class PengingatRecyclerAdapter(
         }
 
         holder.imgNotif.setOnClickListener {
-            val isActive = onImgNotifClick(position)
-
-            changeImgNotif(holder.imgNotif, isActive)
-        }
-    }
-
-    private fun changeImgNotif(imgNotif: ImageView, isActive: Boolean) {
-        if (isActive) {
-            imgNotif.setImageDrawable(
-                ContextCompat.getDrawable(mContext, R.drawable.ic_baseline_notifications_active_48)
-            )
-        } else {
-            imgNotif.setImageDrawable(
-                ContextCompat.getDrawable(mContext, R.drawable.ic_baseline_notifications_off_48)
-            )
+            onImgNotifClick(position)
         }
     }
 
