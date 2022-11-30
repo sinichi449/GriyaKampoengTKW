@@ -19,6 +19,7 @@ import net.bagusekasaputra.griyakampoeng.tkw.data.local.imageDataDiri.RoomLocalI
 import net.bagusekasaputra.griyakampoeng.tkw.data.local.imageSpr.RoomImageSprDataSource
 import net.bagusekasaputra.griyakampoeng.tkw.data.local.kavling.RoomKavlingDataSource
 import net.bagusekasaputra.griyakampoeng.tkw.data.local.pembayaran.RoomPembayaranLocalDataSource
+import net.bagusekasaputra.griyakampoeng.tkw.data.local.pengingat.RoomPengingatDataSource
 import net.bagusekasaputra.griyakampoengtkw.data.interfaces.local.*
 import net.bagusekasaputra.griyakampoengtkw.data.interfaces.remote.*
 import net.bagusekasaputra.griyakampoengtkw.data.remote.kavling.FirebaseKavlingDataSource
@@ -214,5 +215,14 @@ object DataSourceModule {
     @DeviceStorage
     fun provideDeviceFotoPembayaranDataSource(externalFilesDir: File?): LocalFotoPembayaranDataSource {
         return DeviceFotoPembayaranDataSource(externalFilesDir)
+    }
+
+
+    /**
+     * Pengingat
+     */
+    @Provides
+    fun provideLocalPengingatDataSource(roomDatabase: MyRoomDatabase): LocalPengingatDataSource {
+        return RoomPengingatDataSource(roomDatabase)
     }
 }

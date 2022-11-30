@@ -320,7 +320,7 @@ object UseCaseModule {
     }
 
     @Provides
-    fun provideTurnOffPengingatUseCase(pengingatRepository: PengingatRepository): TurnOffPengingatAsyncUseCase {
-        return TurnOffPengingatAsyncUseCase(pengingatRepository)
+    fun provideTurnOffPengingatUseCase(pengingatRepository: PengingatRepository): TurnOnOffPengingatAsyncUseCase {
+        return TurnOnOffPengingatAsyncUseCase(pengingatRepository)
     }
 }

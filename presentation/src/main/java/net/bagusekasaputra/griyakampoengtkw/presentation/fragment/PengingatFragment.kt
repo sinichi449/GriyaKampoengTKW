@@ -22,6 +22,7 @@ import net.bagusekasaputra.griyakampoengtkw.presentation.databinding.FragmentPen
 import net.bagusekasaputra.griyakampoengtkw.presentation.toCalendar
 import net.bagusekasaputra.griyakampoengtkw.presentation.toHour
 import net.bagusekasaputra.griyakampoengtkw.presentation.util.DialogUtil
+import net.bagusekasaputra.griyakampoengtkw.presentation.util.InputUtil
 import net.bagusekasaputra.griyakampoengtkw.presentation.viewmodel.PengingatViewModel
 import java.util.*
 
@@ -91,7 +92,7 @@ class PengingatFragment : Fragment() {
         val adapter = PengingatRecyclerAdapter(
             listPengingat = listPengingat,
             onImgNotifClick = { position ->
-                pengingatViewModel.turnOffPengingat(
+                pengingatViewModel.turnOnOrOffPengingat(
                     pengingat = listPengingat[position],
                     onComplete = {
                         sync()
@@ -181,11 +182,77 @@ class PengingatFragment : Fragment() {
         }
 
         dialogBinding.btnTambahkanPengingat.setOnClickListener {
-            // TODO
+            val isInvalidEdt = InputUtil.isNullOrEmptyEditTexts(
+                dialogBinding.edtJudulPengingat,
+                dialogBinding.edtTanggal,
+                dialogBinding.edtWaktu,
+            )
+
+            if (isInvalidEdt.not()) {
+                dialogBinding.btnTambahkanPengingat.text = "Menyimpan data ..."
+                dialogBinding.btnTambahkanPengingat.isEnabled = false
+                if (editMode) dialogBinding.btnHapusPengingat.isEnabled = false
+
+                val title = dialogBinding.edtJudulPengingat.text.toString()
+                val tanggal = dialogBinding.edtTanggal.text.toString()
+                val waktu = dialogBinding.edtWaktu.text.toString()
+
+                if (editMode) {
+                    pengingatViewModel.updatePengingat(
+                        oldPengingat = pengingat!!,
+                        newTitle = title,
+                        newContent = "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
+                        newDate = tanggal,
+                        newTime = waktu,
+                        isActive = pengingat.isActive,
+                        onComplete = { msg, id ->
+                            sync()
+                            pengingatDialog.dismiss()
+
+                            if (pengingat.isActive) {
+                                // TODO: Cancel existing alarm with id, and set new alarm
+                            }
+
+                            Snackbar.make(binding.root, msg, Snackbar.LENGTH_SHORT).show()
+                        }
+                    )
+                } else {
+                    pengingatViewModel.addPengingat(
+                        title = title,
+                        content = "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
+                        date = tanggal,
+                        time = waktu,
+                        onComplete = { msg, id ->
+                            sync()
+                            pengingatDialog.dismiss()
+
+                            // TODO: Set alarm with id
+
+                            Snackbar.make(binding.root, msg, Snackbar.LENGTH_SHORT).show()
+                        }
+                    )
+                }
+            }
         }
 
         dialogBinding.btnHapusPengingat.setOnClickListener {
-            // TODO
+            if (editMode) {
+                dialogBinding.btnTambahkanPengingat.text = "Menghapus pengingat ..."
+                dialogBinding.btnTambahkanPengingat.isEnabled = false
+                dialogBinding.btnHapusPengingat.isEnabled = false
+
+                pengingatViewModel.deletePengingat(
+                    oldPengingat = pengingat!!,
+                    onComplete = { msg, id ->
+                        sync()
+                        pengingatDialog.dismiss()
+
+                        // TODO: Cancel alarm with id
+
+                        Snackbar.make(binding.root, msg, Snackbar.LENGTH_SHORT).show()
+                    }
+                )
+            }
         }
     }
 }

@@ -16,7 +16,7 @@ class PengingatViewModel @Inject constructor(
     private val addPengingatAsyncUseCase: AddPengingatAsyncUseCase,
     private val deletePengingatAsyncUseCase: DeletePengingatAsyncUseCase,
     private val updatePengingatAsyncUseCase: UpdatePengingatAsyncUseCase,
-    private val turnOffPengingatAsyncUseCase: TurnOffPengingatAsyncUseCase,
+    private val turnOnOffPengingatAsyncUseCase: TurnOnOffPengingatAsyncUseCase,
 ): ViewModel() {
 
     val isFinishOperation = MutableLiveData(true)
@@ -98,7 +98,7 @@ class PengingatViewModel @Inject constructor(
         newDate: String,
         newTime: String,
         isActive: Boolean,
-        onComplete: (msg: String) -> Unit
+        onComplete: (msg: String, id: Long?) -> Unit
     ) {
         val newPengingat = Pengingat(
             title = newTitle,
@@ -115,8 +115,8 @@ class PengingatViewModel @Inject constructor(
         val updatingPengingatJob = asyncHelper.doWork(
             request = request,
             asyncUseCase = updatePengingatAsyncUseCase,
-            onSuccess = { onComplete("Berhasil mengubah pengingat") },
-            onFailure = { onComplete("Gagal mengubah pengingat: ${it.message} ") }
+            onSuccess = { onComplete("Berhasil mengubah pengingat", oldPengingat.id) },
+            onFailure = { onComplete("Gagal mengubah pengingat: ${it.message}", null) }
         )
 
         asyncJobs.add(updatingPengingatJob)
@@ -124,7 +124,7 @@ class PengingatViewModel @Inject constructor(
 
     fun deletePengingat(
         oldPengingat: Pengingat,
-        onComplete: (msg: String) -> Unit,
+        onComplete: (msg: String, id: Long?) -> Unit,
     ) {
         val request = DeletePengingatAsyncUseCase.Request(oldPengingat)
 
@@ -133,23 +133,26 @@ class PengingatViewModel @Inject constructor(
         val deletingPengingatJob = asyncHelper.doWork(
             request = request,
             asyncUseCase = deletePengingatAsyncUseCase,
-            onSuccess = { onComplete("Berhasil menghapus pengingat") },
-            onFailure = { onComplete("Gagal menghapus pengingat: ${it.message}") },
+            onSuccess = { onComplete("Berhasil menghapus pengingat", oldPengingat.id) },
+            onFailure = { onComplete("Gagal menghapus pengingat: ${it.message}", null) },
         )
 
         asyncJobs.add(deletingPengingatJob)
     }
 
-    fun turnOffPengingat(pengingat: Pengingat, onComplete: (msg: String) -> Unit) {
-        val request = TurnOffPengingatAsyncUseCase.Request(pengingat)
+    fun turnOnOrOffPengingat(pengingat: Pengingat, onComplete: (msg: String) -> Unit) {
+        val request = TurnOnOffPengingatAsyncUseCase.Request(pengingat)
 
         pengingatRefreshed.value = false
 
         val turningOffPengingatJob = asyncHelper.doWork(
             request = request,
-            asyncUseCase = turnOffPengingatAsyncUseCase,
-            onSuccess = { onComplete("Pengingat telah dimatikan") },
-            onFailure = { onComplete("Gagal mematikan pengingat: ${it.message}") }
+            asyncUseCase = turnOnOffPengingatAsyncUseCase,
+            onSuccess = {
+                if (pengingat.isActive) onComplete("Pengingat telah dimatikan")
+                else onComplete("Pengingat diaktifkan")
+            },
+            onFailure = { onComplete("Gagal mengatur pengingat: ${it.message}") }
         )
 
         asyncJobs.add(turningOffPengingatJob)

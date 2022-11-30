@@ -5,9 +5,9 @@ import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.AsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.Pengingat
 import net.bagusekasaputra.griyakampoengtkw.domain.repository.PengingatRepository
 
-class TurnOffPengingatAsyncUseCase(
+class TurnOnOffPengingatAsyncUseCase(
     private val pengingatRepository: PengingatRepository,
-): AsyncUseCase<TurnOffPengingatAsyncUseCase.Request, Nothing?>() {
+): AsyncUseCase<TurnOnOffPengingatAsyncUseCase.Request, Nothing?>() {
 
     data class Request(val pengingat: Pengingat): AsyncUseCase.Request
 

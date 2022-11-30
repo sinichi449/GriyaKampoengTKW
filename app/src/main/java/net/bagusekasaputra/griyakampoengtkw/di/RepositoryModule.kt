@@ -163,7 +163,7 @@ object RepositoryModule {
      * Pengingat
      */
     @Provides
-    fun providePengingatRepository(): PengingatRepository {
-        return PengingatRepositoryImpl()
+    fun providePengingatRepository(localPengingatDataSource: LocalPengingatDataSource): PengingatRepository {
+        return PengingatRepositoryImpl(localPengingatDataSource)
     }
 }

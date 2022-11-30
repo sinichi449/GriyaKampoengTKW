@@ -26,13 +26,16 @@ import net.bagusekasaputra.griyakampoeng.tkw.data.local.kavling.KavlingRoomDao
 import net.bagusekasaputra.griyakampoeng.tkw.data.local.kavling.KavlingRoomEntity
 import net.bagusekasaputra.griyakampoeng.tkw.data.local.pembayaran.PembayaranRoomDao
 import net.bagusekasaputra.griyakampoeng.tkw.data.local.pembayaran.PembayaranRoomEntity
+import net.bagusekasaputra.griyakampoeng.tkw.data.local.pengingat.PengingatRoomDao
+import net.bagusekasaputra.griyakampoeng.tkw.data.local.pengingat.PengingatRoomEntity
 
 @Database(
     entities = [KavlingRoomEntity::class, ImageDataDiriRoomEntity::class, BlockRoomEntity::class,
                DataDiriRoomEntity::class, FotoKuitansiRoomEntity::class, ImageSprRoomEntity::class,
                FotoPembayaranEntity::class, PembayaranRoomEntity::class, HargaKavlingRoomEntity::class,
-               CatatanPembayaranRoomEntity::class, FeeMarketingRoomEntity::class, BiayaMarketingV2RoomEntity::class],
-    version = 10,
+               CatatanPembayaranRoomEntity::class, FeeMarketingRoomEntity::class,
+                BiayaMarketingV2RoomEntity::class, PengingatRoomEntity::class],
+    version = 11,
     exportSchema = true,
 //    autoMigrations = [
 //        AutoMigration(from = 3, to = 4),
@@ -68,4 +71,7 @@ abstract class MyRoomDatabase: RoomDatabase() {
     abstract fun getBiayaMarketingV2Dao(): BiayaMarketingV2RoomDao
 
     abstract fun getFeeMarketingDao(): FeeMarketingRoomDao
+
+    abstract fun getPengingatDao(): PengingatRoomDao
+
 }
