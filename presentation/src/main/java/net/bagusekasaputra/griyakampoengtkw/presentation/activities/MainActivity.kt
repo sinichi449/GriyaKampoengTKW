@@ -50,10 +50,14 @@ class MainActivity : AppCompatActivity() {
 
         override fun onTabUnselected(tab: TabLayout.Tab?) {
             logEvent("Tab unselected -> ${tab?.position}")
+
+            viewModel.tabSelectedLive.value = tab?.position
         }
 
         override fun onTabReselected(tab: TabLayout.Tab?) {
             logEvent("Tab reselected -> ${tab?.position}")
+
+            viewModel.tabSelectedLive.value = tab?.position
         }
 
     }
@@ -137,9 +141,18 @@ class MainActivity : AppCompatActivity() {
                 val tabPengingat = 2
 
                 when (tabSelected) {
-                    tabKavling -> showFabs()
-                    tabReport -> hideFabs()
-                    tabPengingat -> showFabs()
+                    tabKavling ->  {
+                        showFabs()
+                        binding.toolbarMain.title = "Site Plan"
+                    }
+                    tabReport -> {
+                        hideFabs()
+                        binding.toolbarMain.title = "Rekapan"
+                    }
+                    tabPengingat -> {
+                        showFabs()
+                        binding.toolbarMain.title = "Pengingat"
+                    }
                 }
             }
         }
