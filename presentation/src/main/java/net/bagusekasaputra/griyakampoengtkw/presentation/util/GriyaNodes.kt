@@ -14,6 +14,12 @@ class GriyaNodes {
 
         const val SHARED_PREFS_NEW_FEATURE = "new_feature"
 
+        // Alarm intent extra
+        const val INTENT_EXTRA_ALARM_TITLE = "alarm_title"
+        const val INTENT_EXTRA_ALARM_CONTENT = "alarm_content"
+        const val INTENT_EXTRA_ALARM_DATE = "alarm_date"
+        const val INTENT_EXTRA_ALARM_TIME = "alarm_time"
+
         const val fotoPembayaranFilePath = "fotoPembayaran"
 
         const val SERVER_TIMEOUT_MILLIS = 3000L

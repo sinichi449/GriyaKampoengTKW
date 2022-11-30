@@ -68,7 +68,7 @@ class PengingatViewModel @Inject constructor(
         content: String,
         date: String,
         time: String,
-        onComplete: (msg: String, id: Long?) -> Unit,
+        onComplete: (msg: String, data: Pengingat?) -> Unit,
     ) {
         val pengingat = Pengingat(
             title = title,
@@ -84,7 +84,7 @@ class PengingatViewModel @Inject constructor(
         val addingPengingatJob = asyncHelper.doWork(
             request = request,
             asyncUseCase = addPengingatAsyncUseCase,
-            onSuccess = { onComplete("Berhasil menambahkan pengingat", it) },
+            onSuccess = { onComplete("Berhasil menambahkan pengingat", pengingat) },
             onFailure = { onComplete("Gagal menambahkan pengingat: ${it.message}", null) },
         )
 
@@ -98,9 +98,10 @@ class PengingatViewModel @Inject constructor(
         newDate: String,
         newTime: String,
         isActive: Boolean,
-        onComplete: (msg: String, id: Long?) -> Unit
+        onComplete: (msg: String, data: Pengingat?) -> Unit
     ) {
         val newPengingat = Pengingat(
+            id = oldPengingat.id,
             title = newTitle,
             content = newContent,
             date = newDate,
@@ -115,7 +116,7 @@ class PengingatViewModel @Inject constructor(
         val updatingPengingatJob = asyncHelper.doWork(
             request = request,
             asyncUseCase = updatePengingatAsyncUseCase,
-            onSuccess = { onComplete("Berhasil mengubah pengingat", oldPengingat.id) },
+            onSuccess = { onComplete("Berhasil mengubah pengingat", newPengingat) },
             onFailure = { onComplete("Gagal mengubah pengingat: ${it.message}", null) }
         )
 

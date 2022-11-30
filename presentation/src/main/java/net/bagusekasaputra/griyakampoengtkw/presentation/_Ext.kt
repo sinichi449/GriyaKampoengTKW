@@ -64,6 +64,31 @@ fun String.toHour(): Calendar {
     }
 }
 
+fun String.datetimeToCalendar(): Calendar {
+    val splitDateTime = this.split(" ")
+    val date = splitDateTime[0]
+    val time = splitDateTime[1]
+
+    val splitDate = date.split("/")
+    val tanggal = splitDate[0].toInt()
+    val bulan = splitDate[1].toInt() - 1
+    val tahun = splitDate[2].toInt()
+
+    val splitTime = time.split(":")
+    val hour = splitTime[0].toInt()
+    val minute = splitTime[1].toInt()
+
+    return Calendar.getInstance().apply {
+        set(Calendar.DAY_OF_MONTH, tanggal)
+        set(Calendar.MONTH, bulan)
+        set(Calendar.YEAR, tahun)
+        set(Calendar.HOUR_OF_DAY, hour)
+        set(Calendar.MINUTE, minute)
+        set(Calendar.SECOND, 0)
+        set(Calendar.MILLISECOND, 0)
+    }
+}
+
 fun Double.juta(): Long {
     val bigDecimal = BigDecimal(this)
     val juta = BigDecimal(10.0.pow(6.0))

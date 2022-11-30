@@ -57,6 +57,11 @@
                 android:name="android.app.lib_name"
                 android:value="" />
         </activity>
+
+        <receiver
+            android:name=".presentation.receiver.AlarmReceiver"
+            android:exported="true"/>
+
     </application>
 
 </manifest>

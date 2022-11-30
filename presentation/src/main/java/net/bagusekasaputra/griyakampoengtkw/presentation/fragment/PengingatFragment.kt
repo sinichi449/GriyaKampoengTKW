@@ -3,6 +3,7 @@ package net.bagusekasaputra.griyakampoengtkw.presentation.fragment
 import android.app.DatePickerDialog
 import android.app.TimePickerDialog
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -19,8 +20,10 @@ import net.bagusekasaputra.griyakampoengtkw.presentation.R
 import net.bagusekasaputra.griyakampoengtkw.presentation.adapter.recyclerview.PengingatRecyclerAdapter
 import net.bagusekasaputra.griyakampoengtkw.presentation.databinding.DialogActionPengingatBinding
 import net.bagusekasaputra.griyakampoengtkw.presentation.databinding.FragmentPengingatBinding
+import net.bagusekasaputra.griyakampoengtkw.presentation.datetimeToCalendar
 import net.bagusekasaputra.griyakampoengtkw.presentation.toCalendar
 import net.bagusekasaputra.griyakampoengtkw.presentation.toHour
+import net.bagusekasaputra.griyakampoengtkw.presentation.util.AlarmHelper
 import net.bagusekasaputra.griyakampoengtkw.presentation.util.DialogUtil
 import net.bagusekasaputra.griyakampoengtkw.presentation.util.InputUtil
 import net.bagusekasaputra.griyakampoengtkw.presentation.viewmodel.PengingatViewModel
@@ -33,6 +36,9 @@ class PengingatFragment : Fragment() {
     private lateinit var fabActionAdd: ExtendedFloatingActionButton
 
     private val pengingatViewModel by viewModels<PengingatViewModel>()
+    private lateinit var alarmHelper: AlarmHelper
+
+    private val TAG = "DEBUG_ME"
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -48,6 +54,8 @@ class PengingatFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         setupViewModel()
+
+        alarmHelper = AlarmHelper(requireContext())
 
         fabActionAdd = requireActivity().findViewById(R.id.fab_actions)
 
@@ -92,10 +100,13 @@ class PengingatFragment : Fragment() {
         val adapter = PengingatRecyclerAdapter(
             listPengingat = listPengingat,
             onImgNotifClick = { position ->
+                val pengingat = listPengingat[position]
                 pengingatViewModel.turnOnOrOffPengingat(
-                    pengingat = listPengingat[position],
+                    pengingat = pengingat,
                     onComplete = {
                         sync()
+
+                        alarmHelper.cancelAlarm(pengingat.id)
 
                         Snackbar.make(binding.root, it, Snackbar.LENGTH_SHORT).show()
                     }
@@ -201,16 +212,22 @@ class PengingatFragment : Fragment() {
                     pengingatViewModel.updatePengingat(
                         oldPengingat = pengingat!!,
                         newTitle = title,
-                        newContent = "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
+                        newContent = getString(R.string.notification_pengingat_content),
                         newDate = tanggal,
                         newTime = waktu,
                         isActive = pengingat.isActive,
-                        onComplete = { msg, id ->
+                        onComplete = { msg, data ->
                             sync()
                             pengingatDialog.dismiss()
 
                             if (pengingat.isActive) {
-                                // TODO: Cancel existing alarm with id, and set new alarm
+                                alarmHelper.cancelAlarm(data?.id)
+
+                                val calendar = "$tanggal $waktu".datetimeToCalendar()
+                                data?.let {
+                                    Log.d(TAG, "showActionPengingatDialog: Set pengingat pada ${calendar.time}")
+                                    alarmHelper.setMonthyRepeatAlarm(calendar, it)
+                                }
                             }
 
                             Snackbar.make(binding.root, msg, Snackbar.LENGTH_SHORT).show()
@@ -222,11 +239,15 @@ class PengingatFragment : Fragment() {
                         content = "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
                         date = tanggal,
                         time = waktu,
-                        onComplete = { msg, id ->
+                        onComplete = { msg, data ->
                             sync()
                             pengingatDialog.dismiss()
 
-                            // TODO: Set alarm with id
+                            val calendar = "$tanggal $waktu".datetimeToCalendar()
+                            data?.let {
+                                Log.d(TAG, "showActionPengingatDialog: Set pengingat pada ${calendar.time}")
+                                alarmHelper.setMonthyRepeatAlarm(calendar, it)
+                            }
 
                             Snackbar.make(binding.root, msg, Snackbar.LENGTH_SHORT).show()
                         }
@@ -247,7 +268,9 @@ class PengingatFragment : Fragment() {
                         sync()
                         pengingatDialog.dismiss()
 
-                        // TODO: Cancel alarm with id
+                        id?.let {
+                            alarmHelper.cancelAlarm(it)
+                        }
 
                         Snackbar.make(binding.root, msg, Snackbar.LENGTH_SHORT).show()
                     }

@@ -143,6 +143,7 @@ class MainActivity : AppCompatActivity() {
                 when (tabSelected) {
                     tabKavling ->  {
                         showFabs()
+                        binding.fabActions.shrink()
                         binding.toolbarMain.title = "Site Plan"
                     }
                     tabReport -> {
@@ -151,6 +152,7 @@ class MainActivity : AppCompatActivity() {
                     }
                     tabPengingat -> {
                         showFabs()
+                        binding.fabActions.extend()
                         binding.toolbarMain.title = "Pengingat"
                     }
                 }
