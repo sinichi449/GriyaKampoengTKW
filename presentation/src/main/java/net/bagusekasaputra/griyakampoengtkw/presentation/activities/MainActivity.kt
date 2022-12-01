@@ -19,7 +19,7 @@ import net.bagusekasaputra.griyakampoengtkw.presentation.adapter.viewpager.MainV
 import net.bagusekasaputra.griyakampoengtkw.presentation.databinding.ActivityMainBinding
 import net.bagusekasaputra.griyakampoengtkw.presentation.fragment.KavlingFragment
 import net.bagusekasaputra.griyakampoengtkw.presentation.fragment.PengingatFragment
-import net.bagusekasaputra.griyakampoengtkw.presentation.fragment.ReportFragment
+import net.bagusekasaputra.griyakampoengtkw.presentation.fragment.RekapFragment
 import net.bagusekasaputra.griyakampoengtkw.presentation.logEvent
 import net.bagusekasaputra.griyakampoengtkw.presentation.util.GriyaNodes
 import net.bagusekasaputra.griyakampoengtkw.presentation.viewmodel.MainViewModel
@@ -50,14 +50,10 @@ class MainActivity : AppCompatActivity() {
 
         override fun onTabUnselected(tab: TabLayout.Tab?) {
             logEvent("Tab unselected -> ${tab?.position}")
-
-            viewModel.tabSelectedLive.value = tab?.position
         }
 
         override fun onTabReselected(tab: TabLayout.Tab?) {
             logEvent("Tab reselected -> ${tab?.position}")
-
-            viewModel.tabSelectedLive.value = tab?.position
         }
 
     }
@@ -137,7 +133,7 @@ class MainActivity : AppCompatActivity() {
         viewModel.tabSelectedLive.observe(this) {
             it?.let { tabSelected ->
                 val tabKavling = 0
-                val tabReport = 1
+                val tabRekap = 1
                 val tabPengingat = 2
 
                 when (tabSelected) {
@@ -146,7 +142,7 @@ class MainActivity : AppCompatActivity() {
                         binding.fabActions.shrink()
                         binding.toolbarMain.title = "Site Plan"
                     }
-                    tabReport -> {
+                    tabRekap -> {
                         hideFabs()
                         binding.toolbarMain.title = "Rekapan"
                     }
@@ -176,7 +172,8 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun setupViewPager() {
-        val fragments = listOf(KavlingFragment(), ReportFragment(), PengingatFragment())
+//        val fragments = listOf(KavlingFragment(), ReportFragment(), PengingatFragment())
+        val fragments = listOf(KavlingFragment(), RekapFragment(), PengingatFragment())
         val pagerAdapter = MainViewPagerAdapter(
             fragmentManager = supportFragmentManager,
             fragments = fragments,

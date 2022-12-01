@@ -362,7 +362,7 @@
                         <!--                            app:layout_constraintEnd_toStartOf="@id/guideline_vertical_total_cuan"-->
                         <!--                            app:layout_constraintTop_toBottomOf="@id/tv_info_total_cuan"-->
                         <!--                            android:layout_marginEnd="8dp"-->
-                        <!--                            android:text="Sisa dari total uang masuk dan pengeluaran"/>-->
+                        <!--                            android:text="Sisa dari hargaDanTambahLuasan uang masuk dan pengeluaran"/>-->
 
                         <!--                        <com.google.android.material.textview.MaterialTextView-->
                         <!--                            android:id="@+id/tv_total_cuan"-->

@@ -149,7 +149,7 @@ class BiayaMarketingFragment : Fragment() {
     }
 
     /**
-     * The total biaya marketing and Cuan texts
+     * The hargaDanTambahLuasan biaya marketing and Cuan texts
      */
     private fun setupHeaderText() {
         binding.tvTotalBiaya.text = NumberUtil.formatLongToString(

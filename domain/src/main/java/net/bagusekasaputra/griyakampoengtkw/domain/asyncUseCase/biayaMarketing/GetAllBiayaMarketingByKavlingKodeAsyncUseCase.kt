@@ -36,7 +36,7 @@ class GetAllBiayaMarketingByKavlingKodeAsyncUseCase(
     ): List<BiayaMarketing> {
         val newBiayaMarketingList = ArrayList<BiayaMarketing>()
 
-        // Calculate total biaya, together with biayaMarketer
+        // Calculate hargaDanTambahLuasan biaya, together with biayaMarketer
         var totalBiaya = biayaMarketer ?: 0L
 
         listBiayaMarketing.forEach { biayaMarketing ->

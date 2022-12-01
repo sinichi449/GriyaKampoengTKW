@@ -17,6 +17,7 @@ import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.hargaKavling.Get
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.kavling.GetKavlingByBlockAsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.pembayaran.GetAllPembayaranAsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.pengingat.*
+import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.rekapGlobal.GetAllRekapGlobalUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.reportKavling.GetAllReportKavlingAsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.repository.*
 import net.bagusekasaputra.griyakampoengtkw.domain.usecase.appupdate.GetUpdateInformationUseCase
@@ -323,4 +324,17 @@ object UseCaseModule {
     fun provideTurnOffPengingatUseCase(pengingatRepository: PengingatRepository): TurnOnOffPengingatAsyncUseCase {
         return TurnOnOffPengingatAsyncUseCase(pengingatRepository)
     }
+
+    /**
+     * Rekap Global
+     */
+    @Provides
+    fun provideGetAllRekapGlobalUseCase(
+        dataDiriRepository: DataDiriRepository,
+        pembayaranRepository: PembayaranRepository,
+        hargaKavlingRepository: HargaKavlingRepository,
+    ): GetAllRekapGlobalUseCase {
+        return GetAllRekapGlobalUseCase(dataDiriRepository, pembayaranRepository, hargaKavlingRepository)
+    }
+
 }

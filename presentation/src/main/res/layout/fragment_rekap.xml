@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.swiperefreshlayout.widget.SwipeRefreshLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/swipe_refresh_rekap"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:context=".fragment.ReportFragment">
+
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/layout_loading_report"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent">
+
+            <com.google.android.material.progressindicator.LinearProgressIndicator
+                android:id="@+id/linearprogress_report"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintBottom_toTopOf="@id/tv_info_loading_report"
+                app:layout_constraintVertical_chainStyle="packed"
+                android:layout_marginHorizontal="36dp"
+                android:progress="0"
+                android:theme="@style/Theme.GriyaKampung"
+                android:visibility="gone"/>
+
+            <com.google.android.material.textview.MaterialTextView
+                android:id="@+id/tv_info_loading_report"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:layout_constraintTop_toBottomOf="@id/linearprogress_report"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toStartOf="@id/linearprogress_report"
+                app:layout_constraintEnd_toEndOf="@id/linearprogress_report"
+                android:text="Memuat ringkasan ..."
+                android:layout_marginTop="16dp"
+                android:visibility="gone"/>
+
+            <com.google.android.material.textview.MaterialTextView
+                android:id="@+id/tv_info_warning_lihat_ringkasan"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintBottom_toTopOf="@id/btn_lihat_ringkasan"
+                app:layout_constraintVertical_chainStyle="packed"
+                android:layout_marginHorizontal="48dp"
+                android:gravity="center"
+                android:text="Proses komputasi dan manipulasi data merekap semua kavling akan banyak memakan sumber daya server. Mohon pergunakan dengan bijak."
+                style="@style/TextAppearance.MaterialComponents.Body1"/>
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btn_lihat_ringkasan"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:layout_constraintTop_toBottomOf="@id/tv_info_warning_lihat_ringkasan"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                android:layout_marginTop="16dp"
+                android:text="Lihat Ringkasan"
+                app:cornerRadius="16dp"
+                style="@style/NormalDialogButton"/>
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+
+        <androidx.core.widget.NestedScrollView
+            android:id="@+id/layout_rekap_global"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:visibility="gone">
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:paddingVertical="16dp"
+                android:paddingStart="16dp">
+
+                <com.evrencoskun.tableview.TableView
+                    android:id="@+id/table_rekap_global"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:column_header_height="@dimen/table_pembayaran_column_header_height"
+                    app:row_header_width="@dimen/table_rekap_double_row_header_width"
+                    app:show_horizontal_separator="true"
+                    app:show_vertical_separator="true"
+                    app:separator_color="@color/black"
+                    />
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+        </androidx.core.widget.NestedScrollView>
+
+    </FrameLayout>
+
+</androidx.swiperefreshlayout.widget.SwipeRefreshLayout>

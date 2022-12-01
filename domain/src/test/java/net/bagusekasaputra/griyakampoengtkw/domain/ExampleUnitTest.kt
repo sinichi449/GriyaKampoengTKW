@@ -1,5 +1,6 @@
 package net.bagusekasaputra.griyakampoengtkw.domain
 
+import net.bagusekasaputra.griyakampoengtkw.domain.entity.RekapGlobal
 import org.junit.Assert.assertEquals
 import org.junit.Test
 import java.util.*
@@ -33,5 +34,25 @@ class ExampleUnitTest {
 
         assertEquals(25, formatToCalendar.get(Calendar.DAY_OF_MONTH))
 
+    }
+
+    @Test
+    fun test_rekap_global_entity_sudah_presisi() {
+        val listRekapGlobal = listOf(
+            RekapGlobal("Andi Setya Budi", "2", "06/05/2021", 250000000L, 130000000L),
+            RekapGlobal("Iwan Ferdiyanto", "3", "01/05/2021", 210000000L, 30000000L),
+            RekapGlobal("Norma Fiki Sugiarto", "4", "13/07/2022", 230000000L, 102087227L),
+        )
+
+        listRekapGlobal.forEach {
+            println("--------------------------------------------------------------------------------------")
+            println("Sisa Pembayaran -> ${it.parsedSisaPembayaran}")
+            println("Persentase -> ${it.parsedPersentase}")
+            println("--------------------------------------------------------------------------------------")
+        }
+
+        assertEquals("120,000,000", listRekapGlobal[0].parsedSisaPembayaran)
+        assertEquals("180,000,000", listRekapGlobal[1].parsedSisaPembayaran)
+        assertEquals("127,912,773", listRekapGlobal[2].parsedSisaPembayaran)
     }
 }

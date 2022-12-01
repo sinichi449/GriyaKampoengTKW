@@ -7,15 +7,15 @@ data class HargaKavling(
     val harga: String,
     val tambahanLuas: String,
 ) {
-    private val hargaLong = NumberUtil.formatStringToLong(this.harga)
-    private val tambahLuasanLong = NumberUtil.formatStringToLong(this.tambahanLuas)
-    private val total = hargaLong + tambahLuasanLong
+    val hargaLong = NumberUtil.formatStringToLong(this.harga)
+    val tambahLuasanLong = NumberUtil.formatStringToLong(this.tambahanLuas)
+    val hargaDanTambahLuasan = hargaLong + tambahLuasanLong
 
     operator fun minus(other: Long): Long {
-        return total - other
+        return hargaDanTambahLuasan - other
     }
 
     fun toFloat(): Float {
-        return total.toFloat()
+        return hargaDanTambahLuasan.toFloat()
     }
 }

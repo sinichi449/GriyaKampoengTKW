@@ -6,6 +6,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flow
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.AsyncUseCase
+import net.bagusekasaputra.griyakampoengtkw.domain.entity.Kavling
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.ProgressState
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.ReportKavling
 import net.bagusekasaputra.griyakampoengtkw.domain.repository.BiayaMarketingRepository
@@ -28,7 +29,7 @@ class GetAllReportKavlingAsyncUseCase(
 
     override fun process(request: Request): Flow<Result<List<ReportKavling>?>> {
         return flow {
-            val kavlingList = getKavlingList()
+            val kavlingList = Kavling.getGriyaKavlingList()
             val listReportKavling = mutableListOf<ReportKavling>()
 
             val totalUnit = BigDecimal(kavlingList.size)
@@ -71,22 +72,5 @@ class GetAllReportKavlingAsyncUseCase(
         }
     }
 
-    private fun getKavlingList(): List<String> {
-        val blockWithSum = mapOf(
-            Pair("A", 14),
-            Pair("B", 20),
-            Pair("C", 9),
-        )
 
-        val listKavling = mutableListOf<String>()
-        blockWithSum.keys.forEach { block ->
-            val totalUnit = blockWithSum[block] ?: 0
-
-            (1..totalUnit).forEach { noKavling ->
-                listKavling.add("$block$noKavling")
-            }
-        }
-
-        return listKavling
-    }
 }

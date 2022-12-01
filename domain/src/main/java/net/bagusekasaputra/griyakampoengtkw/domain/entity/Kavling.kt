@@ -34,6 +34,25 @@ data class Kavling(
         fun getKavlingKode(blockKode: String, noKavling: String): String {
             return "$blockKode$noKavling"
         }
+
+        fun getGriyaKavlingList(): List<String> {
+            val blockWithSum = mapOf(
+                Pair("A", 14),
+                Pair("B", 20),
+                Pair("C", 9),
+            )
+
+            val listKavling = mutableListOf<String>()
+            blockWithSum.keys.forEach { block ->
+                val totalUnit = blockWithSum[block] ?: 0
+
+                (1..totalUnit).forEach { noKavling ->
+                    listKavling.add("$block$noKavling")
+                }
+            }
+
+            return listKavling
+        }
     }
 }
 
