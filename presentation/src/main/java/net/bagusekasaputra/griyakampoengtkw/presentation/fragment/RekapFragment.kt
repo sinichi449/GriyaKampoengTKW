@@ -9,10 +9,7 @@ import androidx.fragment.app.viewModels
 import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
 import net.bagusekasaputra.griyakampoengtkw.presentation.databinding.FragmentRekapBinding
-import net.bagusekasaputra.griyakampoengtkw.presentation.tableview.report.TotalUangMasukTableViewAdapter
-import net.bagusekasaputra.griyakampoengtkw.presentation.tableview.report.TumCell
-import net.bagusekasaputra.griyakampoengtkw.presentation.tableview.report.TumColumnHeaders
-import net.bagusekasaputra.griyakampoengtkw.presentation.tableview.report.TumRowHeaders
+import net.bagusekasaputra.griyakampoengtkw.presentation.tableview.rekapGlobal.*
 import net.bagusekasaputra.griyakampoengtkw.presentation.viewmodel.RekapViewModel
 
 @AndroidEntryPoint
@@ -36,17 +33,26 @@ class RekapFragment : Fragment() {
 
         setupViewModel()
 
-        binding.swipeRefreshRekap.setOnRefreshListener {
-            hideWarning()
+        binding.swipeRefreshRekap.isEnabled = false
+
+        binding.layoutWarningAndLoadingRekap.btnLihatRingkasan.setOnClickListener {
+            onLoadingView()
 
             sync()
         }
+    }
 
-        binding.btnLihatRingkasan.setOnClickListener {
-            hideWarning()
+    private fun onLoadingView() {
+        binding.layoutWarningAndLoadingRekap.layoutWarningRekap.visibility = View.GONE
+        binding.layoutWarningAndLoadingRekap.layoutLoadingRekap.visibility = View.VISIBLE
 
-            sync()
-        }
+        binding.tableRekapGlobal.visibility = View.GONE
+    }
+
+    private fun onCompletedView() {
+        binding.layoutWarningAndLoadingRekap.root.visibility = View.GONE
+
+        binding.tableRekapGlobal.visibility = View.VISIBLE
     }
 
     private fun sync() {
@@ -56,69 +62,44 @@ class RekapFragment : Fragment() {
     }
 
     private fun setupViewModel() {
-        viewModel.isFinishedOperation.observe(requireActivity()) { finished ->
-            if (finished != null) {
-                binding.swipeRefreshRekap.isRefreshing = finished.not()
+        viewModel.progressState.observe(requireActivity()) {
+            if (it != null) {
+                binding.layoutWarningAndLoadingRekap.linearprogressReport.progress = it.percent
+                binding.layoutWarningAndLoadingRekap.tvLoadingReport.text = it.message
             }
         }
 
-        viewModel.isLoadingRekapDone.observe(requireActivity()) { finished ->
-            if (finished != null) {
-                if (finished) onCompletedView() else onLoadingView()
-            }
-        }
-
-        viewModel.progressState.observe(requireActivity()) { progressState ->
-            if (progressState != null) {
-                binding.linearprogressReport.progress = progressState.percent
-                binding.tvInfoLoadingReport.text = progressState.message
+        viewModel.isLoadingRekapDone.observe(requireActivity()) { done ->
+            if (done != null) {
+                if (done) onCompletedView()
             }
         }
 
         viewModel.listRekapGlobalLive.observe(requireActivity()) {
-            val listColumnHeaders = viewModel.getColumnHeaderRekapTable()
-            val listRowHeaders = viewModel.getRowHeaderRekapTable()
-            val listCellItems = viewModel.getListCellsRekapTable()
+            val columnHeaders = viewModel.getColumnHeaderRekapTable()
+            val rowHeaders = viewModel.getRowHeaderRekapTable()
+            val cellItems = viewModel.getListCellsRekapTable()
 
-            setupRekapTableView(listColumnHeaders, listRowHeaders, listCellItems)
+            setupRekapTableView(columnHeaders, rowHeaders, cellItems)
         }
     }
 
     private fun setupRekapTableView(
-        columnHeaders: List<TumColumnHeaders>,
-        rowHeaders: List<TumRowHeaders>,
-        cellItems: List<List<TumCell>>,
+        columnHeaders: List<RgColumnHeader>,
+        rowHeaders: List<RgRowHeader>,
+        cellItems: List<List<RgCell>>,
     ) {
-        val tumTableAdapter = TotalUangMasukTableViewAdapter()
+        val adapter = RekapGlobalTableViewAdapter()
 
-        binding.tableRekapGlobal.setAdapter(tumTableAdapter)
+        binding.tableRekapGlobal.setAdapter(adapter)
 
-        tumTableAdapter.apply {
-            setAllItems(columnHeaders, rowHeaders, cellItems)
-            notifyDataSetChanged()
-        }
+        adapter.setAllItems(columnHeaders, rowHeaders, cellItems)
 
-        binding.tableRekapGlobal.setColumnWidth(2, 250) // Harga
-
+        binding.tableRekapGlobal.setColumnWidth(RekapGlobalColumnPosition.NAMA, 400)
+        binding.tableRekapGlobal.setColumnWidth(RekapGlobalColumnPosition.TANGGAL_PEMBELIAN, 300)
+        binding.tableRekapGlobal.setColumnWidth(RekapGlobalColumnPosition.HARGA, 350)
+        binding.tableRekapGlobal.setColumnWidth(RekapGlobalColumnPosition.JUMLAH_UANG_MASUK, 350)
+        binding.tableRekapGlobal.setColumnWidth(RekapGlobalColumnPosition.SISA_PEMBAYARAN, 350)
+        binding.tableRekapGlobal.setColumnWidth(RekapGlobalColumnPosition.PERSENTASE, 350)
     }
-
-    private fun onLoadingView() {
-        binding.linearprogressReport.visibility = View.VISIBLE
-        binding.tvInfoLoadingReport.visibility = View.VISIBLE
-
-        binding.layoutRekapGlobal.visibility = View.GONE
-    }
-
-    private fun onCompletedView() {
-        binding.linearprogressReport.visibility = View.GONE
-        binding.tvInfoLoadingReport.visibility = View.GONE
-
-        binding.layoutRekapGlobal.visibility = View.VISIBLE
-    }
-
-    private fun hideWarning() {
-        binding.tvInfoWarningLihatRingkasan.visibility = View.GONE
-        binding.btnLihatRingkasan.visibility = View.GONE
-    }
-
 }

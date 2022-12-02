@@ -11,9 +11,9 @@ import kotlinx.coroutines.launch
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.rekapGlobal.GetAllRekapGlobalUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.Kavling
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.RekapGlobal
-import net.bagusekasaputra.griyakampoengtkw.presentation.tableview.report.TumCell
-import net.bagusekasaputra.griyakampoengtkw.presentation.tableview.report.TumColumnHeaders
-import net.bagusekasaputra.griyakampoengtkw.presentation.tableview.report.TumRowHeaders
+import net.bagusekasaputra.griyakampoengtkw.presentation.tableview.rekapGlobal.RgCell
+import net.bagusekasaputra.griyakampoengtkw.presentation.tableview.rekapGlobal.RgColumnHeader
+import net.bagusekasaputra.griyakampoengtkw.presentation.tableview.rekapGlobal.RgRowHeader
 import javax.inject.Inject
 
 @HiltViewModel
@@ -71,13 +71,13 @@ class RekapViewModel @Inject constructor(
         }
     }
 
-    fun getRowHeaderRekapTable(): List<TumRowHeaders> {
-        val listRowHeaders = mutableListOf<TumRowHeaders>()
+    fun getRowHeaderRekapTable(): List<RgRowHeader> {
+        val listRowHeaders = mutableListOf<RgRowHeader>()
 
         kavlingList.forEachIndexed { index, kavlingKode ->
             listRowHeaders.add(
-                TumRowHeaders(
-                    numStr = index.plus(1).toString(),
+                RgRowHeader(
+                    nomor = index.plus(1).toString(),
                     kavling = kavlingKode,
                 )
             )
@@ -86,31 +86,31 @@ class RekapViewModel @Inject constructor(
         return listRowHeaders
     }
 
-    fun getColumnHeaderRekapTable(): List<TumColumnHeaders> {
+    fun getColumnHeaderRekapTable(): List<RgColumnHeader> {
         return listOf(
-            TumColumnHeaders("Nama"),
-            TumColumnHeaders("Tanggal Pembelian"),
-            TumColumnHeaders("Harga"),
-            TumColumnHeaders("Jumlah Uang Masuk"),
-            TumColumnHeaders("Sisa Pembayaran"),
-            TumColumnHeaders("Persentase"),
+            RgColumnHeader("Nama"),
+            RgColumnHeader("Tanggal Pembelian"),
+            RgColumnHeader("Harga"),
+            RgColumnHeader("Jumlah Uang Masuk"),
+            RgColumnHeader("Sisa Pembayaran"),
+            RgColumnHeader("Persentase"),
         )
     }
 
-    fun getListCellsRekapTable(): List<List<TumCell>> {
+    fun getListCellsRekapTable(): List<List<RgCell>> {
         val listRekapGlobal = _listRekapGlobalLive.value
 
         return if (listRekapGlobal != null) {
-            val listCells = mutableListOf<List<TumCell>>()
+            val listCells = mutableListOf<List<RgCell>>()
 
             listRekapGlobal.forEach {
-                val listValues = mutableListOf<TumCell>().apply {
-                    add(TumCell(it.namaCostumer))
-                    add(TumCell(it.tanggalPembelian))
-                    add(TumCell(it.parsedHarga))
-                    add(TumCell(it.parsedJumlahUangMasuk))
-                    add(TumCell(it.parsedSisaPembayaran))
-                    add(TumCell(it.parsedPersentase))
+                val listValues = mutableListOf<RgCell>().apply {
+                    add(RgCell(it.namaCostumer))
+                    add(RgCell(it.tanggalPembelian))
+                    add(RgCell(it.parsedHarga))
+                    add(RgCell(it.parsedJumlahUangMasuk))
+                    add(RgCell(it.parsedSisaPembayaran))
+                    add(RgCell(it.parsedPersentase))
                 }
 
                 listCells.add(listValues)
@@ -120,12 +120,12 @@ class RekapViewModel @Inject constructor(
         } else {
             listOf(
                 listOf(
-                    TumCell("-"), // Nama
-                    TumCell("-"), // Tanggal pembelian
-                    TumCell("-"), // Harga
-                    TumCell("-"), // Jumlah uang masuk
-                    TumCell("-"), // Sisa pembayaran
-                    TumCell("-"), // Persentase
+                    RgCell("-"), // Nama
+                    RgCell("-"), // Tanggal pembelian
+                    RgCell("-"), // Harga
+                    RgCell("-"), // Jumlah uang masuk
+                    RgCell("-"), // Sisa pembayaran
+                    RgCell("-"), // Persentase
                 )
             )
         }
