@@ -19,4 +19,6 @@
     <dimen name="report_divider_negative_margin">0dp</dimen>
     <dimen name="data_diri_padding_horizontal">16dp</dimen>
     <dimen name="table_rekap_double_row_header_width">100dp</dimen>
+    <dimen name="rekap_icon_sizes">28dp</dimen>
+    <dimen name="card_pengeluaran_text_size">14sp</dimen>
 </resources>

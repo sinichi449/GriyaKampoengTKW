@@ -157,14 +157,6 @@ class RekapFragment : Fragment() {
     }
 
     private fun onLoadingView() {
-        childFragmentManager.fragments.forEach {
-            if (it != null) {
-                childFragmentManager.beginTransaction()
-                    .remove(it)
-                    .commit()
-            }
-        }
-
         binding.layoutWarningAndLoadingRekap.layoutWarningRekap.visibility = View.GONE
         binding.layoutWarningAndLoadingRekap.layoutLoadingRekap.visibility = View.VISIBLE
 
@@ -179,8 +171,6 @@ class RekapFragment : Fragment() {
         val currentFragment = viewModel.currentFragment.value
         if (currentFragment == null) {
             navigateTo(RekapType.Global)
-        } else {
-            navigateTo(currentFragment)
         }
     }
 }

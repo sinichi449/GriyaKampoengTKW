@@ -1,0 +1,174 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginHorizontal="2dp"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    app:cardElevation="2dp"
+    app:cardCornerRadius="16dp">
+
+    <androidx.appcompat.widget.LinearLayoutCompat
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/layout_fee_marketing"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:clickable="true"
+            android:focusable="true"
+            android:paddingStart="16dp"
+            android:paddingTop="16dp">
+
+            <ImageView
+                android:id="@+id/imgFeeMarketing"
+                android:layout_width="@dimen/rekap_icon_sizes"
+                android:layout_height="@dimen/rekap_icon_sizes"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                android:src="@drawable/icons8_marketing_64"/>
+
+            <com.google.android.material.textview.MaterialTextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:layout_constraintStart_toEndOf="@id/imgFeeMarketing"
+                app:layout_constraintTop_toTopOf="@id/imgFeeMarketing"
+                app:layout_constraintBottom_toBottomOf="@id/imgFeeMarketing"
+                android:layout_marginStart="8dp"
+                android:text="Fee Marketing"
+                android:textSize="14sp"
+                style="@style/TextAppearance.MaterialComponents.Headline6"/>
+
+
+            <com.google.android.material.textview.MaterialTextView
+                android:id="@+id/tv_fee_marketing"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="@id/imgFeeMarketing"
+                app:layout_constraintBottom_toBottomOf="@id/imgFeeMarketing"
+                android:layout_marginEnd="16dp"
+                android:text="0"
+                tools:text="4,900,000"
+                android:textColor="@color/red_400"
+                android:textSize="@dimen/card_pengeluaran_text_size"
+                style="@style/TextAppearance.MaterialComponents.Headline6"/>
+
+            <com.google.android.material.divider.MaterialDivider
+                android:id="@+id/divider1"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/imgFeeMarketing"
+                android:layout_marginTop="16dp"/>
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/layout_biaya_marketing"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:clickable="true"
+            android:focusable="true"
+            android:paddingTop="16dp"
+            android:paddingStart="16dp">
+
+            <ImageView
+                android:id="@+id/imgBiayaMarketing"
+                android:layout_width="@dimen/rekap_icon_sizes"
+                android:layout_height="@dimen/rekap_icon_sizes"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                android:src="@drawable/icons8_biaya_marketing_64"/>
+
+            <com.google.android.material.textview.MaterialTextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:layout_constraintStart_toEndOf="@id/imgBiayaMarketing"
+                app:layout_constraintTop_toTopOf="@id/imgBiayaMarketing"
+                app:layout_constraintBottom_toBottomOf="@id/imgBiayaMarketing"
+                android:text="Biaya Marketing"
+                android:layout_marginStart="8dp"
+                android:textSize="@dimen/card_pengeluaran_text_size"
+                style="@style/TextAppearance.MaterialComponents.Headline6"/>
+
+            <com.google.android.material.textview.MaterialTextView
+                android:id="@+id/tv_biaya_marketing"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:layout_constraintTop_toTopOf="@id/imgBiayaMarketing"
+                app:layout_constraintBottom_toBottomOf="@id/imgBiayaMarketing"
+                app:layout_constraintEnd_toEndOf="parent"
+                android:layout_marginEnd="16dp"
+                android:text="0"
+                tools:text="1,250,000"
+                android:textColor="@color/red_400"
+                android:textSize="@dimen/card_pengeluaran_text_size"
+                style="@style/TextAppearance.MaterialComponents.Headline6"/>
+
+            <com.google.android.material.divider.MaterialDivider
+                android:id="@+id/divider2"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/imgBiayaMarketing"
+                android:layout_marginTop="16dp"/>
+
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/layout_biaya_lain"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:clickable="true"
+            android:focusable="true"
+            android:paddingTop="16dp"
+            android:paddingBottom="16dp"
+            android:paddingStart="16dp">
+
+            <ImageView
+                android:id="@+id/imgBiayaLain"
+                android:layout_width="@dimen/rekap_icon_sizes"
+                android:layout_height="@dimen/rekap_icon_sizes"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                android:src="@drawable/icons8_biaya_lain_64"/>
+
+            <com.google.android.material.textview.MaterialTextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:layout_constraintStart_toEndOf="@id/imgBiayaLain"
+                app:layout_constraintTop_toTopOf="@id/imgBiayaLain"
+                app:layout_constraintBottom_toBottomOf="@id/imgBiayaLain"
+                android:text="Biaya Lainnya"
+                android:layout_marginStart="8dp"
+                android:textSize="@dimen/card_pengeluaran_text_size"
+                style="@style/TextAppearance.MaterialComponents.Headline6"/>
+
+            <com.google.android.material.textview.MaterialTextView
+                android:id="@+id/tv_biaya_lain"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:layout_constraintTop_toTopOf="@id/imgBiayaLain"
+                app:layout_constraintBottom_toBottomOf="@id/imgBiayaLain"
+                app:layout_constraintEnd_toEndOf="parent"
+                android:layout_marginEnd="16dp"
+                android:text="0"
+                tools:text="580,000"
+                android:textColor="@color/red_400"
+                android:textSize="@dimen/card_pengeluaran_text_size"
+                style="@style/TextAppearance.MaterialComponents.Headline6" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+
+    </androidx.appcompat.widget.LinearLayoutCompat>
+
+</com.google.android.material.card.MaterialCardView>
