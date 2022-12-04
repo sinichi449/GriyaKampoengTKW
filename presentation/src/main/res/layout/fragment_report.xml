@@ -18,7 +18,8 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintBottom_toBottomOf="parent">
+            app:layout_constraintBottom_toBottomOf="parent"
+            android:visibility="invisible">
 
 <!--            <ProgressBar-->
 <!--                android:id="@+id/progress_bar_report"-->
@@ -94,7 +95,7 @@
             app:layout_constraintEnd_toEndOf="parent"
             android:scrollbars="vertical"
             android:scrollbarStyle="outsideOverlay"
-            android:visibility="gone">
+            android:visibility="visible">
 
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:id="@+id/constraint_root_report"

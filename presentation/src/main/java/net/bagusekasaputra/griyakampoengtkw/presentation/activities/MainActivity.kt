@@ -20,6 +20,7 @@ import net.bagusekasaputra.griyakampoengtkw.presentation.databinding.ActivityMai
 import net.bagusekasaputra.griyakampoengtkw.presentation.fragment.KavlingFragment
 import net.bagusekasaputra.griyakampoengtkw.presentation.fragment.PengingatFragment
 import net.bagusekasaputra.griyakampoengtkw.presentation.fragment.RekapFragment
+import net.bagusekasaputra.griyakampoengtkw.presentation.fragment.ReportAndMiscFragment
 import net.bagusekasaputra.griyakampoengtkw.presentation.logEvent
 import net.bagusekasaputra.griyakampoengtkw.presentation.util.GriyaNodes
 import net.bagusekasaputra.griyakampoengtkw.presentation.viewmodel.MainViewModel
@@ -134,7 +135,8 @@ class MainActivity : AppCompatActivity() {
             it?.let { tabSelected ->
                 val tabKavling = 0
                 val tabRekap = 1
-                val tabPengingat = 2
+                val tabReportMisc = 2
+                val tabPengingat = 3
 
                 when (tabSelected) {
                     tabKavling ->  {
@@ -145,6 +147,10 @@ class MainActivity : AppCompatActivity() {
                     tabRekap -> {
                         hideFabs()
                         binding.toolbarMain.title = "Rekapan"
+                    }
+                    tabReportMisc -> {
+                        showFabs()
+                        binding.toolbarMain.title = "Biaya Lainnya"
                     }
                     tabPengingat -> {
                         showFabs()
@@ -173,7 +179,13 @@ class MainActivity : AppCompatActivity() {
 
     private fun setupViewPager() {
 //        val fragments = listOf(KavlingFragment(), ReportFragment(), PengingatFragment())
-        val fragments = listOf(KavlingFragment(), RekapFragment(), PengingatFragment())
+//        val fragments = listOf(KavlingFragment(), RekapFragment(), PengingatFragment())
+        val fragments = listOf(
+            KavlingFragment(),
+            RekapFragment(),
+            ReportAndMiscFragment(),
+            PengingatFragment(),
+        )
         val pagerAdapter = MainViewPagerAdapter(
             fragmentManager = supportFragmentManager,
             fragments = fragments,
@@ -190,7 +202,8 @@ class MainActivity : AppCompatActivity() {
             val getIcon = { iconId: Int -> ContextCompat.getDrawable(this@MainActivity, iconId) }
             getTabAt(0)?.icon = getIcon(R.drawable.ic_baseline_kavling_24)
             getTabAt(1)?.icon = getIcon(R.drawable.ic_baseline_report_24)
-            getTabAt(2)?.icon = getIcon(R.drawable.ic_baseline_alarm_24)
+            getTabAt(2)?.icon = getIcon(R.drawable.ic_baseline_attach_money_24)
+            getTabAt(3)?.icon = getIcon(R.drawable.ic_baseline_alarm_24)
         }
 
         binding.tabLayoutMain.addOnTabSelectedListener(tabSelectedListener)
