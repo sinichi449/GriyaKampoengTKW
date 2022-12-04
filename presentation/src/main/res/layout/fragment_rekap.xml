@@ -5,7 +5,7 @@
     android:layout_height="match_parent"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    tools:context=".fragment.ReportFragment">
+    tools:context=".fragment.rekap.RekapFragment">
 
     <FrameLayout
         android:layout_width="match_parent"
@@ -17,11 +17,14 @@
             layout="@layout/layout_warning_and_loading_rekap"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:visibility="gone"/>
+            android:visibility="visible"/>
 
         <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/layout_rekap_container"
             android:layout_width="match_parent"
-            android:layout_height="match_parent">
+            android:layout_height="match_parent"
+            android:layout_marginBottom="56dp"
+            android:visibility="gone">
 
             <include
                 android:id="@+id/small_tab"
@@ -41,8 +44,7 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/small_tab"
-                app:layout_constraintBottom_toBottomOf="parent"
-                android:layout_marginTop="8dp"/>
+                app:layout_constraintBottom_toBottomOf="parent"/>
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 

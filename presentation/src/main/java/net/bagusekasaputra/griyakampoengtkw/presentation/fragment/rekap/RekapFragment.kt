@@ -10,8 +10,10 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
+import net.bagusekasaputra.griyakampoengtkw.domain.entity.ProgressState
 import net.bagusekasaputra.griyakampoengtkw.presentation.R
 import net.bagusekasaputra.griyakampoengtkw.presentation.databinding.FragmentRekapBinding
+import net.bagusekasaputra.griyakampoengtkw.presentation.databinding.LayoutWarningAndLoadingRekapBinding
 import net.bagusekasaputra.griyakampoengtkw.presentation.databinding.RekapSmallTabBinding
 import net.bagusekasaputra.griyakampoengtkw.presentation.viewmodel.RekapViewModel
 
@@ -36,18 +38,18 @@ class RekapFragment : Fragment() {
 
         setupViewModel()
 
-        val currentFragment = viewModel.currentFragment.value
-        if (currentFragment == null) {
-            navigateTo(RekapType.Global)
-        }
-
-
-        binding.swipeRefreshRekap.isEnabled = false
-
         binding.layoutWarningAndLoadingRekap.btnLihatRingkasan.setOnClickListener {
             onLoadingView()
 
             sync()
+        }
+
+        binding.swipeRefreshRekap.setOnRefreshListener {
+            onLoadingView()
+
+            sync()
+
+            binding.swipeRefreshRekap.isRefreshing = false
         }
 
         binding.smallTab.btnRekapGlobal.setOnClickListener {
@@ -57,19 +59,6 @@ class RekapFragment : Fragment() {
         binding.smallTab.btnRekapBesar.setOnClickListener {
             navigateTo(RekapType.Besar)
         }
-    }
-
-    private fun onLoadingView() {
-        binding.layoutWarningAndLoadingRekap.layoutWarningRekap.visibility = View.GONE
-        binding.layoutWarningAndLoadingRekap.layoutLoadingRekap.visibility = View.VISIBLE
-
-//        binding.tableRekapGlobal.visibility = View.GONE
-    }
-
-    private fun onCompletedView() {
-        binding.layoutWarningAndLoadingRekap.root.visibility = View.GONE
-
-//        binding.tableRekapGlobal.visibility = View.VISIBLE
     }
 
     private fun sync() {
@@ -82,13 +71,17 @@ class RekapFragment : Fragment() {
         viewModel.currentFragment.observe(requireActivity()) {
             if (it != null) {
                 binding.smallTab.setSelectedRekap(it)
+
+                if (it == RekapType.Besar)
+                    enableSwipeRefresh(true)
+                else
+                    enableSwipeRefresh(false)
             }
         }
 
         viewModel.progressState.observe(requireActivity()) {
             if (it != null) {
-                binding.layoutWarningAndLoadingRekap.linearprogressReport.progress = it.percent
-                binding.layoutWarningAndLoadingRekap.tvLoadingReport.text = it.message
+                binding.layoutWarningAndLoadingRekap.setProgressState(it)
             }
         }
 
@@ -98,6 +91,27 @@ class RekapFragment : Fragment() {
             }
         }
 
+    }
+
+    private fun navigateTo(rekapType: RekapType) {
+        // only allow when current fragment is not the same
+        val currentFragment = viewModel.currentFragment.value
+
+        Log.d("DEBUG_ME", "navigateTo: Current Fragment is $currentFragment and you wanna go to $rekapType")
+
+        if (currentFragment != rekapType) {
+            val fragment = when (rekapType) {
+                RekapType.Global -> RekapGlobalFragment()
+                RekapType.Besar -> RekapBesarFragment()
+            }
+            Log.d("DEBUG_ME", "navigateTo: rekap fragment's transition accepted.")
+
+            childFragmentManager.beginTransaction()
+                .replace(binding.rekapContainer.id, fragment)
+                .commit()
+
+            viewModel.currentFragment.value = rekapType
+        }
     }
 
     private fun RekapSmallTabBinding.setSelectedRekap(rekapType: RekapType) {
@@ -133,24 +147,40 @@ class RekapFragment : Fragment() {
         }
     }
 
-    private fun navigateTo(rekapType: RekapType) {
-        // only allow when current fragment is not the same
-        val currentFragment = viewModel.currentFragment.value
+    private fun LayoutWarningAndLoadingRekapBinding.setProgressState(progressState: ProgressState) {
+        this.linearprogressReport.progress = progressState.percent
+        this.tvLoadingReport.text = progressState.message
+    }
 
-        Log.d("DEBUG_ME", "navigateTo: Current Fragment is $currentFragment and you wanna go to $rekapType")
+    private fun enableSwipeRefresh(enable: Boolean) {
+        binding.swipeRefreshRekap.isEnabled = enable
+    }
 
-        if (currentFragment != rekapType) {
-            val fragment = when (rekapType) {
-                RekapType.Global -> RekapGlobalFragment()
-                RekapType.Besar -> RekapBesarFragment()
+    private fun onLoadingView() {
+        childFragmentManager.fragments.forEach {
+            if (it != null) {
+                childFragmentManager.beginTransaction()
+                    .remove(it)
+                    .commit()
             }
-            Log.d("DEBUG_ME", "navigateTo: rekap fragment's transition accepted.")
+        }
 
-            childFragmentManager.beginTransaction()
-                .replace(binding.rekapContainer.id, fragment)
-                .commit()
+        binding.layoutWarningAndLoadingRekap.layoutWarningRekap.visibility = View.GONE
+        binding.layoutWarningAndLoadingRekap.layoutLoadingRekap.visibility = View.VISIBLE
 
-            viewModel.currentFragment.value = rekapType
+        binding.layoutRekapContainer.visibility = View.GONE
+    }
+
+    private fun onCompletedView() {
+        binding.layoutWarningAndLoadingRekap.root.visibility = View.GONE
+
+        binding.layoutRekapContainer.visibility = View.VISIBLE
+
+        val currentFragment = viewModel.currentFragment.value
+        if (currentFragment == null) {
+            navigateTo(RekapType.Global)
+        } else {
+            navigateTo(currentFragment)
         }
     }
 }

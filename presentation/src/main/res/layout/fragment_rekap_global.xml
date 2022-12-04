@@ -3,13 +3,18 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".fragment.rekap.RekapGlobalFragment">
+    tools:context=".fragment.rekap.RekapGlobalFragment"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
 
-    <!-- TODO: Update blank fragment layout -->
-    <TextView
+    <com.evrencoskun.tableview.TableView
+        android:id="@+id/table_rekap_global"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:text="Rekap Global"
-        style="@style/TextAppearance.MaterialComponents.Headline3"/>
+        app:column_header_height="@dimen/table_pembayaran_column_header_height"
+        app:row_header_width="@dimen/table_rekap_double_row_header_width"
+        app:show_horizontal_separator="true"
+        app:show_vertical_separator="true"
+        app:separator_color="@color/black"
+        android:layout_margin="8dp"/>
 
 </FrameLayout>
