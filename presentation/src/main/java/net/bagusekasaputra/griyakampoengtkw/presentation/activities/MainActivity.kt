@@ -19,8 +19,8 @@ import net.bagusekasaputra.griyakampoengtkw.presentation.adapter.viewpager.MainV
 import net.bagusekasaputra.griyakampoengtkw.presentation.databinding.ActivityMainBinding
 import net.bagusekasaputra.griyakampoengtkw.presentation.fragment.KavlingFragment
 import net.bagusekasaputra.griyakampoengtkw.presentation.fragment.PengingatFragment
-import net.bagusekasaputra.griyakampoengtkw.presentation.fragment.RekapFragment
 import net.bagusekasaputra.griyakampoengtkw.presentation.fragment.ReportAndMiscFragment
+import net.bagusekasaputra.griyakampoengtkw.presentation.fragment.rekap.RekapFragment
 import net.bagusekasaputra.griyakampoengtkw.presentation.logEvent
 import net.bagusekasaputra.griyakampoengtkw.presentation.util.GriyaNodes
 import net.bagusekasaputra.griyakampoengtkw.presentation.viewmodel.MainViewModel

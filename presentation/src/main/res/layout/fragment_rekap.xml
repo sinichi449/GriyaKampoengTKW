@@ -16,21 +16,35 @@
             android:id="@+id/layout_warning_and_loading_rekap"
             layout="@layout/layout_warning_and_loading_rekap"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"/>
-
-        <com.evrencoskun.tableview.TableView
-            android:id="@+id/table_rekap_global"
-            android:layout_width="match_parent"
             android:layout_height="match_parent"
-            app:column_header_height="@dimen/table_pembayaran_column_header_height"
-            app:row_header_width="@dimen/table_rekap_double_row_header_width"
-            app:show_horizontal_separator="true"
-            app:show_vertical_separator="true"
-            app:separator_color="@color/black"
-            android:layout_marginTop="16dp"
-            android:layout_marginBottom="64dp"
-            android:layout_marginHorizontal="8dp"
-            android:visibility="invisible"/>
+            android:visibility="gone"/>
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <include
+                android:id="@+id/small_tab"
+                layout="@layout/rekap_small_tab"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                android:layout_marginTop="8dp"
+                android:layout_marginHorizontal="24dp"/>
+
+            <FrameLayout
+                android:id="@+id/rekap_container"
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/small_tab"
+                app:layout_constraintBottom_toBottomOf="parent"
+                android:layout_marginTop="8dp"/>
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
 
     </FrameLayout>
 

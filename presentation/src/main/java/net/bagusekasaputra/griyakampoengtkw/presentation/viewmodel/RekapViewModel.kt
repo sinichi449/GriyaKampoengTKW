@@ -12,6 +12,7 @@ import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.rekapGlobal.GetA
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.Kavling
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.RekapBesar
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.RekapGlobal
+import net.bagusekasaputra.griyakampoengtkw.presentation.fragment.rekap.RekapType
 import net.bagusekasaputra.griyakampoengtkw.presentation.tableview.rekapGlobal.RgCell
 import net.bagusekasaputra.griyakampoengtkw.presentation.tableview.rekapGlobal.RgColumnHeader
 import net.bagusekasaputra.griyakampoengtkw.presentation.tableview.rekapGlobal.RgRowHeader
@@ -21,6 +22,8 @@ import javax.inject.Inject
 class RekapViewModel @Inject constructor(
     private val getAllRekapGlobalWithRekapBesarAsyncUseCase: GetAllRekapGlobalWithRekapBesarAsyncUseCase,
 ): ViewModel() {
+
+    val currentFragment = MutableLiveData<RekapType>()
 
     val progressState = getAllRekapGlobalWithRekapBesarAsyncUseCase.progressState
 
