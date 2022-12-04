@@ -1,5 +1,7 @@
 package net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.rekapGlobal
 
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flow
@@ -7,7 +9,10 @@ import net.bagusekasaputra.griyakampoengtkw.domain.NumberUtil
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.AsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.*
 import net.bagusekasaputra.griyakampoengtkw.domain.repository.*
+import java.math.BigDecimal
+import java.math.RoundingMode
 import kotlin.Result
+import kotlin.math.pow
 
 class GetAllRekapGlobalWithRekapBesarAsyncUseCase(
     private val dataDiriRepository: DataDiriRepository,
@@ -20,8 +25,14 @@ class GetAllRekapGlobalWithRekapBesarAsyncUseCase(
 
     data class Request(val listKavling: List<String>): AsyncUseCase.Request
 
+    private val _progressState = MutableLiveData(ProgressState(0, "Menginisialisasi ..."))
+    val progressState: LiveData<ProgressState>
+        get() = _progressState
+
     override fun process(request: Request): Flow<Result<AllRekapGlobalWithRekapBesar?>> {
         val listKavling = request.listKavling
+        val totalKavling = listKavling.size
+
         return flow {
             val listRekapGlobal = mutableListOf<RekapGlobal>()
 
@@ -31,13 +42,25 @@ class GetAllRekapGlobalWithRekapBesarAsyncUseCase(
             // and the total biaya marketing in ALL Kavling
             var totalBiayaMarketing = 0L
 
+            val divScale = 2
+            val multiplier = BigDecimal(10.0.pow(divScale))
 
-            listKavling.forEach { noKavling ->
+            listKavling.forEachIndexed { index, noKavling ->
+                val percent = BigDecimal(index.plus(1))
+                    .divide(BigDecimal(totalKavling), divScale, RoundingMode.HALF_UP)
+                    .multiply(multiplier)
+                    .toInt()
+
+
+                _progressState.postValue(ProgressState(percent, "Mendapatkan data diri kavling $noKavling ..."))
                 val dataDiri = dataDiriRepository
                     .getDataDiri(kavlingKode = noKavling, offline = false)
                     .first()
                     .getOrThrow()
 
+
+
+                _progressState.postValue(ProgressState(percent, "Mendapatkan pembayaran kavling $noKavling ..."))
                 val sortedPembayaran = pembayaranRepository
                     .getAllPembayaran(kavlingKode = noKavling, offline = false)
                     .first()
@@ -49,22 +72,30 @@ class GetAllRekapGlobalWithRekapBesarAsyncUseCase(
                     Pembayaran.getTanggalPembelian(sortedPembayaran)
                 else "-"
 
-                val hargaKavling = hargaKavlingRepository
-                    .getHargaKavling(kavlingKode = noKavling, offline = false)
-                    .first()
-                    .getOrThrow()
-
                 val jumlahUangMasuk = if (sortedPembayaran != null)
                     Pembayaran.hitungTotalUangMasuk(sortedPembayaran)
                 else 0L
                 totalUangMasuk += jumlahUangMasuk
 
+
+
+                _progressState.postValue(ProgressState(percent, "Mendapatkan harga kavling $noKavling ..."))
+                val hargaKavling = hargaKavlingRepository
+                    .getHargaKavling(kavlingKode = noKavling, offline = false)
+                    .first()
+                    .getOrThrow()
+
+
+
+                _progressState.postValue(ProgressState(percent, "Mendapatkan fee marketing kavling $noKavling ..."))
                 val feeMarketing = feeMarketingRepository
                     .getByKavlingKode(kavlingKode = noKavling, offline = false)
                     .first()
                     .getOrThrow()
                 totalFeeMarketing += NumberUtil.formatStringToLong(feeMarketing?.biayaMarketer ?: "0")
 
+
+                _progressState.postValue(ProgressState(percent, "Mendapatkan biaya marketing kavling $noKavling ..."))
                 val listBiayaMarketing = biayaMarketingRepository
                     .getAllByKavlingKode(kavlingKode = noKavling, offline = false)
                     .first()
@@ -74,6 +105,8 @@ class GetAllRekapGlobalWithRekapBesarAsyncUseCase(
                 else
                     0L
                 totalBiayaMarketing += totalBiayaMaketingPerKavling
+
+
 
                 listRekapGlobal.add(
                     RekapGlobal(
@@ -85,6 +118,7 @@ class GetAllRekapGlobalWithRekapBesarAsyncUseCase(
                     )
                 )
             }
+
 
             val listBiayaLain = biayaLainRepository
                 .getAll(offline = false)

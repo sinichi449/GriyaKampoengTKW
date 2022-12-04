@@ -24,7 +24,7 @@ class MockBiayaLainRepository: BiayaLainRepository {
         }
     }
 
-    override fun getSingle(id: Long, offline: Boolean): Flow<Result<BiayaLain?>> {
+    override fun getSingle(jenisBiaya: String, offline: Boolean): Flow<Result<BiayaLain?>> {
         TODO("Not yet implemented")
     }
 

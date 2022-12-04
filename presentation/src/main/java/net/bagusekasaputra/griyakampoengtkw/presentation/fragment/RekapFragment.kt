@@ -5,7 +5,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.viewModels
+import androidx.fragment.app.activityViewModels
 import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
 import net.bagusekasaputra.griyakampoengtkw.presentation.databinding.FragmentRekapBinding
@@ -16,7 +16,7 @@ import net.bagusekasaputra.griyakampoengtkw.presentation.viewmodel.RekapViewMode
 class RekapFragment : Fragment() {
 
     private lateinit var binding: FragmentRekapBinding
-    private val viewModel by viewModels<RekapViewModel>()
+    private val viewModel by activityViewModels<RekapViewModel>()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -56,7 +56,7 @@ class RekapFragment : Fragment() {
     }
 
     private fun sync() {
-        viewModel.getAllRekapGlobal {
+        viewModel.getAllRekap {
             Snackbar.make(binding.root, it, Snackbar.LENGTH_SHORT).show()
         }
     }

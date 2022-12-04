@@ -24,6 +24,7 @@ import net.bagusekasaputra.griyakampoengtkw.presentation.fragment.ReportAndMiscF
 import net.bagusekasaputra.griyakampoengtkw.presentation.logEvent
 import net.bagusekasaputra.griyakampoengtkw.presentation.util.GriyaNodes
 import net.bagusekasaputra.griyakampoengtkw.presentation.viewmodel.MainViewModel
+import net.bagusekasaputra.griyakampoengtkw.presentation.viewmodel.RekapViewModel
 import javax.inject.Inject
 
 @AndroidEntryPoint
@@ -35,6 +36,7 @@ class MainActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityMainBinding
     private val viewModel: MainViewModel by viewModels()
+    private val rekapViewModel: RekapViewModel by viewModels()
 
     // SharedPreferences to load the user settings, such as offline mode
     @Inject
@@ -179,7 +181,6 @@ class MainActivity : AppCompatActivity() {
 
     private fun setupViewPager() {
 //        val fragments = listOf(KavlingFragment(), ReportFragment(), PengingatFragment())
-//        val fragments = listOf(KavlingFragment(), RekapFragment(), PengingatFragment())
         val fragments = listOf(
             KavlingFragment(),
             RekapFragment(),

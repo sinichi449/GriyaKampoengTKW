@@ -166,4 +166,12 @@ object RepositoryModule {
     fun providePengingatRepository(localPengingatDataSource: LocalPengingatDataSource): PengingatRepository {
         return PengingatRepositoryImpl(localPengingatDataSource)
     }
+
+    /**
+     * Biaya Lain
+     */
+    @Provides
+    fun provideBiayaLainRepository(): BiayaLainRepository {
+        return BiayaLainRepositoryImpl()
+    }
 }

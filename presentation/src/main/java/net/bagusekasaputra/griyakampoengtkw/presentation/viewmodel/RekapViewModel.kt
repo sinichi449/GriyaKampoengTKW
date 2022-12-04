@@ -8,8 +8,9 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
-import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.rekapGlobal.GetAllRekapGlobalUseCase
+import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.rekapGlobal.GetAllRekapGlobalWithRekapBesarAsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.Kavling
+import net.bagusekasaputra.griyakampoengtkw.domain.entity.RekapBesar
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.RekapGlobal
 import net.bagusekasaputra.griyakampoengtkw.presentation.tableview.rekapGlobal.RgCell
 import net.bagusekasaputra.griyakampoengtkw.presentation.tableview.rekapGlobal.RgColumnHeader
@@ -18,20 +19,26 @@ import javax.inject.Inject
 
 @HiltViewModel
 class RekapViewModel @Inject constructor(
-    private val getAllRekapGlobalUseCase: GetAllRekapGlobalUseCase,
+    private val getAllRekapGlobalWithRekapBesarAsyncUseCase: GetAllRekapGlobalWithRekapBesarAsyncUseCase,
 ): ViewModel() {
 
-    val progressState = getAllRekapGlobalUseCase.progressState
+    val progressState = getAllRekapGlobalWithRekapBesarAsyncUseCase.progressState
 
     private val _isFinishedProgress = MutableLiveData(true)
     val isFinishedOperation: LiveData<Boolean>
         get() = _isFinishedProgress
+
 
     private val _listRekapGlobalLive = MutableLiveData(
         listOf(RekapGlobal("-", "-", "-", 0L, 0L))
     )
     val listRekapGlobalLive: LiveData<List<RekapGlobal>>
         get() = _listRekapGlobalLive
+
+    private val _rekapBesarLive = MutableLiveData<RekapBesar>()
+    val rekapBesarLive: LiveData<RekapBesar>
+        get() = _rekapBesarLive
+
 
     private val _isLoadingRekapDone = MutableLiveData<Boolean?>()
     val isLoadingRekapDone: LiveData<Boolean?>
@@ -43,18 +50,22 @@ class RekapViewModel @Inject constructor(
 
 
 
-    fun getAllRekapGlobal(onComplete: (msg: String) -> Unit) {
+    fun getAllRekap(onComplete: (msg: String) -> Unit) {
         getRekapJob?.cancel()
 
-        val request = GetAllRekapGlobalUseCase.Request(kavlingList)
+        val request = GetAllRekapGlobalWithRekapBesarAsyncUseCase.Request(kavlingList)
+
         _isLoadingRekapDone.value = false
+
         getRekapJob = CoroutineScope(Dispatchers.IO).launch {
-            getAllRekapGlobalUseCase.execute(request).collect { result ->
-                result.onSuccess {
+
+            getAllRekapGlobalWithRekapBesarAsyncUseCase.execute(request).collect { result ->
+                result.onSuccess { rekapGlobalWithBesar ->
                     _isLoadingRekapDone.postValue(true)
 
-                    if (it != null) {
-                        _listRekapGlobalLive.postValue(it)
+                    if (rekapGlobalWithBesar != null) {
+                        _listRekapGlobalLive.postValue(rekapGlobalWithBesar.listRekapGlobal)
+                        _rekapBesarLive.postValue(rekapGlobalWithBesar.rekapBesar)
 
                         onComplete("Berhasil mendapatkan semua rekap")
                     } else {
@@ -68,6 +79,7 @@ class RekapViewModel @Inject constructor(
                     onComplete("Gagal mendapatkan rekap -> ${it.message}")
                 }
             }
+
         }
     }
 
