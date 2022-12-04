@@ -1,6 +1,7 @@
 package net.bagusekasaputra.griyakampoengtkw.domain.entity
 
 import net.bagusekasaputra.griyakampoengtkw.domain.NumberUtil
+import net.bagusekasaputra.griyakampoengtkw.domain.PembayaranSorterUtil
 
 data class Pembayaran(
     val termin: String,
@@ -33,5 +34,13 @@ data class Pembayaran(
 
             return mTotal
         }
+
+        fun sortPembayaran(listPembayaran: List<Pembayaran>) = PembayaranSorterUtil(listPembayaran).getSortedList()
+
+        fun getTanggalPembelian(sortedListPembayaran: List<Pembayaran>) =
+            if (sortedListPembayaran.isEmpty())
+                throw Exception("Get tanggal pembelian gagal -> argumen sortedListPembayaran dengan list masih kosong tidak boleh!")
+            else
+                sortedListPembayaran.first().tanggal
     }
 }
