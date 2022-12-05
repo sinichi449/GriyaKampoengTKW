@@ -19,7 +19,6 @@ import net.bagusekasaputra.griyakampoengtkw.presentation.adapter.viewpager.MainV
 import net.bagusekasaputra.griyakampoengtkw.presentation.databinding.ActivityMainBinding
 import net.bagusekasaputra.griyakampoengtkw.presentation.fragment.BiayaLainFragment
 import net.bagusekasaputra.griyakampoengtkw.presentation.fragment.KavlingFragment
-import net.bagusekasaputra.griyakampoengtkw.presentation.fragment.PengingatFragment
 import net.bagusekasaputra.griyakampoengtkw.presentation.fragment.rekap.RekapFragment
 import net.bagusekasaputra.griyakampoengtkw.presentation.logEvent
 import net.bagusekasaputra.griyakampoengtkw.presentation.util.GriyaNodes
@@ -130,6 +129,8 @@ class MainActivity : AppCompatActivity() {
         }
 
         setupViewPager()
+
+        binding.fabActions.shrink()
     }
 
     private fun setupViewModel() {
@@ -140,52 +141,27 @@ class MainActivity : AppCompatActivity() {
                 val tabReportMisc = 2
                 val tabPengingat = 3
 
-                when (tabSelected) {
-                    tabKavling ->  {
-                        showFabs()
-                        binding.fabActions.shrink()
-                        binding.toolbarMain.title = "Site Plan"
-                    }
-                    tabRekap -> {
-                        hideFabs()
-                        binding.toolbarMain.title = "Rekapan"
-                    }
-                    tabReportMisc -> {
-                        showFabs()
-                        binding.toolbarMain.title = "Biaya Lainnya"
-                    }
-                    tabPengingat -> {
-                        showFabs()
-                        binding.fabActions.extend()
-                        binding.toolbarMain.title = "Pengingat"
-                    }
+                if (tabSelected == tabRekap) {
+                    binding.fabActions.visibility = View.INVISIBLE
+                } else {
+                    binding.fabActions.visibility = View.VISIBLE
                 }
             }
         }
     }
 
-    private fun showFabs() {
-        binding.fabActions.visibility = View.VISIBLE
-        binding.fabAddBlock.visibility = View.VISIBLE
-        binding.fabAddKavling.visibility = View.VISIBLE
-
-        binding.fabAddBlock.hide()
-        binding.fabAddKavling.hide()
-    }
-
-    private fun hideFabs() {
-        binding.fabActions.visibility = View.GONE
-        binding.fabAddBlock.visibility = View.GONE
-        binding.fabAddKavling.visibility = View.GONE
-    }
-
     private fun setupViewPager() {
 //        val fragments = listOf(KavlingFragment(), ReportFragment(), PengingatFragment())
+//        val fragments = listOf(
+//            KavlingFragment(),
+//            RekapFragment(),
+//            BiayaLainFragment(),
+//            PengingatFragment(),
+//        )
         val fragments = listOf(
             KavlingFragment(),
             RekapFragment(),
             BiayaLainFragment(),
-            PengingatFragment(),
         )
         val pagerAdapter = MainViewPagerAdapter(
             fragmentManager = supportFragmentManager,

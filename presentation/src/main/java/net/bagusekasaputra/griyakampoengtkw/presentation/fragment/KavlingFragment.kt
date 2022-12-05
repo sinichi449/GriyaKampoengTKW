@@ -32,6 +32,7 @@ import net.bagusekasaputra.griyakampoengtkw.presentation.adapter.recyclerview.Bl
 import net.bagusekasaputra.griyakampoengtkw.presentation.adapter.recyclerview.KavlingRecyclerAdapter
 import net.bagusekasaputra.griyakampoengtkw.presentation.databinding.*
 import net.bagusekasaputra.griyakampoengtkw.presentation.util.DialogUtil
+import net.bagusekasaputra.griyakampoengtkw.presentation.util.FabHelper
 import net.bagusekasaputra.griyakampoengtkw.presentation.util.InputUtil
 import net.bagusekasaputra.griyakampoengtkw.presentation.viewmodel.MainViewModel
 
@@ -40,12 +41,11 @@ class KavlingFragment : Fragment() {
 
     private lateinit var binding: FragmentKavlingBinding
     private val viewModel: MainViewModel by activityViewModels()
+    private lateinit var fabActions: ExtendedFloatingActionButton
+    private lateinit var fabAddKavling: FloatingActionButton
+    private lateinit var fabAddBlock: FloatingActionButton
 
     private var isAllFabsVisible = false
-
-    private lateinit var fabActions: ExtendedFloatingActionButton
-    private lateinit var fabAddBlock: FloatingActionButton
-    private lateinit var fabAddKavling: FloatingActionButton
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -54,19 +54,24 @@ class KavlingFragment : Fragment() {
         // Inflate the layout for this fragment
         binding = FragmentKavlingBinding.inflate(inflater, container, false)
 
-        fabActions = requireActivity().findViewById(R.id.fab_actions)
-        fabAddBlock = requireActivity().findViewById(R.id.fab_add_block)
-        fabAddKavling = requireActivity().findViewById(R.id.fab_add_kavling)
-
         return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        fabActions = requireActivity().findViewById(R.id.fab_actions)
+        fabAddKavling = requireActivity().findViewById(R.id.fab_add_kavling)
+        fabAddBlock = requireActivity().findViewById(R.id.fab_add_block)
+
         setupViewModel()
 
-        setupFloatingButtons()
+//        setupFloatingButtons()
+        val fabHelper = FabHelper(
+            fabAction = fabActions,
+            fabs = arrayOf(fabAddKavling, fabAddBlock),
+        )
+        fabHelper.setupFabs()
 
         // Hide Fab Action on Kavling RecyclerView scrolling down
         hideFabActionsOnKavlingScroll()
@@ -76,7 +81,8 @@ class KavlingFragment : Fragment() {
             // Enable offline mode means disabling the write operation on the data,
             // which is done, in this case, by the FABS. I've encapsulated the needed to disable
             // operation interface in this method.
-            onOfflineState()
+//            onOfflineState()
+            fabHelper.fabOnfflineState()
 
 
         fabAddKavling.setOnClickListener {
@@ -205,7 +211,7 @@ class KavlingFragment : Fragment() {
                 startActivity(intent)
             },
             onRecyclerItemHold = { anchor, position ->
-//                showActionKavlingDialog(kavlings[it])
+                showActionKavlingDialog(kavlings[position])
                 showPopupActionKalvingDialog(anchor, kavlings[position])
             }
         )

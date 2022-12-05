@@ -8,20 +8,24 @@ import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
+import com.google.android.material.floatingactionbutton.FloatingActionButton
 import dagger.hilt.android.AndroidEntryPoint
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.BiayaLain
 import net.bagusekasaputra.griyakampoengtkw.presentation.R
 import net.bagusekasaputra.griyakampoengtkw.presentation.databinding.FragmentBiayaLainBinding
 import net.bagusekasaputra.griyakampoengtkw.presentation.tableview.biayaLain.*
+import net.bagusekasaputra.griyakampoengtkw.presentation.util.FabHelper
 import net.bagusekasaputra.griyakampoengtkw.presentation.viewmodel.BiayaLainViewModel
 
 @AndroidEntryPoint
 class BiayaLainFragment: Fragment() {
 
     private lateinit var binding: FragmentBiayaLainBinding
-    private lateinit var fabActions: ExtendedFloatingActionButton
 
     private val viewModel: BiayaLainViewModel by viewModels()
+    private lateinit var fabActions: ExtendedFloatingActionButton
+    private lateinit var fabAddBiayaLain: FloatingActionButton
+    private lateinit var fabEditBiayaLain: FloatingActionButton
 
     private var isFabAllVisible = false
 
@@ -39,10 +43,17 @@ class BiayaLainFragment: Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         fabActions = requireActivity().findViewById(R.id.fab_actions)
+        fabAddBiayaLain = requireActivity().findViewById(R.id.fab_tambah_biaya_lain)
+        fabEditBiayaLain = requireActivity().findViewById(R.id.fab_edit_biaya_lain)
+
+        val fabHelper = FabHelper(
+            fabAction = fabActions,
+            fabs = arrayOf(fabAddBiayaLain, fabEditBiayaLain)
+        )
+        fabHelper.setupFabs()
 
         setupViewModel()
 
-        setupFloatingActionButton()
 
         binding.swipeRefreshBiayaLain.setOnRefreshListener {
             sync()
@@ -96,28 +107,4 @@ class BiayaLainFragment: Fragment() {
         adapter.notifyDataSetChanged()
     }
 
-    private fun setupFloatingActionButton() {
-        binding.fabTambahBiayaLain.hide()
-        binding.fabEditBiayaLain.hide()
-
-        fabActions.setOnClickListener {
-            if (isFabAllVisible) {
-                // hide the fabs
-                binding.fabTambahBiayaLain.hide()
-                binding.fabEditBiayaLain.hide()
-
-                fabActions.shrink()
-
-                isFabAllVisible = false
-            } else {
-                // show the fabs
-                binding.fabTambahBiayaLain.show()
-                binding.fabEditBiayaLain.show()
-
-                fabActions.extend()
-
-                isFabAllVisible = true
-            }
-        }
-    }
 }
