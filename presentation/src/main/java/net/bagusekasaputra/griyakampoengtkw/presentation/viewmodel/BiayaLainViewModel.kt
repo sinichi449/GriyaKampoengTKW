@@ -11,6 +11,7 @@ import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.biayaLain.Delete
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.biayaLain.GetAllBiayaLainAsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.biayaLain.UpdateBiayaLainAsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.BiayaLain
+import net.bagusekasaputra.griyakampoengtkw.presentation.toDate
 import javax.inject.Inject
 
 @HiltViewModel
@@ -31,10 +32,11 @@ class BiayaLainViewModel @Inject constructor(
         get() = _listBiayaLainLive
 
 
-
     val asyncHelper = AsyncUseCaseHelper(_isFinishOperation)
 
     private val asyncJobs = mutableListOf<Job>()
+
+
 
     fun getAllBiayaLain(onFailure: (msg: String) -> Unit) {
         val request = GetAllBiayaLainAsyncUseCase.Request(false)
@@ -43,7 +45,14 @@ class BiayaLainViewModel @Inject constructor(
             request = request,
             asyncUseCase = getAllBiayaLainAsyncUseCase,
             onSuccess = {
-                _listBiayaLainLive.postValue(it)
+                _listBiayaLainLive.postValue(
+                    it?.sortedWith { p0, p1 ->
+                        val tanggal1 = p0.tanggal.toDate()
+                        val tanggal2 = p1.tanggal.toDate()
+
+                        tanggal1.compareTo(tanggal2)
+                    }
+                )
             },
             onFailure = {
                 onFailure("Gagal mendapatkan biaya lain: ${it.message}")
@@ -52,6 +61,78 @@ class BiayaLainViewModel @Inject constructor(
         )
 
         asyncJobs.add(getAllJobs)
+    }
+
+    fun addBiayaLain(
+        jenisBiaya: String,
+        harga: Long,
+        tanggal: String,
+        onComplete: (msg: String) -> Unit,
+    ) {
+        val biayaLain = BiayaLain(
+            jenisBiaya = jenisBiaya,
+            harga = harga,
+            tanggal = tanggal
+        )
+        val request = AddBiayaLainAsyncUseCase.Request(biayaLain)
+
+        val addingBiayaJob = asyncHelper.doWork(
+            request = request,
+            asyncUseCase = addBiayaLainAsyncUseCase,
+            onSuccess = {
+                onComplete("Berhasil ditambahkan")
+            },
+            onFailure = {
+                onComplete("Gagal menambahkan: ${it.message}")
+            }
+        )
+
+        asyncJobs.add(addingBiayaJob)
+    }
+
+    fun updateBiayaLain(
+        oldBiayaLain: BiayaLain,
+        newJenisBiaya: String,
+        newHarga: Long,
+        newTanggal: String,
+        onComplete: (msg: String) -> Unit,
+    ) {
+        val newBiayaLain = BiayaLain(
+            jenisBiaya = newJenisBiaya,
+            harga = newHarga,
+            tanggal = newTanggal,
+        )
+        val request = UpdateBiayaLainAsyncUseCase.Request(oldBiayaLain, newBiayaLain)
+
+        val updatingBiayaJob = asyncHelper.doWork(
+            request = request,
+            asyncUseCase = updateBiayaLainAsyncUseCase,
+            onSuccess = {
+                onComplete("Berhasil mengubah biaya lain")
+            },
+            onFailure = {
+                onComplete("Gagal mengubah: ${it.message}")
+            }
+        )
+
+        asyncJobs.add(updatingBiayaJob)
+    }
+
+    fun deleteBiayaLain(biayaLain: BiayaLain, onComplete: (msg: String) -> Unit) {
+        val request = DeleteBiayaLainAsyncUseCase.Request(biayaLain)
+
+        val deletingBiayaJob = asyncHelper.doWork(
+            request = request,
+            asyncUseCase = deleteBiayaLainAsyncUseCase,
+            onSuccess = {
+                onComplete("Berhasil menghapus")
+            },
+            onFailure = {
+                onComplete("Gagal menghapus: ${it.message}")
+            }
+        )
+
+        asyncJobs.add(deletingBiayaJob)
     }
 
 

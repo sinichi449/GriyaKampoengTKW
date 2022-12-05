@@ -11,15 +11,19 @@ import androidx.fragment.app.viewModels
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
 import com.google.android.material.floatingactionbutton.FloatingActionButton
+import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
+import net.bagusekasaputra.griyakampoengtkw.domain.NumberUtil
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.BiayaLain
 import net.bagusekasaputra.griyakampoengtkw.presentation.R
+import net.bagusekasaputra.griyakampoengtkw.presentation.custom.ThousandSeparatorTextWatcher
 import net.bagusekasaputra.griyakampoengtkw.presentation.databinding.DialogActionBiayaLainBinding
 import net.bagusekasaputra.griyakampoengtkw.presentation.databinding.FragmentBiayaLainBinding
 import net.bagusekasaputra.griyakampoengtkw.presentation.tableview.biayaLain.*
 import net.bagusekasaputra.griyakampoengtkw.presentation.toCalendar
 import net.bagusekasaputra.griyakampoengtkw.presentation.util.DialogUtil
 import net.bagusekasaputra.griyakampoengtkw.presentation.util.FabHelper
+import net.bagusekasaputra.griyakampoengtkw.presentation.util.InputUtil
 import net.bagusekasaputra.griyakampoengtkw.presentation.viewmodel.BiayaLainViewModel
 import java.util.*
 
@@ -135,6 +139,10 @@ class BiayaLainFragment: Fragment() {
 
         DialogUtil.additionalDialogSetting(requireContext(), dialogView)
 
+        dialogBinding.edtHarga.apply {
+            addTextChangedListener(ThousandSeparatorTextWatcher(this))
+        }
+
         val editMode = biayaLain != null
         if (editMode) {
             dialogBinding.tvTitle.text = "Ubah Biaya Lain"
@@ -144,6 +152,7 @@ class BiayaLainFragment: Fragment() {
             dialogBinding.edtTanggal.setText(biayaLain.tanggal)
 
             dialogBinding.btnTambahkan.text = "Ubah"
+            dialogBinding.btnHapus.visibility = View.VISIBLE
         }
 
         dialogView.show()
@@ -172,6 +181,77 @@ class BiayaLainFragment: Fragment() {
                 .show()
         }
 
+        dialogBinding.btnTambahkan.setOnClickListener {
+            val isInvalidEdt = InputUtil.isNullOrEmptyEditTexts(
+                dialogBinding.edtHarga,
+                dialogBinding.edtJenisBiaya,
+                dialogBinding.edtTanggal,
+            )
+
+            if (isInvalidEdt.not()) {
+                dialogBinding.btnTambahkan.text = "Menyimpan data ..."
+                dialogBinding.btnTambahkan.isEnabled = false
+
+                val jenisBiaya = dialogBinding.edtJenisBiaya.text.toString()
+                val harga = dialogBinding.edtHarga.text.toString()
+                val tanggal = dialogBinding.edtTanggal.text.toString()
+
+                if (editMode) {
+                    viewModel.updateBiayaLain(
+                        oldBiayaLain = biayaLain!!,
+                        newJenisBiaya = jenisBiaya,
+                        newHarga = NumberUtil.formatStringToLong(harga),
+                        newTanggal = tanggal,
+                        onComplete = {
+                            dialogView.dismiss()
+
+                            onCompleteDialogOperation(it)
+                        }
+                    )
+                } else {
+                    viewModel.addBiayaLain(
+                        jenisBiaya = jenisBiaya,
+                        harga = NumberUtil.formatStringToLong(harga),
+                        tanggal = tanggal,
+                        onComplete = {
+                            dialogView.dismiss()
+
+                            onCompleteDialogOperation(it)
+                        }
+                    )
+                }
+            }
+        }
+
+        dialogBinding.btnHapus.setOnClickListener {
+            if (editMode) {
+                MaterialAlertDialogBuilder(requireContext(), R.style.AlertDialogTheme).apply {
+                    setTitle("Hapus \"${biayaLain!!.jenisBiaya}\"?")
+                    setMessage("Apakah Anda yakin ingin menghapus data biaya ini?")
+                    setPositiveButton("Ya") { dialog, _ ->
+                        viewModel.deleteBiayaLain(
+                            biayaLain = biayaLain,
+                            onComplete = {
+                                dialog.dismiss()
+                                dialogView.dismiss()
+
+                                onCompleteDialogOperation(it)
+                            }
+                        )
+                    }
+                    setNegativeButton("Tidak") { dialog, _ ->
+                        dialog.dismiss()
+                    }
+                }
+                        .create()
+                        .show()
+            } else {
+                Toast.makeText(requireContext(), "ERROR: Data biaya lain tidak ditemukan, tapi operasi penghapusan dilakukan.", Toast.LENGTH_LONG)
+                    .show()
+                dialogView.dismiss()
+            }
+        }
+
         dialogBinding.btnBatal.setOnClickListener {
             dialogView.dismiss()
         }
@@ -196,5 +276,11 @@ class BiayaLainFragment: Fragment() {
             }
         }.create()
             .show()
+    }
+
+    private fun onCompleteDialogOperation(msg: String) {
+        Snackbar.make(binding.root, msg, Snackbar.LENGTH_LONG).apply {
+            setAction("OK") { this.dismiss() }
+        }.show()
     }
 }
