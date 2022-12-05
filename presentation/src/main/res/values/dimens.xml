@@ -21,4 +21,5 @@
     <dimen name="table_rekap_double_row_header_width">100dp</dimen>
     <dimen name="rekap_icon_sizes">28dp</dimen>
     <dimen name="card_pengeluaran_text_size">14sp</dimen>
+    <dimen name="dialog_padding">16dp</dimen>
 </resources>

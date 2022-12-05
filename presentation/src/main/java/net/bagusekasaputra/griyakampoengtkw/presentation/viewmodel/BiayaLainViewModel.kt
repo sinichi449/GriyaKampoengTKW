@@ -26,9 +26,9 @@ class BiayaLainViewModel @Inject constructor(
         get() = _isFinishOperation
 
 
-    private val _listBiayaLain = MutableLiveData<List<BiayaLain>>()
-    val listBiayaLain: LiveData<List<BiayaLain>>
-        get() = _listBiayaLain
+    private val _listBiayaLainLive = MutableLiveData<List<BiayaLain>>()
+    val listBiayaLainLive: LiveData<List<BiayaLain>>
+        get() = _listBiayaLainLive
 
 
 
@@ -43,7 +43,7 @@ class BiayaLainViewModel @Inject constructor(
             request = request,
             asyncUseCase = getAllBiayaLainAsyncUseCase,
             onSuccess = {
-                _listBiayaLain.postValue(it)
+                _listBiayaLainLive.postValue(it)
             },
             onFailure = {
                 onFailure("Gagal mendapatkan biaya lain: ${it.message}")

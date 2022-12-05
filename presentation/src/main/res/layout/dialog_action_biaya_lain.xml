@@ -1,0 +1,143 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.appcompat.widget.LinearLayoutCompat xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical"
+    android:padding="@dimen/dialog_padding">
+
+    <com.google.android.material.textview.MaterialTextView
+        android:id="@+id/tv_title"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Tambah Biaya Lain"
+        android:gravity="center"
+        style="@style/TextAppearance.MaterialComponents.Headline6"/>
+
+    <Space
+        android:layout_width="match_parent"
+        android:layout_height="24dp"/>
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Jenis Biaya"
+        app:startIconDrawable="@drawable/ic_baseline_add_card_24"
+        app:endIconMode="clear_text"
+        style="@style/DenseOutlinedTextInputLayout">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/edt_jenis_biaya"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:inputType="text"
+            android:maxLength="50"
+            style="@style/DenseOutlineEditText"/>
+
+    </com.google.android.material.textfield.TextInputLayout>
+
+
+    <Space
+        android:layout_width="match_parent"
+        android:layout_height="8dp"/>
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Harga"
+        app:startIconDrawable="@drawable/ic_baseline_attach_money_24"
+        app:endIconMode="clear_text"
+        style="@style/DenseOutlinedTextInputLayout">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/edt_harga"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            style="@style/DenseOutlineEditText"
+            android:inputType="number"/>
+
+    </com.google.android.material.textfield.TextInputLayout>
+
+
+    <Space
+        android:layout_width="match_parent"
+        android:layout_height="8dp"/>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/til_harga"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toStartOf="@id/btn_pilih_tanggal"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintHorizontal_weight="0.7"
+            android:hint="Tanggal"
+            app:startIconDrawable="@drawable/ic_baseline_calendar_month_24"
+            app:endIconMode="clear_text"
+            style="@style/DenseOutlinedTextInputLayout">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/edt_tanggal"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                style="@style/DenseOutlineEditText"
+                android:inputType="datetime"/>
+
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btn_pilih_tanggal"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@id/til_harga"
+            app:layout_constraintTop_toTopOf="@id/til_harga"
+            app:layout_constraintBottom_toBottomOf="@id/til_harga"
+            app:layout_constraintHorizontal_weight="0.3"
+            android:text="Pilih"
+            android:textColor="@color/secondaryColor"
+            style="@style/Widget.MaterialComponents.Button.TextButton"/>
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+
+    <Space
+        android:layout_width="match_parent"
+        android:layout_height="24dp"/>
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/btn_tambahkan"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Tambahkan"
+        app:cornerRadius="8dp"
+        style="@style/NormalDialogButton"/>
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/btn_batal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Batal"
+        app:cornerRadius="8dp"
+        style="@style/NormalDialogButton"/>
+
+
+    <Space
+        android:layout_width="match_parent"
+        android:layout_height="16dp"/>
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/btn_hapus"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Hapus Biaya Lain"
+        style="@style/TextDialogButton"
+        app:cornerRadius="8dp"
+        android:visibility="gone"/>
+
+
+</androidx.appcompat.widget.LinearLayoutCompat>
