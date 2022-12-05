@@ -30,7 +30,10 @@ import net.bagusekasaputra.griyakampoengtkw.presentation.activities.DetailActivi
 import net.bagusekasaputra.griyakampoengtkw.presentation.activities.MainActivity
 import net.bagusekasaputra.griyakampoengtkw.presentation.adapter.recyclerview.BlockRecyclerAdapter
 import net.bagusekasaputra.griyakampoengtkw.presentation.adapter.recyclerview.KavlingRecyclerAdapter
-import net.bagusekasaputra.griyakampoengtkw.presentation.databinding.*
+import net.bagusekasaputra.griyakampoengtkw.presentation.databinding.DialogAddBlockBinding
+import net.bagusekasaputra.griyakampoengtkw.presentation.databinding.DialogAddKavlingBinding
+import net.bagusekasaputra.griyakampoengtkw.presentation.databinding.DialogEditKavlingBinding
+import net.bagusekasaputra.griyakampoengtkw.presentation.databinding.FragmentKavlingBinding
 import net.bagusekasaputra.griyakampoengtkw.presentation.util.DialogUtil
 import net.bagusekasaputra.griyakampoengtkw.presentation.util.FabHelper
 import net.bagusekasaputra.griyakampoengtkw.presentation.util.InputUtil
@@ -211,7 +214,6 @@ class KavlingFragment : Fragment() {
                 startActivity(intent)
             },
             onRecyclerItemHold = { anchor, position ->
-                showActionKavlingDialog(kavlings[position])
                 showPopupActionKalvingDialog(anchor, kavlings[position])
             }
         )
@@ -344,60 +346,6 @@ class KavlingFragment : Fragment() {
         }
     }
 
-    private fun showActionKavlingDialog(kavling: Kavling) {
-        val dialogBinding = DialogActionKavlingBinding.inflate(layoutInflater)
-//        val actionKavlingDialog = AlertDialog.Builder(this).apply {
-//            setView(dialogBinding.root)
-//        }.create()
-        val actionKavlingDialog = MaterialAlertDialogBuilder(requireContext()).apply {
-            setView(dialogBinding.root)
-        }.create()
-
-        DialogUtil.additionalDialogSetting(requireContext(), actionKavlingDialog)
-
-        actionKavlingDialog.show()
-
-        // Need to be separated like this ...
-        val text = "Kavling ${kavling.kode}"
-        dialogBinding.tvKavlingKode.text = text
-
-
-
-        dialogBinding.btnEdit.setOnClickListener {
-            actionKavlingDialog.dismiss()
-            showEditKavlingDialog(kavling)
-        }
-
-        dialogBinding.btnBatal.setOnClickListener {
-            actionKavlingDialog.dismiss()
-        }
-
-        dialogBinding.btnHapusKavling.setOnClickListener {
-            actionKavlingDialog.dismiss()
-
-            MaterialAlertDialogBuilder(requireContext()).apply {
-                setTitle("Hapus Kavling")
-                setMessage("Apakah Anda yakin menghapus kavling ${kavling.kode}?")
-                setPositiveButton("Ya") { dialog, _ ->
-                    val blockKode = viewModel.currentBlock.value!!
-
-                    viewModel.removeKavling(
-                        blockKode = blockKode,
-                        kavlingKode = kavling.kode,
-                        onComplete = { msg ->
-                            syncData()
-                            dialog.dismiss()
-                            Snackbar.make(binding.root, msg, Snackbar.LENGTH_SHORT).show()
-                        }
-                    )
-
-                }
-                setNegativeButton("Tidak") { dialog, _ -> dialog.dismiss() }
-            }.create()
-                .show()
-        }
-    }
-
     private fun showPopupActionKalvingDialog(anchor: View, kavling: Kavling) {
         val popupMenu = PopupMenu(requireContext(), anchor)
         popupMenu.menuInflater.inflate(R.menu.menu_actions_kavling, popupMenu.menu)
@@ -495,11 +443,6 @@ class KavlingFragment : Fragment() {
         dialogBinding.btnBatal.setOnClickListener {
             editKavlingDialog.dismiss()
         }
-    }
-
-    private fun onOfflineState() {
-        hideFabs()
-        fabActions.hide()
     }
 
     private fun hideFabActionsOnKavlingScroll() {
