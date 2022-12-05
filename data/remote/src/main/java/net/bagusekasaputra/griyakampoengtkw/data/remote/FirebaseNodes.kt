@@ -10,4 +10,5 @@ object FirebaseNodes {
     const val HARGA_KAVLING = "hargaKavling"
     const val KAVLINGS = "kavlings"
     const val UPDATE = "update"
+    const val BIAYA_LAIN = "biayaLain"
 }

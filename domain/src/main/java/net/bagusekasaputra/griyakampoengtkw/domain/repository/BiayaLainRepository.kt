@@ -9,7 +9,7 @@ interface BiayaLainRepository {
 
     fun getSingle(jenisBiaya: String, offline: Boolean): Flow<Result<BiayaLain?>>
 
-    fun addBiayaLain(biayaLain: BiayaLain): Flow<Result<Nothing>?>
+    fun addBiayaLain(biayaLain: BiayaLain): Flow<Result<Nothing?>>
 
     fun updateBiayaLain(oldBiayaLain: BiayaLain, newBiayaLain: BiayaLain): Flow<Result<Nothing?>>
 

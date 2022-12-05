@@ -171,7 +171,7 @@ object RepositoryModule {
      * Biaya Lain
      */
     @Provides
-    fun provideBiayaLainRepository(): BiayaLainRepository {
-        return BiayaLainRepositoryImpl()
+    fun provideBiayaLainRepository(remoteBiayaLainDataSource: RemoteBiayaLainDataSource): BiayaLainRepository {
+        return BiayaLainRepositoryImpl(remoteBiayaLainDataSource)
     }
 }

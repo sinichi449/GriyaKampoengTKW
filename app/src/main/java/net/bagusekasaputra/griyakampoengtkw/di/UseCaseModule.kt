@@ -4,6 +4,10 @@ import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.android.components.ViewModelComponent
+import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.biayaLain.AddBiayaLainAsyncUseCase
+import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.biayaLain.DeleteBiayaLainAsyncUseCase
+import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.biayaLain.GetAllBiayaLainAsyncUseCase
+import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.biayaLain.UpdateBiayaLainAsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.biayaMarketing.GetAllBiayaMarketingByKavlingKodeAsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.block.GetAllBlocksAsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.catatanPembayaran.GetCatatanPembayaranAsyncUseCase
@@ -351,5 +355,28 @@ object UseCaseModule {
         biayaLainRepository: BiayaLainRepository,
     ): GetAllRekapGlobalWithRekapBesarAsyncUseCase {
         return GetAllRekapGlobalWithRekapBesarAsyncUseCase(dataDiriRepository, hargaKavlingRepository, pembayaranRepository, feeMarketingRepository, biayaMarketingRepository, biayaLainRepository)
+    }
+
+    /**
+     * Biaya Lain
+     */
+    @Provides
+    fun provideGetAllBiayalainUseCase(biayaLainRepository: BiayaLainRepository): GetAllBiayaLainAsyncUseCase {
+        return GetAllBiayaLainAsyncUseCase(biayaLainRepository)
+    }
+
+    @Provides
+    fun provideAddBiayaLainUseCase(biayaLainRepository: BiayaLainRepository): AddBiayaLainAsyncUseCase {
+        return AddBiayaLainAsyncUseCase(biayaLainRepository)
+    }
+
+    @Provides
+    fun provideUpdateBiayaLainUseCase(biayaLainRepository: BiayaLainRepository): UpdateBiayaLainAsyncUseCase {
+        return UpdateBiayaLainAsyncUseCase(biayaLainRepository)
+    }
+
+    @Provides
+    fun provideDeleteBiayaLainUseCase(biayaLainRepository: BiayaLainRepository): DeleteBiayaLainAsyncUseCase {
+        return DeleteBiayaLainAsyncUseCase(biayaLainRepository)
     }
 }

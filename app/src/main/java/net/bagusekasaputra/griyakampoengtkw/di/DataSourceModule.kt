@@ -22,6 +22,7 @@ import net.bagusekasaputra.griyakampoeng.tkw.data.local.pembayaran.RoomPembayara
 import net.bagusekasaputra.griyakampoeng.tkw.data.local.pengingat.RoomPengingatDataSource
 import net.bagusekasaputra.griyakampoengtkw.data.interfaces.local.*
 import net.bagusekasaputra.griyakampoengtkw.data.interfaces.remote.*
+import net.bagusekasaputra.griyakampoengtkw.data.remote.biayaLain.FirebaseBiayaLainDataSource
 import net.bagusekasaputra.griyakampoengtkw.data.remote.kavling.FirebaseKavlingDataSource
 import java.io.File
 import javax.inject.Qualifier
@@ -224,5 +225,13 @@ object DataSourceModule {
     @Provides
     fun provideLocalPengingatDataSource(roomDatabase: MyRoomDatabase): LocalPengingatDataSource {
         return RoomPengingatDataSource(roomDatabase)
+    }
+
+    /**
+     * Biaya Lain
+     */
+    @Provides
+    fun provideRemoteBiayaLainDataSource(databaseReference: DatabaseReference): RemoteBiayaLainDataSource {
+        return FirebaseBiayaLainDataSource(databaseReference)
     }
 }

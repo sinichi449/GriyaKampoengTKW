@@ -17,9 +17,9 @@ import dagger.hilt.android.AndroidEntryPoint
 import net.bagusekasaputra.griyakampoengtkw.presentation.R
 import net.bagusekasaputra.griyakampoengtkw.presentation.adapter.viewpager.MainViewPagerAdapter
 import net.bagusekasaputra.griyakampoengtkw.presentation.databinding.ActivityMainBinding
+import net.bagusekasaputra.griyakampoengtkw.presentation.fragment.BiayaLainFragment
 import net.bagusekasaputra.griyakampoengtkw.presentation.fragment.KavlingFragment
 import net.bagusekasaputra.griyakampoengtkw.presentation.fragment.PengingatFragment
-import net.bagusekasaputra.griyakampoengtkw.presentation.fragment.ReportAndMiscFragment
 import net.bagusekasaputra.griyakampoengtkw.presentation.fragment.rekap.RekapFragment
 import net.bagusekasaputra.griyakampoengtkw.presentation.logEvent
 import net.bagusekasaputra.griyakampoengtkw.presentation.util.GriyaNodes
@@ -184,7 +184,7 @@ class MainActivity : AppCompatActivity() {
         val fragments = listOf(
             KavlingFragment(),
             RekapFragment(),
-            ReportAndMiscFragment(),
+            BiayaLainFragment(),
             PengingatFragment(),
         )
         val pagerAdapter = MainViewPagerAdapter(
