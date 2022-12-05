@@ -1,5 +1,6 @@
 package net.bagusekasaputra.griyakampoengtkw.presentation.viewmodel
 
+import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -45,14 +46,26 @@ class BiayaLainViewModel @Inject constructor(
             request = request,
             asyncUseCase = getAllBiayaLainAsyncUseCase,
             onSuccess = {
-                _listBiayaLainLive.postValue(
-                    it?.sortedWith { p0, p1 ->
-                        val tanggal1 = p0.tanggal.toDate()
-                        val tanggal2 = p1.tanggal.toDate()
+                if (it != null) {
+                    if (it.isNotEmpty()) {
+                        _listBiayaLainLive.postValue(
+                            it.sortedWith { p0, p1 ->
+                                val tanggal1 = p0.tanggal.toDate()
+                                val tanggal2 = p1.tanggal.toDate()
 
-                        tanggal1.compareTo(tanggal2)
+                                tanggal1.compareTo(tanggal2)
+                            }
+                        )
+                        Log.d("DEBUG_ME", "getAllBiayaLain: not null")
+                    } else {
+                        val emptyBiayaLain = listOf(
+                            BiayaLain(jenisBiaya = "-", harga = 0L, tanggal = "-")
+                        )
+                        _listBiayaLainLive.postValue(emptyBiayaLain)
+
+                        Log.d("DEBUG_ME", "getAllBiayaLain: is empty detected")
                     }
-                )
+                }
             },
             onFailure = {
                 onFailure("Gagal mendapatkan biaya lain: ${it.message}")
@@ -134,6 +147,18 @@ class BiayaLainViewModel @Inject constructor(
 
         asyncJobs.add(deletingBiayaJob)
     }
+
+
+    fun getTotalBiayaLain(): Long {
+        val listBiayaLain = listBiayaLainLive.value
+
+        return if (listBiayaLain != null) {
+            BiayaLain.hitungTotalBiayaLain(listBiayaLain)
+        } else {
+            0L
+        }
+    }
+
 
 
     override fun onCleared() {

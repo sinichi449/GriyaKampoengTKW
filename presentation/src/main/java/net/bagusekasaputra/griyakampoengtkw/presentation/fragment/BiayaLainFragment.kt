@@ -107,6 +107,8 @@ class BiayaLainFragment: Fragment() {
         viewModel.listBiayaLainLive.observe(requireActivity()) {
             if (it != null) {
                 setupTableBiayaLain(it)
+
+                binding.tvTotalBiayaLain.text = NumberUtil.formatLongToString(viewModel.getTotalBiayaLain())
             }
         }
     }
