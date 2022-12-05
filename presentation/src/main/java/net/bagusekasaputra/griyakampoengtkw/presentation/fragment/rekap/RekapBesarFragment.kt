@@ -9,6 +9,7 @@ import androidx.fragment.app.activityViewModels
 import dagger.hilt.android.AndroidEntryPoint
 import net.bagusekasaputra.griyakampoengtkw.domain.NumberUtil
 import net.bagusekasaputra.griyakampoengtkw.presentation.databinding.CardRekapPengeluaranBinding
+import net.bagusekasaputra.griyakampoengtkw.presentation.databinding.CardRekapUangMasukBinding
 import net.bagusekasaputra.griyakampoengtkw.presentation.databinding.FragmentRekapBesarBinding
 import net.bagusekasaputra.griyakampoengtkw.presentation.viewmodel.RekapViewModel
 
@@ -40,12 +41,27 @@ class RekapBesarFragment : Fragment() {
                 val sisaUang = "Rp ${it.parsedSisaUang}"
                 binding.tvSisaUang.text = sisaUang
 
+                binding.cardPemasukan.setAllItems(
+                    totalUangMasuk = it.totalUangMasuk,
+                    sisaBelumBayar = it.totalSisaBelumBayar,
+                )
+
                 binding.cardPengeluaran.setAllItems(
                     feeMarketing = it.totalFeeMarketing,
                     biayaMarketing = it.totalBiayaMarketing,
                     biayaLain = it.totalBiayaLain,
                 )
             }
+        }
+    }
+
+    private fun CardRekapUangMasukBinding.setAllItems(
+        totalUangMasuk: Long,
+        sisaBelumBayar: Long,
+    ) {
+        this.apply {
+            tvTotalUangMasuk.text = NumberUtil.formatLongToString(totalUangMasuk)
+            tvSisaBelumBayar.text = NumberUtil.formatLongToString(sisaBelumBayar)
         }
     }
 

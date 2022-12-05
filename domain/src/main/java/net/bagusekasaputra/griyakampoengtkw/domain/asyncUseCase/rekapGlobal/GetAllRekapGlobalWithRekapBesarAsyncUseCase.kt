@@ -41,6 +41,7 @@ class GetAllRekapGlobalWithRekapBesarAsyncUseCase(
             // to differentiate between the total biaya marketing in SINGLE Kavling,
             // and the total biaya marketing in ALL Kavling
             var totalBiayaMarketing = 0L
+            var totalSisaBelumBayar = 0L
 
             val divScale = 2
             val multiplier = BigDecimal(10.0.pow(divScale))
@@ -107,16 +108,16 @@ class GetAllRekapGlobalWithRekapBesarAsyncUseCase(
                 totalBiayaMarketing += totalBiayaMaketingPerKavling
 
 
-
-                listRekapGlobal.add(
-                    RekapGlobal(
-                        namaCostumer = dataDiri?.nama ?: "-",
-                        noKavling = noKavling,
-                        tanggalPembelian = tanggalPembelian,
-                        harga = hargaKavling?.hargaDanTambahLuasan ?: 0L,
-                        jumlahUangMasuk = jumlahUangMasuk,
-                    )
+                val rekapGlobal = RekapGlobal(
+                    namaCostumer = dataDiri?.nama ?: "-",
+                    noKavling = noKavling,
+                    tanggalPembelian = tanggalPembelian,
+                    harga = hargaKavling?.hargaDanTambahLuasan ?: 0L,
+                    jumlahUangMasuk = jumlahUangMasuk,
                 )
+                totalSisaBelumBayar += rekapGlobal.sisaPembayaran
+
+                listRekapGlobal.add(rekapGlobal)
             }
 
 
@@ -132,6 +133,7 @@ class GetAllRekapGlobalWithRekapBesarAsyncUseCase(
              */
             val rekapBesar = RekapBesar(
                 totalUangMasuk = totalUangMasuk,
+                totalSisaBelumBayar = totalSisaBelumBayar,
                 totalFeeMarketing = totalFeeMarketing,
                 totalBiayaMarketing = totalBiayaMarketing,
                 totalBiayaLain = totalBiayaLain,

@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginHorizontal="2dp"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    app:cardElevation="2dp"
+    app:cardCornerRadius="16dp">
+
+    <androidx.appcompat.widget.LinearLayoutCompat
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/layout_total_uang_masuk"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:clickable="true"
+            android:focusable="true"
+            android:paddingStart="16dp"
+            android:paddingTop="16dp">
+
+            <ImageView
+                android:id="@+id/imgTotalUangMasuk"
+                android:layout_width="@dimen/rekap_icon_sizes"
+                android:layout_height="@dimen/rekap_icon_sizes"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                android:src="@drawable/icons8_income_78"/>
+
+            <com.google.android.material.textview.MaterialTextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:layout_constraintStart_toEndOf="@id/imgTotalUangMasuk"
+                app:layout_constraintTop_toTopOf="@id/imgTotalUangMasuk"
+                app:layout_constraintBottom_toBottomOf="@id/imgTotalUangMasuk"
+                android:layout_marginStart="8dp"
+                android:text="Uang Masuk"
+                android:textSize="14sp"
+                style="@style/TextAppearance.MaterialComponents.Headline6"/>
+
+
+            <com.google.android.material.textview.MaterialTextView
+                android:id="@+id/tv_total_uang_masuk"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="@id/imgTotalUangMasuk"
+                app:layout_constraintBottom_toBottomOf="@id/imgTotalUangMasuk"
+                android:layout_marginEnd="16dp"
+                android:text="0"
+                tools:text="4,900,000"
+                android:textColor="@color/blue_500"
+                android:textSize="@dimen/card_pengeluaran_text_size"
+                style="@style/TextAppearance.MaterialComponents.Headline6"/>
+
+            <com.google.android.material.divider.MaterialDivider
+                android:id="@+id/divider1"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/imgTotalUangMasuk"
+                android:layout_marginTop="16dp"/>
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/layout_sisa_belum_bayar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:clickable="true"
+            android:focusable="true"
+            android:paddingTop="16dp"
+            android:paddingStart="16dp"
+            android:paddingBottom="16dp">
+
+            <ImageView
+                android:id="@+id/imgSisaBelumBayar"
+                android:layout_width="@dimen/rekap_icon_sizes"
+                android:layout_height="@dimen/rekap_icon_sizes"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                android:src="@drawable/icons8_sisa_belum_bayar_50"/>
+
+            <com.google.android.material.textview.MaterialTextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:layout_constraintStart_toEndOf="@id/imgSisaBelumBayar"
+                app:layout_constraintTop_toTopOf="@id/imgSisaBelumBayar"
+                app:layout_constraintBottom_toBottomOf="@id/imgSisaBelumBayar"
+                android:text="Sisa Pembayaran"
+                android:layout_marginStart="8dp"
+                android:textSize="@dimen/card_pengeluaran_text_size"
+                style="@style/TextAppearance.MaterialComponents.Headline6"/>
+
+            <com.google.android.material.textview.MaterialTextView
+                android:id="@+id/tv_sisa_belum_bayar"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:layout_constraintTop_toTopOf="@id/imgSisaBelumBayar"
+                app:layout_constraintBottom_toBottomOf="@id/imgSisaBelumBayar"
+                app:layout_constraintEnd_toEndOf="parent"
+                android:layout_marginEnd="16dp"
+                android:text="0"
+                tools:text="1,250,000"
+                android:textColor="@color/blue_500"
+                android:textSize="@dimen/card_pengeluaran_text_size"
+                style="@style/TextAppearance.MaterialComponents.Headline6"/>
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+
+    </androidx.appcompat.widget.LinearLayoutCompat>
+
+</com.google.android.material.card.MaterialCardView>

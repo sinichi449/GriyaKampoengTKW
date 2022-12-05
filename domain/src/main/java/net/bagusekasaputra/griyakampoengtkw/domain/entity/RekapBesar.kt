@@ -4,6 +4,7 @@ import net.bagusekasaputra.griyakampoengtkw.domain.NumberUtil
 
 data class RekapBesar(
     val totalUangMasuk: Long,
+    val totalSisaBelumBayar: Long,
     val totalFeeMarketing: Long,
     val totalBiayaMarketing: Long,
     val totalBiayaLain: Long,
