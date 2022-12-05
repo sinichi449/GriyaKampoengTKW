@@ -19,4 +19,40 @@
         android:textStyle="bold"
         style="@style/TextAppearance.MaterialComponents.Subtitle1"/>
 
+    <!-- Left -->
+    <View
+        android:layout_width="@dimen/table_corner_line_weight"
+        android:layout_height="0dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        android:background="@color/black"/>
+
+    <!-- Top -->
+    <View
+        android:layout_width="0dp"
+        android:layout_height="@dimen/table_corner_line_weight"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        android:background="@color/black"/>
+
+    <!-- Right -->
+    <View
+        android:layout_width="@dimen/table_corner_line_weight"
+        android:layout_height="0dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        android:background="@color/black"/>
+
+    <!-- Bottom -->
+    <View
+        android:layout_width="0dp"
+        android:layout_height="@dimen/table_corner_line_weight"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:background="@color/black"/>
+
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -19,4 +19,20 @@
         android:textStyle="bold"
         style="@style/TextAppearance.MaterialComponents.Subtitle1"/>
 
+    <View
+        android:layout_width="0dp"
+        android:layout_height="@dimen/table_corner_line_weight"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:background="@color/black"/>
+
+    <View
+        android:layout_width="0dp"
+        android:layout_height="@dimen/table_corner_line_weight"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:background="@color/black"/>
+
 </androidx.constraintlayout.widget.ConstraintLayout>
