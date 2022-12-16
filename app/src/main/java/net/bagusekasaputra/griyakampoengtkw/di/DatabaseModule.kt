@@ -6,6 +6,8 @@ import androidx.room.migration.Migration
 import androidx.sqlite.db.SupportSQLiteDatabase
 import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.FirebaseDatabase
+import com.google.firebase.storage.FirebaseStorage
+import com.google.firebase.storage.StorageReference
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -70,6 +72,11 @@ object DatabaseModule {
     @Provides
     fun providesFirebaseDatabaseReference(): DatabaseReference {
         return FirebaseDatabase.getInstance(firebaseUrl).reference
+    }
+
+    @Provides
+    fun provideStorageReference(): StorageReference {
+        return FirebaseStorage.getInstance().reference
     }
 
 }

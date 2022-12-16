@@ -74,5 +74,5 @@ dependencies {
     kapt 'androidx.room:room-compiler:2.4.3'
 
     implementation 'com.google.firebase:firebase-database-ktx:20.0.6'
-
+    implementation 'com.google.firebase:firebase-storage-ktx:20.1.0'
 }
