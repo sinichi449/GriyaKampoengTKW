@@ -5,10 +5,10 @@ import android.net.Uri
 import androidx.core.net.toFile
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.channels.trySendBlocking
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.callbackFlow
+import kotlinx.coroutines.flow.*
 import net.bagusekasaputra.griyakampoengtkw.data.interfaces.local.LocalImageDataDiriDataSource
 import net.bagusekasaputra.griyakampoengtkw.data.model.ImageDataDiriModel
+import net.bagusekasaputra.griyakampoengtkw.domain.ImageUtil
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.ImageDataDiri
 import net.bagusekasaputra.griyakampoengtkw.domain.repository.ImageDataDiriRepository
 
@@ -17,15 +17,15 @@ class ImageDataDiriRepositoryImpl(
     private val contentResolver: ContentResolver,
 ): ImageDataDiriRepository {
 
-    override fun getByKavlingKode(kavlingKode: String): Flow<Result<ImageDataDiri>> {
-        return callbackFlow {
-            localImageDataDiriDataSource.getByKavlingKode(
-                kavlingKode = kavlingKode,
-                onSuccess = { trySendBlocking(Result.success(mapImageDataDiri(it))) },
-                onFailure = { trySendBlocking(Result.failure(it?: UnknownError("Terjadi kesalahan mendapatkan gambar"))) }
-            )
+    override fun getByKavlingKode(kavlingKode: String): Flow<Result<ImageDataDiri?>> {
+        return flow {
+            val localImageDataDiri = localImageDataDiriDataSource.getByKavlingKode(kavlingKode)
+                .map {
+                    if (it == null) Result.success(null)
+                    else Result.success(mapImageDataDiri(imageDataDiriModel = it))
+                }
 
-            awaitClose {  }
+            emitAll(localImageDataDiri)
         }
     }
 
@@ -87,7 +87,7 @@ class ImageDataDiriRepositoryImpl(
         return imageDataDiriModel.let {
             ImageDataDiri(
                 kavlingKode = it.kavlingKode,
-                bitmap = net.bagusekasaputra.griyakampoengtkw.domain.ImageUtil.getBitmapFromUri(contentResolver, Uri.parse(it.imgUri))
+                bitmap = ImageUtil.getBitmapFromUri(contentResolver, Uri.parse(it.imgUri))
             )
         }
     }

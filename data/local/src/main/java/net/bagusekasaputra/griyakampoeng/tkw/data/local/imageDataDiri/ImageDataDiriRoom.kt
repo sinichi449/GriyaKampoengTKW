@@ -14,7 +14,7 @@ data class ImageDataDiriRoomEntity(
 interface ImageDataDiriDao {
 
     @Query("SELECT * FROM image_data_diri WHERE kavling_kode = :kavlingKode")
-    fun getByKavlingKode(kavlingKode: String): ImageDataDiriRoomEntity
+    fun getByKavlingKode(kavlingKode: String): ImageDataDiriRoomEntity?
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun insert(imageDataDiri: ImageDataDiriRoomEntity)

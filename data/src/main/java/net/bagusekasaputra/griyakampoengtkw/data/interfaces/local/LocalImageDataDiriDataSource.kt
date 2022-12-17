@@ -1,15 +1,12 @@
 package net.bagusekasaputra.griyakampoengtkw.data.interfaces.local
 
 import android.net.Uri
+import kotlinx.coroutines.flow.Flow
 import net.bagusekasaputra.griyakampoengtkw.data.model.ImageDataDiriModel
 
 interface LocalImageDataDiriDataSource {
 
-    suspend fun getByKavlingKode(
-        kavlingKode: String,
-        onSuccess: (imageDataDiriModel: ImageDataDiriModel) -> Unit,
-        onFailure: (cause: Throwable?) -> Unit
-    )
+    fun getByKavlingKode(kavlingKode: String): Flow<ImageDataDiriModel?>
 
     suspend fun insert(
         imageDataDiriModel: ImageDataDiriModel,

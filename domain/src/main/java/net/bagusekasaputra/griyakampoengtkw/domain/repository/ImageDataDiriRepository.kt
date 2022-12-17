@@ -6,7 +6,7 @@ import net.bagusekasaputra.griyakampoengtkw.domain.entity.ImageDataDiri
 
 interface ImageDataDiriRepository {
 
-    fun getByKavlingKode(kavlingKode: String): Flow<Result<ImageDataDiri>>
+    fun getByKavlingKode(kavlingKode: String): Flow<Result<ImageDataDiri?>>
 
     fun addImage(kavlingKode: String, uri: Uri): Flow<Result<Boolean>>
 

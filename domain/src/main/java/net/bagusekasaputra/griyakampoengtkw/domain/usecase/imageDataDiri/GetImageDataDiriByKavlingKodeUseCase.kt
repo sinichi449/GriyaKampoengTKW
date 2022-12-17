@@ -12,7 +12,7 @@ class GetImageDataDiriByKavlingKodeUseCase(
 
     data class Request(val kavlingKode: String): UseCase.Request
 
-    data class Response(val result: Result<ImageDataDiri>): UseCase.Response
+    data class Response(val result: Result<ImageDataDiri?>): UseCase.Response
 
     override fun process(request: Request): Flow<Response> {
         return imageDataDiriRepository.getByKavlingKode(request.kavlingKode).map {

@@ -70,11 +70,15 @@ class ImageViewModel @Inject constructor(
                 .collect { response ->
                     val result = response.data.result
 
-                    if (result.isSuccess) {
-                        imageDataDiriLive.postValue(result.getOrNull())
-                    } else {
+                    result.onSuccess { imageDatadiri ->
+                        imageDatadiri?.let {
+                            imageDataDiriLive.postValue(it)
+                        }
+                    }
+
+                    result.onFailure {
                         withContext(Dispatchers.Main) {
-                            onFailure("Gagal mendapatkan image data diri: ${result.exceptionOrNull()?.message ?: "null"}")
+                            onFailure("Gagal mendapatkan image data diri: ${it.message ?: "null"}")
                         }
                     }
 

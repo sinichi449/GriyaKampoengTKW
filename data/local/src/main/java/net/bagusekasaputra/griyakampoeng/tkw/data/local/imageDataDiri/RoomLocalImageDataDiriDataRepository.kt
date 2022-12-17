@@ -1,6 +1,8 @@
 package net.bagusekasaputra.griyakampoeng.tkw.data.local.imageDataDiri
 
 import android.net.Uri
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flow
 import net.bagusekasaputra.griyakampoeng.tkw.data.local.MyRoomDatabase
 import net.bagusekasaputra.griyakampoengtkw.data.interfaces.local.LocalImageDataDiriDataSource
 import net.bagusekasaputra.griyakampoengtkw.data.model.ImageDataDiriModel
@@ -11,23 +13,22 @@ class RoomLocalImageDataDiriDataRepository(
 
     private val imageDao = myRoomDatabase.getImageDataDiriDao()
 
-    override suspend fun getByKavlingKode(
-        kavlingKode: String,
-        onSuccess: (imageDataDiriModel: ImageDataDiriModel) -> Unit,
-        onFailure: (cause: Throwable?) -> Unit,
-    ) {
-        try {
-            val imgDataDiri = imageDao.getByKavlingKode(kavlingKode).let {
-                ImageDataDiriModel(
-                    kavlingKode = it.kavlingKode,
-                    imgUri = it.imgUri
-                )
-            }
+    override fun getByKavlingKode(kavlingKode: String): Flow<ImageDataDiriModel?> {
+        return flow {
+            try {
+                val imgDataDiri = imageDao.getByKavlingKode(kavlingKode)?.let {
+                    ImageDataDiriModel(
+                        kavlingKode = it.kavlingKode,
+                        imgUri = it.imgUri
+                    )
+                }
 
-            onSuccess(imgDataDiri)
-        } catch (e: Exception) {
-            e.printStackTrace()
-            onFailure(e.cause)
+                emit(imgDataDiri)
+            } catch (e: Exception) {
+                e.printStackTrace()
+
+                throw e
+            }
         }
     }
 
@@ -100,13 +101,6 @@ class RoomLocalImageDataDiriDataRepository(
         onSuccess: (uri: Uri) -> Unit,
         onFailure: (cause: Throwable?) -> Unit,
     ) {
-        try {
-            val imageDataDiriRoom = imageDao.getByKavlingKode(kavlingKode)
-
-            onSuccess(Uri.parse(imageDataDiriRoom.imgUri))
-        } catch (e: Exception) {
-            e.printStackTrace()
-            onFailure(e.cause)
-        }
+        TODO("Not yet implemented")
     }
 }
