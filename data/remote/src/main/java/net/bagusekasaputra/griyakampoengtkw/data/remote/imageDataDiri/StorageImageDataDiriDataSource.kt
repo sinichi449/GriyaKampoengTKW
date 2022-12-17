@@ -53,8 +53,12 @@ class StorageImageDataDiriDataSource(
                 }
 
             awaitClose {
-                downloadTask.cancel()
-                Log.d("DEBUG_ME", "StorageImage->get(): Download \"$name\" canceled because of closed connection.")
+                if (downloadTask.isComplete) {
+                    Log.d("DEBUG_ME", "StorageImage->get(): Download \"$name\" completed.")
+                } else {
+                    downloadTask.cancel()
+                    Log.d("DEBUG_ME", "StorageImage->get(): Download \"$name\" canceled because of closed connection.")
+                }
             }
         }.first()
     }

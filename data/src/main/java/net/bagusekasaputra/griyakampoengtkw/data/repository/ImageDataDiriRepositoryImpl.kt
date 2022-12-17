@@ -6,14 +6,16 @@ import android.util.Log
 import androidx.core.net.toFile
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.channels.trySendBlocking
-import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.callbackFlow
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.flow
 import net.bagusekasaputra.griyakampoengtkw.data.interfaces.local.LocalImageDataDiriDataSource
 import net.bagusekasaputra.griyakampoengtkw.data.interfaces.local.LocalMetadataDataSource
 import net.bagusekasaputra.griyakampoengtkw.data.interfaces.remote.RemoteImageDataDiriDataSource
 import net.bagusekasaputra.griyakampoengtkw.data.interfaces.remote.RemoteMetadataDataSource
 import net.bagusekasaputra.griyakampoengtkw.data.model.ImageDataDiriModel
 import net.bagusekasaputra.griyakampoengtkw.data.model.MetadataModel
-import net.bagusekasaputra.griyakampoengtkw.data.util.networkBoundResource
 import net.bagusekasaputra.griyakampoengtkw.domain.ImageUtil
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.ImageDataDiri
 import net.bagusekasaputra.griyakampoengtkw.domain.repository.ImageDataDiriRepository
@@ -28,56 +30,37 @@ class ImageDataDiriRepositoryImpl(
 
     override fun getByKavlingKode(kavlingKode: String): Flow<Result<ImageDataDiri?>> {
         return flow {
+            // Cache validation
             val metadataTable = "image_data_diri"
-            val serverTimestamp = remoteMetadata
-                .get(metadataTable)!!
+            val localTimestamp = localMetadata.get(metadataTable)
+                ?.timestamp
+            val serverTimestamp = remoteMetadata.get(metadataTable)!!
                 .timestamp
+            val cacheInvalid = localTimestamp != serverTimestamp
 
-            emitAll(networkBoundResource<Result<ImageDataDiriModel?>, ImageDataDiriModel?>(
-                query = {
-                    Log.d("DEBUG_ME", "repo->getImageDataDiri(): Querying image $kavlingKode from local storage ...")
-                    localImageDataDiri.getByKavlingKode(kavlingKode).map {
-                        if (it == null) Result.success(null)
-                        else Result.success(it)
-                    }
-                },
-                fetch = {
-                    Log.d("DEBUG_ME", "repo->getImageDataDiri(): Fetching from remote server for $kavlingKode")
-                    remoteImageDataDiri.get(kavlingKode)
-                },
-                shouldFetch = {
-                    val localTimeStamp = localMetadata.get(metadataTable)
-                        ?.timestamp
+            if (cacheInvalid) {
+                Log.d("DEBUG_ME", "ImageDataDiriRepo->get(): Cache invalid!! Deleting all cache ...")
+                localImageDataDiri.deleteAll()
+                localMetadata.insert(
+                    MetadataModel(metadataTable, serverTimestamp)
+                )
+            }
 
-                    ((localTimeStamp == null) or (serverTimestamp != localTimeStamp))
-                },
-                saveFetchResult = { model ->
-                    model?.let {
-                        Log.d("DEBUG_ME", "repo->getImageDataDiri(): Saving fetch result $kavlingKode ...")
+            // Emitting value
+            Log.d("DEBUG_ME", "ImageDataDiriRepo->get(): Cache for image data diri \"$kavlingKode\" is okay, Querying from local data source ...")
+            val localModel = localImageDataDiri.getByKavlingKode(kavlingKode)
+                .first()
+            if (localModel == null) {
+                Log.d("DEBUG_ME", "ImageDataDiriRepo->get(): Local data source is null, getting \"$kavlingKode\" from remote ...")
+                remoteImageDataDiri.get(kavlingKode)?.let { remoteModel ->
+                    localImageDataDiri.insert(remoteModel, {}, {})
 
-                        // Insert new metadata
-                        localMetadata.insert(
-                            MetadataModel(tableName = metadataTable, timestamp = serverTimestamp)
-                        )
-
-                        // Purge all local data
-                        localImageDataDiri.deleteAll()
-
-                        // Insert fresh data from remote
-                        localImageDataDiri.insert(
-                            imageDataDiriModel = it,
-                            onSuccess = {},
-                            onFailure = { throwable -> Log.d("DEBUG_ME", "Failed to insert image data diri to local: ${throwable?.message}")},
-                        )
-                    }
+                    emit(Result.success(mapImageDataDiri(remoteModel)))
                 }
-            ).map { resource ->
-                resource.data!!.map { model ->
-                    model?.let {
-                        mapImageDataDiri(it)
-                    }
-                }
-            })
+            } else {
+                Log.d("DEBUG_ME", "ImageDataDiriRepo->get(): Successfully fetch image data diri \"$kavlingKode\" from local data source.")
+                emit(Result.success(mapImageDataDiri(localModel)))
+            }
         }
     }
 

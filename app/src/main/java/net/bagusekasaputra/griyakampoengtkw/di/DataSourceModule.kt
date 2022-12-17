@@ -16,7 +16,7 @@ import net.bagusekasaputra.griyakampoeng.tkw.data.local.fotoKuitansi.RoomFotoKui
 import net.bagusekasaputra.griyakampoeng.tkw.data.local.fotoPembayaran.RoomFotoPembayaranDataSource
 import net.bagusekasaputra.griyakampoeng.tkw.data.local.fotoPembayaran.device.DeviceFotoPembayaranDataSource
 import net.bagusekasaputra.griyakampoeng.tkw.data.local.hargaKavling.RoomHargaKavlingDataSource
-import net.bagusekasaputra.griyakampoeng.tkw.data.local.imageDataDiri.RoomLocalImageDataDiriDataRepository
+import net.bagusekasaputra.griyakampoeng.tkw.data.local.imageDataDiri.LocalImageDataDiriDataSourceImpl
 import net.bagusekasaputra.griyakampoeng.tkw.data.local.imageSpr.RoomImageSprDataSource
 import net.bagusekasaputra.griyakampoeng.tkw.data.local.kavling.RoomKavlingDataSource
 import net.bagusekasaputra.griyakampoeng.tkw.data.local.metadata.RoomMetadataDataSource
@@ -110,8 +110,8 @@ object DataSourceModule {
      * Image Data Diri
      */
     @Provides
-    fun provideLocalImageDataDiriSource(roomDatabase: MyRoomDatabase): LocalImageDataDiriDataSource {
-        return RoomLocalImageDataDiriDataRepository(roomDatabase)
+    fun provideLocalImageDataDiriSource(roomDatabase: MyRoomDatabase, externalFilesDir: File?): LocalImageDataDiriDataSource {
+        return LocalImageDataDiriDataSourceImpl(roomDatabase, externalFilesDir)
     }
 
     @Provides

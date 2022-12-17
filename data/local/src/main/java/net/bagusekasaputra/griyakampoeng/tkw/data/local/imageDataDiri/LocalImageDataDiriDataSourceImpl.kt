@@ -6,12 +6,15 @@ import kotlinx.coroutines.flow.flow
 import net.bagusekasaputra.griyakampoeng.tkw.data.local.MyRoomDatabase
 import net.bagusekasaputra.griyakampoengtkw.data.interfaces.local.LocalImageDataDiriDataSource
 import net.bagusekasaputra.griyakampoengtkw.data.model.ImageDataDiriModel
+import java.io.File
 
-class RoomLocalImageDataDiriDataRepository(
+class LocalImageDataDiriDataSourceImpl(
     myRoomDatabase: MyRoomDatabase,
+    externalFilesDir: File?
 ): LocalImageDataDiriDataSource {
 
     private val imageDao = myRoomDatabase.getImageDataDiriDao()
+    private val imageFile = File(externalFilesDir, "data_diri_images")
 
     override fun getByKavlingKode(kavlingKode: String): Flow<ImageDataDiriModel?> {
         return flow {
@@ -107,6 +110,9 @@ class RoomLocalImageDataDiriDataRepository(
     override fun deleteAll() {
         try {
             imageDao.deleteAll()
+            imageFile.listFiles()?.forEach {
+                it.delete()
+            }
         } catch (e: Exception) {
             throw e
         }
