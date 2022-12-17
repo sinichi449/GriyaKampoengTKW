@@ -3,6 +3,7 @@ package net.bagusekasaputra.griyakampoengtkw.presentation.fragment
 import android.app.Activity
 import android.app.AlertDialog
 import android.content.Intent
+import android.content.SharedPreferences
 import android.net.Uri
 import android.os.Bundle
 import android.text.InputType
@@ -29,6 +30,7 @@ import net.bagusekasaputra.griyakampoengtkw.presentation.util.InputUtil
 import net.bagusekasaputra.griyakampoengtkw.presentation.util.UiUtils
 import net.bagusekasaputra.griyakampoengtkw.presentation.viewmodel.DetailViewModel
 import net.bagusekasaputra.griyakampoengtkw.presentation.viewmodel.ImageViewModel
+import javax.inject.Inject
 
 @AndroidEntryPoint
 class DataDiriFragment : Fragment() {
@@ -39,6 +41,9 @@ class DataDiriFragment : Fragment() {
     private val imageViewModel: ImageViewModel by activityViewModels()
     private var currentKavlingKode: String? = null
     private lateinit var arrayAdapter: ArrayAdapter<String>
+
+    @Inject
+    lateinit var sharedPrefs: SharedPreferences
 
     private val negaraBekerjaList = ArrayList<String>().apply {
         add("Hongkong")
@@ -360,7 +365,7 @@ class DataDiriFragment : Fragment() {
     private fun showImagePicker(launcher: ActivityResultLauncher<Intent>) {
         ImagePicker.with(this)
             .crop()
-            .compress(1024)
+            .compress(sharedPrefs.getInt("max_size_foto_data_diri", 256))
             .createIntent { intent ->
                 launcher.launch(intent)
             }
