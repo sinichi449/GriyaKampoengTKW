@@ -21,6 +21,8 @@ object ImageUtil {
         return dst.toUri()
     }
 
+
+
     fun deleteImagePickerLeftOver(externalFileDir: File?) {
         val imagePickerDirectory = File(externalFileDir, Environment.DIRECTORY_DCIM)
         imagePickerDirectory.listFiles()?.forEach { it?.delete() }

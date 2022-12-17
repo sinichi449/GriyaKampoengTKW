@@ -11,4 +11,8 @@ object FirebaseNodes {
     const val KAVLINGS = "kavlings"
     const val UPDATE = "update"
     const val BIAYA_LAIN = "biayaLain"
+
+    const val METADATA_ROOT = "metadata"
+
+    const val IMAGE_DATA_DIRI = "data_diri_images"
 }

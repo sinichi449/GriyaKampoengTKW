@@ -89,9 +89,18 @@ object RepositoryModule {
     @Provides
     fun provideImageDataDiriRepository(
         localImageDataDiriDataSource: LocalImageDataDiriDataSource,
+        remoteImageDataDiriDataSource: RemoteImageDataDiriDataSource,
+        localMetadataDataSource: LocalMetadataDataSource,
+        remoteMetadataDataSource: RemoteMetadataDataSource,
         contentResolver: ContentResolver,
     ): ImageDataDiriRepository {
-        return ImageDataDiriRepositoryImpl(localImageDataDiriDataSource, contentResolver)
+        return ImageDataDiriRepositoryImpl(
+            localImageDataDiri = localImageDataDiriDataSource,
+            remoteImageDataDiri = remoteImageDataDiriDataSource,
+            localMetadata = localMetadataDataSource,
+            remoteMetadata = remoteMetadataDataSource,
+            contentResolver = contentResolver,
+        )
     }
 
 

@@ -38,4 +38,6 @@ interface LocalImageDataDiriDataSource {
         onSuccess: (uri: Uri) -> Unit,
         onFailure: (cause: Throwable?) -> Unit,
     )
+
+    fun deleteAll()
 }

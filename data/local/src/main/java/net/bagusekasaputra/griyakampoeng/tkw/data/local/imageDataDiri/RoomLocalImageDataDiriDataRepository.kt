@@ -103,4 +103,12 @@ class RoomLocalImageDataDiriDataRepository(
     ) {
         TODO("Not yet implemented")
     }
+
+    override fun deleteAll() {
+        try {
+            imageDao.deleteAll()
+        } catch (e: Exception) {
+            throw e
+        }
+    }
 }

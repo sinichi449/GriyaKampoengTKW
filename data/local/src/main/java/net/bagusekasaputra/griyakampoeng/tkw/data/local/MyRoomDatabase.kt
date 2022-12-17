@@ -1,5 +1,6 @@
 package net.bagusekasaputra.griyakampoeng.tkw.data.local
 
+import androidx.room.AutoMigration
 import androidx.room.Database
 import androidx.room.RoomDatabase
 import net.bagusekasaputra.griyakampoeng.tkw.data.local.biayaMarketing.BiayaMarketingV2RoomDao
@@ -24,6 +25,8 @@ import net.bagusekasaputra.griyakampoeng.tkw.data.local.imageSpr.ImageSprRoomDao
 import net.bagusekasaputra.griyakampoeng.tkw.data.local.imageSpr.ImageSprRoomEntity
 import net.bagusekasaputra.griyakampoeng.tkw.data.local.kavling.KavlingRoomDao
 import net.bagusekasaputra.griyakampoeng.tkw.data.local.kavling.KavlingRoomEntity
+import net.bagusekasaputra.griyakampoeng.tkw.data.local.metadata.MetadataDao
+import net.bagusekasaputra.griyakampoeng.tkw.data.local.metadata.MetadataEntity
 import net.bagusekasaputra.griyakampoeng.tkw.data.local.pembayaran.PembayaranRoomDao
 import net.bagusekasaputra.griyakampoeng.tkw.data.local.pembayaran.PembayaranRoomEntity
 import net.bagusekasaputra.griyakampoeng.tkw.data.local.pengingat.PengingatRoomDao
@@ -34,19 +37,22 @@ import net.bagusekasaputra.griyakampoeng.tkw.data.local.pengingat.PengingatRoomE
                DataDiriRoomEntity::class, FotoKuitansiRoomEntity::class, ImageSprRoomEntity::class,
                FotoPembayaranEntity::class, PembayaranRoomEntity::class, HargaKavlingRoomEntity::class,
                CatatanPembayaranRoomEntity::class, FeeMarketingRoomEntity::class,
-                BiayaMarketingV2RoomEntity::class, PengingatRoomEntity::class],
-    version = 11,
+                BiayaMarketingV2RoomEntity::class, PengingatRoomEntity::class, MetadataEntity::class],
+    version = 12,
     exportSchema = true,
-//    autoMigrations = [
+    autoMigrations = [
 //        AutoMigration(from = 3, to = 4),
 //        AutoMigration(from = 4, to = 5),
 //        AutoMigration(from = 5, to = 6),
 //        AutoMigration(from = 6, to = 7),
 //        AutoMigration(from = 7, to = 8),
 //        AutoMigration(from = 8, to = 9),
-//    ]
+        AutoMigration(from = 11, to = 12),
+    ]
 )
 abstract class MyRoomDatabase: RoomDatabase() {
+
+    abstract fun getMetadataDao(): MetadataDao
 
     abstract fun getKavlingDao(): KavlingRoomDao
 

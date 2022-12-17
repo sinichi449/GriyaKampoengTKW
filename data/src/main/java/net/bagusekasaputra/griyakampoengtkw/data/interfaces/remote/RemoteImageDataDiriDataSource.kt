@@ -1,0 +1,14 @@
+package net.bagusekasaputra.griyakampoengtkw.data.interfaces.remote
+
+import net.bagusekasaputra.griyakampoengtkw.data.model.ImageDataDiriModel
+
+interface RemoteImageDataDiriDataSource {
+
+    suspend fun get(kavlingKode: String): ImageDataDiriModel?
+
+    suspend fun insert(imageDataDiriModel: ImageDataDiriModel)
+
+    suspend fun update(oldModel: ImageDataDiriModel, newModel: ImageDataDiriModel)
+
+    suspend fun delete(imageDataDiriModel: ImageDataDiriModel)
+}

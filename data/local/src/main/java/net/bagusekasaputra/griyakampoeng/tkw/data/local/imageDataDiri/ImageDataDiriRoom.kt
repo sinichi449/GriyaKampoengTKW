@@ -25,6 +25,9 @@ interface ImageDataDiriDao {
     @Query("DELETE FROM image_data_diri WHERE kavling_kode = :kavlingKode")
     fun deleteByKavlingKode(kavlingKode: String)
 
+    @Query("DELETE FROM image_data_diri")
+    fun deleteAll()
+
     @Update
     fun update(oldImageDataDiri: ImageDataDiriRoomEntity, newImageDataDiri: ImageDataDiriRoomEntity)
 }

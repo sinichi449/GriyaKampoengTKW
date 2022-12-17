@@ -1,6 +1,7 @@
 package net.bagusekasaputra.griyakampoengtkw.di
 
 import com.google.firebase.database.DatabaseReference
+import com.google.firebase.storage.StorageReference
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -18,18 +19,34 @@ import net.bagusekasaputra.griyakampoeng.tkw.data.local.hargaKavling.RoomHargaKa
 import net.bagusekasaputra.griyakampoeng.tkw.data.local.imageDataDiri.RoomLocalImageDataDiriDataRepository
 import net.bagusekasaputra.griyakampoeng.tkw.data.local.imageSpr.RoomImageSprDataSource
 import net.bagusekasaputra.griyakampoeng.tkw.data.local.kavling.RoomKavlingDataSource
+import net.bagusekasaputra.griyakampoeng.tkw.data.local.metadata.RoomMetadataDataSource
 import net.bagusekasaputra.griyakampoeng.tkw.data.local.pembayaran.RoomPembayaranLocalDataSource
 import net.bagusekasaputra.griyakampoeng.tkw.data.local.pengingat.RoomPengingatDataSource
 import net.bagusekasaputra.griyakampoengtkw.data.interfaces.local.*
 import net.bagusekasaputra.griyakampoengtkw.data.interfaces.remote.*
 import net.bagusekasaputra.griyakampoengtkw.data.remote.biayaLain.FirebaseBiayaLainDataSource
+import net.bagusekasaputra.griyakampoengtkw.data.remote.imageDataDiri.StorageImageDataDiriDataSource
 import net.bagusekasaputra.griyakampoengtkw.data.remote.kavling.FirebaseKavlingDataSource
+import net.bagusekasaputra.griyakampoengtkw.data.remote.metadata.FirebaseMetadataDataSource
 import java.io.File
 import javax.inject.Qualifier
 
 @Module
 @InstallIn(SingletonComponent::class)
 object DataSourceModule {
+
+    /**
+     * Metadata
+     */
+    @Provides
+    fun provideLocalMetadataDataSource(roomDatabase: MyRoomDatabase): LocalMetadataDataSource {
+        return RoomMetadataDataSource(roomDatabase)
+    }
+
+    @Provides
+    fun provideRemoteMetadataDataSource(databaseReference: DatabaseReference): RemoteMetadataDataSource {
+        return FirebaseMetadataDataSource(databaseReference)
+    }
 
     /**
      * App Update
@@ -95,6 +112,11 @@ object DataSourceModule {
     @Provides
     fun provideLocalImageDataDiriSource(roomDatabase: MyRoomDatabase): LocalImageDataDiriDataSource {
         return RoomLocalImageDataDiriDataRepository(roomDatabase)
+    }
+
+    @Provides
+    fun provideRemoteImageDataDiriSource(storageReference: StorageReference, externalFilesDir: File?): RemoteImageDataDiriDataSource {
+        return StorageImageDataDiriDataSource(storageReference, externalFilesDir)
     }
 
 
