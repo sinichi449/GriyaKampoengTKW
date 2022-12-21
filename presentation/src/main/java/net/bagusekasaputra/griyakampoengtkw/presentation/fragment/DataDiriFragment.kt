@@ -216,9 +216,12 @@ class DataDiriFragment : Fragment() {
             binding.tvNoHp.text = dataDiri?.noHp ?: "-"
         }
 
-        imageViewModel.isFinishLoadingImage.observe(requireActivity()) { finished ->
-            finished?.let {
-                setLayoutImageDataDiriLoading(it.not(), "Memuat gambar ...")
+        imageViewModel.isFinishLoadingImage.observe(requireActivity()) { imageState ->
+            imageState?.let {
+                setLayoutImageDataDiriLoading(
+                    isLoading = it.isFinishLoading.not(),
+                    msg = it.message,
+                )
             }
         }
 

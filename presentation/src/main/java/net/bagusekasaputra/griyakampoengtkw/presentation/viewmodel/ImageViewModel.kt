@@ -7,6 +7,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.*
+import net.bagusekasaputra.griyakampoengtkw.domain.AsyncUseCaseHelper
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.fotoPembayaran.AddFotoPembayaranAsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.fotoPembayaran.DeleteFotoPembayaranAsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.fotoPembayaran.GetFotoPembayaranAsyncUseCase
@@ -52,19 +53,23 @@ class ImageViewModel @Inject constructor(
     // This value is updated on "showFotoPembayaranSelectionDialog()" -> FormPembayaranFragment.
     val currentTermin  = MutableLiveData<String>()
 
-    val isFinishLoadingImage = MutableLiveData<Boolean>()
+    data class ImageState(
+        val isFinishLoading: Boolean,
+        val message: String,
+    )
+
+    val isFinishLoadingImage = MutableLiveData<ImageState>()
     val isFinishAddImage = MutableLiveData<Boolean>()
 
     private val jobs = ArrayList<Job>()
 
-    private val asyncUseCaseHelper =
-        net.bagusekasaputra.griyakampoengtkw.domain.AsyncUseCaseHelper(isFinishAddImage)
+    private val asyncUseCaseHelper = AsyncUseCaseHelper(isFinishAddImage)
 
 
     // Image Data Diri
     fun getImageDataDiri(kavlingKode: String, onFailure: (cause: String) -> Unit) {
         val request = GetImageDataDiriByKavlingKodeUseCase.Request(kavlingKode)
-        isFinishLoadingImage.value = false
+        isFinishLoadingImage.value = ImageState(false, "Memuat gambar ...")
 
         CoroutineScope(Dispatchers.IO).launch {
             getImageDataDiriByKavlingKodeUseCase.execute(request)
@@ -74,14 +79,14 @@ class ImageViewModel @Inject constructor(
                         imageDatadiri?.let {
                             imageDataDiriLive.postValue(it)
                         }
-                        isFinishLoadingImage.postValue(true)
+                        isFinishLoadingImage.postValue(ImageState(true, "Memuat gambar ..."))
                     }
 
                     result.onFailure {
                         withContext(Dispatchers.Main) {
                             onFailure("Gagal mendapatkan image data diri: ${it.message ?: "null"}")
                         }
-                        isFinishLoadingImage.postValue(true)
+                        isFinishLoadingImage.postValue(ImageState(true, "Memuat gambar ..."))
                     }
                 }
         }
@@ -96,17 +101,19 @@ class ImageViewModel @Inject constructor(
             addImageDataDiriUseCase.execute(request).collect { response ->
                 val result = response.data.result
 
-                if (result.isSuccess) {
+                result.onSuccess {
                     withContext(Dispatchers.Main) {
                         onComplete("Berhasil menambahkan foto")
                     }
-                } else if (result.isFailure) {
+                    isFinishAddImage.postValue(true)
+                }
+
+                result.onFailure {
                     withContext(Dispatchers.Main) {
                         onComplete("Gagal menambahkan image data diri: ${result.exceptionOrNull()?.message ?: "null"}")
                     }
+                    isFinishAddImage.postValue(true)
                 }
-
-                isFinishAddImage.postValue(true)
             }
         }
     }
