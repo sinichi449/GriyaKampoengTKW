@@ -1,11 +1,11 @@
 package net.bagusekasaputra.griyakampoengtkw.data.remote.imageDataDiri
 
-import android.net.Uri
 import android.util.Log
 import androidx.core.net.toUri
 import com.google.firebase.storage.StorageReference
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.channels.trySendBlocking
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
 import kotlinx.coroutines.flow.first
 import net.bagusekasaputra.griyakampoengtkw.data.interfaces.remote.RemoteImageDataDiriDataSource
@@ -24,7 +24,6 @@ class StorageImageDataDiriDataSource(
 
     override suspend fun get(kavlingKode: String): ImageDataDiriModel? {
         return callbackFlow {
-
             val dstDir = File(externalDirFile, FirebaseNodes.IMAGE_DATA_DIRI)
             if (!dstDir.exists())
                 dstDir.mkdir()
@@ -63,15 +62,31 @@ class StorageImageDataDiriDataSource(
         }.first()
     }
 
-    override suspend fun insert(imageDataDiriModel: ImageDataDiriModel) {
-        val uri = Uri.parse(imageDataDiriModel.imgUri)
-        imageDataDiriRef.putFile(uri)
-            .addOnSuccessListener {
-                Log.d("DEBUG_ME", "StorageImage->insert(): Uploading \"${getFileName(imageDataDiriModel.kavlingKode)}\" ${it.bytesTransferred.toMegaBytes()}/${it.totalByteCount.toMegaBytes()} MB ...")
+    override fun insert(imageDataDiriModel: ImageDataDiriModel): Flow<Result<Boolean?>> {
+        return callbackFlow {
+            val uri = File(externalDirFile, imageDataDiriModel.getFullPath())
+                .toUri()
+            Log.d("DEBUG_ME", "StorageImage->insert(): Prepare to upload $uri ...")
+
+            val uploadTask = imageDataDiriRef.child(imageDataDiriModel.getFilename())
+                .putFile(uri)
+                .addOnProgressListener {
+                    Log.d("DEBUG_ME", "StorageImage->insert(): Uploading \"${imageDataDiriModel.getFullPath()}\" ${it.bytesTransferred.toMegaBytes()}/${it.totalByteCount.toMegaBytes()} MB ...")
+                }
+                .addOnSuccessListener {
+                    trySendBlocking(Result.success(true))
+                }
+                .addOnFailureListener {
+                    Log.d("DEBUG_ME", "StorageImageDataDiri->insert(): Error uploading ${imageDataDiriModel.getFilename()}: ${it.message}")
+                    trySendBlocking(Result.failure(it))
+                }
+
+            awaitClose {
+                if (!uploadTask.isComplete) {
+                    uploadTask.cancel()
+                }
             }
-            .addOnFailureListener {
-                throw it
-            }
+        }
     }
 
     override suspend fun update(

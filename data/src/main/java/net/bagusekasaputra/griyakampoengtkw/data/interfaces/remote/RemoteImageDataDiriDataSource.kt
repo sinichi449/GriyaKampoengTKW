@@ -1,12 +1,13 @@
 package net.bagusekasaputra.griyakampoengtkw.data.interfaces.remote
 
+import kotlinx.coroutines.flow.Flow
 import net.bagusekasaputra.griyakampoengtkw.data.model.ImageDataDiriModel
 
 interface RemoteImageDataDiriDataSource {
 
     suspend fun get(kavlingKode: String): ImageDataDiriModel?
 
-    suspend fun insert(imageDataDiriModel: ImageDataDiriModel)
+    fun insert(imageDataDiriModel: ImageDataDiriModel): Flow<Result<Boolean?>>
 
     suspend fun update(oldModel: ImageDataDiriModel, newModel: ImageDataDiriModel)
 

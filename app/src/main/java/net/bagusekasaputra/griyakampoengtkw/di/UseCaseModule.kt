@@ -238,8 +238,8 @@ object UseCaseModule {
         = GetImageDataDiriByKavlingKodeUseCase(imageDataDiriRepository)
 
     @Provides
-    fun provideAddImageDataDiri(imageDataDiriRepository: ImageDataDiriRepository, externalFilesDir: File?)
-        = AddImageDataDiriUseCase(imageDataDiriRepository, externalFilesDir)
+    fun provideAddImageDataDiri(imageDataDiriRepository: ImageDataDiriRepository)
+        = AddImageDataDiriUseCase(imageDataDiriRepository)
 
     @Provides
     fun provideDeleteImageDataDiri(imageDataDiriRepository: ImageDataDiriRepository)

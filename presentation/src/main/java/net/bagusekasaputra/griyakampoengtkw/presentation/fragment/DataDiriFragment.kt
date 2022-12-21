@@ -7,6 +7,7 @@ import android.content.SharedPreferences
 import android.net.Uri
 import android.os.Bundle
 import android.text.InputType
+import android.util.Log
 import android.view.*
 import android.widget.ArrayAdapter
 import android.widget.Toast
@@ -65,9 +66,11 @@ class DataDiriFragment : Fragment() {
             when (resultCode) {
                 Activity.RESULT_OK -> {
                     onResultOk(data?.data)
+                    Log.d("DEBUG_ME", "ImagePicker(): Pick image in ${data?.data} success!")
                 }
                 ImagePicker.RESULT_ERROR -> {
-                    Toast.makeText(requireContext(), ImagePicker.getError(data), Toast.LENGTH_SHORT).show()
+//                    Toast.makeText(requireContext(), ImagePicker.getError(data), Toast.LENGTH_SHORT).show()
+                    Log.d("DEBUG_ME", "Error image picker: ${ImagePicker.getError(data)}")
                 }
                 else -> {
                     Toast.makeText(requireContext(), "Task Cancelled", Toast.LENGTH_SHORT).show()
@@ -78,9 +81,10 @@ class DataDiriFragment : Fragment() {
 
     private val startProfileImageForResult = createImagePickerResultLauncher { uri ->
         imageViewModel.addImageDataDiri(currentKavlingKode!!, uri!!) {
-            Toast.makeText(requireContext(), it, Toast.LENGTH_SHORT).show()
+            Log.d("DEBUG_ME", "DataDiriFragment->startProfileImageForResult(): $it")
         }
     }
+
     private val startSPRImageForResult = createImagePickerResultLauncher { uri ->
         imageViewModel.addSprImage(currentKavlingKode!!, uri!!,
             onComplete = { Snackbar.make(binding.root, it, Snackbar.LENGTH_SHORT).show() },
@@ -228,8 +232,8 @@ class DataDiriFragment : Fragment() {
         imageViewModel.isFinishAddImage.observe(requireActivity()) { finished ->
             finished?.let {
                 if (it) {
-                    imageViewModel.getImageDataDiri(currentKavlingKode!!) { failMsg ->
-                        Toast.makeText(requireContext(), failMsg, Toast.LENGTH_SHORT).show()
+                    imageViewModel.getImageDataDiri(viewModel.currentKavlingKode.value!!) { failMsg ->
+                        Log.d("DEBUG_ME", "DataDiriFragment->finishAddImage(): $failMsg")
                     }
                 }
             }

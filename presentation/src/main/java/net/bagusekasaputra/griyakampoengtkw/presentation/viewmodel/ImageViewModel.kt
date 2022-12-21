@@ -102,9 +102,6 @@ class ImageViewModel @Inject constructor(
                 val result = response.data.result
 
                 result.onSuccess {
-                    withContext(Dispatchers.Main) {
-                        onComplete("Berhasil menambahkan foto")
-                    }
                     isFinishAddImage.postValue(true)
                 }
 

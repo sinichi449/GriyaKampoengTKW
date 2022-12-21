@@ -8,7 +8,7 @@ interface ImageDataDiriRepository {
 
     fun getByKavlingKode(kavlingKode: String): Flow<Result<ImageDataDiri?>>
 
-    fun addImage(kavlingKode: String, uri: Uri): Flow<Result<Boolean>>
+    fun addImage(kavlingKode: String, uri: Uri): Flow<Result<Boolean?>>
 
     fun updateImage(oldImageDataDiri: ImageDataDiri, newImageDataDiri: ImageDataDiri): Flow<Result<Boolean>>
 

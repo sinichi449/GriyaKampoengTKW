@@ -5,4 +5,10 @@ data class ImageDataDiriModel(
     val imgUri: String = "",
 ) {
 
+    companion object {
+        const val DST_FOLDER = "data_diri_images"
+    }
+
+    fun getFilename() = "${kavlingKode}_data_diri.png"
+    fun getFullPath() = "${DST_FOLDER}/${getFilename()}"
 }

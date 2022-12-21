@@ -3,6 +3,7 @@ package net.bagusekasaputra.griyakampoeng.tkw.data.local.imageDataDiri
 import android.net.Uri
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
+import net.bagusekasaputra.griyakampoeng.tkw.data.local.ImageUtil
 import net.bagusekasaputra.griyakampoeng.tkw.data.local.MyRoomDatabase
 import net.bagusekasaputra.griyakampoengtkw.data.interfaces.local.LocalImageDataDiriDataSource
 import net.bagusekasaputra.griyakampoengtkw.data.model.ImageDataDiriModel
@@ -10,7 +11,7 @@ import java.io.File
 
 class LocalImageDataDiriDataSourceImpl(
     myRoomDatabase: MyRoomDatabase,
-    externalFilesDir: File?
+    private val externalFilesDir: File?,
 ): LocalImageDataDiriDataSource {
 
     private val imageDao = myRoomDatabase.getImageDataDiriDao()
@@ -41,10 +42,19 @@ class LocalImageDataDiriDataSourceImpl(
         onFailure: (cause: Throwable?) -> Unit,
     ) {
         try {
+            // First copy file to our apps storage on Android/data/<package>/Pictures
+            val dstUri = ImageUtil.copyImageAndGetUri(externalFilesDir,
+                Uri.parse(imageDataDiriModel.imgUri),
+                ImageDataDiriModel.DST_FOLDER,
+                imageDataDiriModel.getFilename())
+
+            // Delete the leftovers from ImagePicker library
+            ImageUtil.deleteImagePickerLeftOver(externalFilesDir)
+
             val imageDataDiri = imageDataDiriModel.let {
                 ImageDataDiriRoomEntity(
                     kavlingKode = it.kavlingKode,
-                    imgUri = it.imgUri,
+                    imgUri = dstUri.toString(),
                 )
             }
 

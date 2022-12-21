@@ -1,4 +1,4 @@
-package net.bagusekasaputra.griyakampoeng.tkw.data.local.fotoPembayaran.device
+package net.bagusekasaputra.griyakampoeng.tkw.data.local
 
 import android.content.ContentResolver
 import android.graphics.Bitmap
@@ -11,9 +11,9 @@ import java.io.File
 
 object ImageUtil {
 
-    fun copyImageAndGetUri(externalFileDir: File?, srcUri: Uri, fileName: String): Uri {
+    fun copyImageAndGetUri(externalFileDir: File?, srcUri: Uri, dstDir: String, fileName: String): Uri {
         val src = srcUri.toFile()
-        val pictureDirectory = File(externalFileDir, Environment.DIRECTORY_PICTURES)
+        val pictureDirectory = File(externalFileDir, dstDir)
         val dst = File(pictureDirectory, fileName)
 
         src.copyTo(dst, true)

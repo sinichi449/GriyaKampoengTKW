@@ -6,10 +6,7 @@ import android.util.Log
 import androidx.core.net.toFile
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.channels.trySendBlocking
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.callbackFlow
-import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.*
 import net.bagusekasaputra.griyakampoengtkw.data.interfaces.local.LocalImageDataDiriDataSource
 import net.bagusekasaputra.griyakampoengtkw.data.interfaces.local.LocalMetadataDataSource
 import net.bagusekasaputra.griyakampoengtkw.data.interfaces.remote.RemoteImageDataDiriDataSource
@@ -28,10 +25,11 @@ class ImageDataDiriRepositoryImpl(
     private val contentResolver: ContentResolver,
 ): ImageDataDiriRepository {
 
+    private val metadataTable = "image_data_diri"
+
     override fun getByKavlingKode(kavlingKode: String): Flow<Result<ImageDataDiri?>> {
         return flow {
             // Cache validation
-            val metadataTable = "image_data_diri"
             val localTimestamp = localMetadata.get(metadataTable)
                 ?.timestamp
             val serverTimestamp = remoteMetadata.get(metadataTable)!!
@@ -59,9 +57,10 @@ class ImageDataDiriRepositoryImpl(
                 // Second try
                 localImageDataDiri.getByKavlingKode(kavlingKode)
                     .first { model ->
-                        model?.let {
-                            emit(Result.success(mapImageDataDiri(it)))
-                        }
+                        emit(Result.success(
+                            if (model != null) mapImageDataDiri(model)
+                            else null
+                        ))
                         true
                     }
             } else {
@@ -71,16 +70,20 @@ class ImageDataDiriRepositoryImpl(
         }
     }
 
-    override fun addImage(kavlingKode: String, uri: Uri): Flow<Result<Boolean>> {
-        return callbackFlow {
-            val model = mapImageDataDiri(kavlingKode, uri)
-            localImageDataDiri.insert(
-                imageDataDiriModel = model,
-                onSuccess = { trySendBlocking(Result.success(true)) },
-                onFailure = { trySendBlocking(Result.failure(it ?: UnknownError("Terjadi kesalahan menambahkan gambar"))) },
-            )
+    override fun addImage(kavlingKode: String, uri: Uri): Flow<Result<Boolean?>> {
+        return flow {
+            // Whenever changes occur in database, update the metadata
+            updateMetadata()
 
-            awaitClose {  }
+            val newModel = ImageDataDiriModel(kavlingKode, uri.toString())
+
+            localImageDataDiri.insert(newModel, {
+                Log.d("DEBUG_ME", "ImageDataDiriRepo->addImages(): Success adding image in $kavlingKode")
+            }, {
+                Log.d("DEBUG_ME", "ImageDataDiriRepo->addImages(): Error : ${it?.message}")
+            })
+
+            emitAll(remoteImageDataDiri.insert(newModel))
         }
     }
 
@@ -123,6 +126,15 @@ class ImageDataDiriRepositoryImpl(
 
             awaitClose {  }
         }
+    }
+
+    private suspend fun updateMetadata() {
+        val currentTimemillis = System.currentTimeMillis()
+        val oldMetadata = localMetadata.get(metadataTable)!!
+        val newMetadataModel = MetadataModel(metadataTable, currentTimemillis)
+
+        remoteMetadata.update(oldMetadata, newMetadataModel)
+        localMetadata.insert(newMetadataModel)
     }
 
     private fun mapImageDataDiri(imageDataDiriModel: ImageDataDiriModel): ImageDataDiri {
