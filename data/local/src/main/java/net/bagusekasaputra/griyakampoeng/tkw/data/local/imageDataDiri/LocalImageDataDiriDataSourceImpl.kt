@@ -66,10 +66,8 @@ class LocalImageDataDiriDataSourceImpl(
     }
 
     override suspend fun delete(
-        imageDataDiriModel: ImageDataDiriModel,
-        onSuccess: () -> Unit,
-        onFailure: (cause: Throwable?) -> Unit,
-    ) {
+        imageDataDiriModel: ImageDataDiriModel
+    ): Result<Nothing?> {
         try {
             val imageDataDiri = imageDataDiriModel.let {
                 ImageDataDiriRoomEntity(
@@ -79,24 +77,32 @@ class LocalImageDataDiriDataSourceImpl(
             }
 
             imageDao.delete(imageDataDiri = imageDataDiri)
-            onSuccess()
+
+            return Result.success(null)
         } catch (e: Exception) {
             e.printStackTrace()
-            onFailure(e.cause)
+
+            return Result.failure(e)
         }
     }
 
     override suspend fun deleteByKavlingKode(
         kavlingKode: String,
-        onSuccess: () -> Unit,
-        onFailure: (cause: Throwable?) -> Unit,
-    ) {
-        try {
+    ): Result<Nothing?> {
+        return try {
+            // Also delete the file
+            imageDao.getByKavlingKode(kavlingKode)?.let {
+                File(externalFilesDir, "${ImageDataDiriModel.DST_FOLDER}/${kavlingKode}_data_diri.png")
+                    .delete()
+            }
+
             imageDao.deleteByKavlingKode(kavlingKode)
-            onSuccess()
+
+            Result.success(null)
         } catch (e: Exception) {
             e.printStackTrace()
-            onFailure(e.cause)
+
+            Result.failure(e)
         }
     }
 

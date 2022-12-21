@@ -14,17 +14,9 @@ interface LocalImageDataDiriDataSource {
         onFailure: (cause: Throwable?) -> Unit
     )
 
-    suspend fun delete(
-        imageDataDiriModel: ImageDataDiriModel,
-        onSuccess: () -> Unit,
-        onFailure: (cause: Throwable?) -> Unit
-    )
+    suspend fun delete(imageDataDiriModel: ImageDataDiriModel): Result<Nothing?>
 
-    suspend fun deleteByKavlingKode(
-        kavlingKode: String,
-        onSuccess: () -> Unit,
-        onFailure: (cause: Throwable?) -> Unit,
-    )
+    suspend fun deleteByKavlingKode(kavlingKode: String): Result<Nothing?>
 
     suspend fun update(
         oldModel: ImageDataDiriModel,

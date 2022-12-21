@@ -199,10 +199,10 @@ class DataDiriFragment : Fragment() {
         imageViewModel.getSprImage(currentKavlingKode!!) { }
     }
 
-    private fun setLayoutImageDataDiriLoading(isLoading: Boolean, msg: String = "") {
+    private fun setLayoutImageDataDiriLoading(isLoading: Boolean) {
         binding.layoutImageProfile?.visibility = if (isLoading) View.GONE else View.VISIBLE
         binding.layoutLoadingImage?.visibility = if (isLoading) View.VISIBLE else View.GONE
-        binding.tvLoadingText?.text = msg
+        binding.tvLoadingText?.text = "Memuat gambar ..."
     }
 
     private fun setupViewModel() {
@@ -228,12 +228,9 @@ class DataDiriFragment : Fragment() {
             binding.tvNoHp.text = dataDiri?.noHp ?: "-"
         }
 
-        imageViewModel.isFinishLoadingImage.observe(requireActivity()) { imageState ->
-            imageState?.let {
-                setLayoutImageDataDiriLoading(
-                    isLoading = it.isFinishLoading.not(),
-                    msg = it.message,
-                )
+        imageViewModel.isFinishLoadingImage.observe(requireActivity()) { finished ->
+            finished?.let {
+                setLayoutImageDataDiriLoading(it.not())
             }
         }
 
@@ -392,7 +389,7 @@ class DataDiriFragment : Fragment() {
         val dialogView = MaterialAlertDialogBuilder(requireContext())
             .setTitle("Hapus Foto")
             .setMessage("Apakah Anda yakin akan menghapus foto?")
-            .setPositiveButton("Ya") { dialog, _ ->
+            .setPositiveButton("Ya") { _, _ ->
                 imageViewModel.deleteImageDataDiri { completeMsg ->
                     ResourcesCompat.getDrawable(resources, R.drawable.avatar_1, null).let {
                         binding.imgProfile.setImageDrawable(it)
@@ -416,7 +413,6 @@ class DataDiriFragment : Fragment() {
     }
 
     private fun setupSpinner(dialogBinding: DialogTambahDataDiriBinding) {
-
         arrayAdapter = ArrayAdapter<String>(
             requireContext(), android.R.layout.simple_spinner_dropdown_item, negaraBekerjaList
         )
@@ -460,7 +456,7 @@ class DataDiriFragment : Fragment() {
     private fun lihatFotoSpr() {
         val imageTransport = imageViewModel.createImageTransport(
             sendIntent = GriyaNodes.INTENT_FOTO_SPR,
-            content = mapOf<String, String>(
+            content = mapOf(
                 Pair("kavlingKode", currentKavlingKode!!)
             )
         )

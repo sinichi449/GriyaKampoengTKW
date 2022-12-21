@@ -32,18 +32,16 @@ class StorageImageDataDiriDataSource(
             val file = File(dstDir, name)
             val downloadTask = imageDataDiriRef.child(name)
                 .getFile(file)
-                .addOnSuccessListener {
+                .addOnProgressListener {
                     Log.d("DEBUG_ME", "StorageImage->get(): Downloading \"$name\" ${it.bytesTransferred.toMegaBytes()}/${it.totalByteCount.toMegaBytes()} MB ...")
-
-                    val isComplete = it.bytesTransferred == it.totalByteCount
-                    if (isComplete) {
-                        trySendBlocking(
-                            ImageDataDiriModel(
-                                kavlingKode = kavlingKode,
-                                imgUri = file.toUri().toString(),
-                            )
+                }
+                .addOnSuccessListener {
+                    trySendBlocking(
+                        ImageDataDiriModel(
+                            kavlingKode = kavlingKode,
+                            imgUri = file.toUri().toString(),
                         )
-                    }
+                    )
                 }
                 .addOnFailureListener {
                     Log.d("DEBUG_ME", "StorageImage->get(): Failed to download \"$name\" : ${it.message}")
@@ -96,8 +94,21 @@ class StorageImageDataDiriDataSource(
         TODO("Not yet implemented")
     }
 
-    override suspend fun delete(imageDataDiriModel: ImageDataDiriModel) {
-        TODO("Not yet implemented")
+    override suspend fun delete(imageDataDiriModel: ImageDataDiriModel): Result<Nothing?> {
+        return callbackFlow<Result<Nothing?>> {
+            val filename = "${imageDataDiriModel.kavlingKode}_data_diri.png"
+
+            imageDataDiriRef.child(filename)
+                .delete()
+                .addOnSuccessListener {
+                    trySendBlocking(Result.success(null))
+                }
+                .addOnFailureListener {
+                    trySendBlocking(Result.failure(it))
+                }
+
+            awaitClose {  }
+        }.first()
     }
 
     private fun getFileName(kavlingKode: String) = "${kavlingKode}_data_diri.png"

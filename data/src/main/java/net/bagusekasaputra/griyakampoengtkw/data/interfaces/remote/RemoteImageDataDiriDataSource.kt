@@ -11,5 +11,5 @@ interface RemoteImageDataDiriDataSource {
 
     suspend fun update(oldModel: ImageDataDiriModel, newModel: ImageDataDiriModel)
 
-    suspend fun delete(imageDataDiriModel: ImageDataDiriModel)
+    suspend fun delete(imageDataDiriModel: ImageDataDiriModel): Result<Nothing?>
 }

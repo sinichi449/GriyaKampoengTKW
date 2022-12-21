@@ -3,7 +3,6 @@ package net.bagusekasaputra.griyakampoengtkw.data.repository
 import android.content.ContentResolver
 import android.net.Uri
 import android.util.Log
-import androidx.core.net.toFile
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.channels.trySendBlocking
 import kotlinx.coroutines.flow.*
@@ -96,19 +95,22 @@ class ImageDataDiriRepositoryImpl(
 
     override fun deleteImage(imageDataDiri: ImageDataDiri): Flow<Result<Boolean>> {
         return callbackFlow {
-            localImageDataDiri.getUriByKavlingKode(
-                kavlingKode = imageDataDiri.kavlingKode,
-                onSuccess = {
-                    it.toFile().delete()
-                },
-                onFailure = { trySendBlocking(Result.failure(it ?: UnknownError("Terjadi kesalahan mendapatkan ID")))}
-            )
+            // Whenever changes occur in database, update the metadata
+            updateMetadata()
 
-            localImageDataDiri.deleteByKavlingKode(
-                kavlingKode = imageDataDiri.kavlingKode,
-                onSuccess = { trySendBlocking(Result.success(true)) },
-                onFailure = { trySendBlocking(Result.failure(it ?: UnknownError("Terjadi kesalahan menghapus gambar"))) },
-            )
+            remoteImageDataDiri.delete(
+                mapImageDataDiri(imageDataDiri.kavlingKode, Uri.EMPTY)
+            ).onFailure {
+                trySendBlocking(Result.failure(it))
+            }
+
+            localImageDataDiri.deleteByKavlingKode(imageDataDiri.kavlingKode)
+                .onSuccess {
+                    trySendBlocking(Result.success(true))
+                }
+                .onFailure {
+                    trySendBlocking(Result.failure(it))
+                }
 
             awaitClose {  }
         }

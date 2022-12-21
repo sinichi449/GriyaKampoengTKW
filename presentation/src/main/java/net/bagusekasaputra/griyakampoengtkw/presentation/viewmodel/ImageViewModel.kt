@@ -53,12 +53,7 @@ class ImageViewModel @Inject constructor(
     // This value is updated on "showFotoPembayaranSelectionDialog()" -> FormPembayaranFragment.
     val currentTermin  = MutableLiveData<String>()
 
-    data class ImageState(
-        val isFinishLoading: Boolean,
-        val message: String,
-    )
-
-    val isFinishLoadingImage = MutableLiveData<ImageState>()
+    val isFinishLoadingImage = MutableLiveData<Boolean>()
     val isFinishAddImage = MutableLiveData<Boolean>()
 
     private val jobs = ArrayList<Job>()
@@ -69,7 +64,7 @@ class ImageViewModel @Inject constructor(
     // Image Data Diri
     fun getImageDataDiri(kavlingKode: String, onFailure: (cause: String) -> Unit) {
         val request = GetImageDataDiriByKavlingKodeUseCase.Request(kavlingKode)
-        isFinishLoadingImage.value = ImageState(false, "Memuat gambar ...")
+        isFinishLoadingImage.value = false
 
         CoroutineScope(Dispatchers.IO).launch {
             getImageDataDiriByKavlingKodeUseCase.execute(request)
@@ -79,14 +74,14 @@ class ImageViewModel @Inject constructor(
                         imageDatadiri?.let {
                             imageDataDiriLive.postValue(it)
                         }
-                        isFinishLoadingImage.postValue(ImageState(true, "Memuat gambar ..."))
+                        isFinishLoadingImage.postValue(true)
                     }
 
                     result.onFailure {
                         withContext(Dispatchers.Main) {
                             onFailure("Gagal mendapatkan image data diri: ${it.message ?: "null"}")
                         }
-                        isFinishLoadingImage.postValue(ImageState(true, "Memuat gambar ..."))
+                        isFinishLoadingImage.postValue(true)
                     }
                 }
         }
@@ -120,21 +115,27 @@ class ImageViewModel @Inject constructor(
             val imageDataDiri = imageDataDiriLive.value
 
             if (imageDataDiri == null) {
-                withContext(Dispatchers.Main) { onComplete("Foto masih kosong") }
+                withContext(Dispatchers.Main) {
+                    onComplete("Foto masih kosong")
+                }
             } else {
                 val request = DeleteImageDataDiriUseCase.Request(imageDataDiri)
 
                 deleteImageDataDiriUseCase.execute(request).collect { response ->
                     val result = response.data.result
 
-                    if (result.isSuccess) {
-                        withContext(Dispatchers.Main) { onComplete("Berhasil menghapus foto") }
-
+                    result.onSuccess {
+                        withContext(Dispatchers.Main) {
+                            onComplete("Berhasil menghapus foto")
+                        }
                         imageDataDiriLive.postValue(null)
-                    } else {
-                        withContext(Dispatchers.Main) { onComplete("Gagal menghapus foto: ${result.exceptionOrNull()?.message}") }
                     }
 
+                    result.onFailure {
+                        withContext(Dispatchers.Main) {
+                            onComplete("Gagal menghapus foto: ${it.message}")
+                        }
+                    }
                 }
             }
         }
