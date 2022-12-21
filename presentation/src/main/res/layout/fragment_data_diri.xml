@@ -27,15 +27,71 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content">
 
-                <ImageView
-                    android:id="@+id/img_profile"
-                    android:layout_width="250dp"
+<!--                <ImageView-->
+<!--                    android:id="@+id/img_profile"-->
+<!--                    android:layout_width="250dp"-->
+<!--                    android:layout_height="300dp"-->
+<!--                    android:layout_marginTop="24dp"-->
+<!--                    android:src="@drawable/avatar_1"-->
+<!--                    app:layout_constraintEnd_toEndOf="parent"-->
+<!--                    app:layout_constraintStart_toStartOf="parent"-->
+<!--                    app:layout_constraintTop_toTopOf="parent" />-->
+                <FrameLayout
+                    android:id="@+id/layout_image_and_loading"
+                    android:layout_width="match_parent"
                     android:layout_height="300dp"
                     android:layout_marginTop="24dp"
-                    android:src="@drawable/avatar_1"
-                    app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent" />
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="parent">
+
+                    <androidx.constraintlayout.widget.ConstraintLayout
+                        android:id="@+id/layout_image_profile"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:visibility="gone">
+
+                        <ImageView
+                            android:id="@+id/img_profile"
+                            android:layout_width="250dp"
+                            android:layout_height="match_parent"
+                            android:src="@drawable/avatar_1"
+                            app:layout_constraintEnd_toEndOf="parent"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintTop_toTopOf="parent"/>
+
+                    </androidx.constraintlayout.widget.ConstraintLayout>
+
+                    <androidx.constraintlayout.widget.ConstraintLayout
+                        android:id="@+id/layout_loading_image"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent">
+
+                        <ProgressBar
+                            android:id="@+id/progress_bar"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:padding="8dp"
+                            app:layout_constraintBottom_toTopOf="@id/tv_loading_text"
+                            app:layout_constraintEnd_toEndOf="parent"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintTop_toTopOf="parent"
+                            app:layout_constraintVertical_chainStyle="packed"/>
+
+                        <com.google.android.material.textview.MaterialTextView
+                            android:id="@+id/tv_loading_text"
+                            style="@style/TextAppearance.MaterialComponents.Subtitle1"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            app:layout_constraintBottom_toBottomOf="parent"
+                            app:layout_constraintEnd_toEndOf="@id/progress_bar"
+                            app:layout_constraintStart_toStartOf="@id/progress_bar"
+                            app:layout_constraintTop_toBottomOf="@id/progress_bar"
+                            tools:text="Memuat gambar ..."/>
+
+                    </androidx.constraintlayout.widget.ConstraintLayout>
+
+                </FrameLayout>
 
                 <com.google.android.material.card.MaterialCardView
                     android:id="@+id/card_data_diri"
@@ -47,7 +103,7 @@
                     android:background="@color/primaryColor"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@id/img_profile"
+                    app:layout_constraintTop_toBottomOf="@id/layout_image_and_loading"
                     app:strokeColor="@color/grey_300"
                     app:strokeWidth="1dp">
 

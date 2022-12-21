@@ -52,6 +52,7 @@ class ImageViewModel @Inject constructor(
     // This value is updated on "showFotoPembayaranSelectionDialog()" -> FormPembayaranFragment.
     val currentTermin  = MutableLiveData<String>()
 
+    val isFinishLoadingImage = MutableLiveData<Boolean>()
     val isFinishAddImage = MutableLiveData<Boolean>()
 
     private val jobs = ArrayList<Job>()
@@ -63,26 +64,25 @@ class ImageViewModel @Inject constructor(
     // Image Data Diri
     fun getImageDataDiri(kavlingKode: String, onFailure: (cause: String) -> Unit) {
         val request = GetImageDataDiriByKavlingKodeUseCase.Request(kavlingKode)
-        isFinishAddImage.value = false
+        isFinishLoadingImage.value = false
 
         CoroutineScope(Dispatchers.IO).launch {
             getImageDataDiriByKavlingKodeUseCase.execute(request)
                 .collect { response ->
                     val result = response.data.result
-
                     result.onSuccess { imageDatadiri ->
                         imageDatadiri?.let {
                             imageDataDiriLive.postValue(it)
                         }
+                        isFinishLoadingImage.postValue(true)
                     }
 
                     result.onFailure {
                         withContext(Dispatchers.Main) {
                             onFailure("Gagal mendapatkan image data diri: ${it.message ?: "null"}")
                         }
+                        isFinishLoadingImage.postValue(true)
                     }
-
-                    isFinishAddImage.postValue(true)
                 }
         }
     }

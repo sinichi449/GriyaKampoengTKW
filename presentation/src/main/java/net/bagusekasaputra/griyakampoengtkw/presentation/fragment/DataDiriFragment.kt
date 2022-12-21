@@ -187,6 +187,12 @@ class DataDiriFragment : Fragment() {
         imageViewModel.getSprImage(currentKavlingKode!!) { }
     }
 
+    private fun setLayoutImageDataDiriLoading(isLoading: Boolean, msg: String = "") {
+        binding.layoutImageProfile?.visibility = if (isLoading) View.GONE else View.VISIBLE
+        binding.layoutLoadingImage?.visibility = if (isLoading) View.VISIBLE else View.GONE
+        binding.tvLoadingText?.text = msg
+    }
+
     private fun setupViewModel() {
         viewModel.isFinishOperation.observe(requireActivity()) {
             it?.let { finish ->
@@ -210,10 +216,18 @@ class DataDiriFragment : Fragment() {
             binding.tvNoHp.text = dataDiri?.noHp ?: "-"
         }
 
-        viewModel.isFinishAddImage.observe(requireActivity()) { finished ->
+        imageViewModel.isFinishLoadingImage.observe(requireActivity()) { finished ->
             finished?.let {
-                if (it) imageViewModel.getImageDataDiri(currentKavlingKode!!) { failMsg ->
-                    Toast.makeText(requireContext(), failMsg, Toast.LENGTH_SHORT).show()
+                setLayoutImageDataDiriLoading(it.not(), "Memuat gambar ...")
+            }
+        }
+
+        imageViewModel.isFinishAddImage.observe(requireActivity()) { finished ->
+            finished?.let {
+                if (it) {
+                    imageViewModel.getImageDataDiri(currentKavlingKode!!) { failMsg ->
+                        Toast.makeText(requireContext(), failMsg, Toast.LENGTH_SHORT).show()
+                    }
                 }
             }
         }

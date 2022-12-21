@@ -54,9 +54,16 @@ class ImageDataDiriRepositoryImpl(
                 Log.d("DEBUG_ME", "ImageDataDiriRepo->get(): Local data source is null, getting \"$kavlingKode\" from remote ...")
                 remoteImageDataDiri.get(kavlingKode)?.let { remoteModel ->
                     localImageDataDiri.insert(remoteModel, {}, {})
-
-                    emit(Result.success(mapImageDataDiri(remoteModel)))
                 }
+
+                // Second try
+                localImageDataDiri.getByKavlingKode(kavlingKode)
+                    .first { model ->
+                        model?.let {
+                            emit(Result.success(mapImageDataDiri(it)))
+                        }
+                        true
+                    }
             } else {
                 Log.d("DEBUG_ME", "ImageDataDiriRepo->get(): Successfully fetch image data diri \"$kavlingKode\" from local data source.")
                 emit(Result.success(mapImageDataDiri(localModel)))
