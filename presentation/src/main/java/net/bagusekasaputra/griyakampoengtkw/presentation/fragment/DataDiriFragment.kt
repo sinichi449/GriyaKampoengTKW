@@ -3,6 +3,7 @@ package net.bagusekasaputra.griyakampoengtkw.presentation.fragment
 import android.app.Activity
 import android.app.AlertDialog
 import android.content.Intent
+import android.content.IntentFilter
 import android.content.SharedPreferences
 import android.net.Uri
 import android.os.Bundle
@@ -25,6 +26,7 @@ import net.bagusekasaputra.griyakampoengtkw.presentation.R
 import net.bagusekasaputra.griyakampoengtkw.presentation.activities.FullImageActivity
 import net.bagusekasaputra.griyakampoengtkw.presentation.databinding.DialogTambahDataDiriBinding
 import net.bagusekasaputra.griyakampoengtkw.presentation.databinding.FragmentDataDiriBinding
+import net.bagusekasaputra.griyakampoengtkw.presentation.receiver.ProgressReceiver
 import net.bagusekasaputra.griyakampoengtkw.presentation.util.DialogUtil
 import net.bagusekasaputra.griyakampoengtkw.presentation.util.GriyaNodes
 import net.bagusekasaputra.griyakampoengtkw.presentation.util.InputUtil
@@ -42,6 +44,8 @@ class DataDiriFragment : Fragment() {
     private val imageViewModel: ImageViewModel by activityViewModels()
     private var currentKavlingKode: String? = null
     private lateinit var arrayAdapter: ArrayAdapter<String>
+
+    private val progressReceiver = ProgressReceiver()
 
     @Inject
     lateinit var sharedPrefs: SharedPreferences
@@ -80,6 +84,7 @@ class DataDiriFragment : Fragment() {
     }
 
     private val startProfileImageForResult = createImagePickerResultLauncher { uri ->
+        createUploadNotification(false)
         imageViewModel.addImageDataDiri(currentKavlingKode!!, uri!!) {
             Log.d("DEBUG_ME", "DataDiriFragment->startProfileImageForResult(): $it")
         }
@@ -173,6 +178,9 @@ class DataDiriFragment : Fragment() {
                 nestedScrollView = binding.scrollViewImageviewAndCard,
                 extendedFabs = binding.fabActions,
             )
+
+        val intentFilter = IntentFilter("net.bagusekasaputra.griyakampoengtkw.ACTION_NOTIFY_PROGRESS")
+        requireActivity().registerReceiver(progressReceiver, intentFilter)
     }
 
     override fun onResume() {
@@ -232,12 +240,27 @@ class DataDiriFragment : Fragment() {
         imageViewModel.isFinishAddImage.observe(requireActivity()) { finished ->
             finished?.let {
                 if (it) {
+                    createUploadNotification(true)
                     imageViewModel.getImageDataDiri(viewModel.currentKavlingKode.value!!) { failMsg ->
                         Log.d("DEBUG_ME", "DataDiriFragment->finishAddImage(): $failMsg")
                     }
                 }
             }
         }
+    }
+
+    private fun createUploadNotification(finished: Boolean) {
+        val intent = Intent(requireContext(), ProgressReceiver::class.java).apply {
+            if (finished) {
+                this.putExtra("INTENT_NOTIFICATION_TITLE", "Selesai mengupload gambar")
+                this.putExtra("INTENT_NOTIFICATION_CONTENT", "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt et labore et dolore magna aliqua.")
+            } else {
+                this.putExtra("INTENT_NOTIFICATION_TITLE", "Sedang mengupload gambar")
+                this.putExtra("INTENT_NOTIFICATION_CONTENT", "Mohon tunggu sebentar")
+            }
+            this.putExtra("INTENT_NOTIFICATION_IS_FINISHED", finished)
+        }
+        requireActivity().sendBroadcast(intent)
     }
 
     private fun setupExtendedFloatingButton() {
@@ -459,6 +482,13 @@ class DataDiriFragment : Fragment() {
             .setPositiveButton("Tutup") { dialog, _ -> dialog.dismiss() }
             .create()
             .show()
+    }
+
+
+    override fun onDestroy() {
+        requireActivity().unregisterReceiver(progressReceiver)
+
+        super.onDestroy()
     }
 
 }

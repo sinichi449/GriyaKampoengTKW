@@ -62,6 +62,14 @@
             android:name=".presentation.receiver.AlarmReceiver"
             android:exported="true"/>
 
+        <receiver
+            android:name=".presentation.receiver.ProgressReceiver"
+            android:exported="false">
+            <intent-filter>
+                <action android:name="net.bagusekasaputra.griyakampoengtkw.ACTION_NOTIFY_PROGRESS"/>
+            </intent-filter>
+        </receiver>
+
     </application>
 
 </manifest>
