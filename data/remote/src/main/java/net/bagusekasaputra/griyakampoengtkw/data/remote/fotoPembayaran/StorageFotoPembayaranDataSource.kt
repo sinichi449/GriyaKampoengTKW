@@ -142,4 +142,36 @@ class StorageFotoPembayaranDataSource(
             awaitClose {  }
         }
     }
+
+    override suspend fun deleteAll(kavlingKode: String): Result<Nothing?> {
+        return callbackFlow<Result<Nothing?>> {
+            fotoPembayaranRef.child(kavlingKode)
+                .listAll()
+                .addOnCompleteListener {
+                    it.result.items.forEach { fotoPembayaran ->
+                        fotoPembayaran
+                            .delete()
+                            .addOnCompleteListener {
+                                Log.d("DEBUG_ME", "StorageFotoPembayaran->deleteAll(): Success deleting ${fotoPembayaran.path} ...")
+                            }
+                            .addOnFailureListener { exception ->
+                                exception.printStackTrace()
+
+                                Log.d("DEBUG_ME", "StorageFotoPembayaran->deleteAll(): FAILED to delete ${fotoPembayaran.path} in $kavlingKode : ${exception.message}")
+                            }
+                    }
+
+                    trySendBlocking(Result.success(null))
+                }
+                .addOnFailureListener {
+                    it.printStackTrace()
+
+                    Log.d("DEBUG_ME", "StorageFotoPembayaran->deleteAll(): FAILED to list Foto Pembayaran files in $kavlingKode : ${it.message}")
+
+                    trySendBlocking(Result.failure(it))
+                }
+
+            awaitClose {  }
+        }.first()
+    }
 }

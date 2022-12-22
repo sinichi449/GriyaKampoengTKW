@@ -13,4 +13,6 @@ interface RemoteFotoPembayaranDataSource {
 
     suspend fun delete(kavlingKode: String, termin: String): Result<Nothing?>
 
+    suspend fun deleteAll(kavlingKode: String): Result<Nothing?>
+
 }
