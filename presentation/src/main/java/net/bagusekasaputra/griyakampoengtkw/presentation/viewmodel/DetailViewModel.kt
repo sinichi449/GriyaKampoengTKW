@@ -62,22 +62,15 @@ class DetailViewModel @Inject constructor(
 ): ViewModel() {
 
     val dataDiriLive = MutableLiveData<DataDiri?>()
-
     val hargaKavlingLive = MutableLiveData<HargaKavling>()
-
     val listPembayaranLive = MutableLiveData<List<Pembayaran>?>()
-
     val feeMarketingLive = MutableLiveData<FeeMarketing?>()
-
     val listBiayaMarketingLive = MutableLiveData<List<BiayaMarketing>?>()
-
     val catatanPembayaranLive = MutableLiveData<CatatanPembayaran?>()
 
     val currentKavlingKode = MutableLiveData<String>()
 
     val isFinishOperation = MutableLiveData<Boolean>()
-
-    val isFinishAddImage = MutableLiveData<Boolean>()
 
     /**
      * To ensure just one time loading of Data Diri, Pembayaran, and Biaya Marketing.

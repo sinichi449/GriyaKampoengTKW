@@ -123,8 +123,8 @@ class DetailActivity : AppCompatActivity() {
 
         if (allowExit?.not() == true) {
             MaterialAlertDialogBuilder(this, R.style.AlertDialogTheme).apply {
-                setTitle("Batalkan Proses Upload?")
-                setMessage("Sistem mendeteksi sedang terjadi peng-upload-an gambar. Apakah Anda yakin ingin keluar dengan membatalkan semua proses tersebut?")
+                setTitle("Batalkan Sinkronisasi Gambar?")
+                setMessage("Sistem mendeteksi sedang terjadi sinkronisasi gambar. Apakah Anda yakin ingin keluar dengan membatalkan proses tersebut?")
                 setPositiveButton("Ya") { dialog, _ ->
                     dialog.dismiss()
 

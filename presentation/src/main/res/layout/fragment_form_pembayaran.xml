@@ -138,27 +138,64 @@
                     style="@style/TextAppearance.MaterialComponents.Subtitle1"/>
 
 
-                <com.evrencoskun.tableview.TableView
-                    android:id="@+id/table_form_pembayaran"
+                <FrameLayout
+                    android:id="@+id/layout_table_form_pembayaran"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintTop_toBottomOf="@id/tv_info_sisa_blm_terbayar"
-                    android:layout_marginTop="24dp"
-                    app:column_header_height="@dimen/table_pembayaran_column_header_height"
-                    app:row_header_width="@dimen/table_pembayaran_row_header_wdith"
-                    app:show_horizontal_separator="true"
-                    app:show_vertical_separator="true"
-                    app:separator_color="@color/black"
-                    android:layout_marginStart="16dp"/>
+                    android:layout_marginTop="24dp">
+
+                    <com.evrencoskun.tableview.TableView
+                        android:id="@+id/table_form_pembayaran"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="16dp"
+                        android:visibility="gone"
+                        app:column_header_height="@dimen/table_pembayaran_column_header_height"
+                        app:row_header_width="@dimen/table_pembayaran_row_header_wdith"
+                        app:separator_color="@color/black"
+                        app:show_horizontal_separator="true"
+                        app:show_vertical_separator="true"/>
+
+                    <androidx.constraintlayout.widget.ConstraintLayout
+                        android:id="@+id/layout_loading_form_pembayaran"
+                        android:layout_width="match_parent"
+                        android:layout_height="300dp">
+
+                        <ProgressBar
+                            android:id="@+id/progress_bar"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:padding="8dp"
+                            app:layout_constraintBottom_toTopOf="@id/tvInfo_loading_form_pembayaran"
+                            app:layout_constraintEnd_toEndOf="parent"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintTop_toTopOf="parent"
+                            app:layout_constraintVertical_chainStyle="packed"/>
+
+                        <com.google.android.material.textview.MaterialTextView
+                            android:id="@+id/tvInfo_loading_form_pembayaran"
+                            style="@style/TextAppearance.MaterialComponents.Subtitle1"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Memuat data pembayaran ..."
+                            app:layout_constraintBottom_toBottomOf="parent"
+                            app:layout_constraintEnd_toEndOf="@id/progress_bar"
+                            app:layout_constraintStart_toStartOf="@id/progress_bar"
+                            app:layout_constraintTop_toBottomOf="@id/progress_bar"/>
+
+                    </androidx.constraintlayout.widget.ConstraintLayout>
+
+                </FrameLayout>
 
                 <com.google.android.material.textview.MaterialTextView
                     android:id="@+id/tv_info_catatan"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@id/table_form_pembayaran"
+                    app:layout_constraintTop_toBottomOf="@id/layout_table_form_pembayaran"
                     android:layout_marginTop="24dp"
                     android:text="Catatan"
                     style="@style/TextAppearance.MaterialComponents.Headline6"

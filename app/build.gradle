@@ -22,8 +22,9 @@ android {
         applicationId "net.bagusekasaputra.griyakampoengtkw"
         minSdk 21
         targetSdk 32
-        versionCode 35
-        versionName "2.0.2"
+
+        versionCode 36
+        versionName "2.0.3"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         signingConfig signingConfigs.debug

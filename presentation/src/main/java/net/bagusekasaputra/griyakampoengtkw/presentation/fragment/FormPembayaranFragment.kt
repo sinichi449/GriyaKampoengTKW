@@ -221,10 +221,22 @@ class FormPembayaranFragment : Fragment() {
         }
     }
 
+    private fun onLoadingFormPembayaran(finished: Boolean) {
+        binding.tableFormPembayaran.visibility = if (finished) View.VISIBLE else View.GONE
+        binding.layoutLoadingFormPembayaran?.visibility = if (finished) View.GONE else View.VISIBLE
+    }
+
     private fun setupViewModel() {
         viewModel.isFinishOperation.observe(requireActivity()) { finish ->
             finish?.let {
                 binding.swipeRefreshFormPembayaran.isRefreshing = !it
+            }
+        }
+
+        viewModel.formPembayaranRefreshed.observe(requireActivity()) { refreshed ->
+            if (refreshed != null) {
+                val isFinish = refreshed == true
+                onLoadingFormPembayaran(isFinish)
             }
         }
 
