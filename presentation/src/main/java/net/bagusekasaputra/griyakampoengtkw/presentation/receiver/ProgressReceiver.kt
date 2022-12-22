@@ -27,12 +27,14 @@ class ProgressReceiver: BroadcastReceiver() {
             createNotificationChannel(ctx)
 
             val notification = NotificationCompat.Builder(ctx, CHANNEL_ID).apply {
-                this.setSmallIcon(R.drawable.ic_baseline_hourglass_top_24)
                 this.setContentTitle(title ?: "Null")
                 this.setContentText(contentMsg ?: "Null description")
                 isFinished?.let {
                     if (it.not()) {
                         this.setProgress(0, 0, true)
+                        this.setSmallIcon(R.drawable.ic_baseline_hourglass_top_24)
+                    } else {
+                        this.setSmallIcon(R.drawable.ic_baseline_check_circle_18)
                     }
                 }
                 this.setSound(RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION))

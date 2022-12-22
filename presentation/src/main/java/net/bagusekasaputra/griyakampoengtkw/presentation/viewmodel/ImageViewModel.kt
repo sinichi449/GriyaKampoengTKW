@@ -3,6 +3,7 @@ package net.bagusekasaputra.griyakampoengtkw.presentation.viewmodel
 import android.content.ContentResolver
 import android.graphics.Bitmap
 import android.net.Uri
+import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -54,6 +55,11 @@ class ImageViewModel @Inject constructor(
     val currentTermin  = MutableLiveData<String>()
 
     val isFinishLoadingImage = MutableLiveData<Boolean>()
+
+    // Used in detail activity
+    val allowExit: LiveData<Boolean>
+        get() = isFinishLoadingImage
+
     val isFinishAddImage = MutableLiveData<Boolean>()
 
     private val jobs = ArrayList<Job>()

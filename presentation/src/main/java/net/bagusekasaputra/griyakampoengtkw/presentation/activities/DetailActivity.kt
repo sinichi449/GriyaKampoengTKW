@@ -8,6 +8,7 @@ import android.view.View
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.tabs.TabLayout
 import dagger.hilt.android.AndroidEntryPoint
 import net.bagusekasaputra.griyakampoengtkw.presentation.R
@@ -110,8 +111,28 @@ class DetailActivity : AppCompatActivity() {
     }
 
     override fun onBackPressed() {
-        super.onBackPressed()
-        finish()
+        val allowExit = imageViewModel.allowExit.value
+
+        if (allowExit?.not() == true) {
+            MaterialAlertDialogBuilder(this, R.style.AlertDialogTheme).apply {
+                setTitle("Batalkan Proses Upload?")
+                setMessage("Sistem mendeteksi sedang terjadi peng-upload-an gambar. Apakah Anda yakin ingin keluar dengan membatalkan semua proses tersebut?")
+                setPositiveButton("Ya") { dialog, _ ->
+                    dialog.dismiss()
+
+                    super.onBackPressed()
+                    finish()
+                }
+                setNegativeButton("Tidak") { dialog, _ ->
+                    dialog.dismiss()
+                }
+            }
+                .create()
+                .show()
+        } else {
+            super.onBackPressed()
+            finish()
+        }
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
