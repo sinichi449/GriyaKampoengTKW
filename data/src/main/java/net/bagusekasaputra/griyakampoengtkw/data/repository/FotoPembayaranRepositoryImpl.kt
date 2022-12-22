@@ -1,7 +1,10 @@
 package net.bagusekasaputra.griyakampoengtkw.data.repository
 
 import android.util.Log
+import kotlinx.coroutines.channels.awaitClose
+import kotlinx.coroutines.channels.trySendBlocking
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.callbackFlow
 import kotlinx.coroutines.flow.emitAll
 import kotlinx.coroutines.flow.flow
 import net.bagusekasaputra.griyakampoengtkw.data.interfaces.local.LocalFotoPembayaranDataSource
@@ -82,29 +85,6 @@ class FotoPembayaranRepositoryImpl(
         termin: String,
         fotoPembayaran: FotoPembayaran
     ): Flow<Result<Nothing?>> {
-//        return flow {
-//            val uriStr = fotoPembayaran.uri.toString() // This is a dummy Uri, just ignore.
-//            var mapModel = mapFotoPembayaranModel(fotoPembayaran, uriStr)
-//
-//            // First we need to copy the file to device storage.
-//            val deviceResult = deviceDataSource.addFotoPembayaran(mapModel, false)
-//            deviceResult.onFailure {
-//                emit(Result.failure(it))
-//            }
-//
-//            // After copying the file to the device storage, we need the uri.
-//            val fileUriResult = deviceDataSource.getFotoUri(kavlingKode, termin)
-//            fileUriResult.onFailure {
-//                emit(Result.failure(it))
-//            }
-//
-//            // Now, ready to be inserted into Room Database
-//            val fileUri = fileUriResult.getOrNull() ?: Uri.EMPTY
-//            mapModel = mapFotoPembayaranModel(fotoPembayaran, fileUri.toString())
-//            val localResult = localFotoPembayaran.addFotoPembayaran(mapModel, false)
-//
-//            emit(localResult)
-//        }
         return flow {
             updateMetadata(kavlingKode)
 
@@ -127,36 +107,38 @@ class FotoPembayaranRepositoryImpl(
     }
 
     override fun deleteFotoPembayaran(kavlingKode: String, termin: String): Flow<Result<Nothing?>> {
-        return flow {
-            // Deleting both in the Device and in the Room Database.
-            val deviceResult = deviceDataSource.deleteByKavlingKodeAndTermin(kavlingKode, termin)
+        return callbackFlow {
+//            // Deleting both in the Device and in the Room Database.
+//            val deviceResult = deviceDataSource.deleteByKavlingKodeAndTermin(kavlingKode, termin)
+//
+//            deviceResult.onFailure {
+//                emit(Result.failure(it))
+//            }
+//
+//            val localResult = localFotoPembayaran.deleteByKavlingKodeAndTermin(kavlingKode, termin)
+//
+//            emit(localResult)
+            updateMetadata(kavlingKode)
 
-            deviceResult.onFailure {
-                emit(Result.failure(it))
-            }
+            remoteFotoPembayaran.delete(kavlingKode, termin)
+                .onFailure {
+                    trySendBlocking(Result.failure(it))
+                }
 
-            val localResult = localFotoPembayaran.deleteByKavlingKodeAndTermin(kavlingKode, termin)
+            localFotoPembayaran.deleteByKavlingKodeAndTermin(kavlingKode, termin)
+                .onSuccess {
+                    trySendBlocking(Result.success(null))
+                }
+                .onFailure {
+                    trySendBlocking(Result.failure(it))
+                }
 
-            emit(localResult)
+            awaitClose {  }
         }
     }
 
     override fun isFotoPembayaranExist(kavlingKode: String, termin: String): Flow<Result<Boolean>> {
         return flow {
-            // We can take advantage of GET operation. Simply, if it returns null, then
-            // Foto Pembayaran isn't exist.
-//            val getFotoPembayaran = localFotoPembayaran.getFotoPembayaran(kavlingKode, termin)
-//
-//            getFotoPembayaran.onSuccess { fotoPembayaran ->
-//                if (fotoPembayaran != null)
-//                    emit(Result.success(true))
-//                else
-//                    emit(Result.success(false))
-//            }
-//
-//            getFotoPembayaran.onFailure {
-//                emit(Result.failure(getFotoPembayaran.exceptionOrNull() ?: UnknownError("ERROR: Gagal mengecek apakah Foto Pembayaran tersedia.")))
-//            }
             emitAll(remoteFotoPembayaran.isFotoPembayaranExist(kavlingKode, termin))
         }
     }

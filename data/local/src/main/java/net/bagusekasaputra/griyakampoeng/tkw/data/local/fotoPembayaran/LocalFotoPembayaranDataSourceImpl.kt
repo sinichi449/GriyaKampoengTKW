@@ -110,8 +110,24 @@ class LocalFotoPembayaranDataSourceImpl(
         kavlingKode: String,
         termin: String
     ): Result<Nothing?> {
-        return RoomRequestHelper.doNonGetOperation {
+        // Also delete the file
+        return try {
+            FotoPembayaranModel(kavlingKode = kavlingKode, termin = termin).let { model ->
+                File(externalFilesDir, "${FotoPembayaranModel.DST_FOLDER}/${model.getKavlingAndFilePath()}")
+                    .delete()
+            }
+
             fotoPembayaranDao.deleteByKavlingKodeAndTermin(kavlingKode, termin)
+
+            Log.d("DEBUG_ME", "LocalFotoPembayaran->delete(): Deleting foto pembayaran $kavlingKode on termin $termin from Local Data success!")
+
+            Result.success(null)
+        } catch (e: Exception) {
+            e.printStackTrace()
+
+            Log.d("DEBUG_ME", "LcoalFotoPembayaran->delete(): Failed to delete Local Data foto pembayaran : ${e.message}")
+
+            Result.failure(e)
         }
     }
 

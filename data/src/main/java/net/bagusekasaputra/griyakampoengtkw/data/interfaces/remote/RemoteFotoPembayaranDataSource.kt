@@ -11,4 +11,6 @@ interface RemoteFotoPembayaranDataSource {
 
     fun insert(newModel: FotoPembayaranModel): Flow<Result<Nothing?>>
 
+    suspend fun delete(kavlingKode: String, termin: String): Result<Nothing?>
+
 }

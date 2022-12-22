@@ -95,6 +95,27 @@ class StorageFotoPembayaranDataSource(
         }
     }
 
+    override suspend fun delete(kavlingKode: String, termin: String): Result<Nothing?> {
+        return callbackFlow<Result<Nothing?>> {
+            val filename = FotoPembayaranModel(kavlingKode = kavlingKode, termin = termin).let { model ->
+                model.getKavlingAndFilePath()
+            }
+            Log.d("DEBUG_ME", "StorageFotoPembayaran->delete(): Attempting to delete $filename ...")
+            fotoPembayaranRef.child(filename)
+                .delete()
+                .addOnCompleteListener {
+                    Log.d("DEBUG_ME", "StorageFotoPembayaran->delete(): Success deleting $filename from remote data source!!")
+                    trySendBlocking(Result.success(null))
+                }
+                .addOnFailureListener {
+                    Log.d("DEBUG_ME", "StorageFotoPembayaran->delete(): Failed to delete $filename : ${it.message}")
+                    trySendBlocking(Result.failure(it))
+                }
+
+            awaitClose {  }
+        }.first()
+    }
+
     override fun isFotoPembayaranExist(kavlingKode: String, termin: String): Flow<Result<Boolean>> {
         return callbackFlow {
             val imageRef = FotoPembayaranModel(kavlingKode = kavlingKode, termin = termin).let {
