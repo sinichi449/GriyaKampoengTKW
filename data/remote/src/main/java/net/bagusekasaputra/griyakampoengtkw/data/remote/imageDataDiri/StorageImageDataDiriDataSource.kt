@@ -17,31 +17,38 @@ import java.math.RoundingMode
 
 class StorageImageDataDiriDataSource(
     storageReference: StorageReference,
-    private val externalDirFile: File?
+    private val externalFilesDir: File?,
 ): RemoteImageDataDiriDataSource {
 
     private val imageDataDiriRef = storageReference.child(FirebaseNodes.IMAGE_DATA_DIRI)
 
     override suspend fun get(kavlingKode: String): ImageDataDiriModel? {
         return callbackFlow {
-            val dstDir = File(externalDirFile, FirebaseNodes.IMAGE_DATA_DIRI)
-            if (!dstDir.exists())
-                dstDir.mkdir()
+            val dstDir = File(externalFilesDir, ImageDataDiriModel.DST_FOLDER)
 
             val name = getFileName(kavlingKode)
             val file = File(dstDir, name)
-            val downloadTask = imageDataDiriRef.child(name)
+
+            Log.d("DEBUG_ME", "StorageImage->get(): Saving \"$name\" to ${file.toUri()}")
+
+            imageDataDiriRef.child(name)
                 .getFile(file)
                 .addOnProgressListener {
                     Log.d("DEBUG_ME", "StorageImage->get(): Downloading \"$name\" ${it.bytesTransferred.toMegaBytes()}/${it.totalByteCount.toMegaBytes()} MB ...")
                 }
-                .addOnSuccessListener {
-                    trySendBlocking(
-                        ImageDataDiriModel(
-                            kavlingKode = kavlingKode,
-                            imgUri = file.toUri().toString(),
+                .addOnCompleteListener {
+                    Log.d("DEBUG_ME", "StorageImage->get(): Download $name is completed!")
+                    if (file.exists()) {
+                        trySendBlocking(
+                            ImageDataDiriModel(
+                                kavlingKode = kavlingKode,
+                                imgUri = file.toUri().toString(),
+                            )
                         )
-                    )
+                    } else {
+                        Log.d("DEBUG_ME", "StorageImageDataDiri->get(): Resulting download file $name not found!!")
+                        trySendBlocking(null)
+                    }
                 }
                 .addOnFailureListener {
                     Log.d("DEBUG_ME", "StorageImage->get(): Failed to download \"$name\" : ${it.message}")
@@ -50,19 +57,14 @@ class StorageImageDataDiriDataSource(
                 }
 
             awaitClose {
-                if (downloadTask.isComplete) {
-                    Log.d("DEBUG_ME", "StorageImage->get(): Download \"$name\" completed.")
-                } else {
-                    downloadTask.cancel()
-                    Log.d("DEBUG_ME", "StorageImage->get(): Download \"$name\" canceled because of closed connection.")
-                }
+                Log.d("DEBUG_ME", "StorageImage->get(): Download \"$name\" completed (2) Saving to local ...")
             }
         }.first()
     }
 
     override fun insert(imageDataDiriModel: ImageDataDiriModel): Flow<Result<Boolean?>> {
         return callbackFlow {
-            val uri = File(externalDirFile, imageDataDiriModel.getFullPath())
+            val uri = File(externalFilesDir, imageDataDiriModel.getFullPath())
                 .toUri()
             Log.d("DEBUG_ME", "StorageImage->insert(): Prepare to upload $uri ...")
 

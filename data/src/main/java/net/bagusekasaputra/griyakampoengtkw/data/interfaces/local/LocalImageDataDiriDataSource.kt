@@ -10,6 +10,7 @@ interface LocalImageDataDiriDataSource {
 
     suspend fun insert(
         imageDataDiriModel: ImageDataDiriModel,
+        fromRemote: Boolean,
         onSuccess: () -> Unit,
         onFailure: (cause: Throwable?) -> Unit
     )

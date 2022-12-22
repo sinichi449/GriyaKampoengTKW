@@ -33,6 +33,7 @@ import net.bagusekasaputra.griyakampoengtkw.presentation.util.InputUtil
 import net.bagusekasaputra.griyakampoengtkw.presentation.util.UiUtils
 import net.bagusekasaputra.griyakampoengtkw.presentation.viewmodel.DetailViewModel
 import net.bagusekasaputra.griyakampoengtkw.presentation.viewmodel.ImageViewModel
+import java.io.File
 import javax.inject.Inject
 
 @AndroidEntryPoint
@@ -124,6 +125,10 @@ class DataDiriFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        File(requireContext().getExternalFilesDir(null), "data_diri_images").let {
+            if (it.exists().not()) it.mkdir()
+        }
 
         offlineMode = viewModel.offlineMode
 

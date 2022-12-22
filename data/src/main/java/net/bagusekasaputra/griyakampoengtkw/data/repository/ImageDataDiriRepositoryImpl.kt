@@ -50,7 +50,12 @@ class ImageDataDiriRepositoryImpl(
             if (localModel == null) {
                 Log.d("DEBUG_ME", "ImageDataDiriRepo->get(): Local data source is null, getting \"$kavlingKode\" from remote ...")
                 remoteImageDataDiri.get(kavlingKode)?.let { remoteModel ->
-                    localImageDataDiri.insert(remoteModel, {}, {})
+                    Log.d("DEBUG_ME", "ImageDataDiriRepo->get(): Uri from remote data source is ${remoteModel.imgUri}")
+                    localImageDataDiri.insert(remoteModel, true, {
+                        Log.d("DEBUG_ME", "ImageDataDiriRepo->get(): Successfully inserting image data diri on ${remoteModel.kavlingKode} to local data source")
+                    }, {
+                        Log.d("DEBUG_ME", "ImageDataDiriRepo->get(): Failed to insert image data diri from remote: ${it?.message}")
+                    })
                 }
 
                 // Second try
@@ -76,7 +81,7 @@ class ImageDataDiriRepositoryImpl(
 
             val newModel = ImageDataDiriModel(kavlingKode, uri.toString())
 
-            localImageDataDiri.insert(newModel, {
+            localImageDataDiri.insert(newModel, false,{
                 Log.d("DEBUG_ME", "ImageDataDiriRepo->addImages(): Success adding image in $kavlingKode")
             }, {
                 Log.d("DEBUG_ME", "ImageDataDiriRepo->addImages(): Error : ${it?.message}")

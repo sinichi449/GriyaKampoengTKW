@@ -110,12 +110,12 @@ object DataSourceModule {
      * Image Data Diri
      */
     @Provides
-    fun provideLocalImageDataDiriSource(roomDatabase: MyRoomDatabase, externalFilesDir: File?): LocalImageDataDiriDataSource {
+    fun provideLocalImageDataDiriSource(roomDatabase: MyRoomDatabase, @ExternalDir externalFilesDir: File?): LocalImageDataDiriDataSource {
         return LocalImageDataDiriDataSourceImpl(roomDatabase, externalFilesDir)
     }
 
     @Provides
-    fun provideRemoteImageDataDiriSource(storageReference: StorageReference, externalFilesDir: File?): RemoteImageDataDiriDataSource {
+    fun provideRemoteImageDataDiriSource(storageReference: StorageReference, @ExternalDir externalFilesDir: File?): RemoteImageDataDiriDataSource {
         return StorageImageDataDiriDataSource(storageReference, externalFilesDir)
     }
 
@@ -236,7 +236,7 @@ object DataSourceModule {
 
     @Provides
     @DeviceStorage
-    fun provideDeviceFotoPembayaranDataSource(externalFilesDir: File?): LocalFotoPembayaranDataSource {
+    fun provideDeviceFotoPembayaranDataSource(@ExternalDir externalFilesDir: File?): LocalFotoPembayaranDataSource {
         return DeviceFotoPembayaranDataSource(externalFilesDir)
     }
 

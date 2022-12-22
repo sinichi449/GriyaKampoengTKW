@@ -15,7 +15,7 @@ class LocalImageDataDiriDataSourceImpl(
 ): LocalImageDataDiriDataSource {
 
     private val imageDao = myRoomDatabase.getImageDataDiriDao()
-    private val imageFile = File(externalFilesDir, "data_diri_images")
+    private val imageFile = File(externalFilesDir, ImageDataDiriModel.DST_FOLDER)
 
     override fun getByKavlingKode(kavlingKode: String): Flow<ImageDataDiriModel?> {
         return flow {
@@ -38,24 +38,35 @@ class LocalImageDataDiriDataSourceImpl(
 
     override suspend fun insert(
         imageDataDiriModel: ImageDataDiriModel,
+        fromRemote: Boolean,
         onSuccess: () -> Unit,
         onFailure: (cause: Throwable?) -> Unit,
     ) {
         try {
-            // First copy file to our apps storage on Android/data/<package>/Pictures
-            val dstUri = ImageUtil.copyImageAndGetUri(externalFilesDir,
-                Uri.parse(imageDataDiriModel.imgUri),
-                ImageDataDiriModel.DST_FOLDER,
-                imageDataDiriModel.getFilename())
+            val imageDataDiri: ImageDataDiriRoomEntity
+            if (fromRemote.not()) {
+                // First copy file to our apps storage on data/data/<package_name>/files/data_diri_images
+                val dstUri = ImageUtil.copyImageAndGetUri(externalFilesDir,
+                    Uri.parse(imageDataDiriModel.imgUri),
+                    ImageDataDiriModel.DST_FOLDER,
+                    imageDataDiriModel.getFilename())
 
-            // Delete the leftovers from ImagePicker library
-            ImageUtil.deleteImagePickerLeftOver(externalFilesDir)
+                // Delete the leftovers from ImagePicker library
+                ImageUtil.deleteImagePickerLeftOver(externalFilesDir)
 
-            val imageDataDiri = imageDataDiriModel.let {
-                ImageDataDiriRoomEntity(
-                    kavlingKode = it.kavlingKode,
-                    imgUri = dstUri.toString(),
-                )
+                imageDataDiri = imageDataDiriModel.let {
+                    ImageDataDiriRoomEntity(
+                        kavlingKode = it.kavlingKode,
+                        imgUri = dstUri.toString(),
+                    )
+                }
+            } else {
+                imageDataDiri = imageDataDiriModel.let {
+                    ImageDataDiriRoomEntity(
+                        kavlingKode = it.kavlingKode,
+                        imgUri = it.imgUri
+                    )
+                }
             }
 
             imageDao.insert(imageDataDiri)

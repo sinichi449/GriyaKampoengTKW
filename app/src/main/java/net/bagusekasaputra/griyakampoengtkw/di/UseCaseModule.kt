@@ -254,7 +254,7 @@ object UseCaseModule {
         = GetImageSprByKavlingKodeUseCase(imageSprRepository)
 
     @Provides
-    fun provideAddImageSpr(imageSprRepository: ImageSprRepository, externalFilesDir: File?)
+    fun provideAddImageSpr(imageSprRepository: ImageSprRepository, @ExternalDir externalFilesDir: File?)
         = AddImageSprUseCase(imageSprRepository, externalFilesDir)
 
 
@@ -266,7 +266,7 @@ object UseCaseModule {
         = GetFotoKuitansiUseCase(fotoKuitansiRepository)
 
     @Provides
-    fun provideAddFotoKuitansi(fotoKuitansiRepository: FotoKuitansiRepository, externalFilesDir: File?)
+    fun provideAddFotoKuitansi(fotoKuitansiRepository: FotoKuitansiRepository, @ExternalDir externalFilesDir: File?)
         = AddFotoKuitansiUseCase(fotoKuitansiRepository, externalFilesDir)
 
 
