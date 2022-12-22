@@ -164,8 +164,17 @@ object RepositoryModule {
     fun provideFotoPembayaranRepository(
         @DataSourceModule.RoomDatabase roomDataSource: LocalFotoPembayaranDataSource,
         @DataSourceModule.DeviceStorage deviceStorageDataSource: LocalFotoPembayaranDataSource,
+        remoteFotoPembayaranDataSource: RemoteFotoPembayaranDataSource,
+        localMetadataDataSource: LocalMetadataDataSource,
+        remoteMetadataDataSource: RemoteMetadataDataSource,
     ): FotoPembayaranRepository {
-        return FotoPembayaranRepositoryImpl(roomDataSource, deviceStorageDataSource)
+        return FotoPembayaranRepositoryImpl(
+            roomDataSource,
+            deviceStorageDataSource,
+            remoteFotoPembayaranDataSource,
+            localMetadataDataSource,
+            remoteMetadataDataSource
+        )
     }
 
     /**

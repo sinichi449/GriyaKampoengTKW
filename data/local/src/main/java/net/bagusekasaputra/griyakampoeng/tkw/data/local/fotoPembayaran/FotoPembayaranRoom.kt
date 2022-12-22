@@ -20,7 +20,7 @@ interface FotoPembayaranDao {
     @Query("SELECT * FROM foto_pembayaran WHERE kavling_kode=:kavlingKode AND termin=:termin")
     fun getFotoPembayaran(kavlingKode: String, termin: String): FotoPembayaranEntity?
 
-    @Insert
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun insert(fotoPembayaranEntity: FotoPembayaranEntity): Long
 
     @Query("DELETE FROM foto_pembayaran WHERE id=:id")

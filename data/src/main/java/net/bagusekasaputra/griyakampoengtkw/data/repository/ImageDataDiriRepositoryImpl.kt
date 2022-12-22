@@ -68,8 +68,8 @@ class ImageDataDiriRepositoryImpl(
                         true
                     }
             } else {
-                Log.d("DEBUG_ME", "ImageDataDiriRepo->get(): Successfully fetch image data diri \"$kavlingKode\" from local data source.")
                 emit(Result.success(mapImageDataDiri(localModel)))
+                Log.d("DEBUG_ME", "ImageDataDiriRepo->get(): Successfully fetch image data diri \"$kavlingKode\" from local data source.")
             }
         }
     }

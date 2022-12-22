@@ -119,7 +119,9 @@ class GetAllPembayaranAsyncUseCase(
                     trySendBlocking(it)
                 }
                 result.onFailure {
+                    it.printStackTrace()
 
+                    throw it
                 }
             }
 

@@ -548,17 +548,6 @@ class FormPembayaranFragment : Fragment() {
         imgVisibilityOnClick(dialogView, dialogBinding)
     }
 
-    private fun getTodayDate(): Calendar {
-        val calendar = Calendar.getInstance()
-        val currentYear = calendar.get(Calendar.YEAR)
-        val currentMonth = calendar.get(Calendar.MONTH)
-        val currentDate = calendar.get(Calendar.DAY_OF_MONTH)
-
-        return Calendar.getInstance().apply {
-            set(currentYear, currentMonth, currentDate)
-        }
-    }
-
     private fun showEditHargaDialog() {
         val dialogBinding = DialogEditHargaBinding.inflate(layoutInflater)
         val dialogView = MaterialAlertDialogBuilder(requireContext()).apply {

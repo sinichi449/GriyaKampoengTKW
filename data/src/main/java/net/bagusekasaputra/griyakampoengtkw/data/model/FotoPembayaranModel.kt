@@ -12,6 +12,24 @@ data class FotoPembayaranModel(
     val uriStr: String = "",
 ) {
 
+    companion object {
+        const val DST_FOLDER = "foto_pembayaran_images"
+
+        /**
+         * We need to create a folder structure like this:
+         * - foto_pembayaran_images
+         *  |- <kavling_kode>
+         *     |- <kavling_kode>_<termin>.png
+         */
+        fun createKavlingFolderIfNotExist(externalFilesDir: File?, kavlingKode: String) {
+            File(externalFilesDir, DST_FOLDER).let { rootDir ->
+                File(rootDir, kavlingKode).let { targetDir ->
+                    if (targetDir.exists().not()) targetDir.mkdir()
+                }
+            }
+        }
+    }
+
     fun getUri() = Uri.parse(uriStr)
 
     fun getFile(externalFilesDir: File?): File {
@@ -24,4 +42,8 @@ data class FotoPembayaranModel(
 
         return File(externalFilesDir, filePath)
     }
+
+    fun getFilename() = "${kavlingKode}_${termin}.png"
+
+    fun getKavlingAndFilePath() = "${kavlingKode}/${getFilename()}"
 }

@@ -7,7 +7,7 @@ interface LocalFotoPembayaranDataSource {
 
     suspend fun getFotoPembayaran(kavlingKode: String, termin: String): Result<FotoPembayaranModel?>
 
-    suspend fun addFotoPembayaran(fotoPembayaranModel: FotoPembayaranModel): Result<Nothing?>
+    suspend fun addFotoPembayaran(fotoPembayaranModel: FotoPembayaranModel, fromRemote: Boolean): Result<Nothing?>
 
     suspend fun deleteById(id: Long): Result<Nothing?>
 
@@ -21,4 +21,6 @@ interface LocalFotoPembayaranDataSource {
     ): Result<Nothing?>
 
     suspend fun getFotoUri(kavlingKode: String, termin: String): Result<Uri?>
+
+    suspend fun deleteAll(kavlingKode: String)
 }

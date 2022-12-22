@@ -45,7 +45,7 @@ class LocalImageDataDiriDataSourceImpl(
         try {
             val imageDataDiri: ImageDataDiriRoomEntity
             if (fromRemote.not()) {
-                // First copy file to our apps storage on data/data/<package_name>/files/data_diri_images
+                // First copy file to our apps storage on Android/data/<package_name>/files/data_diri_images
                 val dstUri = ImageUtil.copyImageAndGetUri(externalFilesDir,
                     Uri.parse(imageDataDiriModel.imgUri),
                     ImageDataDiriModel.DST_FOLDER,
@@ -141,6 +141,8 @@ class LocalImageDataDiriDataSourceImpl(
                 it.delete()
             }
         } catch (e: Exception) {
+            e.printStackTrace()
+
             throw e
         }
     }

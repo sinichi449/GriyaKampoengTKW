@@ -7,8 +7,8 @@ import androidx.room.*
     indices = [Index(value = ["table_name"], unique = true)]
 )
 data class MetadataEntity(
-    @PrimaryKey
-    val id: Long = 0L,
+    @PrimaryKey(autoGenerate = true)
+    val id: Long? = null,
     @ColumnInfo(name = "table_name")
     val tableName: String,
     val timestamp: Long,

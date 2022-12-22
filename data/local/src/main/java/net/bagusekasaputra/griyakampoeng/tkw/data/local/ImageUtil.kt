@@ -12,9 +12,9 @@ import java.io.File
 object ImageUtil {
 
     fun copyImageAndGetUri(externalFileDir: File?, srcUri: Uri, dstDir: String, fileName: String): Uri {
-        val src = srcUri.toFile()
-        val pictureDirectory = File(externalFileDir, dstDir)
-        val dst = File(pictureDirectory, fileName)
+        val src = srcUri.toFile() // Uri from loupe
+        val rootDirectory = File(externalFileDir, dstDir)
+        val dst = File(rootDirectory, fileName)
 
         src.copyTo(dst, true)
 

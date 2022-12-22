@@ -29,7 +29,7 @@ class StorageImageDataDiriDataSource(
             val name = getFileName(kavlingKode)
             val file = File(dstDir, name)
 
-            Log.d("DEBUG_ME", "StorageImage->get(): Saving \"$name\" to ${file.toUri()}")
+            Log.d("DEBUG_ME", "StorageImageDataDiri->get(): Saving \"$name\" to ${file.toUri()}")
 
             imageDataDiriRef.child(name)
                 .getFile(file)
@@ -51,13 +51,14 @@ class StorageImageDataDiriDataSource(
                     }
                 }
                 .addOnFailureListener {
+                    it.printStackTrace()
                     Log.d("DEBUG_ME", "StorageImage->get(): Failed to download \"$name\" : ${it.message}")
 
                     trySendBlocking(null)
                 }
 
             awaitClose {
-                Log.d("DEBUG_ME", "StorageImage->get(): Download \"$name\" completed (2) Saving to local ...")
+                Log.d("DEBUG_ME", "StorageImage->get(): Connection to storage GET \"$name\" is closed.")
             }
         }.first()
     }

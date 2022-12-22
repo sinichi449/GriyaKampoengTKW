@@ -23,7 +23,8 @@ class DeviceFotoPembayaranDataSource(
         TODO("Not yet implemented")
     }
 
-    override suspend fun addFotoPembayaran(fotoPembayaranModel: FotoPembayaranModel): Result<Nothing?> {
+
+    override suspend fun addFotoPembayaran(fotoPembayaranModel: FotoPembayaranModel, fromRemote: Boolean): Result<Nothing?> {
         // It turns out that I can't use ImageUtil because it is only copying file to Picture directory.
         // The Foto Pembayaran should be put in Picture/fotoPembayaran instead.
         val fileSrc = fotoPembayaranModel.getUri().toFile()
@@ -81,6 +82,10 @@ class DeviceFotoPembayaranDataSource(
         oldFotoPembayaranModel: FotoPembayaranModel,
         newFotoPembayaranModel: FotoPembayaranModel
     ): Result<Nothing?> {
+        TODO("Not yet implemented")
+    }
+
+    override suspend fun deleteAll(kavlingKode: String) {
         TODO("Not yet implemented")
     }
 
