@@ -51,7 +51,20 @@ class FirebaseMetadataDataSource(
 
         // Then insert the new one
         metadataRef.child(oldMetadataModel.tableName)
-            .setValue(newMetadataModel)
+            .setValue(newMetadataModel.let {
+                // If the update operation contains multiple child, i.e containing "/" character
+                val containMultipleChild = it.tableName.contains("/")
+                if (containMultipleChild) {
+                    Log.d("DEBUG_ME", "FirebaseMetadataSource->update(): The requested table \"${newMetadataModel.tableName}\" containing \"/\" character, suggesting a multiple child mode.")
+                    // Only get the first index
+                    // For example: "images_foto_pembayaran/D1" becomes "images_foto_pembayaran".
+                    val onlyTableName = it.tableName.split("/")[0]
+                    Log.d("DEBUG_ME", "FirebaseMetadataSource->update(): Changing table from \"${newMetadataModel.tableName} to \"$onlyTableName\".")
+                    MetadataModel(onlyTableName, it.timestamp)
+                } else {
+                    it
+                }
+            })
             .addOnSuccessListener {
                 Log.d("DEBUG_ME", "Success updating metadata \"${oldMetadataModel.tableName}\"")
             }
