@@ -63,6 +63,12 @@ class FormPembayaranFragment : Fragment() {
                     val uri = intent?.data
 
                     uri?.let {
+                        NotificationUtil.createNotification(
+                            activity = requireActivity(),
+                            title = "Upload Foto Pembayaran",
+                            content = "Mohon tunggu sebentar ...",
+                            finished = false,
+                        )
                         imageViewModel.addFotoPembayaran(
                             kavlingKode = currentKavlingKode!!,
                             uri = it,
@@ -207,9 +213,9 @@ class FormPembayaranFragment : Fragment() {
         viewModel.getAllPembayaran(currentKavlingKode!!) { failMsg ->
             Toast.makeText(requireContext(), failMsg, Toast.LENGTH_LONG).show()
         }
-        imageViewModel.getFotoKuitansi(currentKavlingKode!!) { failMsg ->
-            Toast.makeText(requireContext(), failMsg, Toast.LENGTH_SHORT).show()
-        }
+//        imageViewModel.getFotoKuitansi(currentKavlingKode!!) { failMsg ->
+//            Toast.makeText(requireContext(), failMsg, Toast.LENGTH_SHORT).show()
+//        }
         viewModel.getCatatanPembayaran(currentKavlingKode!!) { failMsg ->
             Toast.makeText(requireContext(), failMsg, Toast.LENGTH_SHORT).show()
         }

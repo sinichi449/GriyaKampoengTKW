@@ -26,6 +26,8 @@ class AsyncUseCaseHelper(private val operationStatusLiveData: MutableLiveData<Bo
                         withContext(Dispatchers.Main) { onSuccess(resultObject) }
                     else
                         onSuccess(resultObject)
+
+                    operationStatusLiveData.postValue(true)
                 }
 
                 result.onFailure { throwable ->
@@ -33,9 +35,9 @@ class AsyncUseCaseHelper(private val operationStatusLiveData: MutableLiveData<Bo
                         withContext(Dispatchers.Main) { onFailure(throwable) }
                     else
                         onFailure(throwable)
-                }
 
-                operationStatusLiveData.postValue(true)
+                    operationStatusLiveData.postValue(true)
+                }
             }
         }
     }
