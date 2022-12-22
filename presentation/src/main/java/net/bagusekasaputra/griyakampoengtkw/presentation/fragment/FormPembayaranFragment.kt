@@ -3,7 +3,6 @@ package net.bagusekasaputra.griyakampoengtkw.presentation.fragment
 import android.Manifest
 import android.annotation.SuppressLint
 import android.app.Activity
-import android.app.DatePickerDialog
 import android.content.Intent
 import android.os.Bundle
 import android.view.*
@@ -18,7 +17,6 @@ import androidx.recyclerview.widget.RecyclerView
 import com.github.dhaval2404.imagepicker.ImagePicker
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.snackbar.Snackbar
-import com.google.android.material.textview.MaterialTextView
 import dagger.hilt.android.AndroidEntryPoint
 import net.bagusekasaputra.griyakampoengtkw.domain.NumberUtil
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.HargaKavling
@@ -36,7 +34,7 @@ import net.bagusekasaputra.griyakampoengtkw.presentation.util.*
 import net.bagusekasaputra.griyakampoengtkw.presentation.util.DialogUtil.additionalDialogSetting
 import net.bagusekasaputra.griyakampoengtkw.presentation.viewmodel.DetailViewModel
 import net.bagusekasaputra.griyakampoengtkw.presentation.viewmodel.ImageViewModel
-import java.text.SimpleDateFormat
+import java.io.File
 import java.util.*
 
 @AndroidEntryPoint
@@ -117,6 +115,10 @@ class FormPembayaranFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        File(requireContext().getExternalFilesDir(null), "foto_pembayaran_images").let {
+            if (it.exists().not()) it.mkdir()
+        }
 
         setupExtendedFloatingButton()
 
@@ -551,29 +553,6 @@ class FormPembayaranFragment : Fragment() {
         }
     }
 
-    private fun setDateDefaulOrPickEdtTanggal(defaultDate: Boolean, dialogBinding: DialogAddFormPembayaranBinding) {
-        val currentDate = getTodayDate()
-        val dateFormatter = SimpleDateFormat("dd/MM/yyyy", Locale.US)
-
-        if (defaultDate) {
-            dialogBinding.edtTanggal.setText(dateFormatter.format(currentDate.time))
-        }
-
-        dialogBinding.btnPilihTanggal.setOnClickListener {
-
-            val onDateListenerSet = DatePickerDialog.OnDateSetListener { view, year, monthOfYear, dayOfMonth ->
-                val newDate = Calendar.getInstance().apply {
-                    set(year, monthOfYear, dayOfMonth)
-                }
-                dialogBinding.edtTanggal.setText(dateFormatter.format(newDate.time))
-            }
-            val datePickerDialog = DatePickerDialog(requireContext(), onDateListenerSet,
-                currentDate.get(Calendar.YEAR), currentDate.get(Calendar.MONTH), currentDate.get(Calendar.DAY_OF_MONTH))
-
-            datePickerDialog.show()
-        }
-    }
-
     private fun showEditHargaDialog() {
         val dialogBinding = DialogEditHargaBinding.inflate(layoutInflater)
         val dialogView = MaterialAlertDialogBuilder(requireContext()).apply {
@@ -648,16 +627,6 @@ class FormPembayaranFragment : Fragment() {
 
         pembayaranTableViewAdapter.setAllItems(columnHeaders, rowHeaders, cellLists)
         pembayaranTableViewAdapter.notifyDataSetChanged()
-    }
-
-    private fun createTextViewForTableRows(): MaterialTextView {
-        return MaterialTextView(
-            requireContext(),
-            null,
-            com.google.android.material.R.style.TextAppearance_MaterialComponents_Body1
-        ).apply {
-            setPadding(8, 4, 8, 4)
-        }
     }
 
     private fun showTerminSelectionButtonsDialog() {
@@ -765,7 +734,8 @@ class FormPembayaranFragment : Fragment() {
         onTerminClick: (selectedTermin: String) -> Unit,
     ) {
         val listTerminPembayaran = when (mode) {
-            OperasiFotoPembayaran.TAMBAH -> viewModel.getAllArrayTerminPembayaran()
+            OperasiFotoPembayaran.TAMBAH -> viewModel.getBelumIsiFotoTerminPembayaran()
+            OperasiFotoPembayaran.UBAH -> viewModel.getAllArrayTerminPembayaran()
             OperasiFotoPembayaran.HAPUS -> viewModel.getSudahIsiFotoTerminPembayaran()
             OperasiFotoPembayaran.LIHAT -> viewModel.getSudahIsiFotoTerminPembayaran()
         }
@@ -849,29 +819,19 @@ class FormPembayaranFragment : Fragment() {
                 showFotoPembayaranSelectionDialog(
                     dialogTitle = "Tambah Foto Pembayaran",
                     mode = OperasiFotoPembayaran.TAMBAH,
-                    onTerminClick = { selectedTermin ->
-                        // Checking if "selectedTermin" is exist in the list of Sudah Isi Foto Pembayaran.
-                        val listSudahIsiFoto = viewModel.getSudahIsiFotoTerminPembayaran()
-                            .filter { it == selectedTermin }
-                        val sudahIsiFoto = listSudahIsiFoto.isNotEmpty()
+                    onTerminClick = {
+                        showImagePickerDialog()
+                    }
+                )
 
-                        if (sudahIsiFoto) {
-                            // Show the confirmation dialog to overwrite
-                            MaterialAlertDialogBuilder(requireContext())
-                                .setTitle("Timpa Foto Pembayaran?")
-                                .setMessage("Foto Pembayaran $selectedTermin sudah terisi. Apakah Anda yakin akan mengganti Foto Pembayaran?")
-                                .setPositiveButton("Ya") { dialogOverwrite, _ ->
-                                    dialogOverwrite.dismiss()
-                                    showImagePickerDialog()
-                                }
-                                .setNegativeButton("Tidak") { dialogOverwrite, _ ->
-                                    dialogOverwrite.dismiss()
-                                }
-                                .create()
-                                .show()
-                        } else {
-                            showImagePickerDialog()
-                        }
+                true
+            }
+            R.id.ubah_foto -> {
+                showFotoPembayaranSelectionDialog(
+                    dialogTitle = "Ubah Foto Pembayaran",
+                    mode = OperasiFotoPembayaran.UBAH,
+                    onTerminClick = {
+                        showImagePickerDialog()
                     }
                 )
 
@@ -1060,7 +1020,7 @@ class FormPembayaranFragment : Fragment() {
     }
 
     private enum class OperasiFotoPembayaran {
-        LIHAT, TAMBAH, HAPUS
+        LIHAT, TAMBAH, HAPUS, UBAH
     }
 
     private fun onOfflineState() {

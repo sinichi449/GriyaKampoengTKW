@@ -206,7 +206,9 @@ class ImageViewModel @Inject constructor(
                 val result = response.data.result
 
                 if (result.isSuccess) {
-                    result.getOrNull()?.let { fotoKuitansiLive.postValue(it) }
+                    result.getOrNull()?.let {
+                        fotoKuitansiLive.postValue(it)
+                    }
                 } else {
                     withContext(Dispatchers.Main) {
                         result.exceptionOrNull()?.let {
