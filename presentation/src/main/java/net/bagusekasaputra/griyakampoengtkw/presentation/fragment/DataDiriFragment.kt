@@ -3,7 +3,6 @@ package net.bagusekasaputra.griyakampoengtkw.presentation.fragment
 import android.app.Activity
 import android.app.AlertDialog
 import android.content.Intent
-import android.content.IntentFilter
 import android.content.SharedPreferences
 import android.net.Uri
 import android.os.Bundle
@@ -26,7 +25,6 @@ import net.bagusekasaputra.griyakampoengtkw.presentation.R
 import net.bagusekasaputra.griyakampoengtkw.presentation.activities.FullImageActivity
 import net.bagusekasaputra.griyakampoengtkw.presentation.databinding.DialogTambahDataDiriBinding
 import net.bagusekasaputra.griyakampoengtkw.presentation.databinding.FragmentDataDiriBinding
-import net.bagusekasaputra.griyakampoengtkw.presentation.receiver.ProgressReceiver
 import net.bagusekasaputra.griyakampoengtkw.presentation.util.*
 import net.bagusekasaputra.griyakampoengtkw.presentation.viewmodel.DetailViewModel
 import net.bagusekasaputra.griyakampoengtkw.presentation.viewmodel.ImageViewModel
@@ -42,8 +40,6 @@ class DataDiriFragment : Fragment() {
     private val imageViewModel: ImageViewModel by activityViewModels()
     private var currentKavlingKode: String? = null
     private lateinit var arrayAdapter: ArrayAdapter<String>
-
-    private val progressReceiver = ProgressReceiver()
 
     @Inject
     lateinit var sharedPrefs: SharedPreferences
@@ -186,9 +182,6 @@ class DataDiriFragment : Fragment() {
                 nestedScrollView = binding.scrollViewImageviewAndCard,
                 extendedFabs = binding.fabActions,
             )
-
-        val intentFilter = IntentFilter("net.bagusekasaputra.griyakampoengtkw.ACTION_NOTIFY_PROGRESS")
-        requireActivity().registerReceiver(progressReceiver, intentFilter)
     }
 
     override fun onResume() {
@@ -389,7 +382,19 @@ class DataDiriFragment : Fragment() {
             .setTitle("Hapus Foto")
             .setMessage("Apakah Anda yakin akan menghapus foto?")
             .setPositiveButton("Ya") { _, _ ->
+                NotificationUtil.createNotification(
+                    activity = requireActivity(),
+                    title = "Sedang menghapus foto data diri",
+                    content = "...",
+                    finished = false,
+                )
                 imageViewModel.deleteImageDataDiri { completeMsg ->
+                    NotificationUtil.createNotification(
+                        activity = requireActivity(),
+                        title = "Berhasil menghapus foto data diri!",
+                        content = "",
+                        finished = true,
+                    )
                     ResourcesCompat.getDrawable(resources, R.drawable.avatar_1, null).let {
                         binding.imgProfile.setImageDrawable(it)
                     }
@@ -477,13 +482,6 @@ class DataDiriFragment : Fragment() {
             .setPositiveButton("Tutup") { dialog, _ -> dialog.dismiss() }
             .create()
             .show()
-    }
-
-
-    override fun onDestroy() {
-        requireActivity().unregisterReceiver(progressReceiver)
-
-        super.onDestroy()
     }
 
 }

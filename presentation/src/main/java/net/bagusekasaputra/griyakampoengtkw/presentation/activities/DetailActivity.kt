@@ -1,5 +1,6 @@
 package net.bagusekasaputra.griyakampoengtkw.presentation.activities
 
+import android.content.IntentFilter
 import android.content.SharedPreferences
 import android.content.res.Configuration
 import android.os.Bundle
@@ -17,6 +18,7 @@ import net.bagusekasaputra.griyakampoengtkw.presentation.databinding.ActivityDet
 import net.bagusekasaputra.griyakampoengtkw.presentation.fragment.BiayaMarketingFragment
 import net.bagusekasaputra.griyakampoengtkw.presentation.fragment.DataDiriFragment
 import net.bagusekasaputra.griyakampoengtkw.presentation.fragment.FormPembayaranFragment
+import net.bagusekasaputra.griyakampoengtkw.presentation.receiver.ProgressReceiver
 import net.bagusekasaputra.griyakampoengtkw.presentation.util.GriyaNodes
 import net.bagusekasaputra.griyakampoengtkw.presentation.viewmodel.DetailViewModel
 import net.bagusekasaputra.griyakampoengtkw.presentation.viewmodel.ImageViewModel
@@ -35,6 +37,8 @@ class DetailActivity : AppCompatActivity() {
     lateinit var sharedPrefs: SharedPreferences
 
     private lateinit var currentKavlingKode: String
+
+    private val progressReceiver = ProgressReceiver()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -78,6 +82,10 @@ class DetailActivity : AppCompatActivity() {
         }
 
         setupViewPager()
+
+        // setup broadcast receiver
+        val intentFilter = IntentFilter("net.bagusekasaputra.griyakampoengtkw.ACTION_NOTIFY_PROGRESS")
+        registerReceiver(progressReceiver, intentFilter)
     }
 
     private fun setupViewPager() {
@@ -144,4 +152,9 @@ class DetailActivity : AppCompatActivity() {
         }
     }
 
+    override fun onDestroy() {
+        unregisterReceiver(progressReceiver)
+
+        super.onDestroy()
+    }
 }
