@@ -44,6 +44,8 @@ class FirebaseMetadataDataSource(
     }
 
     override suspend fun update(oldMetadataModel: MetadataModel, newMetadataModel: MetadataModel) {
+        Log.d("DEBUG_ME", "FirebaseMetadataSource->update(): Invoked")
+
         // Remove old value first
         delete(oldMetadataModel.tableName)
 
@@ -54,7 +56,9 @@ class FirebaseMetadataDataSource(
                 Log.d("DEBUG_ME", "Success updating metadata \"${oldMetadataModel.tableName}\"")
             }
             .addOnFailureListener {
-                throw it
+                it.printStackTrace()
+
+                Log.d("DEBUG_ME", "FAILED updating remote metadata for $newMetadataModel : ${it.message}")
             }
     }
 
@@ -65,7 +69,9 @@ class FirebaseMetadataDataSource(
                 Log.d("DEBUG_ME", "Deleting metadata \"$tableName\" success")
             }
             .addOnFailureListener {
-                throw it
+                it.printStackTrace()
+
+                Log.d("DEBUG_ME", "FirebaseMetadataDataSource->delete(): FAILED to delete table $tableName : ${it.message}")
             }
     }
 }

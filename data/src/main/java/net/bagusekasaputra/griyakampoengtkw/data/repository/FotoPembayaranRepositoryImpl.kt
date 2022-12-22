@@ -1,6 +1,5 @@
 package net.bagusekasaputra.griyakampoengtkw.data.repository
 
-import android.net.Uri
 import android.util.Log
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.emitAll
@@ -26,7 +25,7 @@ class FotoPembayaranRepositoryImpl(
         "${kavlingKode}_image_foto_pembayaran"
     }
     private val remoteTable = { kavlingKode: String ->
-        "image_foto_pembayaran/${kavlingKode}"
+        "image_foto_pembayaran/${kavlingKode}/"
     }
 
     override fun getFotoPembayaran(
@@ -83,28 +82,47 @@ class FotoPembayaranRepositoryImpl(
         termin: String,
         fotoPembayaran: FotoPembayaran
     ): Flow<Result<Nothing?>> {
+//        return flow {
+//            val uriStr = fotoPembayaran.uri.toString() // This is a dummy Uri, just ignore.
+//            var mapModel = mapFotoPembayaranModel(fotoPembayaran, uriStr)
+//
+//            // First we need to copy the file to device storage.
+//            val deviceResult = deviceDataSource.addFotoPembayaran(mapModel, false)
+//            deviceResult.onFailure {
+//                emit(Result.failure(it))
+//            }
+//
+//            // After copying the file to the device storage, we need the uri.
+//            val fileUriResult = deviceDataSource.getFotoUri(kavlingKode, termin)
+//            fileUriResult.onFailure {
+//                emit(Result.failure(it))
+//            }
+//
+//            // Now, ready to be inserted into Room Database
+//            val fileUri = fileUriResult.getOrNull() ?: Uri.EMPTY
+//            mapModel = mapFotoPembayaranModel(fotoPembayaran, fileUri.toString())
+//            val localResult = localFotoPembayaran.addFotoPembayaran(mapModel, false)
+//
+//            emit(localResult)
+//        }
         return flow {
-            val uriStr = fotoPembayaran.uri.toString() // This is a dummy Uri, just ignore.
-            var mapModel = mapFotoPembayaranModel(fotoPembayaran, uriStr)
+            updateMetadata(kavlingKode)
 
-            // First we need to copy the file to device storage.
-            val deviceResult = deviceDataSource.addFotoPembayaran(mapModel, false)
-            deviceResult.onFailure {
-                emit(Result.failure(it))
-            }
+            val newModel = FotoPembayaranModel(
+                kavlingKode = kavlingKode,
+                termin = termin,
+                uriStr = fotoPembayaran.uri.toString(),
+            )
 
-            // After copying the file to the device storage, we need the uri.
-            val fileUriResult = deviceDataSource.getFotoUri(kavlingKode, termin)
-            fileUriResult.onFailure {
-                emit(Result.failure(it))
-            }
+            localFotoPembayaran.addFotoPembayaran(newModel, false)
+                .onSuccess {
+                    Log.d("DEBUG_ME", "FotoPembayaranRepoImpl->addFotoPembayaran(): Success adding foto pembayaran at $kavlingKode on termin $termin")
+                }
+                .onFailure {
+                    Log.d("DEBUG_ME", "FotoPembayaranRepoImpl->addFotoPembayaran(): Error : ${it.message}")
+                }
 
-            // Now, ready to be inserted into Room Database
-            val fileUri = fileUriResult.getOrNull() ?: Uri.EMPTY
-            mapModel = mapFotoPembayaranModel(fotoPembayaran, fileUri.toString())
-            val localResult = localFotoPembayaran.addFotoPembayaran(mapModel, false)
-
-            emit(localResult)
+            emitAll(remoteFotoPembayaran.insert(newModel))
         }
     }
 
@@ -178,5 +196,21 @@ class FotoPembayaranRepositoryImpl(
                 uri = it.getUri(),
             )
         }
+    }
+
+    private suspend fun updateMetadata(kavlingKode: String) {
+        Log.d("DEBUG_ME", "FotoPembayaranRepoImpl->updateMetadata(): Updating foto pembayaran $kavlingKode metadata ...")
+        val currentTimemillis = System.currentTimeMillis()
+        val oldTimestamp = localMetadata.get(localTable(kavlingKode))?.timestamp ?: 0L
+
+        remoteMetadata.update(
+            oldMetadataModel = MetadataModel(remoteTable(kavlingKode), oldTimestamp),
+            newMetadataModel = MetadataModel(remoteTable(kavlingKode), currentTimemillis),
+        )
+        localMetadata.insert(
+            MetadataModel(localTable(kavlingKode), currentTimemillis)
+        )
+
+        Log.d("DEBUG_ME", "FotoPembayaranRepoImpl->updateMetadata(): Metadata foto pembayaran for $kavlingKode successfully updated. ")
     }
 }

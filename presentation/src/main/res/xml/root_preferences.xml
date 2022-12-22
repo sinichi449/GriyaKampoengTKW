@@ -23,6 +23,14 @@
             app:showSeekBarValue="true"
             app:updatesContinuously="true"/>
 
+        <SeekBarPreference
+            android:defaultValue="256"
+            android:max="512"
+            android:title="Foto Pembayaran"
+            app:key="max_size_foto_pembayaran"
+            app:min="64"
+            app:showSeekBarValue="true"
+            app:updatesContinuously="true"/>
 
     </PreferenceCategory>
 

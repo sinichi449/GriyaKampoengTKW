@@ -2,6 +2,8 @@ package net.bagusekasaputra.griyakampoeng.tkw.data.local.fotoPembayaran
 
 import android.net.Uri
 import android.util.Log
+import androidx.core.net.toFile
+import androidx.core.net.toUri
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.channels.trySendBlocking
 import kotlinx.coroutines.flow.callbackFlow
@@ -14,7 +16,7 @@ import net.bagusekasaputra.griyakampoengtkw.data.model.FotoPembayaranModel
 import java.io.File
 
 class LocalFotoPembayaranDataSourceImpl(
-    roomDatabase: MyRoomDatabase,
+    private val roomDatabase: MyRoomDatabase,
     private val externalFilesDir: File?,
 ): LocalFotoPembayaranDataSource {
 
@@ -63,15 +65,16 @@ class LocalFotoPembayaranDataSourceImpl(
                     )
                 }
             } else {
-                Log.d("DEBUG_ME", "LocalFotoPembayaran->insert(): Getting Foto Pembayaran from ${fotoPembayaranModel.getKavlingAndFilePath()} on fromRemote=$fromRemote parameter ...")
+                Log.d("DEBUG_ME", "LocalFotoPembayaran->insert(): Getting Foto Pembayaran from ${fotoPembayaranModel.getKavlingAndFilePath()} on fromRemote=false parameter ...")
 
-                // First copy file to our apps storage on Android/data/<package_name>/files/foto_pembayaran_images
-                val dstUri = ImageUtil.copyImageAndGetUri(
-                    externalFileDir = externalFilesDir,
-                    srcUri = Uri.parse(fotoPembayaranModel.uriStr),
-                    dstDir = FotoPembayaranModel.DST_FOLDER,
-                    fileName = fotoPembayaranModel.getKavlingAndFilePath(),
-                )
+                // First copy file to our apps storage on Android/data/<package_name>/files/foto_pembayaran_images/<kavling>/
+                val dstUri = fotoPembayaranModel.getUri().toFile().let { srcFile ->
+                    File(externalFilesDir, "${FotoPembayaranModel.DST_FOLDER}/${fotoPembayaranModel.getKavlingAndFilePath()}").let { dstFile ->
+                        srcFile.copyTo(dstFile, true)
+
+                        dstFile.toUri()
+                    }
+                }
 
                 // Delete the leftovers from ImagePicker library
                 ImageUtil.deleteImagePickerLeftOver(externalFilesDir)
@@ -86,9 +89,14 @@ class LocalFotoPembayaranDataSourceImpl(
             }
 
             fotoPembayaranDao.insert(fotoPembayaran)
+
+            roomDatabase.close()
+
             return Result.success(null)
         } catch (e: Exception) {
             e.printStackTrace()
+
+            roomDatabase.close()
 
             return Result.failure(e)
         }

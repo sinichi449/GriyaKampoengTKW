@@ -9,4 +9,6 @@ interface RemoteFotoPembayaranDataSource {
 
     fun isFotoPembayaranExist(kavlingKode: String, termin: String): Flow<Result<Boolean>>
 
+    fun insert(newModel: FotoPembayaranModel): Flow<Result<Nothing?>>
+
 }

@@ -4,6 +4,7 @@ import android.Manifest
 import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.Intent
+import android.content.SharedPreferences
 import android.os.Bundle
 import android.view.*
 import android.widget.Toast
@@ -36,6 +37,7 @@ import net.bagusekasaputra.griyakampoengtkw.presentation.viewmodel.DetailViewMod
 import net.bagusekasaputra.griyakampoengtkw.presentation.viewmodel.ImageViewModel
 import java.io.File
 import java.util.*
+import javax.inject.Inject
 
 @AndroidEntryPoint
 class FormPembayaranFragment : Fragment() {
@@ -52,6 +54,9 @@ class FormPembayaranFragment : Fragment() {
     private var isAllFabsVisible = false
 
     private var offlineMode = false
+
+    @Inject
+    lateinit var sharedPrefs: SharedPreferences
 
     private val startForFotoPembayaranResult =
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
@@ -735,6 +740,15 @@ class FormPembayaranFragment : Fragment() {
         }
     }
 
+    private fun showImagePickerDialog() {
+        ImagePicker.with(this)
+            .crop()
+            .compress(sharedPrefs.getInt("max_size_foto_pembayaran", 256))
+            .createIntent {
+                startForFotoPembayaranResult.launch(it)
+            }
+    }
+
     private fun showFotoPembayaranSelectionDialog(
         dialogTitle: String,
         mode: OperasiFotoPembayaran,
@@ -980,15 +994,6 @@ class FormPembayaranFragment : Fragment() {
 
             true
         }
-    }
-
-    private fun showImagePickerDialog() {
-        ImagePicker.with(this)
-            .crop()
-            .compress(1024)
-            .createIntent {
-                startForFotoPembayaranResult.launch(it)
-            }
     }
 
     private fun exportExcel() {

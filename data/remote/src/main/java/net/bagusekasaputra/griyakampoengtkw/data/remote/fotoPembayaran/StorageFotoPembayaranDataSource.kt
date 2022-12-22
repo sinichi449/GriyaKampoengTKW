@@ -65,6 +65,36 @@ class StorageFotoPembayaranDataSource(
         }.first()
     }
 
+    override fun insert(newModel: FotoPembayaranModel): Flow<Result<Nothing?>> {
+        return callbackFlow {
+            val kavlingAndFilePath = newModel.getKavlingAndFilePath()
+            val uri = "${FotoPembayaranModel.DST_FOLDER}/${kavlingAndFilePath}".let { fullpath ->
+                File(externalFilesDir, fullpath)
+                    .toUri()
+            }
+
+            Log.d("DEBUG_ME", "StorageFotoPembayaran->insert(): Prepare to upload $uri ...")
+
+            fotoPembayaranRef.child(kavlingAndFilePath)
+                .putFile(uri)
+                .addOnProgressListener {
+                    Log.d("DEBUG_ME", "StorageFotoPembayaran->insert(): Uploading \"$kavlingAndFilePath\" is ${it.bytesTransferred} / ${it.totalByteCount} bytes ...")
+                }
+                .addOnCompleteListener {
+                    Log.d("DEBUG_ME", "StorageFotoPembayaran->insert(): Completed uploading a file \"$kavlingAndFilePath\" to remote server!!")
+                    trySendBlocking(Result.success(null))
+                }
+                .addOnFailureListener {
+                    Log.d("DEBUG_ME", "StorageFotoPembayaran->insert(): Error uploading a file \"$kavlingAndFilePath\" : ${it.message}")
+                    trySendBlocking(Result.failure(it))
+                }
+
+            awaitClose {
+                Log.d("DEBUG_ME","StorageFotoPembayaran->insert(): Connection for upload \"$kavlingAndFilePath\" is closed.")
+            }
+        }
+    }
+
     override fun isFotoPembayaranExist(kavlingKode: String, termin: String): Flow<Result<Boolean>> {
         return callbackFlow {
             val imageRef = FotoPembayaranModel(kavlingKode = kavlingKode, termin = termin).let {
