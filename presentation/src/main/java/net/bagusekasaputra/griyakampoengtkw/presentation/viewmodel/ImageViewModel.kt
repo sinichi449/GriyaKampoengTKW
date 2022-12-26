@@ -179,6 +179,7 @@ class ImageViewModel @Inject constructor(
         onFailure: (msg: String) -> Unit
     ) {
         val request = AddImageSprUseCase.Request(kavlingKode, uri)
+        isFinishAddImage.value = false
 
         CoroutineScope(Dispatchers.IO).launch {
             addImageSprUseCase.execute(request).collect { response ->
@@ -191,6 +192,8 @@ class ImageViewModel @Inject constructor(
                         onFailure(it.message ?: "null")
                     }
                 }
+
+                isFinishAddImage.postValue(true)
             }
         }
     }

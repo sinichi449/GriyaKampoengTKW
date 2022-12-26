@@ -3,10 +3,8 @@ package net.bagusekasaputra.griyakampoengtkw.data.repository
 import android.content.ContentResolver
 import android.net.Uri
 import android.util.Log
-import kotlinx.coroutines.channels.awaitClose
-import kotlinx.coroutines.channels.trySendBlocking
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.callbackFlow
+import kotlinx.coroutines.flow.emitAll
 import kotlinx.coroutines.flow.flow
 import net.bagusekasaputra.griyakampoengtkw.data.interfaces.local.LocalImageSprDataSource
 import net.bagusekasaputra.griyakampoengtkw.data.interfaces.local.LocalMetadataDataSource
@@ -93,17 +91,18 @@ class ImageSprRepositoryImpl(
     }
 
     override fun addImage(kavlingKode: String, uri: Uri): Flow<Result<Nothing?>> {
-        return callbackFlow {
-            localImageSpr.insert(
-                imageSprModel = ImageSprModel(kavlingKode, uri.toString()),
-                fromRemote = false,
-                onSuccess = { trySendBlocking(Result.success(null)) },
-            ) {
-                trySendBlocking(Result.failure(it
-                    ?: Exception("Unknown error: terjadi kegagalan menambahkan foto SPR")))
-            }
+        return flow {
+            updateMetadata()
 
-            awaitClose {  }
+            val newModel = ImageSprModel(kavlingKode, uri.toString())
+
+            localImageSpr.insert(newModel, false, {
+                Log.d("DEBUG_ME", "ImageSprRepoImpl->addImage(): Success adding image SPR \"${newModel.getFilename()}\" into local data source.")
+            }, {
+                Log.d("DEBUG_ME", "ImageSprRepoImpl->addImage(): FAILED adding Image SPR \"${newModel.getFilename()} into local data source: ${it?.message}")
+            })
+
+            emitAll(remoteImageSpr.insert(newModel))
         }
     }
 
@@ -114,6 +113,16 @@ class ImageSprRepositoryImpl(
                 bitmap = ImageUtil.getBitmapFromUri(contentResolver, Uri.parse(it.dstUri))
             )
         }
+    }
+
+    private suspend fun updateMetadata() {
+        val currentTimemillis = System.currentTimeMillis()
+        val oldMetadata = localMetadata.get(metadataTable)
+            ?: MetadataModel(metadataTable, currentTimemillis)
+        val newMetadata = MetadataModel(metadataTable, currentTimemillis)
+
+        remoteMetadata.update(oldMetadata, newMetadata)
+        localMetadata.insert(newMetadata)
     }
 
     private fun mapImageSpr(imageSpr: ImageSpr, dstUri: String): ImageSprModel {

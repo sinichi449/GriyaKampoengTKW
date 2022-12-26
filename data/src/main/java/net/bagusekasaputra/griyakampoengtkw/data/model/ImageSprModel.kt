@@ -9,4 +9,6 @@ data class ImageSprModel(
     }
 
     fun getFilename() = "${kavlingKode}_SPR.png"
+
+    fun getFullPath() = "${DST_ROOT}/${getFilename()}"
 }

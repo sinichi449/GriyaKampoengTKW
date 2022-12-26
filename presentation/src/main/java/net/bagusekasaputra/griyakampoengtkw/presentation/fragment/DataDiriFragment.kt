@@ -199,8 +199,6 @@ class DataDiriFragment : Fragment() {
         }
 
         imageViewModel.getImageDataDiri(currentKavlingKode!!) { }
-
-//        imageViewModel.getSprImage(currentKavlingKode!!) { }
     }
 
     private fun setLayoutImageDataDiriLoading(isLoading: Boolean) {
