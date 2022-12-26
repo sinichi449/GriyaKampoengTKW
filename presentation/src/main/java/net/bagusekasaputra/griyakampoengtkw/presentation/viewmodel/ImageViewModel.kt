@@ -151,6 +151,7 @@ class ImageViewModel @Inject constructor(
     // SPR
     fun getSprImage(kavlingKode: String, onFailure: (msg: String) -> Unit) {
         val request = GetImageSprByKavlingKodeUseCase.Request(kavlingKode)
+        isFinishAddImage.value = false
 
         CoroutineScope(Dispatchers.IO).launch {
             getImageSprByKavlingKodeUseCase.execute(request).collect { response ->
@@ -165,6 +166,8 @@ class ImageViewModel @Inject constructor(
                         }
                     }
                 }
+
+                isFinishAddImage.postValue(true)
             }
         }
     }

@@ -128,6 +128,9 @@ class DataDiriFragment : Fragment() {
         File(requireContext().getExternalFilesDir(null), "data_diri_images").let {
             if (it.exists().not()) it.mkdir()
         }
+        File(requireContext().getExternalFilesDir(null), "spr_images").let {
+            if (it.exists().not()) it.mkdir()
+        }
 
         offlineMode = viewModel.offlineMode
 
@@ -197,7 +200,7 @@ class DataDiriFragment : Fragment() {
 
         imageViewModel.getImageDataDiri(currentKavlingKode!!) { }
 
-        imageViewModel.getSprImage(currentKavlingKode!!) { }
+//        imageViewModel.getSprImage(currentKavlingKode!!) { }
     }
 
     private fun setLayoutImageDataDiriLoading(isLoading: Boolean) {
@@ -407,6 +410,20 @@ class DataDiriFragment : Fragment() {
         dialogView.show()
     }
 
+    private fun lihatFotoSpr() {
+        val imageTransport = imageViewModel.createImageTransport(
+            sendIntent = GriyaNodes.INTENT_FOTO_SPR,
+            content = mapOf(
+                Pair("kavlingKode", currentKavlingKode!!)
+            )
+        )
+
+        val intent = Intent(requireContext(), FullImageActivity::class.java)
+        intent.putExtra(GriyaNodes.INTENT_SOURCE_IMAGE, imageTransport)
+
+        startActivity(intent)
+    }
+
     private fun showImagePicker(launcher: ActivityResultLauncher<Intent>) {
         ImagePicker.with(this)
             .crop()
@@ -455,20 +472,6 @@ class DataDiriFragment : Fragment() {
 
             else -> super.onOptionsItemSelected(item)
         }
-    }
-
-    private fun lihatFotoSpr() {
-        val imageTransport = imageViewModel.createImageTransport(
-            sendIntent = GriyaNodes.INTENT_FOTO_SPR,
-            content = mapOf(
-                Pair("kavlingKode", currentKavlingKode!!)
-            )
-        )
-
-        val intent = Intent(requireContext(), FullImageActivity::class.java)
-        intent.putExtra(GriyaNodes.INTENT_SOURCE_IMAGE, imageTransport)
-
-        startActivity(intent)
     }
 
     /**

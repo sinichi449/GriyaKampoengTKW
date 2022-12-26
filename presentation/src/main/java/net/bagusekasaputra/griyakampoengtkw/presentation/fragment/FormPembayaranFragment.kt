@@ -635,7 +635,9 @@ class FormPembayaranFragment : Fragment() {
     ) {
         val pembayaranTableViewAdapter = PembayaranTableViewAdapter()
 
-        binding.tableFormPembayaran.setAdapter(pembayaranTableViewAdapter)
+        binding.tableFormPembayaran.apply {
+            setAdapter(pembayaranTableViewAdapter)
+        }
 
         pembayaranTableViewAdapter.setAllItems(columnHeaders, rowHeaders, cellLists)
         pembayaranTableViewAdapter.notifyDataSetChanged()

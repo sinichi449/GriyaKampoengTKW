@@ -115,9 +115,12 @@ object RepositoryModule {
     @Provides
     fun provideImageSprRepository(
         localImageSprDataSource: LocalImageSprDataSource,
+        remoteImageSprDataSource: RemoteImageSprDataSource,
+        localMetadata: LocalMetadataDataSource,
+        remoteMetadata: RemoteMetadataDataSource,
         contentResolver: ContentResolver
     ): ImageSprRepository {
-        return ImageSprRepositoryImpl(localImageSprDataSource, contentResolver)
+        return ImageSprRepositoryImpl(localImageSprDataSource, remoteImageSprDataSource, localMetadata, remoteMetadata, contentResolver)
     }
 
 

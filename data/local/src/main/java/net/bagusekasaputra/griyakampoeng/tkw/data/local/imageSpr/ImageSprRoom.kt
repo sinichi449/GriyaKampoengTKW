@@ -27,5 +27,7 @@ interface ImageSprRoomDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun insert(imageSprRoomEntity: ImageSprRoomEntity)
 
+    @Query("DELETE FROM image_spr")
+    fun deleteAll()
 
 }

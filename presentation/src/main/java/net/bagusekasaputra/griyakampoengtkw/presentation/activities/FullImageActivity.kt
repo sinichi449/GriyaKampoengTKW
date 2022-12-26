@@ -151,12 +151,4 @@ class FullImageActivity : AppCompatActivity() {
             }
         }
     }
-
-    private fun getBitmapFromAnotherActivity(): Bitmap? {
-        return intent.getParcelableExtra<Bitmap>(GriyaNodes.INTENT_BITMAP)
-    }
-
-    private fun getSender(): String? {
-        return intent.getStringExtra(GriyaNodes.INTENT_SOURCE_IMAGE)
-    }
 }

@@ -16,4 +16,5 @@ object FirebaseNodes {
 
     const val IMAGE_DATA_DIRI = "data_diri_images"
     const val IMAGES_FOTO_PEMBAYARAN = "foto_pembayaran_images"
+    const val IMAGE_SPR = "spr_images"
 }
