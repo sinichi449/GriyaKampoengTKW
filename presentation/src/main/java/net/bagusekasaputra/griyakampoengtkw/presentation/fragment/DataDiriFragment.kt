@@ -173,7 +173,7 @@ class DataDiriFragment : Fragment() {
                 showAddDataDiriDialog()
         }
 
-        binding.fabTambahFoto.setOnClickListener { showImagePicker(startProfileImageForResult) }
+        binding.fabTambahFoto.setOnClickListener { showImagePickerDataDiri(startProfileImageForResult) }
 
         // Even when I already set the visibility of FabAction into View.GONE,
         // to prevent the user from writing the data on offline mode, it's probably still
@@ -422,10 +422,22 @@ class DataDiriFragment : Fragment() {
         startActivity(intent)
     }
 
-    private fun showImagePicker(launcher: ActivityResultLauncher<Intent>) {
+    /**
+     * Ada dua ImagePicker, bedanya pada settingan max size foto.
+     */
+    private fun showImagePickerDataDiri(launcher: ActivityResultLauncher<Intent>) {
         ImagePicker.with(this)
             .crop()
             .compress(sharedPrefs.getInt("max_size_foto_data_diri", 256))
+            .createIntent { intent ->
+                launcher.launch(intent)
+            }
+    }
+
+    private fun showImagePickerSPR(launcher: ActivityResultLauncher<Intent>) {
+        ImagePicker.with(this)
+            .crop()
+            .compress(sharedPrefs.getInt("max_size_foto_spr", 256))
             .createIntent { intent ->
                 launcher.launch(intent)
             }
@@ -464,7 +476,7 @@ class DataDiriFragment : Fragment() {
                 true
             }
             R.id.tambahkan_spr -> {
-                showImagePicker(startSPRImageForResult)
+                showImagePickerSPR(startSPRImageForResult)
                 true
             }
 
