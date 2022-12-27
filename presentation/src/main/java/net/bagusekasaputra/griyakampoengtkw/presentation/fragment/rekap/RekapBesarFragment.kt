@@ -1,9 +1,11 @@
 package net.bagusekasaputra.griyakampoengtkw.presentation.fragment.rekap
 
+import android.R
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ArrayAdapter
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import dagger.hilt.android.AndroidEntryPoint
@@ -19,6 +21,15 @@ class RekapBesarFragment : Fragment() {
     private lateinit var binding: FragmentRekapBesarBinding
     private val viewModel: RekapViewModel by activityViewModels()
 
+    private val periodeRekapList = listOf(
+        "Pilih Periode",
+        "Semua",
+        "Minggu ini",
+        "Bulan ini",
+        "Tahun ini",
+        "Custom"
+    )
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?,
@@ -33,6 +44,8 @@ class RekapBesarFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         setupViewModel()
+
+        setupSpinnerPeriode()
     }
 
     private fun setupViewModel() {
@@ -53,6 +66,14 @@ class RekapBesarFragment : Fragment() {
                 )
             }
         }
+    }
+
+    private fun setupSpinnerPeriode() {
+        binding.spinnerPeriode.adapter = ArrayAdapter(
+            requireContext(),
+            R.layout.simple_spinner_dropdown_item,
+            periodeRekapList
+        )
     }
 
     private fun CardRekapUangMasukBinding.setAllItems(

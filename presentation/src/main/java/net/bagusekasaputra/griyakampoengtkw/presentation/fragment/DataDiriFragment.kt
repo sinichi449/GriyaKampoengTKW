@@ -35,7 +35,6 @@ import javax.inject.Inject
 class DataDiriFragment : Fragment() {
 
     private lateinit var binding: FragmentDataDiriBinding
-//    private val viewModel: DetailViewModel by viewModels()
     private val viewModel: DetailViewModel by activityViewModels()
     private val imageViewModel: ImageViewModel by activityViewModels()
     private var currentKavlingKode: String? = null
