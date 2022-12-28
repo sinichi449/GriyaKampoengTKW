@@ -22,7 +22,6 @@ import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.kavling.GetKavli
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.pembayaran.GetAllPembayaranAsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.pengingat.*
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.rekapGlobal.GetAllRekapGlobalUseCase
-import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.rekapGlobal.GetAllRekapGlobalWithRekapBesarAsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.reportKavling.GetAllReportKavlingAsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.repository.*
 import net.bagusekasaputra.griyakampoengtkw.domain.usecase.appupdate.GetUpdateInformationUseCase
@@ -340,21 +339,6 @@ object UseCaseModule {
         hargaKavlingRepository: HargaKavlingRepository,
     ): GetAllRekapGlobalUseCase {
         return GetAllRekapGlobalUseCase(dataDiriRepository, pembayaranRepository, hargaKavlingRepository)
-    }
-
-    /**
-     * Rekap Double-Blower
-     */
-    @Provides
-    fun provideGetAllRekapGlobalWithRekapBesarUseCase(
-        dataDiriRepository: DataDiriRepository,
-        hargaKavlingRepository: HargaKavlingRepository,
-        pembayaranRepository: PembayaranRepository,
-        feeMarketingRepository: FeeMarketingRepository,
-        biayaMarketingRepository: BiayaMarketingRepository,
-        biayaLainRepository: BiayaLainRepository,
-    ): GetAllRekapGlobalWithRekapBesarAsyncUseCase {
-        return GetAllRekapGlobalWithRekapBesarAsyncUseCase(dataDiriRepository, hargaKavlingRepository, pembayaranRepository, feeMarketingRepository, biayaMarketingRepository, biayaLainRepository)
     }
 
     /**

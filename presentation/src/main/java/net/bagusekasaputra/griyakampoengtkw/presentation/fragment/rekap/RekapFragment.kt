@@ -79,12 +79,6 @@ class RekapFragment : Fragment() {
             }
         }
 
-        viewModel.progressState.observe(requireActivity()) {
-            if (it != null) {
-                binding.layoutWarningAndLoadingRekap.setProgressState(it)
-            }
-        }
-
         viewModel.isLoadingRekapDone.observe(requireActivity()) { done ->
             if (done != null) {
                 if (done) onCompletedView()

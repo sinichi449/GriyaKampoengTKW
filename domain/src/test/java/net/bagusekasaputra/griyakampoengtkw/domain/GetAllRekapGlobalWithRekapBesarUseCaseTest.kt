@@ -1,7 +1,6 @@
 package net.bagusekasaputra.griyakampoengtkw.domain
 
 import kotlinx.coroutines.runBlocking
-import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.rekapGlobal.GetAllRekapGlobalWithRekapBesarAsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.mockRepository.*
 import org.junit.Test
 

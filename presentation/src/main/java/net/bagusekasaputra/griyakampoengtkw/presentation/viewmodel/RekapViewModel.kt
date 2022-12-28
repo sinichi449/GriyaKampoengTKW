@@ -4,11 +4,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
-import kotlinx.coroutines.launch
-import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.rekapGlobal.GetAllRekapGlobalWithRekapBesarAsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.Kavling
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.RekapBesar
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.RekapGlobal
@@ -20,12 +16,10 @@ import javax.inject.Inject
 
 @HiltViewModel
 class RekapViewModel @Inject constructor(
-    private val getAllRekapGlobalWithRekapBesarAsyncUseCase: GetAllRekapGlobalWithRekapBesarAsyncUseCase,
+
 ): ViewModel() {
 
     val currentFragment = MutableLiveData<RekapType>()
-
-    val progressState = getAllRekapGlobalWithRekapBesarAsyncUseCase.progressState
 
     private val _isFinishedProgress = MutableLiveData(true)
     val isFinishedOperation: LiveData<Boolean>
@@ -56,34 +50,7 @@ class RekapViewModel @Inject constructor(
     fun getAllRekap(onComplete: (msg: String) -> Unit) {
         getRekapJob?.cancel()
 
-        val request = GetAllRekapGlobalWithRekapBesarAsyncUseCase.Request(kavlingList)
-
-        _isLoadingRekapDone.value = false
-
-        getRekapJob = CoroutineScope(Dispatchers.IO).launch {
-
-            getAllRekapGlobalWithRekapBesarAsyncUseCase.execute(request).collect { result ->
-                result.onSuccess { rekapGlobalWithBesar ->
-                    _isLoadingRekapDone.postValue(true)
-
-                    if (rekapGlobalWithBesar != null) {
-                        _listRekapGlobalLive.postValue(rekapGlobalWithBesar.listRekapGlobal)
-                        _rekapBesarLive.postValue(rekapGlobalWithBesar.rekapBesar)
-
-                        onComplete("Berhasil mendapatkan semua rekap")
-                    } else {
-                        onComplete("Data yang diperlukan pada database masih belum tersedia!")
-                    }
-                }
-
-                result.onFailure {
-                    _isLoadingRekapDone.postValue(true)
-
-                    onComplete("Gagal mendapatkan rekap -> ${it.message}")
-                }
-            }
-
-        }
+//        _isLoadingRekapDone.value = false
     }
 
     fun getRowHeaderRekapTable(): List<RgRowHeader> {
