@@ -192,7 +192,17 @@ object RepositoryModule {
      * Biaya Lain
      */
     @Provides
-    fun provideBiayaLainRepository(remoteBiayaLainDataSource: RemoteBiayaLainDataSource): BiayaLainRepository {
-        return BiayaLainRepositoryImpl(remoteBiayaLainDataSource)
+    fun provideBiayaLainRepository(
+        localBiayaLainDataSource: LocalBiayaLainDataSource,
+        remoteBiayaLainDataSource: RemoteBiayaLainDataSource,
+        localMetadataDataSource: LocalMetadataDataSource,
+        remoteMetadataDataSource: RemoteMetadataDataSource,
+    ): BiayaLainRepository {
+        return BiayaLainRepositoryImpl(
+            localBiayaLainDataSource,
+            remoteBiayaLainDataSource,
+            localMetadataDataSource,
+            remoteMetadataDataSource,
+        )
     }
 }

@@ -7,6 +7,7 @@ import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
 import net.bagusekasaputra.griyakampoeng.tkw.data.local.MyRoomDatabase
+import net.bagusekasaputra.griyakampoeng.tkw.data.local.biayaLain.RoomBiayaLainDataSource
 import net.bagusekasaputra.griyakampoeng.tkw.data.local.biayaMarketing.RoomBiayaMarketingDataSource
 import net.bagusekasaputra.griyakampoeng.tkw.data.local.block.RoomBlockDataSource
 import net.bagusekasaputra.griyakampoeng.tkw.data.local.catatanPembayaran.RoomCatatanPembayaranDataSource
@@ -264,6 +265,11 @@ object DataSourceModule {
     /**
      * Biaya Lain
      */
+    @Provides
+    fun provideLocalBiayaLainDataSource(roomDatabase: MyRoomDatabase): LocalBiayaLainDataSource {
+        return RoomBiayaLainDataSource(roomDatabase)
+    }
+
     @Provides
     fun provideRemoteBiayaLainDataSource(databaseReference: DatabaseReference): RemoteBiayaLainDataSource {
         return FirebaseBiayaLainDataSource(databaseReference)
