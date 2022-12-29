@@ -1,5 +1,6 @@
 package net.bagusekasaputra.griyakampoengtkw.presentation.tableview.biayaLain
 
+import android.graphics.Typeface
 import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.View
@@ -52,6 +53,10 @@ class TableBiayaLainViewAdapter: AbstractTableAdapter<BlColumnHeader, BlRowHeade
             viewHolder.text.gravity = Gravity.START
         } else {
             viewHolder.text.gravity = Gravity.CENTER
+        }
+
+        if (columnPosition == BiayaLainColumnPosition.HARGA) {
+            viewHolder.text.typeface = Typeface.SERIF
         }
 
         viewHolder.container.layoutParams.width = ConstraintLayout.LayoutParams.WRAP_CONTENT

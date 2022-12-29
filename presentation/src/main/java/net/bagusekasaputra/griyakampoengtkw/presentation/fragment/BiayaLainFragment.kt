@@ -1,6 +1,7 @@
 package net.bagusekasaputra.griyakampoengtkw.presentation.fragment
 
 import android.app.DatePickerDialog
+import android.content.res.Configuration
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -125,10 +126,12 @@ class BiayaLainFragment: Fragment() {
             BlCell.getListCellItems(listBiayaLain)
         )
 
+        val isPortrait = requireContext().resources.configuration
+            .orientation == Configuration.ORIENTATION_PORTRAIT
         binding.tableviewBiayaLain.apply {
-            setColumnWidth(BiayaLainColumnPosition.JENIS_BIAYA, 500)
-            setColumnWidth(BiayaLainColumnPosition.HARGA, 300)
-            setColumnWidth(BiayaLainColumnPosition.TANGGAL, 300)
+            setColumnWidth(BiayaLainColumnPosition.JENIS_BIAYA, if (isPortrait) 500 else 800)
+            setColumnWidth(BiayaLainColumnPosition.HARGA, if (isPortrait) 300 else 600)
+            setColumnWidth(BiayaLainColumnPosition.TANGGAL, if (isPortrait) 300 else 450)
         }
 
         adapter.notifyDataSetChanged()
