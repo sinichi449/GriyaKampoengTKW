@@ -20,8 +20,8 @@ class GetRekapBesarAsyncUseCase(
     data class Request(
         val kavlingList: List<String>,
         val periode: PeriodeRekap,
-        val startDate: Date?,
-        val endDate: Date?,
+        val startDate: Date? = null,
+        val endDate: Date? = null,
     ): AsyncUseCase.Request
 
     override fun process(request: Request): Flow<Result<RekapBesar?>> {
@@ -42,171 +42,272 @@ class GetRekapBesarAsyncUseCase(
                 .first()
                 .getOrThrow()
 
-            val rekapBesar = when (request.periode) {
-                PeriodeRekap.SEMUA -> getAllRekapBesar(request.kavlingList, mapPembayaran, mapHargaKavling, mapFeeMarketing, mapBiayaMarketing, listBiayaLain)
-                PeriodeRekap.TAHUN_INI -> getTahunIni(request.kavlingList, mapPembayaran, mapHargaKavling, mapFeeMarketing, mapBiayaMarketing, listBiayaLain)
-                PeriodeRekap.MINGGU_INI -> getMingguIni(request.kavlingList, mapPembayaran, mapHargaKavling, mapFeeMarketing, mapBiayaMarketing, listBiayaLain)
-                PeriodeRekap.BULAN_INI -> getBulanIni(request.kavlingList, mapPembayaran, mapHargaKavling, mapFeeMarketing, mapBiayaMarketing, listBiayaLain)
-                PeriodeRekap.CUSTOM -> getCustomRekap(request.kavlingList, request.startDate, request.endDate, mapPembayaran, mapHargaKavling, mapFeeMarketing, mapBiayaMarketing, listBiayaLain)
+            var totalUangMasuk = 0L
+            var totalSisaBelumBayar = 0L
+            var totalFeeMarketing = 0L
+            var totalBiayaMarketing = 0L
+            var totalBiayaLain = 0L
+
+            request.kavlingList.forEach { kavling ->
+                val listPembayaran = mapPembayaran?.get(kavling)
+                    .filterPeriode(request.periode, request.startDate, request.endDate)
+                val feeMarketing = mapFeeMarketing?.get(kavling)
+                    .filterPeriode(request.periode, request.startDate, request.endDate)
+                val listBiayaMarketing = mapBiayaMarketing?.get(kavling)
+                    .filterPeriode(request.periode, request.startDate, request.endDate)
+                val hargaKavling = mapHargaKavling?.get(kavling)
+
+                val uangMasukKavling = if (listPembayaran != null) Pembayaran.hitungTotalUangMasuk(listPembayaran) else 0L
+                val sisaBelumBayarKavling = if (hargaKavling != null) Pembayaran.hitungTotalSisaBelumBayar(hargaKavling, uangMasukKavling) else 0L
+                val biayaMarketingKavling = if (listBiayaMarketing != null) BiayaMarketing.hitungTotalBiayaMarketing(listBiayaMarketing) else 0L
+
+                totalUangMasuk += uangMasukKavling
+                totalSisaBelumBayar += sisaBelumBayarKavling
+                totalFeeMarketing += feeMarketing?.parsedBiayaMarketer ?: 0L
+                totalBiayaMarketing += biayaMarketingKavling
             }
-            emit(Result.success(rekapBesar))
+
+            listBiayaLain.filterPeriode(request.periode, request.startDate, request.endDate)
+                ?.forEach {
+                    totalBiayaLain += it.harga
+                }
+
+            emit(Result.success(RekapBesar(
+                totalUangMasuk,
+                totalSisaBelumBayar,
+                totalFeeMarketing,
+                totalBiayaMarketing,
+                totalBiayaLain
+            )))
         }
     }
 
-    private fun getAllRekapBesar(
-        kavlingList: List<String>,
-        mapPembayaran: Map<String, List<Pembayaran>?>?,
-        mapHargaKavling: Map<String, HargaKavling?>?,
-        mapFeeMarketing: Map<String, FeeMarketing?>?,
-        mapBiayaMarketing: Map<String, List<BiayaMarketing>?>?,
-        listBiayaLain: List<BiayaLain>?,
-    ): RekapBesar {
-        var totalUangMasuk = 0L
-        var totalSisaBelumBayar = 0L
-        var totalFeeMarketing = 0L
-        var totalBiayaMarketing = 0L
-        var totalBiayaLain = 0L
+    private fun List<Pembayaran>?.filterPeriode(
+        periode: PeriodeRekap,
+        start: Date?,
+        end: Date?,
+    ): List<Pembayaran>? {
+        return when(periode) {
+            PeriodeRekap.SEMUA -> this
+            PeriodeRekap.TAHUN_INI ->  {
+                this?.filter { pembayaran ->
+                    val tahunPembayaran = Calendar.getInstance().let {
+                        it.time = pembayaran.tanggal.toDate()
+                        it.get(Calendar.YEAR)
+                    }
 
-        kavlingList.forEach { kavling ->
-            val listPembayaran = mapPembayaran?.get(kavling)
-            val hargaKavling = mapHargaKavling?.get(kavling)
-            val feeMarketing = mapFeeMarketing?.get(kavling)
-            val listBiayaMarketing = mapBiayaMarketing?.get(kavling)
+                    tahunPembayaran == getTahunSekarang()
+                }
+            }
+            PeriodeRekap.BULAN_INI -> {
+                val rangeTanggal = getMonthlyRangeDate()
+                val tanggalPertama = rangeTanggal[0]
+                val tanggalTerakhir = rangeTanggal[1]
 
-            val uangMasukKavling = if (listPembayaran != null) Pembayaran.hitungTotalUangMasuk(listPembayaran) else 0L
-            val sisaBelumBayarKavling = if (hargaKavling != null) Pembayaran.hitungTotalSisaBelumBayar(hargaKavling, uangMasukKavling) else 0L
-            val biayaMarketingKavling = if (listBiayaMarketing != null) BiayaMarketing.hitungTotalBiayaMarketing(listBiayaMarketing) else 0L
+                this?.filter { pembayaran ->
+                    val tanggalPembayaran = pembayaran.tanggal.toDate()
 
-            totalUangMasuk += uangMasukKavling
-            totalSisaBelumBayar += sisaBelumBayarKavling
-            totalFeeMarketing += feeMarketing?.parsedBiayaMarketer ?: 0L
-            totalBiayaMarketing += biayaMarketingKavling
+                    tanggalPembayaran.isWithinRange(tanggalPertama, tanggalTerakhir)
+                }
+            }
+            PeriodeRekap.MINGGU_INI -> {
+                // Get first and end date of the week, which is get
+                // the date of Sunday and the next Sunday
+                val rangeTanggal = getWeeklyRangeDate()
+                val startDate = rangeTanggal[0]
+                val endDate = rangeTanggal[1]
+
+                this?.filter { pembayaran ->
+                    val tanggalPembayaran = pembayaran.tanggal.toDate()
+
+                    tanggalPembayaran.isWithinRange(startDate, endDate)
+                }
+
+            }
+            PeriodeRekap.CUSTOM -> {
+                val rangeTanggal = getCustomRangeDate(start!!, end!!)
+                val startDate = rangeTanggal[0]
+                val endDate = rangeTanggal[1]
+
+                this?.filter {
+                    val tanggalPembayaran = it.tanggal.toDate()
+
+                    tanggalPembayaran.isWithinRange(startDate, endDate)
+                }
+            }
         }
-
-        listBiayaLain?.forEach {
-            totalBiayaLain += it.harga
-        }
-
-        return RekapBesar(
-            totalUangMasuk,
-            totalSisaBelumBayar,
-            totalFeeMarketing,
-            totalBiayaMarketing,
-            totalBiayaLain
-        )
     }
 
-    private fun getTahunIni(
-        kavlingList: List<String>,
-        mapPembayaran: Map<String, List<Pembayaran>?>?,
-        mapHargaKavling: Map<String, HargaKavling?>?,
-        mapFeeMarketing: Map<String, FeeMarketing?>?,
-        mapBiayaMarketing: Map<String, List<BiayaMarketing>?>?,
-        listBiayaLain: List<BiayaLain>?,
-    ): RekapBesar {
-        var totalUangMasuk = 0L
-        var totalSisaBelumBayar = 0L
-        var totalFeeMarketing = 0L
-        var totalBiayaMarketing = 0L
-        var totalBiayaLain = 0L
+    private fun FeeMarketing?.filterPeriode(
+        periode: PeriodeRekap,
+        start: Date?,
+        end: Date?,
+    ): FeeMarketing? {
+        return this?.let {
+            val tanggalPenerimaan = it.tanggalPenerimaan.toDate()
 
-        val tahunSekarang = Calendar.getInstance().get(Calendar.YEAR)
+            when(periode) {
+                PeriodeRekap.SEMUA -> it
+                PeriodeRekap.TAHUN_INI -> {
+                    val tahunPenerimaan = Calendar.getInstance().run {
+                        time = tanggalPenerimaan
 
-        kavlingList.forEach { kavling ->
-            val listPembayaran = mapPembayaran?.get(kavling)?.filter { pembayaran ->
-                val tahunPembayaran = Calendar.getInstance().let {
-                    it.time = pembayaran.tanggal.toDate()
-                    it.get(Calendar.YEAR)
+                        get(Calendar.YEAR)
+                    }
+
+                    if (getTahunSekarang() == tahunPenerimaan) it else null
                 }
+                PeriodeRekap.BULAN_INI -> {
+                    val rangeTanggal = getMonthlyRangeDate()
+                    val startDate = rangeTanggal[0]
+                    val endDate = rangeTanggal[1]
 
-                tahunPembayaran == tahunSekarang
+                    if (tanggalPenerimaan.isWithinRange(startDate, endDate)) it else null
+                }
+                PeriodeRekap.MINGGU_INI -> {
+                    val rangeTanggal = getWeeklyRangeDate()
+                    val startDate = rangeTanggal[0]
+                    val endDate = rangeTanggal[1]
+
+                    if (tanggalPenerimaan.isWithinRange(startDate, endDate)) it else null
+                }
+                PeriodeRekap.CUSTOM -> {
+                    val rangeTanggal = getCustomRangeDate(start!!, end!!)
+                    val startDate = rangeTanggal[0]
+                    val endDate = rangeTanggal[1]
+
+                    if (tanggalPenerimaan.isWithinRange(startDate, endDate)) it else null
+                }
             }
-            val hargaKavling = mapHargaKavling?.get(kavling)
-            val feeMarketing = mapFeeMarketing?.get(kavling)?.let {
-                val tahunPenerimaan = Calendar.getInstance().run {
-                    time = it.tanggalPenerimaan.toDate()
-                    get(Calendar.YEAR)
-                }
+        }
+    }
 
-                if (tahunPenerimaan == tahunSekarang) {
-                    it
-                } else {
-                    null
-                }
-            }
-            val listBiayaMarketing = mapBiayaMarketing?.get(kavling)?.filter { biayaMarketing ->
+    @JvmName("filterPeriodeBiayaMarketing")
+    private fun List<BiayaMarketing>?.filterPeriode(
+        periode: PeriodeRekap,
+        start: Date?,
+        end: Date?,
+    ): List<BiayaMarketing>? {
+        return when (periode) {
+            PeriodeRekap.SEMUA -> this
+            PeriodeRekap.TAHUN_INI -> this?.filter {
                 val tahunBiayaMarketing = Calendar.getInstance().run {
-                    time = biayaMarketing.tanggal.toDate()
+                    time = it.tanggal.toDate()
+
                     get(Calendar.YEAR)
                 }
 
-                tahunBiayaMarketing == tahunSekarang
+                tahunBiayaMarketing == getTahunSekarang()
             }
+            PeriodeRekap.BULAN_INI -> this?.filter {
+                val rangeBulan = getMonthlyRangeDate()
+                val startDate = rangeBulan[0]
+                val endDate = rangeBulan[1]
 
-            val uangMasukKavling = if (listPembayaran != null) Pembayaran.hitungTotalUangMasuk(listPembayaran) else 0L
-            val sisaBelumBayarKavling = if (hargaKavling != null) Pembayaran.hitungTotalSisaBelumBayar(hargaKavling, uangMasukKavling) else 0L
-            val biayaMarketingKavling = if (listBiayaMarketing != null) BiayaMarketing.hitungTotalBiayaMarketing(listBiayaMarketing) else 0L
+                it.tanggal.toDate().isWithinRange(startDate, endDate)
+            }
+            PeriodeRekap.MINGGU_INI -> TODO()
+            PeriodeRekap.CUSTOM -> TODO()
+        }
+    }
 
-            totalUangMasuk += uangMasukKavling
-            totalSisaBelumBayar += sisaBelumBayarKavling
-            totalFeeMarketing += feeMarketing?.parsedBiayaMarketer ?: 0L
-            totalBiayaMarketing += biayaMarketingKavling
+    @JvmName("filterPeriodeBiayaLain")
+    private fun List<BiayaLain>?.filterPeriode(
+        periode: PeriodeRekap,
+        start: Date?,
+        end: Date?,
+    ): List<BiayaLain>? {
+        return when (periode) {
+            PeriodeRekap.SEMUA -> this
+            PeriodeRekap.TAHUN_INI -> this?.filter {
+                val tahunBiayaLain = Calendar.getInstance().run {
+                    time = it.tanggal.toDate()
+
+                    get(Calendar.YEAR)
+                }
+
+                getTahunSekarang() == tahunBiayaLain
+            }
+            PeriodeRekap.BULAN_INI -> this?.filter {
+                val rangeBulan = getMonthlyRangeDate()
+                val startDate = rangeBulan[0]
+                val endDate = rangeBulan[1]
+
+                it.tanggal.toDate().isWithinRange(startDate, endDate)
+            }
+            PeriodeRekap.MINGGU_INI -> TODO()
+            PeriodeRekap.CUSTOM -> TODO()
+        }
+    }
+
+    fun getTahunSekarang() = Calendar.getInstance().get(Calendar.YEAR)
+
+    fun getMonthlyRangeDate(): List<Date> {
+        // Get first and end of day in current month
+        val tanggalPertama = Calendar.getInstance().apply {
+            // Set ke tanggal 1 bulan sekarang
+            set(Calendar.DAY_OF_MONTH, 1)
+
+            set(Calendar.HOUR_OF_DAY, 0)
+            set(Calendar.MINUTE, 0)
+            set(Calendar.SECOND, 0)
+            set(Calendar.MILLISECOND, 0)
+        }.time
+        val tanggalTerakhir = Calendar.getInstance().apply {
+            // Set ke tanggal terakhir bulan sekarang (otomatis mengikuti bulan)
+            set(Calendar.DAY_OF_MONTH, getActualMaximum(Calendar.DATE))
+
+            set(Calendar.HOUR_OF_DAY, 0)
+            set(Calendar.MINUTE, 0)
+            set(Calendar.SECOND, 0)
+            set(Calendar.MILLISECOND, 0)
+        }.time
+
+        return listOf(tanggalPertama, tanggalTerakhir)
+    }
+
+    fun getWeeklyRangeDate(): List<Date> {
+        val startDate = Calendar.getInstance().apply {
+            set(Calendar.DAY_OF_WEEK, firstDayOfWeek)
+
+            set(Calendar.HOUR_OF_DAY, 0)
+            set(Calendar.MINUTE, 0)
+            set(Calendar.SECOND, 0)
+            set(Calendar.MILLISECOND, 0)
+        }
+        val endDate = Calendar.getInstance().apply {
+            time = startDate.time
+
+            add(Calendar.DAY_OF_WEEK, 7)
+
+            set(Calendar.HOUR_OF_DAY, 0)
+            set(Calendar.MINUTE, 0)
+            set(Calendar.SECOND, 0)
+            set(Calendar.MILLISECOND, 0)
         }
 
-        listBiayaLain?.filter { biayaLain ->
-            val tahunBiayaLain = Calendar.getInstance().run {
-                time = biayaLain.tanggal.toDate()
-                get(Calendar.YEAR)
-            }
+        return listOf(startDate.time, endDate.time)
+    }
 
-            tahunBiayaLain == tahunSekarang
+    fun getCustomRangeDate(start: Date, end: Date): List<Date> {
+        val startDate = Calendar.getInstance().apply {
+            time = start
+
+            set(Calendar.HOUR_OF_DAY, 0)
+            set(Calendar.MINUTE, 0)
+            set(Calendar.SECOND, 0)
+            set(Calendar.MILLISECOND, 0)
         }
-            ?.forEach {
-                totalBiayaLain += it.harga
-            }
+        val endDate = Calendar.getInstance().apply {
+            time = end
 
-        return RekapBesar(
-            totalUangMasuk,
-            totalSisaBelumBayar,
-            totalFeeMarketing,
-            totalBiayaMarketing,
-            totalBiayaLain
-        )
-    }
+            set(Calendar.HOUR_OF_DAY, 0)
+            set(Calendar.MINUTE, 0)
+            set(Calendar.SECOND, 0)
+            set(Calendar.MILLISECOND, 0)
+        }
 
-    private fun getBulanIni(
-        kavlingList: List<String>,
-        mapPembayaran: Map<String, List<Pembayaran>?>?,
-        mapHargaKavling: Map<String, HargaKavling?>?,
-        mapFeeMarketing: Map<String, FeeMarketing?>?,
-        mapBiayaMarketing: Map<String, List<BiayaMarketing>?>?,
-        listBiayaLain: List<BiayaLain>?,
-    ): RekapBesar {
-        TODO()
-    }
-
-    private fun getMingguIni(
-        kavlingList: List<String>,
-        mapPembayaran: Map<String, List<Pembayaran>?>?,
-        mapHargaKavling: Map<String, HargaKavling?>?,
-        mapFeeMarketing: Map<String, FeeMarketing?>?,
-        mapBiayaMarketing: Map<String, List<BiayaMarketing>?>?,
-        listBiayaLain: List<BiayaLain>?,
-    ): RekapBesar {
-        TODO()
-    }
-
-    private fun getCustomRekap(
-        kavlingList: List<String>,
-        startDate: Date?,
-        endDate: Date?,
-        mapPembayaran: Map<String, List<Pembayaran>?>?,
-        mapHargaKavling: Map<String, HargaKavling?>?,
-        mapFeeMarketing: Map<String, FeeMarketing?>?,
-        mapBiayaMarketing: Map<String, List<BiayaMarketing>?>?,
-        listBiayaLain: List<BiayaLain>?,
-    ): RekapBesar {
-        TODO()
+        return listOf(startDate.time, endDate.time)
     }
 
     private fun String.toDate(): Date {
@@ -235,4 +336,7 @@ class GetRekapBesarAsyncUseCase(
 
         return "${tanggal}/${bulan}/${tahun}"
     }
+
+    private fun Date.isWithinRange(startDate: Date, endDate: Date)
+        = !(this.before(startDate) || this.after(endDate))
 }

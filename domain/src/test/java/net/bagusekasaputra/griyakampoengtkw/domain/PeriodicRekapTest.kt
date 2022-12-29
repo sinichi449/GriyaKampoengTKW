@@ -5,6 +5,7 @@ import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.rekap.GetListRek
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.rekap.GetRekapBesarAsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.Kavling
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.PeriodeRekap
+import net.bagusekasaputra.griyakampoengtkw.domain.entity.RekapBesar
 import net.bagusekasaputra.griyakampoengtkw.domain.mockRepository.*
 import org.junit.Test
 import java.util.*
@@ -93,25 +94,8 @@ class PeriodicRekapTest {
                 endDate = null,
             )
             getRekapBesarUseCase.execute(request).collect { result ->
-                result.onSuccess { rekapBesar ->
-                    rekapBesar?.let {
-                        println("======================================================================")
-                        println("Rekap Besar")
-                        println("Sisa Uang          : ${it.parsedSisaUang}")
-                        println()
-                        println("-----------------------------------------------------------------------")
-                        println("Pemasukan")
-                        println()
-                        println("Uang Masuk         : ${it.parsedTotalUangMasuk}")
-                        println("Sisa Pembayaran    : ${it.parsedTotalSisaBelumBayar}")
-                        println("-----------------------------------------------------------------------")
-                        println("Pengeluaran")
-                        println()
-                        println("Fee Marketing      : ${it.parsedTotalFeeMarketing}")
-                        println("Biaya Marketing    : ${it.parsedTotalBiayaMarketing}")
-                        println("Biaya Lainnya      : ${it.parsedTotalBiayaLain}")
-                        println("======================================================================")
-                    }
+                result.onSuccess {
+                    it?.print()
                 }
             }
         }
@@ -127,44 +111,52 @@ class PeriodicRekapTest {
                 endDate = null,
             )
             getRekapBesarUseCase.execute(request).collect { result ->
-                result.onSuccess { rekapBesar ->
-                    rekapBesar?.let {
-                        println("======================================================================")
-                        println("Rekap Besar")
-                        println("Sisa Uang          : ${it.parsedSisaUang}")
-                        println()
-                        println("-----------------------------------------------------------------------")
-                        println("Pemasukan")
-                        println()
-                        println("Uang Masuk         : ${it.parsedTotalUangMasuk}")
-                        println("Sisa Pembayaran    : ${it.parsedTotalSisaBelumBayar}")
-                        println("-----------------------------------------------------------------------")
-                        println("Pengeluaran")
-                        println()
-                        println("Fee Marketing      : ${it.parsedTotalFeeMarketing}")
-                        println("Biaya Marketing    : ${it.parsedTotalBiayaMarketing}")
-                        println("Biaya Lainnya      : ${it.parsedTotalBiayaLain}")
-                        println("======================================================================")
-                    }
+                result.onSuccess {
+                    it?.print()
                 }
             }
         }
     }
 
     @Test
-    fun test_date_range() {
-        val startDate = "01/01/2022".toDate()
-        val endDate = "01/04/2022".toDate()
+    fun test_get_bulan_ini_rekap_besar() {
+        runBlocking {
+            val request = GetRekapBesarAsyncUseCase.Request(
+                kavlingList = Kavling.getGriyaKavlingList(),
+                periode = PeriodeRekap.BULAN_INI,
+                startDate = null,
+                endDate = null,
+            )
 
-        val range = "01/03/2022".toDate()
+            val rangeRekap = getRekapBesarUseCase.getMonthlyRangeDate()
+            println("Range rekap : ${rangeRekap[0].toSlashedString()} - ${rangeRekap[1].toSlashedString()}")
+            println()
 
-        val listDate = MockUtils.getListDates(startDate, endDate)
-        val filtered = listDate.filter {
-            it >= range
+            getRekapBesarUseCase.execute(request).collect { result ->
+                result.onSuccess { rekapBesar ->
+                    rekapBesar?.print()
+                }
+            }
         }
-        filtered.forEach {
-            println(it.toSlashedString())
-        }
+    }
+
+    private fun RekapBesar.print() {
+        println("======================================================================")
+        println("Rekap Besar")
+        println("Sisa Uang          : ${this.parsedSisaUang}")
+        println()
+        println("-----------------------------------------------------------------------")
+        println("Pemasukan")
+        println()
+        println("Uang Masuk         : ${this.parsedTotalUangMasuk}")
+        println("Sisa Pembayaran    : ${this.parsedTotalSisaBelumBayar}")
+        println("-----------------------------------------------------------------------")
+        println("Pengeluaran")
+        println()
+        println("Fee Marketing      : ${this.parsedTotalFeeMarketing}")
+        println("Biaya Marketing    : ${this.parsedTotalBiayaMarketing}")
+        println("Biaya Lainnya      : ${this.parsedTotalBiayaLain}")
+        println("======================================================================")
     }
 
     private fun String.toDate(): Date {
@@ -193,4 +185,7 @@ class PeriodicRekapTest {
 
         return "${tanggal}/${bulan}/${tahun}"
     }
+
+    private fun Date.isWithinRange(startDate: Date, endDate: Date)
+            = !(this.before(startDate) || this.after(endDate))
 }
