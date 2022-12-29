@@ -9,15 +9,17 @@ class MockBiayaLainRepository: BiayaLainRepository {
 
     override fun getAll(offline: Boolean): Flow<Result<List<BiayaLain>?>> {
         return flow {
-            val minBiayaLain = 1L
-            val maxBiayaLain = 50L
-
             val listBiayaLain = listOf(
-                BiayaLain(jenisBiaya = "mock 1", harga = MockUtils.getRandomDuwitValue(minBiayaLain, maxBiayaLain), tanggal = "13/12/2022"),
-                BiayaLain(jenisBiaya = "mock 2", harga = MockUtils.getRandomDuwitValue(minBiayaLain, maxBiayaLain), tanggal = "13/12/2022"),
-                BiayaLain(jenisBiaya = "mock 3", harga = MockUtils.getRandomDuwitValue(minBiayaLain, maxBiayaLain), tanggal = "13/12/2022"),
-                BiayaLain(jenisBiaya = "mock 4", harga = MockUtils.getRandomDuwitValue(minBiayaLain, maxBiayaLain), tanggal = "13/12/2022"),
-                BiayaLain(jenisBiaya = "mock 5", harga = MockUtils.getRandomDuwitValue(minBiayaLain, maxBiayaLain), tanggal = "13/12/2022"),
+                BiayaLain(jenisBiaya = "pembuatan berkas Pak Abi abudhabi", harga = 50000L, tanggal = "12/10/2022"),
+                BiayaLain(jenisBiaya = "Gunting Lakban Materai", harga = 30000L, tanggal = "27/10/2022"),
+                BiayaLain(jenisBiaya = "pembuatan stempel logo GKT", harga = 85000L, tanggal = "31/10/2022"),
+                BiayaLain(jenisBiaya = "pembelian Map Oren dan kertas Glosy", harga = 50000L, tanggal = "03/11/2022"),
+                BiayaLain(jenisBiaya = "kwitansi", harga = 10000L, tanggal = "04/11/2022"),
+                BiayaLain(jenisBiaya = "Dp pembuatan APK", harga = 500000L, tanggal = "21/11/2022"),
+                BiayaLain(jenisBiaya = "Service kendaraan CB", harga = 130000L, tanggal = "25/11/2022"),
+                BiayaLain(jenisBiaya = "Map amplop coklat besar", harga = 50000L, tanggal = "13/12/2022"),
+                BiayaLain(jenisBiaya = "pencetakan brosur 100 lembar", harga = 150000L, tanggal = "20/12/2022"),
+                BiayaLain(jenisBiaya = "Dp design 3D mas fian", harga = 700000L, tanggal = "25/12/2022"),
             )
 
             emit(Result.success(listBiayaLain))
