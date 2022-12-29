@@ -1,5 +1,6 @@
 package net.bagusekasaputra.griyakampoengtkw.domain.entity
 
+import net.bagusekasaputra.griyakampoengtkw.domain.NumberUtil
 import java.util.*
 
 data class FeeMarketing(
@@ -8,6 +9,7 @@ data class FeeMarketing(
     var biayaMarketer: String,
     var tanggalPenerimaan: String,
 ) {
+    val parsedBiayaMarketer = NumberUtil.formatStringToLong(biayaMarketer)
 
     fun getTimemillisTanggalPenerimaan(): Long {
         val formatToCalendar = tanggalPenerimaan.split("/").let {

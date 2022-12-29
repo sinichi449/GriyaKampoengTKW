@@ -35,6 +35,10 @@ data class Pembayaran(
             return mTotal
         }
 
+        fun hitungTotalSisaBelumBayar(hargaKavling: HargaKavling, jumlahUangMasukKavling: Long): Long {
+            return hargaKavling.hargaDanTambahLuasan - jumlahUangMasukKavling
+        }
+
         fun sortPembayaran(listPembayaran: List<Pembayaran>) = PembayaranSorterUtil(listPembayaran).getSortedList()
 
         fun getTanggalPembelian(sortedListPembayaran: List<Pembayaran>) =

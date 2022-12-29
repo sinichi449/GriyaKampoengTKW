@@ -16,6 +16,10 @@ class BiayaMarketingRepositoryImpl(
     private val remoteBiayaMarketingDataSource: RemoteBiayaMarketingDataSource,
 ): BiayaMarketingRepository {
 
+    override fun getBatch(listKalving: List<String>): Flow<Result<Map<String, List<BiayaMarketing>?>?>> {
+        TODO("Not yet implemented")
+    }
+
     override fun getAllByKavlingKode(
         kavlingKode: String,
         offline: Boolean

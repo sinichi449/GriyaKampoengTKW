@@ -13,6 +13,7 @@ data class RekapBesar(
     val sisaUang = totalUangMasuk - totalPengeluaran
 
     val parsedTotalUangMasuk = NumberUtil.formatLongToString(totalUangMasuk)
+    val parsedTotalSisaBelumBayar = NumberUtil.formatLongToString(totalSisaBelumBayar)
     val parsedTotalFeeMarketing = NumberUtil.formatLongToString(totalFeeMarketing)
     val parsedTotalBiayaMarketing = NumberUtil.formatLongToString(totalBiayaMarketing)
     val parsedTotalBiayaLain = NumberUtil.formatLongToString(totalBiayaLain)

@@ -7,6 +7,18 @@ import net.bagusekasaputra.griyakampoengtkw.domain.repository.FeeMarketingReposi
 
 class MockFeeMarketingRepository: FeeMarketingRepository {
 
+    override fun getBatch(listKavling: List<String>): Flow<Result<Map<String, FeeMarketing?>?>> {
+        return flow {
+            val result = mutableMapOf<String, FeeMarketing?>()
+
+            listKavling.forEach { kavling ->
+                result[kavling] = null
+            }
+
+            emit(Result.success(result))
+        }
+    }
+
     override fun getByKavlingKode(
         kavlingKode: String,
         offline: Boolean,

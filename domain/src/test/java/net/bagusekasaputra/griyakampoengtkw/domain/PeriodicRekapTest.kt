@@ -2,10 +2,10 @@ package net.bagusekasaputra.griyakampoengtkw.domain
 
 import kotlinx.coroutines.runBlocking
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.rekap.GetListRekapGlobalAsyncUseCase
+import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.rekap.GetRekapBesarAsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.Kavling
-import net.bagusekasaputra.griyakampoengtkw.domain.mockRepository.MockDataDiriRepository
-import net.bagusekasaputra.griyakampoengtkw.domain.mockRepository.MockHargaKavlingRepository
-import net.bagusekasaputra.griyakampoengtkw.domain.mockRepository.MockPembayaranRepository
+import net.bagusekasaputra.griyakampoengtkw.domain.entity.PeriodeRekap
+import net.bagusekasaputra.griyakampoengtkw.domain.mockRepository.*
 import org.junit.Test
 
 class PeriodicRekapTest {
@@ -13,6 +13,9 @@ class PeriodicRekapTest {
     private val mockDataDiriRepo = MockDataDiriRepository()
     private val mockPembayaranRepo = MockPembayaranRepository()
     private val mockHargaKavlingRepo = MockHargaKavlingRepository()
+    private val mockFeeMarketingRepo = MockFeeMarketingRepository()
+    private val mockBiayaMarketingRepo = MockBiayaMarketingRepository()
+    private val mockBiayaLainRepo = MockBiayaLainRepository()
 
     @Test
     fun test_list_rekap_global() {
@@ -58,6 +61,49 @@ class PeriodicRekapTest {
                             println("---------------------------------------------------------------------")
                         }
                         println()
+                    }
+                }
+            }
+        }
+    }
+
+    @Test
+    fun test_get_all_rekap_besar() {
+        val getRekapBesarUseCase = GetRekapBesarAsyncUseCase(
+            pembayaranRepository = mockPembayaranRepo,
+            hargaKavlingRepository = mockHargaKavlingRepo,
+            feeMarketingRepository = mockFeeMarketingRepo,
+            biayaMarketingRepository = mockBiayaMarketingRepo,
+            biayaLainRepository = mockBiayaLainRepo,
+        )
+
+        runBlocking {
+            val request = GetRekapBesarAsyncUseCase.Request(
+                kavlingList = Kavling.getGriyaKavlingList(),
+                periode = PeriodeRekap.SEMUA,
+                startDate = null,
+                endDate = null,
+            )
+
+            getRekapBesarUseCase.execute(request).collect { result ->
+                result.onSuccess { rekapBesar ->
+                    rekapBesar?.let {
+                        println("======================================================================")
+                        println("Rekap Besar")
+                        println("Sisa Uang          : ${it.parsedSisaUang}")
+                        println()
+                        println("-----------------------------------------------------------------------")
+                        println("Pemasukan")
+                        println()
+                        println("Uang Masuk         : ${it.parsedTotalUangMasuk}")
+                        println("Sisa Pembayaran    : ${it.parsedTotalSisaBelumBayar}")
+                        println("-----------------------------------------------------------------------")
+                        println("Pengeluaran")
+                        println()
+                        println("Fee Marketing      : ${it.parsedTotalFeeMarketing}")
+                        println("Biaya Marketing    : ${it.parsedTotalBiayaMarketing}")
+                        println("Biaya Lainnya      : ${it.parsedTotalBiayaLain}")
+                        println("======================================================================")
                     }
                 }
             }

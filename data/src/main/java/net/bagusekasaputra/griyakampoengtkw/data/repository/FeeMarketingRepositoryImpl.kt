@@ -15,6 +15,9 @@ class FeeMarketingRepositoryImpl(
     private val remoteFeeMarketingDataSource: RemoteFeeMarketingDataSource,
 ): FeeMarketingRepository {
 
+    override fun getBatch(listKavling: List<String>): Flow<Result<Map<String, FeeMarketing?>?>> {
+        TODO("Not yet implemented")
+    }
 
     override fun getByKavlingKode(
         kavlingKode: String,

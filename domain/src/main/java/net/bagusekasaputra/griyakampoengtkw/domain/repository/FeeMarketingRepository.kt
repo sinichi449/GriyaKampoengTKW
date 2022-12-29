@@ -5,6 +5,8 @@ import net.bagusekasaputra.griyakampoengtkw.domain.entity.FeeMarketing
 
 interface FeeMarketingRepository {
 
+    fun getBatch(listKavling: List<String>): Flow<Result<Map<String, FeeMarketing?>?>>
+
     fun getByKavlingKode(kavlingKode: String, offline: Boolean): Flow<Result<FeeMarketing?>>
 
     // I need to get a strictly from online/remote data source because the normal get method
