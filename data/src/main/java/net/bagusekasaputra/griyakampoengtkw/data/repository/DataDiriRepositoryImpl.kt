@@ -17,6 +17,10 @@ class DataDiriRepositoryImpl(
     private val remoteKavlingDataSource: RemoteKavlingDataSource,
 ): DataDiriRepository {
 
+    override fun getBatch(listKavling: List<String>): Flow<Result<Map<String, DataDiri?>?>> {
+        TODO("Not yet implemented")
+    }
+
     override fun getDataDiri(kavlingKode: String, offline: Boolean): Flow<Result<DataDiri?>> {
         return flow {
             val flowOffline = flow<Result<DataDiri?>> {

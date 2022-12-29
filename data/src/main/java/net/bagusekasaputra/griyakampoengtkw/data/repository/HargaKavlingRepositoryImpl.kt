@@ -19,6 +19,10 @@ class HargaKavlingRepositoryImpl(
     private val remoteHargaKavlingSource: RemoteHargaKavlingSource,
 ): HargaKavlingRepository {
 
+    override fun getBatch(listKavling: List<String>): Flow<Result<Map<String, HargaKavling?>?>> {
+        TODO("Not yet implemented")
+    }
+
     override fun getHargaKavling(
         kavlingKode: String,
         offline: Boolean

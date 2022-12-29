@@ -5,6 +5,8 @@ import net.bagusekasaputra.griyakampoengtkw.domain.entity.Pembayaran
 
 interface PembayaranRepository {
 
+    fun getBatch(listKavling: List<String>): Flow<Result<Map<String, List<Pembayaran>?>?>>
+
     fun getAllPembayaran(kavlingKode: String, offline: Boolean): Flow<Result<List<Pembayaran>?>>
 
     // I need to get a strictly from online/remote data source because the normal get method

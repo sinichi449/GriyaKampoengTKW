@@ -5,6 +5,8 @@ import net.bagusekasaputra.griyakampoengtkw.domain.entity.HargaKavling
 
 interface HargaKavlingRepository {
 
+    fun getBatch(listKavling: List<String>): Flow<Result<Map<String, HargaKavling?>?>>
+
     fun getHargaKavling(kavlingKode: String, offline: Boolean): Flow<Result<HargaKavling?>>
 
     fun getSingleHargaKavlingForPembayaran(kavlingKode: String): Flow<HargaKavling>

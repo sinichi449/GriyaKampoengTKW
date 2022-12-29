@@ -7,21 +7,37 @@ import net.bagusekasaputra.griyakampoengtkw.domain.repository.DataDiriRepository
 
 class MockDataDiriRepository: DataDiriRepository {
 
-    override fun getDataDiri(kavlingKode: String, offline: Boolean): Flow<Result<DataDiri?>> {
+    private val mapDataDiri = mapOf(
+        Pair("A1", null),
+        Pair("A2", DataDiri("Siti Hartini", "", "", "", "", "", "")),
+        Pair("A4", DataDiri("Eva Emilia Carolina BR Sinuraya", "", "", "", "", "", "")),
+        Pair("A7", DataDiri("Windi Novianti", "", "", "", "", "", "")),
+        Pair("A9", DataDiri("Nurhayati", "", "", "", "", "", "")),
+        Pair("A14", DataDiri("MD Mohidul", "", "", "", "", "", "")),
+        Pair("B5", DataDiri("Ria Eka Sari", "", "", "", "", "", "")),
+        Pair("B6", DataDiri("Laela Nurkumalasari", "", "", "", "", "", "")),
+        Pair("B11", DataDiri("Hesti Milawati", "", "", "", "", "", "")),
+        Pair("B12", DataDiri("Sri Wahyuni Bahtiyar", "", "", "", "", "", "")),
+        Pair("B16", DataDiri("Budiyarti", "", "", "", "", "", "")),
+        Pair("B17", DataDiri("Iin Handayani", "", "", "", "", "", "")),
+        Pair("B18", DataDiri("Duwi Indah Setiyorini", "", "", "", "", "", "")),
+    )
+
+    override fun getBatch(listKavling: List<String>): Flow<Result<Map<String, DataDiri?>?>> {
         return flow {
-            val listDataDiri = listOf(
-                DataDiri("Andi Setya Budi", "", "", "", "", "", ""),
-                DataDiri("Iwan Ferdiyanto", "", "", "", "", "", ""),
-                DataDiri("Norma Fiki Sugiarta", "", "", "", "", "", ""),
-            )
-            val dataDiri: DataDiri? = when (kavlingKode) {
-                "A2" -> listDataDiri[0]
-                "A3" -> listDataDiri[1]
-                "A4" -> listDataDiri[2]
-                else -> null
+            val result = mutableMapOf<String, DataDiri?>()
+
+            listKavling.forEach { kavling ->
+                result[kavling] = mapDataDiri[kavling]
             }
 
-            emit(Result.success(dataDiri))
+            emit(Result.success(result))
+        }
+    }
+
+    override fun getDataDiri(kavlingKode: String, offline: Boolean): Flow<Result<DataDiri?>> {
+        return flow {
+            emit(Result.success(mapDataDiri[kavlingKode]))
         }
     }
 

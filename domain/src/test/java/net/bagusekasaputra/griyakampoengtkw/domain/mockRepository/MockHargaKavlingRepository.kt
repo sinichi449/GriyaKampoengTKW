@@ -7,19 +7,39 @@ import net.bagusekasaputra.griyakampoengtkw.domain.repository.HargaKavlingReposi
 
 class MockHargaKavlingRepository: HargaKavlingRepository {
 
+    private val mapHargaKavling = mapOf<String, HargaKavling?>(
+        Pair("A2", HargaKavling("A2", "320,000,000", "0")),
+        Pair("A4", HargaKavling("A4", "230,000,000", "0")),
+        Pair("A7", HargaKavling("A7", "230,000,000", "0")),
+        Pair("A9", HargaKavling("A9", "230,000,000", "0")),
+        Pair("A14", HargaKavling("A14", "230,000,000", "0")),
+        Pair("B5", HargaKavling("B5", "220,000,000", "0")),
+        Pair("B6", HargaKavling("B6", "220,000,000", "0")),
+        Pair("B11", HargaKavling("B11", "380,000,000", "0")),
+        Pair("B12", HargaKavling("B12", "220,000,000", "0")),
+        Pair("B16", HargaKavling("B16", "220,000,000", "0")),
+        Pair("B17", HargaKavling("B17", "220,000,000", "0")),
+        Pair("B18", HargaKavling("B18", "900,000", "0")),
+    )
+
+    override fun getBatch(listKavling: List<String>): Flow<Result<Map<String, HargaKavling?>?>> {
+        return flow {
+            val result = mutableMapOf<String, HargaKavling?>()
+
+            listKavling.forEach { kavling ->
+                result[kavling] = mapHargaKavling[kavling]
+            }
+
+            emit(Result.success(result))
+        }
+    }
+
     override fun getHargaKavling(
         kavlingKode: String,
         offline: Boolean,
     ): Flow<Result<HargaKavling?>> {
         return flow {
-            val hargaKavling = when (kavlingKode) {
-                "A2" -> HargaKavling("A2", "250,000,000", "0")
-                "A3" -> HargaKavling("A3", "210,000,000", "0")
-                "A4" -> HargaKavling("A4", "230,000,000", "0")
-                else -> null
-            }
-
-            emit(Result.success(hargaKavling))
+            emit(Result.success(mapHargaKavling[kavlingKode]))
         }
     }
 

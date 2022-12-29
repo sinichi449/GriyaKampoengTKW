@@ -17,6 +17,10 @@ class PembayaranRepositoryImpl(
     private val remotePembayaranSource: RemotePembayaranSource,
 ): PembayaranRepository {
 
+    override fun getBatch(listKavling: List<String>): Flow<Result<Map<String, List<Pembayaran>?>?>> {
+        TODO("Not yet implemented")
+    }
+
     override fun getAllPembayaran(
         kavlingKode: String,
         offline: Boolean

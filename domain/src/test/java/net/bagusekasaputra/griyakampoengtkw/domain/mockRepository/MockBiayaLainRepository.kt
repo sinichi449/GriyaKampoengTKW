@@ -28,7 +28,7 @@ class MockBiayaLainRepository: BiayaLainRepository {
         TODO("Not yet implemented")
     }
 
-    override fun addBiayaLain(biayaLain: BiayaLain): Flow<Result<Nothing>?> {
+    override fun addBiayaLain(biayaLain: BiayaLain): Flow<Result<Nothing?>> {
         TODO("Not yet implemented")
     }
 
