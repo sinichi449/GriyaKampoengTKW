@@ -55,6 +55,9 @@ class MockPembayaranRepository: PembayaranRepository {
         Pair("B18", listOf(
             Pembayaran("ITJ 1", "16/12/2022", "900,000", "", 0.0, "", "", timeMillis, true),
         )),
+        Pair("B19", listOf(
+            Pembayaran("ITJ 1", "24/12/2022", "1,300,000", "", 0.0, "", "", timeMillis, true)
+        ))
     )
 
     override fun getBatch(listKavling: List<String>): Flow<Result<Map<String, List<Pembayaran>?>?>> {

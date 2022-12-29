@@ -140,6 +140,28 @@ class PeriodicRekapTest {
         }
     }
 
+    @Test
+    fun test_get_minggu_ini_rekap_besar() {
+        runBlocking {
+            val request = GetRekapBesarAsyncUseCase.Request(
+                kavlingList = Kavling.getGriyaKavlingList(),
+                periode = PeriodeRekap.MINGGU_INI,
+                startDate = null,
+                endDate = null,
+            )
+
+            val rangeRekap = getRekapBesarUseCase.getWeeklyRangeDate()
+            println("Range rekap : ${rangeRekap[0].toSlashedString()} - ${rangeRekap[1].toSlashedString()}")
+            println()
+
+            getRekapBesarUseCase.execute(request).collect { result ->
+                result.onSuccess { rekapBesar ->
+                    rekapBesar?.print()
+                }
+            }
+        }
+    }
+
     private fun RekapBesar.print() {
         println("======================================================================")
         println("Rekap Besar")
@@ -153,6 +175,7 @@ class PeriodicRekapTest {
         println("-----------------------------------------------------------------------")
         println("Pengeluaran")
         println()
+        println("Total Pengeluaran  : ${this.parsedTotalPengeluaran}")
         println("Fee Marketing      : ${this.parsedTotalFeeMarketing}")
         println("Biaya Marketing    : ${this.parsedTotalBiayaMarketing}")
         println("Biaya Lainnya      : ${this.parsedTotalBiayaLain}")

@@ -206,8 +206,20 @@ class GetRekapBesarAsyncUseCase(
 
                 it.tanggal.toDate().isWithinRange(startDate, endDate)
             }
-            PeriodeRekap.MINGGU_INI -> TODO()
-            PeriodeRekap.CUSTOM -> TODO()
+            PeriodeRekap.MINGGU_INI -> this?.filter {
+                val rangeMinggu = getWeeklyRangeDate()
+                val startDate = rangeMinggu[0]
+                val endDate = rangeMinggu[1]
+
+                it.tanggal.toDate().isWithinRange(startDate, endDate)
+            }
+            PeriodeRekap.CUSTOM -> this?.filter {
+                val rangeTanggal = getCustomRangeDate(start!!, end!!)
+                val startDate = rangeTanggal[0]
+                val endDate = rangeTanggal[1]
+
+                it.tanggal.toDate().isWithinRange(startDate, endDate)
+            }
         }
     }
 
@@ -235,8 +247,20 @@ class GetRekapBesarAsyncUseCase(
 
                 it.tanggal.toDate().isWithinRange(startDate, endDate)
             }
-            PeriodeRekap.MINGGU_INI -> TODO()
-            PeriodeRekap.CUSTOM -> TODO()
+            PeriodeRekap.MINGGU_INI -> this?.filter {
+                val rangeMinggu = getWeeklyRangeDate()
+                val startDate = rangeMinggu[0]
+                val endDate = rangeMinggu[1]
+
+                it.tanggal.toDate().isWithinRange(startDate, endDate)
+            }
+            PeriodeRekap.CUSTOM -> this?.filter {
+                val rangeTanggal = getCustomRangeDate(start!!, end!!)
+                val startDate = rangeTanggal[0]
+                val endDate = rangeTanggal[1]
+
+                it.tanggal.toDate().isWithinRange(startDate, endDate)
+            }
         }
     }
 
