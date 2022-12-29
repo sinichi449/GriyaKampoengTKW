@@ -21,6 +21,7 @@ import net.bagusekasaputra.griyakampoengtkw.presentation.databinding.DialogActio
 import net.bagusekasaputra.griyakampoengtkw.presentation.databinding.FragmentBiayaLainBinding
 import net.bagusekasaputra.griyakampoengtkw.presentation.tableview.biayaLain.*
 import net.bagusekasaputra.griyakampoengtkw.presentation.toCalendar
+import net.bagusekasaputra.griyakampoengtkw.presentation.toSlashedDate
 import net.bagusekasaputra.griyakampoengtkw.presentation.util.DialogUtil
 import net.bagusekasaputra.griyakampoengtkw.presentation.util.FabHelper
 import net.bagusekasaputra.griyakampoengtkw.presentation.util.InputUtil
@@ -155,6 +156,11 @@ class BiayaLainFragment: Fragment() {
 
             dialogBinding.btnTambahkan.text = "Ubah"
             dialogBinding.btnHapus.visibility = View.VISIBLE
+        } else {
+            // Add tanggal hari ini on edtTanggal in Non-Edit Mode
+            val tanggalHariIni = Calendar.getInstance().time
+                .toSlashedDate()
+            dialogBinding.edtTanggal.setText(tanggalHariIni)
         }
 
         dialogView.show()
@@ -281,6 +287,8 @@ class BiayaLainFragment: Fragment() {
     }
 
     private fun onCompleteDialogOperation(msg: String) {
+        sync()
+
         Snackbar.make(binding.root, msg, Snackbar.LENGTH_LONG).apply {
             setAction("OK") { this.dismiss() }
         }.show()
