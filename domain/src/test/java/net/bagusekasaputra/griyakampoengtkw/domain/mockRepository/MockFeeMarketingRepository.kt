@@ -7,12 +7,16 @@ import net.bagusekasaputra.griyakampoengtkw.domain.repository.FeeMarketingReposi
 
 class MockFeeMarketingRepository: FeeMarketingRepository {
 
+    private val mapFeeMarketing = mutableMapOf<String, FeeMarketing?>(
+        Pair("A2", FeeMarketing("A2", "Sridevi", "9,800,000", tanggalPenerimaan = "01/03/2021"))
+    )
+
     override fun getBatch(listKavling: List<String>): Flow<Result<Map<String, FeeMarketing?>?>> {
         return flow {
             val result = mutableMapOf<String, FeeMarketing?>()
 
             listKavling.forEach { kavling ->
-                result[kavling] = null
+                result[kavling] = mapFeeMarketing[kavling]
             }
 
             emit(Result.success(result))
@@ -24,29 +28,7 @@ class MockFeeMarketingRepository: FeeMarketingRepository {
         offline: Boolean,
     ): Flow<Result<FeeMarketing?>> {
         return flow {
-            val feeMarketing = when (kavlingKode) {
-                "A2" -> FeeMarketing(
-                    kavlingKode = "A2",
-                    namaMarketer = "Gunawan",
-                    biayaMarketer = "4,000,000",
-                    tanggalPenerimaan = "13/09/2022",
-                )
-                "A3" -> FeeMarketing(
-                    kavlingKode = "A3",
-                    namaMarketer = "Mbak Novi",
-                    biayaMarketer = "3,550,000",
-                    tanggalPenerimaan = "01/01/2021",
-                )
-                "A4" -> FeeMarketing(
-                    kavlingKode = "A4",
-                    namaMarketer = "Watinah",
-                    biayaMarketer = "5,800,000",
-                    tanggalPenerimaan = "26/05/2022",
-                )
-                else -> null
-            }
-
-            emit(Result.success(feeMarketing))
+            emit(Result.success(mapFeeMarketing[kavlingKode]))
         }
     }
 
