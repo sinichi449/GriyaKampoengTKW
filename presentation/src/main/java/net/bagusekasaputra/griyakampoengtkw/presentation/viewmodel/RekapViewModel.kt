@@ -119,7 +119,7 @@ class RekapViewModel @Inject constructor(
             PeriodeRekap.TAHUN_INI -> getRekapBesarAsyncUseCase.getTahunSekarang().toString()
             PeriodeRekap.BULAN_INI -> getRekapBesarAsyncUseCase.getMonthlyRangeDate().toRangeString()
             PeriodeRekap.MINGGU_INI -> getRekapBesarAsyncUseCase.getWeeklyRangeDate().toRangeString()
-            PeriodeRekap.CUSTOM -> "Otw"
+            PeriodeRekap.CUSTOM -> "${startDate?.toSlashedDate()} - ${endDate?.toSlashedDate()}"
         }
     }
 

@@ -12,12 +12,17 @@ import android.widget.ArrayAdapter
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import dagger.hilt.android.AndroidEntryPoint
 import net.bagusekasaputra.griyakampoengtkw.domain.NumberUtil
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.PeriodeRekap
 import net.bagusekasaputra.griyakampoengtkw.presentation.databinding.CardRekapPengeluaranBinding
 import net.bagusekasaputra.griyakampoengtkw.presentation.databinding.CardRekapUangMasukBinding
+import net.bagusekasaputra.griyakampoengtkw.presentation.databinding.DialogPickCustomPeriodeBinding
 import net.bagusekasaputra.griyakampoengtkw.presentation.databinding.FragmentRekapBesarBinding
+import net.bagusekasaputra.griyakampoengtkw.presentation.toDate
+import net.bagusekasaputra.griyakampoengtkw.presentation.util.DatePickerHelper
+import net.bagusekasaputra.griyakampoengtkw.presentation.util.InputUtil
 import net.bagusekasaputra.griyakampoengtkw.presentation.viewmodel.RekapViewModel
 
 @AndroidEntryPoint
@@ -64,7 +69,7 @@ class RekapBesarFragment : Fragment() {
                     2 -> viewModel.getRekapBesar(periode = PeriodeRekap.MINGGU_INI, onFailure = onFailure)
                     3 -> viewModel.getRekapBesar(periode = PeriodeRekap.BULAN_INI, onFailure = onFailure)
                     4 -> viewModel.getRekapBesar(periode = PeriodeRekap.TAHUN_INI, onFailure = onFailure)
-                    5 -> Toast.makeText(requireContext().applicationContext, "Masih dalam tahap development, mohon sabar!", Toast.LENGTH_LONG).show()
+                    5 -> showCustomPeriodePickerDialog()
                     else -> Toast.makeText(requireContext().applicationContext, "Spinner Position unreconizable!!", Toast.LENGTH_LONG).show()
                 }
             }
@@ -73,6 +78,61 @@ class RekapBesarFragment : Fragment() {
 
             }
 
+        }
+    }
+
+    private fun showCustomPeriodePickerDialog() {
+        val dialogBinding = DialogPickCustomPeriodeBinding.inflate(layoutInflater)
+
+        val dialogView = MaterialAlertDialogBuilder(
+            requireContext(),
+            net.bagusekasaputra.griyakampoengtkw.presentation.R.style.AlertDialogTheme
+        ).apply {
+            setView(dialogBinding.root)
+        }.create()
+
+        dialogView.show()
+
+        DatePickerHelper(
+            ctx = requireContext(),
+            triggerButton = dialogBinding.btnPilihStartTanggal,
+            targetEdt = dialogBinding.edtStartTanggal,
+        ).setupDateDefaultOrPick(false)
+
+        DatePickerHelper(
+            ctx = requireContext(),
+            triggerButton = dialogBinding.btnPilihEndTanggal,
+            targetEdt = dialogBinding.edtEndTanggal,
+        ).setupDateDefaultOrPick(true)
+
+        dialogBinding.btnLanjutkan.setOnClickListener {
+            val isInvalidEdt = InputUtil.isNullOrEmptyEditTexts(
+                dialogBinding.edtStartTanggal,
+                dialogBinding.edtEndTanggal,
+            )
+
+            if (!isInvalidEdt) {
+                val startDate = dialogBinding.edtStartTanggal.text.toString()
+                    .toDate()
+                val endDate = dialogBinding.edtEndTanggal.text.toString()
+                    .toDate()
+
+                viewModel.getRekapBesar(
+                    periode = PeriodeRekap.CUSTOM,
+                    startDate = startDate,
+                    endDate = endDate,
+                    onFailure = {
+                        Toast.makeText(requireContext().applicationContext, it, Toast.LENGTH_LONG)
+                            .show()
+                    }
+                )
+
+                dialogView.dismiss()
+            }
+        }
+
+        dialogBinding.btnBatal.setOnClickListener {
+            dialogView.dismiss()
         }
     }
 
