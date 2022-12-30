@@ -32,4 +32,7 @@ interface FeeMarketingRoomDao {
 
     @Query("DELETE FROM fee_marketing WHERE kavling_kode=:kavlingKode")
     fun deleteFeeMarketing(kavlingKode: String)
+
+    @Query("DELETE FROM fee_marketing")
+    fun deleteAll()
 }

@@ -5,8 +5,11 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.emitAll
 import kotlinx.coroutines.flow.flow
 import net.bagusekasaputra.griyakampoengtkw.data.DataUtil
+import net.bagusekasaputra.griyakampoengtkw.data.interfaces.local.LocalMetadataDataSource
 import net.bagusekasaputra.griyakampoengtkw.data.interfaces.local.LocalPembayaranDataSource
+import net.bagusekasaputra.griyakampoengtkw.data.interfaces.remote.RemoteMetadataDataSource
 import net.bagusekasaputra.griyakampoengtkw.data.interfaces.remote.RemotePembayaranSource
+import net.bagusekasaputra.griyakampoengtkw.data.model.MetadataModel
 import net.bagusekasaputra.griyakampoengtkw.data.model.PembayaranModel
 import net.bagusekasaputra.griyakampoengtkw.domain.NumberUtil
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.Pembayaran
@@ -15,17 +18,67 @@ import net.bagusekasaputra.griyakampoengtkw.domain.repository.PembayaranReposito
 class PembayaranRepositoryImpl(
     private val localPembayaranDataSource: LocalPembayaranDataSource,
     private val remotePembayaranSource: RemotePembayaranSource,
+    private val localMetadata: LocalMetadataDataSource,
+    private val remoteMetadata: RemoteMetadataDataSource,
 ): PembayaranRepository {
 
+    private val metadataTable = "formPembayaran"
+
     override fun getBatch(listKavling: List<String>): Flow<Result<Map<String, List<Pembayaran>?>?>> {
-        TODO("Not yet implemented")
+        return flow {
+            checkCache()
+
+            val batchPembayaran = mutableMapOf<String, List<Pembayaran>?>()
+
+            // Consolidating models
+            listKavling.forEach { kavling ->
+                val localModel = localPembayaranDataSource.getAllPembayaran(kavling)
+                    .onFailure {
+                        Log.d("DEBUG_ME", "FAILED attempt to GET Pembayaran $kavling Local : ${it.message}")
+                    }
+                    .getOrNull()
+
+                if (localModel.isNullOrEmpty()) {
+                    remotePembayaranSource.getAllPembayaran(kavling)
+                        .onSuccess { listPembayaran ->
+                            listPembayaran?.forEach {
+                                localPembayaranDataSource.addPembayaranModel(
+                                    kavlingKode = kavling,
+                                    hargaKavling = 0L, // TODO: What is this for??
+                                    pembayaranModel = it
+                                ).onFailure {
+                                    Log.d("DEBUG_ME", "PembayaranRepoImpl:53 onFailure -> ${it.message}")
+                                }
+                            }
+                        }
+                        .onFailure {
+                            Log.d("DEBUG_ME", "FAILED attempt to GET Pembayaran $kavling Remote : ${it.message}")
+                        }
+
+                    // Second try
+                    localPembayaranDataSource.getAllPembayaran(kavling)
+                        .onSuccess { listPembayaran ->
+                            batchPembayaran[kavling] = listPembayaran?.map { mapPembayaran(it) }
+                        }
+                        .onFailure {
+                            Log.d("DEBUG_ME", "FAILED attempt to GET Pembayaran $kavling on PembaranRepoImpl:63 : ${it.message}")
+                        }
+                } else {
+                    batchPembayaran[kavling] = localModel.map { mapPembayaran(it) }
+                }
+            }
+
+            emit(Result.success(batchPembayaran))
+        }
     }
 
     override fun getAllPembayaran(
         kavlingKode: String,
-        offline: Boolean
+        offline: Boolean,
     ): Flow<Result<List<Pembayaran>?>> {
         return flow {
+            // TODO: Check metadata
+
             val flowOffline = flow<Result<List<Pembayaran>?>> {
                 val localResult = localPembayaranDataSource.getAllPembayaran(kavlingKode)
                 val mapResult = DataUtil.mapListResult(
@@ -89,6 +142,8 @@ class PembayaranRepositoryImpl(
         pembayaran: Pembayaran,
     ): Flow<Result<Boolean>> {
         return flow {
+            updateMetadata()
+
             val remoteResult = remotePembayaranSource.addPembayaranModel(
                 kavlingKode,
                 hargaKavling,
@@ -112,6 +167,8 @@ class PembayaranRepositoryImpl(
         newPembayaran: Pembayaran,
     ): Flow<Result<Boolean>> {
         return flow {
+            updateMetadata()
+
             // We need to update the local too!
             val localResult = localPembayaranDataSource.updatePembayaranModel(
                 kavlingKode, mapPembayaran(oldPembayaran), mapPembayaran(newPembayaran)
@@ -141,6 +198,8 @@ class PembayaranRepositoryImpl(
         termin: String,
     ): Flow<Result<Boolean>> {
         return flow {
+            updateMetadata()
+
             // delete both from local and remote
             val localResult = localPembayaranDataSource.deletePembayaranModelByTermin(kavlingKode, termin)
             localResult.onFailure {
@@ -155,6 +214,31 @@ class PembayaranRepositoryImpl(
                 emit(Result.failure(it))
             }
         }
+    }
+
+    private suspend fun checkCache() {
+        // Cache validation
+        val localTimestamp = localMetadata.get(metadataTable)?.timestamp
+        val remoteTimestamp = remoteMetadata.get(metadataTable)?.timestamp!!
+        val cacheInvalid = localTimestamp != remoteTimestamp
+
+        if (cacheInvalid) {
+            Log.d("DEBUG_ME", "Pembayaran cache is invalid! Purging local data now.")
+            localPembayaranDataSource.deleteAll()
+                .onFailure {
+                    Log.d("DEBUG_ME", "FAILED attempt to Invalidate/Purge Pembayaran Local : ${it.message}")
+                }
+            localMetadata.insert(MetadataModel(metadataTable, remoteTimestamp))
+        }
+    }
+
+    private suspend fun updateMetadata() {
+        val currentTimemillis = System.currentTimeMillis()
+        val oldMetadata = localMetadata.get(metadataTable) ?: MetadataModel(metadataTable, 0L)
+        val newMetadata = MetadataModel(metadataTable, currentTimemillis)
+
+        localMetadata.insert(newMetadata)
+        remoteMetadata.update(oldMetadata, newMetadata)
     }
 
     override fun deleteAllPembayaran(kavlingKode: String): Flow<Result<Boolean>> {

@@ -35,4 +35,7 @@ interface HargaKavlingRoomDao {
 
     @Query("DELETE FROM harga_kavling WHERE kavling_kode=:kavlingKode")
     fun deleteHargaKavling(kavlingKode: String)
+
+    @Query("DELETE FROM harga_kavling")
+    fun deleteAll()
 }

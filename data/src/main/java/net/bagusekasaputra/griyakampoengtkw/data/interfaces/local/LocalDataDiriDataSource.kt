@@ -9,4 +9,6 @@ interface LocalDataDiriDataSource {
     suspend fun addDataDiri(kavlingKode: String, dataDiriModel: DataDiriModel): Result<Nothing?>
 
     suspend fun deleteDataDiri(kavlingKode: String): Result<Nothing?>
+
+    suspend fun deleteAll(): Result<Nothing?>
 }

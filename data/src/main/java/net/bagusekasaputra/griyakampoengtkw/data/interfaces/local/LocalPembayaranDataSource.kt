@@ -13,4 +13,6 @@ interface LocalPembayaranDataSource {
     suspend fun deletePembayaranModelByTermin(kavlingKode: String, termin: String): Result<Nothing?>
 
     suspend fun deleteAllPembayaranModel(kavlingKode: String): Result<Nothing?>
+
+    suspend fun deleteAll(): Result<Nothing?>
 }

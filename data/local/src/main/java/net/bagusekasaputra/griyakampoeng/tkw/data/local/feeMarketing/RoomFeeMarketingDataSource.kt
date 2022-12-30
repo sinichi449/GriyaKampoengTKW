@@ -6,7 +6,7 @@ import net.bagusekasaputra.griyakampoengtkw.data.interfaces.local.LocalFeeMarket
 import net.bagusekasaputra.griyakampoengtkw.data.model.FeeMarketingModel
 
 class RoomFeeMarketingDataSource(
-    roomDatabase: MyRoomDatabase
+    private val roomDatabase: MyRoomDatabase
 ): LocalFeeMarketingDataSource {
 
     private val feeMarketingDao = roomDatabase.getFeeMarketingDao()
@@ -76,6 +76,22 @@ class RoomFeeMarketingDataSource(
     override suspend fun deleteFeeMarketing(kavlingKode: String): Result<Nothing?> {
         return RoomRequestHelper.doNonGetOperation {
             feeMarketingDao.deleteFeeMarketing(kavlingKode)
+        }
+    }
+
+    override suspend fun deleteAll(): Result<Nothing?> {
+        return try {
+            feeMarketingDao.deleteAll()
+
+            roomDatabase.close()
+
+            Result.success(null)
+        } catch (e: Exception) {
+            e.printStackTrace()
+
+            roomDatabase.close()
+
+            Result.failure(e)
         }
     }
 }

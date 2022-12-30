@@ -6,6 +6,12 @@
     tools:context=".fragment.rekap.RekapGlobalFragment"
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
+    <include
+        android:id="@+id/layout_warning_loading"
+        layout="@layout/layout_warning_and_loading_rekap"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"/>
+
     <com.evrencoskun.tableview.TableView
         android:id="@+id/table_rekap_global"
         android:layout_width="match_parent"
@@ -15,6 +21,7 @@
         app:show_horizontal_separator="true"
         app:show_vertical_separator="true"
         app:separator_color="@color/black"
-        android:layout_margin="8dp"/>
+        android:layout_margin="8dp"
+        android:visibility="gone"/>
 
 </FrameLayout>

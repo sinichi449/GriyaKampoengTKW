@@ -6,7 +6,7 @@ import net.bagusekasaputra.griyakampoengtkw.data.interfaces.local.LocalHargaKavl
 import net.bagusekasaputra.griyakampoengtkw.data.model.HargaKavlingModel
 
 class RoomHargaKavlingDataSource(
-    roomDatabase: MyRoomDatabase
+    private val roomDatabase: MyRoomDatabase
 ): LocalHargaKavlingDataSource {
 
     private val hargaKavlingDao = roomDatabase.getHargaKavlingDao()
@@ -53,6 +53,22 @@ class RoomHargaKavlingDataSource(
     override suspend fun deleteHargaKavlingModel(kavlingKode: String): Result<Nothing?> {
         return RoomRequestHelper.doNonGetOperation {
             hargaKavlingDao.deleteHargaKavling(kavlingKode)
+        }
+    }
+
+    override suspend fun deleteAll(): Result<Nothing?> {
+        return try {
+            hargaKavlingDao.deleteAll()
+
+            roomDatabase.close()
+
+            Result.success(null)
+        } catch (e: Exception) {
+            e.printStackTrace()
+
+            roomDatabase.close()
+
+            Result.failure(e)
         }
     }
 

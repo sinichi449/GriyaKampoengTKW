@@ -1,12 +1,16 @@
 package net.bagusekasaputra.griyakampoengtkw.data.repository
 
+import android.util.Log
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.emitAll
 import kotlinx.coroutines.flow.flow
 import net.bagusekasaputra.griyakampoengtkw.data.DataUtil
 import net.bagusekasaputra.griyakampoengtkw.data.interfaces.local.LocalBiayaMarketingDataSource
+import net.bagusekasaputra.griyakampoengtkw.data.interfaces.local.LocalMetadataDataSource
 import net.bagusekasaputra.griyakampoengtkw.data.interfaces.remote.RemoteBiayaMarketingDataSource
+import net.bagusekasaputra.griyakampoengtkw.data.interfaces.remote.RemoteMetadataDataSource
 import net.bagusekasaputra.griyakampoengtkw.data.model.BiayaMarketingModel
+import net.bagusekasaputra.griyakampoengtkw.data.model.MetadataModel
 import net.bagusekasaputra.griyakampoengtkw.domain.NumberUtil
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.BiayaMarketing
 import net.bagusekasaputra.griyakampoengtkw.domain.repository.BiayaMarketingRepository
@@ -14,10 +18,57 @@ import net.bagusekasaputra.griyakampoengtkw.domain.repository.BiayaMarketingRepo
 class BiayaMarketingRepositoryImpl(
     private val localBiayaMarketingDataSource: LocalBiayaMarketingDataSource,
     private val remoteBiayaMarketingDataSource: RemoteBiayaMarketingDataSource,
+    private val localMetadata: LocalMetadataDataSource,
+    private val remoteMetadata: RemoteMetadataDataSource,
 ): BiayaMarketingRepository {
 
-    override fun getBatch(listKalving: List<String>): Flow<Result<Map<String, List<BiayaMarketing>?>?>> {
-        TODO("Not yet implemented")
+    private val metadataTable = "biayaMarketing"
+
+    override fun getBatch(listKavling: List<String>): Flow<Result<Map<String, List<BiayaMarketing>?>?>> {
+        return flow {
+            checkCache()
+
+            val batchBiayaMarketing = mutableMapOf<String, List<BiayaMarketing>?>()
+
+            listKavling.forEach { kavling ->
+                val localModel = localBiayaMarketingDataSource.getAllBiayaMarketing(kavling)
+                    .map {
+                        return@map it?.values?.toList()
+                    }
+                    .onFailure {
+                        Log.d("DEBUG_ME", "BiayaMarketingRepoImpl:39 onFailure -> ${it.message}")
+                    }
+                    .getOrNull()
+
+                if (localModel.isNullOrEmpty()) {
+                    remoteBiayaMarketingDataSource.getAllBiayaMarketing(kavling)
+                        .onSuccess { listModel ->
+                            listModel?.forEach {
+                                localBiayaMarketingDataSource.addBiayaMarketing(kavling, it)
+                            }
+                        }
+                        .onFailure {
+                            Log.d("DEBUG_ME", "BiayaMarketingRepoImpl:49 onFailure -> ${it.message}")
+                        }
+
+                    // Second try
+                    localBiayaMarketingDataSource.getAllBiayaMarketing(kavling)
+                        .map {
+                            return@map it?.values?.toList()
+                        }
+                        .onSuccess {
+                            batchBiayaMarketing[kavling] = it?.map { model -> mapBiayaMarketing(model) }
+                        }
+                        .onFailure {
+                            Log.d("DEBUG_ME", "BiayaMarketingRepoImpl:60 onFailure -> ${it.message}")
+                        }
+                } else {
+                    batchBiayaMarketing[kavling] = localModel.map { mapBiayaMarketing(it) }
+                }
+            }
+
+            emit(Result.success(batchBiayaMarketing))
+        }
     }
 
     override fun getAllByKavlingKode(
@@ -103,6 +154,8 @@ class BiayaMarketingRepositoryImpl(
 
     override fun addBiayaMarketing(biayaMarketing: BiayaMarketing): Flow<Result<Nothing?>> {
         return flow {
+            updateMetadata()
+
             val remoteResult = remoteBiayaMarketingDataSource.addBiayaMarketing(
                 kavlingKode = biayaMarketing.kavlingKode,
                 biayaMarketingModel = mapBiayaMarketing(biayaMarketing)
@@ -116,6 +169,8 @@ class BiayaMarketingRepositoryImpl(
         newBiayaMarketing: BiayaMarketing
     ): Flow<Result<Nothing?>> {
         return flow {
+            updateMetadata()
+
             val localResult = localBiayaMarketingDataSource.update(
                 id = oldBiayaMarketing.id ?: -1L,
                 newBiayaMarketingModel = mapBiayaMarketing(newBiayaMarketing),
@@ -139,6 +194,8 @@ class BiayaMarketingRepositoryImpl(
         biayaMarketing: BiayaMarketing
     ): Flow<Result<Nothing?>> {
         return flow {
+            updateMetadata()
+
             val localResult = localBiayaMarketingDataSource.deleteSingle(biayaMarketing.id ?: -1L)
             localResult.onFailure {
                 emit(Result.failure(it))
@@ -155,6 +212,8 @@ class BiayaMarketingRepositoryImpl(
 
     override fun deleteAll(kavlingKode: String): Flow<Result<Nothing?>> {
         return flow {
+            updateMetadata()
+
             val localResult = localBiayaMarketingDataSource.deleteAllBiayaMarketing(kavlingKode)
             localResult.onFailure {
                 emit(Result.failure(it))
@@ -164,6 +223,31 @@ class BiayaMarketingRepositoryImpl(
 
             emit(remoteResult)
         }
+    }
+
+    private suspend fun checkCache() {
+        // Cache validation
+        val localTimestamp = localMetadata.get(metadataTable)?.timestamp
+        val remoteTimestamp = remoteMetadata.get(metadataTable)?.timestamp!!
+        val cacheInvalid = localTimestamp != remoteTimestamp
+
+        if (cacheInvalid) {
+            Log.d("DEBUG_ME", "Biaya Marketing cache is invalid! Purging local data now.")
+            localBiayaMarketingDataSource.deleteAll()
+                .onFailure {
+                    Log.d("DEBUG_ME", "FAILED attempt to Invalidate/Purge Biaya Marketing Local : ${it.message}")
+                }
+            localMetadata.insert(MetadataModel(metadataTable, remoteTimestamp))
+        }
+    }
+
+    private suspend fun updateMetadata() {
+        val currentTimemillis = System.currentTimeMillis()
+        val oldMetadata = localMetadata.get(metadataTable) ?: MetadataModel(metadataTable, 0L)
+        val newMetadata = MetadataModel(metadataTable, currentTimemillis)
+
+        localMetadata.insert(newMetadata)
+        remoteMetadata.update(oldMetadata, newMetadata)
     }
 
     private fun mapBiayaMarketing(biayaMarketing: BiayaMarketing): BiayaMarketingModel {

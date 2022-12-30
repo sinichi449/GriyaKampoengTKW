@@ -6,7 +6,7 @@ import net.bagusekasaputra.griyakampoengtkw.data.interfaces.local.LocalBiayaMark
 import net.bagusekasaputra.griyakampoengtkw.data.model.BiayaMarketingModel
 
 class RoomBiayaMarketingDataSource(
-    roomDatabase: MyRoomDatabase
+    private val roomDatabase: MyRoomDatabase
 ): LocalBiayaMarketingDataSource {
 
     private val biayaMarketingDao = roomDatabase.getBiayaMarketingV2Dao()
@@ -76,6 +76,22 @@ class RoomBiayaMarketingDataSource(
     override suspend fun deleteAllBiayaMarketing(kavlingKode: String): Result<Nothing?> {
         return RoomRequestHelper.doNonGetOperation {
             biayaMarketingDao.deleteAll(kavlingKode)
+        }
+    }
+
+    override suspend fun deleteAll(): Result<Nothing?> {
+        return try {
+            biayaMarketingDao.invalidateAll()
+
+            roomDatabase.close()
+
+            Result.success(null)
+        } catch (e: Exception) {
+            e.printStackTrace()
+
+            roomDatabase.close()
+
+            Result.failure(e)
         }
     }
 

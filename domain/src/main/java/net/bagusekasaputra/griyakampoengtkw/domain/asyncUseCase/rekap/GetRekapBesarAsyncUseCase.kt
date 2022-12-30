@@ -1,5 +1,6 @@
 package net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.rekap
 
+import androidx.lifecycle.MutableLiveData
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flow
@@ -24,20 +25,31 @@ class GetRekapBesarAsyncUseCase(
         val endDate: Date? = null,
     ): AsyncUseCase.Request
 
+    val progressState = MutableLiveData<ProgressState>(ProgressState(0, "Menginisialisasi ..."))
+
     override fun process(request: Request): Flow<Result<RekapBesar?>> {
         return flow {
+            progressState.postValue(ProgressState(18, "Menyusun tabel Pembayaran ..."))
             val mapPembayaran = pembayaranRepository.getBatch(request.kavlingList)
                 .first()
                 .getOrThrow()
+
+            progressState.postValue(ProgressState(36, "Menyusun tabel Harga Kavling ..."))
             val mapHargaKavling = hargaKavlingRepository.getBatch(request.kavlingList)
                 .first()
                 .getOrThrow()
+
+            progressState.postValue(ProgressState(54, "Menyusun tabel Fee Marketing ..."))
             val mapFeeMarketing = feeMarketingRepository.getBatch(request.kavlingList)
                 .first()
                 .getOrThrow()
+
+            progressState.postValue(ProgressState(72, "Menyusun tabel Biaya Marketing ..."))
             val mapBiayaMarketing = biayaMarketingRepository.getBatch(request.kavlingList)
                 .first()
                 .getOrThrow()
+
+            progressState.postValue(ProgressState(90, "Menyusun tabel Biaya Lain-lain ..."))
             val listBiayaLain = biayaLainRepository.getAll(false)
                 .first()
                 .getOrThrow()
@@ -48,6 +60,8 @@ class GetRekapBesarAsyncUseCase(
             var totalBiayaMarketing = 0L
             var totalBiayaLain = 0L
 
+
+            progressState.postValue(ProgressState(95, "Mengevaluasi data rekap ..."))
             request.kavlingList.forEach { kavling ->
                 val listPembayaran = mapPembayaran?.get(kavling)
                     .filterPeriode(request.periode, request.startDate, request.endDate)
@@ -71,6 +85,8 @@ class GetRekapBesarAsyncUseCase(
                 ?.forEach {
                     totalBiayaLain += it.harga
                 }
+
+            progressState.postValue(ProgressState(100, "Rekap akan segera dimuat!"))
 
             emit(Result.success(RekapBesar(
                 totalUangMasuk,

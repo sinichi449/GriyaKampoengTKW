@@ -45,5 +45,7 @@ interface BiayaMarketingV2RoomDao {
     @Query("DELETE FROM biaya_marketing_v2 WHERE kavling_kode=:kavlingKode")
     fun deleteAll(kavlingKode: String)
 
+    @Query("DELETE FROM biaya_marketing_v2")
+    fun invalidateAll()
 
 }

@@ -16,4 +16,6 @@ interface LocalFeeMarketingDataSource {
 
     suspend fun deleteFeeMarketing(kavlingKode: String): Result<Nothing?>
 
+    suspend fun deleteAll(): Result<Nothing?>
+
 }

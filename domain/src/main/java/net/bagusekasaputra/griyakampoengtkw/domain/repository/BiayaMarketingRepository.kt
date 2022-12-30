@@ -5,7 +5,7 @@ import net.bagusekasaputra.griyakampoengtkw.domain.entity.BiayaMarketing
 
 interface BiayaMarketingRepository {
 
-    fun getBatch(listKalving: List<String>): Flow<Result<Map<String, List<BiayaMarketing>?>?>>
+    fun getBatch(listKavling: List<String>): Flow<Result<Map<String, List<BiayaMarketing>?>?>>
 
     fun getAllByKavlingKode(kavlingKode: String, offline: Boolean): Flow<Result<List<BiayaMarketing>?>>
 

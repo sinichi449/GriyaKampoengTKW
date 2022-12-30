@@ -20,4 +20,6 @@ interface LocalBiayaMarketingDataSource {
 
     suspend fun deleteAllBiayaMarketing(kavlingKode: String): Result<Nothing?>
 
+    suspend fun deleteAll(): Result<Nothing?>
+
 }

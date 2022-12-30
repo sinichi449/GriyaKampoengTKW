@@ -21,6 +21,8 @@ import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.hargaKavling.Get
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.kavling.GetKavlingByBlockAsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.pembayaran.GetAllPembayaranAsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.pengingat.*
+import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.rekap.GetListRekapGlobalAsyncUseCase
+import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.rekap.GetRekapBesarAsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.rekapGlobal.GetAllRekapGlobalUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.reportKavling.GetAllReportKavlingAsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.repository.*
@@ -362,5 +364,41 @@ object UseCaseModule {
     @Provides
     fun provideDeleteBiayaLainUseCase(biayaLainRepository: BiayaLainRepository): DeleteBiayaLainAsyncUseCase {
         return DeleteBiayaLainAsyncUseCase(biayaLainRepository)
+    }
+
+    /**
+     * Rekap Global
+     */
+    @Provides
+    fun provideGetListRekapGlobalUseCase(
+        dataDiriRepository: DataDiriRepository,
+        pembayaranRepository: PembayaranRepository,
+        hargaKavlingRepository: HargaKavlingRepository,
+    ): GetListRekapGlobalAsyncUseCase {
+        return GetListRekapGlobalAsyncUseCase(
+            dataDiriRepository,
+            pembayaranRepository,
+            hargaKavlingRepository
+        )
+    }
+
+    /**
+     * Rekap Besar
+     */
+    @Provides
+    fun provideGetRekapBesarUseCase(
+        pembayaranRepository: PembayaranRepository,
+        hargaKavlingRepository: HargaKavlingRepository,
+        feeMarketingRepository: FeeMarketingRepository,
+        biayaMarketingRepository: BiayaMarketingRepository,
+        biayaLainRepository: BiayaLainRepository,
+    ): GetRekapBesarAsyncUseCase {
+        return GetRekapBesarAsyncUseCase(
+            pembayaranRepository,
+            hargaKavlingRepository,
+            feeMarketingRepository,
+            biayaMarketingRepository,
+            biayaLainRepository
+        )
     }
 }

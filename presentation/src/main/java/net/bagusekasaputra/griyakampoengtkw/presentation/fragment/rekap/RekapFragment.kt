@@ -8,12 +8,9 @@ import android.view.ViewGroup
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
-import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
-import net.bagusekasaputra.griyakampoengtkw.domain.entity.ProgressState
 import net.bagusekasaputra.griyakampoengtkw.presentation.R
 import net.bagusekasaputra.griyakampoengtkw.presentation.databinding.FragmentRekapBinding
-import net.bagusekasaputra.griyakampoengtkw.presentation.databinding.LayoutWarningAndLoadingRekapBinding
 import net.bagusekasaputra.griyakampoengtkw.presentation.databinding.RekapSmallTabBinding
 import net.bagusekasaputra.griyakampoengtkw.presentation.viewmodel.RekapViewModel
 
@@ -36,21 +33,11 @@ class RekapFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        if (savedInstanceState == null) {
+            navigateTo(RekapType.Global)
+        }
+
         setupViewModel()
-
-        binding.layoutWarningAndLoadingRekap.btnLihatRingkasan.setOnClickListener {
-            onLoadingView()
-
-            sync()
-        }
-
-        binding.swipeRefreshRekap.setOnRefreshListener {
-            onLoadingView()
-
-            sync()
-
-            binding.swipeRefreshRekap.isRefreshing = false
-        }
 
         binding.smallTab.btnRekapGlobal.setOnClickListener {
             navigateTo(RekapType.Global)
@@ -59,29 +46,14 @@ class RekapFragment : Fragment() {
         binding.smallTab.btnRekapBesar.setOnClickListener {
             navigateTo(RekapType.Besar)
         }
-    }
 
-    private fun sync() {
-        viewModel.getAllRekap {
-            Snackbar.make(binding.root, it, Snackbar.LENGTH_SHORT).show()
-        }
+        binding.swipeRefreshRekap.isEnabled = false
     }
 
     private fun setupViewModel() {
         viewModel.currentFragment.observe(requireActivity()) {
             if (it != null) {
                 binding.smallTab.setSelectedRekap(it)
-
-                if (it == RekapType.Besar)
-                    enableSwipeRefresh(true)
-                else
-                    enableSwipeRefresh(false)
-            }
-        }
-
-        viewModel.isLoadingRekapDone.observe(requireActivity()) { done ->
-            if (done != null) {
-                if (done) onCompletedView()
             }
         }
 
@@ -138,33 +110,6 @@ class RekapFragment : Fragment() {
                     setTextColor(white)
                 }
             }
-        }
-    }
-
-    private fun LayoutWarningAndLoadingRekapBinding.setProgressState(progressState: ProgressState) {
-        this.linearprogressReport.progress = progressState.percent
-        this.tvLoadingReport.text = progressState.message
-    }
-
-    private fun enableSwipeRefresh(enable: Boolean) {
-        binding.swipeRefreshRekap.isEnabled = enable
-    }
-
-    private fun onLoadingView() {
-        binding.layoutWarningAndLoadingRekap.layoutWarningRekap.visibility = View.GONE
-        binding.layoutWarningAndLoadingRekap.layoutLoadingRekap.visibility = View.VISIBLE
-
-        binding.layoutRekapContainer.visibility = View.GONE
-    }
-
-    private fun onCompletedView() {
-        binding.layoutWarningAndLoadingRekap.root.visibility = View.GONE
-
-        binding.layoutRekapContainer.visibility = View.VISIBLE
-
-        val currentFragment = viewModel.currentFragment.value
-        if (currentFragment == null) {
-            navigateTo(RekapType.Global)
         }
     }
 }

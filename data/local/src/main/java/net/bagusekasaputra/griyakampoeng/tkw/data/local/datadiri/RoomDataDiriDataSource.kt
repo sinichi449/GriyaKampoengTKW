@@ -6,7 +6,7 @@ import net.bagusekasaputra.griyakampoengtkw.data.interfaces.local.LocalDataDiriD
 import net.bagusekasaputra.griyakampoengtkw.data.model.DataDiriModel
 
 class RoomDataDiriDataSource(
-    roomDatabase: MyRoomDatabase
+    private val roomDatabase: MyRoomDatabase
 ): LocalDataDiriDataSource {
 
     private val dataDiriRoomDao = roomDatabase.getDataDiriDao()
@@ -52,6 +52,22 @@ class RoomDataDiriDataSource(
     override suspend fun deleteDataDiri(kavlingKode: String): Result<Nothing?> {
         return RoomRequestHelper.doNonGetOperation {
             dataDiriRoomDao.deleteByKavlingKode(kavlingKode)
+        }
+    }
+
+    override suspend fun deleteAll(): Result<Nothing?> {
+        return try {
+            dataDiriRoomDao.deleteAll()
+
+            roomDatabase.close()
+
+            Result.success(null)
+        } catch (e: Exception) {
+            e.printStackTrace()
+
+            roomDatabase.close()
+
+            Result.failure(e)
         }
     }
 

@@ -31,11 +31,11 @@ class MockBiayaMarketingRepository: BiayaMarketingRepository {
         )),
     )
 
-    override fun getBatch(listKalving: List<String>): Flow<Result<Map<String, List<BiayaMarketing>?>?>> {
+    override fun getBatch(listKavling: List<String>): Flow<Result<Map<String, List<BiayaMarketing>?>?>> {
         return flow {
             val result = mutableMapOf<String, List<BiayaMarketing>?>()
 
-            listKalving.forEach { kavling ->
+            listKavling.forEach { kavling ->
                 result[kavling] = mapBiayaMarketing[kavling]
             }
 

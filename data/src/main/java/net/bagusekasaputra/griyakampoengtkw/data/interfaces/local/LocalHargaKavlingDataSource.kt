@@ -10,4 +10,6 @@ interface LocalHargaKavlingDataSource {
 
     suspend fun deleteHargaKavlingModel(kavlingKode: String): Result<Nothing?>
 
+    suspend fun deleteAll(): Result<Nothing?>
+
 }

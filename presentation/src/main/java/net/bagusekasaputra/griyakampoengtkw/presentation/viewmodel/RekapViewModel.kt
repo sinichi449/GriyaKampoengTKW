@@ -3,8 +3,16 @@ package net.bagusekasaputra.griyakampoengtkw.presentation.viewmodel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.asLiveData
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.Job
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.rekap.GetListRekapGlobalAsyncUseCase
+import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.rekap.GetRekapBesarAsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.Kavling
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.RekapBesar
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.RekapGlobal
@@ -16,15 +24,11 @@ import javax.inject.Inject
 
 @HiltViewModel
 class RekapViewModel @Inject constructor(
-
+    private val getListRekapGlobalAsyncUseCase: GetListRekapGlobalAsyncUseCase,
+    private val getRekapBesarAsyncUseCase: GetRekapBesarAsyncUseCase,
 ): ViewModel() {
 
     val currentFragment = MutableLiveData<RekapType>()
-
-    private val _isFinishedProgress = MutableLiveData(true)
-    val isFinishedOperation: LiveData<Boolean>
-        get() = _isFinishedProgress
-
 
     private val _listRekapGlobalLive = MutableLiveData(
         listOf(RekapGlobal("-", "-", "-", 0L, 0L))
@@ -37,20 +41,37 @@ class RekapViewModel @Inject constructor(
         get() = _rekapBesarLive
 
 
-    private val _isLoadingRekapDone = MutableLiveData<Boolean?>()
-    val isLoadingRekapDone: LiveData<Boolean?>
-        get() = _isLoadingRekapDone
-
-    private var getRekapJob: Job? = null
+    val isRekapGlobalLoaded = MutableStateFlow(false)
 
     private val kavlingList = Kavling.getGriyaKavlingList()
 
+    val rekapGlobalProgress = getListRekapGlobalAsyncUseCase.progressState.asLiveData(Dispatchers.Default)
+    val rekapBesarProgress = getRekapBesarAsyncUseCase.progressState
 
 
-    fun getAllRekap(onComplete: (msg: String) -> Unit) {
-        getRekapJob?.cancel()
+    fun getListRekapBesar(onFailure: (msg: String) -> Unit) {
+        val request = GetListRekapGlobalAsyncUseCase.Request(kavlingList)
+        isRekapGlobalLoaded.update { false }
 
-//        _isLoadingRekapDone.value = false
+        CoroutineScope(Dispatchers.IO).launch {
+            getListRekapGlobalAsyncUseCase.execute(request).collect { result ->
+                result.onSuccess { listRekapGlobal ->
+                    listRekapGlobal?.let {
+                        _listRekapGlobalLive.postValue(it)
+                    }
+
+                    isRekapGlobalLoaded.update { true }
+                }
+
+                result.onFailure {
+                    isRekapGlobalLoaded.update { true }
+
+                    withContext(Dispatchers.Main) {
+                        onFailure(it.message ?: "null")
+                    }
+                }
+            }
+        }
     }
 
     fun getRowHeaderRekapTable(): List<RgRowHeader> {

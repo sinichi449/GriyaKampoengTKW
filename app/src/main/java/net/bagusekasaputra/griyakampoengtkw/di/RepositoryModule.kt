@@ -47,8 +47,16 @@ object RepositoryModule {
         localDataDiriDataSource: LocalDataDiriDataSource,
         remoteDataDiriRepository: RemoteDataDiriRepository,
         remoteKavlingDataSource: RemoteKavlingDataSource,
+        localMetadata: LocalMetadataDataSource,
+        remoteMetadata: RemoteMetadataDataSource,
     ): DataDiriRepository {
-        return DataDiriRepositoryImpl(localDataDiriDataSource, remoteDataDiriRepository, remoteKavlingDataSource)
+        return DataDiriRepositoryImpl(
+            localDataDiriDataSource,
+            remoteDataDiriRepository,
+            remoteKavlingDataSource,
+            localMetadata,
+            remoteMetadata
+        )
     }
 
 
@@ -59,8 +67,10 @@ object RepositoryModule {
     fun providePembayaranRepository(
         localPembayaranDataSource: LocalPembayaranDataSource,
         remotePembayaranSource: RemotePembayaranSource,
+        localMetadata: LocalMetadataDataSource,
+        remoteMetadata: RemoteMetadataDataSource,
     ): PembayaranRepository {
-        return PembayaranRepositoryImpl(localPembayaranDataSource, remotePembayaranSource)
+        return PembayaranRepositoryImpl(localPembayaranDataSource, remotePembayaranSource, localMetadata, remoteMetadata)
     }
 
 
@@ -70,9 +80,11 @@ object RepositoryModule {
     @Provides
     fun provideHargaKavlingRepository(
         localHargaKavlingDataSource: LocalHargaKavlingDataSource,
-        remoteHargaKavlingSource: RemoteHargaKavlingSource
+        remoteHargaKavlingSource: RemoteHargaKavlingSource,
+        localMetadata: LocalMetadataDataSource,
+        remoteMetadata: RemoteMetadataDataSource,
     ): HargaKavlingRepository {
-        return HargaKavlingRepositoryImpl(localHargaKavlingDataSource, remoteHargaKavlingSource)
+        return HargaKavlingRepositoryImpl(localHargaKavlingDataSource, remoteHargaKavlingSource, localMetadata, remoteMetadata)
     }
 
 
@@ -130,9 +142,11 @@ object RepositoryModule {
     @Provides
     fun provideFeeMarketingRepository(
         localFeeMarketingDataSource: LocalFeeMarketingDataSource,
-        remoteFeeMarketingDataSource: RemoteFeeMarketingDataSource
+        remoteFeeMarketingDataSource: RemoteFeeMarketingDataSource,
+        localMetadata: LocalMetadataDataSource,
+        remoteMetadata: RemoteMetadataDataSource,
     ): FeeMarketingRepository {
-        return FeeMarketingRepositoryImpl(localFeeMarketingDataSource, remoteFeeMarketingDataSource)
+        return FeeMarketingRepositoryImpl(localFeeMarketingDataSource, remoteFeeMarketingDataSource, localMetadata, remoteMetadata)
     }
 
 
@@ -143,8 +157,10 @@ object RepositoryModule {
     fun provideBiayaMarketingRepository(
         localBiayaMarketingDataSource: LocalBiayaMarketingDataSource,
         remoteBiayaMarketDataSource: RemoteBiayaMarketingDataSource,
+        localMetadata: LocalMetadataDataSource,
+        remoteMetadata: RemoteMetadataDataSource,
     ): BiayaMarketingRepository {
-        return BiayaMarketingRepositoryImpl(localBiayaMarketingDataSource, remoteBiayaMarketDataSource)
+        return BiayaMarketingRepositoryImpl(localBiayaMarketingDataSource, remoteBiayaMarketDataSource, localMetadata, remoteMetadata)
     }
 
 

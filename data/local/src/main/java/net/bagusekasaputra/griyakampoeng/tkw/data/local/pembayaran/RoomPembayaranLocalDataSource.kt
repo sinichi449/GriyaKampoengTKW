@@ -6,7 +6,7 @@ import net.bagusekasaputra.griyakampoengtkw.data.interfaces.local.LocalPembayara
 import net.bagusekasaputra.griyakampoengtkw.data.model.PembayaranModel
 
 class RoomPembayaranLocalDataSource(
-    roomDatabase: MyRoomDatabase,
+    private val roomDatabase: MyRoomDatabase,
 ): LocalPembayaranDataSource {
 
     private val pembayaranDao = roomDatabase.getPembayaranDao()
@@ -119,6 +119,22 @@ class RoomPembayaranLocalDataSource(
     override suspend fun deleteAllPembayaranModel(kavlingKode: String): Result<Nothing?> {
         return RoomRequestHelper.doNonGetOperation {
             pembayaranDao.deleteAllInKavling(kavlingKode)
+        }
+    }
+
+    override suspend fun deleteAll(): Result<Nothing?> {
+        return try {
+            pembayaranDao.deleteAll()
+
+            roomDatabase.close()
+
+            Result.success(null)
+        } catch (e: Exception) {
+            e.printStackTrace()
+
+            roomDatabase.close()
+
+            Result.failure(e)
         }
     }
 }

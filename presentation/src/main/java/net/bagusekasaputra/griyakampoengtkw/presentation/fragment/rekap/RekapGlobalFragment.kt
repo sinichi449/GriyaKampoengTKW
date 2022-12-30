@@ -4,10 +4,19 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.repeatOnLifecycle
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+import net.bagusekasaputra.griyakampoengtkw.domain.entity.ProgressState
 import net.bagusekasaputra.griyakampoengtkw.presentation.databinding.FragmentRekapGlobalBinding
+import net.bagusekasaputra.griyakampoengtkw.presentation.databinding.LayoutWarningAndLoadingRekapBinding
 import net.bagusekasaputra.griyakampoengtkw.presentation.tableview.rekapGlobal.*
 import net.bagusekasaputra.griyakampoengtkw.presentation.viewmodel.RekapViewModel
 
@@ -31,10 +40,36 @@ class RekapGlobalFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         setupViewModel()
+
+        binding.layoutWarningLoading.btnLihatRingkasan.setOnClickListener {
+            binding.layoutWarningLoading.layoutWarningRekap.visibility = View.GONE
+            binding.layoutWarningLoading.layoutLoadingRekap.visibility = View.VISIBLE
+
+            viewModel.getListRekapBesar { failMsg ->
+                Toast.makeText(requireContext().applicationContext, failMsg, Toast.LENGTH_LONG).show()
+            }
+        }
     }
 
 
     private fun setupViewModel() {
+        viewModel.rekapGlobalProgress.observe(requireActivity()) {
+            if (it != null) {
+                binding.layoutWarningLoading.setProgress(it)
+            }
+        }
+
+        CoroutineScope(Dispatchers.Default).launch {
+            repeatOnLifecycle(Lifecycle.State.STARTED) {
+                viewModel.isRekapGlobalLoaded.collect { loaded ->
+                    withContext(Dispatchers.Main) {
+                        binding.layoutWarningLoading.root.visibility = if (loaded) View.GONE else View.VISIBLE
+                        binding.tableRekapGlobal.visibility = if (loaded) View.VISIBLE else View.GONE
+                    }
+                }
+            }
+        }
+
         viewModel.listRekapGlobalLive.observe(requireActivity()) {
             val columnHeaders = viewModel.getColumnHeaderRekapTable()
             val rowHeaders = viewModel.getRowHeaderRekapTable()
@@ -61,5 +96,10 @@ class RekapGlobalFragment : Fragment() {
         binding.tableRekapGlobal.setColumnWidth(RekapGlobalColumnPosition.JUMLAH_UANG_MASUK, 350)
         binding.tableRekapGlobal.setColumnWidth(RekapGlobalColumnPosition.SISA_PEMBAYARAN, 350)
         binding.tableRekapGlobal.setColumnWidth(RekapGlobalColumnPosition.PERSENTASE, 350)
+    }
+
+    private fun LayoutWarningAndLoadingRekapBinding.setProgress(progressState: ProgressState) {
+        linearprogressReport.progress = progressState.percent
+        tvLoadingReport.text = progressState.message
     }
 }

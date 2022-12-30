@@ -12,19 +12,11 @@
         android:layout_height="match_parent"
         android:scrollbarAlwaysDrawVerticalTrack="true">
 
-        <include
-            android:id="@+id/layout_warning_and_loading_rekap"
-            layout="@layout/layout_warning_and_loading_rekap"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:visibility="visible"/>
-
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/layout_rekap_container"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_marginBottom="56dp"
-            android:visibility="gone">
+            android:layout_marginBottom="56dp">
 
             <include
                 android:id="@+id/small_tab"

@@ -1,5 +1,6 @@
 package net.bagusekasaputra.griyakampoengtkw.data.repository
 
+import android.util.Log
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.channels.trySendBlocking
 import kotlinx.coroutines.flow.Flow
@@ -8,8 +9,11 @@ import kotlinx.coroutines.flow.emitAll
 import kotlinx.coroutines.flow.flow
 import net.bagusekasaputra.griyakampoengtkw.data.DataUtil
 import net.bagusekasaputra.griyakampoengtkw.data.interfaces.local.LocalHargaKavlingDataSource
+import net.bagusekasaputra.griyakampoengtkw.data.interfaces.local.LocalMetadataDataSource
 import net.bagusekasaputra.griyakampoengtkw.data.interfaces.remote.RemoteHargaKavlingSource
+import net.bagusekasaputra.griyakampoengtkw.data.interfaces.remote.RemoteMetadataDataSource
 import net.bagusekasaputra.griyakampoengtkw.data.model.HargaKavlingModel
+import net.bagusekasaputra.griyakampoengtkw.data.model.MetadataModel
 import net.bagusekasaputra.griyakampoengtkw.domain.NumberUtil
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.HargaKavling
 import net.bagusekasaputra.griyakampoengtkw.domain.repository.HargaKavlingRepository
@@ -17,10 +21,51 @@ import net.bagusekasaputra.griyakampoengtkw.domain.repository.HargaKavlingReposi
 class HargaKavlingRepositoryImpl(
     private val localHargaKavlingDataSource: LocalHargaKavlingDataSource,
     private val remoteHargaKavlingSource: RemoteHargaKavlingSource,
+    private val localMetadata: LocalMetadataDataSource,
+    private val remoteMetadata: RemoteMetadataDataSource,
 ): HargaKavlingRepository {
 
+    private val metadataTable = "hargaKavling"
+
     override fun getBatch(listKavling: List<String>): Flow<Result<Map<String, HargaKavling?>?>> {
-        TODO("Not yet implemented")
+        return flow {
+            checkCache()
+
+            val mapHargaKavling = mutableMapOf<String, HargaKavling?>()
+
+            listKavling.forEach { kavling ->
+                val localModel = localHargaKavlingDataSource.getHargaKavlingModel(kavling)
+                    .onFailure {
+                        Log.d("DEBUG_ME", "FAILED GET Harga Kavling $kavling Local HargaKavlingRepoImpl:39 : ${it.message}")
+                    }
+                    .getOrNull()
+
+                if (localModel == null) {
+                    remoteHargaKavlingSource.getHargaKavlingModel(kavling)
+                        .onSuccess { model ->
+                            model?.let {
+                                localHargaKavlingDataSource.addHargaKavlingModel(it)
+                            }
+                        }
+                        .onFailure {
+                            Log.d("DEBUG_ME", "HargaKavlingRepoImpl:49 Failure -> ${it.message}")
+                        }
+
+                    // Second try
+                    localHargaKavlingDataSource.getHargaKavlingModel(kavling)
+                        .onSuccess {
+                            mapHargaKavling[kavling] = if (it != null) mapHargaKavling(it) else null
+                        }
+                        .onFailure {
+                            Log.d("DEBUG_ME", "HargaKavlingRepoImpl:60 onFailure -> ${it.message}")
+                        }
+                } else {
+                    mapHargaKavling[kavling] = mapHargaKavling(localModel)
+                }
+            }
+
+            emit(Result.success(mapHargaKavling))
+        }
     }
 
     override fun getHargaKavling(
@@ -28,6 +73,8 @@ class HargaKavlingRepositoryImpl(
         offline: Boolean
     ): Flow<Result<HargaKavling?>> {
         return flow {
+            // TODO: Check metadata
+
             val flowOffline = flow<Result<HargaKavling?>> {
                 val localResult = localHargaKavlingDataSource.getHargaKavlingModel(kavlingKode)
 
@@ -74,6 +121,8 @@ class HargaKavlingRepositoryImpl(
 
     override fun addHargaKavling(hargaKavling: HargaKavling): Flow<Result<Boolean>> {
         return flow {
+            updateMetadata()
+
             val mapHargaKavling = mapHargaKavling(hargaKavling)
             val remoteResult = remoteHargaKavlingSource.addHargaKavlingModel(mapHargaKavling)
 
@@ -90,6 +139,8 @@ class HargaKavlingRepositoryImpl(
 
     override fun deleteHargaKavling(kavlingKode: String): Flow<Result<Nothing?>> {
         return flow {
+            updateMetadata()
+
             // We need to delete the data on the local data source too
             val localDelete = localHargaKavlingDataSource.deleteHargaKavlingModel(kavlingKode)
             localDelete.onFailure {
@@ -116,6 +167,31 @@ class HargaKavlingRepositoryImpl(
 
             awaitClose {  }
         }
+    }
+
+    private suspend fun checkCache() {
+        // Cache validation
+        val localTimestamp = localMetadata.get(metadataTable)?.timestamp
+        val remoteTimestamp = remoteMetadata.get(metadataTable)?.timestamp!!
+        val cacheInvalid = localTimestamp != remoteTimestamp
+
+        if (cacheInvalid) {
+            Log.d("DEBUG_ME", "Harga Kavling cache is invalid! Purging local data now.")
+            localHargaKavlingDataSource.deleteAll()
+                .onFailure {
+                    Log.d("DEBUG_ME", "FAILED attempt to Invalidate/Purge Harga Kavling Local : ${it.message}")
+                }
+            localMetadata.insert(MetadataModel(metadataTable, remoteTimestamp))
+        }
+    }
+
+    private suspend fun updateMetadata() {
+        val currentTimemillis = System.currentTimeMillis()
+        val oldMetadata = localMetadata.get(metadataTable) ?: MetadataModel(metadataTable, 0L)
+        val newMetadata = MetadataModel(metadataTable, currentTimemillis)
+
+        localMetadata.insert(newMetadata)
+        remoteMetadata.update(oldMetadata, newMetadata)
     }
 
     private fun mapHargaKavling(hargaKavling: HargaKavling): HargaKavlingModel {

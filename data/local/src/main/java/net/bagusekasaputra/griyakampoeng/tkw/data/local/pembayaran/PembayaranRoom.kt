@@ -56,4 +56,7 @@ interface PembayaranRoomDao {
     @Query("DELETE FROM pembayaran WHERE kavling_kode=:kavlingKode")
     fun deleteAllInKavling(kavlingKode: String)
 
+    @Query("DELETE FROM pembayaran")
+    fun deleteAll()
+
 }
