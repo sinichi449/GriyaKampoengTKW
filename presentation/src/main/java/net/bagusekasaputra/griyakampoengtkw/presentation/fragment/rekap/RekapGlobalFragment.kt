@@ -45,7 +45,7 @@ class RekapGlobalFragment : Fragment() {
             binding.layoutWarningLoading.layoutWarningRekap.visibility = View.GONE
             binding.layoutWarningLoading.layoutLoadingRekap.visibility = View.VISIBLE
 
-            viewModel.getListRekapBesar { failMsg ->
+            viewModel.getListRekapGlobal { failMsg ->
                 Toast.makeText(requireContext().applicationContext, failMsg, Toast.LENGTH_LONG).show()
             }
         }

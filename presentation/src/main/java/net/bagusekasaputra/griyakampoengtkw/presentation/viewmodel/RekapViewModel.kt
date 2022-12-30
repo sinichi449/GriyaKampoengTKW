@@ -14,12 +14,15 @@ import kotlinx.coroutines.withContext
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.rekap.GetListRekapGlobalAsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.rekap.GetRekapBesarAsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.Kavling
+import net.bagusekasaputra.griyakampoengtkw.domain.entity.PeriodeRekap
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.RekapBesar
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.RekapGlobal
 import net.bagusekasaputra.griyakampoengtkw.presentation.fragment.rekap.RekapType
 import net.bagusekasaputra.griyakampoengtkw.presentation.tableview.rekapGlobal.RgCell
 import net.bagusekasaputra.griyakampoengtkw.presentation.tableview.rekapGlobal.RgColumnHeader
 import net.bagusekasaputra.griyakampoengtkw.presentation.tableview.rekapGlobal.RgRowHeader
+import net.bagusekasaputra.griyakampoengtkw.presentation.toSlashedDate
+import java.util.*
 import javax.inject.Inject
 
 @HiltViewModel
@@ -42,14 +45,17 @@ class RekapViewModel @Inject constructor(
 
 
     val isRekapGlobalLoaded = MutableStateFlow(false)
+    val isRekapBesarLoaded = MutableLiveData<Boolean>()
+
+    val rekapGlobalProgress = getListRekapGlobalAsyncUseCase.progressState.asLiveData(Dispatchers.Default)
+    val rekapBesarProgress = getRekapBesarAsyncUseCase.progressState.asLiveData(Dispatchers.Default)
+
+    val rangeTanggal = MutableLiveData<String>()
 
     private val kavlingList = Kavling.getGriyaKavlingList()
 
-    val rekapGlobalProgress = getListRekapGlobalAsyncUseCase.progressState.asLiveData(Dispatchers.Default)
-    val rekapBesarProgress = getRekapBesarAsyncUseCase.progressState
 
-
-    fun getListRekapBesar(onFailure: (msg: String) -> Unit) {
+    fun getListRekapGlobal(onFailure: (msg: String) -> Unit) {
         val request = GetListRekapGlobalAsyncUseCase.Request(kavlingList)
         isRekapGlobalLoaded.update { false }
 
@@ -72,6 +78,53 @@ class RekapViewModel @Inject constructor(
                 }
             }
         }
+    }
+
+    fun getRekapBesar(
+        periode: PeriodeRekap,
+        startDate: Date? = null,
+        endDate: Date? = null,
+        onFailure: (msg: String) -> Unit,
+    ) {
+        val request = GetRekapBesarAsyncUseCase.Request(kavlingList, periode, startDate, endDate)
+
+        isRekapBesarLoaded.value = false
+
+        CoroutineScope(Dispatchers.IO).launch {
+            getRekapBesarAsyncUseCase.execute(request).collect { result ->
+                result.onSuccess { rekapBesar ->
+                    if (rekapBesar == null) {
+                        withContext(Dispatchers.Main) {
+                            onFailure("Rekap Besar is NULL")
+                        }
+                    } else {
+                        _rekapBesarLive.postValue(rekapBesar)
+                    }
+
+                    isRekapBesarLoaded.postValue(true)
+                }
+
+                result.onFailure {
+                    withContext(Dispatchers.Main) {
+                        onFailure(it.message ?: "null")
+                    }
+
+                    isRekapBesarLoaded.postValue(true)
+                }
+            }
+        }
+
+        rangeTanggal.value = when (periode) {
+            PeriodeRekap.SEMUA -> "-"
+            PeriodeRekap.TAHUN_INI -> getRekapBesarAsyncUseCase.getTahunSekarang().toString()
+            PeriodeRekap.BULAN_INI -> getRekapBesarAsyncUseCase.getMonthlyRangeDate().toRangeString()
+            PeriodeRekap.MINGGU_INI -> getRekapBesarAsyncUseCase.getWeeklyRangeDate().toRangeString()
+            PeriodeRekap.CUSTOM -> "Otw"
+        }
+    }
+
+    private fun List<Date>.toRangeString(): String {
+        return "${this[0].toSlashedDate()} - ${this[1].toSlashedDate()}"
     }
 
     fun getRowHeaderRekapTable(): List<RgRowHeader> {

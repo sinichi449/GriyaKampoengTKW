@@ -1,15 +1,20 @@
 package net.bagusekasaputra.griyakampoengtkw.presentation.fragment.rekap
 
 import android.R
+import android.app.ProgressDialog
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.AdapterView
+import android.widget.AdapterView.OnItemSelectedListener
 import android.widget.ArrayAdapter
+import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import dagger.hilt.android.AndroidEntryPoint
 import net.bagusekasaputra.griyakampoengtkw.domain.NumberUtil
+import net.bagusekasaputra.griyakampoengtkw.domain.entity.PeriodeRekap
 import net.bagusekasaputra.griyakampoengtkw.presentation.databinding.CardRekapPengeluaranBinding
 import net.bagusekasaputra.griyakampoengtkw.presentation.databinding.CardRekapUangMasukBinding
 import net.bagusekasaputra.griyakampoengtkw.presentation.databinding.FragmentRekapBesarBinding
@@ -46,9 +51,61 @@ class RekapBesarFragment : Fragment() {
         setupViewModel()
 
         setupSpinnerPeriode()
+
+        binding.spinnerPeriode.onItemSelectedListener = object : OnItemSelectedListener {
+            override fun onItemSelected(parentView: AdapterView<*>?, selectedItemView: View?, position: Int, id: Long) {
+                val onFailure = { failMsg: String ->
+                    Toast.makeText(requireContext().applicationContext, failMsg, Toast.LENGTH_LONG).show()
+                }
+
+                when (position) {
+                    0 -> {}
+                    1 -> viewModel.getRekapBesar(periode = PeriodeRekap.SEMUA, onFailure = onFailure)
+                    2 -> viewModel.getRekapBesar(periode = PeriodeRekap.MINGGU_INI, onFailure = onFailure)
+                    3 -> viewModel.getRekapBesar(periode = PeriodeRekap.BULAN_INI, onFailure = onFailure)
+                    4 -> viewModel.getRekapBesar(periode = PeriodeRekap.TAHUN_INI, onFailure = onFailure)
+                    5 -> Toast.makeText(requireContext().applicationContext, "Masih dalam tahap development, mohon sabar!", Toast.LENGTH_LONG).show()
+                    else -> Toast.makeText(requireContext().applicationContext, "Spinner Position unreconizable!!", Toast.LENGTH_LONG).show()
+                }
+            }
+
+            override fun onNothingSelected(parentView: AdapterView<*>?) {
+
+            }
+
+        }
     }
 
     private fun setupViewModel() {
+        val progressDialog = createProgressDialog()
+
+        viewModel.rekapBesarProgress.observe(requireActivity()) {
+            if (it != null) {
+                progressDialog.progress = it.percent
+                progressDialog.setMessage(it.message)
+            }
+        }
+
+        viewModel.isRekapBesarLoaded.observe(requireActivity()) {
+            if (it != null) {
+                if (it) {
+                    progressDialog.dismiss()
+
+                    binding.scrollviewRekapBesar.alpha = 1.0f
+                } else  {
+                    progressDialog.show()
+
+                    binding.scrollviewRekapBesar.alpha = 0.1f
+                }
+            }
+        }
+
+        viewModel.rangeTanggal.observe(requireActivity()) {
+            if (it != null) {
+                binding.tvRangePeriode.text = it
+            }
+        }
+
         viewModel.rekapBesarLive.observe(requireActivity()) {
             if (it != null) {
                 val sisaUang = "Rp ${it.parsedSisaUang}"
@@ -96,6 +153,20 @@ class RekapBesarFragment : Fragment() {
             tvBiayaMarketing.text = NumberUtil.formatLongToString(biayaMarketing)
             tvBiayaLain.text = NumberUtil.formatLongToString(biayaLain)
         }
+    }
+
+    private fun createProgressDialog(): ProgressDialog {
+        val progressDialog = ProgressDialog(
+            requireContext(),
+            net.bagusekasaputra.griyakampoengtkw.presentation.R.style.AlertDialogTheme
+        )
+        progressDialog.apply {
+            this.setTitle("Sedang merekap")
+            this.setCancelable(false)
+            this.max = 100
+        }
+
+        return progressDialog
     }
 
 }

@@ -1,9 +1,6 @@
 package net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.rekap
 
-import androidx.lifecycle.MutableLiveData
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.*
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.AsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.*
 import net.bagusekasaputra.griyakampoengtkw.domain.repository.*
@@ -25,31 +22,31 @@ class GetRekapBesarAsyncUseCase(
         val endDate: Date? = null,
     ): AsyncUseCase.Request
 
-    val progressState = MutableLiveData<ProgressState>(ProgressState(0, "Menginisialisasi ..."))
+    val progressState = MutableStateFlow(ProgressState(0, "Menginisialisasi ..."))
 
     override fun process(request: Request): Flow<Result<RekapBesar?>> {
         return flow {
-            progressState.postValue(ProgressState(18, "Menyusun tabel Pembayaran ..."))
+            progressState.update { ProgressState(18, "Menyusun tabel Pembayaran ...") }
             val mapPembayaran = pembayaranRepository.getBatch(request.kavlingList)
                 .first()
                 .getOrThrow()
 
-            progressState.postValue(ProgressState(36, "Menyusun tabel Harga Kavling ..."))
+            progressState.update { ProgressState(36, "Menyusun tabel Harga Kavling ...") }
             val mapHargaKavling = hargaKavlingRepository.getBatch(request.kavlingList)
                 .first()
                 .getOrThrow()
 
-            progressState.postValue(ProgressState(54, "Menyusun tabel Fee Marketing ..."))
+            progressState.update { ProgressState(54, "Menyusun tabel Fee Marketing ...") }
             val mapFeeMarketing = feeMarketingRepository.getBatch(request.kavlingList)
                 .first()
                 .getOrThrow()
 
-            progressState.postValue(ProgressState(72, "Menyusun tabel Biaya Marketing ..."))
+            progressState.update { ProgressState(72, "Menyusun tabel Biaya Marketing ...") }
             val mapBiayaMarketing = biayaMarketingRepository.getBatch(request.kavlingList)
                 .first()
                 .getOrThrow()
 
-            progressState.postValue(ProgressState(90, "Menyusun tabel Biaya Lain-lain ..."))
+            progressState.update { ProgressState(90, "Menyusun tabel Biaya Lain-lain ...") }
             val listBiayaLain = biayaLainRepository.getAll(false)
                 .first()
                 .getOrThrow()
@@ -61,7 +58,7 @@ class GetRekapBesarAsyncUseCase(
             var totalBiayaLain = 0L
 
 
-            progressState.postValue(ProgressState(95, "Mengevaluasi data rekap ..."))
+            progressState.update { ProgressState(95, "Mengevaluasi data rekap ...") }
             request.kavlingList.forEach { kavling ->
                 val listPembayaran = mapPembayaran?.get(kavling)
                     .filterPeriode(request.periode, request.startDate, request.endDate)
@@ -71,9 +68,9 @@ class GetRekapBesarAsyncUseCase(
                     .filterPeriode(request.periode, request.startDate, request.endDate)
                 val hargaKavling = mapHargaKavling?.get(kavling)
 
-                val uangMasukKavling = if (listPembayaran != null) Pembayaran.hitungTotalUangMasuk(listPembayaran) else 0L
+                val uangMasukKavling = if (listPembayaran.isNullOrEmpty().not()) Pembayaran.hitungTotalUangMasuk(listPembayaran!!) else 0L
                 val sisaBelumBayarKavling = if (hargaKavling != null) Pembayaran.hitungTotalSisaBelumBayar(hargaKavling, uangMasukKavling) else 0L
-                val biayaMarketingKavling = if (listBiayaMarketing != null) BiayaMarketing.hitungTotalBiayaMarketing(listBiayaMarketing) else 0L
+                val biayaMarketingKavling = if (listBiayaMarketing.isNullOrEmpty().not()) BiayaMarketing.hitungTotalBiayaMarketing(listBiayaMarketing!!) else 0L
 
                 totalUangMasuk += uangMasukKavling
                 totalSisaBelumBayar += sisaBelumBayarKavling
@@ -86,7 +83,7 @@ class GetRekapBesarAsyncUseCase(
                     totalBiayaLain += it.harga
                 }
 
-            progressState.postValue(ProgressState(100, "Rekap akan segera dimuat!"))
+            progressState.update { ProgressState(100, "Rekap akan segera dimuat!") }
 
             emit(Result.success(RekapBesar(
                 totalUangMasuk,
