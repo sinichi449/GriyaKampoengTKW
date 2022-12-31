@@ -121,7 +121,7 @@ class RekapViewModel @Inject constructor(
         }
 
         rangeTanggal.value = when (periode) {
-            PeriodeRekap.SEMUA -> "-"
+            PeriodeRekap.SEMUA -> "Semua"
             PeriodeRekap.TAHUN_INI -> getRekapBesarAsyncUseCase.getTahunSekarang().toString()
             PeriodeRekap.BULAN_INI -> getRekapBesarAsyncUseCase.getMonthlyRangeDate().toRangeString()
             PeriodeRekap.MINGGU_INI -> getRekapBesarAsyncUseCase.getWeeklyRangeDate().toRangeString()

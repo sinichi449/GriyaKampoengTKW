@@ -1,6 +1,8 @@
 package net.bagusekasaputra.griyakampoengtkw.presentation.activities
 
 import android.os.Bundle
+import android.view.MenuItem
+import android.widget.ArrayAdapter
 import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
@@ -18,13 +20,21 @@ class RekapDetailActivity : AppCompatActivity() {
     private lateinit var binding: ActivityRekapDetailBinding
     private val viewModel: RekapViewModel by viewModels()
 
+    private val listSortMode = listOf(
+        "Kavling",
+        "Tanggal",
+        "Jumlah Pembayaran"
+    )
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityRekapDetailBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
         setSupportActionBar(binding.toolbarMain)
+        binding.toolbarMain.subtitle = intent?.extras?.getString("INTENT_REKAP_DATE_RANGE") ?: "null"
 
+        setupSortSelectionSpinner()
         setupViewModel()
 
         when (intent?.extras?.getString("INTENT_REKAP_TYPE")) {
@@ -59,6 +69,22 @@ class RekapDetailActivity : AppCompatActivity() {
         binding.tableRekap.setAdapter(adapter)
 
         adapter.setAllItems(columnHeader, rowHeader, listCells)
+    }
+
+    private fun setupSortSelectionSpinner() {
+        binding.spinnerSortMode.adapter = ArrayAdapter(
+            this,
+            android.R.layout.simple_spinner_dropdown_item,
+            listSortMode
+        )
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        if (item.itemId == android.R.id.home) {
+            finish()
+        }
+
+        return super.onOptionsItemSelected(item)
     }
 
     override fun onBackPressed() {

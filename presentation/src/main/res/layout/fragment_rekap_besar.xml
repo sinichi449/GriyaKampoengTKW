@@ -34,11 +34,9 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="8dp"
-                android:layout_marginTop="16dp"
-                android:fontFamily="monospace"
+                style="@style/TextAppearance.MaterialComponents.Subtitle2"
                 android:text="-"
-                android:textColor="@color/primaryTextColor"
-                android:textSize="14sp"
+                android:layout_marginTop="8dp"
                 tools:text="27/12/2022 - 01/01/2023"/>
 
         </androidx.appcompat.widget.LinearLayoutCompat>

@@ -90,6 +90,7 @@ class RekapBesarFragment : Fragment() {
     private fun navigateToRekapDetail(rekapType: RekapType) {
         val intent = Intent(requireContext(), RekapDetailActivity::class.java)
         intent.putExtra("INTENT_REKAP_TYPE", rekapType.name)
+        intent.putExtra("INTENT_REKAP_DATE_RANGE", viewModel.rangeTanggal.value ?: "-")
         requireActivity().startActivity(intent)
     }
 
