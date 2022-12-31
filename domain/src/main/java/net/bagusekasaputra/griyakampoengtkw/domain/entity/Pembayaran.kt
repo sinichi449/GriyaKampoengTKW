@@ -15,6 +15,7 @@ data class Pembayaran(
     val timeMillis: Long,
     var sudahIsiFotoPembayaran: Boolean = false,
 ) {
+    val parsedJumlahUangDibayar = NumberUtil.formatStringToLong(jumlahUangDibayar)
 
     fun getUrutan(): Int {
         return termin.split(" ")[1].toInt()

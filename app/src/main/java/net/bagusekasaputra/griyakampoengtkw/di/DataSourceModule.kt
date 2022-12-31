@@ -23,6 +23,7 @@ import net.bagusekasaputra.griyakampoeng.tkw.data.local.kavling.RoomKavlingDataS
 import net.bagusekasaputra.griyakampoeng.tkw.data.local.metadata.RoomMetadataDataSource
 import net.bagusekasaputra.griyakampoeng.tkw.data.local.pembayaran.RoomPembayaranLocalDataSource
 import net.bagusekasaputra.griyakampoeng.tkw.data.local.pengingat.RoomPengingatDataSource
+import net.bagusekasaputra.griyakampoeng.tkw.data.local.rekap.RoomRekapUangMasukLocalDataSource
 import net.bagusekasaputra.griyakampoengtkw.data.interfaces.local.*
 import net.bagusekasaputra.griyakampoengtkw.data.interfaces.remote.*
 import net.bagusekasaputra.griyakampoengtkw.data.remote.biayaLain.FirebaseBiayaLainDataSource
@@ -273,5 +274,13 @@ object DataSourceModule {
     @Provides
     fun provideRemoteBiayaLainDataSource(databaseReference: DatabaseReference): RemoteBiayaLainDataSource {
         return FirebaseBiayaLainDataSource(databaseReference)
+    }
+
+    /**
+     * Rekap Uang Masuk
+     */
+    @Provides
+    fun provideLocalRekapUangMasukDataSource(roomDatabase: MyRoomDatabase): LocalRekapUangMasukDataSource {
+        return RoomRekapUangMasukLocalDataSource(roomDatabase)
     }
 }

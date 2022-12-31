@@ -221,4 +221,12 @@ object RepositoryModule {
             remoteMetadataDataSource,
         )
     }
+
+    /**
+     * Rekap Uang Masuk
+     */
+    @Provides
+    fun provideRekapUangMasukRepository(localRekap: LocalRekapUangMasukDataSource): RekapUangMasukRepository {
+        return RekapUangMasukRepositoryImpl(localRekap)
+    }
 }

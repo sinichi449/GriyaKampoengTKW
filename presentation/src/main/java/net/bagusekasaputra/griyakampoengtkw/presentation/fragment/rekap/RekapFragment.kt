@@ -69,14 +69,17 @@ class RekapFragment : Fragment() {
             val fragment = when (rekapType) {
                 RekapType.Global -> RekapGlobalFragment()
                 RekapType.Besar -> RekapBesarFragment()
+                else -> null
             }
-            Log.d("DEBUG_ME", "navigateTo: rekap fragment's transition accepted.")
+            fragment?.let {
+                Log.d("DEBUG_ME", "navigateTo: rekap fragment's transition accepted.")
 
-            childFragmentManager.beginTransaction()
-                .replace(binding.rekapContainer.id, fragment)
-                .commit()
+                childFragmentManager.beginTransaction()
+                    .replace(binding.rekapContainer.id, it)
+                    .commit()
 
-            viewModel.currentFragment.value = rekapType
+                viewModel.currentFragment.value = rekapType
+            }
         }
     }
 
@@ -110,6 +113,7 @@ class RekapFragment : Fragment() {
                     setTextColor(white)
                 }
             }
+            else -> {}
         }
     }
 }

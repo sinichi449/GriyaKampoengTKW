@@ -2,6 +2,7 @@ package net.bagusekasaputra.griyakampoengtkw.presentation.fragment.rekap
 
 import android.R
 import android.app.ProgressDialog
+import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -16,6 +17,7 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import dagger.hilt.android.AndroidEntryPoint
 import net.bagusekasaputra.griyakampoengtkw.domain.NumberUtil
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.PeriodeRekap
+import net.bagusekasaputra.griyakampoengtkw.presentation.activities.RekapDetailActivity
 import net.bagusekasaputra.griyakampoengtkw.presentation.databinding.CardRekapPengeluaranBinding
 import net.bagusekasaputra.griyakampoengtkw.presentation.databinding.CardRekapUangMasukBinding
 import net.bagusekasaputra.griyakampoengtkw.presentation.databinding.DialogPickCustomPeriodeBinding
@@ -79,6 +81,16 @@ class RekapBesarFragment : Fragment() {
             }
 
         }
+
+        binding.cardPemasukan.layoutTotalUangMasuk.setOnClickListener {
+            navigateToRekapDetail(RekapType.UangMasuk)
+        }
+    }
+
+    private fun navigateToRekapDetail(rekapType: RekapType) {
+        val intent = Intent(requireContext(), RekapDetailActivity::class.java)
+        intent.putExtra("INTENT_REKAP_TYPE", rekapType.name)
+        requireActivity().startActivity(intent)
     }
 
     private fun showCustomPeriodePickerDialog() {

@@ -1,5 +1,6 @@
 package net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.rekap
 
+import android.util.Log
 import kotlinx.coroutines.flow.*
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.AsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.*
@@ -8,11 +9,13 @@ import java.util.*
 import kotlin.Result
 
 class GetRekapBesarAsyncUseCase(
+    private val dataDiriRepository: DataDiriRepository,
     private val pembayaranRepository: PembayaranRepository,
     private val hargaKavlingRepository: HargaKavlingRepository,
     private val feeMarketingRepository: FeeMarketingRepository,
     private val biayaMarketingRepository: BiayaMarketingRepository,
     private val biayaLainRepository: BiayaLainRepository,
+    private val rekapUangMasukRepository: RekapUangMasukRepository,
 ): AsyncUseCase<GetRekapBesarAsyncUseCase.Request, RekapBesar>() {
 
     data class Request(
@@ -26,6 +29,12 @@ class GetRekapBesarAsyncUseCase(
 
     override fun process(request: Request): Flow<Result<RekapBesar?>> {
         return flow {
+            // Clear the rekap cache
+            rekapUangMasukRepository.clearAll().first()
+                .onFailure {
+                    emit(Result.failure(it))
+                }
+
             progressState.update { ProgressState(18, "Menyusun tabel Pembayaran ...") }
             val mapPembayaran = pembayaranRepository.getBatch(request.kavlingList)
                 .first()
@@ -48,6 +57,10 @@ class GetRekapBesarAsyncUseCase(
 
             progressState.update { ProgressState(90, "Menyusun tabel Biaya Lain-lain ...") }
             val listBiayaLain = biayaLainRepository.getAll(false)
+                .first()
+                .getOrThrow()
+
+            val mapDataDiri = dataDiriRepository.getBatch(request.kavlingList)
                 .first()
                 .getOrThrow()
 
@@ -76,6 +89,31 @@ class GetRekapBesarAsyncUseCase(
                 totalSisaBelumBayar += sisaBelumBayarKavling
                 totalFeeMarketing += feeMarketing?.parsedBiayaMarketer ?: 0L
                 totalBiayaMarketing += biayaMarketingKavling
+
+                /**
+                 * Creating rekap cache for Rekap Detail View
+                 */
+                mapDataDiri?.get(kavling)?.let { dataDiri ->
+                    if (!listPembayaran.isNullOrEmpty()) {
+                        listPembayaran.let { listPembayaran ->
+                            listPembayaran.forEach { pembayaran ->
+                                rekapUangMasukRepository.insert(
+                                    RekapUangMasuk(
+                                        noKavling = kavling,
+                                        namaCostumer = dataDiri.nama,
+                                        tanggal = pembayaran.tanggal,
+                                        jenisPembayaran = pembayaran.termin,
+                                        jumlahPembayaran = pembayaran.parsedJumlahUangDibayar,
+                                    )
+                                ).first()
+                                    .onFailure {
+                                        Log.d("DEBUG_ME", "GetRekapBesarUseCase:107 onFailure : ${it.message}")
+                                        emit(Result.failure(it))
+                                    }
+                            }
+                        }
+                    }
+                }
             }
 
             listBiayaLain.filterPeriode(request.periode, request.startDate, request.endDate)

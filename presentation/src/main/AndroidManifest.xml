@@ -8,6 +8,15 @@
 
     <application>
         <activity
+            android:name=".activities.RekapDetailActivity"
+            android:exported="false"
+            android:theme="@style/Theme.GriyaKampung.BlackWhite">
+            <meta-data
+                android:name="android.app.lib_name"
+                android:value="" />
+        </activity>
+
+        <activity
             android:name=".activities.SettingsActivity"
             android:exported="false"
             android:label="@string/title_activity_settings"

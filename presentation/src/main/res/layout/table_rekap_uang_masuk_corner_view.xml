@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="@dimen/table_rekap_double_row_header_width"
+    android:layout_height="@dimen/table_pembayaran_column_header_height"
+    android:background="@color/abang">
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/guidline_table_tum_corner_vertical"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintGuide_percent="0.375"/>
+
+    <View
+        android:layout_width="@dimen/table_corner_line_weight"
+        android:layout_height="0dp"
+        android:background="@color/black"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="@id/guidline_table_tum_corner_vertical"
+        app:layout_constraintStart_toStartOf="@id/guidline_table_tum_corner_vertical"
+        app:layout_constraintTop_toTopOf="parent"/>
+
+    <com.google.android.material.textview.MaterialTextView
+        android:id="@+id/tv_tum_corner_nomor"
+        style="@style/TextAppearance.MaterialComponents.Subtitle1"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:gravity="center"
+        android:text="No"
+        android:textColor="@color/white"
+        android:textSize="@dimen/table_pembayaran_column_header_text_size"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@id/guidline_table_tum_corner_vertical"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"/>
+
+    <com.google.android.material.textview.MaterialTextView
+        android:id="@+id/tv_tum_coner_kavling"
+        style="@style/TextAppearance.MaterialComponents.Subtitle1"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:gravity="center"
+        android:text="Kavling"
+        android:textColor="@color/white"
+        android:textSize="@dimen/table_pembayaran_column_header_text_size"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@id/guidline_table_tum_corner_vertical"
+        app:layout_constraintTop_toTopOf="parent"/>
+
+    <!-- Left -->
+    <View
+        android:layout_width="@dimen/table_corner_line_weight"
+        android:layout_height="0dp"
+        android:background="@color/black"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"/>
+
+    <!-- Top -->
+    <View
+        android:layout_width="0dp"
+        android:layout_height="@dimen/table_corner_line_weight"
+        android:background="@color/black"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"/>
+
+    <!-- Right -->
+    <View
+        android:layout_width="@dimen/table_corner_line_weight"
+        android:layout_height="0dp"
+        android:background="@color/black"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"/>
+
+    <!-- Bottom -->
+    <View
+        android:layout_width="0dp"
+        android:layout_height="@dimen/table_corner_line_weight"
+        android:background="@color/black"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"/>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

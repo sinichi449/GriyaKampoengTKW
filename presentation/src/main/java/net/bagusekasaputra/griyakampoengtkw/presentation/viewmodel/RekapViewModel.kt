@@ -11,16 +11,18 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import net.bagusekasaputra.griyakampoengtkw.domain.NumberUtil
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.rekap.GetListRekapGlobalAsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.rekap.GetRekapBesarAsyncUseCase
-import net.bagusekasaputra.griyakampoengtkw.domain.entity.Kavling
-import net.bagusekasaputra.griyakampoengtkw.domain.entity.PeriodeRekap
-import net.bagusekasaputra.griyakampoengtkw.domain.entity.RekapBesar
-import net.bagusekasaputra.griyakampoengtkw.domain.entity.RekapGlobal
+import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.rekap.GetUangMasukRekapAsyncUseCase
+import net.bagusekasaputra.griyakampoengtkw.domain.entity.*
 import net.bagusekasaputra.griyakampoengtkw.presentation.fragment.rekap.RekapType
 import net.bagusekasaputra.griyakampoengtkw.presentation.tableview.rekapGlobal.RgCell
 import net.bagusekasaputra.griyakampoengtkw.presentation.tableview.rekapGlobal.RgColumnHeader
 import net.bagusekasaputra.griyakampoengtkw.presentation.tableview.rekapGlobal.RgRowHeader
+import net.bagusekasaputra.griyakampoengtkw.presentation.tableview.rekapUangMasuk.RumCell
+import net.bagusekasaputra.griyakampoengtkw.presentation.tableview.rekapUangMasuk.RumColumnHeader
+import net.bagusekasaputra.griyakampoengtkw.presentation.tableview.rekapUangMasuk.RumRowHeader
 import net.bagusekasaputra.griyakampoengtkw.presentation.toSlashedDate
 import java.util.*
 import javax.inject.Inject
@@ -29,6 +31,7 @@ import javax.inject.Inject
 class RekapViewModel @Inject constructor(
     private val getListRekapGlobalAsyncUseCase: GetListRekapGlobalAsyncUseCase,
     private val getRekapBesarAsyncUseCase: GetRekapBesarAsyncUseCase,
+    private val getUangMasukRekapAsyncUseCase: GetUangMasukRekapAsyncUseCase,
 ): ViewModel() {
 
     val currentFragment = MutableLiveData<RekapType>()
@@ -43,6 +46,9 @@ class RekapViewModel @Inject constructor(
     val rekapBesarLive: LiveData<RekapBesar>
         get() = _rekapBesarLive
 
+    private val _listRekapUangMasukLive = MutableLiveData<List<RekapUangMasuk>>()
+    val listRekapUangMasukLive: LiveData<List<RekapUangMasuk>>
+        get() = _listRekapUangMasukLive
 
     val isRekapGlobalLoaded = MutableStateFlow(false)
     val isRekapBesarLoaded = MutableLiveData<Boolean>()
@@ -123,10 +129,27 @@ class RekapViewModel @Inject constructor(
         }
     }
 
-    private fun List<Date>.toRangeString(): String {
-        return "${this[0].toSlashedDate()} - ${this[1].toSlashedDate()}"
+    fun getListUangMasukRekap(onFailure: (msg: String) -> Unit) {
+        val request = GetUangMasukRekapAsyncUseCase.Request
+
+        CoroutineScope(Dispatchers.IO).launch {
+            getUangMasukRekapAsyncUseCase.execute(request).collect { result ->
+                result.onSuccess {
+                    _listRekapUangMasukLive.postValue(it)
+                }
+
+                result.onFailure {
+                    withContext(Dispatchers.Main) {
+                        onFailure("ERROR: ${it.message}")
+                    }
+                }
+            }
+        }
     }
 
+    /**
+     * Rekap Global Table Util
+     */
     fun getRowHeaderRekapTable(): List<RgRowHeader> {
         val listRowHeaders = mutableListOf<RgRowHeader>()
 
@@ -185,5 +208,58 @@ class RekapViewModel @Inject constructor(
                 )
             )
         }
+    }
+
+    /**
+     * Rekap Uang Masuk Util
+     */
+    fun getRumRowHeader(): List<RumRowHeader> {
+        val listRekapUangMasuk = listRekapUangMasukLive.value
+        val listRowHeader = mutableListOf<RumRowHeader>()
+
+        if (listRekapUangMasuk.isNullOrEmpty().not()) {
+            listRekapUangMasuk!!.forEachIndexed { index, rekap ->
+                listRowHeader.add(RumRowHeader(
+                    nomor = index.plus(1).toString(),
+                    kavling = rekap.noKavling,
+                ))
+            }
+        }
+
+        return listRowHeader
+    }
+
+    fun getRumColumnHeader(): List<RumColumnHeader> {
+        return listOf(
+            RumColumnHeader("Nama Costumer"),
+            RumColumnHeader("Tanggal"),
+            RumColumnHeader("Jenis Pembayaran"),
+            RumColumnHeader("Jumlah Pembayaran"),
+        )
+    }
+
+    fun getRumListCells(): List<List<RumCell>> {
+        val listRekapUangMasuk = listRekapUangMasukLive.value
+        val listCells = mutableListOf<List<RumCell>>()
+
+        if (listRekapUangMasuk.isNullOrEmpty().not()) {
+            listRekapUangMasuk!!.forEach {
+                val cell = mutableListOf<RumCell>()
+                cell.apply {
+                    add(RumCell(it.namaCostumer))
+                    add(RumCell(it.tanggal))
+                    add(RumCell(it.jenisPembayaran))
+                    add(RumCell(NumberUtil.formatLongToString(it.jumlahPembayaran)))
+                }
+
+                listCells.add(cell)
+            }
+        }
+
+        return listCells
+    }
+
+    private fun List<Date>.toRangeString(): String {
+        return "${this[0].toSlashedDate()} - ${this[1].toSlashedDate()}"
     }
 }

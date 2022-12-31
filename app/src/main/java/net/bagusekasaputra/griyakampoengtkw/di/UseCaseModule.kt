@@ -23,7 +23,7 @@ import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.pembayaran.GetAl
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.pengingat.*
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.rekap.GetListRekapGlobalAsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.rekap.GetRekapBesarAsyncUseCase
-import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.rekapGlobal.GetAllRekapGlobalUseCase
+import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.rekap.GetUangMasukRekapAsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.reportKavling.GetAllReportKavlingAsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.repository.*
 import net.bagusekasaputra.griyakampoengtkw.domain.usecase.appupdate.GetUpdateInformationUseCase
@@ -332,18 +332,6 @@ object UseCaseModule {
     }
 
     /**
-     * Rekap Global
-     */
-    @Provides
-    fun provideGetAllRekapGlobalUseCase(
-        dataDiriRepository: DataDiriRepository,
-        pembayaranRepository: PembayaranRepository,
-        hargaKavlingRepository: HargaKavlingRepository,
-    ): GetAllRekapGlobalUseCase {
-        return GetAllRekapGlobalUseCase(dataDiriRepository, pembayaranRepository, hargaKavlingRepository)
-    }
-
-    /**
      * Biaya Lain
      */
     @Provides
@@ -387,18 +375,28 @@ object UseCaseModule {
      */
     @Provides
     fun provideGetRekapBesarUseCase(
+        dataDiriRepository: DataDiriRepository,
         pembayaranRepository: PembayaranRepository,
         hargaKavlingRepository: HargaKavlingRepository,
         feeMarketingRepository: FeeMarketingRepository,
         biayaMarketingRepository: BiayaMarketingRepository,
         biayaLainRepository: BiayaLainRepository,
+        rekapUangMasukRepository: RekapUangMasukRepository,
     ): GetRekapBesarAsyncUseCase {
-        return GetRekapBesarAsyncUseCase(
+        return GetRekapBesarAsyncUseCase(dataDiriRepository,
             pembayaranRepository,
             hargaKavlingRepository,
             feeMarketingRepository,
             biayaMarketingRepository,
-            biayaLainRepository
-        )
+            biayaLainRepository,
+            rekapUangMasukRepository)
+    }
+
+    /**
+     * Rekap Uang Masuk
+     */
+    @Provides
+    fun provideGetUangMasukRekapUseCase(rekapUangMasukRepository: RekapUangMasukRepository): GetUangMasukRekapAsyncUseCase {
+        return GetUangMasukRekapAsyncUseCase(rekapUangMasukRepository)
     }
 }
