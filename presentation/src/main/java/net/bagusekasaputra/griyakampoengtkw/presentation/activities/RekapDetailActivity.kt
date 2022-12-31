@@ -2,6 +2,8 @@ package net.bagusekasaputra.griyakampoengtkw.presentation.activities
 
 import android.os.Bundle
 import android.view.MenuItem
+import android.view.View
+import android.widget.AdapterView
 import android.widget.ArrayAdapter
 import android.widget.Toast
 import androidx.activity.viewModels
@@ -23,7 +25,7 @@ class RekapDetailActivity : AppCompatActivity() {
     private val listSortMode = listOf(
         "Kavling",
         "Tanggal",
-        "Jumlah Pembayaran"
+        "Jumlah Pembayaran",
     )
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -45,6 +47,17 @@ class RekapDetailActivity : AppCompatActivity() {
                 }
             }
             else -> Toast.makeText(this.applicationContext, "Masih tahap beta, belum bisa digunakan", Toast.LENGTH_LONG).show()
+        }
+
+        binding.spinnerSortMode.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
+            override fun onItemSelected(p0: AdapterView<*>?, p1: View?, position: Int, id: Long) {
+                viewModel.sortListRekapUangMasuk(listSortMode[position])
+            }
+
+            override fun onNothingSelected(p0: AdapterView<*>?) {
+
+            }
+
         }
     }
 

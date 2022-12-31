@@ -259,6 +259,17 @@ class RekapViewModel @Inject constructor(
         return listCells
     }
 
+    fun sortListRekapUangMasuk(byWhat: String) {
+        if (_listRekapUangMasukLive.value.isNullOrEmpty().not()) {
+                when (byWhat) {
+                "Kavling" -> _listRekapUangMasukLive.value = RekapUangMasuk.sortByKavlingAsc(_listRekapUangMasukLive.value)
+                "Tanggal" -> _listRekapUangMasukLive.value = RekapUangMasuk.sortByTanggalAsc(_listRekapUangMasukLive.value)
+                "Jumlah Pembayaran" -> _listRekapUangMasukLive.value = RekapUangMasuk.sortByJumlahPembayaranDesc(_listRekapUangMasukLive.value)
+                else -> {}
+            }
+        }
+    }
+
     private fun List<Date>.toRangeString(): String {
         return "${this[0].toSlashedDate()} - ${this[1].toSlashedDate()}"
     }
