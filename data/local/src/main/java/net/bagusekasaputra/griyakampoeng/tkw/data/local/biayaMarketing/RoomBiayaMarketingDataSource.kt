@@ -83,13 +83,13 @@ class RoomBiayaMarketingDataSource(
         return try {
             biayaMarketingDao.invalidateAll()
 
-            roomDatabase.close()
+
 
             Result.success(null)
         } catch (e: Exception) {
             e.printStackTrace()
 
-            roomDatabase.close()
+
 
             Result.failure(e)
         }

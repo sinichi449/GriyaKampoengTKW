@@ -126,13 +126,13 @@ class RoomPembayaranLocalDataSource(
         return try {
             pembayaranDao.deleteAll()
 
-            roomDatabase.close()
+
 
             Result.success(null)
         } catch (e: Exception) {
             e.printStackTrace()
 
-            roomDatabase.close()
+
 
             Result.failure(e)
         }

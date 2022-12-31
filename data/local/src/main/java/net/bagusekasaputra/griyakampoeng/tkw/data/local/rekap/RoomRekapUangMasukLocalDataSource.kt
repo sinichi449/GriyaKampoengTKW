@@ -22,13 +22,9 @@ class RoomRekapUangMasukLocalDataSource(
                 )
             }
 
-            roomDatabase.close()
-
             Result.success(listEntity)
         } catch (e: Exception) {
             e.printStackTrace()
-
-            roomDatabase.close()
 
             Result.failure(e)
         }
@@ -58,13 +54,9 @@ class RoomRekapUangMasukLocalDataSource(
         return try {
             rekapDao.clearAll()
 
-            roomDatabase.close()
-
             Result.success(null)
         } catch (e: Exception) {
             e.printStackTrace()
-
-            roomDatabase.close()
 
             Result.failure(e)
         }

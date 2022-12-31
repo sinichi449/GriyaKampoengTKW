@@ -90,13 +90,13 @@ class LocalFotoPembayaranDataSourceImpl(
 
             fotoPembayaranDao.insert(fotoPembayaran)
 
-            roomDatabase.close()
+
 
             return Result.success(null)
         } catch (e: Exception) {
             e.printStackTrace()
 
-            roomDatabase.close()
+
 
             return Result.failure(e)
         }

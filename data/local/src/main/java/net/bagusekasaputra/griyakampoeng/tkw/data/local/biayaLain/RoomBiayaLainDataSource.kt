@@ -16,7 +16,7 @@ class RoomBiayaLainDataSource(
         return flow {
             val listModel = dao.getAll()
 
-            roomDatabase.close()
+
 
             emit(Result.success(
                 listModel?.map {
@@ -34,7 +34,7 @@ class RoomBiayaLainDataSource(
         return flow {
             val model = dao.getSingle(jenisBiaya)
 
-            roomDatabase.close()
+
 
             emit(Result.success(
                 model?.let {
@@ -60,13 +60,13 @@ class RoomBiayaLainDataSource(
                 )
             }
 
-            roomDatabase.close()
+
 
             Result.success(null)
         } catch (e: Exception) {
             e.printStackTrace()
 
-            roomDatabase.close()
+
 
             Result.failure(e)
         }
@@ -82,13 +82,13 @@ class RoomBiayaLainDataSource(
                 )
             )
 
-            roomDatabase.close()
+
 
             Result.success(null)
         } catch (e: Exception) {
             e.printStackTrace()
 
-            roomDatabase.close()
+
 
             Result.failure(e)
         }
@@ -106,13 +106,13 @@ class RoomBiayaLainDataSource(
                 newTanggal = newModel.tanggal,
             )
 
-            roomDatabase.close()
+
 
             Result.success(null)
         } catch (e: Exception) {
             e.printStackTrace()
 
-            roomDatabase.close()
+
 
             Result.failure(e)
         }
@@ -122,13 +122,13 @@ class RoomBiayaLainDataSource(
         return try {
             dao.delete(model.jenisBiaya)
 
-            roomDatabase.close()
+
 
             Result.success(null)
         } catch (e: Exception) {
             e.printStackTrace()
 
-            roomDatabase.close()
+
 
             Result.failure(e)
         }
@@ -138,13 +138,13 @@ class RoomBiayaLainDataSource(
         return try {
             dao.deleteAll()
 
-            roomDatabase.close()
+
 
             Result.success(null)
         } catch (e: Exception) {
             e.printStackTrace()
 
-            roomDatabase.close()
+
 
             Result.failure(e)
         }

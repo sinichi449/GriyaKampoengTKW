@@ -83,13 +83,13 @@ class RoomFeeMarketingDataSource(
         return try {
             feeMarketingDao.deleteAll()
 
-            roomDatabase.close()
+
 
             Result.success(null)
         } catch (e: Exception) {
             e.printStackTrace()
 
-            roomDatabase.close()
+
 
             Result.failure(e)
         }

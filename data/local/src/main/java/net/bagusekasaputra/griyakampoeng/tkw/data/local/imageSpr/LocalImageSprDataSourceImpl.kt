@@ -31,14 +31,14 @@ class LocalImageSprDataSourceImpl(
                 )
             }
 
-            roomDatabase.close()
+
 
             Result.success(imgSpr)
         } catch (e: Exception) {
             e.printStackTrace()
             Log.d(LOG_TAG, LOG_MSG("getByKavlingKode", "Failed to get Image SPR: ${e.message}"))
 
-            roomDatabase.close()
+
 
             Result.failure(e)
         }
@@ -81,11 +81,11 @@ class LocalImageSprDataSourceImpl(
 
             imageSprDao.insert(imgSpr)
 
-            roomDatabase.close()
+
 
             onSuccess()
         } catch (e: Exception) {
-            roomDatabase.close()
+
             onFailure(e)
         }
     }
@@ -93,7 +93,7 @@ class LocalImageSprDataSourceImpl(
     override suspend fun deleteAll(): Result<Nothing?> {
         return try {
             imageSprDao.deleteAll()
-            roomDatabase.close()
+
 
             imageFile.listFiles()?.forEach {
                 it.delete()

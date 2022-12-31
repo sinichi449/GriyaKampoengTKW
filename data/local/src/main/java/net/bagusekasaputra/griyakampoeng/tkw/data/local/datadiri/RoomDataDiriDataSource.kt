@@ -59,13 +59,13 @@ class RoomDataDiriDataSource(
         return try {
             dataDiriRoomDao.deleteAll()
 
-            roomDatabase.close()
+            roomDatabase
 
             Result.success(null)
         } catch (e: Exception) {
             e.printStackTrace()
 
-            roomDatabase.close()
+
 
             Result.failure(e)
         }
