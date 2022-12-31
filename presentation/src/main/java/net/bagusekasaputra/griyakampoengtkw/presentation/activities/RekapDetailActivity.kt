@@ -82,6 +82,13 @@ class RekapDetailActivity : AppCompatActivity() {
         binding.tableRekap.setAdapter(adapter)
 
         adapter.setAllItems(columnHeader, rowHeader, listCells)
+
+        binding.tableRekap.apply {
+            setColumnWidth(0, 400) // Nama Costumer
+            setColumnWidth(1, 300) // Tanggal
+            setColumnWidth(2, 300) // Jenis Pembelian
+            setColumnWidth(3, 350) // Jumlah pembayaran
+        }
     }
 
     private fun setupSortSelectionSpinner() {

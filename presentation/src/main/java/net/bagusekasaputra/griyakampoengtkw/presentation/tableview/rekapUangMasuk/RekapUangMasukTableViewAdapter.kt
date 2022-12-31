@@ -1,10 +1,12 @@
 package net.bagusekasaputra.griyakampoengtkw.presentation.tableview.rekapUangMasuk
 
+import android.graphics.Typeface
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.content.ContextCompat
+import androidx.core.graphics.TypefaceCompat
 import com.evrencoskun.tableview.adapter.AbstractTableAdapter
 import com.evrencoskun.tableview.adapter.recyclerview.holder.AbstractViewHolder
 import net.bagusekasaputra.griyakampoengtkw.presentation.R
@@ -40,6 +42,12 @@ class RekapUangMasukTableViewAdapter: AbstractTableAdapter<RumColumnHeader, RumR
         val viewHolder = holder as RumCellViewHolder
 
         viewHolder.cellText.text = cellItemModel?.text ?: "-"
+
+        viewHolder.cellText.typeface = TypefaceCompat.create(
+            holder.container.context,
+            Typeface.SERIF,
+            Typeface.NORMAL
+        )
 
         viewHolder.container.layoutParams.width = ConstraintLayout.LayoutParams.WRAP_CONTENT
         viewHolder.cellText.requestLayout()
