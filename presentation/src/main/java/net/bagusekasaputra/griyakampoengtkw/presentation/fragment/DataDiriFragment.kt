@@ -317,16 +317,18 @@ class DataDiriFragment : Fragment() {
         dialogView.show()
 
         dialogBinding.btnTambahkan.setOnClickListener {
-            dialogBinding.btnTambahkan.text = "Menyimpan data ..."
-            dialogBinding.btnTambahkan.isEnabled = false
-
             // check not null edt
-            val isInvalidEdt = InputUtil.isNullOrEmptyEditTexts(dialogBinding.edtNamaCostumer,
+            val isInvalidEdt = InputUtil.isNullOrEmptyEditTexts(
+                dialogBinding.edtNamaCostumer,
                 dialogBinding.edtNoIdentitas, dialogBinding.edtAlamatKerja,
-                dialogBinding.edtAlamatIndo, dialogBinding.edtNoHandphone)
+                dialogBinding.edtAlamatIndo, dialogBinding.edtNoHandphone
+            )
 
             // get text from edt
             if (!isInvalidEdt) {
+                dialogBinding.btnTambahkan.text = "Menyimpan data ..."
+                dialogBinding.btnTambahkan.isEnabled = false
+
                 val namaCostumer = dialogBinding.edtNamaCostumer.text.toString()
                 val jenisIdentitas = if (dialogBinding.rbIdPassport.isChecked) "Passport" else "KTP"
                 val noIdentitas = dialogBinding.edtNoIdentitas.text.toString()
