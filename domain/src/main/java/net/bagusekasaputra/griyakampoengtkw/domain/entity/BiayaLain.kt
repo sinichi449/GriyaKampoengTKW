@@ -68,5 +68,19 @@ data class BiayaLain(
                 }
             }
         }
+
+        fun List<BiayaLain>?.sortByTanggal(): List<BiayaLain>? {
+            return this?.sortedBy {
+                Calendar.getInstance().apply {
+                    time = it.tanggal.toDate()
+                }.timeInMillis
+            }
+        }
+
+        fun List<BiayaLain>?.sortByHarga(): List<BiayaLain>? {
+            return this?.sortedBy {
+                it.harga
+            }
+        }
     }
 }

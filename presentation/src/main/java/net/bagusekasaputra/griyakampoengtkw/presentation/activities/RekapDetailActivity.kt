@@ -30,12 +30,6 @@ class RekapDetailActivity : AppCompatActivity() {
 
     private val viewModel: RekapViewModel by viewModels()
 
-    private val listSortMode = listOf(
-        "Kavling",
-        "Tanggal",
-        "Jumlah Pembayaran",
-    )
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityRekapDetailBinding.inflate(layoutInflater)
@@ -222,6 +216,12 @@ class RekapDetailActivity : AppCompatActivity() {
     }
 
     private fun setupSortSelectionSpinner() {
+        val listSortMode = when (rekapType) {
+            RekapType.UangMasuk -> listOf("Kavling", "Tanggal", "Jumlah Pembayaran")
+            RekapType.BiayaMarketing -> listOf("Kavling", "Tanggal", "Harga")
+            RekapType.BiayaLain -> listOf("Tanggal", "Harga")
+            else -> listOf("Tidak tersedia")
+        }
         binding.spinnerSortMode.adapter = ArrayAdapter(
             this,
             android.R.layout.simple_spinner_dropdown_item,
@@ -232,6 +232,8 @@ class RekapDetailActivity : AppCompatActivity() {
             override fun onItemSelected(p0: AdapterView<*>?, p1: View?, position: Int, id: Long) {
                 when (rekapType) {
                     RekapType.UangMasuk -> viewModel.sortListRekapUangMasuk(listSortMode[position])
+                    RekapType.BiayaMarketing -> viewModel.sortBiayaMarketingRekap(listSortMode[position])
+                    RekapType.BiayaLain -> viewModel.sortBiayaLainRekap(listSortMode[position])
                     else -> {}
                 }
             }

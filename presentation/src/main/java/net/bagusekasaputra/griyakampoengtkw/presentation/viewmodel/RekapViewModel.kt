@@ -20,6 +20,11 @@ import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.rekap.GetListRek
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.rekap.GetRekapBesarAsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.rekap.GetUangMasukRekapAsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.*
+import net.bagusekasaputra.griyakampoengtkw.domain.entity.BiayaLain.Companion.sortByHarga
+import net.bagusekasaputra.griyakampoengtkw.domain.entity.BiayaLain.Companion.sortByTanggal
+import net.bagusekasaputra.griyakampoengtkw.domain.entity.BiayaMarketing.Companion.sortByHarga
+import net.bagusekasaputra.griyakampoengtkw.domain.entity.BiayaMarketing.Companion.sortByKavling
+import net.bagusekasaputra.griyakampoengtkw.domain.entity.BiayaMarketing.Companion.sortByTanggal
 import net.bagusekasaputra.griyakampoengtkw.presentation.fragment.rekap.RekapType
 import net.bagusekasaputra.griyakampoengtkw.presentation.tableview.biayaLain.BlCell
 import net.bagusekasaputra.griyakampoengtkw.presentation.tableview.biayaLain.BlColumnHeader
@@ -481,6 +486,51 @@ class RekapViewModel @Inject constructor(
         return cells
     }
 
+    fun sortBiayaMarketingRekap(byWhat: String) {
+        if (_listBiayaMarketingRekapLive.value.isNullOrEmpty().not()) {
+            val batchBiayaMarketing = _listBiayaMarketingRekapLive.value!!
+            val newMap = mutableMapOf<String, List<BiayaMarketing>>()
+
+            when (byWhat) {
+                "Kavling" -> {
+                    batchBiayaMarketing.forEach { items ->
+                        items.value.sortByKavling()?.let {
+                            it.forEach { biayaMarketing ->
+                                newMap[biayaMarketing.kavlingKode] = it
+                            }
+                        }
+                    }
+                }
+                "Tanggal" -> {
+                    batchBiayaMarketing.forEach { items ->
+                        items.value.sortByTanggal()?.let {
+                            it.forEach { biayaMarketing ->
+                                newMap[biayaMarketing.kavlingKode] = it
+                            }
+                        }
+                    }
+                }
+                "Harga" -> {
+                    batchBiayaMarketing.forEach { items ->
+                        items.value.sortByHarga()?.let {
+                            it.forEach { biayaMarketing ->
+                                newMap[biayaMarketing.kavlingKode] = it
+                            }
+                        }
+                    }
+                }
+                else -> {
+                    batchBiayaMarketing.forEach {
+                        newMap[it.key] = it.value
+                    }
+                }
+            }
+
+            _listBiayaMarketingRekapLive.value = newMap
+        }
+    }
+
+
     /**
      * Rekap Biaya Lain-lain Table Util
      */
@@ -526,6 +576,17 @@ class RekapViewModel @Inject constructor(
         }
 
         return cells
+    }
+
+    fun sortBiayaLainRekap(byWhat: String) {
+        if (_listBiayaLainRekapLive.value.isNullOrEmpty().not()) {
+            val listBiayaLain = _listBiayaLainRekapLive.value!!
+
+            when (byWhat) {
+                "Tanggal" -> _listBiayaLainRekapLive.value = listBiayaLain.sortByTanggal()
+                "Harga" -> _listBiayaLainRekapLive.value = listBiayaLain.sortByHarga()
+            }
+        }
     }
 
 

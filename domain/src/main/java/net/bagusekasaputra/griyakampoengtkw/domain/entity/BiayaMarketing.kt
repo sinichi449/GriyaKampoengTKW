@@ -71,5 +71,31 @@ data class BiayaMarketing(
                 }
             }
         }
+
+        fun List<BiayaMarketing>?.sortByKavling(): List<BiayaMarketing>? {
+            return this?.sortedWith { b1, b2 ->
+                val kode1 = b1.kavlingKode[0]
+                val kode2 = b2.kavlingKode[0]
+
+                val nomor1 = b1.kavlingKode.substring(1).toInt()
+                val nomor2 = b2.kavlingKode.substring(1).toInt()
+
+                (kode1.compareTo(kode2)) or (nomor1.compareTo(nomor2))
+            }
+        }
+
+        fun List<BiayaMarketing>?.sortByTanggal(): List<BiayaMarketing>? {
+            return this?.sortedBy {
+                Calendar.getInstance().apply {
+                    time = it.tanggal.toDate()
+                }.timeInMillis
+            }
+        }
+
+        fun List<BiayaMarketing>?.sortByHarga(): List<BiayaMarketing>? {
+            return this?.sortedBy {
+                it.parsedHarga
+            }
+        }
     }
 }
