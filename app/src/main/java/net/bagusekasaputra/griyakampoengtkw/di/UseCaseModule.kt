@@ -9,6 +9,7 @@ import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.biayaLain.Delete
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.biayaLain.GetAllBiayaLainAsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.biayaLain.UpdateBiayaLainAsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.biayaMarketing.GetAllBiayaMarketingByKavlingKodeAsyncUseCase
+import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.biayaMarketing.GetRekapBiayaMarketingAsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.block.GetAllBlocksAsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.catatanPembayaran.GetCatatanPembayaranAsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.dataDiri.GetDataDiriAsyncUseCase
@@ -407,5 +408,13 @@ object UseCaseModule {
     @Provides
     fun provideGetRekapFeeMarketingUseCase(feeMarketingRepository: FeeMarketingRepository): GetRekapFeeMarketingAsyncUseCase {
         return GetRekapFeeMarketingAsyncUseCase(feeMarketingRepository)
+    }
+
+    /**
+     * Rekap Biaya Marketing
+     */
+    @Provides
+    fun provideGetRekapBiayaMarketingUseCase(biayaMarketingRepository: BiayaMarketingRepository): GetRekapBiayaMarketingAsyncUseCase {
+        return GetRekapBiayaMarketingAsyncUseCase(biayaMarketingRepository)
     }
 }

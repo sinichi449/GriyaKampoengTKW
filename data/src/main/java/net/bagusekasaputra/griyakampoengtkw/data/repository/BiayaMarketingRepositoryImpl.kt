@@ -24,7 +24,7 @@ class BiayaMarketingRepositoryImpl(
 
     private val metadataTable = "biayaMarketing"
 
-    override fun getBatch(listKavling: List<String>): Flow<Result<Map<String, List<BiayaMarketing>?>?>> {
+    override fun getBatchOnline(listKavling: List<String>): Flow<Result<Map<String, List<BiayaMarketing>?>?>> {
         return flow {
             checkCache()
 
@@ -68,6 +68,34 @@ class BiayaMarketingRepositoryImpl(
             }
 
             emit(Result.success(batchBiayaMarketing))
+        }
+    }
+
+    override fun getBatchOffline(listKavling: List<String>): Flow<Result<Map<String, List<BiayaMarketing>>?>> {
+        return flow {
+            val batchBiayaMarketing = mutableMapOf<String, List<BiayaMarketing>>()
+
+            listKavling.forEach { kavling ->
+                val listBiayaMarketing = mutableListOf<BiayaMarketing>()
+
+                localBiayaMarketingDataSource.getAllBiayaMarketing(kavling)
+                    .onSuccess {
+                        it?.forEach { item ->
+                            listBiayaMarketing.add(mapBiayaMarketing(item.value))
+                        }
+                    }
+                    .onFailure {
+                        Log.d("DEBUG_ME", "BiayaMarketingRepoImpl:81 onFailure -> $it")
+                        emit(Result.failure(it))
+                    }
+
+                if (listBiayaMarketing.isEmpty().not())
+                    batchBiayaMarketing[kavling] = listBiayaMarketing
+            }
+
+            emit(Result.success(
+                batchBiayaMarketing.ifEmpty { null }
+            ))
         }
     }
 

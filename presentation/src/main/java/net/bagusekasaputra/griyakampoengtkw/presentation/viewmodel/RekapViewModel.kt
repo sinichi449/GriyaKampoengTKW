@@ -13,6 +13,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import net.bagusekasaputra.griyakampoengtkw.domain.DateUtil
 import net.bagusekasaputra.griyakampoengtkw.domain.NumberUtil
+import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.biayaMarketing.GetRekapBiayaMarketingAsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.feeMarketing.GetRekapFeeMarketingAsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.rekap.GetListRekapGlobalAsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.rekap.GetRekapBesarAsyncUseCase
@@ -35,12 +36,15 @@ class RekapViewModel @Inject constructor(
     private val getRekapBesarAsyncUseCase: GetRekapBesarAsyncUseCase,
     private val getUangMasukRekapAsyncUseCase: GetUangMasukRekapAsyncUseCase,
     private val getRekapFeeMarketingAsyncUseCase: GetRekapFeeMarketingAsyncUseCase,
+    private val getRekapBiayaMarketingAsyncUseCase: GetRekapBiayaMarketingAsyncUseCase,
 ): ViewModel() {
 
     val currentFragment = MutableLiveData<RekapType>()
     val currentPeriodeRekap = MutableLiveData<PeriodeRekap>()
     val currentStartDate = MutableLiveData<String>()
     val currentEndDate = MutableLiveData<String>()
+
+
 
     private val _listRekapGlobalLive = MutableLiveData(
         listOf(RekapGlobal("-", "-", "-", 0L, 0L))
@@ -60,6 +64,10 @@ class RekapViewModel @Inject constructor(
     val listFeeMarketingRekapLive: LiveData<List<FeeMarketing>>
         get() = _listFeeMarketingRekapLive
 
+    private val _listBiayaMarketingRekapLive = MutableLiveData<Map<String, List<BiayaMarketing>>>()
+    val listBiayaMarketingRekapLive: LiveData<Map<String, List<BiayaMarketing>>>
+        get() = _listBiayaMarketingRekapLive
+
 
 
     val isRekapGlobalLoaded = MutableStateFlow(false)
@@ -71,7 +79,6 @@ class RekapViewModel @Inject constructor(
     val rangeTanggal = MutableLiveData<String>()
 
     private val kavlingList = Kavling.getGriyaKavlingList()
-
 
 
 
@@ -164,7 +171,6 @@ class RekapViewModel @Inject constructor(
         }
     }
 
-
     fun getFeeMarketingRekap(
         periode: PeriodeRekap,
         startDate: Date?,
@@ -178,6 +184,31 @@ class RekapViewModel @Inject constructor(
                 result.onSuccess { listFeeMarketing ->
                     listFeeMarketing?.let {
                         _listFeeMarketingRekapLive.postValue(it)
+                    }
+                }
+
+                result.onFailure {
+                    withContext(Dispatchers.Main) {
+                        onFailure("ERROR: ${it.message}")
+                    }
+                }
+            }
+        }
+    }
+
+    fun getBiayaMarketingRekap(
+        periode: PeriodeRekap,
+        startDate: Date?,
+        endDate: Date?,
+        onFailure: (msg: String) -> Unit,
+    ) {
+        val request = GetRekapBiayaMarketingAsyncUseCase.Request(kavlingList, periode, startDate, endDate)
+
+        CoroutineScope(Dispatchers.IO).launch {
+            getRekapBiayaMarketingAsyncUseCase.execute(request).collect { result ->
+                result.onSuccess { mapBiayaMarketing ->
+                    mapBiayaMarketing?.let {
+                        _listBiayaMarketingRekapLive.postValue(it)
                     }
                 }
 
@@ -360,6 +391,61 @@ class RekapViewModel @Inject constructor(
 
         return cells
     }
+
+
+    /**
+     * Rekap Biaya Marketing Table Util
+     */
+    fun getBiayaMarketingRowHeader(): List<RumRowHeader> {
+        val batchBiayaMarketing = listBiayaMarketingRekapLive.value
+        val rowHeaders = mutableListOf<RumRowHeader>()
+
+        if (batchBiayaMarketing.isNullOrEmpty().not()) {
+            var index = 1
+            batchBiayaMarketing!!.forEach { item ->
+                item.value.forEach {
+                    rowHeaders.add(RumRowHeader(
+                        nomor = index.toString(),
+                        kavling = it.kavlingKode,
+                    ))
+                    index += 1
+                }
+            }
+        }
+
+        return rowHeaders
+    }
+
+    fun getBiayaMarketingColumnHeader(): List<RumColumnHeader> {
+        return listOf(
+            RumColumnHeader("Jenis Biaya"),
+            RumColumnHeader("Tanggal"),
+            RumColumnHeader("Harga"),
+        )
+    }
+
+    fun getBiayaMarketingListCells(): List<List<RumCell>> {
+        val cells = mutableListOf<List<RumCell>>()
+        val batchBiayaMarketing = listBiayaMarketingRekapLive.value
+
+        if (batchBiayaMarketing.isNullOrEmpty().not()) {
+            batchBiayaMarketing!!.forEach { item ->
+                item.value.forEach {
+                    val listItem = mutableListOf<RumCell>()
+                    listItem.apply {
+                        add(RumCell(it.jenisBiaya))
+                        add(RumCell(it.tanggal))
+                        add(RumCell(NumberUtil.formatLongToString(it.parsedHarga)))
+                    }
+
+                    cells.add(listItem)
+                }
+            }
+        }
+
+        return cells
+    }
+
 
     private fun List<Date>.toRangeString(): String {
         return "${this[0].toSlashedDate()} - ${this[1].toSlashedDate()}"

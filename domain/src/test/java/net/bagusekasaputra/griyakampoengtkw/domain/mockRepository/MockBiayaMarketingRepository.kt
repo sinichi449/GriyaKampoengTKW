@@ -31,7 +31,7 @@ class MockBiayaMarketingRepository: BiayaMarketingRepository {
         )),
     )
 
-    override fun getBatch(listKavling: List<String>): Flow<Result<Map<String, List<BiayaMarketing>?>?>> {
+    override fun getBatchOnline(listKavling: List<String>): Flow<Result<Map<String, List<BiayaMarketing>?>?>> {
         return flow {
             val result = mutableMapOf<String, List<BiayaMarketing>?>()
 

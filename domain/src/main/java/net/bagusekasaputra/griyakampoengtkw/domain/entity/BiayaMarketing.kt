@@ -17,6 +17,9 @@ data class BiayaMarketing(
     val harga: String,
     var totalBiaya: String = "",
 ) {
+
+    val parsedHarga = NumberUtil.formatStringToLong(harga)
+
     companion object {
 
         fun hitungTotalBiayaMarketing(listBiayaMarketing: List<BiayaMarketing>): Long {

@@ -11,6 +11,7 @@ import androidx.appcompat.app.AppCompatActivity
 import dagger.hilt.android.AndroidEntryPoint
 import net.bagusekasaputra.griyakampoengtkw.domain.DateUtil.toDate
 import net.bagusekasaputra.griyakampoengtkw.domain.NumberUtil
+import net.bagusekasaputra.griyakampoengtkw.domain.entity.BiayaMarketing
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.RekapUangMasuk
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.getPeriodeRekap
 import net.bagusekasaputra.griyakampoengtkw.presentation.databinding.ActivityRekapDetailBinding
@@ -63,6 +64,16 @@ class RekapDetailActivity : AppCompatActivity() {
                     Toast.makeText(this.applicationContext, "Terjadi kesalahan: NULL REKAP_TYPE from getPeriodeRekap()", Toast.LENGTH_LONG).show()
                 }
             }
+            RekapType.BiayaMarketing -> {
+                binding.toolbarMain.title = "Biaya Marketing"
+                if (rekapPeriode != null) {
+                    viewModel.getBiayaMarketingRekap(rekapPeriode, startDate, endDate) { failMsg ->
+                        Toast.makeText(this.applicationContext, failMsg, Toast.LENGTH_LONG).show()
+                    }
+                } else {
+                    Toast.makeText(this.applicationContext, "Terjadi kesalahan: NULL REKAP_TYPE from getPeriodeRekap()", Toast.LENGTH_LONG).show()
+                }
+            }
             else -> Toast.makeText(this.applicationContext, "Masih tahap beta, belum bisa digunakan", Toast.LENGTH_LONG).show()
         }
 
@@ -88,6 +99,21 @@ class RekapDetailActivity : AppCompatActivity() {
                 val total = it.let { feeMarketings ->
                     var mTotal = 0L
                     feeMarketings.forEach { item -> mTotal += item.parsedBiayaMarketer }
+
+                    "- Rp. ${NumberUtil.formatLongToString(mTotal)}"
+                }
+                binding.tvTotal.text = total
+            }
+        }
+
+        viewModel.listBiayaMarketingRekapLive.observe(this) {
+            if (it != null) {
+                setupBiayaMarketingTable()
+
+                val total = it.let { batchBiayaMarketing ->
+                    var mTotal = 0L
+
+                    batchBiayaMarketing.forEach { item -> mTotal += BiayaMarketing.hitungTotalBiayaMarketing(item.value)}
 
                     "- Rp. ${NumberUtil.formatLongToString(mTotal)}"
                 }
@@ -130,6 +156,24 @@ class RekapDetailActivity : AppCompatActivity() {
             setColumnWidth(0, 400) // Nama Marketer
             setColumnWidth(1, 300) // Tanggal Penerimaan
             setColumnWidth(2, 350) // Jumlah Uang
+        }
+    }
+
+    private fun setupBiayaMarketingTable() {
+        val columnHeader = viewModel.getBiayaMarketingColumnHeader()
+        val rowHeader = viewModel.getBiayaMarketingRowHeader()
+        val listCells = viewModel.getBiayaMarketingListCells()
+
+        val adapter = RekapUangMasukTableViewAdapter()
+
+        binding.tableRekap.setAdapter(adapter)
+
+        adapter.setAllItems(columnHeader, rowHeader, listCells)
+
+        binding.tableRekap.apply {
+            setColumnWidth(0, 500) // Jenis Biaya
+            setColumnWidth(1, 300) // Tanggal
+            setColumnWidth(2, 350) // Harga
         }
     }
 

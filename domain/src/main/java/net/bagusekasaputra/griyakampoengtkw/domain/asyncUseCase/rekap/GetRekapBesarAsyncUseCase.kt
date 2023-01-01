@@ -55,7 +55,7 @@ class GetRekapBesarAsyncUseCase(
                 .getOrThrow()
 
             progressState.update { ProgressState(72, "Menyusun tabel Biaya Marketing ...") }
-            val mapBiayaMarketing = biayaMarketingRepository.getBatch(request.kavlingList)
+            val mapBiayaMarketing = biayaMarketingRepository.getBatchOnline(request.kavlingList)
                 .first()
                 .getOrThrow()
 

@@ -89,6 +89,10 @@ class RekapBesarFragment : Fragment() {
         binding.cardPengeluaran.layoutFeeMarketing.setOnClickListener {
             navigateToRekapDetail(RekapType.FeeMarketing)
         }
+
+        binding.cardPengeluaran.layoutBiayaMarketing.setOnClickListener {
+            navigateToRekapDetail(RekapType.BiayaMarketing)
+        }
     }
 
     private fun navigateToRekapDetail(rekapType: RekapType) {
