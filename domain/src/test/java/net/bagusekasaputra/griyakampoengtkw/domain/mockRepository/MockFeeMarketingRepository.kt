@@ -11,7 +11,7 @@ class MockFeeMarketingRepository: FeeMarketingRepository {
         Pair("A2", FeeMarketing("A2", "Sridevi", "9,800,000", tanggalPenerimaan = "01/03/2021"))
     )
 
-    override fun getBatch(listKavling: List<String>): Flow<Result<Map<String, FeeMarketing?>?>> {
+    override fun getBatchOnline(listKavling: List<String>): Flow<Result<Map<String, FeeMarketing?>?>> {
         return flow {
             val result = mutableMapOf<String, FeeMarketing?>()
 
@@ -21,6 +21,10 @@ class MockFeeMarketingRepository: FeeMarketingRepository {
 
             emit(Result.success(result))
         }
+    }
+
+    override fun getBatchOffline(kavlingList: List<String>): Flow<Result<List<FeeMarketing>?>> {
+        TODO("Not yet implemented")
     }
 
     override fun getByKavlingKode(

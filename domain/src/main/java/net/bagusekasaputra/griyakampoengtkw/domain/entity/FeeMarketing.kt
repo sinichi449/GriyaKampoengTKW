@@ -1,5 +1,11 @@
 package net.bagusekasaputra.griyakampoengtkw.domain.entity
 
+import net.bagusekasaputra.griyakampoengtkw.domain.DateUtil.getCustomRangeDate
+import net.bagusekasaputra.griyakampoengtkw.domain.DateUtil.getMonthlyRangeDate
+import net.bagusekasaputra.griyakampoengtkw.domain.DateUtil.getTahunSekarang
+import net.bagusekasaputra.griyakampoengtkw.domain.DateUtil.getWeeklyRangeDate
+import net.bagusekasaputra.griyakampoengtkw.domain.DateUtil.isWithinRange
+import net.bagusekasaputra.griyakampoengtkw.domain.DateUtil.toDate
 import net.bagusekasaputra.griyakampoengtkw.domain.NumberUtil
 import java.util.*
 
@@ -25,5 +31,51 @@ data class FeeMarketing(
         }
 
         return formatToCalendar.timeInMillis
+    }
+
+    companion object {
+        fun FeeMarketing?.filterPeriode(
+            periode: PeriodeRekap,
+            start: Date?,
+            end: Date?,
+        ): FeeMarketing? {
+            return this?.let {
+                val tanggalPenerimaan = it.tanggalPenerimaan.toDate()
+
+                when(periode) {
+                    PeriodeRekap.SEMUA -> it
+                    PeriodeRekap.TAHUN_INI -> {
+                        val tahunPenerimaan = Calendar.getInstance().run {
+                            time = tanggalPenerimaan
+
+                            get(Calendar.YEAR)
+                        }
+
+                        if (getTahunSekarang() == tahunPenerimaan) it else null
+                    }
+                    PeriodeRekap.BULAN_INI -> {
+                        val rangeTanggal = getMonthlyRangeDate()
+                        val startDate = rangeTanggal[0]
+                        val endDate = rangeTanggal[1]
+
+                        if (tanggalPenerimaan.isWithinRange(startDate, endDate)) it else null
+                    }
+                    PeriodeRekap.MINGGU_INI -> {
+                        val rangeTanggal = getWeeklyRangeDate()
+                        val startDate = rangeTanggal[0]
+                        val endDate = rangeTanggal[1]
+
+                        if (tanggalPenerimaan.isWithinRange(startDate, endDate)) it else null
+                    }
+                    PeriodeRekap.CUSTOM -> {
+                        val rangeTanggal = getCustomRangeDate(start!!, end!!)
+                        val startDate = rangeTanggal[0]
+                        val endDate = rangeTanggal[1]
+
+                        if (tanggalPenerimaan.isWithinRange(startDate, endDate)) it else null
+                    }
+                }
+            }
+        }
     }
 }

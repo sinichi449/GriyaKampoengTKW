@@ -23,7 +23,7 @@ class FeeMarketingRepositoryImpl(
 
     private val metadataTable = "feeMarketing"
 
-    override fun getBatch(listKavling: List<String>): Flow<Result<Map<String, FeeMarketing?>?>> {
+    override fun getBatchOnline(listKavling: List<String>): Flow<Result<Map<String, FeeMarketing?>?>> {
         return flow {
             checkCache()
 
@@ -61,6 +61,27 @@ class FeeMarketingRepositoryImpl(
             }
 
             emit(Result.success(batchFeeMarketing))
+        }
+    }
+
+    override fun getBatchOffline(kavlingList: List<String>): Flow<Result<List<FeeMarketing>?>> {
+        return flow {
+            val listFeeMarketing = mutableListOf<FeeMarketing>()
+            kavlingList.forEach { kavling ->
+                localFeeMarketingDataSource.getByKavlingKode(kavling)
+                    .onSuccess { model ->
+                        model?.let {
+                            listFeeMarketing.add(mapFeeMarketing(it))
+                        }
+                    }
+                    .onFailure {
+                        Log.d("DEBUG_ME", "FeeMarketingRepoImpl:75 onFailure -> $it")
+                        emit(Result.failure(it))
+                    }
+            }
+
+            if (listFeeMarketing.isEmpty()) emit(Result.success(null))
+            else emit(Result.success(listFeeMarketing))
         }
     }
 

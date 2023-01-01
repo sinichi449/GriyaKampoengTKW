@@ -11,6 +11,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import net.bagusekasaputra.griyakampoengtkw.domain.DateUtil
 import net.bagusekasaputra.griyakampoengtkw.domain.NumberUtil
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.rekap.GetListRekapGlobalAsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.rekap.GetRekapBesarAsyncUseCase
@@ -122,9 +123,9 @@ class RekapViewModel @Inject constructor(
 
         rangeTanggal.value = when (periode) {
             PeriodeRekap.SEMUA -> "Semua"
-            PeriodeRekap.TAHUN_INI -> getRekapBesarAsyncUseCase.getTahunSekarang().toString()
-            PeriodeRekap.BULAN_INI -> getRekapBesarAsyncUseCase.getMonthlyRangeDate().toRangeString()
-            PeriodeRekap.MINGGU_INI -> getRekapBesarAsyncUseCase.getWeeklyRangeDate().toRangeString()
+            PeriodeRekap.TAHUN_INI -> DateUtil.getTahunSekarang().toString()
+            PeriodeRekap.BULAN_INI -> DateUtil.getMonthlyRangeDate().toRangeString()
+            PeriodeRekap.MINGGU_INI -> DateUtil.getWeeklyRangeDate().toRangeString()
             PeriodeRekap.CUSTOM -> "${startDate?.toSlashedDate()} - ${endDate?.toSlashedDate()}"
         }
     }

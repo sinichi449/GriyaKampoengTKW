@@ -5,7 +5,9 @@ import net.bagusekasaputra.griyakampoengtkw.domain.entity.FeeMarketing
 
 interface FeeMarketingRepository {
 
-    fun getBatch(listKavling: List<String>): Flow<Result<Map<String, FeeMarketing?>?>>
+    fun getBatchOnline(listKavling: List<String>): Flow<Result<Map<String, FeeMarketing?>?>>
+
+    fun getBatchOffline(kavlingList: List<String>): Flow<Result<List<FeeMarketing>?>>
 
     fun getByKavlingKode(kavlingKode: String, offline: Boolean): Flow<Result<FeeMarketing?>>
 

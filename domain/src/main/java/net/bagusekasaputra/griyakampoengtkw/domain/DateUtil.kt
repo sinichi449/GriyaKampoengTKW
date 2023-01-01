@@ -1,0 +1,106 @@
+package net.bagusekasaputra.griyakampoengtkw.domain
+
+import java.util.*
+
+object DateUtil {
+
+    fun getTahunSekarang() = Calendar.getInstance().get(Calendar.YEAR)
+
+    fun getMonthlyRangeDate(): List<Date> {
+        // Get first and end of day in current month
+        val tanggalPertama = Calendar.getInstance().apply {
+            // Set ke tanggal 1 bulan sekarang
+            set(Calendar.DAY_OF_MONTH, 1)
+
+            set(Calendar.HOUR_OF_DAY, 0)
+            set(Calendar.MINUTE, 0)
+            set(Calendar.SECOND, 0)
+            set(Calendar.MILLISECOND, 0)
+        }.time
+        val tanggalTerakhir = Calendar.getInstance().apply {
+            // Set ke tanggal terakhir bulan sekarang (otomatis mengikuti bulan)
+            set(Calendar.DAY_OF_MONTH, getActualMaximum(Calendar.DATE))
+
+            set(Calendar.HOUR_OF_DAY, 0)
+            set(Calendar.MINUTE, 0)
+            set(Calendar.SECOND, 0)
+            set(Calendar.MILLISECOND, 0)
+        }.time
+
+        return listOf(tanggalPertama, tanggalTerakhir)
+    }
+
+    fun getWeeklyRangeDate(): List<Date> {
+        val startDate = Calendar.getInstance().apply {
+            set(Calendar.DAY_OF_WEEK, firstDayOfWeek)
+
+            set(Calendar.HOUR_OF_DAY, 0)
+            set(Calendar.MINUTE, 0)
+            set(Calendar.SECOND, 0)
+            set(Calendar.MILLISECOND, 0)
+        }
+        val endDate = Calendar.getInstance().apply {
+            time = startDate.time
+
+            add(Calendar.DAY_OF_WEEK, 7)
+
+            set(Calendar.HOUR_OF_DAY, 0)
+            set(Calendar.MINUTE, 0)
+            set(Calendar.SECOND, 0)
+            set(Calendar.MILLISECOND, 0)
+        }
+
+        return listOf(startDate.time, endDate.time)
+    }
+
+    fun getCustomRangeDate(start: Date, end: Date): List<Date> {
+        val startDate = Calendar.getInstance().apply {
+            time = start
+
+            set(Calendar.HOUR_OF_DAY, 0)
+            set(Calendar.MINUTE, 0)
+            set(Calendar.SECOND, 0)
+            set(Calendar.MILLISECOND, 0)
+        }
+        val endDate = Calendar.getInstance().apply {
+            time = end
+
+            set(Calendar.HOUR_OF_DAY, 0)
+            set(Calendar.MINUTE, 0)
+            set(Calendar.SECOND, 0)
+            set(Calendar.MILLISECOND, 0)
+        }
+
+        return listOf(startDate.time, endDate.time)
+    }
+
+    fun String.toDate(): Date {
+        return this.split("/").let {
+            val tanggal = it[0].toInt()
+            val bulan = it[1].toInt() - 1
+            val tahun = it[2].toInt()
+
+            Calendar.getInstance().apply {
+                set(Calendar.DAY_OF_MONTH, tanggal)
+                set(Calendar.MONTH, bulan)
+                set(Calendar.YEAR, tahun)
+                set(Calendar.HOUR_OF_DAY, 0)
+                set(Calendar.MINUTE, 0)
+                set(Calendar.SECOND, 0)
+                set(Calendar.MILLISECOND, 0)
+            }.time
+        }
+    }
+
+    fun Date.toSlashedString(): String {
+        val calendar = Calendar.getInstance().apply { time = this@toSlashedString }
+        val tanggal = calendar.get(Calendar.DAY_OF_MONTH)
+        val bulan = calendar.get(Calendar.MONTH) + 1
+        val tahun = calendar.get(Calendar.YEAR)
+
+        return "${tanggal}/${bulan}/${tahun}"
+    }
+
+    fun Date.isWithinRange(startDate: Date, endDate: Date)
+            = !(this.before(startDate) || this.after(endDate))
+}
