@@ -13,6 +13,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import net.bagusekasaputra.griyakampoengtkw.domain.DateUtil
 import net.bagusekasaputra.griyakampoengtkw.domain.NumberUtil
+import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.biayaLain.GetRekapBiayaLainAsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.biayaMarketing.GetRekapBiayaMarketingAsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.feeMarketing.GetRekapFeeMarketingAsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.rekap.GetListRekapGlobalAsyncUseCase
@@ -20,6 +21,9 @@ import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.rekap.GetRekapBe
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.rekap.GetUangMasukRekapAsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.*
 import net.bagusekasaputra.griyakampoengtkw.presentation.fragment.rekap.RekapType
+import net.bagusekasaputra.griyakampoengtkw.presentation.tableview.biayaLain.BlCell
+import net.bagusekasaputra.griyakampoengtkw.presentation.tableview.biayaLain.BlColumnHeader
+import net.bagusekasaputra.griyakampoengtkw.presentation.tableview.biayaLain.BlRowHeader
 import net.bagusekasaputra.griyakampoengtkw.presentation.tableview.rekapGlobal.RgCell
 import net.bagusekasaputra.griyakampoengtkw.presentation.tableview.rekapGlobal.RgColumnHeader
 import net.bagusekasaputra.griyakampoengtkw.presentation.tableview.rekapGlobal.RgRowHeader
@@ -37,6 +41,7 @@ class RekapViewModel @Inject constructor(
     private val getUangMasukRekapAsyncUseCase: GetUangMasukRekapAsyncUseCase,
     private val getRekapFeeMarketingAsyncUseCase: GetRekapFeeMarketingAsyncUseCase,
     private val getRekapBiayaMarketingAsyncUseCase: GetRekapBiayaMarketingAsyncUseCase,
+    private val getRekapBiayaLainAsyncUseCase: GetRekapBiayaLainAsyncUseCase,
 ): ViewModel() {
 
     val currentFragment = MutableLiveData<RekapType>()
@@ -68,6 +73,9 @@ class RekapViewModel @Inject constructor(
     val listBiayaMarketingRekapLive: LiveData<Map<String, List<BiayaMarketing>>>
         get() = _listBiayaMarketingRekapLive
 
+    private val _listBiayaLainRekapLive = MutableLiveData<List<BiayaLain>>()
+    val listBiayaLainRekapLive: LiveData<List<BiayaLain>>
+        get() = _listBiayaLainRekapLive
 
 
     val isRekapGlobalLoaded = MutableStateFlow(false)
@@ -220,6 +228,33 @@ class RekapViewModel @Inject constructor(
             }
         }
     }
+
+    fun getBiayaLainRekap(
+        periode: PeriodeRekap,
+        startDate: Date?,
+        endDate: Date?,
+        onFailure: (msg: String) -> Unit,
+    ) {
+        val request = GetRekapBiayaLainAsyncUseCase.Request(kavlingList, periode, startDate, endDate)
+
+        CoroutineScope(Dispatchers.IO).launch {
+            getRekapBiayaLainAsyncUseCase.execute(request).collect { result ->
+                result.onSuccess { listBiayaLain ->
+                    if (listBiayaLain.isNullOrEmpty().not()) {
+                        _listBiayaLainRekapLive.postValue(listBiayaLain)
+                    }
+                }
+
+                result.onFailure {
+                    withContext(Dispatchers.Main) {
+                        onFailure("ERROR: ${it.message}")
+                    }
+                }
+            }
+        }
+    }
+
+
 
 
     /**
@@ -440,6 +475,53 @@ class RekapViewModel @Inject constructor(
 
                     cells.add(listItem)
                 }
+            }
+        }
+
+        return cells
+    }
+
+    /**
+     * Rekap Biaya Lain-lain Table Util
+     */
+    fun getBiayaLainRowHeader(): List<BlRowHeader> {
+        val listBiayaLain = listBiayaLainRekapLive.value
+        val rowHeaders = mutableListOf<BlRowHeader>()
+
+        if (listBiayaLain.isNullOrEmpty().not()) {
+            val size = listBiayaLain!!.size
+            var index = 1
+            repeat(size) {
+                rowHeaders.add(BlRowHeader(nomor = index.toString()))
+                index += 1
+            }
+        }
+
+        return rowHeaders
+    }
+
+    fun getBiayaLainColumnHeaders(): List<BlColumnHeader> {
+        return listOf(
+            BlColumnHeader("Jenis Biaya"),
+            BlColumnHeader("Tanggal"),
+            BlColumnHeader("Harga"),
+        )
+    }
+
+    fun getBiayaLainListCells(): List<List<BlCell>> {
+        val cells = mutableListOf<List<BlCell>>()
+        val listBiayaLain = listBiayaLainRekapLive.value
+
+        if (listBiayaLain.isNullOrEmpty().not()) {
+            listBiayaLain!!.forEach {
+                val items = mutableListOf<BlCell>()
+                items.apply {
+                    add(BlCell(it.jenisBiaya))
+                    add(BlCell(it.tanggal))
+                    add(BlCell(NumberUtil.formatLongToString(it.harga)))
+                }
+
+                cells.add(items)
             }
         }
 

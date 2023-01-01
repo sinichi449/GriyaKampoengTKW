@@ -91,6 +91,18 @@
                 app:show_horizontal_separator="true"
                 app:show_vertical_separator="true"/>
 
+            <com.evrencoskun.tableview.TableView
+                android:id="@+id/tableview_biaya_lain"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_marginTop="24dp"
+                android:visibility="gone"
+                app:column_header_height="@dimen/table_pembayaran_column_header_height"
+                app:row_header_width="@dimen/table_general_numeric_row_header_width"
+                app:separator_color="@color/black"
+                app:show_horizontal_separator="true"
+                app:show_vertical_separator="true"/>
+
             <Space
                 android:layout_width="match_parent"
                 android:layout_height="24dp"/>

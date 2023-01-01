@@ -4,10 +4,7 @@ import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.android.components.ViewModelComponent
-import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.biayaLain.AddBiayaLainAsyncUseCase
-import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.biayaLain.DeleteBiayaLainAsyncUseCase
-import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.biayaLain.GetAllBiayaLainAsyncUseCase
-import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.biayaLain.UpdateBiayaLainAsyncUseCase
+import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.biayaLain.*
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.biayaMarketing.GetAllBiayaMarketingByKavlingKodeAsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.biayaMarketing.GetRekapBiayaMarketingAsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.block.GetAllBlocksAsyncUseCase
@@ -416,5 +413,13 @@ object UseCaseModule {
     @Provides
     fun provideGetRekapBiayaMarketingUseCase(biayaMarketingRepository: BiayaMarketingRepository): GetRekapBiayaMarketingAsyncUseCase {
         return GetRekapBiayaMarketingAsyncUseCase(biayaMarketingRepository)
+    }
+
+    /**
+     * Rekap Biaya Lain-lain
+     */
+    @Provides
+    fun provideGetRekapBiayaLainUseCase(biayaLainRepository: BiayaLainRepository): GetRekapBiayaLainAsyncUseCase {
+        return GetRekapBiayaLainAsyncUseCase(biayaLainRepository)
     }
 }

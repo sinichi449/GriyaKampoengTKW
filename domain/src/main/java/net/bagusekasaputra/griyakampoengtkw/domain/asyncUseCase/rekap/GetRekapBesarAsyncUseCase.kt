@@ -60,7 +60,7 @@ class GetRekapBesarAsyncUseCase(
                 .getOrThrow()
 
             progressState.update { ProgressState(90, "Menyusun tabel Biaya Lain-lain ...") }
-            val listBiayaLain = biayaLainRepository.getAll(false)
+            val listBiayaLain = biayaLainRepository.getAllOnline(false)
                 .first()
                 .getOrThrow()
 

@@ -12,6 +12,6 @@ class GetAllBiayaLainAsyncUseCase(
     data class Request(val offline: Boolean): AsyncUseCase.Request
 
     override fun process(request: Request): Flow<Result<List<BiayaLain>?>> {
-        return biayaLainRepository.getAll(request.offline)
+        return biayaLainRepository.getAllOnline(request.offline)
     }
 }

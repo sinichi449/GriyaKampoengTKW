@@ -20,7 +20,7 @@ class BiayaLainRepositoryImpl(
 
     private val metadataTable = "biayaLain"
 
-    override fun getAll(offline: Boolean): Flow<Result<List<BiayaLain>?>> {
+    override fun getAllOnline(offline: Boolean): Flow<Result<List<BiayaLain>?>> {
         return flow {
             // Cache Validation
             val localTimestamp = localMetadata.get(metadataTable)
@@ -80,6 +80,20 @@ class BiayaLainRepositoryImpl(
                     }
                 ))
             }
+        }
+    }
+
+    override fun getAllOffline(): Flow<Result<List<BiayaLain>?>> {
+        return flow {
+            emitAll(
+                localBiayaLainDataSource.getAll().map { result ->
+                    result.map { listModel ->
+                        listModel?.map {
+                            mapBiayaLain(it)
+                        }
+                    }
+                }
+            )
         }
     }
 

@@ -11,12 +11,14 @@ import androidx.appcompat.app.AppCompatActivity
 import dagger.hilt.android.AndroidEntryPoint
 import net.bagusekasaputra.griyakampoengtkw.domain.DateUtil.toDate
 import net.bagusekasaputra.griyakampoengtkw.domain.NumberUtil
+import net.bagusekasaputra.griyakampoengtkw.domain.entity.BiayaLain
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.BiayaMarketing
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.RekapUangMasuk
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.getPeriodeRekap
 import net.bagusekasaputra.griyakampoengtkw.presentation.databinding.ActivityRekapDetailBinding
 import net.bagusekasaputra.griyakampoengtkw.presentation.fragment.rekap.RekapType
 import net.bagusekasaputra.griyakampoengtkw.presentation.fragment.rekap.getRekapType
+import net.bagusekasaputra.griyakampoengtkw.presentation.tableview.biayaLain.TableBiayaLainViewAdapter
 import net.bagusekasaputra.griyakampoengtkw.presentation.tableview.rekapUangMasuk.RekapUangMasukTableViewAdapter
 import net.bagusekasaputra.griyakampoengtkw.presentation.viewmodel.RekapViewModel
 
@@ -74,6 +76,16 @@ class RekapDetailActivity : AppCompatActivity() {
                     Toast.makeText(this.applicationContext, "Terjadi kesalahan: NULL REKAP_TYPE from getPeriodeRekap()", Toast.LENGTH_LONG).show()
                 }
             }
+            RekapType.BiayaLain -> {
+                binding.toolbarMain.title = "Biaya Lain-lain"
+                if (rekapPeriode != null) {
+                    viewModel.getBiayaLainRekap(rekapPeriode, startDate, endDate) { failMsg ->
+                        Toast.makeText(this.applicationContext, failMsg, Toast.LENGTH_LONG).show()
+                    }
+                } else {
+                    Toast.makeText(this.applicationContext, "Terjadi kesalahan: NULL REKAP_TYPE from getPeriodeRekap()", Toast.LENGTH_LONG).show()
+                }
+            }
             else -> Toast.makeText(this.applicationContext, "Masih tahap beta, belum bisa digunakan", Toast.LENGTH_LONG).show()
         }
 
@@ -116,6 +128,17 @@ class RekapDetailActivity : AppCompatActivity() {
                     batchBiayaMarketing.forEach { item -> mTotal += BiayaMarketing.hitungTotalBiayaMarketing(item.value)}
 
                     "- Rp. ${NumberUtil.formatLongToString(mTotal)}"
+                }
+                binding.tvTotal.text = total
+            }
+        }
+
+        viewModel.listBiayaLainRekapLive.observe(this) {
+            if (it != null) {
+                setupBiayaLainTable()
+
+                val total = BiayaLain.hitungTotalBiayaLain(it).let { total ->
+                    "- Rp. ${NumberUtil.formatLongToString(total)}"
                 }
                 binding.tvTotal.text = total
             }
@@ -171,6 +194,27 @@ class RekapDetailActivity : AppCompatActivity() {
         adapter.setAllItems(columnHeader, rowHeader, listCells)
 
         binding.tableRekap.apply {
+            setColumnWidth(0, 500) // Jenis Biaya
+            setColumnWidth(1, 300) // Tanggal
+            setColumnWidth(2, 350) // Harga
+        }
+    }
+
+    private fun setupBiayaLainTable() {
+        val columnHeader = viewModel.getBiayaLainColumnHeaders()
+        val rowHeader = viewModel.getBiayaLainRowHeader()
+        val listCells = viewModel.getBiayaLainListCells()
+
+        binding.tableRekap.visibility = View.GONE
+        binding.tableviewBiayaLain.visibility = View.VISIBLE
+
+        val adapter = TableBiayaLainViewAdapter()
+
+        binding.tableviewBiayaLain.setAdapter(adapter)
+
+        adapter.setAllItems(columnHeader, rowHeader, listCells)
+
+        binding.tableviewBiayaLain.apply {
             setColumnWidth(0, 500) // Jenis Biaya
             setColumnWidth(1, 300) // Tanggal
             setColumnWidth(2, 350) // Harga

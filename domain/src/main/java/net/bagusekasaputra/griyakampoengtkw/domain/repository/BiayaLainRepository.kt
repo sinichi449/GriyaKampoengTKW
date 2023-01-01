@@ -5,7 +5,9 @@ import net.bagusekasaputra.griyakampoengtkw.domain.entity.BiayaLain
 
 interface BiayaLainRepository {
 
-    fun getAll(offline: Boolean): Flow<Result<List<BiayaLain>?>>
+    fun getAllOnline(offline: Boolean): Flow<Result<List<BiayaLain>?>>
+
+    fun getAllOffline(): Flow<Result<List<BiayaLain>?>>
 
     fun getSingle(jenisBiaya: String, offline: Boolean): Flow<Result<BiayaLain?>>
 

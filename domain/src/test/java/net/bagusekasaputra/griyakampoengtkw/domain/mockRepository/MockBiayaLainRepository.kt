@@ -7,7 +7,7 @@ import net.bagusekasaputra.griyakampoengtkw.domain.repository.BiayaLainRepositor
 
 class MockBiayaLainRepository: BiayaLainRepository {
 
-    override fun getAll(offline: Boolean): Flow<Result<List<BiayaLain>?>> {
+    override fun getAllOnline(offline: Boolean): Flow<Result<List<BiayaLain>?>> {
         return flow {
             val listBiayaLain = listOf(
                 BiayaLain(jenisBiaya = "pembuatan berkas Pak Abi abudhabi", harga = 50000L, tanggal = "12/10/2022"),
