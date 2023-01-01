@@ -85,12 +85,19 @@ class RekapBesarFragment : Fragment() {
         binding.cardPemasukan.layoutTotalUangMasuk.setOnClickListener {
             navigateToRekapDetail(RekapType.UangMasuk)
         }
+
+        binding.cardPengeluaran.layoutFeeMarketing.setOnClickListener {
+            navigateToRekapDetail(RekapType.FeeMarketing)
+        }
     }
 
     private fun navigateToRekapDetail(rekapType: RekapType) {
         val intent = Intent(requireContext(), RekapDetailActivity::class.java)
         intent.putExtra("INTENT_REKAP_TYPE", rekapType.name)
         intent.putExtra("INTENT_REKAP_DATE_RANGE", viewModel.rangeTanggal.value ?: "-")
+        intent.putExtra("INTENT_PERIODE_REKAP", viewModel.currentPeriodeRekap.value?.name ?: "-")
+        intent.putExtra("INTENT_START_DATE", viewModel.currentStartDate.value)
+        intent.putExtra("INTENT_END_DATE", viewModel.currentEndDate.value)
         requireActivity().startActivity(intent)
     }
 

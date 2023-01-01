@@ -9,10 +9,13 @@ import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import dagger.hilt.android.AndroidEntryPoint
+import net.bagusekasaputra.griyakampoengtkw.domain.DateUtil.toDate
 import net.bagusekasaputra.griyakampoengtkw.domain.NumberUtil
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.RekapUangMasuk
+import net.bagusekasaputra.griyakampoengtkw.domain.entity.getPeriodeRekap
 import net.bagusekasaputra.griyakampoengtkw.presentation.databinding.ActivityRekapDetailBinding
 import net.bagusekasaputra.griyakampoengtkw.presentation.fragment.rekap.RekapType
+import net.bagusekasaputra.griyakampoengtkw.presentation.fragment.rekap.getRekapType
 import net.bagusekasaputra.griyakampoengtkw.presentation.tableview.rekapUangMasuk.RekapUangMasukTableViewAdapter
 import net.bagusekasaputra.griyakampoengtkw.presentation.viewmodel.RekapViewModel
 
@@ -20,6 +23,8 @@ import net.bagusekasaputra.griyakampoengtkw.presentation.viewmodel.RekapViewMode
 class RekapDetailActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityRekapDetailBinding
+    private lateinit var rekapType: RekapType
+
     private val viewModel: RekapViewModel by viewModels()
 
     private val listSortMode = listOf(
@@ -36,29 +41,33 @@ class RekapDetailActivity : AppCompatActivity() {
         setSupportActionBar(binding.toolbarMain)
         binding.toolbarMain.subtitle = intent?.extras?.getString("INTENT_REKAP_DATE_RANGE") ?: "null"
 
-        setupSortSelectionSpinner()
-        setupViewModel()
+        val rekapPeriode = getPeriodeRekap(intent?.extras?.getString("INTENT_PERIODE_REKAP") ?: "-")
+        val startDate = intent?.extras?.getString("INTENT_START_DATE")?.toDate()
+        val endDate = intent?.extras?.getString("INTENT_END_DATE")?.toDate()
 
-        when (intent?.extras?.getString("INTENT_REKAP_TYPE")) {
-            RekapType.UangMasuk.name -> {
+        rekapType = getRekapType(intent?.extras?.getString("INTENT_REKAP_TYPE") ?: "-") ?: RekapType.UangMasuk
+        when (rekapType) {
+            RekapType.UangMasuk -> {
                 binding.toolbarMain.title = "Uang Masuk"
                 viewModel.getListUangMasukRekap { failMsg ->
                     Toast.makeText(this.applicationContext, failMsg, Toast.LENGTH_LONG).show()
                 }
             }
+            RekapType.FeeMarketing -> {
+                binding.toolbarMain.title = "Fee Marketing"
+                if (rekapPeriode != null) {
+                    viewModel.getFeeMarketingRekap(rekapPeriode, startDate, endDate) { failMsg ->
+                        Toast.makeText(this.applicationContext, failMsg, Toast.LENGTH_LONG).show()
+                    }
+                } else {
+                    Toast.makeText(this.applicationContext, "Terjadi kesalahan: NULL REKAP_TYPE from getPeriodeRekap()", Toast.LENGTH_LONG).show()
+                }
+            }
             else -> Toast.makeText(this.applicationContext, "Masih tahap beta, belum bisa digunakan", Toast.LENGTH_LONG).show()
         }
 
-        binding.spinnerSortMode.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
-            override fun onItemSelected(p0: AdapterView<*>?, p1: View?, position: Int, id: Long) {
-                viewModel.sortListRekapUangMasuk(listSortMode[position])
-            }
-
-            override fun onNothingSelected(p0: AdapterView<*>?) {
-
-            }
-
-        }
+        setupSortSelectionSpinner()
+        setupViewModel()
     }
 
     private fun setupViewModel() {
@@ -67,6 +76,21 @@ class RekapDetailActivity : AppCompatActivity() {
                 setupRekapUangMasukTable()
 
                 val total = "Rp. ${NumberUtil.formatLongToString(RekapUangMasuk.hitungTotal(it))}"
+                binding.tvTotal.text = total
+
+            }
+        }
+
+        viewModel.listFeeMarketingRekapLive.observe(this) {
+            if (it != null) {
+                setupFeeMarketingTable()
+
+                val total = it.let { feeMarketings ->
+                    var mTotal = 0L
+                    feeMarketings.forEach { item -> mTotal += item.parsedBiayaMarketer }
+
+                    "- Rp. ${NumberUtil.formatLongToString(mTotal)}"
+                }
                 binding.tvTotal.text = total
             }
         }
@@ -91,12 +115,44 @@ class RekapDetailActivity : AppCompatActivity() {
         }
     }
 
+    private fun setupFeeMarketingTable() {
+        val columnHeader = viewModel.getFeeMarketingColumnHeader()
+        val rowHeader = viewModel.getFeeMarketingRowHeader()
+        val listCells = viewModel.getFeeMarketingListCells()
+
+        val adapter = RekapUangMasukTableViewAdapter()
+
+        binding.tableRekap.setAdapter(adapter)
+
+        adapter.setAllItems(columnHeader, rowHeader, listCells)
+
+        binding.tableRekap.apply {
+            setColumnWidth(0, 400) // Nama Marketer
+            setColumnWidth(1, 300) // Tanggal Penerimaan
+            setColumnWidth(2, 350) // Jumlah Uang
+        }
+    }
+
     private fun setupSortSelectionSpinner() {
         binding.spinnerSortMode.adapter = ArrayAdapter(
             this,
             android.R.layout.simple_spinner_dropdown_item,
             listSortMode
         )
+
+        binding.spinnerSortMode.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
+            override fun onItemSelected(p0: AdapterView<*>?, p1: View?, position: Int, id: Long) {
+                when (rekapType) {
+                    RekapType.UangMasuk -> viewModel.sortListRekapUangMasuk(listSortMode[position])
+                    else -> {}
+                }
+            }
+
+            override fun onNothingSelected(p0: AdapterView<*>?) {
+
+            }
+
+        }
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
