@@ -39,11 +39,11 @@ class RekapFragment : Fragment() {
 
         setupViewModel()
 
-        binding.smallTab.btnRekapGlobal.setOnClickListener {
+        binding.smallTab?.btnRekapGlobal?.setOnClickListener {
             navigateTo(RekapType.Global)
         }
 
-        binding.smallTab.btnRekapBesar.setOnClickListener {
+        binding.smallTab?.btnRekapBesar?.setOnClickListener {
             navigateTo(RekapType.Besar)
         }
 
@@ -53,7 +53,7 @@ class RekapFragment : Fragment() {
     private fun setupViewModel() {
         viewModel.currentFragment.observe(requireActivity()) {
             if (it != null) {
-                binding.smallTab.setSelectedRekap(it)
+                binding.smallTab?.setSelectedRekap(it)
             }
         }
 
