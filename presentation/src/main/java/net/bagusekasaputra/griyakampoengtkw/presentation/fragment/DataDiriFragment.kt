@@ -439,7 +439,7 @@ class DataDiriFragment : Fragment() {
     private fun showImagePickerSPR(launcher: ActivityResultLauncher<Intent>) {
         ImagePicker.with(this)
             .crop()
-            .compress(sharedPrefs.getInt("max_size_foto_spr", 256))
+            .compress(sharedPrefs.getInt("max_size_foto_spr", 1024))
             .createIntent { intent ->
                 launcher.launch(intent)
             }

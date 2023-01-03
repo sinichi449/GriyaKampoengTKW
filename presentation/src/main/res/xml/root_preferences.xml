@@ -33,11 +33,11 @@
             app:updatesContinuously="true"/>
 
         <SeekBarPreference
-            android:defaultValue="256"
-            android:max="512"
+            android:defaultValue="1024"
+            android:max="2048"
             android:title="Foto SPR"
             app:key="max_size_foto_spr"
-            app:min="64"
+            app:min="256"
             app:showSeekBarValue="true"
             app:updatesContinuously="true"/>
 
