@@ -6,6 +6,7 @@ data class Kavling(
     val warna: String,
     val ukuran: String,
     val type: String,
+    var sudahBayarBulanIni: Boolean = false,
 ) {
     fun getPanjang(): String {
         return ukuran.split("x")[0]

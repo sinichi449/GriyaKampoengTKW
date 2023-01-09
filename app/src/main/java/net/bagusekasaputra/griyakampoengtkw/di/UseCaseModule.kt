@@ -78,8 +78,8 @@ object UseCaseModule {
      * Kavling
      */
     @Provides
-    fun provideGetKavlingsByBlockAsync(kavlingRepository: KavlingRepository)
-        = GetKavlingByBlockAsyncUseCase(kavlingRepository)
+    fun provideGetKavlingsByBlockAsync(kavlingRepository: KavlingRepository, pembayaranRepository: PembayaranRepository)
+        = GetKavlingByBlockAsyncUseCase(kavlingRepository, pembayaranRepository)
 
     @Provides
     fun provideAddKavlingUseCase(kavlingRepository: KavlingRepository)

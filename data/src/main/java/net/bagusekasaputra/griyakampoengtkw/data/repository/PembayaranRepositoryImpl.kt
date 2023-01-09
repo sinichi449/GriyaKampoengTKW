@@ -11,9 +11,11 @@ import net.bagusekasaputra.griyakampoengtkw.data.interfaces.remote.RemoteMetadat
 import net.bagusekasaputra.griyakampoengtkw.data.interfaces.remote.RemotePembayaranSource
 import net.bagusekasaputra.griyakampoengtkw.data.model.MetadataModel
 import net.bagusekasaputra.griyakampoengtkw.data.model.PembayaranModel
+import net.bagusekasaputra.griyakampoengtkw.domain.DateUtil.toDate
 import net.bagusekasaputra.griyakampoengtkw.domain.NumberUtil
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.Pembayaran
 import net.bagusekasaputra.griyakampoengtkw.domain.repository.PembayaranRepository
+import java.util.*
 
 class PembayaranRepositoryImpl(
     private val localPembayaranDataSource: LocalPembayaranDataSource,
@@ -133,6 +135,37 @@ class PembayaranRepositoryImpl(
                 targetMapper = ::mapPembayaran,
             )
             emit(mapResult)
+        }
+    }
+
+    override suspend fun sudahBayarAngsuran(kavlingKode: String, bulan: Int): Result<Boolean?> {
+        return try {
+            val cacheListPembayaran = localPembayaranDataSource.getAllPembayaran(kavlingKode)
+                .getOrNull()
+            if (cacheListPembayaran.isNullOrEmpty()) {
+                Result.success(false)
+            } else {
+                var sudahBayar = false
+
+                for (p in cacheListPembayaran) {
+                    val bulanBayar = Calendar.getInstance().let {
+                        it.time = p.tanggal.toDate()
+
+                        it.get(Calendar.MONTH) + 1
+                    }
+                    if (bulan == bulanBayar) {
+                        sudahBayar = true
+                        break
+                    }
+                }
+
+                Result.success(sudahBayar)
+            }
+        } catch (e: Exception) {
+            e.printStackTrace()
+            Log.d("DEBUG_ME", "ERROR PembayaranRepo->sudahBayarAngsuran():144 : ${e.message}")
+
+            Result.failure(e)
         }
     }
 

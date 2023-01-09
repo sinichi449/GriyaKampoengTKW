@@ -5,9 +5,12 @@ import kotlinx.coroutines.flow.map
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.AsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.Kavling
 import net.bagusekasaputra.griyakampoengtkw.domain.repository.KavlingRepository
+import net.bagusekasaputra.griyakampoengtkw.domain.repository.PembayaranRepository
+import java.util.*
 
 class GetKavlingByBlockAsyncUseCase(
     private val kavlingRepository: KavlingRepository,
+    private val pembayaranRepository: PembayaranRepository,
 ): AsyncUseCase<GetKavlingByBlockAsyncUseCase.Request, List<Kavling>?>() {
 
     data class Request(val blockKode: String, val offline: Boolean): AsyncUseCase.Request
@@ -16,11 +19,24 @@ class GetKavlingByBlockAsyncUseCase(
         return kavlingRepository.getKavlingByBlock(request.blockKode, request.offline).map { result ->
             // sort the kavling by number
             result.map { kavlingList ->
-                if (kavlingList != null)
+                if (kavlingList != null) {
+                    val bulanIni = Calendar.getInstance().let {
+                        it.get(Calendar.MONTH).plus(1)
+                    }
+
+                    kavlingList.forEach {
+                        val sudahBayarAngsuranBulanIni = pembayaranRepository
+                            .sudahBayarAngsuran(it.kode, bulanIni)
+                            .getOrThrow()
+                            ?: false
+                        it.sudahBayarBulanIni = sudahBayarAngsuranBulanIni
+                    }
+
                     sortKavling(kavlingList)
-                else
+                } else {
                     // If kavlingList is null, just return the null value.
                     null
+                }
             }
         }
     }

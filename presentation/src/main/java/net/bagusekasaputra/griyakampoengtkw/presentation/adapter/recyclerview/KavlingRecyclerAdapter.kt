@@ -45,6 +45,11 @@ class KavlingRecyclerAdapter(
 
         holder.binding.cardKavling.setCardBackgroundColor(Color.parseColor(kavlings[position].warna))
 
+        holder.binding.imgSudahBayarBulanIni.visibility = if (kavlings[position].sudahBayarBulanIni)
+            View.VISIBLE
+        else
+            View.GONE
+
         holder.binding.cardKavling.setOnClickListener {
             onRecyclerItemClick(position)
         }
