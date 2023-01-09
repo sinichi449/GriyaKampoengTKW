@@ -54,6 +54,7 @@ class DataDiriFragment : Fragment() {
         add("Abu Dhabi")
         add("Bangladesh")
         add("Kamboja")
+        add("Brunei Darussalam")
     }
 
     private fun createImagePickerResultLauncher(onResultOk: (uri: Uri?) -> Unit): ActivityResultLauncher<Intent> {
