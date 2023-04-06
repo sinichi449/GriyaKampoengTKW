@@ -9,7 +9,14 @@ plugins {
 android {
     signingConfigs {
         debug {
-            storeFile file('/home/bagus/Documents/keystore.jks')
+            storeFile file('D:\\AndroidStudioProjects\\keystore.jks')
+            storePassword 'r4h4s14d3cH!'
+            keyAlias 'key0'
+            keyPassword 'r4h4s14d3cH!'
+        }
+
+        release {
+            storeFile file('D:\\AndroidStudioProjects\\keystore.jks')
             storePassword 'r4h4s14d3cH!'
             keyAlias 'key0'
             keyPassword 'r4h4s14d3cH!'
@@ -23,8 +30,8 @@ android {
         minSdk 21
         targetSdk 32
 
-        versionCode 44
-        versionName "2.0.6.4"
+        versionCode 45
+        versionName "2.0.6.5"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         signingConfig signingConfigs.debug
