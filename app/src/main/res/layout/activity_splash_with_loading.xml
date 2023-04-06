@@ -14,32 +14,30 @@
         android:src="@drawable/kampoeng_tkw"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintBottom_toTopOf="@id/tv_info_periksa_internet"
+        app:layout_constraintBottom_toTopOf="@id/layout_cek_koneksi"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_chainStyle="packed"/>
 
-    <com.google.android.material.textview.MaterialTextView
-        android:id="@+id/tv_info_periksa_internet"
-        android:layout_width="wrap_content"
+    <include
+        android:id="@+id/layout_cek_koneksi"
+        layout="@layout/layout_cek_koneksi"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/img_logo"
+        android:visibility="visible"/>
+
+    <include
+        android:id="@+id/layout_pilih_data"
+        layout="@layout/layout_pilih_data"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toBottomOf="@id/img_logo"
-        app:layout_constraintBottom_toTopOf="@id/progress_bar_check_internet"
-        android:text="Memeriksa koneksi internet"
-        android:textColor="@color/white"
-        style="@style/TextAppearance.MaterialComponents.Subtitle1"/>
-
-
-    <ProgressBar
-        android:id="@+id/progress_bar_check_internet"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        app:layout_constraintTop_toBottomOf="@id/tv_info_periksa_internet"
-        app:layout_constraintStart_toStartOf="@id/tv_info_periksa_internet"
-        app:layout_constraintEnd_toEndOf="@id/tv_info_periksa_internet"
-        app:layout_constraintBottom_toBottomOf="parent"
-        android:layout_marginTop="16dp"/>
+        android:visibility="invisible"/>
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

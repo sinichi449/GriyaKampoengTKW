@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.appcompat.widget.LinearLayoutCompat xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical"
+    android:gravity="center"
+    android:background="@color/abang">
+
+    <com.google.android.material.textview.MaterialTextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Pilih Data"
+        style="@style/TextAppearance.MaterialComponents.Subtitle1"
+        android:textColor="@color/white"/>
+
+    <Space
+        android:layout_width="match_parent"
+        android:layout_height="16dp"/>
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/btn_data_lama"
+        android:layout_width="250dp"
+        android:layout_height="wrap_content"
+        app:cornerRadius="8dp"
+        app:backgroundTint="@color/white"
+        android:text="Data Lama"
+        android:textColor="@color/black"/>
+
+    <Space
+        android:layout_width="match_parent"
+        android:layout_height="8dp"/>
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/btn_data_baru"
+        android:layout_width="250dp"
+        android:layout_height="wrap_content"
+        app:cornerRadius="8dp"
+        app:backgroundTint="@color/white"
+        android:text="Data Baru"
+        android:textColor="@color/black"/>
+
+</androidx.appcompat.widget.LinearLayoutCompat>

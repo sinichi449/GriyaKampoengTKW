@@ -3,6 +3,7 @@ package net.bagusekasaputra.griyakampoengtkw
 import android.content.Intent
 import android.os.Bundle
 import android.os.Handler
+import android.view.View
 import android.view.WindowManager
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
@@ -66,7 +67,7 @@ class SplashActivity : AppCompatActivity() {
                 deviceOnline().collect { online ->
                     if (online) {
                         withContext(Dispatchers.Main) {
-                            bindingLoading.tvInfoPeriksaInternet.text = "Memeriksa status server"
+                            bindingLoading.layoutCekKoneksi.tvInfoPeriksaInternet.text = "Memeriksa status server"
                         }
                         // Check Maintenance status
                         val isMaintenance = checkMaintenance()
@@ -86,7 +87,9 @@ class SplashActivity : AppCompatActivity() {
                                         .show()
                                 }
                             } else {
-                                goToMainActivity(online)
+                                withContext(Dispatchers.Main) {
+                                    showJenisDataChoice(online)
+                                }
                             }
                         }
 
@@ -95,10 +98,14 @@ class SplashActivity : AppCompatActivity() {
                                 Toast.makeText(this@SplashActivity, "Gagal mengecek status server: $it", Toast.LENGTH_LONG).show()
                             }
 
-                            goToMainActivity(online)
+                            withContext(Dispatchers.Main) {
+                                showJenisDataChoice(online)
+                            }
                         }
                     } else {
-                        goToMainActivity(online)
+                        withContext(Dispatchers.Main) {
+                            showJenisDataChoice(online)
+                        }
                     }
                 }
 
@@ -127,13 +134,26 @@ class SplashActivity : AppCompatActivity() {
         }
     }
 
-    private fun goToMainActivity(isOnline: Boolean) {
+    private fun showJenisDataChoice(isOnline: Boolean) {
+        bindingLoading.layoutCekKoneksi.root.visibility = View.INVISIBLE
+
+        bindingLoading.layoutPilihData.root.visibility = View.VISIBLE
+        bindingLoading.layoutPilihData.btnDataLama.setOnClickListener {
+            goToMainActivity(isOnline, false)
+        }
+        bindingLoading.layoutPilihData.btnDataBaru.setOnClickListener {
+            goToMainActivity(isOnline, true)
+        }
+    }
+
+    private fun goToMainActivity(isOnline: Boolean, isNewDataSelected: Boolean) {
         // I also want to pass a BuildConfig for checking update.
         val intent = Intent(this, MainActivity::class.java)
 
         intent.putExtra(GriyaNodes.INTENT_IS_ONLINE, isOnline)
         intent.putExtra("versionName", BuildConfig.VERSION_NAME)
         intent.putExtra("versionCode", BuildConfig.VERSION_CODE)
+        intent.putExtra("isNewDataSelected", isNewDataSelected)
         startActivity(intent)
         finish()
     }

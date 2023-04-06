@@ -82,6 +82,15 @@ class MainActivity : AppCompatActivity() {
         // Update offlineMode state in viewModel
         viewModel.offlineMode = offlineMode
 
+
+        // Data Lama / Data Baru ?
+        val isNewDataSelected = intent?.getBooleanExtra("isNewDataSelected", false) ?: false
+        Toast.makeText(
+            this.applicationContext,
+            "Data ${if (isNewDataSelected) "Baru" else "Lama"} dipilih!",
+            Toast.LENGTH_SHORT
+        ).show()
+
         // For setup the fabs
         setupViewModel()
 
