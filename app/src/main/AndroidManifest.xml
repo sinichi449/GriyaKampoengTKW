@@ -20,7 +20,7 @@
         android:theme="@style/Theme.GriyaKampung"
         tools:targetApi="31">
         <activity
-            android:name=".DocumentLamaActivity"
+            android:name=".DataLamaActivity"
             android:exported="false" />
         <activity
             android:name=".presentation.activities.FullImageActivity"

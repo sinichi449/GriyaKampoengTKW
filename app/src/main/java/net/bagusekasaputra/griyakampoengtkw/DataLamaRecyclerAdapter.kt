@@ -1,0 +1,37 @@
+package net.bagusekasaputra.griyakampoengtkw
+
+import android.view.LayoutInflater
+import android.view.ViewGroup
+import androidx.recyclerview.widget.RecyclerView
+import net.bagusekasaputra.griyakampoengtkw.databinding.RecyclerItemDataLamaBinding
+
+class DataLamaRecyclerAdapter(
+    private val listFile: List<String>,
+    private val onDeleteAction: (position: Int) -> Unit,
+): RecyclerView.Adapter<DataLamaRecyclerAdapter.DataLamaViewHolder>() {
+
+    class DataLamaViewHolder(itemBinding: RecyclerItemDataLamaBinding): RecyclerView.ViewHolder(itemBinding.root) {
+        val container = itemBinding.root
+        val tvFilename = itemBinding.tvFilename
+        val imgDelete = itemBinding.imgDelete
+    }
+
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): DataLamaViewHolder {
+        return LayoutInflater.from(parent.context).let { inflater ->
+            DataLamaViewHolder(RecyclerItemDataLamaBinding.inflate(inflater, parent, false))
+        }
+    }
+
+    override fun getItemCount(): Int {
+        return listFile.size
+    }
+
+    override fun onBindViewHolder(holder: DataLamaViewHolder, position: Int) {
+        val file = listFile[position]
+
+        holder.tvFilename.text = file
+        holder.imgDelete.setOnClickListener {
+            onDeleteAction(position)
+        }
+    }
+}

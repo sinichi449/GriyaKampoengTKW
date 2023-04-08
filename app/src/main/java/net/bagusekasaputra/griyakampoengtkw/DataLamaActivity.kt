@@ -8,15 +8,16 @@ import android.os.Environment
 import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
+import androidx.recyclerview.widget.LinearLayoutManager
 import dagger.hilt.android.AndroidEntryPoint
-import net.bagusekasaputra.griyakampoengtkw.databinding.ActivityDocumentLamaBinding
+import net.bagusekasaputra.griyakampoengtkw.databinding.ActivityDataLamaBinding
 import net.bagusekasaputra.griyakampoengtkw.idk.DefaultDataLamaManager
 import net.bagusekasaputra.griyakampoengtkw.idk.IDataLamaManager
 
 @AndroidEntryPoint
-class DocumentLamaActivity : AppCompatActivity() {
+class DataLamaActivity : AppCompatActivity() {
 
-    private lateinit var binding: ActivityDocumentLamaBinding
+    private lateinit var binding: ActivityDataLamaBinding
 
     private val PICK_DATA_LAMA_REQUEST = 2
     private val READ_STORAGE_REQUEST = 3
@@ -27,17 +28,33 @@ class DocumentLamaActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        binding = ActivityDocumentLamaBinding.inflate(layoutInflater)
+        binding = ActivityDataLamaBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
         supportActionBar?.title = "Pilih Data"
 
-        dataLamaManager.createDataLamaFolderIfNotExist()
-
         requestReadExternalStorage()
+
+        dataLamaManager.createDataLamaFolderIfNotExist()
+        dataLamaManager.getFiles().let {
+            setupRecyclerView(it)
+        }
 
         binding.fabTambahData.setOnClickListener {
             showDataLamaPicker()
+        }
+    }
+
+    private fun setupRecyclerView(listFiles: List<String>) {
+        if (listFiles.isEmpty()) {
+            // TODO
+        } else {
+            val adapter = DataLamaRecyclerAdapter(listFiles) {
+                // TODO: On Delete data
+            }
+
+            binding.recyclerviewDataLama.adapter = adapter
+            binding.recyclerviewDataLama.layoutManager = LinearLayoutManager(this)
         }
     }
 

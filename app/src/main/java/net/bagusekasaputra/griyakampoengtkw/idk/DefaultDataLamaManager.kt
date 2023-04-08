@@ -24,6 +24,16 @@ class DefaultDataLamaManager(
         }
     }
 
+    override fun getFiles(): List<String> {
+        val listFiles = mutableListOf<String>()
+
+        dataLamaFolder.listFiles()?.forEach {
+            listFiles.add(it.name)
+        }
+
+        return listFiles
+    }
+
     override fun extract(pathToFile: String?) {
         if (pathToFile != null) {
             val zipFile = ZipFile(pathToFile)

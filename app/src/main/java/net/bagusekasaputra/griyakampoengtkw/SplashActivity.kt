@@ -156,7 +156,7 @@ class SplashActivity : AppCompatActivity() {
     }
 
     private fun goToDocumentLamaActivity() {
-        val intent = Intent(this, DocumentLamaActivity::class.java)
+        val intent = Intent(this, DataLamaActivity::class.java)
         startActivity(intent)
     }
 
