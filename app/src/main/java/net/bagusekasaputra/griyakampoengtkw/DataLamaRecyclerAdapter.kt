@@ -3,10 +3,12 @@ package net.bagusekasaputra.griyakampoengtkw
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
+import net.bagusekasaputra.griyakampoengtkw.dataLama.DataLamaModel
 import net.bagusekasaputra.griyakampoengtkw.databinding.RecyclerItemDataLamaBinding
 
 class DataLamaRecyclerAdapter(
-    private val listFile: List<String>,
+    private val listDataLamaModel: List<DataLamaModel>,
+    private val onItemClick: (position: Int) -> Unit,
     private val onDeleteAction: (position: Int) -> Unit,
 ): RecyclerView.Adapter<DataLamaRecyclerAdapter.DataLamaViewHolder>() {
 
@@ -23,13 +25,16 @@ class DataLamaRecyclerAdapter(
     }
 
     override fun getItemCount(): Int {
-        return listFile.size
+        return listDataLamaModel.size
     }
 
     override fun onBindViewHolder(holder: DataLamaViewHolder, position: Int) {
-        val file = listFile[position]
+        val model = listDataLamaModel[position]
 
-        holder.tvFilename.text = file
+        holder.container.setOnClickListener {
+            onItemClick(position)
+        }
+        holder.tvFilename.text = model.name
         holder.imgDelete.setOnClickListener {
             onDeleteAction(position)
         }

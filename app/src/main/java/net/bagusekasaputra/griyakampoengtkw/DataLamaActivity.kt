@@ -6,13 +6,16 @@ import android.content.pm.PackageManager
 import android.os.Bundle
 import android.os.Environment
 import android.util.Log
+import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import dagger.hilt.android.AndroidEntryPoint
+import net.bagusekasaputra.griyakampoengtkw.dataLama.AbstractDataLamaManager
+import net.bagusekasaputra.griyakampoengtkw.dataLama.DataLamaModel
+import net.bagusekasaputra.griyakampoengtkw.dataLama.DefaultDataLamaManager
 import net.bagusekasaputra.griyakampoengtkw.databinding.ActivityDataLamaBinding
-import net.bagusekasaputra.griyakampoengtkw.idk.DefaultDataLamaManager
-import net.bagusekasaputra.griyakampoengtkw.idk.IDataLamaManager
 
 @AndroidEntryPoint
 class DataLamaActivity : AppCompatActivity() {
@@ -22,7 +25,7 @@ class DataLamaActivity : AppCompatActivity() {
     private val PICK_DATA_LAMA_REQUEST = 2
     private val READ_STORAGE_REQUEST = 3
 
-    private val dataLamaManager: IDataLamaManager by lazy {
+    private val dataLamaManager: AbstractDataLamaManager by lazy {
         DefaultDataLamaManager(this)
     }
 
@@ -36,8 +39,10 @@ class DataLamaActivity : AppCompatActivity() {
         requestReadExternalStorage()
 
         dataLamaManager.createDataLamaFolderIfNotExist()
-        dataLamaManager.getFiles().let {
-            setupRecyclerView(it)
+
+        binding.swipeRefreshDataLama.setOnRefreshListener {
+            refreshData()
+            binding.swipeRefreshDataLama.isRefreshing = false
         }
 
         binding.fabTambahData.setOnClickListener {
@@ -45,16 +50,56 @@ class DataLamaActivity : AppCompatActivity() {
         }
     }
 
-    private fun setupRecyclerView(listFiles: List<String>) {
-        if (listFiles.isEmpty()) {
-            // TODO
+    override fun onResume() {
+        super.onResume()
+
+        refreshData()
+    }
+
+    private fun setupRecyclerView(listDataLamaModel: List<DataLamaModel>) {
+        if (listDataLamaModel.isEmpty()) {
+            binding.tvInfoTidakAdaData.visibility = View.VISIBLE
+            binding.recyclerviewDataLama.visibility = View.GONE
         } else {
-            val adapter = DataLamaRecyclerAdapter(listFiles) {
-                // TODO: On Delete data
-            }
+            binding.tvInfoTidakAdaData.visibility = View.GONE
+            binding.recyclerviewDataLama.visibility = View.VISIBLE
+
+            val adapter = DataLamaRecyclerAdapter(
+                listDataLamaModel = listDataLamaModel,
+                onItemClick = {
+                    // TODO: Proceed with selected data lama
+                },
+                onDeleteAction = {
+                    val model = listDataLamaModel[it]
+
+                    MaterialAlertDialogBuilder(this)
+                        .setTitle("Hapus ${model.name}?")
+                        .setMessage("Apakah Anda yakin ingin menghapus data ini?")
+                        .setPositiveButton("Ya") { dialog, _ ->
+                            dataLamaManager.delete(
+                                dataLamaModel = model,
+                                onFinish = {
+                                    refreshData()
+                                    dialog.dismiss()
+                                }
+                            )
+                        }
+                        .setNegativeButton("Tidak") { dialog, _ ->
+                            dialog.dismiss()
+                        }
+                        .create()
+                        .show()
+                }
+            )
 
             binding.recyclerviewDataLama.adapter = adapter
             binding.recyclerviewDataLama.layoutManager = LinearLayoutManager(this)
+        }
+    }
+
+    private fun refreshData() {
+        dataLamaManager.getFiles().let {
+            setupRecyclerView(it)
         }
     }
 
@@ -86,7 +131,9 @@ class DataLamaActivity : AppCompatActivity() {
         when (requestCode) {
             PICK_DATA_LAMA_REQUEST -> if (resultCode == RESULT_OK) {
                 val files = data?.getStringArrayListExtra("filePaths")
-                dataLamaManager.extract(files?.get(0))
+                dataLamaManager.extract(files?.get(0)) {
+                    refreshData()
+                }
             }
         }
     }

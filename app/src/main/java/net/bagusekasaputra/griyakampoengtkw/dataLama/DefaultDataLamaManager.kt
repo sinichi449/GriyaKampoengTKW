@@ -1,4 +1,4 @@
-package net.bagusekasaputra.griyakampoengtkw.idk
+package net.bagusekasaputra.griyakampoengtkw.dataLama
 
 import android.content.Context
 import android.util.Log
@@ -10,31 +10,9 @@ import java.io.File
 
 class DefaultDataLamaManager(
     private val context: Context
-): IDataLamaManager {
+): AbstractDataLamaManager(context) {
 
-    private val dataLamaFolder by lazy {
-        File(context.filesDir, "data_lama")
-    }
-
-
-    override fun createDataLamaFolderIfNotExist() {
-        // If folder isn't exist, create a folder named "data_lama"
-        if (dataLamaFolder.exists().not()) {
-            dataLamaFolder.mkdir()
-        }
-    }
-
-    override fun getFiles(): List<String> {
-        val listFiles = mutableListOf<String>()
-
-        dataLamaFolder.listFiles()?.forEach {
-            listFiles.add(it.name)
-        }
-
-        return listFiles
-    }
-
-    override fun extract(pathToFile: String?) {
+    override fun extract(pathToFile: String?, onFinish: () -> Unit) {
         if (pathToFile != null) {
             val zipFile = ZipFile(pathToFile)
             val progressMonitor = zipFile.progressMonitor
@@ -49,6 +27,7 @@ class DefaultDataLamaManager(
 
             if (progressMonitor.result.equals(ProgressMonitor.Result.SUCCESS)) {
                 Log.d("DEBUG_ME", "Extraction complete")
+                onFinish()
             }
 
         } else {
@@ -61,4 +40,14 @@ class DefaultDataLamaManager(
         }
     }
 
+    override fun delete(dataLamaModel: DataLamaModel, onFinish: () -> Unit) {
+        val folder = File(dataLamaModel.path)
+        val deleteOk = folder.deleteRecursively()
+
+        if (deleteOk) {
+            onFinish()
+        } else {
+            Log.d("DEBUG_ME", "Deleting ${dataLamaModel.name} failed")
+        }
+    }
 }
