@@ -16,6 +16,7 @@ import net.bagusekasaputra.griyakampoengtkw.dataLama.AbstractDataLamaManager
 import net.bagusekasaputra.griyakampoengtkw.dataLama.DataLamaModel
 import net.bagusekasaputra.griyakampoengtkw.dataLama.DefaultDataLamaManager
 import net.bagusekasaputra.griyakampoengtkw.databinding.ActivityDataLamaBinding
+import net.bagusekasaputra.griyakampoengtkw.presentation.activities.MainActivity
 
 @AndroidEntryPoint
 class DataLamaActivity : AppCompatActivity() {
@@ -67,7 +68,7 @@ class DataLamaActivity : AppCompatActivity() {
             val adapter = DataLamaRecyclerAdapter(
                 listDataLamaModel = listDataLamaModel,
                 onItemClick = {
-                    // TODO: Proceed with selected data lama
+                    goToMainActivity(listDataLamaModel[it].path)
                 },
                 onDeleteAction = {
                     val model = listDataLamaModel[it]
@@ -101,6 +102,13 @@ class DataLamaActivity : AppCompatActivity() {
         dataLamaManager.getFiles().let {
             setupRecyclerView(it)
         }
+    }
+
+    private fun goToMainActivity(dataLamaPath: String) {
+        val intent = Intent(this, MainActivity::class.java)
+        intent.putExtra("dataLamaPath", dataLamaPath)
+
+        startActivity(intent)
     }
 
     private fun showDataLamaPicker() {

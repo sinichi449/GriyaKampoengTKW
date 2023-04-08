@@ -84,49 +84,53 @@ class MainActivity : AppCompatActivity() {
 
 
         // Data Lama / Data Baru ?
-        val isNewDataSelected = intent?.getBooleanExtra("isNewDataSelected", false) ?: false
-        Toast.makeText(
-            this.applicationContext,
-            "Data ${if (isNewDataSelected) "Baru" else "Lama"} dipilih!",
-            Toast.LENGTH_SHORT
-        ).show()
+        val pathDataLama = intent?.getStringExtra("dataLamaPath")
+        if (pathDataLama != null) {
+            Toast.makeText(
+                this.applicationContext,
+                "Data $pathDataLama dipilih!",
+                Toast.LENGTH_SHORT
+            ).show()
+        }
 
         // For setup the fabs
         setupViewModel()
 
         // Getting BuildConfig from Splash Activity, and check available update.
-        val appVersionName = intent.getStringExtra("versionName") ?: ""
+        val appVersionName = intent.getStringExtra("versionName")
         val appVersionCode = intent.getIntExtra("versionCode", 0)
-        if ((appVersionName != "") and (appVersionCode != 0)) {
-            viewModel.checkUpdates(
-                versionName = appVersionName,
-                versionCode = appVersionCode,
-                onAvailable = {
-                    MaterialAlertDialogBuilder(this)
-                        .setTitle("Update Tersedia!")
-                        .setMessage(
-                            it.releaseNotes.let { notes ->
-                                val result = StringBuilder()
+        if (appVersionName != null) {
+            if ((appVersionName != "") and (appVersionCode != 0)) {
+                viewModel.checkUpdates(
+                    versionName = appVersionName,
+                    versionCode = appVersionCode,
+                    onAvailable = {
+                        MaterialAlertDialogBuilder(this)
+                            .setTitle("Update Tersedia!")
+                            .setMessage(
+                                it.releaseNotes.let { notes ->
+                                    val result = StringBuilder()
 
-                                notes.forEach { text ->
-                                    result.append("- ")
-                                        .append(text)
-                                        .append("\n")
+                                    notes.forEach { text ->
+                                        result.append("- ")
+                                            .append(text)
+                                            .append("\n")
+                                    }
+
+                                    return@let result.toString()
                                 }
-
-                                return@let result.toString()
+                            )
+                            .setPositiveButton("Update") { _, _ ->
+                                openBrowser(Uri.parse(it.url))
                             }
-                        )
-                        .setPositiveButton("Update") { _, _ ->
-                            openBrowser(Uri.parse(it.url))
-                        }
-                        .create()
-                        .show()
-                },
-                onFailure = {
-                    Snackbar.make(binding.root, it, Snackbar.LENGTH_SHORT).show()
-                }
-            )
+                            .create()
+                            .show()
+                    },
+                    onFailure = {
+                        Snackbar.make(binding.root, it, Snackbar.LENGTH_SHORT).show()
+                    }
+                )
+            }
         }
 
 
