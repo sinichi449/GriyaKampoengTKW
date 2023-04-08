@@ -2,14 +2,14 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
 
-    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.INTERNET" />
-
-    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
-    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
 
     <application
         android:name=".GriyaApplication"
+        android:requestLegacyExternalStorage="true"
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
         android:fullBackupContent="@xml/backup_rules"
@@ -19,6 +19,9 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.GriyaKampung"
         tools:targetApi="31">
+        <activity
+            android:name=".DocumentLamaActivity"
+            android:exported="false" />
         <activity
             android:name=".presentation.activities.FullImageActivity"
             android:exported="false"
@@ -60,16 +63,14 @@
 
         <receiver
             android:name=".presentation.receiver.AlarmReceiver"
-            android:exported="true"/>
-
+            android:exported="true" />
         <receiver
             android:name=".presentation.receiver.ProgressReceiver"
             android:exported="false">
             <intent-filter>
-                <action android:name="net.bagusekasaputra.griyakampoengtkw.ACTION_NOTIFY_PROGRESS"/>
+                <action android:name="net.bagusekasaputra.griyakampoengtkw.ACTION_NOTIFY_PROGRESS" />
             </intent-filter>
         </receiver>
-
     </application>
 
 </manifest>

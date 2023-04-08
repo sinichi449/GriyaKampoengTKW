@@ -83,4 +83,8 @@ dependencies {
 
     implementation 'com.google.firebase:firebase-database-ktx:20.0.6'
     implementation 'com.google.firebase:firebase-storage-ktx:20.1.0'
+
+    implementation 'net.lingala.zip4j:zip4j:2.11.5'
+    implementation 'com.github.abhishekti7:UnicornFilePicker:1.0.2'
+    implementation 'commons-io:commons-io:2.11.0'
 }
