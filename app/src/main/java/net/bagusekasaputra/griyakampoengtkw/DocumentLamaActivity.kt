@@ -8,22 +8,22 @@ import android.os.Environment
 import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
-import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import dagger.hilt.android.AndroidEntryPoint
 import net.bagusekasaputra.griyakampoengtkw.databinding.ActivityDocumentLamaBinding
-import net.lingala.zip4j.ZipFile
-import net.lingala.zip4j.progress.ProgressMonitor
-import org.apache.commons.io.FilenameUtils
-import java.io.File
+import net.bagusekasaputra.griyakampoengtkw.idk.DefaultDataLamaManager
+import net.bagusekasaputra.griyakampoengtkw.idk.IDataLamaManager
 
+@AndroidEntryPoint
 class DocumentLamaActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityDocumentLamaBinding
-    private val dataLamaFolder by lazy {
-        File(filesDir, "data_lama")
-    }
 
     private val PICK_DATA_LAMA_REQUEST = 2
     private val READ_STORAGE_REQUEST = 3
+
+    private val dataLamaManager: IDataLamaManager by lazy {
+        DefaultDataLamaManager(this)
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -32,20 +32,12 @@ class DocumentLamaActivity : AppCompatActivity() {
 
         supportActionBar?.title = "Pilih Data"
 
-        // Creating folder "data_lama"
-        createDataLamaFolderIfNotExist()
+        dataLamaManager.createDataLamaFolderIfNotExist()
 
         requestReadExternalStorage()
 
         binding.fabTambahData.setOnClickListener {
             showDataLamaPicker()
-        }
-    }
-
-    private fun createDataLamaFolderIfNotExist() {
-        // If folder isn't exist, create a folder named "data_lama"
-        if (dataLamaFolder.exists().not()) {
-            dataLamaFolder.mkdir()
         }
     }
 
@@ -58,36 +50,9 @@ class DocumentLamaActivity : AppCompatActivity() {
             .showHiddenFiles(false)
             .setFilters(arrayOf("zip"))
             .addItemDivider(true)
-            .theme(abhishekti7.unicorn.filepicker.R.style.UnicornFilePicker_Dracula)
+            .theme(abhishekti7.unicorn.filepicker.R.style.UnicornFilePicker_Default)
             .build()
             .forResult(PICK_DATA_LAMA_REQUEST)
-    }
-
-    private fun extractDataLamaArchive(pathToFile: String?) {
-        if (pathToFile != null) {
-            val zipFile = ZipFile(pathToFile)
-            val progressMonitor = zipFile.progressMonitor
-
-            // Create folder same name as the zip file
-            val filename = File(pathToFile).name
-            val dataLamaFileNameWithoutExt = FilenameUtils.removeExtension(filename)
-            val newFolder = File(dataLamaFolder, dataLamaFileNameWithoutExt)
-            newFolder.mkdir()
-
-            zipFile.extractAll("${dataLamaFolder.path}/$dataLamaFileNameWithoutExt")
-
-            if (progressMonitor.result.equals(ProgressMonitor.Result.SUCCESS)) {
-                Log.d("DEBUG_ME", "Extraction complete")
-            }
-
-        } else {
-            // Path invalid dialog
-            MaterialAlertDialogBuilder(this)
-                .setTitle("Invalid Path")
-                .setMessage("File yang dipilih tidak valid.")
-                .create()
-                .show()
-        }
     }
 
     private fun requestReadExternalStorage() {
@@ -104,7 +69,7 @@ class DocumentLamaActivity : AppCompatActivity() {
         when (requestCode) {
             PICK_DATA_LAMA_REQUEST -> if (resultCode == RESULT_OK) {
                 val files = data?.getStringArrayListExtra("filePaths")
-                extractDataLamaArchive(files?.get(0))
+                dataLamaManager.extract(files?.get(0))
             }
         }
     }
@@ -116,8 +81,13 @@ class DocumentLamaActivity : AppCompatActivity() {
     ) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
 
-        if (requestCode == READ_STORAGE_REQUEST && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-            Log.d("DEBUG_ME", "Read external storage permission granted.")
+        if (requestCode == READ_STORAGE_REQUEST) {
+            if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                Log.d("DEBUG_ME", "Read external storage permission granted.")
+            }
+            if (grantResults[1] == PackageManager.PERMISSION_GRANTED) {
+                Log.d("DEBUG_ME", "Write external storage permission granted.")
+            }
         }
     }
 
