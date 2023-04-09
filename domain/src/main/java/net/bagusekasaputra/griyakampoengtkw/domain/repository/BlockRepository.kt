@@ -10,4 +10,6 @@ interface BlockRepository {
 
     fun addBlock(block: Block): Flow<Result<Nothing?>>
 
+    fun createBackup(): Flow<Result<Nothing?>>
+
 }

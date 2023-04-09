@@ -43,4 +43,13 @@
 
     </PreferenceCategory>
 
+    <PreferenceCategory android:title="Backup / Restore Data">
+        <Preference
+            android:key="backup_data"
+            app:title="Backup Data"/>
+        <Preference
+            android:key="restore_data"
+            app:title="Restore data"/>
+    </PreferenceCategory>
+
 </PreferenceScreen>

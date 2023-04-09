@@ -4,6 +4,7 @@ import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.android.components.ViewModelComponent
+import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.CreateBackupAsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.biayaLain.*
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.biayaMarketing.GetAllBiayaMarketingByKavlingKodeAsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.biayaMarketing.GetRekapBiayaMarketingAsyncUseCase
@@ -421,5 +422,17 @@ object UseCaseModule {
     @Provides
     fun provideGetRekapBiayaLainUseCase(biayaLainRepository: BiayaLainRepository): GetRekapBiayaLainAsyncUseCase {
         return GetRekapBiayaLainAsyncUseCase(biayaLainRepository)
+    }
+
+
+    /**
+     * Backup / Restore
+     */
+    @Provides
+    fun provideCreateBackupUseCase(
+        blokRepository: BlockRepository,
+        kavlingRepository: KavlingRepository,
+    ): CreateBackupAsyncUseCase {
+        return CreateBackupAsyncUseCase(blokRepository, kavlingRepository)
     }
 }
