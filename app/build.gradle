@@ -57,11 +57,11 @@ android {
 
 dependencies {
 
-
     implementation project(path: ':domain')
     implementation project(path: ':data')
     implementation project(path: ':data:local')
     implementation project(path: ':data:remote')
+    implementation project(path: ':data:backup')
     implementation project(path: ':presentation')
 
     implementation 'androidx.core:core-ktx:1.7.0'

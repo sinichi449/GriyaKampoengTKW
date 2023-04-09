@@ -4,18 +4,21 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.emitAll
 import kotlinx.coroutines.flow.flow
 import net.bagusekasaputra.griyakampoengtkw.data.DataUtil
+import net.bagusekasaputra.griyakampoengtkw.data.interfaces.backup.BackupBlokDataSource
 import net.bagusekasaputra.griyakampoengtkw.data.interfaces.local.LocalBlockDataSource
 import net.bagusekasaputra.griyakampoengtkw.data.interfaces.remote.RemoteBlockDataSource
 import net.bagusekasaputra.griyakampoengtkw.data.model.BlockModel
+import net.bagusekasaputra.griyakampoengtkw.domain.DataMode
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.Block
 import net.bagusekasaputra.griyakampoengtkw.domain.repository.BlockRepository
 
 class BlockRepositoryImpl(
     private val localBlockDataSource: LocalBlockDataSource,
     private val remoteBlockDataSource: RemoteBlockDataSource,
+    private val backupBlokDataSource: BackupBlokDataSource,
 ): BlockRepository {
 
-    override fun getAllBlocks(offline: Boolean): Flow<Result<List<Block>?>> {
+    override fun getAllBlocks(dataMode: DataMode): Flow<Result<List<Block>?>> {
         return flow<Result<List<Block>?>> {
             val flowOffline = flow<Result<List<Block>?>> {
                 // Emit blocks from local instead
@@ -52,10 +55,21 @@ class BlockRepositoryImpl(
                 }
             }
 
-            if (offline)
-                emitAll(flowOffline)
-            else
-                emitAll(flowOnline)
+            when (dataMode) {
+                DataMode.ONLINE -> emitAll(flowOnline)
+                DataMode.OFFLINE -> emitAll(flowOffline)
+                DataMode.DATA_LAMA -> {
+                    val blocks = backupBlokDataSource.getAllBlocks()
+                    val mappedBlocks = DataUtil.mapListResult(
+                        originResult = blocks,
+                        targetMapper = {
+                            mapBlockModel(it)
+                        }
+                    )
+
+                    emit(mappedBlocks)
+                }
+            }
         }
     }
 

@@ -5,6 +5,7 @@ import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
+import net.bagusekasaputra.griyakampoengtkw.data.interfaces.backup.BackupBlokDataSource
 import net.bagusekasaputra.griyakampoengtkw.data.interfaces.local.*
 import net.bagusekasaputra.griyakampoengtkw.data.interfaces.remote.*
 import net.bagusekasaputra.griyakampoengtkw.data.repository.*
@@ -22,8 +23,9 @@ object RepositoryModule {
     fun provideBlockRepository(
         localBlockDataSource: LocalBlockDataSource,
         remoteBlockDataSource: RemoteBlockDataSource,
+        backupBlokDataSource: BackupBlokDataSource,
     ): BlockRepository {
-        return BlockRepositoryImpl(localBlockDataSource, remoteBlockDataSource)
+        return BlockRepositoryImpl(localBlockDataSource, remoteBlockDataSource, backupBlokDataSource)
     }
 
 

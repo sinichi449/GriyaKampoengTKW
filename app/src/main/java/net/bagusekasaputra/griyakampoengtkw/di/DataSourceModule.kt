@@ -1,5 +1,6 @@
 package net.bagusekasaputra.griyakampoengtkw.di
 
+import android.content.SharedPreferences
 import com.google.firebase.database.DatabaseReference
 import com.google.firebase.storage.StorageReference
 import dagger.Module
@@ -24,6 +25,8 @@ import net.bagusekasaputra.griyakampoeng.tkw.data.local.metadata.RoomMetadataDat
 import net.bagusekasaputra.griyakampoeng.tkw.data.local.pembayaran.RoomPembayaranLocalDataSource
 import net.bagusekasaputra.griyakampoeng.tkw.data.local.pengingat.RoomPengingatDataSource
 import net.bagusekasaputra.griyakampoeng.tkw.data.local.rekap.RoomRekapUangMasukLocalDataSource
+import net.bagusekasaputra.griyakampoengtkw.data.backup.blok.BackupBlokDataSourceImpl
+import net.bagusekasaputra.griyakampoengtkw.data.interfaces.backup.BackupBlokDataSource
 import net.bagusekasaputra.griyakampoengtkw.data.interfaces.local.*
 import net.bagusekasaputra.griyakampoengtkw.data.interfaces.remote.*
 import net.bagusekasaputra.griyakampoengtkw.data.remote.biayaLain.FirebaseBiayaLainDataSource
@@ -76,6 +79,11 @@ object DataSourceModule {
         return net.bagusekasaputra.griyakampoengtkw.data.remote.block.FirebaseBlockDataSource(
             databaseReference
         )
+    }
+
+    @Provides
+    fun provideBackupBlokDataSource(sharedPreferences: SharedPreferences): BackupBlokDataSource {
+        return BackupBlokDataSourceImpl(sharedPreferences)
     }
 
 

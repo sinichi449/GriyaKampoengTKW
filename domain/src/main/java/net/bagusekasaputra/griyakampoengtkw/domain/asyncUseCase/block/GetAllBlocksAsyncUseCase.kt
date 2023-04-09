@@ -2,6 +2,7 @@ package net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.block
 
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
+import net.bagusekasaputra.griyakampoengtkw.domain.DataMode
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.AsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.Block
 import net.bagusekasaputra.griyakampoengtkw.domain.repository.BlockRepository
@@ -10,10 +11,10 @@ class GetAllBlocksAsyncUseCase(
     private val blockRepository: BlockRepository,
 ): AsyncUseCase<GetAllBlocksAsyncUseCase.Request, List<Block>?>() {
 
-    data class Request(val offline: Boolean): AsyncUseCase.Request
+    data class Request(val dataMode: DataMode): AsyncUseCase.Request
 
     override fun process(request: Request): Flow<Result<List<Block>?>> {
-        return blockRepository.getAllBlocks(request.offline).map { result ->
+        return blockRepository.getAllBlocks(request.dataMode).map { result ->
             // Sort the Blocks alphabetically
             result.map { listBlock ->
                 sortBlocks(listBlock)

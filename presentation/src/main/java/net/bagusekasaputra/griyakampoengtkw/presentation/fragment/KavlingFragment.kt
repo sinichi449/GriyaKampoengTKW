@@ -23,6 +23,7 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
 import jp.wasabeef.recyclerview.adapters.ScaleInAnimationAdapter
+import net.bagusekasaputra.griyakampoengtkw.domain.DataMode
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.Block
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.Kavling
 import net.bagusekasaputra.griyakampoengtkw.presentation.R
@@ -80,7 +81,8 @@ class KavlingFragment : Fragment() {
         hideFabActionsOnKavlingScroll()
 
         val offlineMode = viewModel.offlineMode
-        if (offlineMode)
+        val dataMode = viewModel.dataMode
+        if (offlineMode || dataMode != DataMode.ONLINE)
             // Enable offline mode means disabling the write operation on the data,
             // which is done, in this case, by the FABS. I've encapsulated the needed to disable
             // operation interface in this method.

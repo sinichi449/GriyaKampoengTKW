@@ -6,6 +6,7 @@ import androidx.lifecycle.ViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.*
 import net.bagusekasaputra.griyakampoengtkw.domain.AsyncUseCaseHelper
+import net.bagusekasaputra.griyakampoengtkw.domain.DataMode
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.block.GetAllBlocksAsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.kavling.GetKavlingByBlockAsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.AppUpdate
@@ -49,6 +50,8 @@ class MainViewModel @Inject constructor(
     // For use case arguments
     var offlineMode = false
 
+    var dataMode: DataMode = DataMode.ONLINE
+
     // The collection of jobs which need to be cancelled on onCleared()
     private val asyncJobs = ArrayList<Job>()
 
@@ -86,7 +89,7 @@ class MainViewModel @Inject constructor(
         // there's no need to pull the data locally.
         if (blockRefreshed.value != true) {
             logEvent("Blocks are already refreshed!")
-            val request = GetAllBlocksAsyncUseCase.Request(offlineMode)
+            val request = GetAllBlocksAsyncUseCase.Request(dataMode)
 
             val gettingBlocksJob = asyncHelper.doWork(
                 request = request,

@@ -10,10 +10,12 @@ import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
+import androidx.core.content.edit
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.tabs.TabLayout
 import dagger.hilt.android.AndroidEntryPoint
+import net.bagusekasaputra.griyakampoengtkw.domain.DataMode
 import net.bagusekasaputra.griyakampoengtkw.presentation.R
 import net.bagusekasaputra.griyakampoengtkw.presentation.adapter.viewpager.MainViewPagerAdapter
 import net.bagusekasaputra.griyakampoengtkw.presentation.databinding.ActivityMainBinding
@@ -23,7 +25,6 @@ import net.bagusekasaputra.griyakampoengtkw.presentation.fragment.rekap.RekapFra
 import net.bagusekasaputra.griyakampoengtkw.presentation.logEvent
 import net.bagusekasaputra.griyakampoengtkw.presentation.util.GriyaNodes
 import net.bagusekasaputra.griyakampoengtkw.presentation.viewmodel.MainViewModel
-import net.bagusekasaputra.griyakampoengtkw.presentation.viewmodel.RekapViewModel
 import javax.inject.Inject
 
 @AndroidEntryPoint
@@ -35,9 +36,8 @@ class MainActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityMainBinding
     private val viewModel: MainViewModel by viewModels()
-    private val rekapViewModel: RekapViewModel by viewModels()
 
-    // SharedPreferences to load the user settings, such as offline mode
+    // SharedPreferences to load the user settings
     @Inject
     lateinit var sharedPrefs: SharedPreferences
 
@@ -81,16 +81,19 @@ class MainActivity : AppCompatActivity() {
         }
         // Update offlineMode state in viewModel
         viewModel.offlineMode = offlineMode
+        if (offlineMode) {
+            viewModel.dataMode = DataMode.DATA_LAMA
+        }
 
 
-        // Data Lama / Data Baru ?
+        // Data Lama / Data Baru Mode?
         val pathDataLama = intent?.getStringExtra("dataLamaPath")
         if (pathDataLama != null) {
-            Toast.makeText(
-                this.applicationContext,
-                "Data $pathDataLama dipilih!",
-                Toast.LENGTH_SHORT
-            ).show()
+            viewModel.dataMode = DataMode.DATA_LAMA
+
+            sharedPrefs.edit(true) {
+                putString("dataLamaPath", pathDataLama)
+            }
         }
 
         // For setup the fabs
@@ -164,13 +167,6 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun setupViewPager() {
-//        val fragments = listOf(KavlingFragment(), ReportFragment(), PengingatFragment())
-//        val fragments = listOf(
-//            KavlingFragment(),
-//            RekapFragment(),
-//            BiayaLainFragment(),
-//            PengingatFragment(),
-//        )
         val fragments = listOf(
             KavlingFragment(),
             RekapFragment(),
