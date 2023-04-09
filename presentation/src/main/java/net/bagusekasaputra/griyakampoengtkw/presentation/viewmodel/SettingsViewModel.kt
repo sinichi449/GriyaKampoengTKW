@@ -15,9 +15,9 @@ class SettingsViewModel @Inject constructor(
     private val createBackupUseCase: CreateBackupAsyncUseCase,
 ): ViewModel() {
 
-    private val _progressLive = MutableLiveData("Sedang memproses...")
-    val progressLive: LiveData<String>
-        get() = _progressLive
+    private val _backupRestoreProgress = MutableLiveData<CreateBackupAsyncUseCase.Progress?>()
+    val backupRestoreProgress: LiveData<CreateBackupAsyncUseCase.Progress?>
+        get() = _backupRestoreProgress
 
     private val _isBackupComplete = MutableLiveData<Boolean?>(null)
     val isBackupComplete: LiveData<Boolean?>
@@ -28,19 +28,20 @@ class SettingsViewModel @Inject constructor(
 
 
     fun createBackup(
+        backupName: String,
         onFailure: (reason: String) -> Unit,
     ) {
-        val request = CreateBackupAsyncUseCase.Request
+        val request = CreateBackupAsyncUseCase.Request(backupName)
 
-        _progressLive.value = "Sedang memproses..."
+        _backupRestoreProgress.value = null
         _isBackupComplete.value = false
 
         activeJob = viewModelScope.launch {
             createBackupUseCase.execute(request).collect { result ->
                 result.onSuccess {
-                    _progressLive.value = it ?: "null"
+                    _backupRestoreProgress.postValue(it)
 
-                    if (it == "Completed") {
+                    if (it?.progress == 100) {
                         _isBackupComplete.postValue(true)
                     }
                 }

@@ -1,6 +1,5 @@
 package net.bagusekasaputra.griyakampoengtkw.data.repository
 
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.emitAll
 import kotlinx.coroutines.flow.flow
@@ -79,15 +78,6 @@ class BlockRepositoryImpl(
             val remoteResult = remoteBlockDataSource.addNewBlock(mapBlockModel(block))
 
             emit(remoteResult)
-        }
-    }
-
-    override fun createBackup(): Flow<Result<Nothing?>> {
-        return flow {
-            // TODO
-            delay(2000L)
-
-            emit(Result.success(null))
         }
     }
 
