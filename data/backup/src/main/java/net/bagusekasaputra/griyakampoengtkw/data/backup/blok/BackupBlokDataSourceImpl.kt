@@ -2,7 +2,7 @@ package net.bagusekasaputra.griyakampoengtkw.data.backup.blok
 
 import android.content.SharedPreferences
 import android.util.Log
-import net.bagusekasaputra.griyakampoengtkw.data.backup.BLOKS_JSON
+import net.bagusekasaputra.griyakampoengtkw.data.backup.JSON_BLOKS
 import net.bagusekasaputra.griyakampoengtkw.data.backup.PREFS_PATH_DATA_LAMA
 import net.bagusekasaputra.griyakampoengtkw.data.backup.readJson
 import net.bagusekasaputra.griyakampoengtkw.data.interfaces.backup.BackupBlokDataSource
@@ -14,7 +14,7 @@ class BackupBlokDataSourceImpl(
 ): BackupBlokDataSource {
 
     override suspend fun getAllBlocks(): Result<List<BlockModel>?> {
-        val dataLamaPath = "${sharedPreferences.getString(PREFS_PATH_DATA_LAMA, "")}/$BLOKS_JSON"
+        val dataLamaPath = "${sharedPreferences.getString(PREFS_PATH_DATA_LAMA, "")}/$JSON_BLOKS"
         val file = File(dataLamaPath)
 
         val bloksArray = readJson<Array<BackupBlokModel>>(file)

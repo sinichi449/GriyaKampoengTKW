@@ -4,20 +4,23 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.emitAll
 import kotlinx.coroutines.flow.flow
 import net.bagusekasaputra.griyakampoengtkw.data.DataUtil
+import net.bagusekasaputra.griyakampoengtkw.data.interfaces.backup.BackupKavlingDataSource
 import net.bagusekasaputra.griyakampoengtkw.data.interfaces.local.LocalKavlingDataSource
 import net.bagusekasaputra.griyakampoengtkw.data.interfaces.remote.RemoteKavlingDataSource
 import net.bagusekasaputra.griyakampoengtkw.data.model.KavlingModel
+import net.bagusekasaputra.griyakampoengtkw.domain.DataMode
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.Kavling
 import net.bagusekasaputra.griyakampoengtkw.domain.repository.KavlingRepository
 
 class KavlingRepositoryImpl(
     private val localKavlingDataSource: LocalKavlingDataSource,
-    private val remoteKavlingDataSource: RemoteKavlingDataSource
+    private val remoteKavlingDataSource: RemoteKavlingDataSource,
+    private val backupKavlingDataSource: BackupKavlingDataSource,
 ): KavlingRepository {
 
     override fun getKavlingByBlock(
         blockCode: String,
-        offline: Boolean,
+        dataMode: DataMode,
     ): Flow<Result<List<Kavling>?>> {
         return flow<Result<List<Kavling>?>> {
             val flowLocal = flow<Result<List<Kavling>?>> {
@@ -64,10 +67,18 @@ class KavlingRepositoryImpl(
                 }
             }
 
-            if (offline)
-                emitAll(flowLocal)
-            else
-                emitAll(flowRemote)
+            when (dataMode) {
+                DataMode.OFFLINE -> emitAll(flowLocal)
+                DataMode.ONLINE -> emitAll(flowRemote)
+                DataMode.DATA_LAMA -> {
+                    emit(DataUtil.mapListResult(
+                        originResult = backupKavlingDataSource.getKavlingByBlockKode(
+                            blockCode
+                        ), targetMapper = {
+                            mapKavling(it)
+                        }))
+                }
+            }
         }
     }
 

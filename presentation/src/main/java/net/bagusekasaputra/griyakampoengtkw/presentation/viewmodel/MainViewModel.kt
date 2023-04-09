@@ -151,13 +151,17 @@ class MainViewModel @Inject constructor(
         val request = if (kavlingsRefreshed[blockKode]?.value != true) {
                 logEvent("Kavling on the block $blockKode isn't refreshed, refreshing now ...")
 
-                // If not refreshed, then pull from remote storage
-                GetKavlingByBlockAsyncUseCase.Request(blockKode, offlineMode)
+                // If not refreshed, then pull from whatever data mode allow
+                GetKavlingByBlockAsyncUseCase.Request(blockKode, dataMode)
             } else {
                 logEvent("Kavling the block $blockKode already refreshed!")
 
                 // Otherwise, pull from local storage by invoking "offline" parameter as TRUE
-                GetKavlingByBlockAsyncUseCase.Request(blockKode, true)
+                // EXCEPT when the DataMode is DATA_LAMA
+                if (dataMode == DataMode.DATA_LAMA)
+                    GetKavlingByBlockAsyncUseCase.Request(blockKode, DataMode.DATA_LAMA)
+                else
+                    GetKavlingByBlockAsyncUseCase.Request(blockKode, DataMode.OFFLINE)
             }
 
         val gettingKavlingsJob = asyncHelper.doWork(

@@ -1,6 +1,5 @@
 package net.bagusekasaputra.griyakampoengtkw.data.backup
 
-import android.util.Log
 import com.google.gson.Gson
 import java.io.BufferedReader
 import java.io.File
@@ -8,7 +7,8 @@ import java.io.FileNotFoundException
 import java.io.FileReader
 
 const val PREFS_PATH_DATA_LAMA = "dataLamaPath"
-const val BLOKS_JSON = "bloks.json"
+const val JSON_BLOKS = "bloks.json"
+const val JSON_KAVLINGS = "kavlings.json"
 
 fun readFile(file: File): String {
     val fileReader = FileReader(file)
@@ -32,9 +32,6 @@ inline fun <reified M> readJson(file: File): M {
     }
 
     val jsonString = readFile(file)
-    val model = Gson().fromJson(jsonString, M::class.java)
 
-    Log.d("DEBUG_ME", jsonString)
-
-    return model
+    return Gson().fromJson(jsonString, M::class.java)
 }

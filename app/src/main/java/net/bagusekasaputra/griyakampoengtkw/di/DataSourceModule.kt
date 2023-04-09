@@ -26,7 +26,9 @@ import net.bagusekasaputra.griyakampoeng.tkw.data.local.pembayaran.RoomPembayara
 import net.bagusekasaputra.griyakampoeng.tkw.data.local.pengingat.RoomPengingatDataSource
 import net.bagusekasaputra.griyakampoeng.tkw.data.local.rekap.RoomRekapUangMasukLocalDataSource
 import net.bagusekasaputra.griyakampoengtkw.data.backup.blok.BackupBlokDataSourceImpl
+import net.bagusekasaputra.griyakampoengtkw.data.backup.kavling.BackupKavlingDataSourceImpl
 import net.bagusekasaputra.griyakampoengtkw.data.interfaces.backup.BackupBlokDataSource
+import net.bagusekasaputra.griyakampoengtkw.data.interfaces.backup.BackupKavlingDataSource
 import net.bagusekasaputra.griyakampoengtkw.data.interfaces.local.*
 import net.bagusekasaputra.griyakampoengtkw.data.interfaces.remote.*
 import net.bagusekasaputra.griyakampoengtkw.data.remote.biayaLain.FirebaseBiayaLainDataSource
@@ -100,6 +102,11 @@ object DataSourceModule {
         return FirebaseKavlingDataSource(
             databaseReference
         )
+    }
+
+    @Provides
+    fun provideBackupKavlingDataSource(sharedPreferences: SharedPreferences): BackupKavlingDataSource {
+        return BackupKavlingDataSourceImpl(sharedPreferences)
     }
 
 

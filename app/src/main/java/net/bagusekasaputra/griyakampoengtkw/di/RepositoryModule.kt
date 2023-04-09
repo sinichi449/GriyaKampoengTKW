@@ -6,6 +6,7 @@ import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
 import net.bagusekasaputra.griyakampoengtkw.data.interfaces.backup.BackupBlokDataSource
+import net.bagusekasaputra.griyakampoengtkw.data.interfaces.backup.BackupKavlingDataSource
 import net.bagusekasaputra.griyakampoengtkw.data.interfaces.local.*
 import net.bagusekasaputra.griyakampoengtkw.data.interfaces.remote.*
 import net.bagusekasaputra.griyakampoengtkw.data.repository.*
@@ -36,8 +37,9 @@ object RepositoryModule {
     fun provideKavlingRepository(
         localKavlingDataSource: LocalKavlingDataSource,
         remoteKavlingDataSource: RemoteKavlingDataSource,
+        backupKavlingDataSource: BackupKavlingDataSource,
     ): KavlingRepository {
-        return KavlingRepositoryImpl(localKavlingDataSource, remoteKavlingDataSource)
+        return KavlingRepositoryImpl(localKavlingDataSource, remoteKavlingDataSource, backupKavlingDataSource)
     }
 
 

@@ -1,11 +1,12 @@
 package net.bagusekasaputra.griyakampoengtkw.domain.repository
 
 import kotlinx.coroutines.flow.Flow
+import net.bagusekasaputra.griyakampoengtkw.domain.DataMode
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.Kavling
 
 interface KavlingRepository {
 
-    fun getKavlingByBlock(blockCode: String, offline: Boolean): Flow<Result<List<Kavling>?>>
+    fun getKavlingByBlock(blockCode: String, dataMode: DataMode): Flow<Result<List<Kavling>?>>
 
     fun addKavling(blockKode: String, kavling: Kavling): Flow<Result<Nothing?>>
 
