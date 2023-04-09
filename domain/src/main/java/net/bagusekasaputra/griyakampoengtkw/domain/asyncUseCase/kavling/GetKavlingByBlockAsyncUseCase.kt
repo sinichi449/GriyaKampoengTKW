@@ -25,14 +25,12 @@ class GetKavlingByBlockAsyncUseCase(
                         it.get(Calendar.MONTH).plus(1)
                     }
 
-                    if (request.dataMode != DataMode.DATA_LAMA) {
-                        kavlingList.forEach {
-                            val sudahBayarAngsuranBulanIni = pembayaranRepository
-                                .sudahBayarAngsuran(it.kode, bulanIni)
-                                .getOrThrow()
-                                ?: false
-                            it.sudahBayarBulanIni = sudahBayarAngsuranBulanIni
-                        }
+                    kavlingList.forEach {
+                        val sudahBayarAngsuranBulanIni = pembayaranRepository
+                            .sudahBayarAngsuran(it.kode, bulanIni)
+                            .getOrThrow()
+                            ?: false
+                        it.sudahBayarBulanIni = sudahBayarAngsuranBulanIni
                     }
 
                     sortKavling(kavlingList)
