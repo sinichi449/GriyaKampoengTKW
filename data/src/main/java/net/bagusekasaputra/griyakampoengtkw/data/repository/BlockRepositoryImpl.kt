@@ -81,21 +81,23 @@ class BlockRepositoryImpl(
         }
     }
 
-    private fun mapBlockModel(blockModel: BlockModel): Block {
-        return blockModel.let {
-            Block(
-                kode = it.kode,
-                warna = it.warna,
-            )
+    companion object {
+        fun mapBlockModel(blockModel: BlockModel): Block {
+            return blockModel.let {
+                Block(
+                    kode = it.kode,
+                    warna = it.warna,
+                )
+            }
         }
-    }
 
-    private fun mapBlockModel(block: Block): BlockModel {
-        return block.let {
-            BlockModel(
-                kode = it.kode,
-                warna = it.warna,
-            )
+        fun mapBlockModel(block: Block): BlockModel {
+            return block.let {
+                BlockModel(
+                    kode = it.kode,
+                    warna = it.warna,
+                )
+            }
         }
     }
 }

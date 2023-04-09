@@ -6,4 +6,5 @@ interface BackupBlokDataSource {
 
     suspend fun getAllBlocks(): Result<List<BlockModel>?>
 
+    suspend fun createBackup(backupPath: String, listBlok: List<BlockModel>): Result<Nothing?>
 }

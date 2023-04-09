@@ -1,10 +1,7 @@
 package net.bagusekasaputra.griyakampoengtkw.data.backup
 
 import com.google.gson.Gson
-import java.io.BufferedReader
-import java.io.File
-import java.io.FileNotFoundException
-import java.io.FileReader
+import java.io.*
 
 const val PREFS_PATH_DATA_LAMA = "dataLamaPath"
 const val JSON_BLOKS = "bloks.json"
@@ -24,6 +21,19 @@ fun readFile(file: File): String {
     bufferedReader.close()
 
     return stringBuilder.toString()
+}
+
+fun writeFile(file: File, str: String) {
+    try {
+        val fileWriter = FileWriter(file)
+        val bufferedWriter = BufferedWriter(fileWriter)
+
+        bufferedWriter.write(str)
+
+        bufferedWriter.close()
+    } catch (e: Exception) {
+        throw e
+    }
 }
 
 inline fun <reified M> readJson(file: File): M {

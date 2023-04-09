@@ -11,6 +11,7 @@ import net.bagusekasaputra.griyakampoengtkw.data.interfaces.local.*
 import net.bagusekasaputra.griyakampoengtkw.data.interfaces.remote.*
 import net.bagusekasaputra.griyakampoengtkw.data.repository.*
 import net.bagusekasaputra.griyakampoengtkw.domain.repository.*
+import java.io.File
 
 @Module
 @InstallIn(SingletonComponent::class)
@@ -232,5 +233,19 @@ object RepositoryModule {
     @Provides
     fun provideRekapUangMasukRepository(localRekap: LocalRekapUangMasukDataSource): RekapUangMasukRepository {
         return RekapUangMasukRepositoryImpl(localRekap)
+    }
+
+    /**
+     * Backup / Restore
+     */
+    @Provides
+    fun provideBackupRestoreRepository(
+        @InternalDir internalFiles: File,
+        backupBlokDataSource: BackupBlokDataSource,
+    ): BackupRestoreRepository {
+        return BackupRestoreRepositoryImpl(
+            internalFiles,
+            backupBlokDataSource,
+        )
     }
 }
