@@ -242,10 +242,12 @@ object RepositoryModule {
     fun provideBackupRestoreRepository(
         @InternalDir internalFiles: File,
         backupBlokDataSource: BackupBlokDataSource,
+        backupKavlingDataSource: BackupKavlingDataSource,
     ): BackupRestoreRepository {
         return BackupRestoreRepositoryImpl(
             internalFiles,
             backupBlokDataSource,
+            backupKavlingDataSource,
         )
     }
 }

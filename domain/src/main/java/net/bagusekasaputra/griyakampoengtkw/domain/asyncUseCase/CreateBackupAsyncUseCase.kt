@@ -9,9 +9,11 @@ import net.bagusekasaputra.griyakampoengtkw.domain.DataMode
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.BackupRestoreEntity
 import net.bagusekasaputra.griyakampoengtkw.domain.repository.BackupRestoreRepository
 import net.bagusekasaputra.griyakampoengtkw.domain.repository.BlockRepository
+import net.bagusekasaputra.griyakampoengtkw.domain.repository.KavlingRepository
 
 class CreateBackupAsyncUseCase(
     private val blokRepository: BlockRepository,
+    private val kavlingRepository: KavlingRepository,
     private val backupRestoreRepository: BackupRestoreRepository,
 ): AsyncUseCase<CreateBackupAsyncUseCase.Request, CreateBackupAsyncUseCase.Progress>() {
 
@@ -23,14 +25,23 @@ class CreateBackupAsyncUseCase(
 
     override fun process(request: Request): Flow<Result<Progress?>> {
         return callbackFlow {
-            trySendBlocking(Result.success(Progress(50, "Mendownload Blok ...")))
-
+            trySendBlocking(Result.success(Progress(7, "Mendownload Blok ...")))
             val listBlok = blokRepository.getAllBlocks(dataMode = DataMode.ONLINE)
                 .first().getOrThrow() ?: emptyList()
+
+            trySendBlocking(Result.success(Progress(14, "Mendownload Kavling ...")))
+            val blokKodes = mutableListOf<String>().apply {
+                listBlok.forEach {
+                    this.add(it.kode)
+                }
+            }
+            val listKavlings = kavlingRepository.getAllKavlings(blokKodes)
+                .first().getOrThrow() ?: HashMap()
 
             val backupRestoreEntity = BackupRestoreEntity(
                 backupName = request.backupName,
                 listBlok = listBlok,
+                listKavling = listKavlings,
             )
 
             backupRestoreRepository.createBackup(backupRestoreEntity)

@@ -2,10 +2,12 @@ package net.bagusekasaputra.griyakampoengtkw.data.backup.kavling
 
 import android.content.SharedPreferences
 import android.util.Log
+import com.google.gson.Gson
 import net.bagusekasaputra.griyakampoengtkw.data.DataUtil
 import net.bagusekasaputra.griyakampoengtkw.data.backup.JSON_KAVLINGS
 import net.bagusekasaputra.griyakampoengtkw.data.backup.PREFS_PATH_DATA_LAMA
 import net.bagusekasaputra.griyakampoengtkw.data.backup.readJson
+import net.bagusekasaputra.griyakampoengtkw.data.backup.writeFile
 import net.bagusekasaputra.griyakampoengtkw.data.interfaces.backup.BackupKavlingDataSource
 import net.bagusekasaputra.griyakampoengtkw.data.model.KavlingModel
 import java.io.File
@@ -45,6 +47,35 @@ class BackupKavlingDataSourceImpl(
         }
     }
 
+    override suspend fun createBackup(
+        backupPath: String,
+        listKavling: HashMap<String, List<KavlingModel>>
+    ): Result<Nothing?> {
+        return try {
+            val listBackupKavling = mutableListOf<BackupKavlingModel>()
+            listKavling.keys.forEach { blok ->
+                listBackupKavling.add(
+                    BackupKavlingModel(
+                        blok = blok,
+                        listKavling = listKavling.get(blok)?.map {
+                            mapKavlingModel(it)
+                        } ?: emptyList()
+                    )
+                )
+            }
+
+            val arrKavlingBackup = listBackupKavling.toTypedArray()
+            val json = Gson().toJson(arrKavlingBackup)
+            val file = File("$backupPath/$JSON_KAVLINGS")
+
+            writeFile(file, json)
+
+            Result.success(null)
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
+    }
+
     private fun mapKavlingModel(kavling: BackupKavlingModel.Kavling): KavlingModel {
         return kavling.let {
             KavlingModel(
@@ -57,4 +88,15 @@ class BackupKavlingDataSourceImpl(
         }
     }
 
+    private fun mapKavlingModel(kavlingModel: KavlingModel): BackupKavlingModel.Kavling {
+        return kavlingModel.let {
+            BackupKavlingModel.Kavling(
+                active = it.active,
+                kode = it.kode,
+                type = it.type,
+                ukuran = it.ukuran,
+                warna = it.warna,
+            )
+        }
+    }
 }

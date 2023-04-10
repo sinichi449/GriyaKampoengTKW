@@ -431,8 +431,13 @@ object UseCaseModule {
     @Provides
     fun provideCreateBackupUseCase(
         blokRepository: BlockRepository,
+        kavlingRepository: KavlingRepository,
         backupRestoreRepository: BackupRestoreRepository,
     ): CreateBackupAsyncUseCase {
-        return CreateBackupAsyncUseCase(blokRepository, backupRestoreRepository)
+        return CreateBackupAsyncUseCase(
+            blokRepository = blokRepository,
+            kavlingRepository = kavlingRepository,
+            backupRestoreRepository = backupRestoreRepository,
+        )
     }
 }

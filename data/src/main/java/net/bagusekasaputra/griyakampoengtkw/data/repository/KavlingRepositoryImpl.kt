@@ -2,6 +2,7 @@ package net.bagusekasaputra.griyakampoengtkw.data.repository
 
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.emitAll
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flow
 import net.bagusekasaputra.griyakampoengtkw.data.DataUtil
 import net.bagusekasaputra.griyakampoengtkw.data.interfaces.backup.BackupKavlingDataSource
@@ -82,6 +83,26 @@ class KavlingRepositoryImpl(
         }
     }
 
+    override fun getAllKavlings(blockKodes: List<String>): Flow<Result<HashMap<String, List<Kavling>>?>> {
+        return flow {
+            val mapKavling = HashMap<String, List<Kavling>>()
+
+            blockKodes.forEach {
+                try {
+                    val kavlingPerBlok = getKavlingByBlock(it, DataMode.ONLINE)
+                        .first().getOrThrow()
+
+                    if (kavlingPerBlok?.isNotEmpty() == true)
+                        mapKavling[it] = kavlingPerBlok
+                } catch (e: Exception) {
+                    emit(Result.failure(e))
+                }
+            }
+
+            emit(Result.success(mapKavling))
+        }
+    }
+
     override fun addKavling(blockKode: String, kavling: Kavling): Flow<Result<Nothing?>> {
         return flow {
             val remoteResult = remoteKavlingDataSource.addKavling(blockKode, mapKavling(kavling))
@@ -121,24 +142,26 @@ class KavlingRepositoryImpl(
         }
     }
 
-    private fun mapKavling(kavlingModel: KavlingModel): Kavling {
-        return Kavling(
-            kavlingModel.kode,
-            kavlingModel.active,
-            kavlingModel.warna,
-            kavlingModel.ukuran,
-            kavlingModel.type
-        )
-    }
+    companion object {
+        fun mapKavling(kavlingModel: KavlingModel): Kavling {
+            return Kavling(
+                kavlingModel.kode,
+                kavlingModel.active,
+                kavlingModel.warna,
+                kavlingModel.ukuran,
+                kavlingModel.type
+            )
+        }
 
-    private fun mapKavling(kavling: Kavling): KavlingModel {
-        return KavlingModel(
-            kavling.kode,
-            kavling.warna,
-            kavling.belumIsi,
-            kavling.ukuran,
-            kavling.type
-        )
+        fun mapKavling(kavling: Kavling): KavlingModel {
+            return KavlingModel(
+                kavling.kode,
+                kavling.warna,
+                kavling.belumIsi,
+                kavling.ukuran,
+                kavling.type
+            )
+        }
     }
 
 }
