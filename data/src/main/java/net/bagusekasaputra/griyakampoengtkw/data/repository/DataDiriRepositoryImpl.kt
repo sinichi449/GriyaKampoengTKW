@@ -164,31 +164,33 @@ class DataDiriRepositoryImpl(
     }
 
 
-    private fun mapDataDiri(dataDiriModel: DataDiriModel): DataDiri {
-        return dataDiriModel.let {
-            DataDiri(
-                nama = it.nama,
-                jenisIdentitas = it.jenisIdentitas,
-                noIdentitas = it.noIdentitas,
-                negaraBekerja = it.negaraBekerja,
-                alamatIndo = it.alamatIndo,
-                alamatKerja = it.alamatKerja,
-                noHp = it.noHp
-            )
+    companion object {
+        fun mapDataDiri(dataDiriModel: DataDiriModel): DataDiri {
+            return dataDiriModel.let {
+                DataDiri(
+                    nama = it.nama,
+                    jenisIdentitas = it.jenisIdentitas,
+                    noIdentitas = it.noIdentitas,
+                    negaraBekerja = it.negaraBekerja,
+                    alamatIndo = it.alamatIndo,
+                    alamatKerja = it.alamatKerja,
+                    noHp = it.noHp
+                )
+            }
         }
-    }
 
-    private fun mapDataDiri(dataDiri: DataDiri): DataDiriModel {
-        return dataDiri.let {
-            DataDiriModel(
-                nama = it.nama,
-                jenisIdentitas = it.jenisIdentitas,
-                noIdentitas = it.noIdentitas,
-                alamatKerja = it.alamatKerja,
-                negaraBekerja = it.negaraBekerja,
-                alamatIndo = it.alamatIndo,
-                noHp = it.noHp
-            )
+        fun mapDataDiri(dataDiri: DataDiri): DataDiriModel {
+            return dataDiri.let {
+                DataDiriModel(
+                    nama = it.nama,
+                    jenisIdentitas = it.jenisIdentitas,
+                    noIdentitas = it.noIdentitas,
+                    alamatKerja = it.alamatKerja,
+                    negaraBekerja = it.negaraBekerja,
+                    alamatIndo = it.alamatIndo,
+                    noHp = it.noHp
+                )
+            }
         }
     }
 

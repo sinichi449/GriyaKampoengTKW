@@ -432,12 +432,16 @@ object UseCaseModule {
     fun provideCreateBackupUseCase(
         blokRepository: BlockRepository,
         kavlingRepository: KavlingRepository,
+        pembayaranRepository: PembayaranRepository,
+        dataDiriRepository: DataDiriRepository,
         backupRestoreRepository: BackupRestoreRepository,
     ): CreateBackupAsyncUseCase {
         return CreateBackupAsyncUseCase(
-            blokRepository = blokRepository,
-            kavlingRepository = kavlingRepository,
-            backupRestoreRepository = backupRestoreRepository,
+            blokRepository,
+            kavlingRepository,
+            pembayaranRepository,
+            dataDiriRepository,
+            backupRestoreRepository,
         )
     }
 }

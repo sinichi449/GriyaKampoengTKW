@@ -292,40 +292,41 @@ class PembayaranRepositoryImpl(
         }
     }
 
-
-    private fun mapPembayaran(pembayaran: Pembayaran): PembayaranModel {
-        return pembayaran.let {
-            val pisah = pisahkanTerminDanUrutan(it.termin)
-
-            return@let PembayaranModel(
-                termin = pisah["jenis"]!!,
-                urutan = pisah["urutan"]!!.toInt(),
-                tanggal = it.tanggal,
-                jumlahUangDibayar = NumberUtil.formatStringToLong(it.jumlahUangDibayar),
-                keterangan = it.keterangan,
-                timeMillis = it.timeMillis,
+    companion object {
+        fun pisahkanTerminDanUrutan(termin: String): Map<String, String> {
+            val terminDanUrutan = termin.split(" ")
+            return mapOf<String, String>(
+                Pair("jenis", terminDanUrutan[0]),
+                Pair("urutan", terminDanUrutan[1]),
             )
         }
-    }
 
-    private fun mapPembayaran(pembayaranModel: PembayaranModel): Pembayaran {
-        return pembayaranModel.let {
-            Pembayaran(
-                termin = "${it.termin} ${it.urutan}",
-                tanggal = it.tanggal,
-                jumlahUangDibayar = NumberUtil.formatLongToString(it.jumlahUangDibayar),
-                keterangan = it.keterangan,
-                timeMillis = it.timeMillis,
-            )
+        fun mapPembayaran(pembayaran: Pembayaran): PembayaranModel {
+            return pembayaran.let {
+                val pisah = pisahkanTerminDanUrutan(it.termin)
+
+                return@let PembayaranModel(
+                    termin = pisah["jenis"]!!,
+                    urutan = pisah["urutan"]!!.toInt(),
+                    tanggal = it.tanggal,
+                    jumlahUangDibayar = NumberUtil.formatStringToLong(it.jumlahUangDibayar),
+                    keterangan = it.keterangan,
+                    timeMillis = it.timeMillis,
+                )
+            }
         }
-    }
 
-    private fun pisahkanTerminDanUrutan(termin: String): Map<String, String> {
-        val terminDanUrutan = termin.split(" ")
-        return mapOf<String, String>(
-            Pair("jenis", terminDanUrutan[0]),
-            Pair("urutan", terminDanUrutan[1]),
-        )
+        fun mapPembayaran(pembayaranModel: PembayaranModel): Pembayaran {
+            return pembayaranModel.let {
+                Pembayaran(
+                    termin = "${it.termin} ${it.urutan}",
+                    tanggal = it.tanggal,
+                    jumlahUangDibayar = NumberUtil.formatLongToString(it.jumlahUangDibayar),
+                    keterangan = it.keterangan,
+                    timeMillis = it.timeMillis,
+                )
+            }
+        }
     }
 
 }

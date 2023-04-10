@@ -6,4 +6,5 @@ interface BackupPembayaranDataSource {
 
     suspend fun getAllPembayaran(kavlingKode: String): Result<List<PembayaranModel>?>
 
+    suspend fun createBackup(backupPath: String, listPembayaran: Map<String, List<PembayaranModel>?>): Result<Nothing?>
 }

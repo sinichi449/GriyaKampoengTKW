@@ -26,9 +26,13 @@ import net.bagusekasaputra.griyakampoeng.tkw.data.local.pembayaran.RoomPembayara
 import net.bagusekasaputra.griyakampoeng.tkw.data.local.pengingat.RoomPengingatDataSource
 import net.bagusekasaputra.griyakampoeng.tkw.data.local.rekap.RoomRekapUangMasukLocalDataSource
 import net.bagusekasaputra.griyakampoengtkw.data.backup.blok.BackupBlokDataSourceImpl
+import net.bagusekasaputra.griyakampoengtkw.data.backup.dataDiri.BackupDataDiriDataSourceImpl
 import net.bagusekasaputra.griyakampoengtkw.data.backup.kavling.BackupKavlingDataSourceImpl
+import net.bagusekasaputra.griyakampoengtkw.data.backup.pembayaran.BackupPembayaranDataSourceImpl
 import net.bagusekasaputra.griyakampoengtkw.data.interfaces.backup.BackupBlokDataSource
+import net.bagusekasaputra.griyakampoengtkw.data.interfaces.backup.BackupDataDiriDataSource
 import net.bagusekasaputra.griyakampoengtkw.data.interfaces.backup.BackupKavlingDataSource
+import net.bagusekasaputra.griyakampoengtkw.data.interfaces.backup.BackupPembayaranDataSource
 import net.bagusekasaputra.griyakampoengtkw.data.interfaces.local.*
 import net.bagusekasaputra.griyakampoengtkw.data.interfaces.remote.*
 import net.bagusekasaputra.griyakampoengtkw.data.remote.biayaLain.FirebaseBiayaLainDataSource
@@ -123,6 +127,11 @@ object DataSourceModule {
         return net.bagusekasaputra.griyakampoengtkw.data.remote.datadiri.FirebaseDataDiriRepository(
             databaseReference
         )
+    }
+
+    @Provides
+    fun provideBackupDataDiriDataSource(sharedPreferences: SharedPreferences): BackupDataDiriDataSource {
+        return BackupDataDiriDataSourceImpl(sharedPreferences)
     }
 
     /**
@@ -223,6 +232,11 @@ object DataSourceModule {
     @Provides
     fun provideLocalPembayaranDataSource(roomDatabase: MyRoomDatabase): LocalPembayaranDataSource {
         return RoomPembayaranLocalDataSource(roomDatabase)
+    }
+
+    @Provides
+    fun provideBackupPembayaranDataSource(sharedPreferences: SharedPreferences): BackupPembayaranDataSource {
+        return BackupPembayaranDataSourceImpl(sharedPreferences)
     }
 
 

@@ -1,11 +1,14 @@
 package net.bagusekasaputra.griyakampoengtkw.data.backup
 
 import com.google.gson.Gson
+import com.google.gson.GsonBuilder
 import java.io.*
 
 const val PREFS_PATH_DATA_LAMA = "dataLamaPath"
 const val JSON_BLOKS = "bloks.json"
 const val JSON_KAVLINGS = "kavlings.json"
+const val JSON_PEMBAYARANS = "pembayarans.json"
+const val JSON_DATA_DIRI = "data_diri.json"
 
 fun readFile(file: File): String {
     val fileReader = FileReader(file)
@@ -44,4 +47,10 @@ inline fun <reified M> readJson(file: File): M {
     val jsonString = readFile(file)
 
     return Gson().fromJson(jsonString, M::class.java)
+}
+
+fun <O> getGsonJsonString(obj: O): String {
+    val gson = GsonBuilder().setPrettyPrinting().create()
+
+    return gson.toJson(obj)
 }

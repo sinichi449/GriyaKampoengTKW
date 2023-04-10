@@ -6,7 +6,9 @@ import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
 import net.bagusekasaputra.griyakampoengtkw.data.interfaces.backup.BackupBlokDataSource
+import net.bagusekasaputra.griyakampoengtkw.data.interfaces.backup.BackupDataDiriDataSource
 import net.bagusekasaputra.griyakampoengtkw.data.interfaces.backup.BackupKavlingDataSource
+import net.bagusekasaputra.griyakampoengtkw.data.interfaces.backup.BackupPembayaranDataSource
 import net.bagusekasaputra.griyakampoengtkw.data.interfaces.local.*
 import net.bagusekasaputra.griyakampoengtkw.data.interfaces.remote.*
 import net.bagusekasaputra.griyakampoengtkw.data.repository.*
@@ -243,11 +245,15 @@ object RepositoryModule {
         @InternalDir internalFiles: File,
         backupBlokDataSource: BackupBlokDataSource,
         backupKavlingDataSource: BackupKavlingDataSource,
+        backupPembayaranDataSource: BackupPembayaranDataSource,
+        backupDataDiriDataSource: BackupDataDiriDataSource,
     ): BackupRestoreRepository {
         return BackupRestoreRepositoryImpl(
             internalFiles,
             backupBlokDataSource,
             backupKavlingDataSource,
+            backupPembayaranDataSource,
+            backupDataDiriDataSource,
         )
     }
 }
