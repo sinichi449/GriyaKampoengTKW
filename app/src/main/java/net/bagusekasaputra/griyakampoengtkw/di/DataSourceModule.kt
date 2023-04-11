@@ -26,6 +26,7 @@ import net.bagusekasaputra.griyakampoeng.tkw.data.local.pembayaran.RoomPembayara
 import net.bagusekasaputra.griyakampoeng.tkw.data.local.pengingat.RoomPengingatDataSource
 import net.bagusekasaputra.griyakampoeng.tkw.data.local.rekap.RoomRekapUangMasukLocalDataSource
 import net.bagusekasaputra.griyakampoengtkw.data.backup.blok.BackupBlokDataSourceImpl
+import net.bagusekasaputra.griyakampoengtkw.data.backup.catatanPembayaran.BackupCatatanPembayaranDataSourceImpl
 import net.bagusekasaputra.griyakampoengtkw.data.backup.dataDiri.BackupDataDiriDataSourceImpl
 import net.bagusekasaputra.griyakampoengtkw.data.backup.hargaKavling.BackupHargaKavlingDataSourceImpl
 import net.bagusekasaputra.griyakampoengtkw.data.backup.kavling.BackupKavlingDataSourceImpl
@@ -214,6 +215,11 @@ object DataSourceModule {
     @Provides
     fun provideLocalCatatanPembayaranDataSource(roomDatabase: MyRoomDatabase): LocalCatatanPembayaranDataSource {
         return RoomCatatanPembayaranDataSource(roomDatabase)
+    }
+
+    @Provides
+    fun provideBackupCatatanPembayaranDataSource(sharedPreferences: SharedPreferences): BackupCatatanPembayaranDataSource {
+        return BackupCatatanPembayaranDataSourceImpl(sharedPreferences)
     }
 
 

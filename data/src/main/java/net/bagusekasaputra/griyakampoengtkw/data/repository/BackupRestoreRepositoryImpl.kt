@@ -5,10 +5,7 @@ import kotlinx.coroutines.channels.trySendBlocking
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
 import net.bagusekasaputra.griyakampoengtkw.data.interfaces.backup.*
-import net.bagusekasaputra.griyakampoengtkw.data.model.DataDiriModel
-import net.bagusekasaputra.griyakampoengtkw.data.model.HargaKavlingModel
-import net.bagusekasaputra.griyakampoengtkw.data.model.KavlingModel
-import net.bagusekasaputra.griyakampoengtkw.data.model.PembayaranModel
+import net.bagusekasaputra.griyakampoengtkw.data.model.*
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.BackupRestoreEntity
 import net.bagusekasaputra.griyakampoengtkw.domain.repository.BackupRestoreRepository
 import java.io.File
@@ -20,6 +17,7 @@ class BackupRestoreRepositoryImpl(
     private val backupPembayaranDataSource: BackupPembayaranDataSource,
     private val backupDataDiriDataSource: BackupDataDiriDataSource,
     private val backupHargaKavlingDataSource: BackupHargaKavlingDataSource,
+    private val backupCatatanPembayaranDataSource: BackupCatatanPembayaranDataSource,
 ): BackupRestoreRepository {
 
     override fun createBackup(backupRestoreEntity: BackupRestoreEntity): Flow<Result<Nothing?>> {
@@ -28,7 +26,7 @@ class BackupRestoreRepositoryImpl(
                 val backupPath = File(internalFiles, "data_lama/${backupRestoreEntity.backupName}")
                 if (backupPath.exists().not()) backupPath.mkdirs()
 
-                // Mapping
+                // Mapping from Domain's Entity to Data Model
                 val listBlok = backupRestoreEntity.listBlok.map {
                     BlockRepositoryImpl.mapBlockModel(it)
                 }
@@ -78,23 +76,37 @@ class BackupRestoreRepositoryImpl(
 
                     newList.toList()
                 }
+                val listCatatanPembayaran = backupRestoreEntity.listCatatanPembayaran.run {
+                    val newList = mutableListOf<CatatanPembayaranModel>()
+
+                    this.forEach {
+                        val model = CatatanPembayaranRepositoryImpl.mapCatatanPembayaran(it)
+                        newList.add(model)
+                    }
+
+                    newList.toList()
+                }
 
 
                 backupBlokDataSource.createBackup(backupPath.absolutePath, listBlok).onFailure {
-                    trySendBlocking(Result.failure(it))
+                    throw it
                 }
                 backupKavlingDataSource.createBackup(backupPath.absolutePath, listKavling).onFailure {
-                    trySendBlocking(Result.failure(it))
+                    throw it
                 }
                 backupPembayaranDataSource.createBackup(backupPath.absolutePath, listPembayaran).onFailure {
-                    trySendBlocking(Result.failure(it))
+                    throw it
                 }
                 backupDataDiriDataSource.createBackup(backupPath.absolutePath, listDataDiri).onFailure {
-                    trySendBlocking(Result.failure(it))
+                    throw it
                 }
                 backupHargaKavlingDataSource.createBackup(backupPath.absolutePath, listHargaKavling).onFailure {
-                    trySendBlocking(Result.failure(it))
+                    throw it
                 }
+                backupCatatanPembayaranDataSource.createBackup(backupPath.absolutePath, listCatatanPembayaran).onFailure {
+                    throw it
+                }
+
 
                 trySendBlocking(Result.success(null))
             } catch (e: Exception) {

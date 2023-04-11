@@ -16,6 +16,7 @@ class CreateBackupAsyncUseCase(
     private val pembayaranRepository: PembayaranRepository,
     private val dataDiriRepository: DataDiriRepository,
     private val hargaKavlingRepository: HargaKavlingRepository,
+    private val catatanPembayaranRepository: CatatanPembayaranRepository,
     private val backupRestoreRepository: BackupRestoreRepository,
 ): AsyncUseCase<CreateBackupAsyncUseCase.Request, CreateBackupAsyncUseCase.Progress>() {
 
@@ -74,6 +75,9 @@ class CreateBackupAsyncUseCase(
                 newList
             }
 
+            trySendBlocking(Result.success(Progress(42, "Mendownload Catatan Pembayaran")))
+            val listCatatanPembayaran = catatanPembayaranRepository.getBatch(listKavling = listKodeKavlings)
+                .first().getOrThrow() ?: emptyList()
 
 
             val backupRestoreEntity = BackupRestoreEntity(
@@ -83,6 +87,7 @@ class CreateBackupAsyncUseCase(
                 listPembayaran,
                 listDataDiri,
                 listHargaKavling,
+                listCatatanPembayaran,
             )
 
             backupRestoreRepository.createBackup(backupRestoreEntity)

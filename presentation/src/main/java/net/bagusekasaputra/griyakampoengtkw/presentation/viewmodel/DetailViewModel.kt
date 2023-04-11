@@ -728,7 +728,7 @@ class DetailViewModel @Inject constructor(
      * Catatan Pembayaran
      */
     fun getCatatanPembayaran(kavlingKode: String, onFailure: (cause: String) -> Unit) {
-        val request = GetCatatanPembayaranAsyncUseCase.Request(kavlingKode, offlineMode)
+        val request = GetCatatanPembayaranAsyncUseCase.Request(kavlingKode, dataMode)
 
         val gettingCatatanPembayaranJob = asyncHelper.doWork(
             request = request,

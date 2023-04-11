@@ -1,23 +1,26 @@
 package net.bagusekasaputra.griyakampoengtkw.data.repository
 
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.emitAll
-import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.channels.awaitClose
+import kotlinx.coroutines.channels.trySendBlocking
+import kotlinx.coroutines.flow.*
 import net.bagusekasaputra.griyakampoengtkw.data.DataUtil
+import net.bagusekasaputra.griyakampoengtkw.data.interfaces.backup.BackupCatatanPembayaranDataSource
 import net.bagusekasaputra.griyakampoengtkw.data.interfaces.local.LocalCatatanPembayaranDataSource
 import net.bagusekasaputra.griyakampoengtkw.data.interfaces.remote.RemoteCatatanPembayaranDataSource
 import net.bagusekasaputra.griyakampoengtkw.data.model.CatatanPembayaranModel
+import net.bagusekasaputra.griyakampoengtkw.domain.DataMode
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.CatatanPembayaran
 import net.bagusekasaputra.griyakampoengtkw.domain.repository.CatatanPembayaranRepository
 
 class CatatanPembayaranRepositoryImpl(
     private val localCatatanPembayaranDataSource: LocalCatatanPembayaranDataSource,
     private val remoteCatatanPembayaranDataSource: RemoteCatatanPembayaranDataSource,
+    private val backupCatatanPembayaranDataSource: BackupCatatanPembayaranDataSource,
 ): CatatanPembayaranRepository {
 
     override fun getCatatan(
         kavlingKode: String,
-        offline: Boolean
+        dataMode: DataMode,
     ): Flow<Result<CatatanPembayaran?>> {
         return flow {
             val flowOffline = flow<Result<CatatanPembayaran?>> {
@@ -27,7 +30,6 @@ class CatatanPembayaranRepositoryImpl(
                     DataUtil.mapSingleResult(localResult, ::mapCatatanPembayaran)
                 )
             }
-
             val flowOnline = flow<Result<CatatanPembayaran?>> {
                 // First, get from the remote
                 val remoteResult = remoteCatatanPembayaranDataSource.getCatatan(kavlingKode)
@@ -54,11 +56,42 @@ class CatatanPembayaranRepositoryImpl(
                     emitAll(flowOffline)
                 }
             }
+            val flowDataLama = flow<Result<CatatanPembayaran?>> {
+                backupCatatanPembayaranDataSource.getCatatanPembayaran(kavlingKode)
+                    .onSuccess {
+                        emit(DataUtil.mapSingleResult(
+                            originResult = Result.success(it),
+                            targetMapper = ::mapCatatanPembayaran,
+                        ))
+                    }
+            }
 
-            if (offline)
-                emitAll(flowOffline)
-            else
-                emitAll(flowOnline)
+            when (dataMode) {
+                DataMode.OFFLINE -> emitAll(flowOffline)
+                DataMode.ONLINE -> emitAll(flowOnline)
+                DataMode.DATA_LAMA -> emitAll(flowDataLama)
+            }
+        }
+    }
+
+    override fun getBatch(listKavling: List<String>): Flow<Result<List<CatatanPembayaran>?>> {
+        return callbackFlow {
+            try {
+                val listModels = mutableListOf<CatatanPembayaran>()
+
+                listKavling.forEach { kavling ->
+                    val model = getCatatan(kavling, DataMode.ONLINE)
+                        .first().getOrThrow()
+
+                    if (model != null) listModels.add(model)
+                }
+
+                trySendBlocking(Result.success(listModels.toList()))
+            } catch (e: Exception) {
+                trySendBlocking(Result.failure(e))
+            }
+
+            awaitClose {  }
         }
     }
 
@@ -90,21 +123,23 @@ class CatatanPembayaranRepositoryImpl(
         }
     }
 
-    private fun mapCatatanPembayaran(catatanPembayaranModel: CatatanPembayaranModel): CatatanPembayaran {
-        return catatanPembayaranModel.let {
-            CatatanPembayaran(
-                kavlingKode = it.kavlingKode,
-                content = it.content,
-            )
+    companion object {
+        fun mapCatatanPembayaran(catatanPembayaranModel: CatatanPembayaranModel): CatatanPembayaran {
+            return catatanPembayaranModel.let {
+                CatatanPembayaran(
+                    kavlingKode = it.kavlingKode,
+                    content = it.content,
+                )
+            }
         }
-    }
 
-    private fun mapCatatanPembayaran(catatanPembayaran: CatatanPembayaran): CatatanPembayaranModel {
-        return catatanPembayaran.let {
-            CatatanPembayaranModel(
-                kavlingKode = it.kavlingKode,
-                content = it.content,
-            )
+        fun mapCatatanPembayaran(catatanPembayaran: CatatanPembayaran): CatatanPembayaranModel {
+            return catatanPembayaran.let {
+                CatatanPembayaranModel(
+                    kavlingKode = it.kavlingKode,
+                    content = it.content,
+                )
+            }
         }
     }
 }

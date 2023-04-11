@@ -190,9 +190,10 @@ object RepositoryModule {
     @Provides
     fun provideCatatanPembayaranRepository(
         localCatatanPembayaranDataSource: LocalCatatanPembayaranDataSource,
-        remoteCatatanPembayaranDataSource: RemoteCatatanPembayaranDataSource
+        remoteCatatanPembayaranDataSource: RemoteCatatanPembayaranDataSource,
+        backupCatatanPembayaranDataSource: BackupCatatanPembayaranDataSource,
     ): CatatanPembayaranRepository {
-        return CatatanPembayaranRepositoryImpl(localCatatanPembayaranDataSource, remoteCatatanPembayaranDataSource)
+        return CatatanPembayaranRepositoryImpl(localCatatanPembayaranDataSource, remoteCatatanPembayaranDataSource, backupCatatanPembayaranDataSource)
     }
 
 
@@ -261,6 +262,7 @@ object RepositoryModule {
         backupPembayaranDataSource: BackupPembayaranDataSource,
         backupDataDiriDataSource: BackupDataDiriDataSource,
         backupHargaKavlingDataSource: BackupHargaKavlingDataSource,
+        backupCatatanPembayaranDataSource: BackupCatatanPembayaranDataSource,
     ): BackupRestoreRepository {
         return BackupRestoreRepositoryImpl(
             internalFiles,
@@ -269,6 +271,7 @@ object RepositoryModule {
             backupPembayaranDataSource,
             backupDataDiriDataSource,
             backupHargaKavlingDataSource,
+            backupCatatanPembayaranDataSource,
         )
     }
 }

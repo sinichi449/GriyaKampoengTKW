@@ -8,4 +8,5 @@ data class BackupRestoreEntity(
     val listPembayaran: Map<String, List<Pembayaran>?>,
     val listDataDiri: Map<String, DataDiri?>,
     val listHargaKavling: List<HargaKavling>,
+    val listCatatanPembayaran: List<CatatanPembayaran>,
 )
