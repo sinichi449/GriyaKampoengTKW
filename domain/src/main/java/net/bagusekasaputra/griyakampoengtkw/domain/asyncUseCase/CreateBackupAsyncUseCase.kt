@@ -8,6 +8,7 @@ import kotlinx.coroutines.flow.first
 import net.bagusekasaputra.griyakampoengtkw.domain.DataMode
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.BackupRestoreEntity
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.BiayaMarketing
+import net.bagusekasaputra.griyakampoengtkw.domain.entity.FeeMarketing
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.HargaKavling
 import net.bagusekasaputra.griyakampoengtkw.domain.repository.*
 
@@ -19,6 +20,7 @@ class CreateBackupAsyncUseCase(
     private val hargaKavlingRepository: HargaKavlingRepository,
     private val catatanPembayaranRepository: CatatanPembayaranRepository,
     private val biayaMarketingRepository: BiayaMarketingRepository,
+    private val feeMarketingRepository: FeeMarketingRepository,
     private val backupRestoreRepository: BackupRestoreRepository,
 ): AsyncUseCase<CreateBackupAsyncUseCase.Request, CreateBackupAsyncUseCase.Progress>() {
 
@@ -95,6 +97,20 @@ class CreateBackupAsyncUseCase(
                 newList.toList()
             }
 
+            trySendBlocking(Result.success(Progress(56, "Mendownload Fee Marketing")))
+            val listFeeMarketing = (feeMarketingRepository.getBatchOnline(listKavling = listKodeKavlings)
+                .first().getOrThrow() ?: HashMap()).run {
+                val newList = mutableListOf<FeeMarketing>()
+
+                this.keys.forEach { kavling ->
+                    val feeMarketing = this[kavling]
+
+                    if (feeMarketing != null) newList.add(feeMarketing)
+                }
+
+                newList.toList()
+            }
+
 
             val backupRestoreEntity = BackupRestoreEntity(
                 request.backupName,
@@ -105,6 +121,7 @@ class CreateBackupAsyncUseCase(
                 listHargaKavling,
                 listCatatanPembayaran,
                 listBiayaMarketing,
+                listFeeMarketing,
             )
 
             backupRestoreRepository.createBackup(backupRestoreEntity)

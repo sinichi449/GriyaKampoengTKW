@@ -18,7 +18,7 @@ class GetAllBiayaMarketingByKavlingKodeAsyncUseCase(
 
     override fun process(request: Request): Flow<Result<List<BiayaMarketing>?>> {
         return biayaMarketingRepository.getAllByKavlingKode(request.kavlingKode, request.dataMode)
-            .zip(getBiayaMarketer(request.kavlingKode, false)) { resultBiayaMarketing, biayaMarketer ->
+            .zip(getBiayaMarketer(request.kavlingKode, request.dataMode)) { resultBiayaMarketing, biayaMarketer ->
                 val listBiayaMarketing = resultBiayaMarketing.getOrNull()
 
                 if (listBiayaMarketing != null) {
@@ -51,8 +51,8 @@ class GetAllBiayaMarketingByKavlingKodeAsyncUseCase(
         return newBiayaMarketingList
     }
 
-    private fun getBiayaMarketer(kavlingKode: String, offline: Boolean): Flow<Long?> {
-        return feeMarketingRepository.getByKavlingKode(kavlingKode, offline).map { result ->
+    private fun getBiayaMarketer(kavlingKode: String, dataMode: DataMode): Flow<Long?> {
+        return feeMarketingRepository.getByKavlingKode(kavlingKode, dataMode).map { result ->
             result.getOrNull()?.biayaMarketer?.toLong()
         }
     }

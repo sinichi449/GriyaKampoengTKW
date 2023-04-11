@@ -5,18 +5,21 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.emitAll
 import kotlinx.coroutines.flow.flow
 import net.bagusekasaputra.griyakampoengtkw.data.DataUtil
+import net.bagusekasaputra.griyakampoengtkw.data.interfaces.backup.BackupFeeMarketingDataSource
 import net.bagusekasaputra.griyakampoengtkw.data.interfaces.local.LocalFeeMarketingDataSource
 import net.bagusekasaputra.griyakampoengtkw.data.interfaces.local.LocalMetadataDataSource
 import net.bagusekasaputra.griyakampoengtkw.data.interfaces.remote.RemoteFeeMarketingDataSource
 import net.bagusekasaputra.griyakampoengtkw.data.interfaces.remote.RemoteMetadataDataSource
 import net.bagusekasaputra.griyakampoengtkw.data.model.FeeMarketingModel
 import net.bagusekasaputra.griyakampoengtkw.data.model.MetadataModel
+import net.bagusekasaputra.griyakampoengtkw.domain.DataMode
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.FeeMarketing
 import net.bagusekasaputra.griyakampoengtkw.domain.repository.FeeMarketingRepository
 
 class FeeMarketingRepositoryImpl(
     private val localFeeMarketingDataSource: LocalFeeMarketingDataSource,
     private val remoteFeeMarketingDataSource: RemoteFeeMarketingDataSource,
+    private val backupFeeMarketingDataSource: BackupFeeMarketingDataSource,
     private val localMetadata: LocalMetadataDataSource,
     private val remoteMetadata: RemoteMetadataDataSource,
 ): FeeMarketingRepository {
@@ -87,7 +90,7 @@ class FeeMarketingRepositoryImpl(
 
     override fun getByKavlingKode(
         kavlingKode: String,
-        offline: Boolean
+        dataMode: DataMode,
     ): Flow<Result<FeeMarketing?>> {
         return flow {
             val flowOffline = flow {
@@ -97,7 +100,6 @@ class FeeMarketingRepositoryImpl(
                     DataUtil.mapSingleResult(localResult, ::mapFeeMarketing)
                 )
             }
-
             val flowOnline = flow<Result<FeeMarketing?>> {
                 // First, get from remote server
                 val remoteResult = remoteFeeMarketingDataSource.getByKavlingKode(kavlingKode)
@@ -128,11 +130,24 @@ class FeeMarketingRepositoryImpl(
                     emitAll(flowOffline)
                 }
             }
+            val flowDataLama = flow<Result<FeeMarketing?>> {
+                backupFeeMarketingDataSource.getFeeMarketing(kavlingKode)
+                    .onSuccess {
+                        emit(DataUtil.mapSingleResult(
+                            originResult = Result.success(it),
+                            targetMapper = ::mapFeeMarketing,
+                        ))
+                    }
+                    .onFailure {
+                        emit(Result.failure(it))
+                    }
+            }
 
-            if (offline)
-                emitAll(flowOffline)
-            else
-                emitAll(flowOnline)
+            when (dataMode) {
+                DataMode.OFFLINE -> emitAll(flowOffline)
+                DataMode.ONLINE -> emitAll(flowOnline)
+                DataMode.DATA_LAMA -> emitAll(flowDataLama)
+            }
         }
     }
 
@@ -230,24 +245,26 @@ class FeeMarketingRepositoryImpl(
         remoteMetadata.update(oldMetadata, newMetadata)
     }
 
-    private fun mapFeeMarketing(feeMarketingModel: FeeMarketingModel): FeeMarketing =
-        feeMarketingModel.let {
-            FeeMarketing(
-                kavlingKode = it.kavlingKode,
-                namaMarketer = it.namaMarketer,
-                biayaMarketer = it.biayaMarketer.toString(),
-                tanggalPenerimaan = it.getTanggalStr(),
-            )
-        }
+    companion object {
+        fun mapFeeMarketing(feeMarketingModel: FeeMarketingModel): FeeMarketing =
+            feeMarketingModel.let {
+                FeeMarketing(
+                    kavlingKode = it.kavlingKode,
+                    namaMarketer = it.namaMarketer,
+                    biayaMarketer = it.biayaMarketer.toString(),
+                    tanggalPenerimaan = it.getTanggalStr(),
+                )
+            }
 
-    private fun mapFeeMarketing(feeMarketing: FeeMarketing) =
-        feeMarketing.let {
-            FeeMarketingModel(
-                timeMillis = it.getTimemillisTanggalPenerimaan(),
-                kavlingKode = it.kavlingKode,
-                namaMarketer = it.namaMarketer,
-                biayaMarketer = it.biayaMarketer.toLong(),
-            )
-        }
+        fun mapFeeMarketing(feeMarketing: FeeMarketing) =
+            feeMarketing.let {
+                FeeMarketingModel(
+                    timeMillis = it.getTimemillisTanggalPenerimaan(),
+                    kavlingKode = it.kavlingKode,
+                    namaMarketer = it.namaMarketer,
+                    biayaMarketer = it.biayaMarketer.toLong(),
+                )
+            }
+    }
 
 }

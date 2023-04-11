@@ -14,7 +14,7 @@ class BackupCatatanPembayaranDataSourceImpl(
 
     override suspend fun getCatatanPembayaran(kavlingKode: String): Result<CatatanPembayaranModel?> {
         return try {
-            val file = File("${sharedPreferences.getString(PREFS_PATH_DATA_LAMA, "")}/${JSON_CATATAN_PEMBAYARANS}")
+            val file = File("${sharedPreferences.getString(PREFS_PATH_DATA_LAMA, "")}/${JSON_CATATAN_PEMBAYARAN}")
             val backupModels = readJson<Array<BackupCatatanPembayaranModel>>(file).filter {
                 it.kavling == kavlingKode
             }
@@ -46,7 +46,7 @@ class BackupCatatanPembayaranDataSourceImpl(
                     this.add(mapCatatanPembayaranModel(model))
                 }
             }.toTypedArray()
-            val file = File("$backupPath/$JSON_CATATAN_PEMBAYARANS")
+            val file = File("$backupPath/$JSON_CATATAN_PEMBAYARAN")
             val json = getGsonJsonString(arrBackup)
 
             writeFile(file, json)

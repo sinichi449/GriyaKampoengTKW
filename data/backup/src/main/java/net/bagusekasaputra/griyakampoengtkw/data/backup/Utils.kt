@@ -9,9 +9,10 @@ const val JSON_BLOKS = "bloks.json"
 const val JSON_KAVLINGS = "kavlings.json"
 const val JSON_PEMBAYARANS = "pembayarans.json"
 const val JSON_DATA_DIRI = "data_diri.json"
-const val JSON_HARGA_KAVLINGS = "harga_kavlings.json"
-const val JSON_CATATAN_PEMBAYARANS = "catatan_pembayarans.json"
+const val JSON_HARGA_KAVLING = "harga_kavling.json"
+const val JSON_CATATAN_PEMBAYARAN = "catatan_pembayaran.json"
 const val JSON_BIAYA_MARKETINGS = "biaya_marketings.json"
+const val JSON_FEE_MARKETING = "fee_marketing.json"
 
 fun readFile(file: File): String {
     val fileReader = FileReader(file)

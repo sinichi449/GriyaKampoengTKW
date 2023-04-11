@@ -163,10 +163,11 @@ object RepositoryModule {
     fun provideFeeMarketingRepository(
         localFeeMarketingDataSource: LocalFeeMarketingDataSource,
         remoteFeeMarketingDataSource: RemoteFeeMarketingDataSource,
+        backupFeeMarketingDataSource: BackupFeeMarketingDataSource,
         localMetadata: LocalMetadataDataSource,
         remoteMetadata: RemoteMetadataDataSource,
     ): FeeMarketingRepository {
-        return FeeMarketingRepositoryImpl(localFeeMarketingDataSource, remoteFeeMarketingDataSource, localMetadata, remoteMetadata)
+        return FeeMarketingRepositoryImpl(localFeeMarketingDataSource, remoteFeeMarketingDataSource, backupFeeMarketingDataSource, localMetadata, remoteMetadata)
     }
 
 
@@ -265,6 +266,7 @@ object RepositoryModule {
         backupHargaKavlingDataSource: BackupHargaKavlingDataSource,
         backupCatatanPembayaranDataSource: BackupCatatanPembayaranDataSource,
         backupBiayaMarketingDataSource: BackupBiayaMarketingDataSource,
+        backupFeeMarketingDataSource: BackupFeeMarketingDataSource,
     ): BackupRestoreRepository {
         return BackupRestoreRepositoryImpl(
             internalFiles,
@@ -275,6 +277,7 @@ object RepositoryModule {
             backupHargaKavlingDataSource,
             backupCatatanPembayaranDataSource,
             backupBiayaMarketingDataSource,
+            backupFeeMarketingDataSource,
         )
     }
 }

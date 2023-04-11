@@ -377,7 +377,7 @@ class DetailViewModel @Inject constructor(
      * Fee Marketing
      */
     fun getFeeMarketing(kavlingKode: String, onFailure: (cause: String) -> Unit) {
-        val request = GetFeeMarketingByKavlingKodeAsyncUseCase.Request(kavlingKode, offlineMode)
+        val request = GetFeeMarketingByKavlingKodeAsyncUseCase.Request(kavlingKode, dataMode)
 
         val gettingFeeMarketingJob = asyncHelper.doWork(
             request = request,

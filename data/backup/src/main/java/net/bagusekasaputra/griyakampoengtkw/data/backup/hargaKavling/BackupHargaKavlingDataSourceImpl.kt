@@ -14,7 +14,7 @@ class BackupHargaKavlingDataSourceImpl(
 
     override suspend fun getHargaKavling(kavlingKode: String): Result<HargaKavlingModel?> {
         return try {
-            val file = "${sharedPreferences.getString(PREFS_PATH_DATA_LAMA, "")}/$JSON_HARGA_KAVLINGS".let { filePath ->
+            val file = "${sharedPreferences.getString(PREFS_PATH_DATA_LAMA, "")}/$JSON_HARGA_KAVLING".let { filePath ->
                 File(filePath)
             }
             val backupModels = readJson<Array<BackupHargaKavlingModel>>(file).filter {
@@ -47,7 +47,7 @@ class BackupHargaKavlingDataSourceImpl(
                     this.add(mapHargaKavlingModel(it))
                 }
             }.toTypedArray()
-            val file = File("$backupPath/$JSON_HARGA_KAVLINGS")
+            val file = File("$backupPath/$JSON_HARGA_KAVLING")
             val json = getGsonJsonString(arrBackup)
 
             writeFile(file, json)
