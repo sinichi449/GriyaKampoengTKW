@@ -108,7 +108,7 @@ class DetailViewModel @Inject constructor(
     fun getDataDiri(kavlingKode: String, onFailure: (cause: String) -> Unit) {
         if (dataDiriRefreshed.value != true) {
             logEvent("Syncing data diri ...")
-            val request = GetDataDiriAsyncUseCase.Request(kavlingKode, offlineMode)
+            val request = GetDataDiriAsyncUseCase.Request(kavlingKode, dataMode)
 
             val gettingDataDiriJob = asyncHelper.doWork(
                 request = request,

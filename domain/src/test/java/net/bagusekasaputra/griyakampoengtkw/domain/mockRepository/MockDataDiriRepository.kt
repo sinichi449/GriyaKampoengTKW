@@ -2,6 +2,7 @@ package net.bagusekasaputra.griyakampoengtkw.domain.mockRepository
 
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
+import net.bagusekasaputra.griyakampoengtkw.domain.DataMode
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.DataDiri
 import net.bagusekasaputra.griyakampoengtkw.domain.repository.DataDiriRepository
 
@@ -35,7 +36,7 @@ class MockDataDiriRepository: DataDiriRepository {
         }
     }
 
-    override fun getDataDiri(kavlingKode: String, offline: Boolean): Flow<Result<DataDiri?>> {
+    override fun getDataDiri(kavlingKode: String, dataMode: DataMode): Flow<Result<DataDiri?>> {
         return flow {
             emit(Result.success(mapDataDiri[kavlingKode]))
         }

@@ -54,6 +54,7 @@ object RepositoryModule {
         localDataDiriDataSource: LocalDataDiriDataSource,
         remoteDataDiriRepository: RemoteDataDiriRepository,
         remoteKavlingDataSource: RemoteKavlingDataSource,
+        backupDataDiriDataSource: BackupDataDiriDataSource,
         localMetadata: LocalMetadataDataSource,
         remoteMetadata: RemoteMetadataDataSource,
     ): DataDiriRepository {
@@ -61,6 +62,7 @@ object RepositoryModule {
             localDataDiriDataSource,
             remoteDataDiriRepository,
             remoteKavlingDataSource,
+            backupDataDiriDataSource,
             localMetadata,
             remoteMetadata
         )

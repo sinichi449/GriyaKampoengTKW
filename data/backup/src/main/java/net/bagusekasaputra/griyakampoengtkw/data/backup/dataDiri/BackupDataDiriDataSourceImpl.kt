@@ -1,9 +1,9 @@
 package net.bagusekasaputra.griyakampoengtkw.data.backup.dataDiri
 
 import android.content.SharedPreferences
-import net.bagusekasaputra.griyakampoengtkw.data.backup.JSON_DATA_DIRI
-import net.bagusekasaputra.griyakampoengtkw.data.backup.getGsonJsonString
-import net.bagusekasaputra.griyakampoengtkw.data.backup.writeFile
+import android.util.Log
+import net.bagusekasaputra.griyakampoengtkw.data.DataUtil
+import net.bagusekasaputra.griyakampoengtkw.data.backup.*
 import net.bagusekasaputra.griyakampoengtkw.data.interfaces.backup.BackupDataDiriDataSource
 import net.bagusekasaputra.griyakampoengtkw.data.model.DataDiriModel
 import java.io.File
@@ -13,7 +13,28 @@ class BackupDataDiriDataSourceImpl(
 ): BackupDataDiriDataSource {
 
     override suspend fun getDataDiri(kavlingKode: String): Result<DataDiriModel?> {
-        TODO("Not yet implemented")
+        return try {
+            val file = File("${sharedPreferences.getString(PREFS_PATH_DATA_LAMA, "")}/$JSON_DATA_DIRI")
+            val backupModels = readJson<Array<BackupDataDiriModel>>(file).filter {
+                it.kavling == kavlingKode
+            }
+
+            backupModels.forEach {
+                val dataDiri = it.dataDiri
+                Log.d("DEBUG_ME", "Data Diri ${it.kavling} a/n ${dataDiri?.nama} deserialized!")
+            }
+
+            if (backupModels.isEmpty()) {
+                Result.success(null)
+            } else {
+                DataUtil.mapSingleResult(
+                    originResult = Result.success(backupModels[0].dataDiri),
+                    targetMapper = ::mapDataDiriModel,
+                )
+            }
+        } catch (e: Exception) {
+            return Result.failure(e)
+        }
     }
 
     override suspend fun createBackup(
@@ -21,7 +42,7 @@ class BackupDataDiriDataSourceImpl(
         listDataDiri: Map<String, DataDiriModel?>
     ): Result<Nothing?> {
         return try {
-            val listBackup = mutableListOf<BackupDataDiriModel>().apply {
+            val arrBackup = mutableListOf<BackupDataDiriModel>().apply {
                 listDataDiri.keys.forEach { kavling ->
                     this.add(
                         BackupDataDiriModel(
@@ -30,15 +51,29 @@ class BackupDataDiriDataSourceImpl(
                         )
                     )
                 }
-            }.toList()
+            }.toTypedArray()
             val file = File("$backupPath/$JSON_DATA_DIRI")
-            val json = getGsonJsonString(listBackup)
+            val json = getGsonJsonString(arrBackup)
 
             writeFile(file, json)
 
             Result.success(null)
         } catch (e: Exception) {
             Result.failure(e)
+        }
+    }
+
+    private fun mapDataDiriModel(model: BackupDataDiriModel.DataDiri): DataDiriModel {
+        return model.let {
+            DataDiriModel(
+                nama = it.nama,
+                jenisIdentitas = it.jenisIdentitas,
+                noIdentitas = it.noIdentitas,
+                negaraBekerja = it.negaraBekerja,
+                alamatKerja = it.alamatKerja,
+                alamatIndo = it.alamatIndo,
+                noHp = it.noHp,
+            )
         }
     }
 

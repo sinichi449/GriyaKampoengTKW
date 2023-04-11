@@ -5,6 +5,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.emitAll
 import kotlinx.coroutines.flow.flow
 import net.bagusekasaputra.griyakampoengtkw.data.DataUtil
+import net.bagusekasaputra.griyakampoengtkw.data.interfaces.backup.BackupDataDiriDataSource
 import net.bagusekasaputra.griyakampoengtkw.data.interfaces.local.LocalDataDiriDataSource
 import net.bagusekasaputra.griyakampoengtkw.data.interfaces.local.LocalMetadataDataSource
 import net.bagusekasaputra.griyakampoengtkw.data.interfaces.remote.RemoteDataDiriRepository
@@ -12,6 +13,7 @@ import net.bagusekasaputra.griyakampoengtkw.data.interfaces.remote.RemoteKavling
 import net.bagusekasaputra.griyakampoengtkw.data.interfaces.remote.RemoteMetadataDataSource
 import net.bagusekasaputra.griyakampoengtkw.data.model.DataDiriModel
 import net.bagusekasaputra.griyakampoengtkw.data.model.MetadataModel
+import net.bagusekasaputra.griyakampoengtkw.domain.DataMode
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.DataDiri
 import net.bagusekasaputra.griyakampoengtkw.domain.repository.DataDiriRepository
 
@@ -19,6 +21,7 @@ class DataDiriRepositoryImpl(
     private val localDataDiriDataSource: LocalDataDiriDataSource,
     private val remoteDataDiriRepository: RemoteDataDiriRepository,
     private val remoteKavlingDataSource: RemoteKavlingDataSource,
+    private val backupDataDiriDataSource: BackupDataDiriDataSource,
     private val localMetadata: LocalMetadataDataSource,
     private val remoteMetadata: RemoteMetadataDataSource,
 ): DataDiriRepository {
@@ -66,7 +69,7 @@ class DataDiriRepositoryImpl(
         }
     }
 
-    override fun getDataDiri(kavlingKode: String, offline: Boolean): Flow<Result<DataDiri?>> {
+    override fun getDataDiri(kavlingKode: String, dataMode: DataMode): Flow<Result<DataDiri?>> {
         return flow {
             val flowOffline = flow<Result<DataDiri?>> {
                 val getDataDiriFromLocal = localDataDiriDataSource.getDataDiri(kavlingKode)
@@ -76,7 +79,6 @@ class DataDiriRepositoryImpl(
                 else
                     emit(Result.failure(Throwable("Error tak diketahui")))
             }
-
             val flowOnline = flow<Result<DataDiri?>> {
                 // Get from remote
                 val getDataDiriRemote = remoteDataDiriRepository.getDataDiri(kavlingKode)
@@ -97,11 +99,24 @@ class DataDiriRepositoryImpl(
                     emitAll(flowOffline)
                 }
             }
+            val flowDataLama = flow<Result<DataDiri?>> {
+                backupDataDiriDataSource.getDataDiri(kavlingKode)
+                    .onSuccess {
+                        emit(DataUtil.mapSingleResult(
+                            originResult = Result.success(it),
+                            targetMapper = ::mapDataDiri,
+                        ))
+                    }
+                    .onFailure {
+                        emit(Result.failure(it))
+                    }
+            }
 
-            if (offline)
-                emitAll(flowOffline)
-            else
-                emitAll(flowOnline)
+            when (dataMode) {
+                DataMode.OFFLINE -> emitAll(flowOffline)
+                DataMode.ONLINE -> emitAll(flowOnline)
+                DataMode.DATA_LAMA -> emitAll(flowDataLama)
+            }
         }
     }
 
