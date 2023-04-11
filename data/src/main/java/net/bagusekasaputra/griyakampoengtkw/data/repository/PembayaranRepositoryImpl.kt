@@ -5,12 +5,14 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.emitAll
 import kotlinx.coroutines.flow.flow
 import net.bagusekasaputra.griyakampoengtkw.data.DataUtil
+import net.bagusekasaputra.griyakampoengtkw.data.interfaces.backup.BackupPembayaranDataSource
 import net.bagusekasaputra.griyakampoengtkw.data.interfaces.local.LocalMetadataDataSource
 import net.bagusekasaputra.griyakampoengtkw.data.interfaces.local.LocalPembayaranDataSource
 import net.bagusekasaputra.griyakampoengtkw.data.interfaces.remote.RemoteMetadataDataSource
 import net.bagusekasaputra.griyakampoengtkw.data.interfaces.remote.RemotePembayaranSource
 import net.bagusekasaputra.griyakampoengtkw.data.model.MetadataModel
 import net.bagusekasaputra.griyakampoengtkw.data.model.PembayaranModel
+import net.bagusekasaputra.griyakampoengtkw.domain.DataMode
 import net.bagusekasaputra.griyakampoengtkw.domain.DateUtil.toDate
 import net.bagusekasaputra.griyakampoengtkw.domain.NumberUtil
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.Pembayaran
@@ -20,6 +22,7 @@ import java.util.*
 class PembayaranRepositoryImpl(
     private val localPembayaranDataSource: LocalPembayaranDataSource,
     private val remotePembayaranSource: RemotePembayaranSource,
+    private val backupPembayaranDataSource: BackupPembayaranDataSource,
     private val localMetadata: LocalMetadataDataSource,
     private val remoteMetadata: RemoteMetadataDataSource,
 ): PembayaranRepository {
@@ -76,12 +79,12 @@ class PembayaranRepositoryImpl(
 
     override fun getAllPembayaran(
         kavlingKode: String,
-        offline: Boolean,
+        dataMode: DataMode,
     ): Flow<Result<List<Pembayaran>?>> {
         return flow {
             // TODO: Check metadata
 
-            val flowOffline = flow<Result<List<Pembayaran>?>> {
+            val flowOffline = flow {
                 val localResult = localPembayaranDataSource.getAllPembayaran(kavlingKode)
                 val mapResult = DataUtil.mapListResult(
                     originResult = localResult,
@@ -90,8 +93,7 @@ class PembayaranRepositoryImpl(
 
                 emit(mapResult)
             }
-
-            val flowOnline = flow<Result<List<Pembayaran>?>> {
+            val flowOnline = flow {
                 // First, we request to the remote
                 val remoteResult = remotePembayaranSource.getAllPembayaran(kavlingKode)
 
@@ -117,11 +119,21 @@ class PembayaranRepositoryImpl(
                     emitAll(flowOffline)
                 }
             }
+            val flowDataLama = flow {
+                val backupResult = backupPembayaranDataSource.getAllPembayaran(kavlingKode)
+                val mapResult = DataUtil.mapListResult(
+                    originResult = backupResult,
+                    targetMapper = ::mapPembayaran,
+                )
 
-            if (offline)
-                emitAll(flowOffline)
-            else
-                emitAll(flowOnline)
+                emit(mapResult)
+            }
+
+            when (dataMode) {
+                DataMode.ONLINE -> emitAll(flowOnline)
+                DataMode.OFFLINE -> emitAll(flowOffline)
+                DataMode.DATA_LAMA -> emitAll(flowDataLama)
+            }
         }
     }
 

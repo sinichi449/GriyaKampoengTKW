@@ -3,6 +3,7 @@ package net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.pembayaran
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.channels.trySendBlocking
 import kotlinx.coroutines.flow.*
+import net.bagusekasaputra.griyakampoengtkw.domain.DataMode
 import net.bagusekasaputra.griyakampoengtkw.domain.NumberUtil
 import net.bagusekasaputra.griyakampoengtkw.domain.PembayaranSorterUtil
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.AsyncUseCase
@@ -24,12 +25,15 @@ class GetAllPembayaranAsyncUseCase(
     private val fotoPembayaranRepository: FotoPembayaranRepository,
 ): AsyncUseCase<GetAllPembayaranAsyncUseCase.Request, List<Pembayaran>?>() {
 
-    data class Request(val kavlingKode: String, val offline: Boolean): AsyncUseCase.Request
+    data class Request(
+        val kavlingKode: String,
+        val dataMode: DataMode
+    ): AsyncUseCase.Request
 
 
     override fun process(request: Request): Flow<Result<List<Pembayaran>?>> {
-        return pembayaranRepository.getAllPembayaran(request.kavlingKode, request.offline)
-            .zip(getHargaKavling(request.kavlingKode, request.offline)) { resultListPembayaran, hargaKavling ->
+        return pembayaranRepository.getAllPembayaran(request.kavlingKode, request.dataMode)
+            .zip(getHargaKavling(request.kavlingKode, false)) { resultListPembayaran, hargaKavling ->
                 val listPembayaran = resultListPembayaran.getOrNull()
 
                 if (listPembayaran != null) {

@@ -19,6 +19,7 @@ import com.github.dhaval2404.imagepicker.ImagePicker
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
+import net.bagusekasaputra.griyakampoengtkw.domain.DataMode
 import net.bagusekasaputra.griyakampoengtkw.domain.NumberUtil
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.HargaKavling
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.Pembayaran
@@ -138,7 +139,8 @@ class FormPembayaranFragment : Fragment() {
         // Disable write operation interfaces on offline mode such as
         // edit HargaKavling and CatatanPembayaran, and disable Fabs.
         offlineMode = viewModel.offlineMode
-        if (offlineMode)
+        val dataMode = viewModel.dataMode
+        if (offlineMode || dataMode == DataMode.DATA_LAMA)
             onOfflineState()
 
         binding.imgEdit?.setOnClickListener {

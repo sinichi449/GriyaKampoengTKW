@@ -2,7 +2,6 @@ package net.bagusekasaputra.griyakampoengtkw.data.backup.dataDiri
 
 import android.content.SharedPreferences
 import net.bagusekasaputra.griyakampoengtkw.data.backup.JSON_DATA_DIRI
-import net.bagusekasaputra.griyakampoengtkw.data.backup.PREFS_PATH_DATA_LAMA
 import net.bagusekasaputra.griyakampoengtkw.data.backup.getGsonJsonString
 import net.bagusekasaputra.griyakampoengtkw.data.backup.writeFile
 import net.bagusekasaputra.griyakampoengtkw.data.interfaces.backup.BackupDataDiriDataSource
@@ -10,10 +9,8 @@ import net.bagusekasaputra.griyakampoengtkw.data.model.DataDiriModel
 import java.io.File
 
 class BackupDataDiriDataSourceImpl(
-    sharedPreferences: SharedPreferences
+    private val sharedPreferences: SharedPreferences
 ): BackupDataDiriDataSource {
-
-    private val file = File("${sharedPreferences.getString(PREFS_PATH_DATA_LAMA, "")}/$JSON_DATA_DIRI")
 
     override suspend fun getDataDiri(kavlingKode: String): Result<DataDiriModel?> {
         TODO("Not yet implemented")
@@ -34,7 +31,7 @@ class BackupDataDiriDataSourceImpl(
                     )
                 }
             }.toList()
-
+            val file = File("$backupPath/$JSON_DATA_DIRI")
             val json = getGsonJsonString(listBackup)
 
             writeFile(file, json)

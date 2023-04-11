@@ -12,6 +12,7 @@ import androidx.fragment.app.Fragment
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.tabs.TabLayout
 import dagger.hilt.android.AndroidEntryPoint
+import net.bagusekasaputra.griyakampoengtkw.domain.DataMode
 import net.bagusekasaputra.griyakampoengtkw.presentation.R
 import net.bagusekasaputra.griyakampoengtkw.presentation.adapter.viewpager.DetailViewPagerAdapter
 import net.bagusekasaputra.griyakampoengtkw.presentation.databinding.ActivityDetailBinding
@@ -67,12 +68,22 @@ class DetailActivity : AppCompatActivity() {
         supportActionBar?.setHomeAsUpIndicator(R.drawable.keyboard_arrow_left_36px)
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
 
-        // Connectivity Check
-        val offlineMode = sharedPrefs.getBoolean("offline_mode", false)
-        if (offlineMode)
+        // Data Lama / Data Baru Mode?
+        val pathDataLama = sharedPrefs.getString("dataLamaPath", null)
+        if (pathDataLama != null) {
+            viewModel.dataMode = DataMode.DATA_LAMA
+
             binding.connectivityStatus.constraintConnectivity.visibility = View.VISIBLE
-        // Update offline mode state in viewModel
-        viewModel.offlineMode = offlineMode
+        }
+
+
+        // DataMode check
+        val offlineMode = sharedPrefs.getBoolean("offline_mode", false)
+        if (offlineMode) {
+            viewModel.offlineMode = true
+            binding.connectivityStatus.constraintConnectivity.visibility = View.VISIBLE
+        }
+
 
         val kavlingKode = intent.getStringExtra(MainActivity.INTENT_KAVLING_KODE)
         kavlingKode?.let {

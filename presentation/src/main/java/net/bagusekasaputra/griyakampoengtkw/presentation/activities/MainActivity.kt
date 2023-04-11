@@ -75,16 +75,6 @@ class MainActivity : AppCompatActivity() {
         if (!deviceOnline) {
             Toast.makeText(this, "Device terdeteksi offline, data tidak akan tersinkronisasi!", Toast.LENGTH_LONG).show()
         }
-        val offlineMode = sharedPrefs.getBoolean("offline_mode", false)
-        if (offlineMode) {
-            binding.connectivityStatus.constraintConnectivity.visibility = View.VISIBLE
-        }
-        // Update offlineMode state in viewModel
-        viewModel.offlineMode = offlineMode
-        if (offlineMode) {
-            viewModel.dataMode = DataMode.DATA_LAMA
-        }
-
 
         // Data Lama / Data Baru Mode?
         val pathDataLama = intent?.getStringExtra("dataLamaPath")
@@ -94,6 +84,16 @@ class MainActivity : AppCompatActivity() {
             sharedPrefs.edit(true) {
                 putString("dataLamaPath", pathDataLama)
             }
+
+            binding.connectivityStatus.constraintConnectivity.visibility = View.VISIBLE
+        }
+
+        val offlineMode = sharedPrefs.getBoolean("offline_mode", false)
+        if (offlineMode) {
+            viewModel.offlineMode = true
+            viewModel.dataMode = DataMode.OFFLINE
+
+            binding.connectivityStatus.constraintConnectivity.visibility = View.VISIBLE
         }
 
         // For setup the fabs

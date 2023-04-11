@@ -1,6 +1,7 @@
 package net.bagusekasaputra.griyakampoengtkw
 
 import android.content.Intent
+import android.content.SharedPreferences
 import android.os.Bundle
 import android.os.Handler
 import android.view.View
@@ -8,6 +9,7 @@ import android.view.WindowManager
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.core.content.ContextCompat
+import androidx.core.content.edit
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ktx.getValue
 import dagger.hilt.android.AndroidEntryPoint
@@ -25,12 +27,15 @@ import net.bagusekasaputra.griyakampoengtkw.presentation.util.GriyaNodes
 import java.io.IOException
 import java.net.InetSocketAddress
 import java.net.Socket
+import javax.inject.Inject
 
 @AndroidEntryPoint
 class SplashActivity : AppCompatActivity() {
 
     private lateinit var bindingPure: ActivitySplashPureBinding
     private lateinit var bindingLoading: ActivitySplashWithLoadingBinding
+    @Inject
+    lateinit var sharedPreferences: SharedPreferences
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -139,6 +144,11 @@ class SplashActivity : AppCompatActivity() {
             goToDocumentLamaActivity()
         }
         bindingLoading.layoutPilihData.btnDataBaru.setOnClickListener {
+            // Nullify the sharedPreference Data Lama to prevent MainActivity/DetailActivity
+            // to DataLama mode
+            sharedPreferences.edit(true) {
+                putString("dataLamaPath", null)
+            }
             goToMainActivity(isOnline, true)
         }
     }

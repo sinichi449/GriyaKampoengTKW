@@ -5,6 +5,7 @@ import androidx.lifecycle.ViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.*
 import net.bagusekasaputra.griyakampoengtkw.domain.AsyncUseCaseHelper
+import net.bagusekasaputra.griyakampoengtkw.domain.DataMode
 import net.bagusekasaputra.griyakampoengtkw.domain.NumberUtil
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.biayaMarketing.GetAllBiayaMarketingByKavlingKodeAsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.catatanPembayaran.GetCatatanPembayaranAsyncUseCase
@@ -92,6 +93,7 @@ class DetailViewModel @Inject constructor(
 
     // Need to be put on UseCase argument
     var offlineMode = false
+    var dataMode = DataMode.ONLINE
 
     private val asyncHelper = AsyncUseCaseHelper(isFinishOperation)
 
@@ -233,7 +235,7 @@ class DetailViewModel @Inject constructor(
     fun getAllPembayaran(kavlingKode: String, onFailure: (cause: String) -> Unit) {
         if (formPembayaranRefreshed.value != true) {
             logEvent("Syncing pembayaran ...")
-            val request = GetAllPembayaranAsyncUseCase.Request(kavlingKode, offlineMode)
+            val request = GetAllPembayaranAsyncUseCase.Request(kavlingKode, dataMode)
 
             val gettingAllPembayaranJob = asyncHelper.doWork(
                 request = request,

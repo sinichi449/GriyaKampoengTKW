@@ -16,8 +16,7 @@ class BackupBlokDataSourceImpl(
 ): BackupBlokDataSource {
 
     override suspend fun getAllBlocks(): Result<List<BlockModel>?> {
-        val dataLamaPath = "${sharedPreferences.getString(PREFS_PATH_DATA_LAMA, "")}/$JSON_BLOKS"
-        val file = File(dataLamaPath)
+        val file = File("${sharedPreferences.getString(PREFS_PATH_DATA_LAMA, "")}/$JSON_BLOKS")
 
         val bloksArray = readJson<Array<BackupBlokModel>>(file)
 

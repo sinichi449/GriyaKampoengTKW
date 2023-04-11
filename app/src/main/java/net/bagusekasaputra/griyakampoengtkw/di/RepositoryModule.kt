@@ -74,10 +74,17 @@ object RepositoryModule {
     fun providePembayaranRepository(
         localPembayaranDataSource: LocalPembayaranDataSource,
         remotePembayaranSource: RemotePembayaranSource,
+        backupPembayaranDataSource: BackupPembayaranDataSource,
         localMetadata: LocalMetadataDataSource,
         remoteMetadata: RemoteMetadataDataSource,
     ): PembayaranRepository {
-        return PembayaranRepositoryImpl(localPembayaranDataSource, remotePembayaranSource, localMetadata, remoteMetadata)
+        return PembayaranRepositoryImpl(
+            localPembayaranDataSource,
+            remotePembayaranSource,
+            backupPembayaranDataSource,
+            localMetadata,
+            remoteMetadata
+        )
     }
 
 

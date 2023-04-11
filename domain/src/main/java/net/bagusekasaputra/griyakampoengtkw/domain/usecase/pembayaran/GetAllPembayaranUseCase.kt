@@ -4,6 +4,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.channels.trySendBlocking
 import kotlinx.coroutines.flow.*
+import net.bagusekasaputra.griyakampoengtkw.domain.DataMode
 import net.bagusekasaputra.griyakampoengtkw.domain.NumberUtil
 import net.bagusekasaputra.griyakampoengtkw.domain.PembayaranSorterUtil
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.HargaKavling
@@ -31,7 +32,7 @@ class GetAllPembayaranUseCase(
     data class Response(val result: Result<List<Pembayaran>?>): UseCase.Response
 
     override fun process(request: Request): Flow<Response> {
-        return pembayaranRepository.getAllPembayaran(request.kavlingKode, false)
+        return pembayaranRepository.getAllPembayaran(request.kavlingKode, DataMode.OFFLINE)
             .zip(getHargaKavling(request.kavlingKode)) { resultListPembayaran, hargaKavling ->
                 val listPembayaran = resultListPembayaran.getOrNull()
 

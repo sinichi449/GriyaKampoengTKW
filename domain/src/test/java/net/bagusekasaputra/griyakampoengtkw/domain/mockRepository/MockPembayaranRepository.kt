@@ -2,6 +2,7 @@ package net.bagusekasaputra.griyakampoengtkw.domain.mockRepository
 
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
+import net.bagusekasaputra.griyakampoengtkw.domain.DataMode
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.Pembayaran
 import net.bagusekasaputra.griyakampoengtkw.domain.repository.PembayaranRepository
 
@@ -74,7 +75,7 @@ class MockPembayaranRepository: PembayaranRepository {
 
     override fun getAllPembayaran(
         kavlingKode: String,
-        offline: Boolean,
+        dataMode: DataMode,
     ): Flow<Result<List<Pembayaran>?>> {
         return flow {
             emit(Result.success(mapPembayaran[kavlingKode]))

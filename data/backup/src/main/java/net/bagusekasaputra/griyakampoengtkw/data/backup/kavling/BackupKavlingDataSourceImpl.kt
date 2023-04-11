@@ -13,15 +13,14 @@ import net.bagusekasaputra.griyakampoengtkw.data.model.KavlingModel
 import java.io.File
 
 class BackupKavlingDataSourceImpl(
-    sharedPreferences: SharedPreferences
+    private val sharedPreferences: SharedPreferences
 ): BackupKavlingDataSource {
-
-    private val file = "${sharedPreferences.getString(PREFS_PATH_DATA_LAMA, "")}/$JSON_KAVLINGS".let { filePath ->
-        File(filePath)
-    }
 
     override suspend fun getKavlingByBlockKode(blockKode: String): Result<List<KavlingModel>?> {
         try {
+            val file = "${sharedPreferences.getString(PREFS_PATH_DATA_LAMA, "")}/$JSON_KAVLINGS".let { filePath ->
+                File(filePath)
+            }
             val backupModels = readJson<Array<BackupKavlingModel>>(file).filter {
                 it.blok == blockKode
             }
