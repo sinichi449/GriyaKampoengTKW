@@ -74,6 +74,7 @@ class DetailActivity : AppCompatActivity() {
             viewModel.dataMode = DataMode.DATA_LAMA
 
             binding.connectivityStatus.constraintConnectivity.visibility = View.VISIBLE
+            binding.connectivityStatus.tvStatus.text = "Mode Data Lama"
         }
 
 

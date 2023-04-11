@@ -86,6 +86,7 @@ class MainActivity : AppCompatActivity() {
             }
 
             binding.connectivityStatus.constraintConnectivity.visibility = View.VISIBLE
+            binding.connectivityStatus.tvStatus.text = "Mode Data Lama"
         }
 
         val offlineMode = sharedPrefs.getBoolean("offline_mode", false)
