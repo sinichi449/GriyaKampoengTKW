@@ -8,12 +8,14 @@ import kotlinx.coroutines.flow.callbackFlow
 import kotlinx.coroutines.flow.emitAll
 import kotlinx.coroutines.flow.flow
 import net.bagusekasaputra.griyakampoengtkw.data.DataUtil
+import net.bagusekasaputra.griyakampoengtkw.data.interfaces.backup.BackupHargaKavlingDataSource
 import net.bagusekasaputra.griyakampoengtkw.data.interfaces.local.LocalHargaKavlingDataSource
 import net.bagusekasaputra.griyakampoengtkw.data.interfaces.local.LocalMetadataDataSource
 import net.bagusekasaputra.griyakampoengtkw.data.interfaces.remote.RemoteHargaKavlingSource
 import net.bagusekasaputra.griyakampoengtkw.data.interfaces.remote.RemoteMetadataDataSource
 import net.bagusekasaputra.griyakampoengtkw.data.model.HargaKavlingModel
 import net.bagusekasaputra.griyakampoengtkw.data.model.MetadataModel
+import net.bagusekasaputra.griyakampoengtkw.domain.DataMode
 import net.bagusekasaputra.griyakampoengtkw.domain.NumberUtil
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.HargaKavling
 import net.bagusekasaputra.griyakampoengtkw.domain.repository.HargaKavlingRepository
@@ -21,6 +23,7 @@ import net.bagusekasaputra.griyakampoengtkw.domain.repository.HargaKavlingReposi
 class HargaKavlingRepositoryImpl(
     private val localHargaKavlingDataSource: LocalHargaKavlingDataSource,
     private val remoteHargaKavlingSource: RemoteHargaKavlingSource,
+    private val backupHargaKavlingDataSource: BackupHargaKavlingDataSource,
     private val localMetadata: LocalMetadataDataSource,
     private val remoteMetadata: RemoteMetadataDataSource,
 ): HargaKavlingRepository {
@@ -70,7 +73,7 @@ class HargaKavlingRepositoryImpl(
 
     override fun getHargaKavling(
         kavlingKode: String,
-        offline: Boolean
+        dataMode: DataMode
     ): Flow<Result<HargaKavling?>> {
         return flow {
             // TODO: Check metadata
@@ -82,7 +85,6 @@ class HargaKavlingRepositoryImpl(
                     DataUtil.mapSingleResult(localResult, ::mapHargaKavling)
                 )
             }
-
             val flowOnline = flow<Result<HargaKavling?>> {
                 // First get from remote
                 val remoteResult = remoteHargaKavlingSource.getHargaKavlingModel(kavlingKode)
@@ -110,11 +112,24 @@ class HargaKavlingRepositoryImpl(
                     emitAll(flowOffline)
                 }
             }
+            val flowDataLama = flow<Result<HargaKavling?>> {
+                backupHargaKavlingDataSource.getHargaKavling(kavlingKode)
+                    .onSuccess {
+                        emit(DataUtil.mapSingleResult(
+                            originResult = Result.success(it),
+                            targetMapper = ::mapHargaKavling,
+                        ))
+                    }
+                    .onFailure {
+                        emit(Result.failure(it))
+                    }
+            }
 
-            if (offline)
-                emitAll(flowOffline)
-            else
-                emitAll(flowOnline)
+            when (dataMode) {
+                DataMode.OFFLINE -> emitAll(flowOffline)
+                DataMode.ONLINE -> emitAll(flowOnline)
+                DataMode.DATA_LAMA -> emitAll(flowDataLama)
+            }
         }
     }
 
@@ -194,23 +209,25 @@ class HargaKavlingRepositoryImpl(
         remoteMetadata.update(oldMetadata, newMetadata)
     }
 
-    private fun mapHargaKavling(hargaKavling: HargaKavling): HargaKavlingModel {
-        return hargaKavling.let {
-            HargaKavlingModel(
-                kavlingKode = it.kavlingKode,
-                harga = NumberUtil.formatStringToLong(it.harga),
-                tambahLuasan = NumberUtil.formatStringToLong(it.tambahanLuas),
-            )
+    companion object {
+        fun mapHargaKavling(hargaKavling: HargaKavling): HargaKavlingModel {
+            return hargaKavling.let {
+                HargaKavlingModel(
+                    kavlingKode = it.kavlingKode,
+                    harga = NumberUtil.formatStringToLong(it.harga),
+                    tambahLuasan = NumberUtil.formatStringToLong(it.tambahanLuas),
+                )
+            }
         }
-    }
 
-    private fun mapHargaKavling(hargaKavlingModel: HargaKavlingModel): HargaKavling {
-        return hargaKavlingModel.let {
-            HargaKavling(
-                kavlingKode = it.kavlingKode,
-                harga = NumberUtil.formatLongToString(it.harga),
-                tambahanLuas = NumberUtil.formatLongToString(it.tambahLuasan),
-            )
+        fun mapHargaKavling(hargaKavlingModel: HargaKavlingModel): HargaKavling {
+            return hargaKavlingModel.let {
+                HargaKavling(
+                    kavlingKode = it.kavlingKode,
+                    harga = NumberUtil.formatLongToString(it.harga),
+                    tambahanLuas = NumberUtil.formatLongToString(it.tambahLuasan),
+                )
+            }
         }
     }
 

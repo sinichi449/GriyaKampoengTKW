@@ -434,6 +434,7 @@ object UseCaseModule {
         kavlingRepository: KavlingRepository,
         pembayaranRepository: PembayaranRepository,
         dataDiriRepository: DataDiriRepository,
+        hargaKavlingRepository: HargaKavlingRepository,
         backupRestoreRepository: BackupRestoreRepository,
     ): CreateBackupAsyncUseCase {
         return CreateBackupAsyncUseCase(
@@ -441,6 +442,7 @@ object UseCaseModule {
             kavlingRepository,
             pembayaranRepository,
             dataDiriRepository,
+            hargaKavlingRepository,
             backupRestoreRepository,
         )
     }

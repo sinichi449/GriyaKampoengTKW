@@ -7,6 +7,7 @@ import kotlinx.coroutines.flow.callbackFlow
 import kotlinx.coroutines.flow.first
 import net.bagusekasaputra.griyakampoengtkw.domain.DataMode
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.BackupRestoreEntity
+import net.bagusekasaputra.griyakampoengtkw.domain.entity.HargaKavling
 import net.bagusekasaputra.griyakampoengtkw.domain.repository.*
 
 class CreateBackupAsyncUseCase(
@@ -14,6 +15,7 @@ class CreateBackupAsyncUseCase(
     private val kavlingRepository: KavlingRepository,
     private val pembayaranRepository: PembayaranRepository,
     private val dataDiriRepository: DataDiriRepository,
+    private val hargaKavlingRepository: HargaKavlingRepository,
     private val backupRestoreRepository: BackupRestoreRepository,
 ): AsyncUseCase<CreateBackupAsyncUseCase.Request, CreateBackupAsyncUseCase.Progress>() {
 
@@ -56,14 +58,31 @@ class CreateBackupAsyncUseCase(
             val listDataDiri = dataDiriRepository.getBatch(listKavling = listKodeKavlings)
                 .first().getOrThrow() ?: HashMap()
 
+            trySendBlocking(Result.success(Progress(35, "Mendownload Harga Kavling")))
+            val listHargaKavling = (hargaKavlingRepository.getBatch(listKavling = listKodeKavlings)
+                .first().getOrThrow() ?: HashMap()).run {
+                // Convert this into List<HargaKavling> first
+                val newList = mutableListOf<HargaKavling>()
+
+                this.keys.forEach { kavling ->
+                    val hargaKavling = this[kavling]
+                    if (hargaKavling != null) {
+                        newList.add(hargaKavling)
+                    }
+                }
+
+                newList
+            }
+
 
 
             val backupRestoreEntity = BackupRestoreEntity(
-                backupName = request.backupName,
-                listBlok = listBlok,
-                listKavling = listKavlings,
-                listPembayaran = listPembayaran,
-                listDataDiri = listDataDiri,
+                request.backupName,
+                listBlok,
+                listKavlings,
+                listPembayaran,
+                listDataDiri,
+                listHargaKavling,
             )
 
             backupRestoreRepository.createBackup(backupRestoreEntity)

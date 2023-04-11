@@ -183,7 +183,7 @@ class DetailViewModel @Inject constructor(
      * Harga Kavling
      */
     fun getHargaKavling(kavlingKode: String, onFailure: (cause: String) -> Unit) {
-        val request = GetHargaKavlingAsyncUseCase.Request(kavlingKode, offlineMode)
+        val request = GetHargaKavlingAsyncUseCase.Request(kavlingKode, dataMode)
 
         val gettingHargaKavlingJob = asyncHelper.doWork(
             request = request,

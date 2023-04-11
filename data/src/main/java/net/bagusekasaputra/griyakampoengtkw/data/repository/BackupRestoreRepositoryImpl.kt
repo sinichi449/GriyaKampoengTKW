@@ -4,11 +4,9 @@ import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.channels.trySendBlocking
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
-import net.bagusekasaputra.griyakampoengtkw.data.interfaces.backup.BackupBlokDataSource
-import net.bagusekasaputra.griyakampoengtkw.data.interfaces.backup.BackupDataDiriDataSource
-import net.bagusekasaputra.griyakampoengtkw.data.interfaces.backup.BackupKavlingDataSource
-import net.bagusekasaputra.griyakampoengtkw.data.interfaces.backup.BackupPembayaranDataSource
+import net.bagusekasaputra.griyakampoengtkw.data.interfaces.backup.*
 import net.bagusekasaputra.griyakampoengtkw.data.model.DataDiriModel
+import net.bagusekasaputra.griyakampoengtkw.data.model.HargaKavlingModel
 import net.bagusekasaputra.griyakampoengtkw.data.model.KavlingModel
 import net.bagusekasaputra.griyakampoengtkw.data.model.PembayaranModel
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.BackupRestoreEntity
@@ -21,6 +19,7 @@ class BackupRestoreRepositoryImpl(
     private val backupKavlingDataSource: BackupKavlingDataSource,
     private val backupPembayaranDataSource: BackupPembayaranDataSource,
     private val backupDataDiriDataSource: BackupDataDiriDataSource,
+    private val backupHargaKavlingDataSource: BackupHargaKavlingDataSource,
 ): BackupRestoreRepository {
 
     override fun createBackup(backupRestoreEntity: BackupRestoreEntity): Flow<Result<Nothing?>> {
@@ -69,6 +68,16 @@ class BackupRestoreRepositoryImpl(
 
                     newMap
                 }
+                val listHargaKavling = backupRestoreEntity.listHargaKavling.run {
+                    val newList = mutableListOf<HargaKavlingModel>()
+
+                    this.forEach {
+                        val model = HargaKavlingRepositoryImpl.mapHargaKavling(it)
+                        newList.add(model)
+                    }
+
+                    newList.toList()
+                }
 
 
                 backupBlokDataSource.createBackup(backupPath.absolutePath, listBlok).onFailure {
@@ -81,6 +90,9 @@ class BackupRestoreRepositoryImpl(
                     trySendBlocking(Result.failure(it))
                 }
                 backupDataDiriDataSource.createBackup(backupPath.absolutePath, listDataDiri).onFailure {
+                    trySendBlocking(Result.failure(it))
+                }
+                backupHargaKavlingDataSource.createBackup(backupPath.absolutePath, listHargaKavling).onFailure {
                     trySendBlocking(Result.failure(it))
                 }
 

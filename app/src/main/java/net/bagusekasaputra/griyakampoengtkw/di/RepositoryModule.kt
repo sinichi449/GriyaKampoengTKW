@@ -5,10 +5,7 @@ import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
-import net.bagusekasaputra.griyakampoengtkw.data.interfaces.backup.BackupBlokDataSource
-import net.bagusekasaputra.griyakampoengtkw.data.interfaces.backup.BackupDataDiriDataSource
-import net.bagusekasaputra.griyakampoengtkw.data.interfaces.backup.BackupKavlingDataSource
-import net.bagusekasaputra.griyakampoengtkw.data.interfaces.backup.BackupPembayaranDataSource
+import net.bagusekasaputra.griyakampoengtkw.data.interfaces.backup.*
 import net.bagusekasaputra.griyakampoengtkw.data.interfaces.local.*
 import net.bagusekasaputra.griyakampoengtkw.data.interfaces.remote.*
 import net.bagusekasaputra.griyakampoengtkw.data.repository.*
@@ -97,10 +94,17 @@ object RepositoryModule {
     fun provideHargaKavlingRepository(
         localHargaKavlingDataSource: LocalHargaKavlingDataSource,
         remoteHargaKavlingSource: RemoteHargaKavlingSource,
+        backupHargaKavlingDataSource: BackupHargaKavlingDataSource,
         localMetadata: LocalMetadataDataSource,
         remoteMetadata: RemoteMetadataDataSource,
     ): HargaKavlingRepository {
-        return HargaKavlingRepositoryImpl(localHargaKavlingDataSource, remoteHargaKavlingSource, localMetadata, remoteMetadata)
+        return HargaKavlingRepositoryImpl(
+            localHargaKavlingDataSource,
+            remoteHargaKavlingSource,
+            backupHargaKavlingDataSource,
+            localMetadata,
+            remoteMetadata
+        )
     }
 
 
@@ -256,6 +260,7 @@ object RepositoryModule {
         backupKavlingDataSource: BackupKavlingDataSource,
         backupPembayaranDataSource: BackupPembayaranDataSource,
         backupDataDiriDataSource: BackupDataDiriDataSource,
+        backupHargaKavlingDataSource: BackupHargaKavlingDataSource,
     ): BackupRestoreRepository {
         return BackupRestoreRepositoryImpl(
             internalFiles,
@@ -263,6 +268,7 @@ object RepositoryModule {
             backupKavlingDataSource,
             backupPembayaranDataSource,
             backupDataDiriDataSource,
+            backupHargaKavlingDataSource,
         )
     }
 }
