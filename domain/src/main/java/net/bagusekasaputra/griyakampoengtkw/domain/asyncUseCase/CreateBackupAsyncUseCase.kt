@@ -7,6 +7,7 @@ import kotlinx.coroutines.flow.callbackFlow
 import kotlinx.coroutines.flow.first
 import net.bagusekasaputra.griyakampoengtkw.domain.DataMode
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.BackupRestoreEntity
+import net.bagusekasaputra.griyakampoengtkw.domain.entity.BiayaMarketing
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.HargaKavling
 import net.bagusekasaputra.griyakampoengtkw.domain.repository.*
 
@@ -17,6 +18,7 @@ class CreateBackupAsyncUseCase(
     private val dataDiriRepository: DataDiriRepository,
     private val hargaKavlingRepository: HargaKavlingRepository,
     private val catatanPembayaranRepository: CatatanPembayaranRepository,
+    private val biayaMarketingRepository: BiayaMarketingRepository,
     private val backupRestoreRepository: BackupRestoreRepository,
 ): AsyncUseCase<CreateBackupAsyncUseCase.Request, CreateBackupAsyncUseCase.Progress>() {
 
@@ -79,6 +81,20 @@ class CreateBackupAsyncUseCase(
             val listCatatanPembayaran = catatanPembayaranRepository.getBatch(listKavling = listKodeKavlings)
                 .first().getOrThrow() ?: emptyList()
 
+            trySendBlocking(Result.success(Progress(49, "Mendownload Biaya Marketing")))
+            val listBiayaMarketing = (biayaMarketingRepository.getBatchOnline(listKavling = listKodeKavlings)
+                .first().getOrThrow() ?: HashMap()).run {
+                val newList = mutableListOf<BiayaMarketing>()
+
+                this.keys.forEach {  kavling ->
+                    this[kavling]?.forEach { biayaMarketing ->
+                        newList.add(biayaMarketing)
+                    }
+                }
+
+                newList.toList()
+            }
+
 
             val backupRestoreEntity = BackupRestoreEntity(
                 request.backupName,
@@ -88,6 +104,7 @@ class CreateBackupAsyncUseCase(
                 listDataDiri,
                 listHargaKavling,
                 listCatatanPembayaran,
+                listBiayaMarketing,
             )
 
             backupRestoreRepository.createBackup(backupRestoreEntity)

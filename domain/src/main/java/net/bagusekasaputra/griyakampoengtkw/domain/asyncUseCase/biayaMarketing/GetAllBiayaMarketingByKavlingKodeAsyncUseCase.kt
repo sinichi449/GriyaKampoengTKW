@@ -3,6 +3,7 @@ package net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.biayaMarketing
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.zip
+import net.bagusekasaputra.griyakampoengtkw.domain.DataMode
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.AsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.BiayaMarketing
 import net.bagusekasaputra.griyakampoengtkw.domain.repository.BiayaMarketingRepository
@@ -13,11 +14,11 @@ class GetAllBiayaMarketingByKavlingKodeAsyncUseCase(
     private val feeMarketingRepository: FeeMarketingRepository,
 ): AsyncUseCase<GetAllBiayaMarketingByKavlingKodeAsyncUseCase.Request, List<BiayaMarketing>?>() {
 
-    data class Request(val kavlingKode: String, val offline: Boolean): AsyncUseCase.Request
+    data class Request(val kavlingKode: String, val dataMode: DataMode): AsyncUseCase.Request
 
     override fun process(request: Request): Flow<Result<List<BiayaMarketing>?>> {
-        return biayaMarketingRepository.getAllByKavlingKode(request.kavlingKode, request.offline)
-            .zip(getBiayaMarketer(request.kavlingKode, request.offline)) { resultBiayaMarketing, biayaMarketer ->
+        return biayaMarketingRepository.getAllByKavlingKode(request.kavlingKode, request.dataMode)
+            .zip(getBiayaMarketer(request.kavlingKode, false)) { resultBiayaMarketing, biayaMarketer ->
                 val listBiayaMarketing = resultBiayaMarketing.getOrNull()
 
                 if (listBiayaMarketing != null) {

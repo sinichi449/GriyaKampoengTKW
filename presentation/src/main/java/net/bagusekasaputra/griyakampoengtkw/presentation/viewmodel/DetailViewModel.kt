@@ -523,7 +523,7 @@ class DetailViewModel @Inject constructor(
         if (biayaMarketingRefreshed.value != true) {
             logEvent("Syncing biaya marketing ...")
             val request =
-                GetAllBiayaMarketingByKavlingKodeAsyncUseCase.Request(kavlingKode, offlineMode)
+                GetAllBiayaMarketingByKavlingKodeAsyncUseCase.Request(kavlingKode, dataMode)
 
             val gettingAllBiayaMarketingJob = asyncHelper.doWork(
                 request = request,

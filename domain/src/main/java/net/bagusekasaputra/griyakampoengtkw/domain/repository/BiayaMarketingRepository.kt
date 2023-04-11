@@ -1,6 +1,7 @@
 package net.bagusekasaputra.griyakampoengtkw.domain.repository
 
 import kotlinx.coroutines.flow.Flow
+import net.bagusekasaputra.griyakampoengtkw.domain.DataMode
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.BiayaMarketing
 
 interface BiayaMarketingRepository {
@@ -9,7 +10,7 @@ interface BiayaMarketingRepository {
 
     fun getBatchOffline(listKavling: List<String>): Flow<Result<Map<String, List<BiayaMarketing>>?>>
 
-    fun getAllByKavlingKode(kavlingKode: String, offline: Boolean): Flow<Result<List<BiayaMarketing>?>>
+    fun getAllByKavlingKode(kavlingKode: String, dataMode: DataMode): Flow<Result<List<BiayaMarketing>?>>
 
     // I need to get a strictly from online/remote data source because the normal get method
     // will return the data from local if an error occurred.

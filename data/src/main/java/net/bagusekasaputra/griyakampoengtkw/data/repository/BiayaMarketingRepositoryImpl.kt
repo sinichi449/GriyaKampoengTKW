@@ -5,12 +5,14 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.emitAll
 import kotlinx.coroutines.flow.flow
 import net.bagusekasaputra.griyakampoengtkw.data.DataUtil
+import net.bagusekasaputra.griyakampoengtkw.data.interfaces.backup.BackupBiayaMarketingDataSource
 import net.bagusekasaputra.griyakampoengtkw.data.interfaces.local.LocalBiayaMarketingDataSource
 import net.bagusekasaputra.griyakampoengtkw.data.interfaces.local.LocalMetadataDataSource
 import net.bagusekasaputra.griyakampoengtkw.data.interfaces.remote.RemoteBiayaMarketingDataSource
 import net.bagusekasaputra.griyakampoengtkw.data.interfaces.remote.RemoteMetadataDataSource
 import net.bagusekasaputra.griyakampoengtkw.data.model.BiayaMarketingModel
 import net.bagusekasaputra.griyakampoengtkw.data.model.MetadataModel
+import net.bagusekasaputra.griyakampoengtkw.domain.DataMode
 import net.bagusekasaputra.griyakampoengtkw.domain.NumberUtil
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.BiayaMarketing
 import net.bagusekasaputra.griyakampoengtkw.domain.repository.BiayaMarketingRepository
@@ -18,6 +20,7 @@ import net.bagusekasaputra.griyakampoengtkw.domain.repository.BiayaMarketingRepo
 class BiayaMarketingRepositoryImpl(
     private val localBiayaMarketingDataSource: LocalBiayaMarketingDataSource,
     private val remoteBiayaMarketingDataSource: RemoteBiayaMarketingDataSource,
+    private val backupBiayaMarketingDataSource: BackupBiayaMarketingDataSource,
     private val localMetadata: LocalMetadataDataSource,
     private val remoteMetadata: RemoteMetadataDataSource,
 ): BiayaMarketingRepository {
@@ -101,7 +104,7 @@ class BiayaMarketingRepositoryImpl(
 
     override fun getAllByKavlingKode(
         kavlingKode: String,
-        offline: Boolean
+        dataMode: DataMode,
     ): Flow<Result<List<BiayaMarketing>?>> {
         return flow {
             val flowOffline = flow<Result<List<BiayaMarketing>?>> {
@@ -139,7 +142,6 @@ class BiayaMarketingRepositoryImpl(
                     emit(Result.failure(it))
                 }
             }
-
             val flowOnline = flow<Result<List<BiayaMarketing>?>> {
                 val remoteResult = remoteBiayaMarketingDataSource.getAllBiayaMarketing(kavlingKode)
 
@@ -161,11 +163,24 @@ class BiayaMarketingRepositoryImpl(
                     emitAll(flowOffline)
                 }
             }
+            val flowDataLama = flow<Result<List<BiayaMarketing>>> {
+                backupBiayaMarketingDataSource.getAllBiayaMarketing(kavlingKode)
+                    .onSuccess {
+                        emit(DataUtil.mapListResult(
+                            originResult = Result.success(it),
+                            targetMapper = ::mapBiayaMarketing,
+                        ))
+                    }
+                    .onFailure {
+                        emit(Result.failure(it))
+                    }
+            }
 
-            if (offline)
-                emitAll(flowOffline)
-            else
-                emitAll(flowOnline)
+            when (dataMode) {
+                DataMode.OFFLINE -> emitAll(flowOffline)
+                DataMode.ONLINE -> emitAll(flowOnline)
+                DataMode.DATA_LAMA -> emitAll(flowDataLama)
+            }
         }
     }
 
@@ -278,27 +293,28 @@ class BiayaMarketingRepositoryImpl(
         remoteMetadata.update(oldMetadata, newMetadata)
     }
 
-    private fun mapBiayaMarketing(biayaMarketing: BiayaMarketing): BiayaMarketingModel {
-        return biayaMarketing.let {
-            BiayaMarketingModel(
-                tanggal = it.tanggal,
-                kavlingKode = it.kavlingKode,
-                jenisBiaya = it.jenisBiaya,
-                harga = NumberUtil.formatStringToLong(it.harga), // from UI layer, the harga is formatted into comma separated
-            )
+    companion object {
+        fun mapBiayaMarketing(biayaMarketing: BiayaMarketing): BiayaMarketingModel {
+            return biayaMarketing.let {
+                BiayaMarketingModel(
+                    tanggal = it.tanggal,
+                    kavlingKode = it.kavlingKode,
+                    jenisBiaya = it.jenisBiaya,
+                    harga = NumberUtil.formatStringToLong(it.harga), // from UI layer, the harga is formatted into comma separated
+                )
+            }
+        }
+
+        fun mapBiayaMarketing(biayaMarketingModel: BiayaMarketingModel): BiayaMarketing {
+            return biayaMarketingModel.let {
+                BiayaMarketing(
+                    kavlingKode = it.kavlingKode,
+                    tanggal = it.tanggal,
+                    jenisBiaya = it.jenisBiaya,
+                    harga = it.harga.toString(),
+                )
+            }
         }
     }
-
-    private fun mapBiayaMarketing(biayaMarketingModel: BiayaMarketingModel): BiayaMarketing {
-        return biayaMarketingModel.let {
-            BiayaMarketing(
-                kavlingKode = it.kavlingKode,
-                tanggal = it.tanggal,
-                jenisBiaya = it.jenisBiaya,
-                harga = it.harga.toString(),
-            )
-        }
-    }
-
 
 }
