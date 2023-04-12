@@ -10,4 +10,14 @@ data class PembayaranModel(
 ) {
     fun getFullTermin()
         = "$termin $urutan"
+
+    companion object {
+        fun pisahkanTerminDanUrutan(termin: String): Map<String, String> {
+            val terminDanUrutan = termin.split(" ")
+            return mapOf<String, String>(
+                Pair("jenis", terminDanUrutan[0]),
+                Pair("urutan", terminDanUrutan[1]),
+            )
+        }
+    }
 }

@@ -5,10 +5,10 @@ import kotlinx.coroutines.flow.emitAll
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flow
 import net.bagusekasaputra.griyakampoengtkw.data.DataUtil
+import net.bagusekasaputra.griyakampoengtkw.data.MyObjectMapper.mapKavling
 import net.bagusekasaputra.griyakampoengtkw.data.interfaces.backup.BackupKavlingDataSource
 import net.bagusekasaputra.griyakampoengtkw.data.interfaces.local.LocalKavlingDataSource
 import net.bagusekasaputra.griyakampoengtkw.data.interfaces.remote.RemoteKavlingDataSource
-import net.bagusekasaputra.griyakampoengtkw.data.model.KavlingModel
 import net.bagusekasaputra.griyakampoengtkw.domain.DataMode
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.Kavling
 import net.bagusekasaputra.griyakampoengtkw.domain.repository.KavlingRepository
@@ -139,28 +139,6 @@ class KavlingRepositoryImpl(
             val remoteResult = remoteKavlingDataSource.deleteKavling(blockCode, kavlingKode)
 
             emit(remoteResult)
-        }
-    }
-
-    companion object {
-        fun mapKavling(kavlingModel: KavlingModel): Kavling {
-            return Kavling(
-                kavlingModel.kode,
-                kavlingModel.active,
-                kavlingModel.warna,
-                kavlingModel.ukuran,
-                kavlingModel.type
-            )
-        }
-
-        fun mapKavling(kavling: Kavling): KavlingModel {
-            return KavlingModel(
-                kavling.kode,
-                kavling.warna,
-                kavling.belumIsi,
-                kavling.ukuran,
-                kavling.type
-            )
         }
     }
 

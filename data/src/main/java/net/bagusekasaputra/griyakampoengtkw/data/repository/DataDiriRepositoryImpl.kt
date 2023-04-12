@@ -5,13 +5,13 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.emitAll
 import kotlinx.coroutines.flow.flow
 import net.bagusekasaputra.griyakampoengtkw.data.DataUtil
+import net.bagusekasaputra.griyakampoengtkw.data.MyObjectMapper.mapDataDiri
 import net.bagusekasaputra.griyakampoengtkw.data.interfaces.backup.BackupDataDiriDataSource
 import net.bagusekasaputra.griyakampoengtkw.data.interfaces.local.LocalDataDiriDataSource
 import net.bagusekasaputra.griyakampoengtkw.data.interfaces.local.LocalMetadataDataSource
 import net.bagusekasaputra.griyakampoengtkw.data.interfaces.remote.RemoteDataDiriRepository
 import net.bagusekasaputra.griyakampoengtkw.data.interfaces.remote.RemoteKavlingDataSource
 import net.bagusekasaputra.griyakampoengtkw.data.interfaces.remote.RemoteMetadataDataSource
-import net.bagusekasaputra.griyakampoengtkw.data.model.DataDiriModel
 import net.bagusekasaputra.griyakampoengtkw.data.model.MetadataModel
 import net.bagusekasaputra.griyakampoengtkw.domain.DataMode
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.DataDiri
@@ -176,37 +176,6 @@ class DataDiriRepositoryImpl(
 
         localMetadata.insert(newMetadata)
         remoteMetadata.update(oldMetadata, newMetadata)
-    }
-
-
-    companion object {
-        fun mapDataDiri(dataDiriModel: DataDiriModel): DataDiri {
-            return dataDiriModel.let {
-                DataDiri(
-                    nama = it.nama,
-                    jenisIdentitas = it.jenisIdentitas,
-                    noIdentitas = it.noIdentitas,
-                    negaraBekerja = it.negaraBekerja,
-                    alamatIndo = it.alamatIndo,
-                    alamatKerja = it.alamatKerja,
-                    noHp = it.noHp
-                )
-            }
-        }
-
-        fun mapDataDiri(dataDiri: DataDiri): DataDiriModel {
-            return dataDiri.let {
-                DataDiriModel(
-                    nama = it.nama,
-                    jenisIdentitas = it.jenisIdentitas,
-                    noIdentitas = it.noIdentitas,
-                    alamatKerja = it.alamatKerja,
-                    negaraBekerja = it.negaraBekerja,
-                    alamatIndo = it.alamatIndo,
-                    noHp = it.noHp
-                )
-            }
-        }
     }
 
 }

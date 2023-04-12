@@ -4,10 +4,10 @@ import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.channels.trySendBlocking
 import kotlinx.coroutines.flow.*
 import net.bagusekasaputra.griyakampoengtkw.data.DataUtil
+import net.bagusekasaputra.griyakampoengtkw.data.MyObjectMapper.mapCatatanPembayaran
 import net.bagusekasaputra.griyakampoengtkw.data.interfaces.backup.BackupCatatanPembayaranDataSource
 import net.bagusekasaputra.griyakampoengtkw.data.interfaces.local.LocalCatatanPembayaranDataSource
 import net.bagusekasaputra.griyakampoengtkw.data.interfaces.remote.RemoteCatatanPembayaranDataSource
-import net.bagusekasaputra.griyakampoengtkw.data.model.CatatanPembayaranModel
 import net.bagusekasaputra.griyakampoengtkw.domain.DataMode
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.CatatanPembayaran
 import net.bagusekasaputra.griyakampoengtkw.domain.repository.CatatanPembayaranRepository
@@ -123,23 +123,4 @@ class CatatanPembayaranRepositoryImpl(
         }
     }
 
-    companion object {
-        fun mapCatatanPembayaran(catatanPembayaranModel: CatatanPembayaranModel): CatatanPembayaran {
-            return catatanPembayaranModel.let {
-                CatatanPembayaran(
-                    kavlingKode = it.kavlingKode,
-                    content = it.content,
-                )
-            }
-        }
-
-        fun mapCatatanPembayaran(catatanPembayaran: CatatanPembayaran): CatatanPembayaranModel {
-            return catatanPembayaran.let {
-                CatatanPembayaranModel(
-                    kavlingKode = it.kavlingKode,
-                    content = it.content,
-                )
-            }
-        }
-    }
 }

@@ -3,8 +3,8 @@ package net.bagusekasaputra.griyakampoengtkw.data.repository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import net.bagusekasaputra.griyakampoengtkw.data.DataUtil
+import net.bagusekasaputra.griyakampoengtkw.data.MyObjectMapper.mapAppUpdate
 import net.bagusekasaputra.griyakampoengtkw.data.interfaces.remote.RemoteAppUpdateSource
-import net.bagusekasaputra.griyakampoengtkw.data.model.AppUpdateModel
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.AppUpdate
 import net.bagusekasaputra.griyakampoengtkw.domain.repository.AppUpdateRepository
 
@@ -18,17 +18,6 @@ class AppUpdateRepositoryImpl(
             val mappedRemoteUpdate = DataUtil.mapSingleResult(remoteUpdate, ::mapAppUpdate)
 
             emit(mappedRemoteUpdate)
-        }
-    }
-
-    private fun mapAppUpdate(appUpdateModel: AppUpdateModel): AppUpdate {
-        return appUpdateModel.let {
-            AppUpdate(
-                latestVersion = it.latestVersion,
-                latestVersionCode = it.latestVersionCode,
-                url = it.url,
-                releaseNotes = it.releaseNotes,
-            )
         }
     }
 

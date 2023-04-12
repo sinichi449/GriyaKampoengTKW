@@ -8,15 +8,14 @@ import kotlinx.coroutines.flow.callbackFlow
 import kotlinx.coroutines.flow.emitAll
 import kotlinx.coroutines.flow.flow
 import net.bagusekasaputra.griyakampoengtkw.data.DataUtil
+import net.bagusekasaputra.griyakampoengtkw.data.MyObjectMapper.mapHargaKavling
 import net.bagusekasaputra.griyakampoengtkw.data.interfaces.backup.BackupHargaKavlingDataSource
 import net.bagusekasaputra.griyakampoengtkw.data.interfaces.local.LocalHargaKavlingDataSource
 import net.bagusekasaputra.griyakampoengtkw.data.interfaces.local.LocalMetadataDataSource
 import net.bagusekasaputra.griyakampoengtkw.data.interfaces.remote.RemoteHargaKavlingSource
 import net.bagusekasaputra.griyakampoengtkw.data.interfaces.remote.RemoteMetadataDataSource
-import net.bagusekasaputra.griyakampoengtkw.data.model.HargaKavlingModel
 import net.bagusekasaputra.griyakampoengtkw.data.model.MetadataModel
 import net.bagusekasaputra.griyakampoengtkw.domain.DataMode
-import net.bagusekasaputra.griyakampoengtkw.domain.NumberUtil
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.HargaKavling
 import net.bagusekasaputra.griyakampoengtkw.domain.repository.HargaKavlingRepository
 
@@ -207,28 +206,6 @@ class HargaKavlingRepositoryImpl(
 
         localMetadata.insert(newMetadata)
         remoteMetadata.update(oldMetadata, newMetadata)
-    }
-
-    companion object {
-        fun mapHargaKavling(hargaKavling: HargaKavling): HargaKavlingModel {
-            return hargaKavling.let {
-                HargaKavlingModel(
-                    kavlingKode = it.kavlingKode,
-                    harga = NumberUtil.formatStringToLong(it.harga),
-                    tambahLuasan = NumberUtil.formatStringToLong(it.tambahanLuas),
-                )
-            }
-        }
-
-        fun mapHargaKavling(hargaKavlingModel: HargaKavlingModel): HargaKavling {
-            return hargaKavlingModel.let {
-                HargaKavling(
-                    kavlingKode = it.kavlingKode,
-                    harga = NumberUtil.formatLongToString(it.harga),
-                    tambahanLuas = NumberUtil.formatLongToString(it.tambahLuasan),
-                )
-            }
-        }
     }
 
 }

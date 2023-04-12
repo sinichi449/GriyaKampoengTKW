@@ -4,6 +4,7 @@ import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.channels.trySendBlocking
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
+import net.bagusekasaputra.griyakampoengtkw.data.MyObjectMapper
 import net.bagusekasaputra.griyakampoengtkw.data.interfaces.backup.*
 import net.bagusekasaputra.griyakampoengtkw.data.model.*
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.BackupRestoreEntity
@@ -31,14 +32,14 @@ class BackupRestoreRepositoryImpl(
 
                 // Mapping from Domain's Entity to Data Model
                 val listBlok = backupRestoreEntity.listBlok.map {
-                    BlockRepositoryImpl.mapBlockModel(it)
+                    MyObjectMapper.mapBlockModel(it)
                 }
                 val listKavling = backupRestoreEntity.listKavling.run {
                     val mapped = HashMap<String, List<KavlingModel>>()
 
                     this.keys.forEach { blok ->
                         this[blok]?.let {
-                            mapped[blok] = it.map { kavling -> KavlingRepositoryImpl.mapKavling(kavling) }
+                            mapped[blok] = it.map { kavling -> MyObjectMapper.mapKavling(kavling) }
                         }
                     }
 
@@ -49,7 +50,7 @@ class BackupRestoreRepositoryImpl(
 
                     this.keys.forEach { kavling ->
                         newMap[kavling] = this[kavling]?.map {
-                            PembayaranRepositoryImpl.mapPembayaran(it)
+                            MyObjectMapper.mapPembayaran(it)
                         }
                     }
 
@@ -62,7 +63,7 @@ class BackupRestoreRepositoryImpl(
                         val model = this[kavling]
 
                         newMap[kavling] = if (model != null)
-                            DataDiriRepositoryImpl.mapDataDiri(model)
+                            MyObjectMapper.mapDataDiri(model)
                         else
                             null
                     }
@@ -73,7 +74,7 @@ class BackupRestoreRepositoryImpl(
                     val newList = mutableListOf<HargaKavlingModel>()
 
                     this.forEach {
-                        val model = HargaKavlingRepositoryImpl.mapHargaKavling(it)
+                        val model = MyObjectMapper.mapHargaKavling(it)
                         newList.add(model)
                     }
 
@@ -83,7 +84,7 @@ class BackupRestoreRepositoryImpl(
                     val newList = mutableListOf<CatatanPembayaranModel>()
 
                     this.forEach {
-                        val model = CatatanPembayaranRepositoryImpl.mapCatatanPembayaran(it)
+                        val model = MyObjectMapper.mapCatatanPembayaran(it)
                         newList.add(model)
                     }
 
@@ -93,7 +94,7 @@ class BackupRestoreRepositoryImpl(
                     val newList = mutableListOf<BiayaMarketingModel>()
 
                     this.forEach {
-                        newList.add(BiayaMarketingRepositoryImpl.mapBiayaMarketing(it))
+                        newList.add(MyObjectMapper.mapBiayaMarketing(it))
                     }
 
                     newList.toList()
@@ -102,7 +103,7 @@ class BackupRestoreRepositoryImpl(
                     val newList = mutableListOf<FeeMarketingModel>()
 
                     this.forEach {
-                        newList.add(FeeMarketingRepositoryImpl.mapFeeMarketing(it))
+                        newList.add(MyObjectMapper.mapFeeMarketing(it))
                     }
 
                     newList.toList()
@@ -111,7 +112,7 @@ class BackupRestoreRepositoryImpl(
                     val newList = mutableListOf<BiayaLainModel>()
 
                     this.forEach {
-                        newList.add(BiayaLainRepositoryImpl.mapBiayaLain(it))
+                        newList.add(MyObjectMapper.mapBiayaLain(it))
                     }
 
                     newList.toList()

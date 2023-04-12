@@ -5,16 +5,15 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.emitAll
 import kotlinx.coroutines.flow.flow
 import net.bagusekasaputra.griyakampoengtkw.data.DataUtil
+import net.bagusekasaputra.griyakampoengtkw.data.MyObjectMapper.mapPembayaran
 import net.bagusekasaputra.griyakampoengtkw.data.interfaces.backup.BackupPembayaranDataSource
 import net.bagusekasaputra.griyakampoengtkw.data.interfaces.local.LocalMetadataDataSource
 import net.bagusekasaputra.griyakampoengtkw.data.interfaces.local.LocalPembayaranDataSource
 import net.bagusekasaputra.griyakampoengtkw.data.interfaces.remote.RemoteMetadataDataSource
 import net.bagusekasaputra.griyakampoengtkw.data.interfaces.remote.RemotePembayaranSource
 import net.bagusekasaputra.griyakampoengtkw.data.model.MetadataModel
-import net.bagusekasaputra.griyakampoengtkw.data.model.PembayaranModel
 import net.bagusekasaputra.griyakampoengtkw.domain.DataMode
 import net.bagusekasaputra.griyakampoengtkw.domain.DateUtil.toDate
-import net.bagusekasaputra.griyakampoengtkw.domain.NumberUtil
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.Pembayaran
 import net.bagusekasaputra.griyakampoengtkw.domain.repository.PembayaranRepository
 import java.util.*
@@ -300,43 +299,6 @@ class PembayaranRepositoryImpl(
             }
             remoteResult.onFailure {
                 emit(Result.failure(it))
-            }
-        }
-    }
-
-    companion object {
-        fun pisahkanTerminDanUrutan(termin: String): Map<String, String> {
-            val terminDanUrutan = termin.split(" ")
-            return mapOf<String, String>(
-                Pair("jenis", terminDanUrutan[0]),
-                Pair("urutan", terminDanUrutan[1]),
-            )
-        }
-
-        fun mapPembayaran(pembayaran: Pembayaran): PembayaranModel {
-            return pembayaran.let {
-                val pisah = pisahkanTerminDanUrutan(it.termin)
-
-                return@let PembayaranModel(
-                    termin = pisah["jenis"]!!,
-                    urutan = pisah["urutan"]!!.toInt(),
-                    tanggal = it.tanggal,
-                    jumlahUangDibayar = NumberUtil.formatStringToLong(it.jumlahUangDibayar),
-                    keterangan = it.keterangan,
-                    timeMillis = it.timeMillis,
-                )
-            }
-        }
-
-        fun mapPembayaran(pembayaranModel: PembayaranModel): Pembayaran {
-            return pembayaranModel.let {
-                Pembayaran(
-                    termin = "${it.termin} ${it.urutan}",
-                    tanggal = it.tanggal,
-                    jumlahUangDibayar = NumberUtil.formatLongToString(it.jumlahUangDibayar),
-                    keterangan = it.keterangan,
-                    timeMillis = it.timeMillis,
-                )
             }
         }
     }

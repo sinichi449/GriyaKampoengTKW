@@ -5,12 +5,12 @@ import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.channels.trySendBlocking
 import kotlinx.coroutines.flow.*
 import net.bagusekasaputra.griyakampoengtkw.data.DataUtil
+import net.bagusekasaputra.griyakampoengtkw.data.MyObjectMapper.mapBiayaLain
 import net.bagusekasaputra.griyakampoengtkw.data.interfaces.backup.BackupBiayaLainDataSource
 import net.bagusekasaputra.griyakampoengtkw.data.interfaces.local.LocalBiayaLainDataSource
 import net.bagusekasaputra.griyakampoengtkw.data.interfaces.local.LocalMetadataDataSource
 import net.bagusekasaputra.griyakampoengtkw.data.interfaces.remote.RemoteBiayaLainDataSource
 import net.bagusekasaputra.griyakampoengtkw.data.interfaces.remote.RemoteMetadataDataSource
-import net.bagusekasaputra.griyakampoengtkw.data.model.BiayaLainModel
 import net.bagusekasaputra.griyakampoengtkw.data.model.MetadataModel
 import net.bagusekasaputra.griyakampoengtkw.domain.DataMode
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.BiayaLain
@@ -201,28 +201,5 @@ class BiayaLainRepositoryImpl(
 
         localMetadata.insert(newMetadata)
         remoteMetadata.update(oldMetadata, newMetadata)
-    }
-
-
-    companion object {
-        fun mapBiayaLain(model: BiayaLainModel): BiayaLain {
-            return model.let {
-                BiayaLain(
-                    jenisBiaya = it.jenisBiaya,
-                    harga = it.harga,
-                    tanggal = it.tanggal,
-                )
-            }
-        }
-
-        fun mapBiayaLain(biayaLain: BiayaLain): BiayaLainModel {
-            return biayaLain.let {
-                BiayaLainModel(
-                    jenisBiaya = it.jenisBiaya,
-                    harga = it.harga,
-                    tanggal = it.tanggal,
-                )
-            }
-        }
     }
 }

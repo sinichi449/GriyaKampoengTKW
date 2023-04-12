@@ -4,10 +4,10 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.emitAll
 import kotlinx.coroutines.flow.flow
 import net.bagusekasaputra.griyakampoengtkw.data.DataUtil
+import net.bagusekasaputra.griyakampoengtkw.data.MyObjectMapper.mapBlockModel
 import net.bagusekasaputra.griyakampoengtkw.data.interfaces.backup.BackupBlokDataSource
 import net.bagusekasaputra.griyakampoengtkw.data.interfaces.local.LocalBlockDataSource
 import net.bagusekasaputra.griyakampoengtkw.data.interfaces.remote.RemoteBlockDataSource
-import net.bagusekasaputra.griyakampoengtkw.data.model.BlockModel
 import net.bagusekasaputra.griyakampoengtkw.domain.DataMode
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.Block
 import net.bagusekasaputra.griyakampoengtkw.domain.repository.BlockRepository
@@ -81,23 +81,4 @@ class BlockRepositoryImpl(
         }
     }
 
-    companion object {
-        fun mapBlockModel(blockModel: BlockModel): Block {
-            return blockModel.let {
-                Block(
-                    kode = it.kode,
-                    warna = it.warna,
-                )
-            }
-        }
-
-        fun mapBlockModel(block: Block): BlockModel {
-            return block.let {
-                BlockModel(
-                    kode = it.kode,
-                    warna = it.warna,
-                )
-            }
-        }
-    }
 }
