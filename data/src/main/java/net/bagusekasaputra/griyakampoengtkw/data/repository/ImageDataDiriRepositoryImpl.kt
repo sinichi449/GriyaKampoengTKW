@@ -6,6 +6,7 @@ import android.util.Log
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.channels.trySendBlocking
 import kotlinx.coroutines.flow.*
+import net.bagusekasaputra.griyakampoengtkw.data.interfaces.backup.BackupImageDataDiriDataSource
 import net.bagusekasaputra.griyakampoengtkw.data.interfaces.local.LocalImageDataDiriDataSource
 import net.bagusekasaputra.griyakampoengtkw.data.interfaces.local.LocalMetadataDataSource
 import net.bagusekasaputra.griyakampoengtkw.data.interfaces.remote.RemoteImageDataDiriDataSource
@@ -19,6 +20,7 @@ import net.bagusekasaputra.griyakampoengtkw.domain.repository.ImageDataDiriRepos
 class ImageDataDiriRepositoryImpl(
     private val localImageDataDiri: LocalImageDataDiriDataSource,
     private val remoteImageDataDiri: RemoteImageDataDiriDataSource,
+    private val backupImageDataDiri: BackupImageDataDiriDataSource,
     private val localMetadata: LocalMetadataDataSource,
     private val remoteMetadata: RemoteMetadataDataSource,
     private val contentResolver: ContentResolver,
@@ -71,6 +73,24 @@ class ImageDataDiriRepositoryImpl(
                 emit(Result.success(mapImageDataDiri(localModel)))
                 Log.d("DEBUG_ME", "ImageDataDiriRepo->get(): Successfully fetch image data diri \"$kavlingKode\" from local data source.")
             }
+        }
+    }
+
+    override fun getFromBackup(kavlingKode: String): Flow<Result<ImageDataDiri?>> {
+        return callbackFlow {
+            backupImageDataDiri.getImageDataDiri(kavlingKode)
+                .onSuccess {
+                    if (it == null) {
+                        trySendBlocking(Result.success(null))
+                    } else {
+                        trySendBlocking(Result.success(mapImageDataDiri(it)))
+                    }
+                }
+                .onFailure {
+                    trySendBlocking(Result.failure(Throwable("Gagal mendapatkan ImageDataDiri dari Backup: ${it.cause}")))
+                }
+
+            awaitClose {  }
         }
     }
 

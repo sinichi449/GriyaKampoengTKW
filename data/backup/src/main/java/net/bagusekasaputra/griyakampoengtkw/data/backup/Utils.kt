@@ -15,6 +15,10 @@ const val JSON_BIAYA_MARKETINGS = "biaya_marketings.json"
 const val JSON_FEE_MARKETING = "fee_marketing.json"
 const val JSON_BIAYA_LAINS = "biaya_lains.json"
 
+val PATH_IMAGE_DATA_DIRI = { kavling: String ->
+    "data_diri_images/${kavling}_data_diri.png"
+}
+
 fun readFile(file: File): String {
     val fileReader = FileReader(file)
     val bufferedReader = BufferedReader(fileReader)

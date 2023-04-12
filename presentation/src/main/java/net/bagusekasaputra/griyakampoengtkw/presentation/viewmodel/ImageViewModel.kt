@@ -3,12 +3,14 @@ package net.bagusekasaputra.griyakampoengtkw.presentation.viewmodel
 import android.content.ContentResolver
 import android.graphics.Bitmap
 import android.net.Uri
+import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.*
 import net.bagusekasaputra.griyakampoengtkw.domain.AsyncUseCaseHelper
+import net.bagusekasaputra.griyakampoengtkw.domain.DataMode
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.fotoPembayaran.AddFotoPembayaranAsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.fotoPembayaran.DeleteFotoPembayaranAsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.fotoPembayaran.GetFotoPembayaranAsyncUseCase
@@ -66,10 +68,14 @@ class ImageViewModel @Inject constructor(
 
     private val asyncUseCaseHelper = AsyncUseCaseHelper(isFinishAddImage)
 
+    var dataMode = DataMode.ONLINE
+
 
     // Image Data Diri
     fun getImageDataDiri(kavlingKode: String, onFailure: (cause: String) -> Unit) {
-        val request = GetImageDataDiriByKavlingKodeUseCase.Request(kavlingKode)
+        Log.d("DEBUG_ME", "ImageViewModel::getImageDataDiri() started on DataMode ${dataMode.name}")
+
+        val request = GetImageDataDiriByKavlingKodeUseCase.Request(kavlingKode, dataMode)
         isFinishLoadingImage.value = false
 
         CoroutineScope(Dispatchers.IO).launch {

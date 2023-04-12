@@ -199,7 +199,9 @@ class DataDiriFragment : Fragment() {
             Toast.makeText(requireContext(), failMsg, Toast.LENGTH_LONG).show()
         }
 
-        imageViewModel.getImageDataDiri(currentKavlingKode!!) { }
+        imageViewModel.getImageDataDiri(currentKavlingKode!!) {
+
+        }
     }
 
     private fun setLayoutImageDataDiriLoading(isLoading: Boolean) {

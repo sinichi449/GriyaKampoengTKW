@@ -72,6 +72,7 @@ class DetailActivity : AppCompatActivity() {
         val pathDataLama = sharedPrefs.getString("dataLamaPath", null)
         if (pathDataLama != null) {
             viewModel.dataMode = DataMode.DATA_LAMA
+            imageViewModel.dataMode = DataMode.DATA_LAMA
 
             binding.connectivityStatus.constraintConnectivity.visibility = View.VISIBLE
             binding.connectivityStatus.tvStatus.text = "Mode Data Lama"
@@ -82,6 +83,7 @@ class DetailActivity : AppCompatActivity() {
         val offlineMode = sharedPrefs.getBoolean("offline_mode", false)
         if (offlineMode) {
             viewModel.offlineMode = true
+            imageViewModel.dataMode = DataMode.OFFLINE
             binding.connectivityStatus.constraintConnectivity.visibility = View.VISIBLE
         }
 
