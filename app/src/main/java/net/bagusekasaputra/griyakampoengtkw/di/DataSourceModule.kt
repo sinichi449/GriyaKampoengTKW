@@ -25,6 +25,7 @@ import net.bagusekasaputra.griyakampoeng.tkw.data.local.metadata.RoomMetadataDat
 import net.bagusekasaputra.griyakampoeng.tkw.data.local.pembayaran.RoomPembayaranLocalDataSource
 import net.bagusekasaputra.griyakampoeng.tkw.data.local.pengingat.RoomPengingatDataSource
 import net.bagusekasaputra.griyakampoeng.tkw.data.local.rekap.RoomRekapUangMasukLocalDataSource
+import net.bagusekasaputra.griyakampoengtkw.data.backup.biayaLain.BackupBiayaLainDataSourceImpl
 import net.bagusekasaputra.griyakampoengtkw.data.backup.biayaMarketing.BackupBiayaMarketingDataSourceImpl
 import net.bagusekasaputra.griyakampoengtkw.data.backup.blok.BackupBlokDataSourceImpl
 import net.bagusekasaputra.griyakampoengtkw.data.backup.catatanPembayaran.BackupCatatanPembayaranDataSourceImpl
@@ -324,6 +325,11 @@ object DataSourceModule {
     @Provides
     fun provideRemoteBiayaLainDataSource(databaseReference: DatabaseReference): RemoteBiayaLainDataSource {
         return FirebaseBiayaLainDataSource(databaseReference)
+    }
+
+    @Provides
+    fun provideBackupBiayaLainDataSource(sharedPreferences: SharedPreferences): BackupBiayaLainDataSource {
+        return BackupBiayaLainDataSourceImpl(sharedPreferences)
     }
 
     /**

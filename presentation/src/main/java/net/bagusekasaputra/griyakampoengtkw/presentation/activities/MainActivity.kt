@@ -24,6 +24,7 @@ import net.bagusekasaputra.griyakampoengtkw.presentation.fragment.KavlingFragmen
 import net.bagusekasaputra.griyakampoengtkw.presentation.fragment.rekap.RekapFragment
 import net.bagusekasaputra.griyakampoengtkw.presentation.logEvent
 import net.bagusekasaputra.griyakampoengtkw.presentation.util.GriyaNodes
+import net.bagusekasaputra.griyakampoengtkw.presentation.viewmodel.BiayaLainViewModel
 import net.bagusekasaputra.griyakampoengtkw.presentation.viewmodel.MainViewModel
 import javax.inject.Inject
 
@@ -36,6 +37,7 @@ class MainActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityMainBinding
     private val viewModel: MainViewModel by viewModels()
+    private val biayaLainViewModel: BiayaLainViewModel by viewModels()
 
     // SharedPreferences to load the user settings
     @Inject

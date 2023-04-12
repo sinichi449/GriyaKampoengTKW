@@ -7,6 +7,7 @@ import androidx.lifecycle.ViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Job
 import net.bagusekasaputra.griyakampoengtkw.domain.AsyncUseCaseHelper
+import net.bagusekasaputra.griyakampoengtkw.domain.DataMode
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.biayaLain.AddBiayaLainAsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.biayaLain.DeleteBiayaLainAsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.biayaLain.GetAllBiayaLainAsyncUseCase
@@ -39,8 +40,9 @@ class BiayaLainViewModel @Inject constructor(
 
 
 
-    fun getAllBiayaLain(onFailure: (msg: String) -> Unit) {
-        val request = GetAllBiayaLainAsyncUseCase.Request(false)
+    fun getAllBiayaLain(dataMode: DataMode, onFailure: (msg: String) -> Unit) {
+        Log.d("DEBUG_ME", "BiayaLainViewModel: DataMode is set to ${dataMode.name}")
+        val request = GetAllBiayaLainAsyncUseCase.Request(dataMode)
 
         val getAllJobs = asyncHelper.doWork(
             request = request,

@@ -21,6 +21,7 @@ class CreateBackupAsyncUseCase(
     private val catatanPembayaranRepository: CatatanPembayaranRepository,
     private val biayaMarketingRepository: BiayaMarketingRepository,
     private val feeMarketingRepository: FeeMarketingRepository,
+    private val biayaLainRepository: BiayaLainRepository,
     private val backupRestoreRepository: BackupRestoreRepository,
 ): AsyncUseCase<CreateBackupAsyncUseCase.Request, CreateBackupAsyncUseCase.Progress>() {
 
@@ -111,6 +112,10 @@ class CreateBackupAsyncUseCase(
                 newList.toList()
             }
 
+            trySendBlocking(Result.success(Progress(63, "Mendownload Biaya Lain-lain")))
+            val listBiayaLain = biayaLainRepository.getAllOnline(dataMode = DataMode.ONLINE)
+                .first().getOrThrow() ?: emptyList()
+
 
             val backupRestoreEntity = BackupRestoreEntity(
                 request.backupName,
@@ -122,6 +127,7 @@ class CreateBackupAsyncUseCase(
                 listCatatanPembayaran,
                 listBiayaMarketing,
                 listFeeMarketing,
+                listBiayaLain,
             )
 
             backupRestoreRepository.createBackup(backupRestoreEntity)

@@ -2,6 +2,7 @@ package net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.rekap
 
 import android.util.Log
 import kotlinx.coroutines.flow.*
+import net.bagusekasaputra.griyakampoengtkw.domain.DataMode
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.AsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.*
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.BiayaLain.Companion.filterPeriode
@@ -60,7 +61,7 @@ class GetRekapBesarAsyncUseCase(
                 .getOrThrow()
 
             progressState.update { ProgressState(90, "Menyusun tabel Biaya Lain-lain ...") }
-            val listBiayaLain = biayaLainRepository.getAllOnline(false)
+            val listBiayaLain = biayaLainRepository.getAllOnline(DataMode.ONLINE)
                 .first()
                 .getOrThrow()
 

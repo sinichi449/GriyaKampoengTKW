@@ -1,26 +1,32 @@
 package net.bagusekasaputra.griyakampoengtkw.data.repository
 
 import android.util.Log
+import kotlinx.coroutines.channels.awaitClose
+import kotlinx.coroutines.channels.trySendBlocking
 import kotlinx.coroutines.flow.*
+import net.bagusekasaputra.griyakampoengtkw.data.DataUtil
+import net.bagusekasaputra.griyakampoengtkw.data.interfaces.backup.BackupBiayaLainDataSource
 import net.bagusekasaputra.griyakampoengtkw.data.interfaces.local.LocalBiayaLainDataSource
 import net.bagusekasaputra.griyakampoengtkw.data.interfaces.local.LocalMetadataDataSource
 import net.bagusekasaputra.griyakampoengtkw.data.interfaces.remote.RemoteBiayaLainDataSource
 import net.bagusekasaputra.griyakampoengtkw.data.interfaces.remote.RemoteMetadataDataSource
 import net.bagusekasaputra.griyakampoengtkw.data.model.BiayaLainModel
 import net.bagusekasaputra.griyakampoengtkw.data.model.MetadataModel
+import net.bagusekasaputra.griyakampoengtkw.domain.DataMode
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.BiayaLain
 import net.bagusekasaputra.griyakampoengtkw.domain.repository.BiayaLainRepository
 
 class BiayaLainRepositoryImpl(
     private val localBiayaLainDataSource: LocalBiayaLainDataSource,
     private val remoteBiayaLainDataSource: RemoteBiayaLainDataSource,
+    private val backupBiayaLainDataSource: BackupBiayaLainDataSource,
     private val localMetadata: LocalMetadataDataSource,
     private val remoteMetadata: RemoteMetadataDataSource,
 ): BiayaLainRepository {
 
     private val metadataTable = "biayaLain"
 
-    override fun getAllOnline(offline: Boolean): Flow<Result<List<BiayaLain>?>> {
+    override fun getAllOnline(dataMode: DataMode): Flow<Result<List<BiayaLain>?>> {
         return flow {
             // Cache Validation
             val localTimestamp = localMetadata.get(metadataTable)
@@ -94,6 +100,23 @@ class BiayaLainRepositoryImpl(
                     }
                 }
             )
+        }
+    }
+
+    override fun getFromBackup(): Flow<Result<List<BiayaLain>?>> {
+        return callbackFlow {
+            backupBiayaLainDataSource.getAllBiayaLain()
+                .onSuccess {
+                    trySendBlocking(DataUtil.mapListResult(
+                        originResult = Result.success(it),
+                        targetMapper = ::mapBiayaLain,
+                    ))
+                }
+                .onFailure {
+                    trySendBlocking(Result.failure(Throwable("Gagal mendapatkan Biaya Lain dari Backup: ${it.cause}")))
+                }
+
+            awaitClose {  }
         }
     }
 
@@ -180,23 +203,26 @@ class BiayaLainRepositoryImpl(
         remoteMetadata.update(oldMetadata, newMetadata)
     }
 
-    private fun mapBiayaLain(model: BiayaLainModel): BiayaLain {
-        return model.let {
-            BiayaLain(
-                jenisBiaya = it.jenisBiaya,
-                harga = it.harga,
-                tanggal = it.tanggal,
-            )
-        }
-    }
 
-    private fun mapBiayaLain(biayaLain: BiayaLain): BiayaLainModel {
-        return biayaLain.let {
-            BiayaLainModel(
-                jenisBiaya = it.jenisBiaya,
-                harga = it.harga,
-                tanggal = it.tanggal,
-            )
+    companion object {
+        fun mapBiayaLain(model: BiayaLainModel): BiayaLain {
+            return model.let {
+                BiayaLain(
+                    jenisBiaya = it.jenisBiaya,
+                    harga = it.harga,
+                    tanggal = it.tanggal,
+                )
+            }
+        }
+
+        fun mapBiayaLain(biayaLain: BiayaLain): BiayaLainModel {
+            return biayaLain.let {
+                BiayaLainModel(
+                    jenisBiaya = it.jenisBiaya,
+                    harga = it.harga,
+                    tanggal = it.tanggal,
+                )
+            }
         }
     }
 }

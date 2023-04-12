@@ -20,6 +20,7 @@ class BackupRestoreRepositoryImpl(
     private val backupCatatanPembayaranDataSource: BackupCatatanPembayaranDataSource,
     private val backupBiayaMarketingDataSource: BackupBiayaMarketingDataSource,
     private val backupFeeMarketingDataSource: BackupFeeMarketingDataSource,
+    private val backupBiayaLainDataSource: BackupBiayaLainDataSource,
 ): BackupRestoreRepository {
 
     override fun createBackup(backupRestoreEntity: BackupRestoreEntity): Flow<Result<Nothing?>> {
@@ -106,6 +107,15 @@ class BackupRestoreRepositoryImpl(
 
                     newList.toList()
                 }
+                val listBiayaLain = backupRestoreEntity.listBiayaLain.run {
+                    val newList = mutableListOf<BiayaLainModel>()
+
+                    this.forEach {
+                        newList.add(BiayaLainRepositoryImpl.mapBiayaLain(it))
+                    }
+
+                    newList.toList()
+                }
 
 
                 backupBlokDataSource.createBackup(backupPath.absolutePath, listBlok).onFailure {
@@ -130,6 +140,9 @@ class BackupRestoreRepositoryImpl(
                     throw it
                 }
                 backupFeeMarketingDataSource.createBackup(backupPath.absolutePath, listFeeMarketing).onFailure {
+                    throw it
+                }
+                backupBiayaLainDataSource.createBackup(backupPath.absolutePath, listBiayaLain).onFailure {
                     throw it
                 }
 

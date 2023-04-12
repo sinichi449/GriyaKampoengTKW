@@ -1,13 +1,16 @@
 package net.bagusekasaputra.griyakampoengtkw.domain.repository
 
 import kotlinx.coroutines.flow.Flow
+import net.bagusekasaputra.griyakampoengtkw.domain.DataMode
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.BiayaLain
 
 interface BiayaLainRepository {
 
-    fun getAllOnline(offline: Boolean): Flow<Result<List<BiayaLain>?>>
+    fun getAllOnline(dataMode: DataMode): Flow<Result<List<BiayaLain>?>>
 
     fun getAllOffline(): Flow<Result<List<BiayaLain>?>>
+
+    fun getFromBackup(): Flow<Result<List<BiayaLain>?>>
 
     fun getSingle(jenisBiaya: String, offline: Boolean): Flow<Result<BiayaLain?>>
 

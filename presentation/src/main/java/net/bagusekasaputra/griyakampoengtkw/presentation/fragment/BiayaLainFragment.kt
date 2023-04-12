@@ -1,6 +1,7 @@
 package net.bagusekasaputra.griyakampoengtkw.presentation.fragment
 
 import android.app.DatePickerDialog
+import android.content.SharedPreferences
 import android.content.res.Configuration
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -14,6 +15,7 @@ import com.google.android.material.floatingactionbutton.ExtendedFloatingActionBu
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
+import net.bagusekasaputra.griyakampoengtkw.domain.DataMode
 import net.bagusekasaputra.griyakampoengtkw.domain.NumberUtil
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.BiayaLain
 import net.bagusekasaputra.griyakampoengtkw.presentation.R
@@ -28,6 +30,7 @@ import net.bagusekasaputra.griyakampoengtkw.presentation.util.FabHelper
 import net.bagusekasaputra.griyakampoengtkw.presentation.util.InputUtil
 import net.bagusekasaputra.griyakampoengtkw.presentation.viewmodel.BiayaLainViewModel
 import java.util.*
+import javax.inject.Inject
 
 @AndroidEntryPoint
 class BiayaLainFragment: Fragment() {
@@ -38,6 +41,9 @@ class BiayaLainFragment: Fragment() {
     private lateinit var fabActions: ExtendedFloatingActionButton
     private lateinit var fabAddBiayaLain: FloatingActionButton
     private lateinit var fabEditBiayaLain: FloatingActionButton
+
+    @Inject lateinit var sharedPrefs: SharedPreferences
+    private var dataMode = DataMode.ONLINE
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -61,6 +67,18 @@ class BiayaLainFragment: Fragment() {
             fabs = arrayOf(fabAddBiayaLain, fabEditBiayaLain)
         )
         fabHelper.setupFabs()
+
+        // Check offline mode
+        val offlineMode = sharedPrefs.getBoolean("offline_mode", false)
+        if (offlineMode) {
+            dataMode = DataMode.OFFLINE
+        }
+
+        // Data Lama / Baru?
+        val pathDataLama = sharedPrefs.getString("dataLamaPath", null)
+        if (pathDataLama != null) {
+            dataMode = DataMode.DATA_LAMA
+        }
 
         setupViewModel()
 
@@ -94,7 +112,7 @@ class BiayaLainFragment: Fragment() {
     }
 
     private fun sync() {
-        viewModel.getAllBiayaLain {
+        viewModel.getAllBiayaLain(dataMode) {
             Toast.makeText(requireContext(), it, Toast.LENGTH_SHORT).show()
         }
     }

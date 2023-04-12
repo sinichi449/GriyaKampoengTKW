@@ -234,12 +234,14 @@ object RepositoryModule {
     fun provideBiayaLainRepository(
         localBiayaLainDataSource: LocalBiayaLainDataSource,
         remoteBiayaLainDataSource: RemoteBiayaLainDataSource,
+        backupBiayaLainDataSource: BackupBiayaLainDataSource,
         localMetadataDataSource: LocalMetadataDataSource,
         remoteMetadataDataSource: RemoteMetadataDataSource,
     ): BiayaLainRepository {
         return BiayaLainRepositoryImpl(
             localBiayaLainDataSource,
             remoteBiayaLainDataSource,
+            backupBiayaLainDataSource,
             localMetadataDataSource,
             remoteMetadataDataSource,
         )
@@ -267,6 +269,7 @@ object RepositoryModule {
         backupCatatanPembayaranDataSource: BackupCatatanPembayaranDataSource,
         backupBiayaMarketingDataSource: BackupBiayaMarketingDataSource,
         backupFeeMarketingDataSource: BackupFeeMarketingDataSource,
+        backupBiayaLainDataSource: BackupBiayaLainDataSource,
     ): BackupRestoreRepository {
         return BackupRestoreRepositoryImpl(
             internalFiles,
@@ -278,6 +281,7 @@ object RepositoryModule {
             backupCatatanPembayaranDataSource,
             backupBiayaMarketingDataSource,
             backupFeeMarketingDataSource,
+            backupBiayaLainDataSource,
         )
     }
 }
