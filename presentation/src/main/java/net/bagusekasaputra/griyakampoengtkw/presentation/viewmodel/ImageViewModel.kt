@@ -354,7 +354,7 @@ class ImageViewModel @Inject constructor(
 
 
     fun <T> createImageTransport(sendIntent: String, content: T): ImageTransport<T> {
-        return ImageTransport(sendIntent, content)
+        return ImageTransport(sendIntent, content, dataMode)
     }
 
     fun getBitmapFromUri(contentResolver: ContentResolver, uri: Uri): Bitmap {

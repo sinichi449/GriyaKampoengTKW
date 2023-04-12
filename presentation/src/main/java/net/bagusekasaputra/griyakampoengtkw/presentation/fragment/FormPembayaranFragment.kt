@@ -872,7 +872,7 @@ class FormPembayaranFragment : Fragment() {
                             content = mapOf<String, String>(
                                 Pair("kavlingKode", currentKavlingKode!!),
                                 Pair("termin", selectedTermin),
-                            )
+                            ),
                         )
 
                         val fullImageIntent = Intent(requireContext(), FullImageActivity::class.java)

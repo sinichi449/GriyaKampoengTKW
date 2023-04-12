@@ -82,6 +82,8 @@ class FullImageActivity : AppCompatActivity() {
         val imageTransport = intent.getSerializableExtra(GriyaNodes.INTENT_SOURCE_IMAGE) as ImageTransport<*>
         val mapContent = imageTransport.content as Map<String, String>
 
+        imageViewModel.dataMode = imageTransport.dataMode
+
         when (imageTransport.sendIntention) {
             GriyaNodes.INTENT_FOTO_PEMBAYARAN -> {
                 val selectedTermin = mapContent["termin"]

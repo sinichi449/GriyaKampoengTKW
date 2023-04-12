@@ -156,7 +156,7 @@ class DataDiriFragment : Fragment() {
                             sendIntent = GriyaNodes.INTENT_DATA_DIRI,
                             content = mapOf<String, String>(
                                 Pair("kavlingKode", currentKavlingKode!!)
-                            )
+                            ),
                         )
                         intent.putExtra(GriyaNodes.INTENT_SOURCE_IMAGE, imageTransport)
                         startActivity(intent)
@@ -418,7 +418,7 @@ class DataDiriFragment : Fragment() {
             sendIntent = GriyaNodes.INTENT_FOTO_SPR,
             content = mapOf(
                 Pair("kavlingKode", currentKavlingKode!!)
-            )
+            ),
         )
 
         val intent = Intent(requireContext(), FullImageActivity::class.java)
