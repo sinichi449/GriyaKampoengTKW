@@ -156,7 +156,9 @@ class ImageViewModel @Inject constructor(
 
     // SPR
     fun getSprImage(kavlingKode: String, onFailure: (msg: String) -> Unit) {
-        val request = GetImageSprByKavlingKodeUseCase.Request(kavlingKode)
+        Log.d("DEBUG_ME", "ImageViewModel->getSPRImage(): Initiated on DataMode $dataMode")
+
+        val request = GetImageSprByKavlingKodeUseCase.Request(kavlingKode, dataMode)
         isFinishAddImage.value = false
 
         CoroutineScope(Dispatchers.IO).launch {

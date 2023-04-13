@@ -21,6 +21,10 @@ val PATH_IMAGE_DATA_DIRI = { kavling: String ->
 val PATH_FOTO_PEMBAYARAN = { kavlingKode: String, termin: String ->
     "foto_pembayaran_images/$kavlingKode/${kavlingKode}_${termin}.png"
 }
+val PATH_IMAGE_SPR = { kavlingKode: String ->
+    "spr_images/${kavlingKode}_SPR.png"
+}
+
 
 fun readFile(file: File): String {
     val fileReader = FileReader(file)

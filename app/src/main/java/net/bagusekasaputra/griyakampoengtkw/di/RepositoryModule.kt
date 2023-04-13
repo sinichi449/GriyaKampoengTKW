@@ -150,11 +150,12 @@ object RepositoryModule {
     fun provideImageSprRepository(
         localImageSprDataSource: LocalImageSprDataSource,
         remoteImageSprDataSource: RemoteImageSprDataSource,
+        backupImageSPRDataSource: BackupImageSPRDataSource,
         localMetadata: LocalMetadataDataSource,
         remoteMetadata: RemoteMetadataDataSource,
         contentResolver: ContentResolver
     ): ImageSprRepository {
-        return ImageSprRepositoryImpl(localImageSprDataSource, remoteImageSprDataSource, localMetadata, remoteMetadata, contentResolver)
+        return ImageSprRepositoryImpl(localImageSprDataSource, remoteImageSprDataSource, backupImageSPRDataSource, localMetadata, remoteMetadata, contentResolver)
     }
 
 

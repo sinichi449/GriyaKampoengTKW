@@ -3,9 +3,14 @@ package net.bagusekasaputra.griyakampoengtkw.data.repository
 import android.content.ContentResolver
 import android.net.Uri
 import android.util.Log
+import kotlinx.coroutines.channels.awaitClose
+import kotlinx.coroutines.channels.trySendBlocking
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.callbackFlow
 import kotlinx.coroutines.flow.emitAll
 import kotlinx.coroutines.flow.flow
+import net.bagusekasaputra.griyakampoengtkw.data.DataUtil
+import net.bagusekasaputra.griyakampoengtkw.data.interfaces.backup.BackupImageSPRDataSource
 import net.bagusekasaputra.griyakampoengtkw.data.interfaces.local.LocalImageSprDataSource
 import net.bagusekasaputra.griyakampoengtkw.data.interfaces.local.LocalMetadataDataSource
 import net.bagusekasaputra.griyakampoengtkw.data.interfaces.remote.RemoteImageSprDataSource
@@ -19,6 +24,7 @@ import net.bagusekasaputra.griyakampoengtkw.domain.repository.ImageSprRepository
 class ImageSprRepositoryImpl(
     private val localImageSpr: LocalImageSprDataSource,
     private val remoteImageSpr: RemoteImageSprDataSource,
+    private val backupImageSprDataSource: BackupImageSPRDataSource,
     private val localMetadata: LocalMetadataDataSource,
     private val remoteMetadata: RemoteMetadataDataSource,
     private val contentResolver: ContentResolver,
@@ -87,6 +93,27 @@ class ImageSprRepositoryImpl(
                 emit(Result.success(mapImageSpr(localModel)))
                 Log.d("DEBUG_ME", "ImageDataDiriRepo->get(): Successfully fetch image SPR \"$kavlingKode\" from local data source.")
             }
+        }
+    }
+
+    override fun getFromBackup(kavlingKode: String): Flow<Result<ImageSpr?>> {
+        return callbackFlow {
+            backupImageSprDataSource.getImageSPR(kavlingKode)
+                .onSuccess {
+                    if (it != null) {
+                        trySendBlocking(DataUtil.mapSingleResult(
+                            originResult = Result.success(it),
+                            targetMapper = ::mapImageSpr,
+                        ))
+                    } else {
+                        trySendBlocking(Result.success(null))
+                    }
+                }
+                .onFailure {
+                    trySendBlocking(Result.failure(Throwable("ImageSprRepoImpl:113 failed -> ${it.cause}")))
+                }
+
+            awaitClose {  }
         }
     }
 

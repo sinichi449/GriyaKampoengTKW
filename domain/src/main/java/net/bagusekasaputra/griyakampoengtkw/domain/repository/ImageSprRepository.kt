@@ -8,6 +8,8 @@ interface ImageSprRepository {
 
     fun getByKavlingKode(kavlingKode: String): Flow<Result<ImageSpr?>>
 
+    fun getFromBackup(kavlingKode: String): Flow<Result<ImageSpr?>>
+
     fun addImage(kavlingKode: String, uri: Uri): Flow<Result<Nothing?>>
 
 }
