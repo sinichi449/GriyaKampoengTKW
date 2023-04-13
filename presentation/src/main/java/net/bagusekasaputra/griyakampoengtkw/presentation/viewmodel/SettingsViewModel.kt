@@ -48,6 +48,7 @@ class SettingsViewModel @Inject constructor(
 
                 result.onFailure {
                     onFailure(it.message ?: "Unknown error")
+
                     activeJob?.cancel()
 
                     _isBackupComplete.postValue(true)

@@ -2,7 +2,9 @@ package net.bagusekasaputra.griyakampoengtkw.data.backup.imageDataDiri
 
 import android.content.SharedPreferences
 import android.util.Log
+import androidx.core.net.toFile
 import androidx.core.net.toUri
+import net.bagusekasaputra.griyakampoengtkw.data.backup.FOLDER_IMAGE_DATA_DIRI
 import net.bagusekasaputra.griyakampoengtkw.data.backup.PATH_IMAGE_DATA_DIRI
 import net.bagusekasaputra.griyakampoengtkw.data.backup.PREFS_PATH_DATA_LAMA
 import net.bagusekasaputra.griyakampoengtkw.data.interfaces.backup.BackupImageDataDiriDataSource
@@ -38,6 +40,26 @@ class BackupImageDataDiriDataSourceImpl(
         backupPath: String,
         listImageDataDiri: List<ImageDataDiriModel>?
     ): Result<Nothing?> {
-        TODO("Not yet implemented")
+        return try {
+            if (listImageDataDiri?.isEmpty() == true) {
+                Log.d("DEBUG_ME", "BackupImageDataDiri: Argument \"listImageDataDiri\" is EMPTY!")
+            }
+
+            val backupFolder = File("$backupPath/$FOLDER_IMAGE_DATA_DIRI")
+            if (!backupFolder.exists()) {
+                backupFolder.mkdir()
+            }
+
+            listImageDataDiri?.forEach {
+                val imageDataDiriFile = it.imgUri.toUri().toFile()
+                val targetFolder = File(backupFolder, it.getFilename())
+
+                imageDataDiriFile.copyTo(targetFolder, true)
+            }
+
+            Result.success(null)
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
     }
 }

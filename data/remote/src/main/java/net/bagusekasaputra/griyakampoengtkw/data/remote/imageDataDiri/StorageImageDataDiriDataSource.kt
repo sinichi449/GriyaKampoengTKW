@@ -2,6 +2,10 @@ package net.bagusekasaputra.griyakampoengtkw.data.remote.imageDataDiri
 
 import android.util.Log
 import androidx.core.net.toUri
+import com.google.android.gms.tasks.OnCompleteListener
+import com.google.android.gms.tasks.OnFailureListener
+import com.google.firebase.storage.FileDownloadTask
+import com.google.firebase.storage.OnProgressListener
 import com.google.firebase.storage.StorageReference
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.channels.trySendBlocking
@@ -31,34 +35,44 @@ class StorageImageDataDiriDataSource(
 
             Log.d("DEBUG_ME", "StorageImageDataDiri->get(): Saving \"$name\" to ${file.toUri()}")
 
-            imageDataDiriRef.child(name)
-                .getFile(file)
-                .addOnProgressListener {
-                    Log.d("DEBUG_ME", "StorageImage->get(): Downloading \"$name\" ${it.bytesTransferred.toMegaBytes()}/${it.totalByteCount.toMegaBytes()} MB ...")
-                }
-                .addOnCompleteListener {
-                    Log.d("DEBUG_ME", "StorageImage->get(): Download $name is completed!")
-                    if (file.exists()) {
-                        trySendBlocking(
-                            ImageDataDiriModel(
-                                kavlingKode = kavlingKode,
-                                imgUri = file.toUri().toString(),
-                            )
+            val progressListener = OnProgressListener<FileDownloadTask.TaskSnapshot> {
+                Log.d("DEBUG_ME", "StorageImage->get(): Downloading \"$name\" ${it.bytesTransferred.toMegaBytes()}/${it.totalByteCount.toMegaBytes()} MB ...")
+            }
+            val onCompleteListener = OnCompleteListener<FileDownloadTask.TaskSnapshot> {
+                Log.d("DEBUG_ME", "StorageImage->get(): Download $name is completed!")
+                if (file.exists()) {
+                    trySendBlocking(
+                        ImageDataDiriModel(
+                            kavlingKode = kavlingKode,
+                            imgUri = file.toUri().toString(),
                         )
-                    } else {
-                        Log.d("DEBUG_ME", "StorageImageDataDiri->get(): Resulting download file $name not found!!")
-                        trySendBlocking(null)
-                    }
-                }
-                .addOnFailureListener {
-                    it.printStackTrace()
-                    Log.d("DEBUG_ME", "StorageImage->get(): Failed to download \"$name\" : ${it.message}")
-
+                    )
+                } else {
+                    Log.d("DEBUG_ME", "StorageImageDataDiri->get(): Resulting download file $name not found!!")
                     trySendBlocking(null)
                 }
+            }
+            val onFailureListener = OnFailureListener {
+                it.printStackTrace()
+                Log.d("DEBUG_ME", "StorageImage->get(): Failed to download \"$name\" : ${it.message}")
+
+                trySendBlocking(null)
+            }
+            val downloadImageDataDiriTask = imageDataDiriRef.child(name).getFile(file)
+
+            downloadImageDataDiriTask
+                .addOnProgressListener(progressListener)
+                .addOnCompleteListener(onCompleteListener)
+                .addOnFailureListener(onFailureListener)
+
 
             awaitClose {
-                Log.d("DEBUG_ME", "StorageImage->get(): Connection to storage GET \"$name\" is closed.")
+                Log.d("DEBUG_ME", "StorageImage->get(): Connection to storage GET \"$name\" is closed. Detaching listeners ...")
+
+                downloadImageDataDiriTask
+                    .removeOnProgressListener(progressListener)
+                    .removeOnCompleteListener(onCompleteListener)
+                    .removeOnFailureListener(onFailureListener)
             }
         }.first()
     }

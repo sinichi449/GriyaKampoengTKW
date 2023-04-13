@@ -275,6 +275,7 @@ object RepositoryModule {
         backupBiayaMarketingDataSource: BackupBiayaMarketingDataSource,
         backupFeeMarketingDataSource: BackupFeeMarketingDataSource,
         backupBiayaLainDataSource: BackupBiayaLainDataSource,
+        backupImageDataDiriDataSource: BackupImageDataDiriDataSource,
     ): BackupRestoreRepository {
         return BackupRestoreRepositoryImpl(
             internalFiles,
@@ -287,6 +288,7 @@ object RepositoryModule {
             backupBiayaMarketingDataSource,
             backupFeeMarketingDataSource,
             backupBiayaLainDataSource,
+            backupImageDataDiriDataSource,
         )
     }
 }

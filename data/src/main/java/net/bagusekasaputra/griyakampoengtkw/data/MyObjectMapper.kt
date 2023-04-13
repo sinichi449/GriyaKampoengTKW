@@ -3,6 +3,7 @@ package net.bagusekasaputra.griyakampoengtkw.data
 import net.bagusekasaputra.griyakampoengtkw.data.model.*
 import net.bagusekasaputra.griyakampoengtkw.domain.NumberUtil
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.*
+import net.bagusekasaputra.griyakampoengtkw.domain.entity.images.ImageDataDiriUri
 
 
 /**
@@ -256,4 +257,15 @@ object MyObjectMapper {
     }
 
 
+    /**
+     * Image Data Diri
+     */
+    fun mapImageDataDiri(imageDataDiriUri: ImageDataDiriUri): ImageDataDiriModel {
+        return imageDataDiriUri.let {
+            ImageDataDiriModel(
+                kavlingKode = it.kavling,
+                imgUri = it.uriStr,
+            )
+        }
+    }
 }

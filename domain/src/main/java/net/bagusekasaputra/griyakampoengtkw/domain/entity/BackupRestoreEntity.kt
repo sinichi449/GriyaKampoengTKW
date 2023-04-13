@@ -1,5 +1,7 @@
 package net.bagusekasaputra.griyakampoengtkw.domain.entity
 
+import net.bagusekasaputra.griyakampoengtkw.domain.entity.images.ImageDataDiriUri
+
 
 data class BackupRestoreEntity(
     val backupName: String,
@@ -12,4 +14,5 @@ data class BackupRestoreEntity(
     val listBiayaMarketing: List<BiayaMarketing>,
     val listFeeMarketing: List<FeeMarketing>,
     val listBiayaLain: List<BiayaLain>,
+    val listImageDataDiriUri: List<ImageDataDiriUri>,
 )

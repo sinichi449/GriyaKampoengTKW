@@ -22,6 +22,7 @@ class CreateBackupAsyncUseCase(
     private val biayaMarketingRepository: BiayaMarketingRepository,
     private val feeMarketingRepository: FeeMarketingRepository,
     private val biayaLainRepository: BiayaLainRepository,
+    private val imageDataDiriRepository: ImageDataDiriRepository,
     private val backupRestoreRepository: BackupRestoreRepository,
 ): AsyncUseCase<CreateBackupAsyncUseCase.Request, CreateBackupAsyncUseCase.Progress>() {
 
@@ -116,6 +117,10 @@ class CreateBackupAsyncUseCase(
             val listBiayaLain = biayaLainRepository.getAllOnline(dataMode = DataMode.ONLINE)
                 .first().getOrThrow() ?: emptyList()
 
+            trySendBlocking(Result.success(Progress(70, "Mendownload Foto Data Diri")))
+            val listImageDataDiriUri = imageDataDiriRepository.getBatchUri(listKavling = listKodeKavlings)
+                .first().getOrNull() ?: emptyList()
+
 
             val backupRestoreEntity = BackupRestoreEntity(
                 request.backupName,
@@ -128,6 +133,7 @@ class CreateBackupAsyncUseCase(
                 listBiayaMarketing,
                 listFeeMarketing,
                 listBiayaLain,
+                listImageDataDiriUri,
             )
 
             backupRestoreRepository.createBackup(backupRestoreEntity)
