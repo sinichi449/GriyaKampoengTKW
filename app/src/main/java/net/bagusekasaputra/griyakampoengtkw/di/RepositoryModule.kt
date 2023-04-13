@@ -209,6 +209,7 @@ object RepositoryModule {
         @DataSourceModule.RoomDatabase roomDataSource: LocalFotoPembayaranDataSource,
         @DataSourceModule.DeviceStorage deviceStorageDataSource: LocalFotoPembayaranDataSource,
         remoteFotoPembayaranDataSource: RemoteFotoPembayaranDataSource,
+        backupFotoPembayaranDataSource: BackupFotoPembayaranDataSource,
         localMetadataDataSource: LocalMetadataDataSource,
         remoteMetadataDataSource: RemoteMetadataDataSource,
     ): FotoPembayaranRepository {
@@ -216,6 +217,7 @@ object RepositoryModule {
             roomDataSource,
             deviceStorageDataSource,
             remoteFotoPembayaranDataSource,
+            backupFotoPembayaranDataSource,
             localMetadataDataSource,
             remoteMetadataDataSource
         )

@@ -262,7 +262,7 @@ class ImageViewModel @Inject constructor(
         termin: String,
         onFailure: (msg: String) -> Unit,
     ) {
-        val request = GetFotoPembayaranAsyncUseCase.Request(kavlingKode, termin)
+        val request = GetFotoPembayaranAsyncUseCase.Request(kavlingKode, termin, dataMode)
 
         // Will update the isFinishAddImage LiveData when the operation is finished.
         // It then will be observed by FullImageActivity to either dismiss() or show() a ProgressDialog.
@@ -339,7 +339,7 @@ class ImageViewModel @Inject constructor(
         onComplete: (exist: Boolean) -> Unit,
         onFailure: (msg: String) -> Unit,
     ) {
-        val request = IsFotoPembayaranExistAsyncUseCase.Request(kavlingKode, termin)
+        val request = IsFotoPembayaranExistAsyncUseCase.Request(kavlingKode, termin, dataMode)
 
         val checkingFotoPembayaranJob = asyncUseCaseHelper.doWork(
             request = request,

@@ -54,9 +54,10 @@ class GetAllPembayaranAsyncUseCase(
 
                     // Check sudah isi form pembayaran
                     maskedPembayaran.forEach { pembayaran ->
-                        val sudahIsiFormPembayaran = checkSudahIsiFormPembayaran(
+                        val sudahIsiFormPembayaran = checkSudahAdaFotoPembayaran(
                             kavlingKode = request.kavlingKode,
                             termin = pembayaran.termin,
+                            dataMode = request.dataMode,
                         )
 
                         pembayaran.sudahIsiFotoPembayaran = sudahIsiFormPembayaran
@@ -113,11 +114,12 @@ class GetAllPembayaranAsyncUseCase(
         }
     }
 
-    private suspend fun checkSudahIsiFormPembayaran(kavlingKode: String, termin: String): Boolean {
+    private suspend fun checkSudahAdaFotoPembayaran(kavlingKode: String, termin: String, dataMode: DataMode): Boolean {
         return callbackFlow<Boolean> {
             fotoPembayaranRepository.isFotoPembayaranExist(
                 kavlingKode = kavlingKode,
                 termin = termin,
+                dataMode = dataMode,
             ).collect { result ->
                 result.onSuccess {
                     trySendBlocking(it)

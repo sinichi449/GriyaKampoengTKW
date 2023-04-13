@@ -7,12 +7,15 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
 import kotlinx.coroutines.flow.emitAll
 import kotlinx.coroutines.flow.flow
+import net.bagusekasaputra.griyakampoengtkw.data.DataUtil
+import net.bagusekasaputra.griyakampoengtkw.data.interfaces.backup.BackupFotoPembayaranDataSource
 import net.bagusekasaputra.griyakampoengtkw.data.interfaces.local.LocalFotoPembayaranDataSource
 import net.bagusekasaputra.griyakampoengtkw.data.interfaces.local.LocalMetadataDataSource
 import net.bagusekasaputra.griyakampoengtkw.data.interfaces.remote.RemoteFotoPembayaranDataSource
 import net.bagusekasaputra.griyakampoengtkw.data.interfaces.remote.RemoteMetadataDataSource
 import net.bagusekasaputra.griyakampoengtkw.data.model.FotoPembayaranModel
 import net.bagusekasaputra.griyakampoengtkw.data.model.MetadataModel
+import net.bagusekasaputra.griyakampoengtkw.domain.DataMode
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.FotoPembayaran
 import net.bagusekasaputra.griyakampoengtkw.domain.repository.FotoPembayaranRepository
 
@@ -20,6 +23,7 @@ class FotoPembayaranRepositoryImpl(
     private val localFotoPembayaran: LocalFotoPembayaranDataSource,
     private val deviceDataSource: LocalFotoPembayaranDataSource,
     private val remoteFotoPembayaran: RemoteFotoPembayaranDataSource,
+    private val backupFotoPembayaranDataSource: BackupFotoPembayaranDataSource,
     private val localMetadata: LocalMetadataDataSource,
     private val remoteMetadata: RemoteMetadataDataSource,
 ): FotoPembayaranRepository {
@@ -70,13 +74,30 @@ class FotoPembayaranRepositoryImpl(
 
                 // Second try
                 emit(localFotoPembayaran.getFotoPembayaran(kavlingKode, termin).map { model ->
-                    if (model != null) mapFotoPembayaranModel(model)
+                    if (model != null) mapFotoPembayaran(model)
                     else null
                 })
             } else {
-                emit(Result.success(mapFotoPembayaranModel(localModel)))
+                emit(Result.success(mapFotoPembayaran(localModel)))
                 Log.d("DEBUG_ME", "FotoPembayaranRepoImpl->get(): Succesfully fetch Foto Pembayaran $kavlingKode on termin $termin from local data source.")
             }
+        }
+    }
+
+    override fun getFromBackup(kavlingKode: String, termin: String): Flow<Result<FotoPembayaran?>> {
+        return callbackFlow {
+            backupFotoPembayaranDataSource.getFotoPembayaran(kavlingKode, termin)
+                .onSuccess {
+                    trySendBlocking(DataUtil.mapSingleResult(
+                        originResult = Result.success(it),
+                        targetMapper = ::mapFotoPembayaran,
+                    ))
+                }
+                .onFailure {
+                    trySendBlocking(Result.failure(Throwable("Gagal mendapatkan Foto Pembayaran $kavlingKode $termin : ${it.cause}")))
+                }
+
+            awaitClose {  }
         }
     }
 
@@ -137,9 +158,23 @@ class FotoPembayaranRepositoryImpl(
         }
     }
 
-    override fun isFotoPembayaranExist(kavlingKode: String, termin: String): Flow<Result<Boolean>> {
+    override fun isFotoPembayaranExist(kavlingKode: String, termin: String, dataMode: DataMode): Flow<Result<Boolean>> {
         return flow {
-            emitAll(remoteFotoPembayaran.isFotoPembayaranExist(kavlingKode, termin))
+            if (dataMode == DataMode.DATA_LAMA) {
+                backupFotoPembayaranDataSource.isFotoPembayaranExist(kavlingKode, termin)
+                    .onSuccess {
+                        if (it == null) {
+                            emit(Result.failure(Throwable("Pengecekan Foto Pembayaran berakhir NULL (FotoPembayaranRepoImpl:167)")))
+                        } else {
+                            emit(Result.success(it))
+                        }
+                    }
+                    .onFailure {
+                        emit(Result.failure(Throwable("Gagal Availability Foto Pembayaran $kavlingKode $termin: ${it.cause}")))
+                    }
+            } else {
+                emitAll(remoteFotoPembayaran.isFotoPembayaranExist(kavlingKode, termin))
+            }
         }
     }
 
@@ -173,7 +208,7 @@ class FotoPembayaranRepositoryImpl(
         }
     }
 
-    private fun mapFotoPembayaranModel(fotoPembayaran: FotoPembayaran, uriStr: String): FotoPembayaranModel {
+    private fun mapFotoPembayaran(fotoPembayaran: FotoPembayaran, uriStr: String): FotoPembayaranModel {
         return fotoPembayaran.let {
             FotoPembayaranModel(
                 id = it.id,
@@ -184,7 +219,7 @@ class FotoPembayaranRepositoryImpl(
         }
     }
 
-    private fun mapFotoPembayaranModel(fotoPembayaranModel: FotoPembayaranModel): FotoPembayaran {
+    private fun mapFotoPembayaran(fotoPembayaranModel: FotoPembayaranModel): FotoPembayaran {
         return fotoPembayaranModel.let {
             FotoPembayaran(
                 id = it.id,

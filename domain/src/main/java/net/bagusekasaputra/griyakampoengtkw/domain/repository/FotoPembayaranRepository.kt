@@ -1,11 +1,14 @@
 package net.bagusekasaputra.griyakampoengtkw.domain.repository
 
 import kotlinx.coroutines.flow.Flow
+import net.bagusekasaputra.griyakampoengtkw.domain.DataMode
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.FotoPembayaran
 
 interface FotoPembayaranRepository {
 
     fun getFotoPembayaran(kavlingKode: String, termin: String): Flow<Result<FotoPembayaran?>>
+
+    fun getFromBackup(kavlingKode: String, termin: String): Flow<Result<FotoPembayaran?>>
 
     fun addFotoPembayaran(
         kavlingKode: String,
@@ -20,7 +23,7 @@ interface FotoPembayaranRepository {
 
     // This is to prevent an unintentional replacement of existing image, the data is
     // important after all ...
-    fun isFotoPembayaranExist(kavlingKode: String, termin: String): Flow<Result<Boolean>>
+    fun isFotoPembayaranExist(kavlingKode: String, termin: String, dataMode: DataMode): Flow<Result<Boolean>>
 
     fun deleteAllFotoPembayaran(kavlingKode: String): Flow<Result<Nothing?>>
 }

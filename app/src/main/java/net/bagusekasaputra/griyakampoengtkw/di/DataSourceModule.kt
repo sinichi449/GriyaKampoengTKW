@@ -31,6 +31,7 @@ import net.bagusekasaputra.griyakampoengtkw.data.backup.blok.BackupBlokDataSourc
 import net.bagusekasaputra.griyakampoengtkw.data.backup.catatanPembayaran.BackupCatatanPembayaranDataSourceImpl
 import net.bagusekasaputra.griyakampoengtkw.data.backup.dataDiri.BackupDataDiriDataSourceImpl
 import net.bagusekasaputra.griyakampoengtkw.data.backup.feeMarketing.BackupFeeMarketingDataSourceImpl
+import net.bagusekasaputra.griyakampoengtkw.data.backup.fotoPembayaran.BackupFotoPembayaranDataSourceImpl
 import net.bagusekasaputra.griyakampoengtkw.data.backup.hargaKavling.BackupHargaKavlingDataSourceImpl
 import net.bagusekasaputra.griyakampoengtkw.data.backup.imageDataDiri.BackupImageDataDiriDataSourceImpl
 import net.bagusekasaputra.griyakampoengtkw.data.backup.kavling.BackupKavlingDataSourceImpl
@@ -309,6 +310,11 @@ object DataSourceModule {
     @Provides
     fun provideRemoteFotoPembayaranDataSource(storageReference: StorageReference, @ExternalDir externalFilesDir: File?): RemoteFotoPembayaranDataSource {
         return StorageFotoPembayaranDataSource(storageReference, externalFilesDir)
+    }
+
+    @Provides
+    fun provideBackupFotoPembayaranDataSource(sharedPreferences: SharedPreferences): BackupFotoPembayaranDataSource {
+        return BackupFotoPembayaranDataSourceImpl(sharedPreferences)
     }
 
 
