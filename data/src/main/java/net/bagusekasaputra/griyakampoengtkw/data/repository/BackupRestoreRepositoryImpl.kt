@@ -25,6 +25,7 @@ class BackupRestoreRepositoryImpl(
     private val backupImageDataDiriDataSource: BackupImageDataDiriDataSource,
     private val backupFotoPembayaranDataSource: BackupFotoPembayaranDataSource,
     private val backupImageSPRDataSource: BackupImageSPRDataSource,
+    private val backupRestoreDataSource: BackupRestoreDataSource,
 ): BackupRestoreRepository {
 
     override fun createBackup(backupRestoreEntity: BackupRestoreEntity): Flow<Result<Nothing?>> {
@@ -149,6 +150,7 @@ class BackupRestoreRepositoryImpl(
                 }
 
 
+                // Create invidiual data backup to specific path
                 backupBlokDataSource.createBackup(backupPath.absolutePath, listBlok).onFailure {
                     throw it
                 }
@@ -185,7 +187,20 @@ class BackupRestoreRepositoryImpl(
                 backupImageSPRDataSource.createBackup(backupPath.absolutePath, listImageSpr).onFailure { throw it }
 
 
-                trySendBlocking(Result.success(null))
+                // Save all backup to requested SavePath
+                backupRestoreDataSource.createZippedBackup(
+                    backupPath = backupPath.absolutePath,
+                    backupName = backupRestoreEntity.backupName,
+                    savePath = backupRestoreEntity.backupSavePath,
+                )
+                    .onSuccess {
+                        trySendBlocking(Result.success(null))
+                    }
+                    .onFailure {
+                        it.printStackTrace()
+
+                        throw it
+                    }
             } catch (e: Exception) {
                 e.printStackTrace()
 

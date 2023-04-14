@@ -40,4 +40,5 @@ dependencies {
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.5.0'
 
     implementation 'com.google.code.gson:gson:2.10.1'
+    implementation 'net.lingala.zip4j:zip4j:2.11.5'
 }

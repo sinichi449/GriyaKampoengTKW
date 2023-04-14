@@ -6,6 +6,7 @@ import net.bagusekasaputra.griyakampoengtkw.domain.entity.images.ImageSprUri
 
 data class BackupRestoreEntity(
     val backupName: String,
+    val backupSavePath: String,
     val listBlok: List<Block>,
     val listKavling: HashMap<String, List<Kavling>>,
     val listPembayaran: Map<String, List<Pembayaran>?>,

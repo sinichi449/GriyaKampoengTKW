@@ -29,9 +29,10 @@ class SettingsViewModel @Inject constructor(
 
     fun createBackup(
         backupName: String,
+        backupSavePath: String,
         onFailure: (reason: String) -> Unit,
     ) {
-        val request = CreateBackupAsyncUseCase.Request(backupName)
+        val request = CreateBackupAsyncUseCase.Request(backupName, backupSavePath)
 
         _backupRestoreProgress.value = null
         _isBackupComplete.value = false

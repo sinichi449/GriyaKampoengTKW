@@ -1,11 +1,15 @@
 package net.bagusekasaputra.griyakampoengtkw.presentation.activities
 
+import abhishekti7.unicorn.filepicker.UnicornFilePicker
 import android.app.ProgressDialog
 import android.content.Intent
 import android.os.Bundle
+import android.os.Environment
+import android.util.Log
 import android.view.MenuItem
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.app.ActivityCompat
 import androidx.fragment.app.viewModels
 import androidx.preference.Preference
 import androidx.preference.PreferenceFragmentCompat
@@ -48,9 +52,14 @@ class SettingsActivity : AppCompatActivity() {
                 isIndeterminate = false
             }
         }
+        private val PICK_BACKUP_PATH_REQUEST = 4
+        private val READ_WRITE_STORAGE_REQUEST = 5
+        private var dialogBinding: DialogCreateBackupBinding? = null
 
         override fun onCreatePreferences(savedInstanceState: Bundle?, rootKey: String?) {
             setPreferencesFromResource(R.xml.root_preferences, rootKey)
+
+            requestReadWriteExternalStorage()
 
             val backupData = findPreference<Preference>("backup_data")
             val restoreData = findPreference<Preference>("restore_data")
@@ -58,11 +67,11 @@ class SettingsActivity : AppCompatActivity() {
             backupData?.setOnPreferenceClickListener {
                 progressDialog.setTitle("Membackup Data")
 
-                showSetNamaBackupDialog {
+                showSetNamaBackupDialog(onBtnOkClick = { backupName, backupAbsolutePath ->
                     viewModel.createBackup(
-                        backupName = it,
+                        backupName = backupName,
+                        backupSavePath = backupAbsolutePath,
                         onFailure = { failReason ->
-                            // TODO: On failure
                             Toast.makeText(
                                 requireContext(),
                                 "Gagal membuat backup: $failReason",
@@ -70,7 +79,7 @@ class SettingsActivity : AppCompatActivity() {
                             ).show()
                         }
                     )
-                }
+                })
 
                 true
             }
@@ -86,12 +95,18 @@ class SettingsActivity : AppCompatActivity() {
         }
 
         private fun setupViewModel() {
-            viewModel.isBackupComplete.observe(this) { isComplete ->
+            viewModel.isBackupComplete.observe(requireActivity()) { isComplete ->
                 isComplete?.let {
-                    if (it) progressDialog.dismiss() else progressDialog.show()
+                    if (it) {
+                        progressDialog.dismiss()
+
+                        Toast.makeText(requireContext(), "Berhasil membuat backup!", Toast.LENGTH_SHORT).show()
+                    } else{
+                        progressDialog.show()
+                    }
                 }
             }
-            viewModel.backupRestoreProgress.observe(this) { progress ->
+            viewModel.backupRestoreProgress.observe(requireActivity()) { progress ->
                 progress?.let {
                     progressDialog.progress = it.progress
                     progressDialog.setMessage(it.message)
@@ -99,31 +114,40 @@ class SettingsActivity : AppCompatActivity() {
             }
         }
 
-        private fun showSetNamaBackupDialog(onBtnOkClick: (namaBackup: String) -> Unit) {
-            val dialogBinding = DialogCreateBackupBinding.inflate(layoutInflater)
+        private fun showSetNamaBackupDialog(onBtnOkClick: (namaBackup: String, backupSaveAbsolutePath: String) -> Unit) {
+            dialogBinding = DialogCreateBackupBinding.inflate(layoutInflater)
             val dialogView = MaterialAlertDialogBuilder(requireContext()).apply {
-                setView(dialogBinding.root)
+                setView(dialogBinding?.root)
             }.create()
 
             DialogUtil.additionalDialogSetting(requireContext(), dialogView)
 
-            dialogBinding.edtNamaBackup.setText(getDefaultBackupName())
+            dialogBinding?.edtNamaBackup?.setText(getDefaultBackupName())
+            dialogBinding?.edtSaveFolderPath?.setText(getDefaultBackupPath())
 
             dialogView.show()
 
-            dialogBinding.btnBuatBackup.setOnClickListener {
-                val isInvalidEdt = InputUtil.isNullOrEmptyEditTexts(dialogBinding.edtNamaBackup)
+            dialogBinding?.btnBuatBackup?.setOnClickListener {
+                val isInvalidEdt = dialogBinding?.let {
+                    InputUtil.isNullOrEmptyEditTexts(
+                        it.edtNamaBackup,
+                        it.edtSaveFolderPath
+                    )
+                } ?: false
 
                 if (!isInvalidEdt) {
-                    val namaBackup = dialogBinding.edtNamaBackup.text.toString()
+                    val namaBackup = dialogBinding?.edtNamaBackup?.text.toString()
+                    val backupAbsolutePath = dialogBinding?.edtSaveFolderPath?.text.toString()
 
-                    onBtnOkClick(namaBackup)
+                    onBtnOkClick(namaBackup, backupAbsolutePath)
 
                     dialogView.dismiss()
                 }
             }
-
-            dialogBinding.btnBatal.setOnClickListener {
+            dialogBinding?.btnPilihFolder?.setOnClickListener {
+                showBackupSavePathPicker()
+            }
+            dialogBinding?.btnBatal?.setOnClickListener {
                 dialogView.dismiss()
             }
 
@@ -143,6 +167,45 @@ class SettingsActivity : AppCompatActivity() {
             val menit = padWithZero(calendar.get(Calendar.MINUTE))
 
             return "backup_$tahun$bulan${tanggal}_$jam$menit"
+        }
+
+        private fun getDefaultBackupPath(): String {
+            return Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS)
+                .absolutePath
+        }
+
+        private fun requestReadWriteExternalStorage() {
+            ActivityCompat.requestPermissions(
+                requireActivity(),
+                arrayOf(android.Manifest.permission.READ_EXTERNAL_STORAGE, android.Manifest.permission.WRITE_EXTERNAL_STORAGE),
+                READ_WRITE_STORAGE_REQUEST,
+            )
+        }
+
+        private fun showBackupSavePathPicker() {
+            UnicornFilePicker.from(this)
+                .addConfigBuilder()
+                .selectMultipleFiles(false)
+                .showOnlyDirectory(true)
+                .setRootDirectory(Environment.getExternalStorageDirectory().absolutePath)
+                .showHiddenFiles(false)
+                .addItemDivider(true)
+                .build()
+                .forResult(PICK_BACKUP_PATH_REQUEST)
+        }
+
+        override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+            super.onActivityResult(requestCode, resultCode, data)
+
+            when (requestCode) {
+                PICK_BACKUP_PATH_REQUEST -> if (resultCode == RESULT_OK) {
+                    val arrFilePathStr = data?.getStringArrayListExtra("filePaths")
+
+//                    viewModel.setBackupSavePath(arrFilePathStr?.get(0) ?: "")
+                    Log.d("DEBUG_ME", "SettingsActivity: Got Backup Save Path on $arrFilePathStr")
+                    dialogBinding?.edtSaveFolderPath?.setText(arrFilePathStr?.get(0))
+                }
+            }
         }
     }
 

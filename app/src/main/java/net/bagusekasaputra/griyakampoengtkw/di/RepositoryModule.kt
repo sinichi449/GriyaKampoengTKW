@@ -278,6 +278,7 @@ object RepositoryModule {
         backupImageDataDiriDataSource: BackupImageDataDiriDataSource,
         backupFotoPembayaranDataSource: BackupFotoPembayaranDataSource,
         backupImageSPRDataSource: BackupImageSPRDataSource,
+        backupRestoreDataSource: BackupRestoreDataSource,
     ): BackupRestoreRepository {
         return BackupRestoreRepositoryImpl(
             internalFiles,
@@ -293,6 +294,7 @@ object RepositoryModule {
             backupImageDataDiriDataSource,
             backupFotoPembayaranDataSource,
             backupImageSPRDataSource,
+            backupRestoreDataSource,
         )
     }
 }

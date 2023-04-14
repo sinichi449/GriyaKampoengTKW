@@ -32,7 +32,7 @@ class CreateBackupAsyncUseCase(
         val progress: Int,
         val message: String,
     )
-    data class Request(val backupName: String): AsyncUseCase.Request
+    data class Request(val backupName: String, val backupSavepath: String): AsyncUseCase.Request
 
     override fun process(request: Request): Flow<Result<Progress?>> {
         return callbackFlow {
@@ -147,6 +147,7 @@ class CreateBackupAsyncUseCase(
 
             val backupRestoreEntity = BackupRestoreEntity(
                 request.backupName,
+                request.backupSavepath,
                 listBlok,
                 listKavlings,
                 listPembayaran,
@@ -161,6 +162,8 @@ class CreateBackupAsyncUseCase(
                 listImageSprUri,
             )
 
+
+            trySendBlocking(Result.success(Progress(91, "Membuat arsip ${request.backupName}.zip ...")))
             backupRestoreRepository.createBackup(backupRestoreEntity)
                 .first()
                 .onSuccess {
