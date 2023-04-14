@@ -10,6 +10,8 @@ interface FotoPembayaranRepository {
 
     fun getFromBackup(kavlingKode: String, termin: String): Flow<Result<FotoPembayaran?>>
 
+    fun getBatchUri(mapKavlingTermin: Map<String, List<String>>): Flow<Result<List<FotoPembayaran>?>>
+
     fun addFotoPembayaran(
         kavlingKode: String,
         termin: String,

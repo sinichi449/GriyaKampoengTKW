@@ -23,6 +23,7 @@ class BackupRestoreRepositoryImpl(
     private val backupFeeMarketingDataSource: BackupFeeMarketingDataSource,
     private val backupBiayaLainDataSource: BackupBiayaLainDataSource,
     private val backupImageDataDiriDataSource: BackupImageDataDiriDataSource,
+    private val backupFotoPembayaranDataSource: BackupFotoPembayaranDataSource,
 ): BackupRestoreRepository {
 
     override fun createBackup(backupRestoreEntity: BackupRestoreEntity): Flow<Result<Nothing?>> {
@@ -127,6 +128,15 @@ class BackupRestoreRepositoryImpl(
 
                     newList.toList()
                 }
+                val listFotoPembayaran = backupRestoreEntity.listFotoPembayaran.run {
+                    val newList = mutableListOf<FotoPembayaranModel>()
+
+                    this.forEach { fotoPembayaran ->
+                        newList.add(MyObjectMapper.mapFotoPembayaran(fotoPembayaran))
+                    }
+
+                    newList.toList()
+                }
 
 
                 backupBlokDataSource.createBackup(backupPath.absolutePath, listBlok).onFailure {
@@ -159,10 +169,15 @@ class BackupRestoreRepositoryImpl(
                 backupImageDataDiriDataSource.createBackup(backupPath.absolutePath, listImageDataDiri).onFailure {
                     throw it
                 }
+                backupFotoPembayaranDataSource.createBackup(backupPath.absolutePath, listFotoPembayaran).onFailure {
+                    throw it
+                }
 
 
                 trySendBlocking(Result.success(null))
             } catch (e: Exception) {
+                e.printStackTrace()
+
                 trySendBlocking(Result.failure(e))
             }
 

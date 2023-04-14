@@ -268,4 +268,30 @@ object MyObjectMapper {
             )
         }
     }
+
+
+    /**
+     * Foto Pembayaran
+     */
+    fun mapFotoPembayaran(fotoPembayaran: FotoPembayaran): FotoPembayaranModel {
+        return fotoPembayaran.let {
+            FotoPembayaranModel(
+                id = it.id,
+                kavlingKode = it.kavlingKode,
+                termin = it.termin,
+                uriStr = it.uri.toString(),
+            )
+        }
+    }
+
+    fun mapFotoPembayaran(fotoPembayaranModel: FotoPembayaranModel): FotoPembayaran {
+        return fotoPembayaranModel.let {
+            FotoPembayaran(
+                id = it.id,
+                kavlingKode = it.kavlingKode,
+                termin = it.termin,
+                uri = it.getUri(),
+            )
+        }
+    }
 }

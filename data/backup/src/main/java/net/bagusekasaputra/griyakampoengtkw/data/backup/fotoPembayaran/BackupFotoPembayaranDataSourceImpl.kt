@@ -2,7 +2,9 @@ package net.bagusekasaputra.griyakampoengtkw.data.backup.fotoPembayaran
 
 import android.content.SharedPreferences
 import android.util.Log
+import androidx.core.net.toFile
 import androidx.core.net.toUri
+import net.bagusekasaputra.griyakampoengtkw.data.backup.FOLDER_FOTO_PEMBAYARAN
 import net.bagusekasaputra.griyakampoengtkw.data.backup.PATH_FOTO_PEMBAYARAN
 import net.bagusekasaputra.griyakampoengtkw.data.backup.PREFS_PATH_DATA_LAMA
 import net.bagusekasaputra.griyakampoengtkw.data.interfaces.backup.BackupFotoPembayaranDataSource
@@ -17,7 +19,7 @@ class BackupFotoPembayaranDataSourceImpl(
         return File("${sharedPreferences.getString(PREFS_PATH_DATA_LAMA, "")}/${PATH_FOTO_PEMBAYARAN(kavlingKode, termin)}")
     }
 
-    override fun getFotoPembayaran(
+    override suspend fun getFotoPembayaran(
         kavlingKode: String,
         termin: String
     ): Result<FotoPembayaranModel?> {
@@ -41,11 +43,13 @@ class BackupFotoPembayaranDataSourceImpl(
                 Result.success(null)
             }
         } catch (e: Exception) {
+            e.printStackTrace()
+
             Result.failure(e)
         }
     }
 
-    override fun isFotoPembayaranExist(kavlingKode: String, termin: String): Result<Boolean?> {
+    override suspend fun isFotoPembayaranExist(kavlingKode: String, termin: String): Result<Boolean?> {
         return try {
             val fileFotoPembayaran = getFileFotoPembayaran(kavlingKode, termin)
 
@@ -59,14 +63,40 @@ class BackupFotoPembayaranDataSourceImpl(
                 Result.success(false)
             }
         } catch (e: Exception) {
+            e.printStackTrace()
+
             Result.failure(e)
         }
     }
 
-    override fun createBackup(
+    override suspend fun createBackup(
         backupPath: String,
         listFotoPembayaran: List<FotoPembayaranModel>
     ): Result<Nothing?> {
-        TODO("Not yet implemented")
+        return try {
+            if (listFotoPembayaran.isEmpty()) {
+                Log.d("DEBUG_ME", "BackupFotoPembayaran: Argument \"listFotoPembayaran\" is EMPTY!")
+            }
+
+            val backupFolder = File("$backupPath/$FOLDER_FOTO_PEMBAYARAN")
+            if (!backupFolder.exists()) backupFolder.mkdir()
+
+            listFotoPembayaran.forEach {
+                val fotoPembayaranFile = it.uriStr.toUri().toFile()
+                var targetFolder = File(backupFolder, it.kavlingKode)
+
+                if (!targetFolder.exists()) targetFolder.mkdir()
+
+                targetFolder = File(targetFolder, it.getFilename())
+
+                fotoPembayaranFile.copyTo(targetFolder, true)
+            }
+
+            Result.success(null)
+        } catch (e: Exception) {
+            e.printStackTrace()
+
+            Result.failure(e)
+        }
     }
 }

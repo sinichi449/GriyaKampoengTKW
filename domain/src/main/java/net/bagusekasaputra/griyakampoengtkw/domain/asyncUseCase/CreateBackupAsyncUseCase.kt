@@ -23,6 +23,7 @@ class CreateBackupAsyncUseCase(
     private val feeMarketingRepository: FeeMarketingRepository,
     private val biayaLainRepository: BiayaLainRepository,
     private val imageDataDiriRepository: ImageDataDiriRepository,
+    private val fotoPembayaranRepository: FotoPembayaranRepository,
     private val backupRestoreRepository: BackupRestoreRepository,
 ): AsyncUseCase<CreateBackupAsyncUseCase.Request, CreateBackupAsyncUseCase.Progress>() {
 
@@ -121,6 +122,23 @@ class CreateBackupAsyncUseCase(
             val listImageDataDiriUri = imageDataDiriRepository.getBatchUri(listKavling = listKodeKavlings)
                 .first().getOrNull() ?: emptyList()
 
+            trySendBlocking(Result.success(Progress(77, "Mendownload Foto Pembayaran")))
+            val mapKavlingTermin = mutableMapOf<String, List<String>>().run {
+                listPembayaran.keys.forEach { kavling ->
+                    val listTermin = mutableListOf<String>()
+
+                    listPembayaran[kavling]?.forEach { pembayaran ->
+                        listTermin.add(pembayaran.termin)
+                    }
+
+                    this[kavling] = listTermin.toList()
+                }
+
+                this
+            }
+            val listFotoPembayaran = fotoPembayaranRepository.getBatchUri(mapKavlingTermin)
+                .first().getOrThrow() ?: emptyList()
+
 
             val backupRestoreEntity = BackupRestoreEntity(
                 request.backupName,
@@ -134,6 +152,7 @@ class CreateBackupAsyncUseCase(
                 listFeeMarketing,
                 listBiayaLain,
                 listImageDataDiriUri,
+                listFotoPembayaran,
             )
 
             backupRestoreRepository.createBackup(backupRestoreEntity)

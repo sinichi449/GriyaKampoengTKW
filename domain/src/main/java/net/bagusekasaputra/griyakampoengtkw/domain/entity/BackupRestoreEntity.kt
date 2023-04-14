@@ -15,4 +15,5 @@ data class BackupRestoreEntity(
     val listFeeMarketing: List<FeeMarketing>,
     val listBiayaLain: List<BiayaLain>,
     val listImageDataDiriUri: List<ImageDataDiriUri>,
+    val listFotoPembayaran: List<FotoPembayaran>,
 )

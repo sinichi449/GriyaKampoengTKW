@@ -3,11 +3,9 @@ package net.bagusekasaputra.griyakampoengtkw.data.repository
 import android.util.Log
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.channels.trySendBlocking
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.callbackFlow
-import kotlinx.coroutines.flow.emitAll
-import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.*
 import net.bagusekasaputra.griyakampoengtkw.data.DataUtil
+import net.bagusekasaputra.griyakampoengtkw.data.MyObjectMapper.mapFotoPembayaran
 import net.bagusekasaputra.griyakampoengtkw.data.interfaces.backup.BackupFotoPembayaranDataSource
 import net.bagusekasaputra.griyakampoengtkw.data.interfaces.local.LocalFotoPembayaranDataSource
 import net.bagusekasaputra.griyakampoengtkw.data.interfaces.local.LocalMetadataDataSource
@@ -34,25 +32,35 @@ class FotoPembayaranRepositoryImpl(
     private val remoteTable = { kavlingKode: String ->
         "image_foto_pembayaran/${kavlingKode}/"
     }
+    private var hasMetadataChecked = false
 
     override fun getFotoPembayaran(
         kavlingKode: String,
         termin: String
     ): Flow<Result<FotoPembayaran?>> {
         return flow {
-            // Cache validation
-            val localTimestamp = localMetadata.get(localTable(kavlingKode))
-                ?.timestamp
-            val serverTimestamp = remoteMetadata.get(remoteTable(kavlingKode))!!
-                .timestamp
-            val cacheInvalid = localTimestamp != serverTimestamp
+            if (!hasMetadataChecked) {
+                Log.d("DEBUG_ME", "FotoPembayaranRepoImpl: Checking Metadata now ...")
+                val localTimestamp = localMetadata.get(localTable(kavlingKode))
+                    ?.timestamp
+                val serverTimestamp = remoteMetadata.get(remoteTable(kavlingKode))!!
+                    .timestamp
+                val cacheInvalid = localTimestamp != serverTimestamp
 
-            if (cacheInvalid) {
-                Log.d("DEBUG_ME", "FotoPembayaranRepo->get(): Cache foto pembayaran invalid!! Deleting all foto pembayaran cache ...")
-                localFotoPembayaran.deleteAll(kavlingKode)
-                localMetadata.insert(
-                    MetadataModel(localTable(kavlingKode), serverTimestamp)
-                )
+                if (cacheInvalid) {
+                    Log.d(
+                        "DEBUG_ME",
+                        "FotoPembayaranRepo->get(): Cache foto pembayaran invalid!! Deleting all foto pembayaran cache ..."
+                    )
+                    localFotoPembayaran.deleteAll(kavlingKode)
+                    localMetadata.insert(
+                        MetadataModel(localTable(kavlingKode), serverTimestamp)
+                    )
+                }
+
+                hasMetadataChecked = true
+            } else {
+                Log.d("DEBUG_ME", "FotoPembayaranRepoImpl: Skipping check Metadata!")
             }
 
             // Emiting value
@@ -96,6 +104,36 @@ class FotoPembayaranRepositoryImpl(
                 .onFailure {
                     trySendBlocking(Result.failure(Throwable("Gagal mendapatkan Foto Pembayaran $kavlingKode $termin : ${it.cause}")))
                 }
+
+            awaitClose {  }
+        }
+    }
+
+    override fun getBatchUri(mapKavlingTermin: Map<String, List<String>>): Flow<Result<List<FotoPembayaran>?>> {
+        return callbackFlow {
+            val listFotoPembayaran = mutableListOf<FotoPembayaran>()
+
+            mapKavlingTermin.keys.forEach { kavling ->
+                val listTermin = mapKavlingTermin[kavling]
+
+                listTermin?.forEach { termin ->
+                    getFotoPembayaran(kavling, termin).first()
+                        .onSuccess {
+                            if (it != null) listFotoPembayaran.add(it)
+                        }
+                        .onFailure {
+                            it.printStackTrace()
+
+                            Log.d("DEBUG_ME", "FotoPembayaranRepoImpl:126 --> ${it.cause}")
+                        }
+                }
+            }
+
+            if (listFotoPembayaran.isEmpty()) {
+                trySendBlocking(Result.success(null))
+            } else {
+                trySendBlocking(Result.success(listFotoPembayaran))
+            }
 
             awaitClose {  }
         }
@@ -205,28 +243,6 @@ class FotoPembayaranRepositoryImpl(
                 }
 
             awaitClose {  }
-        }
-    }
-
-    private fun mapFotoPembayaran(fotoPembayaran: FotoPembayaran, uriStr: String): FotoPembayaranModel {
-        return fotoPembayaran.let {
-            FotoPembayaranModel(
-                id = it.id,
-                kavlingKode = it.kavlingKode,
-                termin = it.termin,
-                uriStr = uriStr,
-            )
-        }
-    }
-
-    private fun mapFotoPembayaran(fotoPembayaranModel: FotoPembayaranModel): FotoPembayaran {
-        return fotoPembayaranModel.let {
-            FotoPembayaran(
-                id = it.id,
-                kavlingKode = it.kavlingKode,
-                termin = it.termin,
-                uri = it.getUri(),
-            )
         }
     }
 

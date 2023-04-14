@@ -2,6 +2,10 @@ package net.bagusekasaputra.griyakampoengtkw.data.remote.fotoPembayaran
 
 import android.util.Log
 import androidx.core.net.toUri
+import com.google.android.gms.tasks.OnCompleteListener
+import com.google.android.gms.tasks.OnFailureListener
+import com.google.firebase.storage.FileDownloadTask
+import com.google.firebase.storage.OnProgressListener
 import com.google.firebase.storage.StorageReference
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.channels.trySendBlocking
@@ -32,35 +36,44 @@ class StorageFotoPembayaranDataSource(
 
             Log.d("DEBUG_ME", "StorageFotoPembayaran->get(): Saving \"$filename\" to ${dstFile.toUri()}")
 
-            fotoPembayaranRef.child(filename)
-                .getFile(dstFile)
-                .addOnProgressListener {
-                    Log.d("DEBUG_ME", "StorageFotoPembayaran->get(): Downloading \"$filename\" is ${it.bytesTransferred}/${it.totalByteCount} bytes ...")
-                }
-                .addOnCompleteListener {
-                    Log.d("DEBUG_ME", "StorageFotoPembayaran->get(): Download \"$filename\" is completed!")
-                    if (dstFile.exists()) {
-                        trySendBlocking(
-                            FotoPembayaranModel(
-                                kavlingKode = kavlingKode,
-                                termin = termin,
-                                uriStr = dstFile.toUri().toString(),
-                            )
+            val onProgressListener = OnProgressListener<FileDownloadTask.TaskSnapshot> {
+                Log.d("DEBUG_ME", "StorageFotoPembayaran->get(): Downloading \"$filename\" is ${it.bytesTransferred}/${it.totalByteCount} bytes ...")
+            }
+            val onCompleteListener = OnCompleteListener<FileDownloadTask.TaskSnapshot> {
+                Log.d("DEBUG_ME", "StorageFotoPembayaran->get(): Download \"$filename\" is completed!")
+                if (dstFile.exists()) {
+                    trySendBlocking(
+                        FotoPembayaranModel(
+                            kavlingKode = kavlingKode,
+                            termin = termin,
+                            uriStr = dstFile.toUri().toString(),
                         )
-                    } else {
-                        Log.d("DEBUG_ME", "StorageFotoPembayaran->get(): Resulting downloaded file \"$filename\" is not found! Sending null instead.")
-                        trySendBlocking(null)
-                    }
-                }
-                .addOnFailureListener {
-                    it.printStackTrace()
-
-                    Log.d("DEBUG_ME", "StorageFotoPembayaran->get(): Failed to download \"$filename\": ${it.message}")
+                    )
+                } else {
+                    Log.d("DEBUG_ME", "StorageFotoPembayaran->get(): Resulting downloaded file \"$filename\" is not found! Sending null instead.")
                     trySendBlocking(null)
                 }
+            }
+            val onFailureListener = OnFailureListener {
+                it.printStackTrace()
+
+                Log.d("DEBUG_ME", "StorageFotoPembayaran->get(): Failed to download \"$filename\": ${it.message}")
+                trySendBlocking(null)
+            }
+            val downloadFotoPembayaranTask = fotoPembayaranRef.child(filename).getFile(dstFile)
+
+            downloadFotoPembayaranTask
+                .addOnProgressListener(onProgressListener)
+                .addOnCompleteListener(onCompleteListener)
+                .addOnFailureListener(onFailureListener)
 
             awaitClose {
-                Log.d("DEBUG_ME", "StorageFotoPembayaran->get(): Connection to storage GET \"$filename\" is closed.")
+                Log.d("DEBUG_ME", "StorageFotoPembayaran->get(): Connection to storage GET \"$filename\" is closed. Detaching listeners ...")
+
+                downloadFotoPembayaranTask
+                    .removeOnProgressListener(onProgressListener)
+                    .removeOnCompleteListener(onCompleteListener)
+                    .removeOnFailureListener(onFailureListener)
             }
         }.first()
     }
