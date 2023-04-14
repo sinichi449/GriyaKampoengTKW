@@ -1,6 +1,7 @@
 package net.bagusekasaputra.griyakampoengtkw.domain.entity
 
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.images.ImageDataDiriUri
+import net.bagusekasaputra.griyakampoengtkw.domain.entity.images.ImageSprUri
 
 
 data class BackupRestoreEntity(
@@ -16,4 +17,5 @@ data class BackupRestoreEntity(
     val listBiayaLain: List<BiayaLain>,
     val listImageDataDiriUri: List<ImageDataDiriUri>,
     val listFotoPembayaran: List<FotoPembayaran>,
+    val listImageSprUri: List<ImageSprUri>,
 )

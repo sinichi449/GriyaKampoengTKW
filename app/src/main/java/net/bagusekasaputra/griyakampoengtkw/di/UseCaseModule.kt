@@ -441,6 +441,7 @@ object UseCaseModule {
         biayaLainRepository: BiayaLainRepository,
         imageDataDiriRepository: ImageDataDiriRepository,
         fotoPembayaranRepository: FotoPembayaranRepository,
+        imageSprRepository: ImageSprRepository,
         backupRestoreRepository: BackupRestoreRepository,
     ): CreateBackupAsyncUseCase {
         return CreateBackupAsyncUseCase(
@@ -455,6 +456,7 @@ object UseCaseModule {
             biayaLainRepository,
             imageDataDiriRepository,
             fotoPembayaranRepository,
+            imageSprRepository,
             backupRestoreRepository,
         )
     }

@@ -24,6 +24,7 @@ class CreateBackupAsyncUseCase(
     private val biayaLainRepository: BiayaLainRepository,
     private val imageDataDiriRepository: ImageDataDiriRepository,
     private val fotoPembayaranRepository: FotoPembayaranRepository,
+    private val imageSprRepository: ImageSprRepository,
     private val backupRestoreRepository: BackupRestoreRepository,
 ): AsyncUseCase<CreateBackupAsyncUseCase.Request, CreateBackupAsyncUseCase.Progress>() {
 
@@ -139,6 +140,10 @@ class CreateBackupAsyncUseCase(
             val listFotoPembayaran = fotoPembayaranRepository.getBatchUri(mapKavlingTermin)
                 .first().getOrThrow() ?: emptyList()
 
+            trySendBlocking(Result.success(Progress(84, "Mendownload Foto SPR")))
+            val listImageSprUri = imageSprRepository.getBatchUri(listKavling = listKodeKavlings)
+                .first().getOrThrow() ?: emptyList()
+
 
             val backupRestoreEntity = BackupRestoreEntity(
                 request.backupName,
@@ -153,6 +158,7 @@ class CreateBackupAsyncUseCase(
                 listBiayaLain,
                 listImageDataDiriUri,
                 listFotoPembayaran,
+                listImageSprUri,
             )
 
             backupRestoreRepository.createBackup(backupRestoreEntity)

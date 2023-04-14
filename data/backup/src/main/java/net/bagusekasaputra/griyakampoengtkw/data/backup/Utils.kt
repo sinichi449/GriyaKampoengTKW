@@ -17,6 +17,7 @@ const val JSON_BIAYA_LAINS = "biaya_lains.json"
 
 const val FOLDER_IMAGE_DATA_DIRI = "data_diri_images"
 const val FOLDER_FOTO_PEMBAYARAN = "foto_pembayaran_images"
+const val FOLDER_IMAGE_SPR = "spr_images"
 
 val PATH_IMAGE_DATA_DIRI = { kavling: String ->
     "$FOLDER_IMAGE_DATA_DIRI/${kavling}_data_diri.png"
@@ -25,8 +26,9 @@ val PATH_FOTO_PEMBAYARAN = { kavlingKode: String, termin: String ->
     "$FOLDER_FOTO_PEMBAYARAN/$kavlingKode/${kavlingKode}_${termin}.png"
 }
 val PATH_IMAGE_SPR = { kavlingKode: String ->
-    "spr_images/${kavlingKode}_SPR.png"
+    "$FOLDER_IMAGE_SPR/${kavlingKode}_SPR.png"
 }
+
 
 
 fun readFile(file: File): String {

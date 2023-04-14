@@ -1,9 +1,13 @@
 package net.bagusekasaputra.griyakampoengtkw.data
 
+import android.content.ContentResolver
+import android.net.Uri
 import net.bagusekasaputra.griyakampoengtkw.data.model.*
+import net.bagusekasaputra.griyakampoengtkw.domain.ImageUtil
 import net.bagusekasaputra.griyakampoengtkw.domain.NumberUtil
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.*
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.images.ImageDataDiriUri
+import net.bagusekasaputra.griyakampoengtkw.domain.entity.images.ImageSprUri
 
 
 /**
@@ -291,6 +295,46 @@ object MyObjectMapper {
                 kavlingKode = it.kavlingKode,
                 termin = it.termin,
                 uri = it.getUri(),
+            )
+        }
+    }
+
+
+    /**
+     * Image Spr
+     */
+    fun mapImageSpr(imageSprModel: ImageSprModel): ImageSprUri {
+        return imageSprModel.let {
+            ImageSprUri(
+                kavlingKode = it.kavlingKode,
+                uriStr = it.dstUri,
+            )
+        }
+    }
+
+    fun mapImageSpr(imageSprUri: ImageSprUri): ImageSprModel {
+        return imageSprUri.let {
+            ImageSprModel(
+                kavlingKode = it.kavlingKode,
+                dstUri = it.uriStr,
+            )
+        }
+    }
+
+    fun mapImageSpr(imageSpr: ImageSpr, dstUri: String): ImageSprModel {
+        return imageSpr.let {
+            ImageSprModel(
+                kavlingKode = it.kavlingKode,
+                dstUri = dstUri,
+            )
+        }
+    }
+
+    fun mapImageSpr(imageSprModel: ImageSprModel, contentResolver: ContentResolver): ImageSpr {
+        return imageSprModel.let {
+            ImageSpr(
+                kavlingKode = it.kavlingKode,
+                bitmap = ImageUtil.getBitmapFromUri(contentResolver, Uri.parse(it.dstUri))
             )
         }
     }

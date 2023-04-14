@@ -4,8 +4,8 @@ import net.bagusekasaputra.griyakampoengtkw.data.model.ImageSprModel
 
 interface BackupImageSPRDataSource {
 
-    fun getImageSPR(kavlingKode: String): Result<ImageSprModel?>
+    suspend fun getImageSPR(kavlingKode: String): Result<ImageSprModel?>
 
-    fun createBackup(backupPath: String, listSprImage: List<ImageSprModel>?): Result<Nothing?>
+    suspend fun createBackup(backupPath: String, listSprImage: List<ImageSprModel>?): Result<Nothing?>
 
 }
