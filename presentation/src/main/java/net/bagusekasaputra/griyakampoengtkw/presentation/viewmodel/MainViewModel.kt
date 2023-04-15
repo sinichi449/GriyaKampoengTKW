@@ -1,5 +1,6 @@
 package net.bagusekasaputra.griyakampoengtkw.presentation.viewmodel
 
+import android.os.Parcelable
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -42,6 +43,8 @@ class MainViewModel @Inject constructor(
     val currentBlock = MutableLiveData("A")
 
     val tabSelectedLive = MutableLiveData(0)
+
+    var kavlingRecyclerState: Parcelable? = null
 
     val isFinishOperation = MutableLiveData<Boolean>()
 

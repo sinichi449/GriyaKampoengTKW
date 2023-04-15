@@ -3,6 +3,7 @@ package net.bagusekasaputra.griyakampoengtkw.presentation.fragment
 import android.content.Intent
 import android.content.res.Configuration
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -50,6 +51,7 @@ class KavlingFragment : Fragment() {
     private lateinit var fabAddBlock: FloatingActionButton
 
     private var isAllFabsVisible = false
+    private lateinit var kavlingRecyclerView: RecyclerView
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -57,6 +59,8 @@ class KavlingFragment : Fragment() {
     ): View? {
         // Inflate the layout for this fragment
         binding = FragmentKavlingBinding.inflate(inflater, container, false)
+
+        kavlingRecyclerView = binding.recyclerKavlings
 
         return binding.root
     }
@@ -116,6 +120,14 @@ class KavlingFragment : Fragment() {
         super.onResume()
 
         syncData()
+    }
+
+    override fun onStop() {
+        super.onStop()
+
+        viewModel.kavlingRecyclerState = kavlingRecyclerView.layoutManager?.onSaveInstanceState()
+
+        Log.d("DEBUG_ME", "KavlingFragment: Saving KavlingRecyclerView's State onStop() ...")
     }
 
     private fun setupViewModel() {
@@ -222,12 +234,20 @@ class KavlingFragment : Fragment() {
 
         val customAdapter = ScaleInAnimationAdapter(adapter)
 
-        binding.recyclerKavlings.adapter = customAdapter
+        kavlingRecyclerView.adapter = customAdapter
 
         // If screen is in Landscape mode, I want to show more spans number in the kavling
         val screenOrientation = resources.configuration.orientation
         val spansCount = if (screenOrientation == Configuration.ORIENTATION_LANDSCAPE) 5 else 3
-        binding.recyclerKavlings.layoutManager = GridLayoutManager(requireContext(), spansCount)
+        kavlingRecyclerView.layoutManager = GridLayoutManager(requireContext(), spansCount)
+
+
+        val kavlingRecyclerState = viewModel.kavlingRecyclerState
+        if (kavlingRecyclerState != null) {
+            kavlingRecyclerView.layoutManager?.onRestoreInstanceState(kavlingRecyclerState)
+        }
+
+        Log.d("DEBUG_ME", "KavlingFragment: RecyclerViewKavling's State is $kavlingRecyclerState")
     }
 
     private fun showAddBlockDialog() {
