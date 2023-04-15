@@ -6,19 +6,25 @@ import android.os.Bundle
 import android.os.Handler
 import android.view.View
 import android.view.WindowManager
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.core.content.ContextCompat
 import androidx.core.content.edit
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ktx.getValue
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.channels.trySendBlocking
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import net.bagusekasaputra.griyakampoengtkw.databinding.ActivitySplashPureBinding
 import net.bagusekasaputra.griyakampoengtkw.databinding.ActivitySplashWithLoadingBinding
 import net.bagusekasaputra.griyakampoengtkw.presentation.R
@@ -55,62 +61,63 @@ class SplashActivity : AppCompatActivity() {
         showSplashScreen(1.5f)
     }
 
-    @Suppress("SameParameterValue")
     private fun showSplashScreen(seconds: Float) {
         val handler = Handler()
         val splashRunnable = Runnable {
             bindingLoading = ActivitySplashWithLoadingBinding.inflate(layoutInflater)
             setContentView(bindingLoading.root)
 
-            showJenisDataChoice(true)
+            CoroutineScope(Dispatchers.IO).launch {
+                deviceOnline().collect { online ->
+                    if (online) {
+                        withContext(Dispatchers.Main) {
+                            bindingLoading.layoutCekKoneksi.tvInfoPeriksaInternet.text = "Memeriksa status server"
+                        }
+                        // Check Maintenance status
+                        val isMaintenance = checkMaintenance()
 
-//            CoroutineScope(Dispatchers.IO).launch {
-//                deviceOnline().collect { online ->
-//                    if (online) {
-//                        withContext(Dispatchers.Main) {
-//                            bindingLoading.layoutCekKoneksi.tvInfoPeriksaInternet.text = "Memeriksa status server"
-//                        }
-//                        // Check Maintenance status
-//                        val isMaintenance = checkMaintenance()
-//
-//                        isMaintenance.onSuccess { maintenance ->
-//                            if (maintenance) {
-//                                withContext(Dispatchers.Main) {
-//                                    MaterialAlertDialogBuilder(this@SplashActivity)
-//                                        .setTitle("Server Maintenance")
-//                                        .setCancelable(false)
-//                                        .setMessage("Mohon maaf, untuk saat ini server sedang menjalani proses pemeliharaan. Silakan coba lagi nanti.")
-//                                        .setPositiveButton("Oke") { dialog, _ ->
-//                                            dialog.dismiss()
-//                                            this@SplashActivity.finish()
-//                                        }
-//                                        .create()
-//                                        .show()
-//                                }
-//                            } else {
-//                                withContext(Dispatchers.Main) {
-//                                    showJenisDataChoice(online)
-//                                }
-//                            }
-//                        }
-//
-//                        isMaintenance.onFailure {
-//                            withContext(Dispatchers.Main) {
-//                                Toast.makeText(this@SplashActivity, "Gagal mengecek status server: $it", Toast.LENGTH_LONG).show()
-//                            }
-//
-//                            withContext(Dispatchers.Main) {
-//                                showJenisDataChoice(online)
-//                            }
-//                        }
-//                    } else {
-//                        withContext(Dispatchers.Main) {
-//                            showJenisDataChoice(online)
-//                        }
-//                    }
-//                }
-//
-//            }
+                        isMaintenance.onSuccess { maintenance ->
+                            if (maintenance) {
+                                withContext(Dispatchers.Main) {
+                                    MaterialAlertDialogBuilder(this@SplashActivity)
+                                        .setTitle("Server Maintenance")
+                                        .setCancelable(false)
+                                        .setMessage("Mohon maaf, untuk saat ini server sedang menjalani proses pemeliharaan. Anda hanya bisa membuka Data Lama. Silakan coba lagi nanti.")
+                                        .setPositiveButton("Oke") { dialog, _ ->
+                                            dialog.dismiss()
+
+                                            showJenisDataChoice(isOnline = true, shouldShowDataBaruOption = false)
+                                        }
+                                        .create()
+                                        .show()
+                                }
+                            } else {
+                                withContext(Dispatchers.Main) {
+                                    showJenisDataChoice(isOnline = true, shouldShowDataBaruOption = true)
+                                }
+                            }
+                        }
+
+                        isMaintenance.onFailure {
+                            withContext(Dispatchers.Main) {
+                                Toast.makeText(this@SplashActivity, "Gagal mengecek status server: $it", Toast.LENGTH_LONG).show()
+                                showJenisDataChoice(isOnline = true, shouldShowDataBaruOption = false)
+                            }
+                        }
+                    } else {
+                        withContext(Dispatchers.Main) {
+                            Toast.makeText(
+                                this@SplashActivity,
+                                "Device terdeteksi offline, mohon cek koneksi Anda.",
+                                Toast.LENGTH_LONG
+                            ).show()
+
+                            showJenisDataChoice(isOnline = false, shouldShowDataBaruOption = false)
+                        }
+                    }
+                }
+
+            }
         }
         // Convert integer to long milliseconds
         val millis = (seconds * 1000).toLong()
@@ -135,12 +142,17 @@ class SplashActivity : AppCompatActivity() {
         }
     }
 
-    private fun showJenisDataChoice(isOnline: Boolean) {
+    private fun showJenisDataChoice(isOnline: Boolean, shouldShowDataBaruOption: Boolean) {
         bindingLoading.layoutCekKoneksi.root.visibility = View.INVISIBLE
+
+        // When checking Maintenance Status or Device Connectivity fails,
+        // disable "Data Baru" button.
+        if (!shouldShowDataBaruOption) {
+            bindingLoading.layoutPilihData.btnDataBaru.visibility = View.GONE
+        }
 
         bindingLoading.layoutPilihData.root.visibility = View.VISIBLE
         bindingLoading.layoutPilihData.btnDataLama.setOnClickListener {
-//            goToMainActivity(isOnline, false)
             goToDocumentLamaActivity()
         }
         bindingLoading.layoutPilihData.btnDataBaru.setOnClickListener {
