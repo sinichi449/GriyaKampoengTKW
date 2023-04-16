@@ -189,7 +189,7 @@ class BiayaLainFragment: Fragment() {
         dialogBinding.btnPilihTanggal.setOnClickListener {
             val inputtedTanggal = dialogBinding.edtTanggal.text.toString()
 
-            val current = if ((editMode) or (inputtedTanggal.isNotEmpty()))
+            val current = if (editMode || inputtedTanggal.isNotEmpty())
                 inputtedTanggal.toCalendar()
             else
                 Calendar.getInstance()
@@ -199,14 +199,14 @@ class BiayaLainFragment: Fragment() {
 
 
             val mListener = DatePickerDialog.OnDateSetListener { _, mYear, mMonth, mDay ->
-                val properDay = if (mDay < 10) "0$mDay" else mDay.toString()
-                val properMonth = if (mMonth.plus(1) < 10) "0$mMonth" else mMonth.plus(1).toString()
+                val properDay = String.format("%02d", mDay)
+                val properMonth = String.format("%02d", mMonth + 1)
 
                 val result = "$properDay/$properMonth/$mYear"
                 dialogBinding.edtTanggal.setText(result)
             }
 
-            DatePickerDialog(requireContext(), R.style.DatePicker,mListener, year, month, day)
+            DatePickerDialog(requireContext(), R.style.DatePicker, mListener, year, month, day)
                 .show()
         }
 
