@@ -149,10 +149,19 @@ class PembayaranRepositoryImpl(
         }
     }
 
-    override suspend fun sudahBayarAngsuran(kavlingKode: String, bulan: Int): Result<Boolean?> {
+    override suspend fun sudahBayarAngsuran(
+        kavlingKode: String,
+        bulan: Int,
+        dataMode: DataMode
+    ): Result<Boolean?> {
         return try {
-            val cacheListPembayaran = localPembayaranDataSource.getAllPembayaran(kavlingKode)
-                .getOrNull()
+            val cacheListPembayaran = if (dataMode == DataMode.DATA_LAMA)
+                backupPembayaranDataSource.getAllPembayaran(kavlingKode)
+                    .getOrNull()
+            else
+                localPembayaranDataSource.getAllPembayaran(kavlingKode)
+                    .getOrNull()
+
             if (cacheListPembayaran.isNullOrEmpty()) {
                 Result.success(false)
             } else {

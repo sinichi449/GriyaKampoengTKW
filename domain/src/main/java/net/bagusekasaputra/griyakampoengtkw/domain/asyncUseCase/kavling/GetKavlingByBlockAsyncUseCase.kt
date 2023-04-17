@@ -27,7 +27,7 @@ class GetKavlingByBlockAsyncUseCase(
 
                     kavlingList.forEach {
                         val sudahBayarAngsuranBulanIni = pembayaranRepository
-                            .sudahBayarAngsuran(it.kode, bulanIni)
+                            .sudahBayarAngsuran(it.kode, bulanIni, request.dataMode)
                             .getOrThrow()
                             ?: false
                         it.sudahBayarBulanIni = sudahBayarAngsuranBulanIni
