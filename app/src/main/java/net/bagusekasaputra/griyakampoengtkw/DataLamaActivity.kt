@@ -1,15 +1,18 @@
 package net.bagusekasaputra.griyakampoengtkw
 
-import abhishekti7.unicorn.filepicker.UnicornFilePicker
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.net.Uri
+import android.os.Build
 import android.os.Bundle
-import android.os.Environment
+import android.provider.Settings
 import android.util.Log
 import android.view.View
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.atwa.filepicker.core.FilePicker
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import dagger.hilt.android.AndroidEntryPoint
 import net.bagusekasaputra.griyakampoengtkw.dataLama.AbstractDataLamaManager
@@ -29,6 +32,7 @@ class DataLamaActivity : AppCompatActivity() {
     private val dataLamaManager: AbstractDataLamaManager by lazy {
         DefaultDataLamaManager(this)
     }
+    private val filePicker = FilePicker.getInstance(this)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -47,7 +51,7 @@ class DataLamaActivity : AppCompatActivity() {
         }
 
         binding.fabTambahData.setOnClickListener {
-            showDataLamaPicker()
+            pickFileAndExtract()
         }
     }
 
@@ -111,40 +115,71 @@ class DataLamaActivity : AppCompatActivity() {
         startActivity(intent)
     }
 
-    private fun showDataLamaPicker() {
-        UnicornFilePicker.from(this)
-            .addConfigBuilder()
-            .selectMultipleFiles(false)
-            .showOnlyDirectory(false)
-            .setRootDirectory(Environment.getExternalStorageDirectory().absolutePath)
-            .showHiddenFiles(false)
-            .setFilters(arrayOf("zip"))
-            .addItemDivider(true)
-            .theme(abhishekti7.unicorn.filepicker.R.style.UnicornFilePicker_Default)
-            .build()
-            .forResult(PICK_DATA_LAMA_REQUEST)
-    }
+    private fun pickFileAndExtract() {
+        filePicker.pickFile { meta ->
+            val file = meta?.file
 
-    private fun requestReadExternalStorage() {
-        ActivityCompat.requestPermissions(
-            this,
-            arrayOf(android.Manifest.permission.READ_EXTERNAL_STORAGE, android.Manifest.permission.WRITE_EXTERNAL_STORAGE),
-            READ_STORAGE_REQUEST,
-        )
-    }
-
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        super.onActivityResult(requestCode, resultCode, data)
-
-        when (requestCode) {
-            PICK_DATA_LAMA_REQUEST -> if (resultCode == RESULT_OK) {
-                val files = data?.getStringArrayListExtra("filePaths")
-                dataLamaManager.extract(files?.get(0)) {
-                    refreshData()
-                }
+            if (file != null) {
+                dataLamaManager.extract(
+                    pathToFile = file.path,
+                    onFinish = {
+                        refreshData()
+                    }
+                )
+            } else {
+                Toast.makeText(this, "ERROR: File tidak ditemukan", Toast.LENGTH_LONG).show()
             }
         }
     }
+
+    private fun requestReadExternalStorage() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+            try {
+                val intent = Intent(Settings.ACTION_MANAGE_APP_ALL_FILES_ACCESS_PERMISSION)
+                intent.addCategory("android.intent.category.DEFAULT")
+                intent.data = Uri.parse(String.format("package:%s", applicationContext.packageName))
+
+                startActivityForResult(intent, READ_STORAGE_REQUEST)
+            } catch (e: Exception) {
+                val intent = Intent()
+                intent.action = Settings.ACTION_MANAGE_ALL_FILES_ACCESS_PERMISSION
+                startActivityForResult(intent, READ_STORAGE_REQUEST);
+            }
+        } else {
+            ActivityCompat.requestPermissions(
+                this,
+                arrayOf(
+                    android.Manifest.permission.READ_EXTERNAL_STORAGE,
+                    android.Manifest.permission.WRITE_EXTERNAL_STORAGE
+                ),
+                READ_STORAGE_REQUEST,
+            )
+        }
+    }
+
+//    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+//        super.onActivityResult(requestCode, resultCode, data)
+//
+//        when (requestCode) {
+//            PICK_DATA_LAMA_REQUEST -> {
+//                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+//                    if (Environment.isExternalStorageManager()) {
+//                        extractBackupFilesFiles(data)
+//                    } else {
+//                        Toast.makeText(this, "Akses penyimpanan telah ditolak!", Toast.LENGTH_LONG)
+//                            .show()
+//                    }
+//                } else {
+//                    if (resultCode == RESULT_OK) {
+//                        extractBackupFilesFiles(data)
+//                    } else {
+//                        Toast.makeText(this, "Akses penyimpanan telah ditolak!", Toast.LENGTH_LONG)
+//                            .show()
+//                    }
+//                }
+//            }
+//        }
+//    }
 
     override fun onRequestPermissionsResult(
         requestCode: Int,
