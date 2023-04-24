@@ -1,9 +1,9 @@
 package net.bagusekasaputra.griyakampoengtkw.presentation.fragment.rekap
 
-import android.R
 import android.app.ProgressDialog
 import android.content.DialogInterface
 import android.content.Intent
+import android.content.SharedPreferences
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -28,6 +28,7 @@ import net.bagusekasaputra.griyakampoengtkw.presentation.toDate
 import net.bagusekasaputra.griyakampoengtkw.presentation.util.DatePickerHelper
 import net.bagusekasaputra.griyakampoengtkw.presentation.util.InputUtil
 import net.bagusekasaputra.griyakampoengtkw.presentation.viewmodel.RekapViewModel
+import javax.inject.Inject
 
 @AndroidEntryPoint
 class RekapBesarFragment : Fragment() {
@@ -43,6 +44,8 @@ class RekapBesarFragment : Fragment() {
         "Tahun ini",
         "Custom"
     )
+    @Inject
+    lateinit var sharedPrefs: SharedPreferences
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -62,12 +65,19 @@ class RekapBesarFragment : Fragment() {
         setupSpinnerPeriode()
 
 
-        binding.checkboxIncludeDataLama?.setOnCheckedChangeListener { _, checked ->
-            if (checked) {
-                showIncludeKavlingDataLamaDialog()
-            } else {
-                viewModel.setListDataLamaRekapBesarIncluded(emptyList())
+        // Only show checkbox include data lama Rekap on Data Lama Mode
+        val isDataLamaMode = sharedPrefs.getString("dataLamaPath", null) != null
+        if (isDataLamaMode) {
+            binding.checkboxIncludeDataLama?.visibility = View.VISIBLE
+            binding.checkboxIncludeDataLama?.setOnCheckedChangeListener { _, checked ->
+                if (checked) {
+                    showIncludeKavlingDataLamaDialog()
+                } else {
+                    viewModel.setListDataLamaRekapBesarIncluded(emptyList())
+                }
             }
+        } else {
+            binding.checkboxIncludeDataLama?.visibility = View.GONE
         }
 
         binding.spinnerPeriode.onItemSelectedListener = object : OnItemSelectedListener {
@@ -248,7 +258,7 @@ class RekapBesarFragment : Fragment() {
     private fun setupSpinnerPeriode() {
         binding.spinnerPeriode.adapter = ArrayAdapter(
             requireContext(),
-            R.layout.simple_spinner_dropdown_item,
+            android.R.layout.simple_spinner_dropdown_item,
             periodeRekapList
         )
     }

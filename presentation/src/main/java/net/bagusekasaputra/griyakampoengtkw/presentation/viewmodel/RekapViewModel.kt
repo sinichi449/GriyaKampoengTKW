@@ -267,7 +267,6 @@ class RekapViewModel @Inject constructor(
         onSuccess: (listUnmigratedKavling: List<UnmigratedKavling>?) -> Unit,
         onFailure: (msg: String) -> Unit
     ) {
-        // TODO
         kavlingLamaRekapBesarJob = viewModelScope.launch {
             onProgress()
 
