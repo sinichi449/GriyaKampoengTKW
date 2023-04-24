@@ -30,6 +30,8 @@ object FirebaseRequestHelper {
                     trySendBlocking(Result.success(resultObject))
                 }
                 .addOnFailureListener {
+                    it.printStackTrace()
+
                     trySendBlocking(Result.failure(it))
                 }
 

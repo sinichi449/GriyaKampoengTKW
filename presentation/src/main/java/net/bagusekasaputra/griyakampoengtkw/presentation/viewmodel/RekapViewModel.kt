@@ -1,21 +1,16 @@
 package net.bagusekasaputra.griyakampoengtkw.presentation.viewmodel
 
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.asLiveData
+import androidx.lifecycle.*
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.update
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import net.bagusekasaputra.griyakampoengtkw.domain.DateUtil
 import net.bagusekasaputra.griyakampoengtkw.domain.NumberUtil
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.biayaLain.GetRekapBiayaLainAsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.biayaMarketing.GetRekapBiayaMarketingAsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.feeMarketing.GetRekapFeeMarketingAsyncUseCase
+import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.kavling.GetListUnmigratedKavlingsAsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.rekap.GetListRekapGlobalAsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.rekap.GetRekapBesarAsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.rekap.GetUangMasukRekapAsyncUseCase
@@ -47,6 +42,7 @@ class RekapViewModel @Inject constructor(
     private val getRekapFeeMarketingAsyncUseCase: GetRekapFeeMarketingAsyncUseCase,
     private val getRekapBiayaMarketingAsyncUseCase: GetRekapBiayaMarketingAsyncUseCase,
     private val getRekapBiayaLainAsyncUseCase: GetRekapBiayaLainAsyncUseCase,
+    private val getListUnmigratedKavlingsAsyncUseCase: GetListUnmigratedKavlingsAsyncUseCase,
 ): ViewModel() {
 
     val currentFragment = MutableLiveData<RekapType>()
@@ -93,6 +89,12 @@ class RekapViewModel @Inject constructor(
 
     private val kavlingList = Kavling.getGriyaKavlingList()
 
+    private val _listKavlingDataLamaRekapBesarIncludedLive = MutableLiveData(emptyList<String>())
+    val listKavlingDataLamaRekapBesarIncluded: LiveData<List<String>>
+        get() = _listKavlingDataLamaRekapBesarIncludedLive
+
+
+    var kavlingLamaRekapBesarJob: Job? = null
 
 
     fun getListRekapGlobal(onFailure: (msg: String) -> Unit) {
@@ -126,7 +128,7 @@ class RekapViewModel @Inject constructor(
         endDate: Date? = null,
         onFailure: (msg: String) -> Unit,
     ) {
-        val request = GetRekapBesarAsyncUseCase.Request(kavlingList, periode, startDate, endDate)
+        val request = GetRekapBesarAsyncUseCase.Request(kavlingList, listKavlingDataLamaRekapBesarIncluded.value!!, periode, startDate, endDate)
         currentPeriodeRekap.value = periode
         currentStartDate.value = startDate?.toSlashedDate()
         currentEndDate.value = endDate?.toSlashedDate()
@@ -260,6 +262,37 @@ class RekapViewModel @Inject constructor(
     }
 
 
+    fun getListKavlingDataLama(
+        onProgress: () -> Unit,
+        onSuccess: (listUnmigratedKavling: List<UnmigratedKavling>?) -> Unit,
+        onFailure: (msg: String) -> Unit
+    ) {
+        // TODO
+        kavlingLamaRekapBesarJob = viewModelScope.launch {
+            onProgress()
+
+            val request = GetListUnmigratedKavlingsAsyncUseCase.Request
+            getListUnmigratedKavlingsAsyncUseCase.execute(request).collect { result ->
+                result.onSuccess {
+                    val listKavlingStr = mutableListOf<String>().apply {
+                        it?.forEach { unmigratedKavling ->
+                            add(unmigratedKavling.kavlingKode)
+                        }
+                    }
+                    setListDataLamaRekapBesarIncluded(listKavlingStr)
+
+                    onSuccess(it)
+                }
+                result.onFailure {
+                    onFailure("ERROR: Gagal mendapatkan Kavling data Lama -> ${it.message}")
+                }
+            }
+        }
+    }
+
+    fun setListDataLamaRekapBesarIncluded(listKavlingStr: List<String>) {
+        _listKavlingDataLamaRekapBesarIncludedLive.postValue(listKavlingStr.sorted())
+    }
 
 
     /**
@@ -588,7 +621,6 @@ class RekapViewModel @Inject constructor(
             }
         }
     }
-
 
     private fun List<Date>.toRangeString(): String {
         return "${this[0].toSlashedDate()} - ${this[1].toSlashedDate()}"

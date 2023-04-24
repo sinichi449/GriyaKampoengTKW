@@ -2,6 +2,7 @@ package net.bagusekasaputra.griyakampoengtkw.presentation.fragment.rekap
 
 import android.R
 import android.app.ProgressDialog
+import android.content.DialogInterface
 import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -17,6 +18,7 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import dagger.hilt.android.AndroidEntryPoint
 import net.bagusekasaputra.griyakampoengtkw.domain.NumberUtil
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.PeriodeRekap
+import net.bagusekasaputra.griyakampoengtkw.domain.entity.UnmigratedKavling
 import net.bagusekasaputra.griyakampoengtkw.presentation.activities.RekapDetailActivity
 import net.bagusekasaputra.griyakampoengtkw.presentation.databinding.CardRekapPengeluaranBinding
 import net.bagusekasaputra.griyakampoengtkw.presentation.databinding.CardRekapUangMasukBinding
@@ -58,6 +60,15 @@ class RekapBesarFragment : Fragment() {
         setupViewModel()
 
         setupSpinnerPeriode()
+
+
+        binding.checkboxIncludeDataLama?.setOnCheckedChangeListener { _, checked ->
+            if (checked) {
+                showIncludeKavlingDataLamaDialog()
+            } else {
+                viewModel.setListDataLamaRekapBesarIncluded(emptyList())
+            }
+        }
 
         binding.spinnerPeriode.onItemSelectedListener = object : OnItemSelectedListener {
             override fun onItemSelected(parentView: AdapterView<*>?, selectedItemView: View?, position: Int, id: Long) {
@@ -211,6 +222,27 @@ class RekapBesarFragment : Fragment() {
                 )
             }
         }
+
+        viewModel.listKavlingDataLamaRekapBesarIncluded.observe(requireActivity()) {
+            if (!it.isNullOrEmpty()) {
+                binding.tvIncludedKavlingDataLama?.visibility = View.VISIBLE
+                binding.tvIncludedKavlingDataLama?.text = it.run {
+                    val text = StringBuilder()
+
+                    this.forEachIndexed { index, str ->
+                        if (index == lastIndex) {
+                            text.append(str)
+                        } else {
+                            text.append("$str, ")
+                        }
+                    }
+
+                    text.toString()
+                }
+            } else {
+                binding.tvIncludedKavlingDataLama?.visibility = View.GONE
+            }
+        }
     }
 
     private fun setupSpinnerPeriode() {
@@ -257,4 +289,86 @@ class RekapBesarFragment : Fragment() {
         return progressDialog
     }
 
+    private fun showIncludeKavlingDataLamaDialog() {
+        fun showDialog(listUnmigratedKavling: List<UnmigratedKavling>) {
+            val listKavlingDataLama = mutableListOf<String>().apply {
+                listUnmigratedKavling.forEach {
+                    add("${it.kavlingKode} (${it.namaCostumer})")
+                }
+            }.toTypedArray()
+            val checkedKavling = mutableListOf<Boolean>().apply {
+                repeat(listKavlingDataLama.size) {
+                    add(true)
+                }
+            }
+                .toBooleanArray()
+
+            MaterialAlertDialogBuilder(requireContext()).apply {
+                setTitle("List Kavling Not-Migrated")
+                setCancelable(false)
+                setMultiChoiceItems(listKavlingDataLama, checkedKavling) { _, which, checked ->
+                    checkedKavling[which] = checked
+                }
+                setPositiveButton("OK") { dialog, _ ->
+                    val listCheckedKavlingDataLama = mutableListOf<String>().apply {
+                        checkedKavling.forEachIndexed { index, isChecked ->
+                            if (isChecked) {
+                                add(listUnmigratedKavling[index].kavlingKode)
+                            }
+                        }
+                    }
+
+                    viewModel.setListDataLamaRekapBesarIncluded(listCheckedKavlingDataLama)
+
+                    dialog.dismiss()
+                }
+                setNegativeButton("Cancel") { dialog, _ ->
+                    viewModel.setListDataLamaRekapBesarIncluded(emptyList())
+
+                    dialog.dismiss()
+                }
+                setOnDismissListener {
+                    val listCheckedKavlingDataLama = viewModel.listKavlingDataLamaRekapBesarIncluded.value
+
+                    if (listCheckedKavlingDataLama.isNullOrEmpty()) {
+                        uncheckIncludeDataLamaCheckbox()
+                        Toast.makeText(requireContext(), "None are selected", Toast.LENGTH_SHORT).show()
+                    }
+                }
+            }.show()
+        }
+
+        val progressDialog = ProgressDialog(requireContext()).apply {
+            setTitle("Tunggu sebentar...")
+            setMessage("Mendapatkan data Kavling not-migrated")
+            setCancelable(false)
+            setButton(DialogInterface.BUTTON_NEGATIVE, "Cancel") { dialog, _ ->
+                viewModel.kavlingLamaRekapBesarJob?.cancel()
+
+                dialog.dismiss()
+            }
+        }
+
+        viewModel.getListKavlingDataLama(
+            onProgress = {
+                progressDialog.show()
+            },
+            onSuccess = {
+                progressDialog.dismiss()
+
+                if (!it.isNullOrEmpty()) {
+                    showDialog(it)
+                }
+            },
+            onFailure = {
+                progressDialog.dismiss()
+
+                Toast.makeText(requireContext(), it, Toast.LENGTH_LONG).show()
+            }
+        )
+    }
+
+    private fun uncheckIncludeDataLamaCheckbox() {
+        binding.checkboxIncludeDataLama?.isChecked = false
+    }
 }

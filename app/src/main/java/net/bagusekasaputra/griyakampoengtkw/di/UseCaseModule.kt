@@ -19,6 +19,7 @@ import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.fotoPembayaran.G
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.fotoPembayaran.IsFotoPembayaranExistAsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.hargaKavling.GetHargaKavlingAsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.kavling.GetKavlingByBlockAsyncUseCase
+import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.kavling.GetListUnmigratedKavlingsAsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.pembayaran.GetAllPembayaranAsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.pengingat.*
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.rekap.GetListRekapGlobalAsyncUseCase
@@ -93,6 +94,14 @@ object UseCaseModule {
     @Provides
     fun provideRemoveKavling(kavlingRepository: KavlingRepository)
         = RemoveKavlingUseCase(kavlingRepository)
+
+    @Provides
+    fun provideGetListUnmigratedKavlingAsyncUseCase(
+        kavlingRepository: KavlingRepository,
+        dataDiriRepository: DataDiriRepository
+    ): GetListUnmigratedKavlingsAsyncUseCase {
+        return GetListUnmigratedKavlingsAsyncUseCase(kavlingRepository, dataDiriRepository)
+    }
 
 
     /**

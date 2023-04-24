@@ -142,4 +142,10 @@ class KavlingRepositoryImpl(
         }
     }
 
+    override fun getUnmigratedKavlings(): Flow<Result<List<String>?>> {
+        return flow {
+            emit(remoteKavlingDataSource.getUnmigratedKavlings())
+        }
+    }
+
 }

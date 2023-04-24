@@ -25,6 +25,7 @@ class GetRekapBesarAsyncUseCase(
 
     data class Request(
         val kavlingList: List<String>,
+        val listDataLamaIncluded: List<String>,
         val periode: PeriodeRekap,
         val startDate: Date? = null,
         val endDate: Date? = null,

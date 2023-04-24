@@ -82,6 +82,17 @@ class FirebaseKavlingDataSource(
             }
     }
 
+    override suspend fun getUnmigratedKavlings(): Result<List<String>?> {
+        return FirebaseRequestHelper.getOperation(
+            pathToChild = databaseReference.child(FirebaseNodes.UNMIGRATED),
+            onGetSnapshot = {
+                it.getValue<List<String>>()
+            },
+            timeOutMsg = "Waktu habis mendapatkan Kavling Data Lama!",
+            onClosedConnection = {}
+        )
+    }
+
     private fun isKavlingExists(blockKode: String, kavling: KavlingModel): Flow<Boolean> {
         return callbackFlow {
             kavlingRef
