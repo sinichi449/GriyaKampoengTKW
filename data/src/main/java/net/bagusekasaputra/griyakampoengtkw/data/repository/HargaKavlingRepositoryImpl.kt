@@ -3,10 +3,7 @@ package net.bagusekasaputra.griyakampoengtkw.data.repository
 import android.util.Log
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.channels.trySendBlocking
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.callbackFlow
-import kotlinx.coroutines.flow.emitAll
-import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.*
 import net.bagusekasaputra.griyakampoengtkw.data.DataUtil
 import net.bagusekasaputra.griyakampoengtkw.data.MyObjectMapper.mapHargaKavling
 import net.bagusekasaputra.griyakampoengtkw.data.interfaces.backup.BackupHargaKavlingDataSource
@@ -29,7 +26,7 @@ class HargaKavlingRepositoryImpl(
 
     private val metadataTable = "hargaKavling"
 
-    override fun getBatch(listKavling: List<String>): Flow<Result<Map<String, HargaKavling?>?>> {
+    override fun getBatchOnline(listKavling: List<String>): Flow<Result<Map<String, HargaKavling?>?>> {
         return flow {
             checkCache()
 
@@ -67,6 +64,26 @@ class HargaKavlingRepositoryImpl(
             }
 
             emit(Result.success(mapHargaKavling))
+        }
+    }
+
+    override fun getBatchBackup(listKavling: List<String>): Flow<Result<Map<String, HargaKavling?>?>> {
+        return callbackFlow {
+            try {
+                val mapHargaKavling = mutableMapOf<String, HargaKavling?>()
+
+                listKavling.forEach { kavling ->
+                    mapHargaKavling[kavling] = getHargaKavling(kavling, DataMode.DATA_LAMA).first().getOrThrow()
+                }
+
+                trySendBlocking(Result.success(mapHargaKavling))
+            } catch (e: Exception) {
+                e.printStackTrace()
+
+                trySendBlocking(Result.failure(e))
+            }
+
+            awaitClose {  }
         }
     }
 

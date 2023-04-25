@@ -60,7 +60,7 @@ class CreateBackupAsyncUseCase(
             }
 
             trySendBlocking(Result.success(Progress(21, "Mendownload Pembayaran ...")))
-            val listPembayaran = pembayaranRepository.getBatch(listKavling = listKodeKavlings)
+            val listPembayaran = pembayaranRepository.getBatchOnline(listKavling = listKodeKavlings)
                 .first().getOrThrow() ?: HashMap()
 
             trySendBlocking(Result.success(Progress(28, "Mendownload Data Diri")))
@@ -68,7 +68,7 @@ class CreateBackupAsyncUseCase(
                 .first().getOrThrow() ?: HashMap()
 
             trySendBlocking(Result.success(Progress(35, "Mendownload Harga Kavling")))
-            val listHargaKavling = (hargaKavlingRepository.getBatch(listKavling = listKodeKavlings)
+            val listHargaKavling = (hargaKavlingRepository.getBatchOnline(listKavling = listKodeKavlings)
                 .first().getOrThrow() ?: HashMap()).run {
                 // Convert this into List<HargaKavling> first
                 val newList = mutableListOf<HargaKavling>()

@@ -22,7 +22,7 @@ class MockHargaKavlingRepository: HargaKavlingRepository {
         Pair("B18", HargaKavling("B18", "900,000", "0")),
     )
 
-    override fun getBatch(listKavling: List<String>): Flow<Result<Map<String, HargaKavling?>?>> {
+    override fun getBatchOnline(listKavling: List<String>): Flow<Result<Map<String, HargaKavling?>?>> {
         return flow {
             val result = mutableMapOf<String, HargaKavling?>()
 

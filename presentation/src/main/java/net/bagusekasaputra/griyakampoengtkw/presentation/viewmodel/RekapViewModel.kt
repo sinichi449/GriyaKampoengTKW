@@ -9,9 +9,11 @@ import net.bagusekasaputra.griyakampoengtkw.domain.DateUtil
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.kavling.GetListUnmigratedKavlingsAsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.rekap.CalculateRekapBesarAndGetRekapBesarOverview
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.rekap.GetListRekapGlobalAsyncUseCase
+import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.rekap.GetRekapBesarDetailAsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.Kavling
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.UnmigratedKavling
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.rekap.PeriodeRekap
+import net.bagusekasaputra.griyakampoengtkw.domain.entity.rekap.RekapBesarDetail
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.rekap.RekapBesarOverview
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.rekap.RekapGlobal
 import net.bagusekasaputra.griyakampoengtkw.presentation.RekapDetailTransport
@@ -27,6 +29,7 @@ import javax.inject.Inject
 class RekapViewModel @Inject constructor(
     private val getListRekapGlobalAsyncUseCase: GetListRekapGlobalAsyncUseCase,
     private val calculateRekapBesarAndGetRekapBesarOverview: CalculateRekapBesarAndGetRekapBesarOverview,
+    private val getRekapBesarDetailAsyncUseCase: GetRekapBesarDetailAsyncUseCase,
     private val getListUnmigratedKavlingsAsyncUseCase: GetListUnmigratedKavlingsAsyncUseCase,
 ): ViewModel() {
 
@@ -47,9 +50,16 @@ class RekapViewModel @Inject constructor(
     val rekapBesarOverviewLive: LiveData<RekapBesarOverview>
         get() = _rekapBesarOverviewLive
 
+    private val _rekapBesarDetailLive = MutableLiveData<RekapBesarDetail>()
+    val rekapBesarDetailLive: LiveData<RekapBesarDetail>
+        get() = _rekapBesarDetailLive
+
 
     val isRekapGlobalLoaded = MutableStateFlow(false)
-    val isRekapBesarLoaded = MutableLiveData<Boolean>()
+    val isRekapBesarOverviewLoaded = MutableLiveData<Boolean>()
+    private val _isRekapBesarDetailLoaded = MutableLiveData<Boolean>()
+    val isRekapBesarDetailLoaded: LiveData<Boolean>
+        get() = _isRekapBesarDetailLoaded
 
     val rekapGlobalProgress = getListRekapGlobalAsyncUseCase.progressState.asLiveData(Dispatchers.Default)
 
@@ -88,7 +98,7 @@ class RekapViewModel @Inject constructor(
         }
     }
 
-    fun getRekapBesar(
+    fun getRekapBesarOverview(
         periode: PeriodeRekap,
         startDate: Date? = null,
         endDate: Date? = null,
@@ -110,7 +120,7 @@ class RekapViewModel @Inject constructor(
         )
 
         // Need to be set like this to show progress dialog
-        isRekapBesarLoaded.value = false
+        isRekapBesarOverviewLoaded.value = false
 
         gettingRekapBesarJob = viewModelScope.launch {
             val request = CalculateRekapBesarAndGetRekapBesarOverview.Request(
@@ -123,12 +133,36 @@ class RekapViewModel @Inject constructor(
                 result.onSuccess {
                     _rekapBesarOverviewLive.postValue(it)
 
-                    isRekapBesarLoaded.postValue(true)
+                    isRekapBesarOverviewLoaded.postValue(true)
                 }
                 result.onFailure {
                     onFailure("Gagal merekap: ${it.cause}")
 
-                    isRekapBesarLoaded.postValue(true)
+                    isRekapBesarOverviewLoaded.postValue(true)
+                }
+            }
+        }
+    }
+
+    fun getRekapBesarDetail(onFailure: (msg: String) -> Unit) {
+        _isRekapBesarDetailLoaded.value = false
+
+        gettingRekapBesarJob = viewModelScope.launch {
+            val request = GetRekapBesarDetailAsyncUseCase.Request
+            getRekapBesarDetailAsyncUseCase.execute(request).collect { result ->
+                result.onSuccess {
+                    _rekapBesarDetailLive.postValue(it)
+
+                    _isRekapBesarDetailLoaded.postValue(true)
+                }
+                result.onFailure {
+                    it.printStackTrace()
+
+                    _isRekapBesarDetailLoaded.postValue(true)
+
+                    withContext(Dispatchers.Main) {
+                        onFailure("Gagal mendapatkan Rekap Besar Detail: ${it.message}")
+                    }
                 }
             }
         }
@@ -249,15 +283,6 @@ class RekapViewModel @Inject constructor(
             )
         }
     }
-
-    /**
-     * Rekap Uang Masuk Table Util
-     */
-
-
-    /**
-     * Rekap Biaya Marketing Table Util
-     */
 
     private fun List<Date>.toRangeString(): String {
         return "${this[0].toSlashedDate()} - ${this[1].toSlashedDate()}"

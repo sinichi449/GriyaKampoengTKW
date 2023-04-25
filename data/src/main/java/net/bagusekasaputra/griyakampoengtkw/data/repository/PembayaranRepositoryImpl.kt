@@ -1,9 +1,9 @@
 package net.bagusekasaputra.griyakampoengtkw.data.repository
 
 import android.util.Log
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.emitAll
-import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.channels.awaitClose
+import kotlinx.coroutines.channels.trySendBlocking
+import kotlinx.coroutines.flow.*
 import net.bagusekasaputra.griyakampoengtkw.data.DataUtil
 import net.bagusekasaputra.griyakampoengtkw.data.MyObjectMapper.mapPembayaran
 import net.bagusekasaputra.griyakampoengtkw.data.interfaces.backup.BackupPembayaranDataSource
@@ -28,7 +28,7 @@ class PembayaranRepositoryImpl(
 
     private val metadataTable = "formPembayaran"
 
-    override fun getBatch(listKavling: List<String>): Flow<Result<Map<String, List<Pembayaran>?>?>> {
+    override fun getBatchOnline(listKavling: List<String>): Flow<Result<Map<String, List<Pembayaran>?>?>> {
         return flow {
             checkCache()
 
@@ -76,6 +76,38 @@ class PembayaranRepositoryImpl(
         }
     }
 
+    private fun getFromDataLama(kavlingKode: String): Flow<Result<List<Pembayaran>?>> {
+        return flow {
+            val backupResult = backupPembayaranDataSource.getAllPembayaran(kavlingKode)
+            val mapResult = DataUtil.mapListResult(
+                originResult = backupResult,
+                targetMapper = ::mapPembayaran,
+            )
+
+            emit(mapResult)
+        }
+    }
+
+    override fun getBatchBackup(listKavling: List<String>): Flow<Result<Map<String, List<Pembayaran>?>?>> {
+        return callbackFlow {
+            try {
+                val mapListPembayaran = mutableMapOf<String, List<Pembayaran>?>()
+
+                listKavling.forEach { kavling ->
+                    mapListPembayaran[kavling] = getFromDataLama(kavling).first().getOrThrow()
+                }
+
+                trySendBlocking(Result.success(mapListPembayaran))
+            } catch (e: Exception) {
+                e.printStackTrace()
+
+                trySendBlocking(Result.failure(e))
+            }
+
+            awaitClose {  }
+        }
+    }
+
     override fun getAllPembayaran(
         kavlingKode: String,
         dataMode: DataMode,
@@ -118,15 +150,8 @@ class PembayaranRepositoryImpl(
                     emitAll(flowOffline)
                 }
             }
-            val flowDataLama = flow {
-                val backupResult = backupPembayaranDataSource.getAllPembayaran(kavlingKode)
-                val mapResult = DataUtil.mapListResult(
-                    originResult = backupResult,
-                    targetMapper = ::mapPembayaran,
-                )
+            val flowDataLama = getFromDataLama(kavlingKode)
 
-                emit(mapResult)
-            }
 
             when (dataMode) {
                 DataMode.ONLINE -> emitAll(flowOnline)

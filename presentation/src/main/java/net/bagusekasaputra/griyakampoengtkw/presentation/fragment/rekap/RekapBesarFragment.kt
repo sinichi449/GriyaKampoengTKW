@@ -88,10 +88,10 @@ class RekapBesarFragment : Fragment() {
 
                 when (position) {
                     0 -> {}
-                    1 -> viewModel.getRekapBesar(periode = PeriodeRekap.SEMUA, onFailure = onFailure)
-                    2 -> viewModel.getRekapBesar(periode = PeriodeRekap.MINGGU_INI, onFailure = onFailure)
-                    3 -> viewModel.getRekapBesar(periode = PeriodeRekap.BULAN_INI, onFailure = onFailure)
-                    4 -> viewModel.getRekapBesar(periode = PeriodeRekap.TAHUN_INI, onFailure = onFailure)
+                    1 -> viewModel.getRekapBesarOverview(periode = PeriodeRekap.SEMUA, onFailure = onFailure)
+                    2 -> viewModel.getRekapBesarOverview(periode = PeriodeRekap.MINGGU_INI, onFailure = onFailure)
+                    3 -> viewModel.getRekapBesarOverview(periode = PeriodeRekap.BULAN_INI, onFailure = onFailure)
+                    4 -> viewModel.getRekapBesarOverview(periode = PeriodeRekap.TAHUN_INI, onFailure = onFailure)
                     5 -> showCustomPeriodePickerDialog()
                     else -> Toast.makeText(requireContext().applicationContext, "Spinner Position unreconizable!!", Toast.LENGTH_LONG).show()
                 }
@@ -170,7 +170,7 @@ class RekapBesarFragment : Fragment() {
                 val endDate = dialogBinding.edtEndTanggal.text.toString()
                     .toDate()
 
-                viewModel.getRekapBesar(
+                viewModel.getRekapBesarOverview(
                     periode = PeriodeRekap.CUSTOM,
                     startDate = startDate,
                     endDate = endDate,
@@ -191,7 +191,7 @@ class RekapBesarFragment : Fragment() {
 
     private fun setupViewModel() {
         val progressDialog = createProgressDialog()
-        viewModel.isRekapBesarLoaded.observe(requireActivity()) {
+        viewModel.isRekapBesarOverviewLoaded.observe(requireActivity()) {
             if (it != null) {
                 if (it) {
                     progressDialog.dismiss()

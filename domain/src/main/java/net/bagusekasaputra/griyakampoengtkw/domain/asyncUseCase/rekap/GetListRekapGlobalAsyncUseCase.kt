@@ -36,7 +36,7 @@ class GetListRekapGlobalAsyncUseCase(
 
             Log.d("DEBUG_ME", "RekapGlobalUseCase: Getting tabel pembayaran ...")
             progressState.update { ProgressState(50, "Menyusun tabel Pembayaran ...") }
-            val pembayaranBatch = pembayaranRepository.getBatch(request.listKavling)
+            val pembayaranBatch = pembayaranRepository.getBatchOnline(request.listKavling)
                 .first()
                 .onFailure {
                     trySendBlocking(Result.failure(Exception("GetListRekapGlobalUseCase:40 onFailure -> ${it.message}")))
@@ -46,7 +46,7 @@ class GetListRekapGlobalAsyncUseCase(
 
             Log.d("DEBUG_ME", "RekapGlobalUseCase: Getting harga kavling ...")
             progressState.update { ProgressState(75, "Menyusun tabel Harga Kavling ...") }
-            val hargaKavlingBatch = hargaKavlingRepository.getBatch(request.listKavling)
+            val hargaKavlingBatch = hargaKavlingRepository.getBatchOnline(request.listKavling)
                 .first()
                 .onFailure {
                     trySendBlocking(Result.failure(Exception("GetListRekapGlobalUseCase:49 onFailure -> ${it.message}")))

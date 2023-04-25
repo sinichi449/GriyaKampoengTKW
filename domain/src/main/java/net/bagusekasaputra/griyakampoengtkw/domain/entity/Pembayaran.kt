@@ -43,6 +43,18 @@ data class Pembayaran(
             return mTotal
         }
 
+        fun hitungTotalAllKavlingUangMasuk(mapListPembayaran: Map<String, List<Pembayaran>?>): Long {
+            var mTotal = 0L
+
+            mapListPembayaran.keys.forEach { kavling ->
+                mapListPembayaran[kavling]?.forEach { pembayaran ->
+                    mTotal += pembayaran.parsedJumlahUangDibayar
+                }
+            }
+
+            return mTotal
+        }
+
         fun hitungTotalSisaBelumBayar(hargaKavling: HargaKavling, jumlahUangMasukKavling: Long): Long {
             return hargaKavling.hargaDanTambahLuasan - jumlahUangMasukKavling
         }

@@ -1,6 +1,9 @@
 package net.bagusekasaputra.griyakampoengtkw.presentation.activities
 
+import android.app.ProgressDialog
+import android.content.DialogInterface
 import android.os.Bundle
+import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.navigation.NavController
@@ -44,6 +47,8 @@ class RekapBesarDetailActivity : AppCompatActivity() {
             RekapType.SisaPembayaran -> R.id.nav_rekap_detail_sisa_pembayaran
             else -> R.id.nav_rekap_detail_sisa_pembayaran
         }, bundleForFragments)
+
+        setupViewModel()
     }
 
     private fun setupToolbar(rekapDetailTransport: RekapDetailTransport?) {
@@ -61,8 +66,38 @@ class RekapBesarDetailActivity : AppCompatActivity() {
         }
     }
 
+    private fun setupViewModel() {
+        val progressDialog = ProgressDialog(this).apply {
+            setTitle("Tunggu sebentar...")
+            setMessage("Menyiapkan data ...")
+            setCancelable(false)
+            setButton(DialogInterface.BUTTON_NEGATIVE, "Cancel") { dialog, _ ->
+                viewModel.gettingRekapBesarJob?.cancel()
+
+                dialog.dismiss()
+            }
+        }
+
+        viewModel.isRekapBesarDetailLoaded.observe(this) {
+            it?.also { loaded ->
+                if (loaded) {
+                    progressDialog.dismiss()
+                } else {
+                    progressDialog.show()
+                }
+            }
+        }
+    }
+
+    override fun onResume() {
+        super.onResume()
+
+        viewModel.getRekapBesarDetail {
+            Toast.makeText(this, it, Toast.LENGTH_LONG).show()
+        }
+    }
+
     override fun onBackPressed() {
         finish()
-        super.onBackPressed()
     }
 }

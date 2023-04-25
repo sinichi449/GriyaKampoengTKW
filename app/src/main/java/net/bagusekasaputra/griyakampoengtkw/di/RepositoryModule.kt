@@ -289,4 +289,14 @@ object RepositoryModule {
             backupRestoreDataSource,
         )
     }
+
+
+    /**
+     * Rekap Besar Detail
+     */
+    @Provides
+    fun provideRekapBesarDetailRepository(@InternalDir internalFile: File): RekapBesarDetailRepository {
+        return RekapBesarDetailRepositoryImpl(internalFile)
+    }
+
 }
