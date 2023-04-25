@@ -33,8 +33,6 @@ import net.bagusekasaputra.griyakampoeng.tkw.data.local.pembayaran.PembayaranRoo
 import net.bagusekasaputra.griyakampoeng.tkw.data.local.pembayaran.PembayaranRoomEntity
 import net.bagusekasaputra.griyakampoeng.tkw.data.local.pengingat.PengingatRoomDao
 import net.bagusekasaputra.griyakampoeng.tkw.data.local.pengingat.PengingatRoomEntity
-import net.bagusekasaputra.griyakampoeng.tkw.data.local.rekap.RekapUangMasukDao
-import net.bagusekasaputra.griyakampoeng.tkw.data.local.rekap.RekapUangMasukEntity
 
 @Database(
     entities = [KavlingRoomEntity::class, ImageDataDiriRoomEntity::class, BlockRoomEntity::class,
@@ -42,16 +40,10 @@ import net.bagusekasaputra.griyakampoeng.tkw.data.local.rekap.RekapUangMasukEnti
                FotoPembayaranEntity::class, PembayaranRoomEntity::class, HargaKavlingRoomEntity::class,
                CatatanPembayaranRoomEntity::class, FeeMarketingRoomEntity::class,
                 BiayaMarketingV2RoomEntity::class, PengingatRoomEntity::class, MetadataEntity::class,
-               BiayaLainRoomEntity::class, RekapUangMasukEntity::class],
-    version = 15,
+               BiayaLainRoomEntity::class],
+    version = 16,
     exportSchema = true,
     autoMigrations = [
-//        AutoMigration(from = 3, to = 4),
-//        AutoMigration(from = 4, to = 5),
-//        AutoMigration(from = 5, to = 6),
-//        AutoMigration(from = 6, to = 7),
-//        AutoMigration(from = 7, to = 8),
-//        AutoMigration(from = 8, to = 9),
         AutoMigration(from = 11, to = 12),
         AutoMigration(from = 12, to = 13),
         AutoMigration(from = 13, to = 14),
@@ -89,6 +81,4 @@ abstract class MyRoomDatabase: RoomDatabase() {
     abstract fun getPengingatDao(): PengingatRoomDao
 
     abstract fun getBiayaLainDao(): BiayaLainDao
-
-    abstract fun getRekapUangMasukDao(): RekapUangMasukDao
 }

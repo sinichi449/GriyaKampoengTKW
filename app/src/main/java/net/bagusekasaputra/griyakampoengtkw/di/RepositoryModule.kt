@@ -253,14 +253,6 @@ object RepositoryModule {
     }
 
     /**
-     * Rekap Uang Masuk
-     */
-    @Provides
-    fun provideRekapUangMasukRepository(localRekap: LocalRekapUangMasukDataSource): RekapUangMasukRepository {
-        return RekapUangMasukRepositoryImpl(localRekap)
-    }
-
-    /**
      * Backup / Restore
      */
     @Provides

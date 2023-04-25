@@ -2,10 +2,9 @@ package net.bagusekasaputra.griyakampoengtkw.domain
 
 import kotlinx.coroutines.runBlocking
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.rekap.GetListRekapGlobalAsyncUseCase
-import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.rekap.GetRekapBesarAsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.Kavling
-import net.bagusekasaputra.griyakampoengtkw.domain.entity.PeriodeRekap
-import net.bagusekasaputra.griyakampoengtkw.domain.entity.RekapBesar
+import net.bagusekasaputra.griyakampoengtkw.domain.entity.rekap.PeriodeRekap
+import net.bagusekasaputra.griyakampoengtkw.domain.entity.rekap.RekapBesarOverview
 import net.bagusekasaputra.griyakampoengtkw.domain.mockRepository.*
 import org.junit.Test
 import java.util.*
@@ -162,7 +161,7 @@ class PeriodicRekapTest {
         }
     }
 
-    private fun RekapBesar.print() {
+    private fun RekapBesarOverview.print() {
         println("======================================================================")
         println("Rekap Besar")
         println("Sisa Uang          : ${this.parsedSisaUang}")

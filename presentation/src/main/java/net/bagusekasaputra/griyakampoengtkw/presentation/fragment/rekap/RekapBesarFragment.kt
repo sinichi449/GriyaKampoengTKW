@@ -2,7 +2,6 @@ package net.bagusekasaputra.griyakampoengtkw.presentation.fragment.rekap
 
 import android.app.ProgressDialog
 import android.content.DialogInterface
-import android.content.Intent
 import android.content.SharedPreferences
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -17,9 +16,8 @@ import androidx.fragment.app.activityViewModels
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import dagger.hilt.android.AndroidEntryPoint
 import net.bagusekasaputra.griyakampoengtkw.domain.NumberUtil
-import net.bagusekasaputra.griyakampoengtkw.domain.entity.PeriodeRekap
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.UnmigratedKavling
-import net.bagusekasaputra.griyakampoengtkw.presentation.activities.RekapDetailActivity
+import net.bagusekasaputra.griyakampoengtkw.domain.entity.rekap.PeriodeRekap
 import net.bagusekasaputra.griyakampoengtkw.presentation.databinding.CardRekapPengeluaranBinding
 import net.bagusekasaputra.griyakampoengtkw.presentation.databinding.CardRekapUangMasukBinding
 import net.bagusekasaputra.griyakampoengtkw.presentation.databinding.DialogPickCustomPeriodeBinding
@@ -121,13 +119,12 @@ class RekapBesarFragment : Fragment() {
     }
 
     private fun navigateToRekapDetail(rekapType: RekapType) {
-        val intent = Intent(requireContext(), RekapDetailActivity::class.java)
-        intent.putExtra("INTENT_REKAP_TYPE", rekapType.name)
-        intent.putExtra("INTENT_REKAP_DATE_RANGE", viewModel.rangeTanggal.value ?: "-")
-        intent.putExtra("INTENT_PERIODE_REKAP", viewModel.currentPeriodeRekap.value?.name ?: "-")
-        intent.putExtra("INTENT_START_DATE", viewModel.currentStartDate.value)
-        intent.putExtra("INTENT_END_DATE", viewModel.currentEndDate.value)
-        requireActivity().startActivity(intent)
+        // TODO
+        Toast.makeText(
+            requireContext(),
+            "Navigate to Rekap Detail is in progress!",
+            Toast.LENGTH_SHORT
+        ).show()
     }
 
     private fun showCustomPeriodePickerDialog() {
@@ -187,14 +184,6 @@ class RekapBesarFragment : Fragment() {
 
     private fun setupViewModel() {
         val progressDialog = createProgressDialog()
-
-        viewModel.rekapBesarProgress.observe(requireActivity()) {
-            if (it != null) {
-                progressDialog.progress = it.percent
-                progressDialog.setMessage(it.message)
-            }
-        }
-
         viewModel.isRekapBesarLoaded.observe(requireActivity()) {
             if (it != null) {
                 if (it) {
@@ -215,7 +204,7 @@ class RekapBesarFragment : Fragment() {
             }
         }
 
-        viewModel.rekapBesarLive.observe(requireActivity()) {
+        viewModel.rekapBesarOverviewLive.observe(requireActivity()) {
             if (it != null) {
                 val sisaUang = "Rp ${it.parsedSisaUang}"
                 binding.tvSisaUang.text = sisaUang

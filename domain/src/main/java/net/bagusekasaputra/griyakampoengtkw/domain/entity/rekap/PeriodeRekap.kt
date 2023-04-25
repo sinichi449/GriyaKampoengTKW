@@ -1,4 +1,4 @@
-package net.bagusekasaputra.griyakampoengtkw.domain.entity
+package net.bagusekasaputra.griyakampoengtkw.domain.entity.rekap
 
 enum class PeriodeRekap {
     SEMUA,

@@ -7,12 +7,10 @@ import dagger.hilt.android.components.ViewModelComponent
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.CreateBackupAsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.biayaLain.*
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.biayaMarketing.GetAllBiayaMarketingByKavlingKodeAsyncUseCase
-import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.biayaMarketing.GetRekapBiayaMarketingAsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.block.GetAllBlocksAsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.catatanPembayaran.GetCatatanPembayaranAsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.dataDiri.GetDataDiriAsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.feeMarketing.GetFeeMarketingByKavlingKodeAsyncUseCase
-import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.feeMarketing.GetRekapFeeMarketingAsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.fotoPembayaran.AddFotoPembayaranAsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.fotoPembayaran.DeleteFotoPembayaranAsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.fotoPembayaran.GetFotoPembayaranAsyncUseCase
@@ -23,8 +21,6 @@ import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.kavling.GetListU
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.pembayaran.GetAllPembayaranAsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.pengingat.*
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.rekap.GetListRekapGlobalAsyncUseCase
-import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.rekap.GetRekapBesarAsyncUseCase
-import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.rekap.GetUangMasukRekapAsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.reportKavling.GetAllReportKavlingAsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.repository.*
 import net.bagusekasaputra.griyakampoengtkw.domain.usecase.appupdate.GetUpdateInformationUseCase
@@ -377,60 +373,6 @@ object UseCaseModule {
             pembayaranRepository,
             hargaKavlingRepository
         )
-    }
-
-    /**
-     * Rekap Besar
-     */
-    @Provides
-    fun provideGetRekapBesarUseCase(
-        dataDiriRepository: DataDiriRepository,
-        pembayaranRepository: PembayaranRepository,
-        hargaKavlingRepository: HargaKavlingRepository,
-        feeMarketingRepository: FeeMarketingRepository,
-        biayaMarketingRepository: BiayaMarketingRepository,
-        biayaLainRepository: BiayaLainRepository,
-        rekapUangMasukRepository: RekapUangMasukRepository,
-    ): GetRekapBesarAsyncUseCase {
-        return GetRekapBesarAsyncUseCase(dataDiriRepository,
-            pembayaranRepository,
-            hargaKavlingRepository,
-            feeMarketingRepository,
-            biayaMarketingRepository,
-            biayaLainRepository,
-            rekapUangMasukRepository)
-    }
-
-    /**
-     * Rekap Uang Masuk
-     */
-    @Provides
-    fun provideGetUangMasukRekapUseCase(rekapUangMasukRepository: RekapUangMasukRepository): GetUangMasukRekapAsyncUseCase {
-        return GetUangMasukRekapAsyncUseCase(rekapUangMasukRepository)
-    }
-
-    /**
-     * Rekap Fee Marketing
-     */
-    @Provides
-    fun provideGetRekapFeeMarketingUseCase(feeMarketingRepository: FeeMarketingRepository): GetRekapFeeMarketingAsyncUseCase {
-        return GetRekapFeeMarketingAsyncUseCase(feeMarketingRepository)
-    }
-
-    /**
-     * Rekap Biaya Marketing
-     */
-    @Provides
-    fun provideGetRekapBiayaMarketingUseCase(biayaMarketingRepository: BiayaMarketingRepository): GetRekapBiayaMarketingAsyncUseCase {
-        return GetRekapBiayaMarketingAsyncUseCase(biayaMarketingRepository)
-    }
-
-    /**
-     * Rekap Biaya Lain-lain
-     */
-    @Provides
-    fun provideGetRekapBiayaLainUseCase(biayaLainRepository: BiayaLainRepository): GetRekapBiayaLainAsyncUseCase {
-        return GetRekapBiayaLainAsyncUseCase(biayaLainRepository)
     }
 
 

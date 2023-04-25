@@ -24,7 +24,6 @@ import net.bagusekasaputra.griyakampoeng.tkw.data.local.kavling.RoomKavlingDataS
 import net.bagusekasaputra.griyakampoeng.tkw.data.local.metadata.RoomMetadataDataSource
 import net.bagusekasaputra.griyakampoeng.tkw.data.local.pembayaran.RoomPembayaranLocalDataSource
 import net.bagusekasaputra.griyakampoeng.tkw.data.local.pengingat.RoomPengingatDataSource
-import net.bagusekasaputra.griyakampoeng.tkw.data.local.rekap.RoomRekapUangMasukLocalDataSource
 import net.bagusekasaputra.griyakampoengtkw.data.backup.BackupRestoreDataSourceImpl
 import net.bagusekasaputra.griyakampoengtkw.data.backup.biayaLain.BackupBiayaLainDataSourceImpl
 import net.bagusekasaputra.griyakampoengtkw.data.backup.biayaMarketing.BackupBiayaMarketingDataSourceImpl
@@ -349,14 +348,6 @@ object DataSourceModule {
     @Provides
     fun provideBackupBiayaLainDataSource(sharedPreferences: SharedPreferences): BackupBiayaLainDataSource {
         return BackupBiayaLainDataSourceImpl(sharedPreferences)
-    }
-
-    /**
-     * Rekap Uang Masuk
-     */
-    @Provides
-    fun provideLocalRekapUangMasukDataSource(roomDatabase: MyRoomDatabase): LocalRekapUangMasukDataSource {
-        return RoomRekapUangMasukLocalDataSource(roomDatabase)
     }
 
 

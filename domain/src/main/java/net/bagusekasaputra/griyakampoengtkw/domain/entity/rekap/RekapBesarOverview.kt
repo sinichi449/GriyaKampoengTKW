@@ -1,8 +1,8 @@
-package net.bagusekasaputra.griyakampoengtkw.domain.entity
+package net.bagusekasaputra.griyakampoengtkw.domain.entity.rekap
 
 import net.bagusekasaputra.griyakampoengtkw.domain.NumberUtil
 
-data class RekapBesar(
+data class RekapBesarOverview(
     val totalUangMasuk: Long,
     val totalSisaBelumBayar: Long,
     val totalFeeMarketing: Long,

@@ -8,7 +8,7 @@ import net.bagusekasaputra.griyakampoengtkw.domain.PembayaranSorterUtil
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.AsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.Pembayaran
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.ProgressState
-import net.bagusekasaputra.griyakampoengtkw.domain.entity.RekapGlobal
+import net.bagusekasaputra.griyakampoengtkw.domain.entity.rekap.RekapGlobal
 import net.bagusekasaputra.griyakampoengtkw.domain.repository.DataDiriRepository
 import net.bagusekasaputra.griyakampoengtkw.domain.repository.HargaKavlingRepository
 import net.bagusekasaputra.griyakampoengtkw.domain.repository.PembayaranRepository
@@ -71,13 +71,15 @@ class GetListRekapGlobalAsyncUseCase(
                     else 0L
                 }
 
-                listRekapGlobal.add(RekapGlobal(
+                listRekapGlobal.add(
+                    RekapGlobal(
                     noKavling = kavling,
                     namaCostumer = namaCostumer,
                     tanggalPembelian = tanggalPembelian,
                     harga = hargaKavling,
                     jumlahUangMasuk = jumlahUangMasuk,
-                ))
+                )
+                )
             }
 
             trySendBlocking(Result.success(listRekapGlobal))

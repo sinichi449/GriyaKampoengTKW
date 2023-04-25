@@ -1,4 +1,4 @@
-package net.bagusekasaputra.griyakampoengtkw.domain.entity
+package net.bagusekasaputra.griyakampoengtkw.domain.entity.rekap
 
 import net.bagusekasaputra.griyakampoengtkw.domain.NumberUtil
 import java.math.BigDecimal

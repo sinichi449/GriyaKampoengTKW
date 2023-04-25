@@ -1,6 +1,6 @@
 package net.bagusekasaputra.griyakampoengtkw.domain
 
-import net.bagusekasaputra.griyakampoengtkw.domain.entity.RekapGlobal
+import net.bagusekasaputra.griyakampoengtkw.domain.entity.rekap.RekapGlobal
 import org.junit.Assert.assertEquals
 import org.junit.Test
 import java.util.*
