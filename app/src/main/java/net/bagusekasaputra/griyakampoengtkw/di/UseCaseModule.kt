@@ -20,6 +20,7 @@ import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.kavling.GetKavli
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.kavling.GetListUnmigratedKavlingsAsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.pembayaran.GetAllPembayaranAsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.pengingat.*
+import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.rekap.CalculateRekapBesarAndGetRekapBesarOverview
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.rekap.GetListRekapGlobalAsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.reportKavling.GetAllReportKavlingAsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.repository.*
@@ -409,6 +410,24 @@ object UseCaseModule {
             fotoPembayaranRepository,
             imageSprRepository,
             backupRestoreRepository,
+        )
+    }
+
+
+    @Provides
+    fun provideCalculateRekapBesarAndGetRekapBesarOverview(
+        pembayaranRepository: PembayaranRepository,
+        hargaKavlingRepository: HargaKavlingRepository,
+        feeMarketingRepository: FeeMarketingRepository,
+        biayaMarketingRepository: BiayaMarketingRepository,
+        biayaLainRepository: BiayaLainRepository,
+    ): CalculateRekapBesarAndGetRekapBesarOverview {
+        return CalculateRekapBesarAndGetRekapBesarOverview(
+            pembayaranRepository,
+            hargaKavlingRepository,
+            feeMarketingRepository,
+            biayaMarketingRepository,
+            biayaLainRepository,
         )
     }
 }

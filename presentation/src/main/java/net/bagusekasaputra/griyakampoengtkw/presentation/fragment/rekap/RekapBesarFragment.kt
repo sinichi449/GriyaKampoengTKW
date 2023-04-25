@@ -283,6 +283,11 @@ class RekapBesarFragment : Fragment() {
             this.setTitle("Sedang merekap")
             this.setCancelable(false)
             this.max = 100
+            setButton(DialogInterface.BUTTON_NEGATIVE, "Cancel") { dialog, _ ->
+                viewModel.gettingRekapBesarJob?.cancel()
+
+                dialog.dismiss()
+            }
         }
 
         return progressDialog

@@ -7,6 +7,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.update
 import net.bagusekasaputra.griyakampoengtkw.domain.DateUtil
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.kavling.GetListUnmigratedKavlingsAsyncUseCase
+import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.rekap.CalculateRekapBesarAndGetRekapBesarOverview
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.rekap.GetListRekapGlobalAsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.Kavling
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.UnmigratedKavling
@@ -24,6 +25,7 @@ import javax.inject.Inject
 @HiltViewModel
 class RekapViewModel @Inject constructor(
     private val getListRekapGlobalAsyncUseCase: GetListRekapGlobalAsyncUseCase,
+    private val calculateRekapBesarAndGetRekapBesarOverview: CalculateRekapBesarAndGetRekapBesarOverview,
     private val getListUnmigratedKavlingsAsyncUseCase: GetListUnmigratedKavlingsAsyncUseCase,
 ): ViewModel() {
 
@@ -60,7 +62,7 @@ class RekapViewModel @Inject constructor(
     val listKavlingDataLamaRekapBesarIncluded: LiveData<List<String>>
         get() = _listKavlingDataLamaRekapBesarIncludedLive
 
-
+    var gettingRekapBesarJob: Job? = null
     var kavlingLamaRekapBesarJob: Job? = null
 
 
@@ -100,9 +102,28 @@ class RekapViewModel @Inject constructor(
         currentEndDate.value = endDate?.toSlashedDate()
 
         // Need to be set like this to show progress dialog
-//        isRekapBesarLoaded.value = false
+        isRekapBesarLoaded.value = false
 
-        // TODO
+        gettingRekapBesarJob = viewModelScope.launch {
+            val request = CalculateRekapBesarAndGetRekapBesarOverview.Request(
+                periodeRekap = periode,
+                startDate = startDate,
+                endDate = endDate,
+                listIncludedKavlingDataLama = _listKavlingDataLamaRekapBesarIncludedLive.value!!,
+            )
+            calculateRekapBesarAndGetRekapBesarOverview.execute(request).collect { result ->
+                result.onSuccess {
+                    _rekapBesarOverviewLive.postValue(it)
+
+                    isRekapBesarLoaded.postValue(true)
+                }
+                result.onFailure {
+                    onFailure("Gagal merekap: ${it.cause}")
+
+                    isRekapBesarLoaded.postValue(true)
+                }
+            }
+        }
 
         rangeTanggal.value = when (periode) {
             PeriodeRekap.SEMUA -> "Semua"
