@@ -31,4 +31,15 @@
         app:navGraph="@navigation/nav_graph_rekap_detail"
         app:layout_behavior="com.google.android.material.appbar.AppBarLayout$ScrollingViewBehavior"/>
 
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/fab_scroll_data_type"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|right"
+        app:layout_anchor="@id/fragmentContainerView_rekap_detail"
+        app:layout_anchorGravity="bottom|right|end"
+        android:layout_marginEnd="24dp"
+        android:layout_marginBottom="24dp"
+        android:src="@drawable/baseline_arrow_downward_24"/>
+
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

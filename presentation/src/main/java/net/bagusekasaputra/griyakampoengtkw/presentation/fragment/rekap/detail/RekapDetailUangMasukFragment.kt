@@ -1,25 +1,30 @@
 package net.bagusekasaputra.griyakampoengtkw.presentation.fragment.rekap.detail
 
+import android.os.Build
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
+import com.google.android.material.floatingactionbutton.FloatingActionButton
 import dagger.hilt.android.AndroidEntryPoint
 import net.bagusekasaputra.griyakampoengtkw.domain.NumberUtil
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.rekap.PembayaranWithNamaCostumer
+import net.bagusekasaputra.griyakampoengtkw.presentation.activities.RekapBesarDetailActivity
 import net.bagusekasaputra.griyakampoengtkw.presentation.databinding.FragmentRekapDetailUangMasukBinding
 import net.bagusekasaputra.griyakampoengtkw.presentation.tableview.rekapUangMasuk.RekapUangMasukTableViewAdapter
 import net.bagusekasaputra.griyakampoengtkw.presentation.tableview.rekapUangMasuk.RumCell
 import net.bagusekasaputra.griyakampoengtkw.presentation.tableview.rekapUangMasuk.RumColumnHeader
 import net.bagusekasaputra.griyakampoengtkw.presentation.tableview.rekapUangMasuk.RumRowHeader
+import net.bagusekasaputra.griyakampoengtkw.presentation.util.UiUtils
 import net.bagusekasaputra.griyakampoengtkw.presentation.viewmodel.RekapViewModel
 
 @AndroidEntryPoint
 class RekapDetailUangMasukFragment : Fragment() {
 
     private lateinit var binding: FragmentRekapDetailUangMasukBinding
+    private lateinit var fabScrollDataType: FloatingActionButton
     private val viewModel: RekapViewModel by activityViewModels()
 
     override fun onCreateView(
@@ -28,12 +33,23 @@ class RekapDetailUangMasukFragment : Fragment() {
     ): View? {
         // Inflate the layout for this fragment
         binding = FragmentRekapDetailUangMasukBinding.inflate(inflater, container, false)
+        fabScrollDataType = (requireActivity() as RekapBesarDetailActivity).getFabScrollDataType()
 
         return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            val dataLamaIncluded = viewModel.rekapDetailTransportLive.value?.includeDataLama
+
+            if (dataLamaIncluded == true) {
+                fabScrollDataType.setOnClickListener {
+                    UiUtils.scrollToView(binding.root, binding.tvInfoDataLama)
+                }
+            }
+        }
 
         setupViewModel()
     }
@@ -159,4 +175,6 @@ class RekapDetailUangMasukFragment : Fragment() {
 
         adapter.notifyDataSetChanged()
     }
+
+
 }

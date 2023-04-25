@@ -3,11 +3,13 @@ package net.bagusekasaputra.griyakampoengtkw.presentation.activities
 import android.app.ProgressDialog
 import android.content.DialogInterface
 import android.os.Bundle
+import android.view.View
 import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.navigation.NavController
 import androidx.navigation.fragment.NavHostFragment
+import com.google.android.material.floatingactionbutton.FloatingActionButton
 import dagger.hilt.android.AndroidEntryPoint
 import net.bagusekasaputra.griyakampoengtkw.presentation.R
 import net.bagusekasaputra.griyakampoengtkw.presentation.RekapDetailTransport
@@ -21,6 +23,10 @@ class RekapBesarDetailActivity : AppCompatActivity() {
     private lateinit var binding: ActivityRekapBesarDetailBinding
     private lateinit var navController: NavController
     private val viewModel: RekapViewModel by viewModels()
+
+    enum class FabMode {
+        Upward, Downward
+    }
 
     companion object {
         const val EXTRAS_REKAP_DETAIL_TRANSPORT = "EXTRAS_REKAP_DETAIL_TRANSPORT"
@@ -48,6 +54,10 @@ class RekapBesarDetailActivity : AppCompatActivity() {
             else -> R.id.nav_rekap_detail_sisa_pembayaran
         }, bundleForFragments)
 
+        // Disable FAB Scroll Type on NOT-INCLUDED DATA LAMA
+        binding.fabScrollDataType.visibility = if (rekapDetailTransport?.includeDataLama == true)
+            View.VISIBLE else View.GONE
+
         setupViewModel()
     }
 
@@ -65,6 +75,8 @@ class RekapBesarDetailActivity : AppCompatActivity() {
             subtitle = rekapDetailTransport?.getRangeTanggal()
         }
     }
+
+
 
     private fun setupViewModel() {
         val progressDialog = ProgressDialog(this).apply {
@@ -87,6 +99,14 @@ class RekapBesarDetailActivity : AppCompatActivity() {
                 }
             }
         }
+    }
+
+    fun getFabScrollDataType(): FloatingActionButton {
+        return binding.fabScrollDataType
+    }
+
+    fun setFabScrollDataTypeIcon(fabMode: FabMode) {
+        // TODO
     }
 
     override fun onResume() {
