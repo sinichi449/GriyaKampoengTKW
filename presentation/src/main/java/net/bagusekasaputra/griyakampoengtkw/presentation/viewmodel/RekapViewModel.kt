@@ -14,6 +14,7 @@ import net.bagusekasaputra.griyakampoengtkw.domain.entity.UnmigratedKavling
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.rekap.PeriodeRekap
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.rekap.RekapBesarOverview
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.rekap.RekapGlobal
+import net.bagusekasaputra.griyakampoengtkw.presentation.RekapDetailTransport
 import net.bagusekasaputra.griyakampoengtkw.presentation.fragment.rekap.RekapType
 import net.bagusekasaputra.griyakampoengtkw.presentation.tableview.rekapGlobal.RgCell
 import net.bagusekasaputra.griyakampoengtkw.presentation.tableview.rekapGlobal.RgColumnHeader
@@ -30,11 +31,10 @@ class RekapViewModel @Inject constructor(
 ): ViewModel() {
 
     val currentFragment = MutableLiveData<RekapType>()
-    val currentPeriodeRekap = MutableLiveData<PeriodeRekap>()
-    val currentStartDate = MutableLiveData<String>()
-    val currentEndDate = MutableLiveData<String>()
 
-
+    private val _rekapDetailTransportLive = MutableLiveData<RekapDetailTransport>()
+    val rekapDetailTransportLive: LiveData<RekapDetailTransport>
+        get() = _rekapDetailTransportLive
 
     private val _listRekapGlobalLive = MutableLiveData(
         listOf(RekapGlobal("-", "-", "-", 0L, 0L))
@@ -43,7 +43,6 @@ class RekapViewModel @Inject constructor(
         get() = _listRekapGlobalLive
 
 
-    // TODO: Pass the value here
     private val _rekapBesarOverviewLive = MutableLiveData<RekapBesarOverview>()
     val rekapBesarOverviewLive: LiveData<RekapBesarOverview>
         get() = _rekapBesarOverviewLive
@@ -53,8 +52,6 @@ class RekapViewModel @Inject constructor(
     val isRekapBesarLoaded = MutableLiveData<Boolean>()
 
     val rekapGlobalProgress = getListRekapGlobalAsyncUseCase.progressState.asLiveData(Dispatchers.Default)
-
-    val rangeTanggal = MutableLiveData<String>()
 
     private val kavlingList = Kavling.getGriyaKavlingList()
 
@@ -97,9 +94,20 @@ class RekapViewModel @Inject constructor(
         endDate: Date? = null,
         onFailure: (msg: String) -> Unit,
     ) {
-        currentPeriodeRekap.value = periode
-        currentStartDate.value = startDate?.toSlashedDate()
-        currentEndDate.value = endDate?.toSlashedDate()
+        val listRangeTanggal = when (periode) {
+            PeriodeRekap.SEMUA -> emptyList()
+            PeriodeRekap.TAHUN_INI -> DateUtil.getYearlyRangeDate()
+            PeriodeRekap.BULAN_INI -> DateUtil.getMonthlyRangeDate()
+            PeriodeRekap.MINGGU_INI -> DateUtil.getWeeklyRangeDate()
+            PeriodeRekap.CUSTOM -> DateUtil.getCustomRangeDate(startDate!!, endDate!!)
+        }
+        _rekapDetailTransportLive.value = RekapDetailTransport(
+            rekapType = null,
+            periodeRekap = periode,
+            startDate = if (listRangeTanggal.isNotEmpty()) listRangeTanggal[0] else null,
+            endDate = if (listRangeTanggal.isNotEmpty()) listRangeTanggal[1] else null,
+            includeDataLama = doesIncludeDataLama(),
+        )
 
         // Need to be set like this to show progress dialog
         isRekapBesarLoaded.value = false
@@ -123,14 +131,6 @@ class RekapViewModel @Inject constructor(
                     isRekapBesarLoaded.postValue(true)
                 }
             }
-        }
-
-        rangeTanggal.value = when (periode) {
-            PeriodeRekap.SEMUA -> "Semua"
-            PeriodeRekap.TAHUN_INI -> DateUtil.getTahunSekarang().toString()
-            PeriodeRekap.BULAN_INI -> DateUtil.getMonthlyRangeDate().toRangeString()
-            PeriodeRekap.MINGGU_INI -> DateUtil.getWeeklyRangeDate().toRangeString()
-            PeriodeRekap.CUSTOM -> "${startDate?.toSlashedDate()} - ${endDate?.toSlashedDate()}"
         }
     }
 
@@ -164,6 +164,22 @@ class RekapViewModel @Inject constructor(
 
     fun setListDataLamaRekapBesarIncluded(listKavlingStr: List<String>) {
         _listKavlingDataLamaRekapBesarIncludedLive.postValue(listKavlingStr.sorted())
+    }
+
+    fun setRekapTypeDetailTransport(rekapType: RekapType) {
+        _rekapDetailTransportLive.value?.let {
+            _rekapDetailTransportLive.value = RekapDetailTransport(
+                rekapType = rekapType,
+                periodeRekap = it.periodeRekap,
+                startDate = it.startDate,
+                endDate = it.endDate,
+                includeDataLama = it.includeDataLama,
+            )
+        }
+    }
+
+    fun setRekapDetailTransport(rekapDetailTransport: RekapDetailTransport) {
+        _rekapDetailTransportLive.value = rekapDetailTransport
     }
 
     fun doesIncludeDataLama(): Boolean {

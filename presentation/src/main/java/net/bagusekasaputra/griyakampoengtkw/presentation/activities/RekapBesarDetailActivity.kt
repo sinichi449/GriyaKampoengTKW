@@ -7,9 +7,9 @@ import androidx.navigation.NavController
 import androidx.navigation.fragment.NavHostFragment
 import dagger.hilt.android.AndroidEntryPoint
 import net.bagusekasaputra.griyakampoengtkw.presentation.R
+import net.bagusekasaputra.griyakampoengtkw.presentation.RekapDetailTransport
 import net.bagusekasaputra.griyakampoengtkw.presentation.databinding.ActivityRekapBesarDetailBinding
 import net.bagusekasaputra.griyakampoengtkw.presentation.fragment.rekap.RekapType
-import net.bagusekasaputra.griyakampoengtkw.presentation.fragment.rekap.getRekapType
 import net.bagusekasaputra.griyakampoengtkw.presentation.viewmodel.RekapViewModel
 
 @AndroidEntryPoint
@@ -20,10 +20,7 @@ class RekapBesarDetailActivity : AppCompatActivity() {
     private val viewModel: RekapViewModel by viewModels()
 
     companion object {
-        const val EXTRAS_REKAP_TYPE = "EXTRAS_REKAP_TYPE"
-        const val EXTRAS_START_DATE = "EXTRAS_START_DATE"
-        const val EXTRAS_END_DATE = "EXTRAS_END_DATE"
-        const val EXTRAS_INCLUDE_DATA_LAMA = "EXTRAS_INCLUDE_DATA_LAMA"
+        const val EXTRAS_REKAP_DETAIL_TRANSPORT = "EXTRAS_REKAP_DETAIL_TRANSPORT"
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -32,45 +29,40 @@ class RekapBesarDetailActivity : AppCompatActivity() {
         setContentView(binding.root)
 
         // Setup Toolbar
-        val rekapType = intent?.extras?.getString(EXTRAS_REKAP_TYPE)?.let { getRekapType(it) }
-        val startDate = intent?.extras?.getString(EXTRAS_START_DATE)
-        val endDate = intent?.extras?.getString(EXTRAS_END_DATE)
-        setupToolbar(rekapType, startDate, endDate)
+        val rekapDetailTransport = intent?.extras?.getSerializable(EXTRAS_REKAP_DETAIL_TRANSPORT) as RekapDetailTransport?
+        rekapDetailTransport?.also { viewModel.setRekapDetailTransport(it) }
+        setupToolbar(rekapDetailTransport)
 
 
         // Navigate to corresponding fragments
         navController = (supportFragmentManager.findFragmentById(R.id.fragmentContainerView_rekap_detail) as NavHostFragment).navController
-        val dataLamaIncluded = intent?.extras?.getBoolean(EXTRAS_INCLUDE_DATA_LAMA) ?: false
         val bundleForFragments = Bundle().apply {
-            putString(EXTRAS_START_DATE, startDate)
-            putString(EXTRAS_END_DATE, endDate)
-            putBoolean(EXTRAS_INCLUDE_DATA_LAMA, dataLamaIncluded)
+            putSerializable(EXTRAS_REKAP_DETAIL_TRANSPORT, rekapDetailTransport)
         }
-        navController.navigate(when (rekapType) {
+        navController.navigate(when (rekapDetailTransport?.rekapType) {
             RekapType.UangMasuk -> R.id.nav_rekap_detail_uang_masuk
             RekapType.SisaPembayaran -> R.id.nav_rekap_detail_sisa_pembayaran
             else -> R.id.nav_rekap_detail_sisa_pembayaran
         }, bundleForFragments)
     }
 
-    private fun setupToolbar(rekapType: RekapType?, startDate: String?, endDate: String?) {
+    private fun setupToolbar(rekapDetailTransport: RekapDetailTransport?) {
         setSupportActionBar(binding.toolbarRekapDetail)
 
         binding.toolbarRekapDetail.apply {
-            title = when (rekapType) {
+            title = when (rekapDetailTransport?.rekapType) {
                 RekapType.UangMasuk -> "Uang Masuk"
                 RekapType.SisaPembayaran -> "Sisa Pembayaran"
                 RekapType.FeeMarketing -> "Fee Marketing"
                 RekapType.BiayaMarketing -> "Biaya Marketing"
-                else -> "Unknown Rekap Type"
+                else -> "Unknown/NULL Rekap Type"
             }
-            val dateRange = "$startDate - $endDate"
-            subtitle = dateRange
+            subtitle = rekapDetailTransport?.getRangeTanggal()
         }
     }
 
     override fun onBackPressed() {
-        super.onBackPressed()
         finish()
+        super.onBackPressed()
     }
 }

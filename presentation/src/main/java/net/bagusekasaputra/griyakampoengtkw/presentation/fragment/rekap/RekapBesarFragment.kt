@@ -125,11 +125,10 @@ class RekapBesarFragment : Fragment() {
     }
 
     private fun navigateToRekapDetail(rekapType: RekapType) {
+        viewModel.setRekapTypeDetailTransport(rekapType)
+
         val intent = Intent(requireContext(), RekapBesarDetailActivity::class.java).apply {
-            putExtra(RekapBesarDetailActivity.EXTRAS_REKAP_TYPE, rekapType.name)
-            putExtra(RekapBesarDetailActivity.EXTRAS_START_DATE, viewModel.currentStartDate.value)
-            putExtra(RekapBesarDetailActivity.EXTRAS_END_DATE, viewModel.currentEndDate.value)
-            putExtra(RekapBesarDetailActivity.EXTRAS_INCLUDE_DATA_LAMA, viewModel.doesIncludeDataLama())
+            putExtra(RekapBesarDetailActivity.EXTRAS_REKAP_DETAIL_TRANSPORT, viewModel.rekapDetailTransportLive.value)
         }
 
         requireActivity().startActivity(intent)
@@ -206,9 +205,9 @@ class RekapBesarFragment : Fragment() {
             }
         }
 
-        viewModel.rangeTanggal.observe(requireActivity()) {
+        viewModel.rekapDetailTransportLive.observe(requireActivity()) {
             if (it != null) {
-                binding.tvRangePeriode.text = it
+                binding.tvRangePeriode.text = it.getRangeTanggal()
             }
         }
 

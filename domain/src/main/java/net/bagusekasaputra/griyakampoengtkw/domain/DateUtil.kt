@@ -6,6 +6,21 @@ object DateUtil {
 
     fun getTahunSekarang() = Calendar.getInstance().get(Calendar.YEAR)
 
+    fun getYearlyRangeDate(): List<Date> {
+        val tanggalPertama = Calendar.getInstance().apply {
+            set(Calendar.DAY_OF_MONTH, 1)
+            set(Calendar.MONTH, Calendar.JANUARY)
+
+            set(Calendar.HOUR_OF_DAY, 0)
+            set(Calendar.MINUTE, 0)
+            set(Calendar.SECOND, 0)
+            set(Calendar.MILLISECOND, 0)
+        }.time
+        val tanggalTerakhir = Calendar.getInstance().time
+
+        return listOf(tanggalPertama, tanggalTerakhir)
+    }
+
     fun getMonthlyRangeDate(): List<Date> {
         // Get first and end of day in current month
         val tanggalPertama = Calendar.getInstance().apply {
