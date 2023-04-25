@@ -6,20 +6,51 @@ import net.bagusekasaputra.griyakampoengtkw.domain.entity.FeeMarketing
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.Pembayaran
 
 data class RekapBesarDetail(
-    val mapListPembayaranRekapBaru: Map<String, List<Pembayaran>?>,
+    // Data Baru
+    val mapListPembayaranRekapBaru: Map<String, List<PembayaranWithNamaCostumer>?>,
     val mapFeeMarketingRekapBaru: Map<String, FeeMarketing?>,
     val mapListBiayaMarketingRekapBaru: Map<String, List<BiayaMarketing>?>,
-    val mapListPembayaranRekapLama: Map<String, List<Pembayaran>?> = mapOf(),
-    val mapFeeMarketingRekapLama: Map<String, FeeMarketing?>,
-    val mapListBiayaMarketingRekapLama: Map<String, List<BiayaMarketing>?>,
+
+    // Data Lama
+    val mapListPembayaranRekapLama: Map<String, List<PembayaranWithNamaCostumer>?> = mapOf(),
+    val mapFeeMarketingRekapLama: Map<String, FeeMarketing?> = mapOf(),
+    val mapListBiayaMarketingRekapLama: Map<String, List<BiayaMarketing>?> = mapOf(),
+
+    // Agnostic :V
     val listBiayaLain: List<BiayaLain>?,
 ) {
 
     fun getTotalUangMasukRekapBaru(): Long {
-        return Pembayaran.hitungTotalAllKavlingUangMasuk(mapListPembayaranRekapBaru)
+        val mapPembayaran = mutableMapOf<String, List<Pembayaran>?>()
+
+        mapListPembayaranRekapBaru.keys.forEach { kavling ->
+            val listPembayaran = mutableListOf<Pembayaran>()
+            mapListPembayaranRekapBaru[kavling]?.forEach { pembayaranWithNamaCostumer ->
+                listPembayaran.add(pembayaranWithNamaCostumer.pembayaran)
+            }
+
+            if (listPembayaran.isNotEmpty()) {
+                mapPembayaran[kavling] = listPembayaran
+            }
+        }
+
+        return Pembayaran.hitungTotalAllKavlingUangMasuk(mapPembayaran)
     }
 
     fun getTotalUangMasukRekapLama(): Long {
-        return Pembayaran.hitungTotalAllKavlingUangMasuk(mapListPembayaranRekapLama)
+        val mapPembayaran = mutableMapOf<String, List<Pembayaran>?>()
+
+        mapListPembayaranRekapLama.keys.forEach { kavlingLama ->
+            val listPembayaran = mutableListOf<Pembayaran>()
+            mapListPembayaranRekapLama[kavlingLama]?.forEach { pembayaranWithNamaCostumer ->
+                listPembayaran.add(pembayaranWithNamaCostumer.pembayaran)
+            }
+
+            if (listPembayaran.isNotEmpty()) {
+                mapPembayaran[kavlingLama] = listPembayaran
+            }
+        }
+
+        return Pembayaran.hitungTotalAllKavlingUangMasuk(mapPembayaran)
     }
 }

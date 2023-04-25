@@ -1,9 +1,9 @@
 package net.bagusekasaputra.griyakampoengtkw.data.repository
 
 import android.util.Log
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.emitAll
-import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.channels.awaitClose
+import kotlinx.coroutines.channels.trySendBlocking
+import kotlinx.coroutines.flow.*
 import net.bagusekasaputra.griyakampoengtkw.data.DataUtil
 import net.bagusekasaputra.griyakampoengtkw.data.MyObjectMapper.mapDataDiri
 import net.bagusekasaputra.griyakampoengtkw.data.interfaces.backup.BackupDataDiriDataSource
@@ -28,7 +28,7 @@ class DataDiriRepositoryImpl(
 
     private val metadataTable = "dataDiri"
 
-    override fun getBatch(listKavling: List<String>): Flow<Result<Map<String, DataDiri?>?>> {
+    override fun getBatchOnline(listKavling: List<String>): Flow<Result<Map<String, DataDiri?>?>> {
         return flow {
             checkCache()
 
@@ -66,6 +66,26 @@ class DataDiriRepositoryImpl(
             }
 
             emit(Result.success(batchDataDiri))
+        }
+    }
+
+    override fun getBatchBackup(listKavling: List<String>): Flow<Result<Map<String, DataDiri?>?>> {
+        return callbackFlow {
+            try {
+                val mapDataDiri = mutableMapOf<String, DataDiri?>()
+
+                listKavling.forEach { kavling ->
+                    mapDataDiri[kavling] = getDataDiri(kavling, DataMode.DATA_LAMA).first().getOrThrow()
+                }
+
+                trySendBlocking(Result.success(mapDataDiri))
+            } catch (e: Exception) {
+                e.printStackTrace()
+
+                trySendBlocking(Result.failure(e))
+            }
+
+            awaitClose {  }
         }
     }
 

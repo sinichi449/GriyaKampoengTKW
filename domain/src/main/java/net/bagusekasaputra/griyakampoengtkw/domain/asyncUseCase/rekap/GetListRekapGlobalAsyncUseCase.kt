@@ -27,7 +27,7 @@ class GetListRekapGlobalAsyncUseCase(
         return callbackFlow {
             Log.d("DEBUG_ME", "RekapGlobalUseCase: Getting data diri ...")
             progressState.update { ProgressState(25, "Menyusun tabel Data Diri ...") }
-            val dataDiriBatch = dataDiriRepository.getBatch(request.listKavling)
+            val dataDiriBatch = dataDiriRepository.getBatchOnline(request.listKavling)
                 .first()
                 .onFailure {
                     trySendBlocking(Result.failure(Exception("GetListRekapGlobalUseCase:32 onFailure -> ${it.message}")))

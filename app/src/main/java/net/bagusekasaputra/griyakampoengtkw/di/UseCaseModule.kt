@@ -421,6 +421,7 @@ object UseCaseModule {
     @Provides
     fun provideCalculateRekapBesarAndGetRekapBesarOverview(
         pembayaranRepository: PembayaranRepository,
+        dataDiriRepository: DataDiriRepository,
         hargaKavlingRepository: HargaKavlingRepository,
         feeMarketingRepository: FeeMarketingRepository,
         biayaMarketingRepository: BiayaMarketingRepository,
@@ -429,6 +430,7 @@ object UseCaseModule {
     ): CalculateRekapBesarAndGetRekapBesarOverview {
         return CalculateRekapBesarAndGetRekapBesarOverview(
             pembayaranRepository,
+            dataDiriRepository,
             hargaKavlingRepository,
             feeMarketingRepository,
             biayaMarketingRepository,

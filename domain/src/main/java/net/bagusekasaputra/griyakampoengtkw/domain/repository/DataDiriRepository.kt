@@ -6,7 +6,9 @@ import net.bagusekasaputra.griyakampoengtkw.domain.entity.DataDiri
 
 interface DataDiriRepository {
 
-    fun getBatch(listKavling: List<String>): Flow<Result<Map<String, DataDiri?>?>>
+    fun getBatchOnline(listKavling: List<String>): Flow<Result<Map<String, DataDiri?>?>>
+
+    fun getBatchBackup(listKavling: List<String>): Flow<Result<Map<String, DataDiri?>?>>
 
     fun getDataDiri(kavlingKode: String, dataMode: DataMode): Flow<Result<DataDiri?>>
 

@@ -64,7 +64,7 @@ class CreateBackupAsyncUseCase(
                 .first().getOrThrow() ?: HashMap()
 
             trySendBlocking(Result.success(Progress(28, "Mendownload Data Diri")))
-            val listDataDiri = dataDiriRepository.getBatch(listKavling = listKodeKavlings)
+            val listDataDiri = dataDiriRepository.getBatchOnline(listKavling = listKodeKavlings)
                 .first().getOrThrow() ?: HashMap()
 
             trySendBlocking(Result.success(Progress(35, "Mendownload Harga Kavling")))

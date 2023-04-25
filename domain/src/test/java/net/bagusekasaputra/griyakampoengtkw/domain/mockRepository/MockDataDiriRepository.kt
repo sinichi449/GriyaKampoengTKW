@@ -24,7 +24,7 @@ class MockDataDiriRepository: DataDiriRepository {
         Pair("B18", DataDiri("Duwi Indah Setiyorini", "", "", "", "", "", "")),
     )
 
-    override fun getBatch(listKavling: List<String>): Flow<Result<Map<String, DataDiri?>?>> {
+    override fun getBatchOnline(listKavling: List<String>): Flow<Result<Map<String, DataDiri?>?>> {
         return flow {
             val result = mutableMapOf<String, DataDiri?>()
 

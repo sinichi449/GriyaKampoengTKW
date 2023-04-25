@@ -8,7 +8,7 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import dagger.hilt.android.AndroidEntryPoint
 import net.bagusekasaputra.griyakampoengtkw.domain.NumberUtil
-import net.bagusekasaputra.griyakampoengtkw.domain.entity.Pembayaran
+import net.bagusekasaputra.griyakampoengtkw.domain.entity.rekap.PembayaranWithNamaCostumer
 import net.bagusekasaputra.griyakampoengtkw.presentation.databinding.FragmentRekapDetailUangMasukBinding
 import net.bagusekasaputra.griyakampoengtkw.presentation.tableview.rekapUangMasuk.RekapUangMasukTableViewAdapter
 import net.bagusekasaputra.griyakampoengtkw.presentation.tableview.rekapUangMasuk.RumCell
@@ -49,13 +49,14 @@ class RekapDetailUangMasukFragment : Fragment() {
         }
     }
 
-    private fun setupTableViewDataBaru(mapListPembayaranBaru: Map<String, List<Pembayaran>?>) {
+    private fun setupTableViewDataBaru(mapListPembayaranBaru: Map<String, List<PembayaranWithNamaCostumer>?>) {
         val adapter = RekapUangMasukTableViewAdapter()
         binding.tableviewRekapUangMasuk.apply {
             setAdapter(adapter)
         }
 
         val columnHeader = listOf(
+            RumColumnHeader("Nama Costumer"),
             RumColumnHeader("Tanggal"),
             // TODO: Nama Costumer
             RumColumnHeader("Jenis Pembayaran"),
@@ -73,9 +74,10 @@ class RekapDetailUangMasukFragment : Fragment() {
         }
         val cellLists = mutableListOf<List<RumCell>>().apply {
             mapListPembayaranBaru.keys.forEach { kavling ->
-                mapListPembayaranBaru[kavling]?.forEach { pembayaran ->
+                mapListPembayaranBaru[kavling]?.forEach { pembayaranWithNamaCostumer ->
                     val cells = mutableListOf<RumCell>()
-
+                    val pembayaran = pembayaranWithNamaCostumer.pembayaran
+                    cells.add(RumCell(pembayaranWithNamaCostumer.namaCostumer))
                     cells.add(RumCell(pembayaran.tanggal))
                     cells.add(RumCell(pembayaran.termin))
                     cells.add(RumCell(pembayaran.jumlahUangDibayar))
