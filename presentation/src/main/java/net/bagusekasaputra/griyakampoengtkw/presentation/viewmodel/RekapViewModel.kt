@@ -166,6 +166,10 @@ class RekapViewModel @Inject constructor(
         _listKavlingDataLamaRekapBesarIncludedLive.postValue(listKavlingStr.sorted())
     }
 
+    fun doesIncludeDataLama(): Boolean {
+        return _listKavlingDataLamaRekapBesarIncludedLive.value.isNullOrEmpty().not()
+    }
+
 
     /**
      * Rekap Global Table Util

@@ -2,6 +2,7 @@ package net.bagusekasaputra.griyakampoengtkw.presentation.fragment.rekap
 
 import android.app.ProgressDialog
 import android.content.DialogInterface
+import android.content.Intent
 import android.content.SharedPreferences
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -18,6 +19,7 @@ import dagger.hilt.android.AndroidEntryPoint
 import net.bagusekasaputra.griyakampoengtkw.domain.NumberUtil
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.UnmigratedKavling
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.rekap.PeriodeRekap
+import net.bagusekasaputra.griyakampoengtkw.presentation.activities.RekapBesarDetailActivity
 import net.bagusekasaputra.griyakampoengtkw.presentation.databinding.CardRekapPengeluaranBinding
 import net.bagusekasaputra.griyakampoengtkw.presentation.databinding.CardRekapUangMasukBinding
 import net.bagusekasaputra.griyakampoengtkw.presentation.databinding.DialogPickCustomPeriodeBinding
@@ -105,6 +107,10 @@ class RekapBesarFragment : Fragment() {
             navigateToRekapDetail(RekapType.UangMasuk)
         }
 
+        binding.cardPemasukan.layoutSisaBelumBayar.setOnClickListener {
+            navigateToRekapDetail(RekapType.SisaPembayaran)
+        }
+
         binding.cardPengeluaran.layoutFeeMarketing.setOnClickListener {
             navigateToRekapDetail(RekapType.FeeMarketing)
         }
@@ -119,12 +125,14 @@ class RekapBesarFragment : Fragment() {
     }
 
     private fun navigateToRekapDetail(rekapType: RekapType) {
-        // TODO
-        Toast.makeText(
-            requireContext(),
-            "Navigate to Rekap Detail is in progress!",
-            Toast.LENGTH_SHORT
-        ).show()
+        val intent = Intent(requireContext(), RekapBesarDetailActivity::class.java).apply {
+            putExtra(RekapBesarDetailActivity.EXTRAS_REKAP_TYPE, rekapType.name)
+            putExtra(RekapBesarDetailActivity.EXTRAS_START_DATE, viewModel.currentStartDate.value)
+            putExtra(RekapBesarDetailActivity.EXTRAS_END_DATE, viewModel.currentEndDate.value)
+            putExtra(RekapBesarDetailActivity.EXTRAS_INCLUDE_DATA_LAMA, viewModel.doesIncludeDataLama())
+        }
+
+        requireActivity().startActivity(intent)
     }
 
     private fun showCustomPeriodePickerDialog() {
@@ -280,9 +288,8 @@ class RekapBesarFragment : Fragment() {
             net.bagusekasaputra.griyakampoengtkw.presentation.R.style.AlertDialogTheme
         )
         progressDialog.apply {
-            this.setTitle("Sedang merekap")
-            this.setCancelable(false)
-            this.max = 100
+            setTitle("Sedang merekap")
+            setCancelable(false)
             setButton(DialogInterface.BUTTON_NEGATIVE, "Cancel") { dialog, _ ->
                 viewModel.gettingRekapBesarJob?.cancel()
 

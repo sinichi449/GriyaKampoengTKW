@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/nav_graph_rekap_detail"
+    app:startDestination="@id/nav_rekap_detail_uang_masuk">
+
+    <fragment
+        android:id="@+id/nav_rekap_detail_uang_masuk"
+        android:name="net.bagusekasaputra.griyakampoengtkw.presentation.fragment.rekap.detail.RekapDetailUangMasukFragment"
+        android:label="fragment_rekap_detail_uang_masuk"
+        tools:layout="@layout/fragment_rekap_detail_uang_masuk" />
+
+    <fragment
+        android:id="@+id/nav_rekap_detail_sisa_pembayaran"
+        android:name="net.bagusekasaputra.griyakampoengtkw.presentation.fragment.rekap.detail.RekapDetailSisaPembayaranFragment"
+        android:label="fragment_rekap_detail_sisa_pembayaran"
+        tools:layout="@layout/fragment_rekap_detail_sisa_pembayaran" />
+
+</navigation>

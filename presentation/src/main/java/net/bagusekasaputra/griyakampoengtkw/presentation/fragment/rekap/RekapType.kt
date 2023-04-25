@@ -7,6 +7,7 @@ enum class RekapType {
     BiayaLain,
     FeeMarketing,
     BiayaMarketing,
+    SisaPembayaran,
 }
 
 fun getRekapType(str: String): RekapType? {
@@ -17,6 +18,7 @@ fun getRekapType(str: String): RekapType? {
         "BiayaLain" -> RekapType.BiayaLain
         "FeeMarketing" -> RekapType.FeeMarketing
         "BiayaMarketing" -> RekapType.BiayaMarketing
+        "SisaPembayaran" -> RekapType.SisaPembayaran
         else -> null
     }
 }
