@@ -38,9 +38,9 @@ data class Kavling(
 
         fun getGriyaKavlingList(): List<String> {
             val blockWithSum = mapOf(
-                Pair("A", 14),
-                Pair("B", 20),
-                Pair("C", 9),
+                Pair("A", 13),
+                Pair("B", 4),
+                Pair("C", 5),
             )
 
             val listKavling = mutableListOf<String>()
