@@ -191,12 +191,21 @@ class RekapBesarFragment : Fragment() {
 
     private fun setupViewModel() {
         val progressDialog = createProgressDialog()
+
+        viewModel.rekapBesarProgress.observe(requireActivity()) {
+            it?.also { progressMessage ->
+                progressDialog.setMessage(progressMessage)
+            }
+        }
         viewModel.isRekapBesarOverviewLoaded.observe(requireActivity()) {
             if (it != null) {
                 if (it) {
                     progressDialog.dismiss()
 
                     binding.scrollviewRekapBesar.alpha = 1.0f
+
+                    // Release observer on progress done
+
                 } else  {
                     progressDialog.show()
 
@@ -204,7 +213,6 @@ class RekapBesarFragment : Fragment() {
                 }
             }
         }
-
         viewModel.rekapDetailTransportLive.observe(requireActivity()) {
             if (it != null) {
                 binding.tvRangePeriode.text = it.getRangeTanggal()

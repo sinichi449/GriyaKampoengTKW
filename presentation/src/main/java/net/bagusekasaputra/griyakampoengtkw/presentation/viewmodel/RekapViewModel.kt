@@ -63,6 +63,7 @@ class RekapViewModel @Inject constructor(
         get() = _isRekapBesarDetailLoaded
 
     val rekapGlobalProgress = getListRekapGlobalAsyncUseCase.progressState.asLiveData(Dispatchers.Default)
+    val rekapBesarProgress = calculateRekapBesarAndGetRekapBesarOverview.messageProgress
 
     private val kavlingList = Kavling.getGriyaKavlingList()
 
