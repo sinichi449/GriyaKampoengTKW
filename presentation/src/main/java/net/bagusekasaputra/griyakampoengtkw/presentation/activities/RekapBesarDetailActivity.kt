@@ -7,14 +7,16 @@ import android.view.View
 import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.ContextCompat
+import androidx.core.widget.NestedScrollView
 import androidx.navigation.NavController
 import androidx.navigation.fragment.NavHostFragment
-import com.google.android.material.floatingactionbutton.FloatingActionButton
 import dagger.hilt.android.AndroidEntryPoint
 import net.bagusekasaputra.griyakampoengtkw.presentation.R
 import net.bagusekasaputra.griyakampoengtkw.presentation.RekapDetailTransport
 import net.bagusekasaputra.griyakampoengtkw.presentation.databinding.ActivityRekapBesarDetailBinding
 import net.bagusekasaputra.griyakampoengtkw.presentation.fragment.rekap.RekapType
+import net.bagusekasaputra.griyakampoengtkw.presentation.util.UiUtils
 import net.bagusekasaputra.griyakampoengtkw.presentation.viewmodel.RekapViewModel
 
 @AndroidEntryPoint
@@ -101,12 +103,26 @@ class RekapBesarDetailActivity : AppCompatActivity() {
         }
     }
 
-    fun getFabScrollDataType(): FloatingActionButton {
-        return binding.fabScrollDataType
+    fun setFabScrollingBehavior(scrollView: NestedScrollView, upwardView: View, downwardView: View) {
+        binding.fabScrollDataType.setOnClickListener {
+            val fabMode = viewModel.fabScrollMode
+            if (fabMode == FabMode.Upward) {
+                setFabScrollDataTypeIcon(FabMode.Downward)
+                UiUtils.scrollToView(scrollView, downwardView)
+            } else {
+                setFabScrollDataTypeIcon(FabMode.Upward)
+                UiUtils.scrollToView(scrollView, upwardView)
+            }
+        }
     }
 
-    fun setFabScrollDataTypeIcon(fabMode: FabMode) {
-        // TODO
+    private fun setFabScrollDataTypeIcon(fabMode: FabMode) {
+        val resId = if (fabMode == FabMode.Upward) R.drawable.baseline_arrow_upward_24
+            else R.drawable.baseline_arrow_downward_24
+        val drawable = ContextCompat.getDrawable(this, resId)
+        binding.fabScrollDataType.setImageDrawable(drawable)
+
+        viewModel.fabScrollMode = fabMode
     }
 
     override fun onResume() {

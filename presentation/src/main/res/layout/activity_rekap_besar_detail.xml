@@ -39,7 +39,6 @@
         app:layout_anchor="@id/fragmentContainerView_rekap_detail"
         app:layout_anchorGravity="bottom|right|end"
         android:layout_marginEnd="24dp"
-        android:layout_marginBottom="24dp"
-        android:src="@drawable/baseline_arrow_downward_24"/>
+        android:layout_marginBottom="24dp"/>
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

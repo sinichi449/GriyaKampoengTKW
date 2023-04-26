@@ -17,6 +17,7 @@ import net.bagusekasaputra.griyakampoengtkw.domain.entity.rekap.RekapBesarDetail
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.rekap.RekapBesarOverview
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.rekap.RekapGlobal
 import net.bagusekasaputra.griyakampoengtkw.presentation.RekapDetailTransport
+import net.bagusekasaputra.griyakampoengtkw.presentation.activities.RekapBesarDetailActivity.FabMode
 import net.bagusekasaputra.griyakampoengtkw.presentation.fragment.rekap.RekapType
 import net.bagusekasaputra.griyakampoengtkw.presentation.tableview.rekapGlobal.RgCell
 import net.bagusekasaputra.griyakampoengtkw.presentation.tableview.rekapGlobal.RgColumnHeader
@@ -68,6 +69,10 @@ class RekapViewModel @Inject constructor(
     private val _listKavlingDataLamaRekapBesarIncludedLive = MutableLiveData(emptyList<String>())
     val listKavlingDataLamaRekapBesarIncluded: LiveData<List<String>>
         get() = _listKavlingDataLamaRekapBesarIncludedLive
+
+
+    var fabScrollMode = FabMode.Downward
+
 
     var gettingRekapBesarJob: Job? = null
     var kavlingLamaRekapBesarJob: Job? = null
