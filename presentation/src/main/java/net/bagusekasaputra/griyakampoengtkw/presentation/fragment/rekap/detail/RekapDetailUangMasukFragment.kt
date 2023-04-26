@@ -11,6 +11,7 @@ import net.bagusekasaputra.griyakampoengtkw.domain.NumberUtil
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.rekap.PembayaranWithNamaCostumer
 import net.bagusekasaputra.griyakampoengtkw.presentation.activities.RekapBesarDetailActivity
 import net.bagusekasaputra.griyakampoengtkw.presentation.databinding.FragmentRekapDetailUangMasukBinding
+import net.bagusekasaputra.griyakampoengtkw.presentation.fragment.rekap.RekapType
 import net.bagusekasaputra.griyakampoengtkw.presentation.tableview.rekapUangMasuk.RekapUangMasukTableViewAdapter
 import net.bagusekasaputra.griyakampoengtkw.presentation.tableview.rekapUangMasuk.RumCell
 import net.bagusekasaputra.griyakampoengtkw.presentation.tableview.rekapUangMasuk.RumColumnHeader
@@ -44,7 +45,10 @@ class RekapDetailUangMasukFragment : Fragment() {
         viewModel.rekapBesarDetailLive.observe(requireActivity()) {
             it?.also { rekapBesarDetail ->
                 setupTableViewDataBaru(rekapBesarDetail.mapListPembayaranRekapBaru)
-                val rupiahTotalUangMasukRekapBaru = "Rp. ${NumberUtil.formatLongToString(rekapBesarDetail.getTotalUangMasukRekapBaru())}"
+
+                var totalUangMasuk = rekapBesarDetail.getTotalUangMasukRekapBaru()
+
+                val rupiahTotalUangMasukRekapBaru = "Rp. ${NumberUtil.formatLongToString(totalUangMasuk)}"
                 binding.tvTotalRekap.text = rupiahTotalUangMasukRekapBaru
 
 
@@ -54,12 +58,16 @@ class RekapDetailUangMasukFragment : Fragment() {
                     binding.tvInfoDataBaru.visibility = View.VISIBLE
                     setupTableViewDataLama(rekapBesarDetail.mapListPembayaranRekapLama)
 
+                    totalUangMasuk += rekapBesarDetail.getTotalUangMasukRekapLama()
                     val rupiahTotalUangMasukRekapLama = "Rp. ${NumberUtil.formatLongToString(rekapBesarDetail.getTotalUangMasukRekapLama())}"
                     binding.tvTotalRekapDataLama.text = rupiahTotalUangMasukRekapLama
                 } else {
                     binding.layoutDataLama.visibility = View.GONE
                     binding.tvInfoDataBaru.visibility = View.GONE
                 }
+
+                // Set RekapBesarDetailActivity's Toolbar's Title
+                (requireActivity() as RekapBesarDetailActivity).setToolbarTitle(RekapType.UangMasuk, totalUangMasuk)
             }
         }
     }

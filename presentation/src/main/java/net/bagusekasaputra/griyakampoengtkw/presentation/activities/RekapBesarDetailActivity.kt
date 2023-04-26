@@ -12,6 +12,7 @@ import androidx.core.widget.NestedScrollView
 import androidx.navigation.NavController
 import androidx.navigation.fragment.NavHostFragment
 import dagger.hilt.android.AndroidEntryPoint
+import net.bagusekasaputra.griyakampoengtkw.domain.NumberUtil
 import net.bagusekasaputra.griyakampoengtkw.presentation.R
 import net.bagusekasaputra.griyakampoengtkw.presentation.RekapDetailTransport
 import net.bagusekasaputra.griyakampoengtkw.presentation.databinding.ActivityRekapBesarDetailBinding
@@ -42,7 +43,8 @@ class RekapBesarDetailActivity : AppCompatActivity() {
         // Setup Toolbar
         val rekapDetailTransport = intent?.extras?.getSerializable(EXTRAS_REKAP_DETAIL_TRANSPORT) as RekapDetailTransport?
         rekapDetailTransport?.also { viewModel.setRekapDetailTransport(it) }
-        setupToolbar(rekapDetailTransport)
+        setSupportActionBar(binding.toolbarRekapDetail)
+        binding.toolbarRekapDetail.subtitle = rekapDetailTransport?.getRangeTanggal()
 
 
         // Navigate to corresponding fragments
@@ -61,21 +63,6 @@ class RekapBesarDetailActivity : AppCompatActivity() {
             View.VISIBLE else View.GONE
 
         setupViewModel()
-    }
-
-    private fun setupToolbar(rekapDetailTransport: RekapDetailTransport?) {
-        setSupportActionBar(binding.toolbarRekapDetail)
-
-        binding.toolbarRekapDetail.apply {
-            title = when (rekapDetailTransport?.rekapType) {
-                RekapType.UangMasuk -> "Uang Masuk"
-                RekapType.SisaPembayaran -> "Sisa Pembayaran"
-                RekapType.FeeMarketing -> "Fee Marketing"
-                RekapType.BiayaMarketing -> "Biaya Marketing"
-                else -> "Unknown/NULL Rekap Type"
-            }
-            subtitle = rekapDetailTransport?.getRangeTanggal()
-        }
     }
 
 
@@ -113,6 +100,20 @@ class RekapBesarDetailActivity : AppCompatActivity() {
                 setFabScrollDataTypeIcon(FabMode.Upward)
                 UiUtils.scrollToView(scrollView, upwardView)
             }
+        }
+    }
+
+    fun setToolbarTitle(rekapType: RekapType, total: Long) {
+        val parsedTotal = "Rp. ${NumberUtil.formatLongToString(total)}"
+
+        binding.toolbarRekapDetail.apply {
+            title = when (rekapType) {
+                RekapType.UangMasuk -> "Uang Masuk"
+                RekapType.SisaPembayaran -> "Sisa Pembayaran"
+                RekapType.FeeMarketing -> "Fee Marketing"
+                RekapType.BiayaMarketing -> "Biaya Marketing"
+                else -> "Unknown/NULL Rekap Type"
+            } + " - $parsedTotal"
         }
     }
 
