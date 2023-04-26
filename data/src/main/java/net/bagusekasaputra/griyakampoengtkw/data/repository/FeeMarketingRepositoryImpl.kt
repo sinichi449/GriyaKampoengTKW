@@ -1,9 +1,9 @@
 package net.bagusekasaputra.griyakampoengtkw.data.repository
 
 import android.util.Log
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.emitAll
-import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.channels.awaitClose
+import kotlinx.coroutines.channels.trySendBlocking
+import kotlinx.coroutines.flow.*
 import net.bagusekasaputra.griyakampoengtkw.data.DataUtil
 import net.bagusekasaputra.griyakampoengtkw.data.MyObjectMapper.mapFeeMarketing
 import net.bagusekasaputra.griyakampoengtkw.data.interfaces.backup.BackupFeeMarketingDataSource
@@ -85,6 +85,28 @@ class FeeMarketingRepositoryImpl(
 
             if (listFeeMarketing.isEmpty()) emit(Result.success(null))
             else emit(Result.success(listFeeMarketing))
+        }
+    }
+
+    override fun getBatchBackup(kavlingList: List<String>): Flow<Result<Map<String, FeeMarketing?>?>> {
+        return callbackFlow {
+            try {
+                val mapFeeMarketing = mutableMapOf<String, FeeMarketing?>()
+
+                kavlingList.forEach { kavlingLama ->
+                    val feeMarketingDataLama = getByKavlingKode(kavlingLama, DataMode.DATA_LAMA).first().getOrThrow()
+
+                    mapFeeMarketing[kavlingLama] = feeMarketingDataLama
+                }
+
+                trySendBlocking(Result.success(mapFeeMarketing))
+            } catch (e: Exception) {
+                e.printStackTrace()
+
+                trySendBlocking(Result.failure(e))
+            }
+
+            awaitClose {  }
         }
     }
 

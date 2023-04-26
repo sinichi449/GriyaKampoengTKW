@@ -10,6 +10,8 @@ interface FeeMarketingRepository {
 
     fun getBatchOffline(kavlingList: List<String>): Flow<Result<List<FeeMarketing>?>>
 
+    fun getBatchBackup(kavlingList: List<String>): Flow<Result<Map<String, FeeMarketing?>?>>
+
     fun getByKavlingKode(kavlingKode: String, dataMode: DataMode): Flow<Result<FeeMarketing?>>
 
     // I need to get a strictly from online/remote data source because the normal get method

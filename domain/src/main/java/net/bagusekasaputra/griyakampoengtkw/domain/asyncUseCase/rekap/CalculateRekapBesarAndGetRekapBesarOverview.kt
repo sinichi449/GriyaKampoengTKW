@@ -9,19 +9,28 @@ import kotlinx.coroutines.flow.callbackFlow
 import kotlinx.coroutines.flow.first
 import net.bagusekasaputra.griyakampoengtkw.domain.DataMode
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.AsyncUseCase
-import net.bagusekasaputra.griyakampoengtkw.domain.entity.*
+import net.bagusekasaputra.griyakampoengtkw.domain.entity.BiayaLain
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.BiayaLain.Companion.filterPeriode
+import net.bagusekasaputra.griyakampoengtkw.domain.entity.BiayaMarketing
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.BiayaMarketing.Companion.filterPeriode
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.FeeMarketing.Companion.filterPeriode
+import net.bagusekasaputra.griyakampoengtkw.domain.entity.HargaKavling
+import net.bagusekasaputra.griyakampoengtkw.domain.entity.Kavling
+import net.bagusekasaputra.griyakampoengtkw.domain.entity.Pembayaran
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.Pembayaran.Companion.filterPeriode
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.rekap.PembayaranWithNamaCostumer
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.rekap.PembayaranWithNamaCostumer.Companion.toListPembayaranWithNamaCostumer
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.rekap.PeriodeRekap
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.rekap.RekapBesarDetail
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.rekap.RekapBesarOverview
-import net.bagusekasaputra.griyakampoengtkw.domain.repository.*
-import java.util.*
-import kotlin.Result
+import net.bagusekasaputra.griyakampoengtkw.domain.repository.BiayaLainRepository
+import net.bagusekasaputra.griyakampoengtkw.domain.repository.BiayaMarketingRepository
+import net.bagusekasaputra.griyakampoengtkw.domain.repository.DataDiriRepository
+import net.bagusekasaputra.griyakampoengtkw.domain.repository.FeeMarketingRepository
+import net.bagusekasaputra.griyakampoengtkw.domain.repository.HargaKavlingRepository
+import net.bagusekasaputra.griyakampoengtkw.domain.repository.PembayaranRepository
+import net.bagusekasaputra.griyakampoengtkw.domain.repository.RekapBesarDetailRepository
+import java.util.Date
 
 class CalculateRekapBesarAndGetRekapBesarOverview(
     private val pembayaranRepository: PembayaranRepository,
@@ -66,7 +75,7 @@ class CalculateRekapBesarAndGetRekapBesarOverview(
                 val mapListPembayaranLama = pembayaranRepository.getBatchBackup(request.listIncludedKavlingDataLama).first().getOrThrow()
                 val mapListDataDiriLama = dataDiriRepository.getBatchBackup(request.listIncludedKavlingDataLama).first().getOrThrow()
                 val mapHargaKavlingLama = hargaKavlingRepository.getBatchBackup(request.listIncludedKavlingDataLama).first().getOrThrow()?.toMutableMap()
-                // TODO: mapFeeMarketingLama
+                val mapFeeMarketingLama = feeMarketingRepository.getBatchBackup(request.listIncludedKavlingDataLama).first().getOrThrow()?.toMutableMap()
                 // TODO: mapListBiayaMarketingLama
 
 
@@ -116,22 +125,23 @@ class CalculateRekapBesarAndGetRekapBesarOverview(
                 request.listIncludedKavlingDataLama.forEach { kavlingLama ->
                     val listPembayaranRekapLama = mapListPembayaranLama?.get(kavlingLama)?.filterPeriode(request.periodeRekap, request.startDate, request.endDate)
                     val hargaKavlingLama = mapHargaKavlingLama?.get(kavlingLama)
-                    // TODO: Filter periode mapFeeMarketingLama
+                    val feeMarketingLama = mapFeeMarketingLama?.get(kavlingLama)?.filterPeriode(request.periodeRekap, request.startDate, request.endDate)
                     // TODO: Filter periode mapListBiayaMarketingLama
                     val dataDiriLama = mapListDataDiriLama?.get(kavlingLama)
 
 
                     val totalPembayaranPerKavlingLama = Pembayaran.hitungTotalUangMasuk(listPembayaranRekapLama ?: emptyList())
                     val totalSisaBelumBayarPerKavlingLama = Pembayaran.hitungTotalSisaBelumBayar(hargaKavlingLama  ?: HargaKavling(kavlingLama, "0", "0"), totalPembayaranPerKavlingLama)
+
                     // Sum it UP!
                     totalUangMasuk += totalPembayaranPerKavlingLama
                     totalSisaBelumBayar += totalSisaBelumBayarPerKavlingLama
-                    // TODO: Sum totalFeeMarketing
+                    totalFeeMarketing += feeMarketingLama?.parsedBiayaMarketer ?: 0L
                     // TODO: Sum totalBiayaMarketing
 
                     // Mutate the maps with filtered periode. These will useful for RekapBesarDetail.
                     mMapPembayaranWithNamaCostumerLama[kavlingLama] = listPembayaranRekapLama?.toListPembayaranWithNamaCostumer(kavlingLama, dataDiriLama?.nama ?: "N/A")
-                    // TODO: Mutate mapFeeMarketingLama
+                    mapFeeMarketingLama?.set(kavlingLama, feeMarketingLama)
                     // TODO: Mutate mapListBiayaMarketingLama
                 }
 
@@ -145,7 +155,7 @@ class CalculateRekapBesarAndGetRekapBesarOverview(
                         mapFeeMarketingRekapBaru = mapFeeMarketingBaru ?: mapOf(),
                         mapListBiayaMarketingRekapBaru = mapListBiayaMarketingBaru ?: mapOf(),
                         mapListPembayaranRekapLama = mMapPembayaranWithNamaCostumerLama,
-                        mapFeeMarketingRekapLama = mapOf(), // TODO
+                        mapFeeMarketingRekapLama = mapFeeMarketingLama ?: mapOf(),
                         mapListBiayaMarketingRekapLama = mapOf(), // TODO
                         listBiayaLain = listBiayaLain ?: emptyList(),
                     ),
