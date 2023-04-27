@@ -8,7 +8,8 @@ import net.bagusekasaputra.griyakampoengtkw.domain.DateUtil.toDate
 import net.bagusekasaputra.griyakampoengtkw.domain.NumberUtil
 import net.bagusekasaputra.griyakampoengtkw.domain.PembayaranSorterUtil
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.rekap.PeriodeRekap
-import java.util.*
+import java.util.Calendar
+import java.util.Date
 
 data class Pembayaran(
     val termin: String,
@@ -43,7 +44,7 @@ data class Pembayaran(
             return mTotal
         }
 
-        fun hitungTotalAllKavlingUangMasuk(mapListPembayaran: Map<String, List<Pembayaran>?>): Long {
+        fun hitungTotalAllKavling(mapListPembayaran: Map<String, List<Pembayaran>?>): Long {
             var mTotal = 0L
 
             mapListPembayaran.keys.forEach { kavling ->

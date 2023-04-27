@@ -42,7 +42,7 @@ data class RekapBesarDetail(
             }
         }
 
-        return Pembayaran.hitungTotalAllKavlingUangMasuk(mMapPembayaran)
+        return Pembayaran.hitungTotalAllKavling(mMapPembayaran)
     }
 
     fun getTotalFeeMarketing(data: String): Long {
@@ -50,5 +50,12 @@ data class RekapBesarDetail(
             mapFeeMarketingRekapBaru else mapFeeMarketingRekapLama
 
         return FeeMarketing.hitungTotalAllKavling(mapFeeMarketing)
+    }
+
+    fun getTotalBiayaMarketing(data: String): Long {
+        val mapBiayaMarketing = if (data == DATA_BARU)
+            mapListBiayaMarketingRekapBaru else mapListBiayaMarketingRekapLama
+
+        return BiayaMarketing.hitungTotalAllKavling(mapBiayaMarketing)
     }
 }

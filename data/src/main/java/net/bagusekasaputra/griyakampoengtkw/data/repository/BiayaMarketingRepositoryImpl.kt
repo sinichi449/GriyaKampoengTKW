@@ -1,8 +1,12 @@
 package net.bagusekasaputra.griyakampoengtkw.data.repository
 
 import android.util.Log
+import kotlinx.coroutines.channels.awaitClose
+import kotlinx.coroutines.channels.trySendBlocking
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.callbackFlow
 import kotlinx.coroutines.flow.emitAll
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flow
 import net.bagusekasaputra.griyakampoengtkw.data.DataUtil
 import net.bagusekasaputra.griyakampoengtkw.data.MyObjectMapper.mapBiayaMarketing
@@ -98,6 +102,25 @@ class BiayaMarketingRepositoryImpl(
             emit(Result.success(
                 batchBiayaMarketing.ifEmpty { null }
             ))
+        }
+    }
+
+    override fun getBatchBackup(listKavling: List<String>): Flow<Result<Map<String, List<BiayaMarketing>?>>> {
+        return callbackFlow {
+            try {
+                val mapListBiayaMarketingLama = mutableMapOf<String, List<BiayaMarketing>?>()
+                listKavling.forEach { kavlingLama ->
+                    mapListBiayaMarketingLama[kavlingLama] = getAllByKavlingKode(kavlingLama, DataMode.DATA_LAMA).first().getOrThrow()
+                }
+
+                trySendBlocking(Result.success(mapListBiayaMarketingLama))
+            } catch (e: Exception) {
+                e.printStackTrace()
+
+                trySendBlocking(Result.failure(e))
+            }
+
+            awaitClose {  }
         }
     }
 

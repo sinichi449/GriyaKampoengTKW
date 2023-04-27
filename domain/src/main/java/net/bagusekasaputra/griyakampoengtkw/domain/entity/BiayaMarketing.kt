@@ -8,7 +8,8 @@ import net.bagusekasaputra.griyakampoengtkw.domain.DateUtil.isWithinRange
 import net.bagusekasaputra.griyakampoengtkw.domain.DateUtil.toDate
 import net.bagusekasaputra.griyakampoengtkw.domain.NumberUtil
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.rekap.PeriodeRekap
-import java.util.*
+import java.util.Calendar
+import java.util.Date
 
 data class BiayaMarketing(
     var id: Long? = 0L, // local database identifier
@@ -31,6 +32,18 @@ data class BiayaMarketing(
             }
 
             return totalBiayaMarketing
+        }
+
+        fun hitungTotalAllKavling(mapListBiayaMarketing: Map<String, List<BiayaMarketing>?>): Long {
+            var mTotal = 0L
+
+            mapListBiayaMarketing.keys.forEach { kavling ->
+                val listBiayaMarketing = mapListBiayaMarketing[kavling] ?: emptyList()
+
+                mTotal += hitungTotalBiayaMarketing(listBiayaMarketing)
+            }
+
+            return mTotal
         }
 
         fun List<BiayaMarketing>?.filterPeriode(

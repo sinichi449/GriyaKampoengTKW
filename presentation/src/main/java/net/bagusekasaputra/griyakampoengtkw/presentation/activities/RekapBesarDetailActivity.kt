@@ -56,6 +56,7 @@ class RekapBesarDetailActivity : AppCompatActivity() {
             RekapType.UangMasuk -> R.id.nav_rekap_detail_uang_masuk
             RekapType.SisaPembayaran -> R.id.nav_rekap_detail_sisa_pembayaran
             RekapType.FeeMarketing -> R.id.nav_rekap_detail_fee_marketing
+            RekapType.BiayaMarketing -> R.id.nav_rekap_detail_biaya_marketing
             else -> R.id.nav_rekap_detail_sisa_pembayaran
         }, bundleForFragments)
 

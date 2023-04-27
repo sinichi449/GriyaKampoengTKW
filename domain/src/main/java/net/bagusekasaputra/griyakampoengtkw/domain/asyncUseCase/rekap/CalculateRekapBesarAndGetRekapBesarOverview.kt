@@ -76,10 +76,10 @@ class CalculateRekapBesarAndGetRekapBesarOverview(
                 val mapListDataDiriLama = dataDiriRepository.getBatchBackup(request.listIncludedKavlingDataLama).first().getOrThrow()
                 val mapHargaKavlingLama = hargaKavlingRepository.getBatchBackup(request.listIncludedKavlingDataLama).first().getOrThrow()?.toMutableMap()
                 val mapFeeMarketingLama = feeMarketingRepository.getBatchBackup(request.listIncludedKavlingDataLama).first().getOrThrow()?.toMutableMap()
-                // TODO: mapListBiayaMarketingLama
+                val mapListBiayaMarketingLama = biayaMarketingRepository.getBatchBackup(request.listIncludedKavlingDataLama).first().getOrThrow()?.toMutableMap()
 
 
-                // No matter what kavling (old/new), biaya lain always lonely :V
+                // No matter what kavling (old/new), Biaya Lain always lonely :V
                 _messageProgress.postValue("Mendapatkan metadata Biaya Lain-lain ...")
                 val listBiayaLain = biayaLainRepository.getAllOnline(DataMode.ONLINE).first().getOrThrow()
                     ?.filterPeriode(request.periodeRekap, request.startDate, request.endDate)
@@ -95,27 +95,28 @@ class CalculateRekapBesarAndGetRekapBesarOverview(
                 request.listKavling.forEach { kavling ->
                     _messageProgress.postValue("Memproses kavling $kavling ...")
                     val listPembayaranBaru = mapListPembayaranBaru?.get(kavling)?.filterPeriode(request.periodeRekap, request.startDate, request.endDate)
-                    val hargaKavling = mapHargaKavlingBaru?.get(kavling)
-                    val feeMarketing = mapFeeMarketingBaru?.get(kavling)?.filterPeriode(request.periodeRekap, request.startDate, request.endDate)
-                    val listBiayaMarketing = mapListBiayaMarketingBaru?.get(kavling)?.filterPeriode(request.periodeRekap, request.startDate, request.endDate)
+                    val hargaKavlingBaru = mapHargaKavlingBaru?.get(kavling)
+                    val feeMarketingBaru = mapFeeMarketingBaru?.get(kavling)?.filterPeriode(request.periodeRekap, request.startDate, request.endDate)
+                    val listBiayaMarketingBaru = mapListBiayaMarketingBaru?.get(kavling)?.filterPeriode(request.periodeRekap, request.startDate, request.endDate)
                     val dataDiriBaru = mapListDataDiriBaru?.get(kavling)
 
 
                     val totalPembayaranPerKavlingBaru = Pembayaran.hitungTotalUangMasuk(listPembayaranBaru ?: emptyList())
-                    val totalSisaBelumBayarPerKavlingBaru = Pembayaran.hitungTotalSisaBelumBayar(hargaKavling ?: HargaKavling(kavling, "0", "0"), totalPembayaranPerKavlingBaru)
-                    val totalBiayaMarketingPerKavling = BiayaMarketing.hitungTotalBiayaMarketing(listBiayaMarketing ?: emptyList())
+                    val totalSisaBelumBayarPerKavlingBaru = Pembayaran.hitungTotalSisaBelumBayar(hargaKavlingBaru ?: HargaKavling(kavling, "0", "0"), totalPembayaranPerKavlingBaru)
+                    val totalBiayaMarketingPerKavlingBaru = BiayaMarketing.hitungTotalBiayaMarketing(listBiayaMarketingBaru ?: emptyList())
 
                     // Sum it UP!
                     totalUangMasuk += totalPembayaranPerKavlingBaru
                     totalSisaBelumBayar += totalSisaBelumBayarPerKavlingBaru
-                    totalFeeMarketing += feeMarketing?.parsedBiayaMarketer ?: 0L
-                    totalBiayaMarketing += totalBiayaMarketingPerKavling
+                    totalFeeMarketing += feeMarketingBaru?.parsedBiayaMarketer ?: 0L
+                    totalBiayaMarketing += totalBiayaMarketingPerKavlingBaru
 
 
-                    // Mutate the maps with filtered periode. These will useful for RekapBesarDetail.
+                    // Mutate the maps with filtered periode.
+                    // These will useful for RekapBesarDetail for Filtering as per Periode
                     mMapPembayaranWithNamaCostumerBaru[kavling] = listPembayaranBaru?.toListPembayaranWithNamaCostumer(kavling, dataDiriBaru?.nama ?: "N/A")
-                    mapFeeMarketingBaru?.set(kavling, feeMarketing)
-                    mapListBiayaMarketingBaru?.set(kavling, listBiayaMarketing)
+                    mapFeeMarketingBaru?.set(kavling, feeMarketingBaru)
+                    mapListBiayaMarketingBaru?.set(kavling, listBiayaMarketingBaru)
                 }
 
 
@@ -126,26 +127,28 @@ class CalculateRekapBesarAndGetRekapBesarOverview(
                     val listPembayaranRekapLama = mapListPembayaranLama?.get(kavlingLama)?.filterPeriode(request.periodeRekap, request.startDate, request.endDate)
                     val hargaKavlingLama = mapHargaKavlingLama?.get(kavlingLama)
                     val feeMarketingLama = mapFeeMarketingLama?.get(kavlingLama)?.filterPeriode(request.periodeRekap, request.startDate, request.endDate)
-                    // TODO: Filter periode mapListBiayaMarketingLama
+                    val listBiayaMarketingLama = mapListBiayaMarketingLama?.get(kavlingLama)?.filterPeriode(request.periodeRekap, request.startDate, request.endDate)
                     val dataDiriLama = mapListDataDiriLama?.get(kavlingLama)
 
 
                     val totalPembayaranPerKavlingLama = Pembayaran.hitungTotalUangMasuk(listPembayaranRekapLama ?: emptyList())
                     val totalSisaBelumBayarPerKavlingLama = Pembayaran.hitungTotalSisaBelumBayar(hargaKavlingLama  ?: HargaKavling(kavlingLama, "0", "0"), totalPembayaranPerKavlingLama)
+                    val totalBiayaMarketingPerKavlingLama = BiayaMarketing.hitungTotalBiayaMarketing(listBiayaMarketingLama ?: emptyList())
 
                     // Sum it UP!
                     totalUangMasuk += totalPembayaranPerKavlingLama
                     totalSisaBelumBayar += totalSisaBelumBayarPerKavlingLama
                     totalFeeMarketing += feeMarketingLama?.parsedBiayaMarketer ?: 0L
-                    // TODO: Sum totalBiayaMarketing
+                    totalBiayaMarketing += totalBiayaMarketingPerKavlingLama
 
-                    // Mutate the maps with filtered periode. These will useful for RekapBesarDetail.
+                    // Mutate the maps with filtered periode.
+                    // These will useful for RekapBesarDetail for Filtering as per Periode
                     mMapPembayaranWithNamaCostumerLama[kavlingLama] = listPembayaranRekapLama?.toListPembayaranWithNamaCostumer(kavlingLama, dataDiriLama?.nama ?: "N/A")
                     mapFeeMarketingLama?.set(kavlingLama, feeMarketingLama)
-                    // TODO: Mutate mapListBiayaMarketingLama
+                    mapListBiayaMarketingLama?.set(kavlingLama, listBiayaMarketingLama)
                 }
 
-                // This is a lonely variable, because doesn't specifically tied to kavling :(
+                // This is a lonely variable, because doesn't specifically tied to Kavling :(
                 val totalBiayaLain = BiayaLain.hitungTotalBiayaLain(listBiayaLain)
 
 
@@ -156,7 +159,7 @@ class CalculateRekapBesarAndGetRekapBesarOverview(
                         mapListBiayaMarketingRekapBaru = mapListBiayaMarketingBaru ?: mapOf(),
                         mapListPembayaranRekapLama = mMapPembayaranWithNamaCostumerLama,
                         mapFeeMarketingRekapLama = mapFeeMarketingLama ?: mapOf(),
-                        mapListBiayaMarketingRekapLama = mapOf(), // TODO
+                        mapListBiayaMarketingRekapLama = mapListBiayaMarketingLama ?: mapOf(), // TODO
                         listBiayaLain = listBiayaLain ?: emptyList(),
                     ),
                 )
