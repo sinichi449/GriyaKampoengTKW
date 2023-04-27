@@ -1,4 +1,4 @@
-package net.bagusekasaputra.griyakampoengtkw.presentation.tableview.rekapUangMasuk
+package net.bagusekasaputra.griyakampoengtkw.presentation.tableview.rekapBesarDetail
 
 import android.graphics.Typeface
 import android.view.LayoutInflater
@@ -10,36 +10,41 @@ import androidx.core.graphics.TypefaceCompat
 import com.evrencoskun.tableview.adapter.AbstractTableAdapter
 import com.evrencoskun.tableview.adapter.recyclerview.holder.AbstractViewHolder
 import net.bagusekasaputra.griyakampoengtkw.presentation.R
-import net.bagusekasaputra.griyakampoengtkw.presentation.databinding.TableRekapUangMasukCellBinding
-import net.bagusekasaputra.griyakampoengtkw.presentation.databinding.TableRekapUangMasukColumnHeaderBinding
-import net.bagusekasaputra.griyakampoengtkw.presentation.databinding.TableRekapUangMasukCornerViewBinding
-import net.bagusekasaputra.griyakampoengtkw.presentation.databinding.TableRekapUangMasukRowHeaderBinding
+import net.bagusekasaputra.griyakampoengtkw.presentation.databinding.TableRekapBesarDetailCellBinding
+import net.bagusekasaputra.griyakampoengtkw.presentation.databinding.TableRekapBesarDetailColumnHeaderBinding
+import net.bagusekasaputra.griyakampoengtkw.presentation.databinding.TableRekapBesarDetailCornerViewBinding
+import net.bagusekasaputra.griyakampoengtkw.presentation.databinding.TableRekapBesarDetailRowHeaderBinding
 
-class RekapUangMasukTableViewAdapter: AbstractTableAdapter<RumColumnHeader, RumRowHeader, RumCell>() {
+/**
+ * RBD = Rekap Besar Detail
+ * This adapter is specifically made for the table which has 2 row headers,
+ * that is [No, Kavling].
+*/
+class RbdWithKavling_TableViewAdapter: AbstractTableAdapter<RbdColumnHeader, RbdWithKavlingRowHeader, RbdCell>() {
 
     /**
      * Cell
      */
-    private class RumCellViewHolder(binding: TableRekapUangMasukCellBinding): AbstractViewHolder(binding.root) {
+    private class RbdWithKavling_CellViewHolder(binding: TableRekapBesarDetailCellBinding): AbstractViewHolder(binding.root) {
         val container = binding.root
         val cellText = binding.tvTumCell
     }
 
     override fun onCreateCellViewHolder(parent: ViewGroup, viewType: Int): AbstractViewHolder {
         return LayoutInflater.from(parent.context).let { layoutInflater ->
-            TableRekapUangMasukCellBinding.inflate(layoutInflater, parent, false).let { binding ->
-                RumCellViewHolder(binding)
+            TableRekapBesarDetailCellBinding.inflate(layoutInflater, parent, false).let { binding ->
+                RbdWithKavling_CellViewHolder(binding)
             }
         }
     }
 
     override fun onBindCellViewHolder(
         holder: AbstractViewHolder,
-        cellItemModel: RumCell?,
+        cellItemModel: RbdCell?,
         columnPosition: Int,
         rowPosition: Int,
     ) {
-        val viewHolder = holder as RumCellViewHolder
+        val viewHolder = holder as RbdWithKavling_CellViewHolder
 
         viewHolder.cellText.text = cellItemModel?.text ?: "-"
 
@@ -58,7 +63,7 @@ class RekapUangMasukTableViewAdapter: AbstractTableAdapter<RumColumnHeader, RumR
      * Column Header
      */
 
-    private class RumColumnHeaderViewHolder(binding: TableRekapUangMasukColumnHeaderBinding): AbstractViewHolder(binding.root) {
+    private class RbdWithKavling_ColumnHeaderViewHolder(binding: TableRekapBesarDetailColumnHeaderBinding): AbstractViewHolder(binding.root) {
         val container = binding.root
         val columnHeaderText = binding.tvTumColumnHeader
 
@@ -81,18 +86,18 @@ class RekapUangMasukTableViewAdapter: AbstractTableAdapter<RumColumnHeader, RumR
         viewType: Int,
     ): AbstractViewHolder {
         return LayoutInflater.from(parent.context).let { layoutInflater ->
-            TableRekapUangMasukColumnHeaderBinding.inflate(layoutInflater, parent, false).let { binding ->
-                RumColumnHeaderViewHolder(binding)
+            TableRekapBesarDetailColumnHeaderBinding.inflate(layoutInflater, parent, false).let { binding ->
+                RbdWithKavling_ColumnHeaderViewHolder(binding)
             }
         }
     }
 
     override fun onBindColumnHeaderViewHolder(
         holder: AbstractViewHolder,
-        columnHeaderItemModel: RumColumnHeader?,
+        columnHeaderItemModel: RbdColumnHeader?,
         columnPosition: Int,
     ) {
-        val viewHolder = holder as RumColumnHeaderViewHolder
+        val viewHolder = holder as RbdWithKavling_ColumnHeaderViewHolder
 
         viewHolder.columnHeaderText.text = columnHeaderItemModel?.text ?: "-"
 
@@ -105,25 +110,25 @@ class RekapUangMasukTableViewAdapter: AbstractTableAdapter<RumColumnHeader, RumR
      * Row Header
      */
 
-    private class RumRowHeaderViewHolder(binding: TableRekapUangMasukRowHeaderBinding): AbstractViewHolder(binding.root) {
+    private class RbdWithKavling_RowHeaderViewHolder(binding: TableRekapBesarDetailRowHeaderBinding): AbstractViewHolder(binding.root) {
         val tvNomor = binding.tvTumRowHeaderNomor
         val tvKavling = binding.tvTumRowHeaderKavling
     }
 
     override fun onCreateRowHeaderViewHolder(parent: ViewGroup, viewType: Int): AbstractViewHolder {
         return LayoutInflater.from(parent.context).let { layoutInflater ->
-            TableRekapUangMasukRowHeaderBinding.inflate(layoutInflater, parent, false).let { binding ->
-                RumRowHeaderViewHolder(binding)
+            TableRekapBesarDetailRowHeaderBinding.inflate(layoutInflater, parent, false).let { binding ->
+                RbdWithKavling_RowHeaderViewHolder(binding)
             }
         }
     }
 
     override fun onBindRowHeaderViewHolder(
         holder: AbstractViewHolder,
-        rowHeaderItemModel: RumRowHeader?,
+        rowHeaderItemModel: RbdWithKavlingRowHeader?,
         rowPosition: Int,
     ) {
-        val viewHolder = holder as RumRowHeaderViewHolder
+        val viewHolder = holder as RbdWithKavling_RowHeaderViewHolder
 
         viewHolder.tvNomor.text = rowHeaderItemModel?.nomor ?: "-"
         viewHolder.tvKavling.text = rowHeaderItemModel?.kavling ?: "-"
@@ -136,7 +141,7 @@ class RekapUangMasukTableViewAdapter: AbstractTableAdapter<RumColumnHeader, RumR
 
     override fun onCreateCornerView(parent: ViewGroup): View {
         return LayoutInflater.from(parent.context).let { layoutInflater ->
-            TableRekapUangMasukCornerViewBinding.inflate(layoutInflater, parent, false).let { binding ->
+            TableRekapBesarDetailCornerViewBinding.inflate(layoutInflater, parent, false).let { binding ->
                 binding.root
             }
         }

@@ -55,6 +55,7 @@ class RekapBesarDetailActivity : AppCompatActivity() {
         navController.navigate(when (rekapDetailTransport?.rekapType) {
             RekapType.UangMasuk -> R.id.nav_rekap_detail_uang_masuk
             RekapType.SisaPembayaran -> R.id.nav_rekap_detail_sisa_pembayaran
+            RekapType.FeeMarketing -> R.id.nav_rekap_detail_fee_marketing
             else -> R.id.nav_rekap_detail_sisa_pembayaran
         }, bundleForFragments)
 
@@ -64,8 +65,6 @@ class RekapBesarDetailActivity : AppCompatActivity() {
 
         setupViewModel()
     }
-
-
 
     private fun setupViewModel() {
         val progressDialog = ProgressDialog(this).apply {
@@ -118,8 +117,8 @@ class RekapBesarDetailActivity : AppCompatActivity() {
     }
 
     private fun setFabScrollDataTypeIcon(fabMode: FabMode) {
-        val resId = if (fabMode == FabMode.Upward) R.drawable.baseline_arrow_upward_24
-            else R.drawable.baseline_arrow_downward_24
+        val resId = if (fabMode == FabMode.Upward) R.drawable.baseline_arrow_downward_24
+            else R.drawable.baseline_arrow_upward_24
         val drawable = ContextCompat.getDrawable(this, resId)
         binding.fabScrollDataType.setImageDrawable(drawable)
 

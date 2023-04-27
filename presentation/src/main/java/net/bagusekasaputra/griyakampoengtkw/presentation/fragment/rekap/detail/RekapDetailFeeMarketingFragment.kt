@@ -9,10 +9,10 @@ import androidx.fragment.app.activityViewModels
 import com.evrencoskun.tableview.TableView
 import dagger.hilt.android.AndroidEntryPoint
 import net.bagusekasaputra.griyakampoengtkw.domain.NumberUtil
-import net.bagusekasaputra.griyakampoengtkw.domain.entity.rekap.PembayaranWithNamaCostumer
+import net.bagusekasaputra.griyakampoengtkw.domain.entity.FeeMarketing
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.rekap.RekapBesarDetail
 import net.bagusekasaputra.griyakampoengtkw.presentation.activities.RekapBesarDetailActivity
-import net.bagusekasaputra.griyakampoengtkw.presentation.databinding.FragmentRekapDetailUangMasukBinding
+import net.bagusekasaputra.griyakampoengtkw.presentation.databinding.FragmentRekapDetailFeeMarketingBinding
 import net.bagusekasaputra.griyakampoengtkw.presentation.fragment.rekap.RekapType
 import net.bagusekasaputra.griyakampoengtkw.presentation.tableview.rekapBesarDetail.RbdCell
 import net.bagusekasaputra.griyakampoengtkw.presentation.tableview.rekapBesarDetail.RbdColumnHeader
@@ -21,9 +21,9 @@ import net.bagusekasaputra.griyakampoengtkw.presentation.tableview.rekapBesarDet
 import net.bagusekasaputra.griyakampoengtkw.presentation.viewmodel.RekapViewModel
 
 @AndroidEntryPoint
-class RekapDetailUangMasukFragment : Fragment() {
+class RekapDetailFeeMarketingFragment : Fragment() {
 
-    private lateinit var binding: FragmentRekapDetailUangMasukBinding
+    private lateinit var binding: FragmentRekapDetailFeeMarketingBinding
     private val viewModel: RekapViewModel by activityViewModels()
 
     override fun onCreateView(
@@ -31,7 +31,7 @@ class RekapDetailUangMasukFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         // Inflate the layout for this fragment
-        binding = FragmentRekapDetailUangMasukBinding.inflate(inflater, container, false)
+        binding = FragmentRekapDetailFeeMarketingBinding.inflate(inflater, container, false)
 
         return binding.root
     }
@@ -46,48 +46,48 @@ class RekapDetailUangMasukFragment : Fragment() {
     private fun setupViewModel() {
         viewModel.rekapBesarDetailLive.observe(requireActivity()) {
             it?.also { rekapBesarDetail ->
-                binding.tableviewRekapUangMasuk.setAllItems(rekapBesarDetail.mapListPembayaranRekapBaru)
+                binding.tableviewRekapFeeMarketing.setAllItems(rekapBesarDetail.mapFeeMarketingRekapBaru)
 
-                val totalDataBaru = rekapBesarDetail.getTotalUangMasukPembayaran(RekapBesarDetail.DATA_BARU)
-                val rupiahTotalUangMasukRekapBaru = "Rp. ${NumberUtil.formatLongToString(totalDataBaru)}"
-                binding.tvTotalRekap.text = rupiahTotalUangMasukRekapBaru
+                val totalDataBaru = rekapBesarDetail.getTotalFeeMarketing(RekapBesarDetail.DATA_BARU)
+
+                val rupiahTotalFeeMarketingRekapBaru = "Rp. ${NumberUtil.formatLongToString(totalDataBaru)}"
+                binding.tvTotalRekap.text = rupiahTotalFeeMarketingRekapBaru
 
                 val dataLamaIncluded = viewModel.rekapDetailTransportLive.value?.includeDataLama
                 if (dataLamaIncluded == true) {
                     binding.layoutDataLama.visibility = View.VISIBLE
                     binding.tvInfoDataBaru.visibility = View.VISIBLE
 
-                    binding.tableviewRekapUangMasukDataLama.setAllItems(rekapBesarDetail.mapListPembayaranRekapLama)
+                    binding.tableviewRekapFeeMarketingDataLama.setAllItems(rekapBesarDetail.mapFeeMarketingRekapLama)
 
-                    val totalDataLama = rekapBesarDetail.getTotalUangMasukPembayaran(RekapBesarDetail.DATA_LAMA)
-                    val rupiahTotalUangMasukRekapLama = "Rp. ${NumberUtil.formatLongToString(totalDataLama)}"
-                    binding.tvTotalRekapDataLama.text = rupiahTotalUangMasukRekapLama
+                    val totalDataLama = rekapBesarDetail.getTotalFeeMarketing(RekapBesarDetail.DATA_LAMA)
+                    val rupiahTotalFeeMarketingRekapLama = "Rp. ${NumberUtil.formatLongToString(totalDataLama)}"
+                    binding.tvTotalRekapDataLama.text = rupiahTotalFeeMarketingRekapLama
 
-                    setTotalUangMasukToToolbarTitle(totalDataBaru, totalDataLama)
+                    setTotalFeeMarketingToToolbarTitle(totalDataBaru, totalDataLama)
                 } else {
                     binding.layoutDataLama.visibility = View.GONE
                     binding.tvInfoDataBaru.visibility = View.GONE
 
-                    setTotalUangMasukToToolbarTitle(totalDataBaru, 0L)
+                    setTotalFeeMarketingToToolbarTitle(totalDataBaru, 0L)
                 }
             }
         }
     }
 
-    private fun TableView.setAllItems(mapListPembayaranWithNamaCostumer: Map<String, List<PembayaranWithNamaCostumer>?>) {
+    private fun TableView.setAllItems(mapFeeMarketing: Map<String, FeeMarketing?>) {
         val adapter = RbdWithKavling_TableViewAdapter()
         setAdapter(adapter)
 
-        val columnHeader = listOf(
-            RbdColumnHeader("Nama Costumer"),
-            RbdColumnHeader("Tanggal"),
-            RbdColumnHeader("Jenis Pembayaran"),
-            RbdColumnHeader("Jumlah Pembayaran"),
+        val columnHeaders = listOf(
+            RbdColumnHeader("Nama Marketer"),
+            RbdColumnHeader("Tanggal Penerimaan"),
+            RbdColumnHeader("Jumlah Uang"),
         )
         val rowHeaders = mutableListOf<RbdWithKavlingRowHeader>().run {
             var index = 1
-            mapListPembayaranWithNamaCostumer.keys.forEach { kavling ->
-                mapListPembayaranWithNamaCostumer[kavling]?.forEach {
+            mapFeeMarketing.keys.forEach { kavling ->
+                if (mapFeeMarketing[kavling] != null) {
                     add(RbdWithKavlingRowHeader(index.toString(), kavling))
 
                     index++
@@ -97,29 +97,24 @@ class RekapDetailUangMasukFragment : Fragment() {
             this
         }
         val cellLists = mutableListOf<List<RbdCell>>().run {
-            mapListPembayaranWithNamaCostumer.keys.forEach { kavling ->
-                mapListPembayaranWithNamaCostumer[kavling]?.forEach { pembayaranWithNamaCostumer ->
-                    val cells = mutableListOf<RbdCell>()
-                    val pembayaran = pembayaranWithNamaCostumer.pembayaran
-                    cells.add(RbdCell(pembayaranWithNamaCostumer.namaCostumer))
-                    cells.add(RbdCell(pembayaran.tanggal))
-                    cells.add(RbdCell(pembayaran.termin))
-                    cells.add(RbdCell(pembayaran.jumlahUangDibayar))
+            val cells = mutableListOf<RbdCell>()
+            mapFeeMarketing.keys.forEach { kavling ->
+                mapFeeMarketing[kavling]?.also { feeMarketing ->
+                    cells.add(RbdCell(feeMarketing.namaMarketer))
+                    cells.add(RbdCell(feeMarketing.tanggalPenerimaan))
+                    cells.add(RbdCell(feeMarketing.biayaMarketer))
 
-                    if (cells.isNotEmpty()) {
-                        add(cells)
-                    }
+                    add(cells)
                 }
             }
 
             this
         }
-        adapter.setAllItems(columnHeader, rowHeaders, cellLists)
+        adapter.setAllItems(columnHeaders, rowHeaders, cellLists)
 
-        setColumnWidth(0, 350) // Nama Costumer
-        setColumnWidth(1, 300) // Tanggal
-        setColumnWidth(2, 300) // Jenis Pembayaran
-        setColumnWidth(3, 350) // Jumlah Pembayaran
+        setColumnWidth(0, 400) // Nama Marketer
+        setColumnWidth(1, 300) // Tanggal Penerimaan
+        setColumnWidth(2, 350) // Jumlah Uang
     }
 
     private fun setupFabScroll() {
@@ -135,15 +130,14 @@ class RekapDetailUangMasukFragment : Fragment() {
         }
     }
 
-
     /**
-     * Set RekapBesarDetailActivity's Toolbar's Title -> Total Uang Masuk
+     * Set RekapBesarDetailActivity's Toolbar's Title -> Total Fee Marketing
      * @param totalDataLama
      * @param totalDataBaru
      */
-    private fun setTotalUangMasukToToolbarTitle(totalDataBaru: Long, totalDataLama: Long) {
+    private fun setTotalFeeMarketingToToolbarTitle(totalDataBaru: Long, totalDataLama: Long) {
         val totalAll = totalDataBaru + totalDataLama
         (requireActivity() as RekapBesarDetailActivity)
-            .setToolbarTitle(RekapType.UangMasuk, totalAll)
+            .setToolbarTitle(RekapType.FeeMarketing, totalAll)
     }
 }

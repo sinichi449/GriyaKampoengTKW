@@ -8,7 +8,8 @@ import net.bagusekasaputra.griyakampoengtkw.domain.DateUtil.isWithinRange
 import net.bagusekasaputra.griyakampoengtkw.domain.DateUtil.toDate
 import net.bagusekasaputra.griyakampoengtkw.domain.NumberUtil
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.rekap.PeriodeRekap
-import java.util.*
+import java.util.Calendar
+import java.util.Date
 
 data class FeeMarketing(
     val kavlingKode: String,
@@ -77,6 +78,18 @@ data class FeeMarketing(
                     }
                 }
             }
+        }
+
+        fun hitungTotalAllKavling(mapFeeMarketing: Map<String, FeeMarketing?>): Long {
+            var mTotal = 0L
+
+            mapFeeMarketing.keys.forEach { kavling ->
+                val feeMarketing = mapFeeMarketing[kavling]
+
+                mTotal += feeMarketing?.parsedBiayaMarketer ?: 0L
+            }
+
+            return mTotal
         }
     }
 }

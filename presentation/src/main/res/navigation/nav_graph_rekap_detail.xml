@@ -16,5 +16,11 @@
         android:name="net.bagusekasaputra.griyakampoengtkw.presentation.fragment.rekap.detail.RekapDetailSisaPembayaranFragment"
         android:label="fragment_rekap_detail_sisa_pembayaran"
         tools:layout="@layout/fragment_rekap_detail_sisa_pembayaran" />
+    <fragment
+        android:id="@+id/nav_rekap_detail_fee_marketing"
+        android:name="net.bagusekasaputra.griyakampoengtkw.presentation.fragment.rekap.detail.RekapDetailFeeMarketingFragment"
+        android:label="fragment_rekap_detail_fee_marketing"
+        tools:layout="@layout/fragment_rekap_detail_fee_marketing" />
+
 
 </navigation>

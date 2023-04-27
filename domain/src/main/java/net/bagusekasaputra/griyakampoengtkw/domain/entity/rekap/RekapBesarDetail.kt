@@ -20,37 +20,35 @@ data class RekapBesarDetail(
     val listBiayaLain: List<BiayaLain>?,
 ) {
 
-    fun getTotalUangMasukRekapBaru(): Long {
-        val mapPembayaran = mutableMapOf<String, List<Pembayaran>?>()
-
-        mapListPembayaranRekapBaru.keys.forEach { kavling ->
-            val listPembayaran = mutableListOf<Pembayaran>()
-            mapListPembayaranRekapBaru[kavling]?.forEach { pembayaranWithNamaCostumer ->
-                listPembayaran.add(pembayaranWithNamaCostumer.pembayaran)
-            }
-
-            if (listPembayaran.isNotEmpty()) {
-                mapPembayaran[kavling] = listPembayaran
-            }
-        }
-
-        return Pembayaran.hitungTotalAllKavlingUangMasuk(mapPembayaran)
+    companion object {
+        const val DATA_BARU = "DATA_BARU"
+        const val DATA_LAMA = "DATA_LAMA"
     }
 
-    fun getTotalUangMasukRekapLama(): Long {
-        val mapPembayaran = mutableMapOf<String, List<Pembayaran>?>()
+    fun getTotalUangMasukPembayaran(data: String): Long {
+        val mapSelectedPembayaran = if (data == DATA_BARU)
+            mapListPembayaranRekapBaru else mapListPembayaranRekapLama
+        val mMapPembayaran = mutableMapOf<String, List<Pembayaran>?>()
 
-        mapListPembayaranRekapLama.keys.forEach { kavlingLama ->
+        // Convert the map PembayaranWithNamaCostumer to Pembayaran
+        mapSelectedPembayaran.keys.forEach { kavling ->
             val listPembayaran = mutableListOf<Pembayaran>()
-            mapListPembayaranRekapLama[kavlingLama]?.forEach { pembayaranWithNamaCostumer ->
+            mapSelectedPembayaran[kavling]?.forEach { pembayaranWithNamaCostumer ->
                 listPembayaran.add(pembayaranWithNamaCostumer.pembayaran)
             }
 
             if (listPembayaran.isNotEmpty()) {
-                mapPembayaran[kavlingLama] = listPembayaran
+                mMapPembayaran[kavling] = listPembayaran
             }
         }
 
-        return Pembayaran.hitungTotalAllKavlingUangMasuk(mapPembayaran)
+        return Pembayaran.hitungTotalAllKavlingUangMasuk(mMapPembayaran)
+    }
+
+    fun getTotalFeeMarketing(data: String): Long {
+        val mapFeeMarketing = if (data == DATA_BARU)
+            mapFeeMarketingRekapBaru else mapFeeMarketingRekapLama
+
+        return FeeMarketing.hitungTotalAllKavling(mapFeeMarketing)
     }
 }
