@@ -2,7 +2,8 @@ package net.bagusekasaputra.griyakampoengtkw.domain
 
 import net.bagusekasaputra.griyakampoengtkw.domain.mockRepository.MockUtils
 import org.junit.Test
-import java.util.*
+import java.util.Calendar
+import java.util.Date
 
 class TanggalRangeTest {
 

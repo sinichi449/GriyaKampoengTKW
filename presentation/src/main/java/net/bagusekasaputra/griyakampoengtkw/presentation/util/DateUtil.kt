@@ -1,7 +1,8 @@
 package net.bagusekasaputra.griyakampoengtkw.presentation.util
 
 import net.bagusekasaputra.griyakampoengtkw.presentation.resetHours
-import java.util.*
+import java.util.Calendar
+import java.util.Date
 
 object DateUtil {
 

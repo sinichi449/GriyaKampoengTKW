@@ -7,7 +7,7 @@ import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.AsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.Kavling
 import net.bagusekasaputra.griyakampoengtkw.domain.repository.KavlingRepository
 import net.bagusekasaputra.griyakampoengtkw.domain.repository.PembayaranRepository
-import java.util.*
+import java.util.Calendar
 
 class GetKavlingByBlockAsyncUseCase(
     private val kavlingRepository: KavlingRepository,

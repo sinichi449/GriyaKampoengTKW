@@ -1,6 +1,7 @@
 package net.bagusekasaputra.griyakampoengtkw.domain
 
-import java.util.*
+import java.util.Calendar
+import java.util.Date
 
 object DateUtil {
 

@@ -1,6 +1,7 @@
 package net.bagusekasaputra.griyakampoengtkw.data.remote
 
-import java.util.*
+import java.util.Timer
+import java.util.TimerTask
 
 object ConnectionUtil {
 

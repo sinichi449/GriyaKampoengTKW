@@ -21,7 +21,7 @@ import net.bagusekasaputra.griyakampoengtkw.presentation.databinding.SettingsAct
 import net.bagusekasaputra.griyakampoengtkw.presentation.util.DialogUtil
 import net.bagusekasaputra.griyakampoengtkw.presentation.util.InputUtil
 import net.bagusekasaputra.griyakampoengtkw.presentation.viewmodel.SettingsViewModel
-import java.util.*
+import java.util.Calendar
 
 @AndroidEntryPoint
 class SettingsActivity : AppCompatActivity() {

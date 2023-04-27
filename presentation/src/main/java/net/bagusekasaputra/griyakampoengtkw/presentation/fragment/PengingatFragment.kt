@@ -27,7 +27,7 @@ import net.bagusekasaputra.griyakampoengtkw.presentation.util.AlarmHelper
 import net.bagusekasaputra.griyakampoengtkw.presentation.util.DialogUtil
 import net.bagusekasaputra.griyakampoengtkw.presentation.util.InputUtil
 import net.bagusekasaputra.griyakampoengtkw.presentation.viewmodel.PengingatViewModel
-import java.util.*
+import java.util.Calendar
 
 @AndroidEntryPoint
 class PengingatFragment : Fragment() {

@@ -3,7 +3,9 @@ package net.bagusekasaputra.griyakampoengtkw.domain
 import org.junit.Test
 import java.math.BigDecimal
 import java.text.SimpleDateFormat
-import java.util.*
+import java.util.Calendar
+import java.util.Date
+import java.util.Locale
 import kotlin.math.pow
 import kotlin.random.Random
 import kotlin.random.nextInt

@@ -1,6 +1,7 @@
 package net.bagusekasaputra.griyakampoengtkw.domain.mockRepository
 
-import java.util.*
+import java.util.Calendar
+import java.util.Date
 import kotlin.random.Random
 
 object MockUtils {

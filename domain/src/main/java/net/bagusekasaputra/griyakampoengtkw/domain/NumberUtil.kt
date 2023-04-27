@@ -2,7 +2,7 @@ package net.bagusekasaputra.griyakampoengtkw.domain
 
 import java.text.DecimalFormat
 import java.text.DecimalFormatSymbols
-import java.util.*
+import java.util.Locale
 
 object NumberUtil {
 

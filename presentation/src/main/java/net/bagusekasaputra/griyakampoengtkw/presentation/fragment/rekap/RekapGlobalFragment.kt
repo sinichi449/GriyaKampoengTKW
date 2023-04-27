@@ -17,7 +17,11 @@ import kotlinx.coroutines.withContext
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.ProgressState
 import net.bagusekasaputra.griyakampoengtkw.presentation.databinding.FragmentRekapGlobalBinding
 import net.bagusekasaputra.griyakampoengtkw.presentation.databinding.LayoutWarningAndLoadingRekapBinding
-import net.bagusekasaputra.griyakampoengtkw.presentation.tableview.rekapGlobal.*
+import net.bagusekasaputra.griyakampoengtkw.presentation.tableview.rekapGlobal.RekapGlobalColumnPosition
+import net.bagusekasaputra.griyakampoengtkw.presentation.tableview.rekapGlobal.RekapGlobalTableViewAdapter
+import net.bagusekasaputra.griyakampoengtkw.presentation.tableview.rekapGlobal.RgCell
+import net.bagusekasaputra.griyakampoengtkw.presentation.tableview.rekapGlobal.RgColumnHeader
+import net.bagusekasaputra.griyakampoengtkw.presentation.tableview.rekapGlobal.RgRowHeader
 import net.bagusekasaputra.griyakampoengtkw.presentation.viewmodel.RekapViewModel
 
 @AndroidEntryPoint

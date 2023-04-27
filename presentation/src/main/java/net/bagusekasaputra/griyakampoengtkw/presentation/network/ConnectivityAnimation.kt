@@ -7,7 +7,8 @@ import android.view.animation.AnimationUtils
 import androidx.core.content.ContextCompat
 import net.bagusekasaputra.griyakampoengtkw.presentation.R
 import net.bagusekasaputra.griyakampoengtkw.presentation.databinding.LayoutConnectivityStatusBinding
-import java.util.*
+import java.util.Timer
+import java.util.TimerTask
 import java.util.concurrent.atomic.AtomicBoolean
 
 class ConnectivityAnimation(

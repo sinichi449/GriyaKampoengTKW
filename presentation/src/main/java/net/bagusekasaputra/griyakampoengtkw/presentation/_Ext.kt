@@ -4,7 +4,9 @@ import android.util.Log
 import net.bagusekasaputra.griyakampoengtkw.presentation.util.GriyaNodes
 import java.math.BigDecimal
 import java.text.SimpleDateFormat
-import java.util.*
+import java.util.Calendar
+import java.util.Date
+import java.util.Locale
 import kotlin.math.pow
 
 fun logEvent(msg: String) {

@@ -20,7 +20,7 @@ import net.bagusekasaputra.griyakampoengtkw.presentation.tableview.report.TumRow
 import net.bagusekasaputra.griyakampoengtkw.presentation.toDate
 import net.bagusekasaputra.griyakampoengtkw.presentation.toSlashedDate
 import net.bagusekasaputra.griyakampoengtkw.presentation.util.DateUtil
-import java.util.*
+import java.util.Date
 import javax.inject.Inject
 
 @HiltViewModel

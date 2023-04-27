@@ -6,7 +6,7 @@ import android.content.Context
 import android.content.Intent
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.Pengingat
 import net.bagusekasaputra.griyakampoengtkw.presentation.receiver.AlarmReceiver
-import java.util.*
+import java.util.Calendar
 
 class AlarmHelper(private val context: Context) {
     private val milMonth = 2592000000L;

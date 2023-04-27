@@ -3,7 +3,7 @@ package net.bagusekasaputra.griyakampoengtkw.domain
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.rekap.RekapGlobal
 import org.junit.Assert.assertEquals
 import org.junit.Test
-import java.util.*
+import java.util.Calendar
 
 /**
  * Example local unit test, which will execute on the development machine (host).

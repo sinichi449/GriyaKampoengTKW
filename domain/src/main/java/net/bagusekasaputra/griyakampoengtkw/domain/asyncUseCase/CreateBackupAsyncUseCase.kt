@@ -10,7 +10,19 @@ import net.bagusekasaputra.griyakampoengtkw.domain.entity.BackupRestoreEntity
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.BiayaMarketing
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.FeeMarketing
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.HargaKavling
-import net.bagusekasaputra.griyakampoengtkw.domain.repository.*
+import net.bagusekasaputra.griyakampoengtkw.domain.repository.BackupRestoreRepository
+import net.bagusekasaputra.griyakampoengtkw.domain.repository.BiayaLainRepository
+import net.bagusekasaputra.griyakampoengtkw.domain.repository.BiayaMarketingRepository
+import net.bagusekasaputra.griyakampoengtkw.domain.repository.BlockRepository
+import net.bagusekasaputra.griyakampoengtkw.domain.repository.CatatanPembayaranRepository
+import net.bagusekasaputra.griyakampoengtkw.domain.repository.DataDiriRepository
+import net.bagusekasaputra.griyakampoengtkw.domain.repository.FeeMarketingRepository
+import net.bagusekasaputra.griyakampoengtkw.domain.repository.FotoPembayaranRepository
+import net.bagusekasaputra.griyakampoengtkw.domain.repository.HargaKavlingRepository
+import net.bagusekasaputra.griyakampoengtkw.domain.repository.ImageDataDiriRepository
+import net.bagusekasaputra.griyakampoengtkw.domain.repository.ImageSprRepository
+import net.bagusekasaputra.griyakampoengtkw.domain.repository.KavlingRepository
+import net.bagusekasaputra.griyakampoengtkw.domain.repository.PembayaranRepository
 
 class CreateBackupAsyncUseCase(
     private val blokRepository: BlockRepository,

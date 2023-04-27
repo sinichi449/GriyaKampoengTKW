@@ -1,7 +1,8 @@
 package net.bagusekasaputra.griyakampoengtkw.data.model
 
 import java.text.SimpleDateFormat
-import java.util.*
+import java.util.Calendar
+import java.util.Locale
 
 data class FeeMarketingModel(
     var timeMillis: Long? = null,
