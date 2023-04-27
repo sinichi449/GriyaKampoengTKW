@@ -7,6 +7,8 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.AdapterView
+import android.widget.ArrayAdapter
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
@@ -22,14 +24,18 @@ import net.bagusekasaputra.griyakampoengtkw.presentation.R
 import net.bagusekasaputra.griyakampoengtkw.presentation.custom.ThousandSeparatorTextWatcher
 import net.bagusekasaputra.griyakampoengtkw.presentation.databinding.DialogActionBiayaLainBinding
 import net.bagusekasaputra.griyakampoengtkw.presentation.databinding.FragmentBiayaLainBinding
-import net.bagusekasaputra.griyakampoengtkw.presentation.tableview.biayaLain.*
+import net.bagusekasaputra.griyakampoengtkw.presentation.tableview.biayaLain.BiayaLainColumnPosition
+import net.bagusekasaputra.griyakampoengtkw.presentation.tableview.biayaLain.BlCell
+import net.bagusekasaputra.griyakampoengtkw.presentation.tableview.biayaLain.BlColumnHeader
+import net.bagusekasaputra.griyakampoengtkw.presentation.tableview.biayaLain.BlRowHeader
+import net.bagusekasaputra.griyakampoengtkw.presentation.tableview.biayaLain.TableBiayaLainViewAdapter
 import net.bagusekasaputra.griyakampoengtkw.presentation.toCalendar
 import net.bagusekasaputra.griyakampoengtkw.presentation.toSlashedDate
 import net.bagusekasaputra.griyakampoengtkw.presentation.util.DialogUtil
 import net.bagusekasaputra.griyakampoengtkw.presentation.util.FabHelper
 import net.bagusekasaputra.griyakampoengtkw.presentation.util.InputUtil
 import net.bagusekasaputra.griyakampoengtkw.presentation.viewmodel.BiayaLainViewModel
-import java.util.*
+import java.util.Calendar
 import javax.inject.Inject
 
 @AndroidEntryPoint
@@ -44,6 +50,12 @@ class BiayaLainFragment: Fragment() {
 
     @Inject lateinit var sharedPrefs: SharedPreferences
     private var dataMode = DataMode.ONLINE
+
+    private val listUrutkanSpinner = listOf(
+        "Tanggal",
+        "Harga",
+        "A-Z",
+    )
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -67,6 +79,8 @@ class BiayaLainFragment: Fragment() {
             fabs = arrayOf(fabAddBiayaLain, fabEditBiayaLain)
         )
         fabHelper.setupFabs()
+
+        setupSpinnerUrutkan()
 
         // Check offline mode
         val offlineMode = sharedPrefs.getBoolean("offline_mode", false)
@@ -103,6 +117,8 @@ class BiayaLainFragment: Fragment() {
                 Toast.makeText(requireContext(), "Data biaya lain masih kosong!", Toast.LENGTH_SHORT).show()
             }
         }
+
+
     }
 
     override fun onResume() {
@@ -313,5 +329,30 @@ class BiayaLainFragment: Fragment() {
         Snackbar.make(binding.root, msg, Snackbar.LENGTH_LONG).apply {
             setAction("OK") { this.dismiss() }
         }.show()
+    }
+
+    private fun setupSpinnerUrutkan() {
+        binding.spinnerUrutkan?.adapter = ArrayAdapter(
+            requireContext(),
+            android.R.layout.simple_spinner_dropdown_item,
+            listUrutkanSpinner
+        )
+
+        binding.spinnerUrutkan?.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
+            override fun onItemSelected(adapterView: AdapterView<*>?, view: View?, position: Int, p3: Long) {
+                val sortMethod = when (position) {
+                    0 -> BiayaLain.SortMethod.TANGGAL
+                    1 -> BiayaLain.SortMethod.HARGA
+                    2 -> BiayaLain.SortMethod.JENIS_BIAYA
+                    else -> BiayaLain.SortMethod.TANGGAL
+                }
+                viewModel.sortListBiayaLain(sortMethod)
+            }
+
+            override fun onNothingSelected(p0: AdapterView<*>?) {
+
+            }
+
+        }
     }
 }

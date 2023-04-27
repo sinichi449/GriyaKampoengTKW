@@ -13,6 +13,7 @@ import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.biayaLain.Delete
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.biayaLain.GetAllBiayaLainAsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.biayaLain.UpdateBiayaLainAsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.BiayaLain
+import net.bagusekasaputra.griyakampoengtkw.domain.entity.BiayaLain.Companion.sort
 import net.bagusekasaputra.griyakampoengtkw.presentation.toDate
 import javax.inject.Inject
 
@@ -37,7 +38,6 @@ class BiayaLainViewModel @Inject constructor(
     val asyncHelper = AsyncUseCaseHelper(_isFinishOperation)
 
     private val asyncJobs = mutableListOf<Job>()
-
 
 
     fun getAllBiayaLain(dataMode: DataMode, onFailure: (msg: String) -> Unit) {
@@ -159,6 +159,11 @@ class BiayaLainViewModel @Inject constructor(
         } else {
             0L
         }
+    }
+
+    fun sortListBiayaLain(sortMethod: BiayaLain.SortMethod) {
+        _listBiayaLainLive.value = _listBiayaLainLive.value
+            ?.sort(sortMethod)
     }
 
 

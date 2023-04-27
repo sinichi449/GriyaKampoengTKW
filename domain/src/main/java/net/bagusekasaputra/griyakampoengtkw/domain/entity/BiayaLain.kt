@@ -8,7 +8,8 @@ import net.bagusekasaputra.griyakampoengtkw.domain.DateUtil.isWithinRange
 import net.bagusekasaputra.griyakampoengtkw.domain.DateUtil.toDate
 import net.bagusekasaputra.griyakampoengtkw.domain.NumberUtil
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.rekap.PeriodeRekap
-import java.util.*
+import java.util.Calendar
+import java.util.Date
 
 data class BiayaLain(
     val id: Long? = null,
@@ -16,8 +17,13 @@ data class BiayaLain(
     val harga: Long,
     val tanggal: String,
 ) {
-
     val parsedHarga = NumberUtil.formatLongToString(harga)
+
+    enum class SortMethod {
+        JENIS_BIAYA,
+        HARGA,
+        TANGGAL
+    }
 
     companion object {
         fun hitungTotalBiayaLain(listBiayaLain: List<BiayaLain>?): Long {
@@ -70,17 +76,25 @@ data class BiayaLain(
             }
         }
 
-        fun List<BiayaLain>?.sortByTanggal(): List<BiayaLain>? {
-            return this?.sortedBy {
-                Calendar.getInstance().apply {
-                    time = it.tanggal.toDate()
-                }.timeInMillis
-            }
-        }
-
-        fun List<BiayaLain>?.sortByHarga(): List<BiayaLain>? {
-            return this?.sortedBy {
-                it.harga
+        fun List<BiayaLain>?.sort(sortMethod: SortMethod): List<BiayaLain>? {
+            return when (sortMethod) {
+                SortMethod.TANGGAL -> {
+                    this?.sortedBy {
+                        Calendar.getInstance().apply {
+                            time = it.tanggal.toDate()
+                        }.timeInMillis
+                    }
+                }
+                SortMethod.HARGA -> {
+                    this?.sortedBy {
+                        it.harga
+                    }
+                }
+                SortMethod.JENIS_BIAYA -> {
+                    this?.sortedBy {
+                        it.jenisBiaya
+                    }
+                }
             }
         }
     }

@@ -14,7 +14,8 @@
         <androidx.appcompat.widget.LinearLayoutCompat
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:orientation="vertical">
+            android:orientation="vertical"
+            android:paddingBottom="88dp">
 
             <com.google.android.material.textview.MaterialTextView
                 android:layout_width="match_parent"
@@ -23,6 +24,45 @@
                 android:layout_marginTop="16dp"
                 android:layout_marginStart="16dp"
                 style="@style/TextAppearance.MaterialComponents.Headline6"/>
+
+            <androidx.legacy.widget.Space
+                android:layout_width="match_parent"
+                android:layout_height="24dp"/>
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginHorizontal="24dp">
+
+                <ImageView
+                    android:id="@+id/imgInfo_urutkan"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:src="@drawable/ic_baseline_sort_24"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"/>
+
+                <com.google.android.material.textview.MaterialTextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    app:layout_constraintStart_toEndOf="@id/imgInfo_urutkan"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="@id/imgInfo_urutkan"
+                    app:layout_constraintBottom_toBottomOf="@id/imgInfo_urutkan"
+                    android:layout_marginStart="8dp"
+                    android:text="Urutkan"
+                    style="@style/TextAppearance.MaterialComponents.Body2"/>
+
+                <Spinner
+                    android:id="@+id/spinner_urutkan"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    app:layout_constraintTop_toBottomOf="@id/imgInfo_urutkan"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    android:layout_marginTop="4dp"/>
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
 
             <com.evrencoskun.tableview.TableView
                 android:id="@+id/tableview_biaya_lain"
