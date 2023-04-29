@@ -1,6 +1,9 @@
 package net.bagusekasaputra.griyakampoengtkw.presentation.util
 
+import android.content.Context
+import android.content.Intent
 import android.graphics.Point
+import android.net.Uri
 import android.view.View
 import android.view.ViewGroup
 import android.view.ViewParent
@@ -35,5 +38,13 @@ object UiUtils {
             return
         }
         getDeepChildOffset(mainParent, parentGroup.parent, parentGroup, accumulatedOffset)
+    }
+
+    fun openWhatsapp(context: Context, phoneNumber: String) {
+        val mPhoneNumber = phoneNumber.replace(" ", "") // Remove spaces
+        val url = "https://api.whatsapp.com/send?phone=$mPhoneNumber"
+        val intent = Intent(Intent.ACTION_VIEW)
+        intent.data = Uri.parse(url)
+        context.startActivity(intent)
     }
 }

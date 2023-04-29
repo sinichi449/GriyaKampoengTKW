@@ -7,8 +7,15 @@ import android.content.SharedPreferences
 import android.net.Uri
 import android.os.Bundle
 import android.text.InputType
+import android.text.SpannableString
+import android.text.style.UnderlineSpan
 import android.util.Log
-import android.view.*
+import android.view.LayoutInflater
+import android.view.Menu
+import android.view.MenuInflater
+import android.view.MenuItem
+import android.view.View
+import android.view.ViewGroup
 import android.widget.ArrayAdapter
 import android.widget.Toast
 import androidx.activity.result.ActivityResultLauncher
@@ -20,12 +27,17 @@ import com.github.dhaval2404.imagepicker.ImagePicker
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
+import net.bagusekasaputra.griyakampoengtkw.domain.DataMode
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.DataDiri
 import net.bagusekasaputra.griyakampoengtkw.presentation.R
 import net.bagusekasaputra.griyakampoengtkw.presentation.activities.FullImageActivity
 import net.bagusekasaputra.griyakampoengtkw.presentation.databinding.DialogTambahDataDiriBinding
 import net.bagusekasaputra.griyakampoengtkw.presentation.databinding.FragmentDataDiriBinding
-import net.bagusekasaputra.griyakampoengtkw.presentation.util.*
+import net.bagusekasaputra.griyakampoengtkw.presentation.util.DialogUtil
+import net.bagusekasaputra.griyakampoengtkw.presentation.util.GriyaNodes
+import net.bagusekasaputra.griyakampoengtkw.presentation.util.InputUtil
+import net.bagusekasaputra.griyakampoengtkw.presentation.util.NotificationUtil
+import net.bagusekasaputra.griyakampoengtkw.presentation.util.UiUtils
 import net.bagusekasaputra.griyakampoengtkw.presentation.viewmodel.DetailViewModel
 import net.bagusekasaputra.griyakampoengtkw.presentation.viewmodel.ImageViewModel
 import java.io.File
@@ -165,6 +177,16 @@ class DataDiriFragment : Fragment() {
             }
         }
 
+        binding.tvNoHp.setOnClickListener {
+            val phoneNumber = viewModel.dataDiriLive.value?.noHp
+            if (phoneNumber != null) {
+                UiUtils.openWhatsapp(requireContext(), phoneNumber)
+            } else {
+                Snackbar.make(binding.root, "Nomor telepon tidak dapat diproses!", Snackbar.LENGTH_LONG)
+                    .show()
+            }
+        }
+
         setupViewModel()
 
         binding.fabTambahDataDiri.setOnClickListener {
@@ -230,7 +252,12 @@ class DataDiriFragment : Fragment() {
             binding.tvNegaraBekerja.text = dataDiri?.negaraBekerja ?: "Hongkong"
             binding.tvAlamatKerja.text = dataDiri?.alamatKerja ?: "-"
             binding.tvAlamatIndo.text = dataDiri?.alamatIndo ?: "-"
-            binding.tvNoHp.text = dataDiri?.noHp ?: "-"
+            binding.tvNoHp.apply {
+                // Apply underline to No Hp
+                val content = SpannableString(dataDiri?.noHp ?: "-")
+                content.setSpan(UnderlineSpan(), 0, content.length, 0)
+                text = content
+            }
         }
 
         imageViewModel.isFinishLoadingImage.observe(requireActivity()) { finished ->
