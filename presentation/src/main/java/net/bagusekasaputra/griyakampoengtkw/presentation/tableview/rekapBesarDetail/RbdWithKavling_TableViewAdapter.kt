@@ -4,6 +4,7 @@ import android.graphics.Typeface
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.TextView
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.content.ContextCompat
 import androidx.core.graphics.TypefaceCompat
@@ -20,7 +21,9 @@ import net.bagusekasaputra.griyakampoengtkw.presentation.databinding.TableRekapB
  * This adapter is specifically made for the table which has 2 row headers,
  * that is [No, Kavling].
 */
-class RbdWithKavling_TableViewAdapter: AbstractTableAdapter<RbdColumnHeader, RbdWithKavlingRowHeader, RbdCell>() {
+class RbdWithKavling_TableViewAdapter(
+    private val onCellTextCreated: (columnPosition: Int, cellTextView: TextView) -> Unit = { _, _ -> },
+): AbstractTableAdapter<RbdColumnHeader, RbdWithKavlingRowHeader, RbdCell>() {
 
     /**
      * Cell
@@ -53,6 +56,7 @@ class RbdWithKavling_TableViewAdapter: AbstractTableAdapter<RbdColumnHeader, Rbd
             Typeface.SERIF,
             Typeface.NORMAL
         )
+        onCellTextCreated(columnPosition, viewHolder.cellText)
 
         viewHolder.container.layoutParams.width = ConstraintLayout.LayoutParams.WRAP_CONTENT
         viewHolder.cellText.requestLayout()

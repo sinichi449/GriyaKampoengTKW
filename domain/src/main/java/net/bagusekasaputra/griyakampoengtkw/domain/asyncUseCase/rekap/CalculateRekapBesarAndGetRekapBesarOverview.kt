@@ -23,6 +23,7 @@ import net.bagusekasaputra.griyakampoengtkw.domain.entity.rekap.PembayaranWithNa
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.rekap.PeriodeRekap
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.rekap.RekapBesarDetail
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.rekap.RekapBesarOverview
+import net.bagusekasaputra.griyakampoengtkw.domain.entity.rekap.SisaPembayaran
 import net.bagusekasaputra.griyakampoengtkw.domain.repository.BiayaLainRepository
 import net.bagusekasaputra.griyakampoengtkw.domain.repository.BiayaMarketingRepository
 import net.bagusekasaputra.griyakampoengtkw.domain.repository.DataDiriRepository
@@ -91,7 +92,9 @@ class CalculateRekapBesarAndGetRekapBesarOverview(
                 var totalBiayaMarketing = 0L
 
                 // DATA BARU: Calculate for each Kavling and requested Periode
+                // DATA BARU: Sisa Pembayaran only in Data Baru
                 val mMapPembayaranWithNamaCostumerBaru = mutableMapOf<String, List<PembayaranWithNamaCostumer>?>()
+                val listSisaPembayaran = mutableListOf<SisaPembayaran>()
                 request.listKavling.forEach { kavling ->
                     _messageProgress.postValue("Memproses kavling $kavling ...")
                     val listPembayaranBaru = mapListPembayaranBaru?.get(kavling)?.filterPeriode(request.periodeRekap, request.startDate, request.endDate)
@@ -117,6 +120,15 @@ class CalculateRekapBesarAndGetRekapBesarOverview(
                     mMapPembayaranWithNamaCostumerBaru[kavling] = listPembayaranBaru?.toListPembayaranWithNamaCostumer(kavling, dataDiriBaru?.nama ?: "N/A")
                     mapFeeMarketingBaru?.set(kavling, feeMarketingBaru)
                     mapListBiayaMarketingBaru?.set(kavling, listBiayaMarketingBaru)
+
+                    if (!listPembayaranBaru.isNullOrEmpty()) {
+                        listSisaPembayaran.add(SisaPembayaran(
+                            kavling = kavling,
+                            namaCostumer = dataDiriBaru?.nama ?: "N/A",
+                            hargaKavling = hargaKavlingBaru ?: HargaKavling(kavling, "0", "0"),
+                            totalUangMasuk = totalPembayaranPerKavlingBaru,
+                        ))
+                    }
                 }
 
 
@@ -161,6 +173,7 @@ class CalculateRekapBesarAndGetRekapBesarOverview(
                         mapFeeMarketingRekapLama = mapFeeMarketingLama ?: mapOf(),
                         mapListBiayaMarketingRekapLama = mapListBiayaMarketingLama ?: mapOf(), // TODO
                         listBiayaLain = listBiayaLain ?: emptyList(),
+                        listSisaPembayaran = listSisaPembayaran,
                     ),
                 )
 

@@ -1,6 +1,7 @@
 package net.bagusekasaputra.griyakampoengtkw.presentation.fragment.rekap.detail
 
 import android.os.Bundle
+import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -8,17 +9,17 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import com.evrencoskun.tableview.TableView
 import dagger.hilt.android.AndroidEntryPoint
-import net.bagusekasaputra.griyakampoengtkw.domain.entity.HargaKavling
-import net.bagusekasaputra.griyakampoengtkw.domain.entity.Kavling
+import net.bagusekasaputra.griyakampoengtkw.domain.NumberUtil
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.rekap.SisaPembayaran
+import net.bagusekasaputra.griyakampoengtkw.domain.entity.rekap.SisaPembayaran.Companion.hitungTotal
 import net.bagusekasaputra.griyakampoengtkw.presentation.activities.RekapBesarDetailActivity
 import net.bagusekasaputra.griyakampoengtkw.presentation.databinding.FragmentRekapDetailSisaPembayaranBinding
+import net.bagusekasaputra.griyakampoengtkw.presentation.fragment.rekap.RekapType
 import net.bagusekasaputra.griyakampoengtkw.presentation.tableview.rekapBesarDetail.RbdCell
 import net.bagusekasaputra.griyakampoengtkw.presentation.tableview.rekapBesarDetail.RbdColumnHeader
 import net.bagusekasaputra.griyakampoengtkw.presentation.tableview.rekapBesarDetail.RbdWithKavlingRowHeader
 import net.bagusekasaputra.griyakampoengtkw.presentation.tableview.rekapBesarDetail.RbdWithKavling_TableViewAdapter
 import net.bagusekasaputra.griyakampoengtkw.presentation.viewmodel.RekapViewModel
-import kotlin.random.Random
 
 @AndroidEntryPoint
 class RekapDetailSisaPembayaranFragment : Fragment() {
@@ -46,34 +47,24 @@ class RekapDetailSisaPembayaranFragment : Fragment() {
     private fun setupViewModel() {
         viewModel.rekapBesarDetailLive.observe(requireActivity()) {
             it?.also { rekapBesarDetail ->
-                // TODO
+                binding.tableviewRekapSisaPembayaran.setAllItems(rekapBesarDetail.listSisaPembayaran)
+
+                val total = rekapBesarDetail.listSisaPembayaran.hitungTotal()
+                binding.tvTotalRekap.text = "Rp. ${NumberUtil.formatLongToString(total)}"
+
+                (requireActivity() as RekapBesarDetailActivity)
+                    .setToolbarTitle(RekapType.SisaPembayaran, total)
             }
         }
-
-        val mockData = mutableListOf<SisaPembayaran>().run {
-            Kavling.getGriyaKavlingList().forEachIndexed { index, kavling ->
-                val randomUangMasuk = Random.nextLong(from = 1, 10) * 1_000_000L
-
-                add(SisaPembayaran(
-                    kavling,
-                    namaCostumer = "Costumer ${index.plus(1)}",
-                    hargaKavling = HargaKavling(
-                        kavling,
-                        "230,000,000",
-                        tambahanLuas = "50,000,000"
-                    ),
-                    totalUangMasuk = randomUangMasuk,
-                ))
-            }
-
-            this
-        }
-        binding.tableviewRekapSisaPembayaran.setAllItems(mockData)
-        binding.tableviewRekapSisaPembayaranDataLama.setAllItems(mockData)
     }
 
     private fun TableView.setAllItems(listSisaPembayaran: List<SisaPembayaran>) {
-        val adapter = RbdWithKavling_TableViewAdapter()
+        val adapter = RbdWithKavling_TableViewAdapter(onCellTextCreated = { columnPosition, cellTextView ->
+            when (columnPosition) {
+                0 -> cellTextView.gravity = Gravity.START // Nama
+                else -> cellTextView.gravity = Gravity.CENTER
+            }
+        })
         setAdapter(adapter)
 
         val columnHeader = listOf(
@@ -114,19 +105,22 @@ class RekapDetailSisaPembayaranFragment : Fragment() {
         setColumnWidth(2, 350) // Uang Masuk
         setColumnWidth(3, 350) // Harga Kavling
         setColumnWidth(4, 350) // Tambah Luasan
-        setColumnWidth(5, 300) // Persentase
+        setColumnWidth(5, 250) // Persentase
     }
 
     private fun setupFabScroll() {
-        val dataLamaIncluded = viewModel.rekapDetailTransportLive.value?.includeDataLama
-
-        if (dataLamaIncluded == true) {
-            (requireActivity() as RekapBesarDetailActivity)
-                .setFabScrollingBehavior(
-                    scrollView = binding.root,
-                    upwardView = binding.tvInfoDataBaru,
-                    downwardView = binding.tvInfoDataLama,
-                )
-        }
+        /**
+         * Temporarily disabled due to costumer's request
+         */
+//        val dataLamaIncluded = viewModel.rekapDetailTransportLive.value?.includeDataLama
+//
+//        if (dataLamaIncluded == true) {
+//            (requireActivity() as RekapBesarDetailActivity)
+//                .setFabScrollingBehavior(
+//                    scrollView = binding.root,
+//                    upwardView = binding.tvInfoDataBaru,
+//                    downwardView = binding.tvInfoDataLama,
+//                )
+//        }
     }
 }

@@ -18,6 +18,7 @@ data class RekapBesarDetail(
 
     // Agnostic :V
     val listBiayaLain: List<BiayaLain>?,
+    val listSisaPembayaran: List<SisaPembayaran>,
 ) {
 
     companion object {

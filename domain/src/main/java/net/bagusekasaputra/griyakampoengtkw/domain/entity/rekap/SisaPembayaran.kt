@@ -31,4 +31,16 @@ data class SisaPembayaran(
     fun getParsedSisaBelumDibayar(): String {
         return NumberUtil.formatLongToString(sisaBelumDibayar)
     }
+
+    companion object {
+        fun List<SisaPembayaran>?.hitungTotal(): Long {
+            var mTotal = 0L
+
+            this?.forEach {
+                mTotal += it.sisaBelumDibayar
+            }
+
+            return mTotal
+        }
+    }
 }

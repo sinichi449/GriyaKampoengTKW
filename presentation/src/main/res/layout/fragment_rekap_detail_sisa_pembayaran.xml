@@ -13,13 +13,54 @@
         android:layout_height="wrap_content"
         android:padding="16dp">
 
+        <com.google.android.material.card.MaterialCardView
+            android:id="@+id/card_warning_not_included_data_lama"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:cardCornerRadius="4dp"
+            app:cardBackgroundColor="#FF6840">
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:padding="16dp">
+
+                <ImageView
+                    android:id="@+id/imgInfo_warning"
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    android:src="@drawable/baseline_warning_24"
+                    app:tint="@color/abang"/>
+
+                <com.google.android.material.textview.MaterialTextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    app:layout_constraintStart_toEndOf="@id/imgInfo_warning"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    android:text="Pembayaran tidak termasuk data lama!"
+                    android:layout_marginStart="16dp"
+                    android:textColor="@color/white"
+                    style="@style/TextAppearance.AppCompat.Body1"/>
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+        </com.google.android.material.card.MaterialCardView>
+
         <com.google.android.material.textview.MaterialTextView
             android:id="@+id/tvInfo_data_baru"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/card_warning_not_included_data_lama"
             android:text="Data Baru"
             android:visibility="gone"
             style="@style/TextAppearance.MaterialComponents.Headline5"/>
@@ -73,78 +114,6 @@
             android:gravity="end"
             android:textSize="@dimen/form_pembayaran_title_text_size"
             style="@style/TextAppearance.MaterialComponents.Subtitle1" />
-
-
-        <androidx.constraintlayout.widget.ConstraintLayout
-            android:id="@+id/layout_data_lama"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/tvInfo_total_rekap"
-            android:layout_marginTop="48dp"
-            android:visibility="gone">
-
-            <com.google.android.material.textview.MaterialTextView
-                android:id="@+id/tvInfo_data_lama"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-                android:text="Data Lama"
-                style="@style/TextAppearance.MaterialComponents.Headline5"/>
-
-            <com.evrencoskun.tableview.TableView
-                android:id="@+id/tableview_rekap_sisa_pembayaran_data_lama"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/tvInfo_data_lama"
-                android:layout_marginTop="16dp"
-                app:separator_color="@color/black"
-                app:show_horizontal_separator="true"
-                app:show_vertical_separator="true"
-                app:column_header_height="@dimen/table_pembayaran_column_header_height"
-                app:row_header_width="@dimen/table_rekap_double_row_header_width"/>
-
-            <com.google.android.material.divider.MaterialDivider
-                android:id="@+id/divider_rekap_total_data_lama"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/tableview_rekap_sisa_pembayaran_data_lama"
-                android:layout_marginTop="24dp"/>
-
-            <com.google.android.material.textview.MaterialTextView
-                android:id="@+id/tvInfo_total_rekap_data_lama"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintEnd_toStartOf="@id/tv_total_rekap_data_lama"
-                app:layout_constraintTop_toBottomOf="@id/divider_rekap_total_data_lama"
-                android:layout_marginTop="8dp"
-                android:layout_marginHorizontal="8dp"
-                android:text="Total"
-                style="@style/TextAppearance.MaterialComponents.Headline6"
-                android:textSize="@dimen/form_pembayaran_title_text_size"/>
-
-            <com.google.android.material.textview.MaterialTextView
-                android:id="@+id/tv_total_rekap_data_lama"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toEndOf="@id/tvInfo_total_rekap_data_lama"
-                app:layout_constraintTop_toTopOf="@id/tvInfo_total_rekap_data_lama"
-                app:layout_constraintBottom_toBottomOf="@id/tvInfo_total_rekap_data_lama"
-                android:layout_marginHorizontal="8dp"
-                android:text="Rp. 0"
-                android:gravity="end"
-                android:textSize="@dimen/form_pembayaran_title_text_size"
-                style="@style/TextAppearance.MaterialComponents.Subtitle1" />
-
-        </androidx.constraintlayout.widget.ConstraintLayout>
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
