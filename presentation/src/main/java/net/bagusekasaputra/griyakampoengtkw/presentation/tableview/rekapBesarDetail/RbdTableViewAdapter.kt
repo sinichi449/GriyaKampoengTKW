@@ -13,22 +13,20 @@ import com.evrencoskun.tableview.adapter.recyclerview.holder.AbstractViewHolder
 import net.bagusekasaputra.griyakampoengtkw.presentation.R
 import net.bagusekasaputra.griyakampoengtkw.presentation.databinding.TableRekapBesarDetailCellBinding
 import net.bagusekasaputra.griyakampoengtkw.presentation.databinding.TableRekapBesarDetailColumnHeaderBinding
-import net.bagusekasaputra.griyakampoengtkw.presentation.databinding.TableRekapBesarDetailWithKavlingCornerViewBinding
-import net.bagusekasaputra.griyakampoengtkw.presentation.databinding.TableRekapBesarDetailWithKavlingRowHeaderBinding
+import net.bagusekasaputra.griyakampoengtkw.presentation.databinding.TableRekapBesarDetailCornerViewBinding
+import net.bagusekasaputra.griyakampoengtkw.presentation.databinding.TableRekapBesarDetailRowHeaderBinding
 
 /**
  * RBD = Rekap Besar Detail
- * This adapter is specifically made for the table which has 2 row headers,
- * that is [No, Kavling].
-*/
-class RbdWithKavling_TableViewAdapter(
+ */
+class RbdTableViewAdapter(
     private val onCellTextCreated: (columnPosition: Int, cellTextView: TextView) -> Unit = { _, _ -> },
-): AbstractTableAdapter<RbdColumnHeader, RbdWithKavlingRowHeader, RbdCell>() {
+): AbstractTableAdapter<RbdColumnHeader, RbdRowHeader, RbdCell>() {
 
     /**
      * Cell
      */
-    private class RbdWithKavling_CellViewHolder(binding: TableRekapBesarDetailCellBinding): AbstractViewHolder(binding.root) {
+    private class RbdCellViewHolder(binding: TableRekapBesarDetailCellBinding): AbstractViewHolder(binding.root) {
         val container = binding.root
         val cellText = binding.tvTumCell
     }
@@ -36,7 +34,7 @@ class RbdWithKavling_TableViewAdapter(
     override fun onCreateCellViewHolder(parent: ViewGroup, viewType: Int): AbstractViewHolder {
         return LayoutInflater.from(parent.context).let { layoutInflater ->
             TableRekapBesarDetailCellBinding.inflate(layoutInflater, parent, false).let { binding ->
-                RbdWithKavling_CellViewHolder(binding)
+                RbdCellViewHolder(binding)
             }
         }
     }
@@ -47,7 +45,7 @@ class RbdWithKavling_TableViewAdapter(
         columnPosition: Int,
         rowPosition: Int,
     ) {
-        val viewHolder = holder as RbdWithKavling_CellViewHolder
+        val viewHolder = holder as RbdCellViewHolder
 
         viewHolder.cellText.text = cellItemModel?.text ?: "-"
 
@@ -67,7 +65,7 @@ class RbdWithKavling_TableViewAdapter(
      * Column Header
      */
 
-    private class RbdWithKavling_ColumnHeaderViewHolder(binding: TableRekapBesarDetailColumnHeaderBinding): AbstractViewHolder(binding.root) {
+    private class RbdColumnHeaderViewHolder(binding: TableRekapBesarDetailColumnHeaderBinding): AbstractViewHolder(binding.root) {
         val container = binding.root
         val columnHeaderText = binding.tvTumColumnHeader
 
@@ -91,7 +89,7 @@ class RbdWithKavling_TableViewAdapter(
     ): AbstractViewHolder {
         return LayoutInflater.from(parent.context).let { layoutInflater ->
             TableRekapBesarDetailColumnHeaderBinding.inflate(layoutInflater, parent, false).let { binding ->
-                RbdWithKavling_ColumnHeaderViewHolder(binding)
+                RbdColumnHeaderViewHolder(binding)
             }
         }
     }
@@ -101,7 +99,7 @@ class RbdWithKavling_TableViewAdapter(
         columnHeaderItemModel: RbdColumnHeader?,
         columnPosition: Int,
     ) {
-        val viewHolder = holder as RbdWithKavling_ColumnHeaderViewHolder
+        val viewHolder = holder as RbdColumnHeaderViewHolder
 
         viewHolder.columnHeaderText.text = columnHeaderItemModel?.text ?: "-"
 
@@ -114,38 +112,35 @@ class RbdWithKavling_TableViewAdapter(
      * Row Header
      */
 
-    private class RbdWithKavling_RowHeaderViewHolder(binding: TableRekapBesarDetailWithKavlingRowHeaderBinding): AbstractViewHolder(binding.root) {
-        val tvNomor = binding.tvTumRowHeaderNomor
-        val tvKavling = binding.tvTumRowHeaderKavling
+    private class RbdRowHeaderViewHolder(binding: TableRekapBesarDetailRowHeaderBinding): AbstractViewHolder(binding.root) {
+        val tvNomor = binding.tvRhNomor
     }
 
     override fun onCreateRowHeaderViewHolder(parent: ViewGroup, viewType: Int): AbstractViewHolder {
         return LayoutInflater.from(parent.context).let { layoutInflater ->
-            TableRekapBesarDetailWithKavlingRowHeaderBinding.inflate(layoutInflater, parent, false).let { binding ->
-                RbdWithKavling_RowHeaderViewHolder(binding)
+            TableRekapBesarDetailRowHeaderBinding.inflate(layoutInflater, parent, false).let { binding ->
+                RbdRowHeaderViewHolder(binding)
             }
         }
     }
 
     override fun onBindRowHeaderViewHolder(
         holder: AbstractViewHolder,
-        rowHeaderItemModel: RbdWithKavlingRowHeader?,
+        rowHeaderItemModel: RbdRowHeader?,
         rowPosition: Int,
     ) {
-        val viewHolder = holder as RbdWithKavling_RowHeaderViewHolder
+        val viewHolder = holder as RbdRowHeaderViewHolder
 
-        viewHolder.tvNomor.text = rowHeaderItemModel?.nomor ?: "-"
-        viewHolder.tvKavling.text = rowHeaderItemModel?.kavling ?: "-"
+        viewHolder.tvNomor.text = rowHeaderItemModel?.text ?: "-"
     }
 
 
     /**
      * Corner
      */
-
     override fun onCreateCornerView(parent: ViewGroup): View {
         return LayoutInflater.from(parent.context).let { layoutInflater ->
-            TableRekapBesarDetailWithKavlingCornerViewBinding.inflate(layoutInflater, parent, false).let { binding ->
+            TableRekapBesarDetailCornerViewBinding.inflate(layoutInflater, parent, false).let { binding ->
                 binding.root
             }
         }

@@ -57,6 +57,7 @@ class RekapBesarDetailActivity : AppCompatActivity() {
             RekapType.SisaPembayaran -> R.id.nav_rekap_detail_sisa_pembayaran
             RekapType.FeeMarketing -> R.id.nav_rekap_detail_fee_marketing
             RekapType.BiayaMarketing -> R.id.nav_rekap_detail_biaya_marketing
+            RekapType.BiayaLain -> R.id.nav_rekap_detail_biaya_lain
             else -> R.id.nav_rekap_detail_sisa_pembayaran
         }, bundleForFragments)
 
@@ -112,6 +113,7 @@ class RekapBesarDetailActivity : AppCompatActivity() {
                 RekapType.SisaPembayaran -> "Sisa Pembayaran"
                 RekapType.FeeMarketing -> "Fee Marketing"
                 RekapType.BiayaMarketing -> "Biaya Marketing"
+                RekapType.BiayaLain -> "Biaya Lain-lain"
                 else -> "Unknown/NULL Rekap Type"
             } + " - $parsedTotal"
         }

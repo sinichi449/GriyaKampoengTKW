@@ -26,6 +26,10 @@
         android:name="net.bagusekasaputra.griyakampoengtkw.presentation.fragment.rekap.detail.RekapDetailBiayaMarketingFragment"
         android:label="fragment_rekap_detail_biaya_marketing"
         tools:layout="@layout/fragment_rekap_detail_biaya_marketing" />
+    <fragment
+        android:id="@+id/nav_rekap_detail_biaya_lain"
+        android:name="net.bagusekasaputra.griyakampoengtkw.presentation.fragment.rekap.detail.RekapDetailBiayaLainFragment"
+        android:label="RekapDetailBiayaLainFragment" />
 
 
 </navigation>

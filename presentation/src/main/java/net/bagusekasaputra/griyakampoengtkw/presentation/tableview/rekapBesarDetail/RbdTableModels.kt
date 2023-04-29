@@ -12,6 +12,10 @@ data class RbdWithKavlingRowHeader(
     val kavling: String,
 )
 
+data class RbdRowHeader(
+    val text: String,
+)
+
 data class RbdCell(
     val text: String,
 )
