@@ -112,8 +112,8 @@ class ImageSprRepositoryImpl(
     override fun getByKavlingKode(kavlingKode: String): Flow<Result<ImageSpr?>> {
         return callbackFlow {
             getImageSpr(kavlingKode, onSuccess = {
-                if (it != null) Result.success(mapImageSpr(it, contentResolver))
-                else Result.success(null)
+                if (it != null) trySendBlocking(Result.success(mapImageSpr(it, contentResolver)))
+                else trySendBlocking(Result.success(null))
             })
 
             awaitClose {  }
