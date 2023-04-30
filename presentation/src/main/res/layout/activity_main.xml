@@ -1,152 +1,70 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.drawerlayout.widget.DrawerLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/drawer_main"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".activities.MainActivity">
+    tools:context=".activities.MainActivity"
+    android:fitsSystemWindows="true">
 
-    <androidx.drawerlayout.widget.DrawerLayout
-        android:id="@+id/drawer_main"
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:fitsSystemWindows="true">
+        android:layout_height="match_parent">
 
-        <androidx.coordinatorlayout.widget.CoordinatorLayout
+        <com.google.android.material.appbar.AppBarLayout
+            android:id="@+id/appbar_main"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:clipChildren="false">
+            android:layout_height="wrap_content"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            android:background="@color/primaryColor"
+            app:elevation="0dp">
 
-            <androidx.fragment.app.FragmentContainerView
-                android:id="@+id/navHostFragment_main"
-                android:name="androidx.navigation.fragment.NavHostFragment"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                app:defaultNavHost="true"
-                app:navGraph="@navigation/nav_graph_main_activity"
-                app:layout_behavior="com.google.android.material.appbar.AppBarLayout$ScrollingViewBehavior"/>
-
-            <com.google.android.material.appbar.AppBarLayout
-                android:id="@+id/appbar_main"
+            <com.google.android.material.appbar.MaterialToolbar
+                android:id="@+id/toolbar_main"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                android:background="@color/primaryColor"
-                app:liftOnScroll="true">
+                app:title="Site Plan"
+                app:titleCentered="true"
+                app:titleTextColor="@color/primaryTextColor"
+                app:navigationIcon="@drawable/baseline_menu_24"
+                app:navigationIconTint="@color/black"
+                android:theme="@style/ThemeOverlay.MaterialComponents.Toolbar.Primary"
+                app:menu="@menu/menu_main"/>
 
-                <com.google.android.material.appbar.MaterialToolbar
-                    android:id="@+id/toolbar_main"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintTop_toTopOf="parent"
-                    app:layout_scrollFlags="scroll|enterAlways|snap"
-                    app:title="Site Plan"
-                    app:titleCentered="true"
-                    app:titleTextColor="@color/primaryTextColor"
-                    app:navigationIcon="@drawable/baseline_menu_24"
-                    app:navigationIconTint="@color/black"
-                    android:theme="@style/ThemeOverlay.MaterialComponents.Toolbar.Primary"
-                    app:menu="@menu/menu_main"
-                    android:elevation="0dp"/>
+            <include
+                android:id="@+id/connectivity_status"
+                layout="@layout/layout_connectivity_status"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:visibility="gone"/>
 
-                <include
-                    android:id="@+id/connectivity_status"
-                    layout="@layout/layout_connectivity_status"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    app:layout_constraintTop_toBottomOf="@id/card_tab"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    android:visibility="gone"/>
+        </com.google.android.material.appbar.AppBarLayout>
 
-            </com.google.android.material.appbar.AppBarLayout>
+        <androidx.fragment.app.FragmentContainerView
+            android:id="@+id/navHostFragment_main"
+            android:name="androidx.navigation.fragment.NavHostFragment"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            app:defaultNavHost="true"
+            app:navGraph="@navigation/nav_graph_main_activity"
+            app:layout_constraintTop_toBottomOf="@id/appbar_main"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"/>
 
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
-
-        </androidx.coordinatorlayout.widget.CoordinatorLayout>
-
-        <com.google.android.material.navigation.NavigationView
-            android:id="@+id/navView_main"
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:layout_gravity="start"
-            app:menu="@menu/menu_drawer_main"
-            android:theme="@style/NavigationViewTheme"/>
-
-    </androidx.drawerlayout.widget.DrawerLayout>
-
-    <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
-        android:id="@+id/fab_actions"
+    <com.google.android.material.navigation.NavigationView
+        android:id="@+id/navView_main"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        android:layout_marginEnd="24dp"
-        android:layout_marginBottom="24dp"
-        android:text="Tambah"
-        app:icon="@drawable/ic_baseline_add_24"
-        app:elevation="16dp"
-        android:theme="@style/Theme.GriyaKampung.BlackWhite"/>
+        android:layout_height="match_parent"
+        android:fitsSystemWindows="true"
+        android:layout_gravity="start"
+        app:menu="@menu/menu_drawer_main"
+        style="@style/NavigationViewTheme"/>
 
-    <com.google.android.material.floatingactionbutton.FloatingActionButton
-        android:id="@+id/fab_add_kavling"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:src="@drawable/ic_baseline_kavling_24"
-        app:layout_constraintBottom_toTopOf="@id/fab_actions"
-        app:layout_constraintEnd_toEndOf="@id/fab_actions"
-        app:fabSize="normal"
-        android:layout_marginBottom="24dp"
-        app:elevation="16dp"
-        android:theme="@style/Theme.GriyaKampung.BlackWhite"
-        android:visibility="gone"/>
-
-    <com.google.android.material.floatingactionbutton.FloatingActionButton
-        android:id="@+id/fab_add_block"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="24dp"
-        app:fabSize="normal"
-        app:layout_constraintBottom_toTopOf="@id/fab_add_kavling"
-        app:layout_constraintEnd_toEndOf="@id/fab_add_kavling"
-        app:layout_constraintStart_toStartOf="@id/fab_add_kavling"
-        android:src="@drawable/ic_baseline_block_24"
-        app:elevation="16dp"
-        android:theme="@style/Theme.GriyaKampung.BlackWhite"
-        android:visibility="gone"/>
-
-
-    <com.google.android.material.floatingactionbutton.FloatingActionButton
-        android:id="@+id/fab_tambah_biaya_lain"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:src="@drawable/ic_baseline_create_new_folder_24"
-        app:layout_constraintBottom_toTopOf="@id/fab_actions"
-        app:layout_constraintEnd_toEndOf="@id/fab_actions"
-        app:fabSize="normal"
-        android:layout_marginBottom="24dp"
-        app:elevation="16dp"
-        android:theme="@style/Theme.GriyaKampung.BlackWhite"
-        android:visibility="gone"/>
-
-    <com.google.android.material.floatingactionbutton.FloatingActionButton
-        android:id="@+id/fab_edit_biaya_lain"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="24dp"
-        app:fabSize="normal"
-        app:layout_constraintBottom_toTopOf="@id/fab_tambah_biaya_lain"
-        app:layout_constraintEnd_toEndOf="@id/fab_tambah_biaya_lain"
-        app:layout_constraintStart_toStartOf="@id/fab_tambah_biaya_lain"
-        android:src="@drawable/ic_baseline_edit_24"
-        app:elevation="16dp"
-        android:theme="@style/Theme.GriyaKampung.BlackWhite"
-        android:visibility="gone"/>
-
-
-</androidx.constraintlayout.widget.ConstraintLayout>
+</androidx.drawerlayout.widget.DrawerLayout>
 

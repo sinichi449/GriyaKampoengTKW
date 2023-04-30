@@ -10,7 +10,6 @@ import androidx.fragment.app.activityViewModels
 import com.google.android.material.tabs.TabLayout
 import dagger.hilt.android.AndroidEntryPoint
 import net.bagusekasaputra.griyakampoengtkw.presentation.R
-import net.bagusekasaputra.griyakampoengtkw.presentation.activities.MainActivity
 import net.bagusekasaputra.griyakampoengtkw.presentation.adapter.viewpager.ManagementKavlingViewPagerAdapter
 import net.bagusekasaputra.griyakampoengtkw.presentation.databinding.FragmentManagementKavlingBinding
 import net.bagusekasaputra.griyakampoengtkw.presentation.fragment.rekap.RekapFragment
@@ -60,12 +59,12 @@ class ManagementKavlingFragment : Fragment() {
             it?.let { tabSelected ->
                 val tabRekap = 1
 
-                setVisibilityFabActionsMainActivity(
-                    if (tabSelected == tabRekap) View.INVISIBLE
+                binding.fabActions.visibility = if (tabSelected == tabRekap) View.INVISIBLE
                     else View.VISIBLE
-                )
             }
         }
+
+        binding.fabActions.shrink()
     }
 
     private fun setupViewPager() {
@@ -93,12 +92,6 @@ class ManagementKavlingFragment : Fragment() {
 
         // Disable FloatingActionButton on RekapFragment
         binding.tabLayoutManagementKavling.addOnTabSelectedListener(tabSelectedListener)
-    }
-
-
-    private fun setVisibilityFabActionsMainActivity(visibility: Int) {
-        (requireActivity() as MainActivity).getFabActions()
-            .visibility = visibility
     }
 
     override fun onDestroy() {

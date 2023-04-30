@@ -18,7 +18,6 @@ import androidx.navigation.ui.navigateUp
 import androidx.navigation.ui.onNavDestinationSelected
 import androidx.navigation.ui.setupWithNavController
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
-import com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
 import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
 import net.bagusekasaputra.griyakampoengtkw.domain.DataMode
@@ -99,20 +98,11 @@ class MainActivity : AppCompatActivity() {
 
         checkUpdate()
 
-        binding.fabActions.shrink()
+
     }
 
     override fun onSupportNavigateUp(): Boolean {
         return navController.navigateUp(appBarConfiguration)
-    }
-
-    private fun setupNavigationDrawer() {
-//        mDrawerToggle = ActionBarDrawerToggle(this,
-//            binding.drawerMain,
-//            binding.toolbarMain,
-//            R.string.open_drawer_desc,
-//            R.string.close_drawer_desc,
-//        )
     }
 
     private fun checkUpdate() {
@@ -160,10 +150,6 @@ class MainActivity : AppCompatActivity() {
         startActivity(intent)
     }
 
-    fun getFabActions(): ExtendedFloatingActionButton {
-        return binding.fabActions
-    }
-
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
         menuInflater.inflate(R.menu.menu_main, menu)
         return super.onCreateOptionsMenu(menu)
@@ -173,16 +159,4 @@ class MainActivity : AppCompatActivity() {
         return item.onNavDestinationSelected(navController) ||
                 super.onOptionsItemSelected(item)
     }
-
-//    override fun onPostCreate(savedInstanceState: Bundle?, persistentState: PersistableBundle?) {
-//        super.onPostCreate(savedInstanceState, persistentState)
-//
-//        mDrawerToggle.syncState()
-//    }
-//
-//    override fun onConfigurationChanged(newConfig: Configuration) {
-//        super.onConfigurationChanged(newConfig)
-//
-//        mDrawerToggle.syncState()
-//    }
 }
