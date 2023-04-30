@@ -22,4 +22,7 @@
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="notification_pengingat_content">Lorem ipsum dolor sit amet, consectetur adipiscing elit.</string>
+
+    <string name="open_drawer_desc">Open Drawer</string>
+    <string name="close_drawer_desc">Close Drawer</string>
 </resources>

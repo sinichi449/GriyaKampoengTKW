@@ -6,78 +6,78 @@
     android:layout_height="match_parent"
     tools:context=".activities.MainActivity">
 
-    <androidx.coordinatorlayout.widget.CoordinatorLayout
+    <androidx.drawerlayout.widget.DrawerLayout
+        android:id="@+id/drawer_main"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:clipChildren="false">
+        android:fitsSystemWindows="true">
 
-        <com.google.android.material.appbar.AppBarLayout
-            android:id="@+id/appbar_main"
+        <androidx.coordinatorlayout.widget.CoordinatorLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            android:background="@color/primaryColor"
-            app:liftOnScroll="true">
+            android:layout_height="match_parent"
+            android:clipChildren="false">
 
-            <com.google.android.material.appbar.MaterialToolbar
-                android:id="@+id/toolbar_main"
+            <androidx.fragment.app.FragmentContainerView
+                android:id="@+id/navHostFragment_main"
+                android:name="androidx.navigation.fragment.NavHostFragment"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                app:defaultNavHost="true"
+                app:navGraph="@navigation/nav_graph_main_activity"
+                app:layout_behavior="com.google.android.material.appbar.AppBarLayout$ScrollingViewBehavior"/>
+
+            <com.google.android.material.appbar.AppBarLayout
+                android:id="@+id/appbar_main"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
-                app:layout_scrollFlags="scroll|enterAlways|snap"
-                app:title="Site Plan"
-                app:titleCentered="true"
-                app:titleTextColor="@color/primaryTextColor"
-                app:navigationIcon="@drawable/settings_24px"
-                app:navigationIconTint="@color/black"
-                android:theme="@style/ThemeOverlay.MaterialComponents.Toolbar.Primary"
-                app:menu="@menu/menu_main"
-                android:elevation="0dp"/>
-
-            <com.google.android.material.tabs.TabLayout
-                android:id="@+id/tab_layout_main"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/appbar_main"
                 android:background="@color/primaryColor"
-                app:tabBackground="@color/primaryColor"
-                app:tabTextColor="@color/primaryTextColor"
-                app:tabIndicatorHeight="2dp"
-                app:tabIndicatorColor="@color/black"
-                app:tabIconTint="@color/black"
-                app:tabMode="fixed"/>
+                app:liftOnScroll="true">
 
-            <include
-                android:id="@+id/connectivity_status"
-                layout="@layout/layout_connectivity_status"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                app:layout_constraintTop_toBottomOf="@id/card_tab"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                android:visibility="gone"/>
+                <com.google.android.material.appbar.MaterialToolbar
+                    android:id="@+id/toolbar_main"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_scrollFlags="scroll|enterAlways|snap"
+                    app:title="Site Plan"
+                    app:titleCentered="true"
+                    app:titleTextColor="@color/primaryTextColor"
+                    app:navigationIcon="@drawable/baseline_menu_24"
+                    app:navigationIconTint="@color/black"
+                    android:theme="@style/ThemeOverlay.MaterialComponents.Toolbar.Primary"
+                    app:menu="@menu/menu_main"
+                    android:elevation="0dp"/>
 
-        </com.google.android.material.appbar.AppBarLayout>
+                <include
+                    android:id="@+id/connectivity_status"
+                    layout="@layout/layout_connectivity_status"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    app:layout_constraintTop_toBottomOf="@id/card_tab"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    android:visibility="gone"/>
+
+            </com.google.android.material.appbar.AppBarLayout>
 
 
 
-        <androidx.viewpager.widget.ViewPager
-            android:id="@+id/viewpager_main"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/connectivity_status"
-            app:layout_behavior="com.google.android.material.appbar.AppBarLayout$ScrollingViewBehavior" />
+        </androidx.coordinatorlayout.widget.CoordinatorLayout>
 
-    </androidx.coordinatorlayout.widget.CoordinatorLayout>
+        <com.google.android.material.navigation.NavigationView
+            android:id="@+id/navView_main"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_gravity="start"
+            app:menu="@menu/menu_drawer_main"
+            android:theme="@style/NavigationViewTheme"/>
+
+    </androidx.drawerlayout.widget.DrawerLayout>
 
     <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
         android:id="@+id/fab_actions"

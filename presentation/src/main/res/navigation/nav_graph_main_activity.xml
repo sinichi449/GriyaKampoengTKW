@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/nav_graph_management_kavling"
+    app:startDestination="@id/nav_management_kavling">
+    <fragment
+        android:id="@+id/nav_management_kavling"
+        android:name="net.bagusekasaputra.griyakampoengtkw.presentation.fragment.ManagementKavlingFragment"
+        android:label="Management Kavling"
+        tools:layout="@layout/fragment_management_kavling" />
+    <fragment
+        android:id="@+id/nav_uang_masuk_virtual"
+        android:name="net.bagusekasaputra.griyakampoengtkw.presentation.fragment.UangMasukVirtualFragment"
+        android:label="Uang Masuk Virtual"
+        tools:layout="@layout/fragment_uang_masuk_virtual" />
+    <activity
+        android:id="@+id/nav_pengaturan"
+        android:name="net.bagusekasaputra.griyakampoengtkw.presentation.activities.SettingsActivity"
+        android:label="SettingsActivity" />
+</navigation>

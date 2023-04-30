@@ -5,24 +5,25 @@ import android.content.SharedPreferences
 import android.net.Uri
 import android.os.Bundle
 import android.view.Menu
+import android.view.MenuItem
 import android.view.View
 import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.content.ContextCompat
 import androidx.core.content.edit
+import androidx.navigation.NavController
+import androidx.navigation.fragment.NavHostFragment
+import androidx.navigation.ui.AppBarConfiguration
+import androidx.navigation.ui.navigateUp
+import androidx.navigation.ui.onNavDestinationSelected
+import androidx.navigation.ui.setupWithNavController
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
 import com.google.android.material.snackbar.Snackbar
-import com.google.android.material.tabs.TabLayout
 import dagger.hilt.android.AndroidEntryPoint
 import net.bagusekasaputra.griyakampoengtkw.domain.DataMode
 import net.bagusekasaputra.griyakampoengtkw.presentation.R
-import net.bagusekasaputra.griyakampoengtkw.presentation.adapter.viewpager.MainViewPagerAdapter
 import net.bagusekasaputra.griyakampoengtkw.presentation.databinding.ActivityMainBinding
-import net.bagusekasaputra.griyakampoengtkw.presentation.fragment.BiayaLainFragment
-import net.bagusekasaputra.griyakampoengtkw.presentation.fragment.KavlingFragment
-import net.bagusekasaputra.griyakampoengtkw.presentation.fragment.rekap.RekapFragment
-import net.bagusekasaputra.griyakampoengtkw.presentation.logEvent
 import net.bagusekasaputra.griyakampoengtkw.presentation.util.GriyaNodes
 import net.bagusekasaputra.griyakampoengtkw.presentation.viewmodel.BiayaLainViewModel
 import net.bagusekasaputra.griyakampoengtkw.presentation.viewmodel.MainViewModel
@@ -39,28 +40,12 @@ class MainActivity : AppCompatActivity() {
     private val viewModel: MainViewModel by viewModels()
     private val biayaLainViewModel: BiayaLainViewModel by viewModels()
 
+    private lateinit var navController: NavController
+    private lateinit var appBarConfiguration: AppBarConfiguration
+
     // SharedPreferences to load the user settings
     @Inject
     lateinit var sharedPrefs: SharedPreferences
-
-
-    // Hide fabs on Report tabs
-    private val tabSelectedListener = object : TabLayout.OnTabSelectedListener {
-        override fun onTabSelected(tab: TabLayout.Tab?) {
-            logEvent("Tab selected -> ${tab?.position}")
-
-            viewModel.tabSelectedLive.value = tab?.position
-        }
-
-        override fun onTabUnselected(tab: TabLayout.Tab?) {
-            logEvent("Tab unselected -> ${tab?.position}")
-        }
-
-        override fun onTabReselected(tab: TabLayout.Tab?) {
-            logEvent("Tab reselected -> ${tab?.position}")
-        }
-
-    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -68,8 +53,21 @@ class MainActivity : AppCompatActivity() {
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        // Setup toolbar
+        navController = (supportFragmentManager.findFragmentById(R.id.navHostFragment_main)
+                as NavHostFragment).navController
+        appBarConfiguration = AppBarConfiguration(
+            topLevelDestinationIds = setOf(
+                R.id.nav_management_kavling,
+                R.id.nav_uang_masuk_virtual,
+                R.id.nav_pengaturan,
+            ),
+            drawerLayout = binding.drawerMain,
+        )
+
+        binding.toolbarMain.setupWithNavController(navController, appBarConfiguration)
         setSupportActionBar(binding.toolbarMain)
+
+        binding.navViewMain?.setupWithNavController(navController)
 
         // Connectivity check
         val deviceOnline = intent.getBooleanExtra(GriyaNodes.INTENT_IS_ONLINE, true)
@@ -99,9 +97,25 @@ class MainActivity : AppCompatActivity() {
             binding.connectivityStatus.constraintConnectivity.visibility = View.VISIBLE
         }
 
-        // For setup the fabs
-        setupViewModel()
+        checkUpdate()
 
+        binding.fabActions.shrink()
+    }
+
+    override fun onSupportNavigateUp(): Boolean {
+        return navController.navigateUp(appBarConfiguration)
+    }
+
+    private fun setupNavigationDrawer() {
+//        mDrawerToggle = ActionBarDrawerToggle(this,
+//            binding.drawerMain,
+//            binding.toolbarMain,
+//            R.string.open_drawer_desc,
+//            R.string.close_drawer_desc,
+//        )
+    }
+
+    private fun checkUpdate() {
         // Getting BuildConfig from Splash Activity, and check available update.
         val appVersionName = intent.getStringExtra("versionName")
         val appVersionCode = intent.getIntExtra("versionCode", 0)
@@ -138,66 +152,7 @@ class MainActivity : AppCompatActivity() {
                 )
             }
         }
-
-
-        // On setting icon listener
-        binding.toolbarMain.setNavigationOnClickListener {
-            val settingIntent = Intent(this, SettingsActivity::class.java)
-            startActivity(settingIntent)
-            finish()
-        }
-
-        setupViewPager()
-
-        binding.fabActions.shrink()
     }
-
-    private fun setupViewModel() {
-        viewModel.tabSelectedLive.observe(this) {
-            it?.let { tabSelected ->
-                val tabKavling = 0
-                val tabRekap = 1
-                val tabReportMisc = 2
-                val tabPengingat = 3
-
-                if (tabSelected == tabRekap) {
-                    binding.fabActions.visibility = View.INVISIBLE
-                } else {
-                    binding.fabActions.visibility = View.VISIBLE
-                }
-            }
-        }
-    }
-
-    private fun setupViewPager() {
-        val fragments = listOf(
-            KavlingFragment(),
-            RekapFragment(),
-            BiayaLainFragment(),
-        )
-        val pagerAdapter = MainViewPagerAdapter(
-            fragmentManager = supportFragmentManager,
-            fragments = fragments,
-        )
-
-        binding.viewpagerMain.apply {
-            adapter = pagerAdapter
-        }
-
-        binding.tabLayoutMain.apply {
-            setupWithViewPager(binding.viewpagerMain)
-            tabIndicatorAnimationMode = TabLayout.INDICATOR_ANIMATION_MODE_ELASTIC
-
-            val getIcon = { iconId: Int -> ContextCompat.getDrawable(this@MainActivity, iconId) }
-            getTabAt(0)?.icon = getIcon(R.drawable.ic_baseline_kavling_24)
-            getTabAt(1)?.icon = getIcon(R.drawable.ic_baseline_report_24)
-            getTabAt(2)?.icon = getIcon(R.drawable.ic_baseline_attach_money_24)
-            getTabAt(3)?.icon = getIcon(R.drawable.ic_baseline_alarm_24)
-        }
-
-        binding.tabLayoutMain.addOnTabSelectedListener(tabSelectedListener)
-    }
-
 
     private fun openBrowser(uri: Uri) {
         val intent = Intent(Intent.ACTION_VIEW)
@@ -205,14 +160,29 @@ class MainActivity : AppCompatActivity() {
         startActivity(intent)
     }
 
+    fun getFabActions(): ExtendedFloatingActionButton {
+        return binding.fabActions
+    }
+
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
         menuInflater.inflate(R.menu.menu_main, menu)
         return super.onCreateOptionsMenu(menu)
     }
 
-    override fun onDestroy() {
-        super.onDestroy()
-
-        binding.tabLayoutMain.removeOnTabSelectedListener(tabSelectedListener)
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        return item.onNavDestinationSelected(navController) ||
+                super.onOptionsItemSelected(item)
     }
+
+//    override fun onPostCreate(savedInstanceState: Bundle?, persistentState: PersistableBundle?) {
+//        super.onPostCreate(savedInstanceState, persistentState)
+//
+//        mDrawerToggle.syncState()
+//    }
+//
+//    override fun onConfigurationChanged(newConfig: Configuration) {
+//        super.onConfigurationChanged(newConfig)
+//
+//        mDrawerToggle.syncState()
+//    }
 }

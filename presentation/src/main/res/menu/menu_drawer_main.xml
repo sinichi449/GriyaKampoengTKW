@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item
+        android:id="@id/nav_management_kavling"
+        android:title="Management Kavling"/>
+
+    <item
+        android:id="@id/nav_uang_masuk_virtual"
+        android:title="Uang Masuk Virtual"/>
+
+    <item
+        android:id="@id/nav_pengaturan"
+        android:title="Pengaturan"/>
+
+</menu>

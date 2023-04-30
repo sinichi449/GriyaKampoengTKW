@@ -132,5 +132,8 @@
         <item name="colorAccent">@color/secondaryLightColor</item>
     </style>
 
+    <style name="NavigationViewTheme">
+        <item name="colorOnPrimary">@color/secondaryColor</item>
+    </style>
 
 </resources>
