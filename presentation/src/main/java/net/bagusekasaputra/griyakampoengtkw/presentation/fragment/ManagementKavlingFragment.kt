@@ -74,7 +74,7 @@ class ManagementKavlingFragment : Fragment() {
             BiayaLainFragment(),
         )
         binding.viewPagerManagementKavling.adapter = ManagementKavlingViewPagerAdapter(
-            fragmentManager = parentFragmentManager,
+            fragmentManager = childFragmentManager,
             fragments = fragments,
         )
 
