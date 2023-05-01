@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="250dp"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:background="@drawable/kampoeng_tkw"
+    android:padding="8dp"
+    android:fitsSystemWindows="true">
+
+    <com.google.android.material.textview.MaterialTextView
+        android:id="@+id/tv_sisa_uang"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:gravity="center"
+
+        android:text="Rp. 16,500,000"
+        style="@style/TextAppearance.MaterialComponents.Headline6"
+        android:textColor="@color/white"/>
+
+    <com.google.android.material.textview.MaterialTextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        android:text="v2.0.7.1 (48)"
+        android:textColor="@color/white"
+        style="@style/TextAppearance.MaterialComponents.Body2"/>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

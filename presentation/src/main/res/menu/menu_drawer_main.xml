@@ -1,16 +1,24 @@
 <?xml version="1.0" encoding="utf-8"?>
-<menu xmlns:android="http://schemas.android.com/apk/res/android">
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <item
         android:id="@id/nav_management_kavling"
-        android:title="Management Kavling"/>
+        android:title="Management Kavling"
+        android:icon="@drawable/ic_baseline_kavling_24"
+        app:showAsAction="ifRoom"/>
 
     <item
         android:id="@id/nav_uang_masuk_virtual"
-        android:title="Uang Masuk Virtual"/>
+        android:title="Uang Masuk Virtual"
+        android:icon="@drawable/outline_uang_masuk_virtual_24"
+        app:showAsAction="ifRoom"/>
 
     <item
         android:id="@id/nav_pengaturan"
-        android:title="Pengaturan"/>
+        android:title="Pengaturan"
+        android:icon="@drawable/settings_24px"
+        app:showAsAction="ifRoom"
+        android:iconTint="@color/black"/>
 
 </menu>
