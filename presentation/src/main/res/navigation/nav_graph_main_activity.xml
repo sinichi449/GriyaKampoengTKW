@@ -15,10 +15,10 @@
         android:label="Database User"
         tools:layout="@layout/fragment_database_user" />
     <fragment
-        android:id="@+id/nav_uang_masuk_virtual"
-        android:name="net.bagusekasaputra.griyakampoengtkw.presentation.fragment.UangMasukVirtualFragment"
-        android:label="Uang Masuk Virtual"
-        tools:layout="@layout/fragment_uang_masuk_virtual" />
+        android:id="@+id/nav_inden_booking"
+        android:name="net.bagusekasaputra.griyakampoengtkw.presentation.fragment.IndenBookingFragment"
+        android:label="Inden Booking"
+        tools:layout="@layout/fragment_inden_booking" />
     <activity
         android:id="@+id/nav_pengaturan"
         android:name="net.bagusekasaputra.griyakampoengtkw.presentation.activities.SettingsActivity"

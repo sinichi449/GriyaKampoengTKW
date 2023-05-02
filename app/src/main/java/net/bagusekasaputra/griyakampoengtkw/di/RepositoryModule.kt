@@ -300,10 +300,19 @@ object RepositoryModule {
     }
 
     /**
-     * Database User
+     * Database Use
      */
     @Provides
     fun provideDatabaseUserRepository(): DatabaseUserRepository {
         return DatabaseUserRepositoryImpl()
+    }
+
+
+    /**
+     * Inden Booking
+     */
+    @Provides
+    fun provideIndenBookingRepository(): IndenBookingRepository {
+        return IndenBookingRepositoryImpl()
     }
 }

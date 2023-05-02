@@ -17,6 +17,7 @@ import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.fotoPembayaran.D
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.fotoPembayaran.GetFotoPembayaranAsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.fotoPembayaran.IsFotoPembayaranExistAsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.hargaKavling.GetHargaKavlingAsyncUseCase
+import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.indenBooking.GetAllIndenBookingAsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.kavling.GetKavlingByBlockAsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.kavling.GetListUnmigratedKavlingsAsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.pembayaran.GetAllPembayaranAsyncUseCase
@@ -452,5 +453,14 @@ object UseCaseModule {
     @Provides
     fun provideGetAllDatabaseUserUseCase(databaseUserRepository: DatabaseUserRepository): GetAllDatabaseUserAsyncUseCase {
         return GetAllDatabaseUserAsyncUseCase(databaseUserRepository)
+    }
+
+
+    /**
+     * Inden Booking
+     */
+    @Provides
+    fun provideGetAllIndenBookingUseCase(indenBookingRepository: IndenBookingRepository): GetAllIndenBookingAsyncUseCase {
+        return GetAllIndenBookingAsyncUseCase(indenBookingRepository)
     }
 }
