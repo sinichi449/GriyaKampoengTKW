@@ -1,6 +1,6 @@
 package net.bagusekasaputra.griyakampoengtkw.domain.entity
 
-data class CalonPembeli(
+data class DatabaseUser(
     var id: Long = 0L,
     val nama: String,
     val noHp: String = "",
@@ -10,8 +10,8 @@ data class CalonPembeli(
 ) {
 
     companion object {
-        fun sortbyLastModified(listCalonPembeli: List<CalonPembeli>?): List<CalonPembeli> {
-            return listCalonPembeli?.sortedBy {
+        fun sortbyLastModified(listDatabaseUser: List<DatabaseUser>?): List<DatabaseUser> {
+            return listDatabaseUser?.sortedBy {
                 it.lastModified
             } ?: emptyList()
         }

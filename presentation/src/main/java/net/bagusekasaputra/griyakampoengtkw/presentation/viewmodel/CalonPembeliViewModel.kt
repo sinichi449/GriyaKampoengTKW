@@ -9,18 +9,18 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.calonPembeli.GetAllCalonPembeliAsyncUseCase
-import net.bagusekasaputra.griyakampoengtkw.domain.entity.CalonPembeli
+import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.databaseUser.GetAllDatabaseUserAsyncUseCase
+import net.bagusekasaputra.griyakampoengtkw.domain.entity.DatabaseUser
 import javax.inject.Inject
 
 @HiltViewModel
 class CalonPembeliViewModel @Inject constructor(
-    private val getAllCalonPembeliAsyncUseCase: GetAllCalonPembeliAsyncUseCase,
+    private val getAllDatabaseUserAsyncUseCase: GetAllDatabaseUserAsyncUseCase,
 ): ViewModel() {
 
-    private val _listCalonPembeliLive = MutableLiveData<List<CalonPembeli>?>()
-    val listCalonPembeliLive: LiveData<List<CalonPembeli>?>
-        get() = _listCalonPembeliLive
+    private val _listDatabaseUserLive = MutableLiveData<List<DatabaseUser>?>()
+    val listDatabaseUserLive: LiveData<List<DatabaseUser>?>
+        get() = _listDatabaseUserLive
 
     val showExtendedFab = MutableLiveData(false)
 
@@ -32,11 +32,11 @@ class CalonPembeliViewModel @Inject constructor(
         onFailure: (msg: String) -> Unit
     ) {
         gettingListJob = viewModelScope.launch {
-            val request = GetAllCalonPembeliAsyncUseCase.Request
+            val request = GetAllDatabaseUserAsyncUseCase.Request
 
-            getAllCalonPembeliAsyncUseCase.execute(request).collect { result ->
+            getAllDatabaseUserAsyncUseCase.execute(request).collect { result ->
                 result.onSuccess {
-                    _listCalonPembeliLive.postValue(it)
+                    _listDatabaseUserLive.postValue(it)
 
                     withContext(Dispatchers.Main) {
                         onComplete()

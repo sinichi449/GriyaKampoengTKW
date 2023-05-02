@@ -10,17 +10,17 @@ import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.RecyclerView
 import com.evrencoskun.tableview.listener.ITableViewListener
 import dagger.hilt.android.AndroidEntryPoint
-import net.bagusekasaputra.griyakampoengtkw.domain.entity.CalonPembeli
-import net.bagusekasaputra.griyakampoengtkw.presentation.databinding.FragmentCalonPembeliBinding
-import net.bagusekasaputra.griyakampoengtkw.presentation.tableview.calonPembeli.CalonPembeliTableAdapter
-import net.bagusekasaputra.griyakampoengtkw.presentation.tableview.calonPembeli.TableCalonPembeli
+import net.bagusekasaputra.griyakampoengtkw.domain.entity.DatabaseUser
+import net.bagusekasaputra.griyakampoengtkw.presentation.databinding.FragmentDatabaseUserBinding
+import net.bagusekasaputra.griyakampoengtkw.presentation.tableview.databaseUser.DatabaseUserTableAdapter
+import net.bagusekasaputra.griyakampoengtkw.presentation.tableview.databaseUser.TableDatabaseUser
 import net.bagusekasaputra.griyakampoengtkw.presentation.util.UiUtils
 import net.bagusekasaputra.griyakampoengtkw.presentation.viewmodel.CalonPembeliViewModel
 
 @AndroidEntryPoint
-class CalonPembeliFragment : Fragment() {
+class DatabaseUserFragment : Fragment() {
 
-    private lateinit var binding: FragmentCalonPembeliBinding
+    private lateinit var binding: FragmentDatabaseUserBinding
     private val viewModel: CalonPembeliViewModel by viewModels()
 
     override fun onCreateView(
@@ -28,7 +28,7 @@ class CalonPembeliFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         // Inflate the layout for this fragment
-        binding = FragmentCalonPembeliBinding.inflate(inflater, container, false)
+        binding = FragmentDatabaseUserBinding.inflate(inflater, container, false)
 
         return binding.root
     }
@@ -55,7 +55,7 @@ class CalonPembeliFragment : Fragment() {
     }
 
     private fun setupViewModel() {
-        viewModel.listCalonPembeliLive.observe(requireActivity()) {
+        viewModel.listDatabaseUserLive.observe(requireActivity()) {
             it?.also { calonPembelis ->
                 setupTableView(calonPembelis)
             }
@@ -72,15 +72,15 @@ class CalonPembeliFragment : Fragment() {
         }
     }
 
-    private fun setupTableView(listCalonPembeli: List<CalonPembeli>) {
-        val adapter = CalonPembeliTableAdapter()
+    private fun setupTableView(listDatabaseUser: List<DatabaseUser>) {
+        val adapter = DatabaseUserTableAdapter()
         binding.tableViewCalonPembeli.setAdapter(adapter)
 
-        val tableCalonPembeli = TableCalonPembeli(listCalonPembeli)
+        val tableDatabaseUser = TableDatabaseUser(listDatabaseUser)
         adapter.setAllItems(
-            tableCalonPembeli.getColumnHeaderItems(),
-            tableCalonPembeli.getRowHeaderItems(),
-            tableCalonPembeli.getCellItems(),
+            tableDatabaseUser.getColumnHeaderItems(),
+            tableDatabaseUser.getRowHeaderItems(),
+            tableDatabaseUser.getCellItems(),
         )
 
         // Set Column Width
@@ -95,7 +95,7 @@ class CalonPembeliFragment : Fragment() {
             override fun onCellClicked(cellView: RecyclerView.ViewHolder, column: Int, row: Int) {
                 // Open whatsapp on the one of "No Hp" column cell
                 if (column == 1) {
-                    val noHp = listCalonPembeli[row].noHp
+                    val noHp = listDatabaseUser[row].noHp
                     UiUtils.openWhatsapp(requireContext(), noHp)
                 }
             }

@@ -1,4 +1,4 @@
-package net.bagusekasaputra.griyakampoengtkw.presentation.tableview.calonPembeli
+package net.bagusekasaputra.griyakampoengtkw.presentation.tableview.databaseUser
 
 import android.text.SpannableString
 import android.text.style.UnderlineSpan
@@ -11,29 +11,29 @@ import androidx.core.content.ContextCompat
 import com.evrencoskun.tableview.adapter.AbstractTableAdapter
 import com.evrencoskun.tableview.adapter.recyclerview.holder.AbstractViewHolder
 import net.bagusekasaputra.griyakampoengtkw.presentation.R
-import net.bagusekasaputra.griyakampoengtkw.presentation.databinding.TableCalonPembeliCellViewBinding
-import net.bagusekasaputra.griyakampoengtkw.presentation.databinding.TableCalonPembeliColumnHeaderBinding
-import net.bagusekasaputra.griyakampoengtkw.presentation.databinding.TableCalonPembeliCornerViewBinding
-import net.bagusekasaputra.griyakampoengtkw.presentation.databinding.TableCalonPembeliRowHeaderBinding
-import net.bagusekasaputra.griyakampoengtkw.presentation.tableview.calonPembeli.TableCalonPembeli.CalonPembeliCell
-import net.bagusekasaputra.griyakampoengtkw.presentation.tableview.calonPembeli.TableCalonPembeli.CalonPembeliColumnHeader
-import net.bagusekasaputra.griyakampoengtkw.presentation.tableview.calonPembeli.TableCalonPembeli.CalonPembeliRowHeader
+import net.bagusekasaputra.griyakampoengtkw.presentation.databinding.TableDatabaseUserCellViewBinding
+import net.bagusekasaputra.griyakampoengtkw.presentation.databinding.TableDatabaseUserColumnHeaderBinding
+import net.bagusekasaputra.griyakampoengtkw.presentation.databinding.TableDatabaseUserCornerViewBinding
+import net.bagusekasaputra.griyakampoengtkw.presentation.databinding.TableDatabaseUserRowHeaderBinding
+import net.bagusekasaputra.griyakampoengtkw.presentation.tableview.databaseUser.TableDatabaseUser.CalonPembeliCell
+import net.bagusekasaputra.griyakampoengtkw.presentation.tableview.databaseUser.TableDatabaseUser.CalonPembeliColumnHeader
+import net.bagusekasaputra.griyakampoengtkw.presentation.tableview.databaseUser.TableDatabaseUser.CalonPembeliRowHeader
 
 
-class CalonPembeliTableAdapter(): AbstractTableAdapter<CalonPembeliColumnHeader, CalonPembeliRowHeader, CalonPembeliCell>() {
+class DatabaseUserTableAdapter(): AbstractTableAdapter<CalonPembeliColumnHeader, CalonPembeliRowHeader, CalonPembeliCell>() {
 
 
     /**
      * Cell
      */
-    private class CalonPembeliCellViewHolder(binding: TableCalonPembeliCellViewBinding): AbstractViewHolder(binding.root) {
+    private class CalonPembeliCellViewHolder(binding: TableDatabaseUserCellViewBinding): AbstractViewHolder(binding.root) {
         val container = binding.root
         val tvCell = binding.tvCellData
     }
 
     override fun onCreateCellViewHolder(parent: ViewGroup, viewType: Int): AbstractViewHolder {
         val binding = LayoutInflater.from(parent.context).let { inflater ->
-            TableCalonPembeliCellViewBinding.inflate(inflater, parent, false)
+            TableDatabaseUserCellViewBinding.inflate(inflater, parent, false)
         }
         return CalonPembeliCellViewHolder(binding)
     }
@@ -73,7 +73,7 @@ class CalonPembeliTableAdapter(): AbstractTableAdapter<CalonPembeliColumnHeader,
     /**
      * Column Header
      */
-    class CalonPembeliColumnHeaderViewHolder(binding: TableCalonPembeliColumnHeaderBinding): AbstractViewHolder(binding.root) {
+    class CalonPembeliColumnHeaderViewHolder(binding: TableDatabaseUserColumnHeaderBinding): AbstractViewHolder(binding.root) {
         val container = binding.root
         val tvColumnHeader = binding.tvChData
 
@@ -96,7 +96,7 @@ class CalonPembeliTableAdapter(): AbstractTableAdapter<CalonPembeliColumnHeader,
         viewType: Int
     ): AbstractViewHolder {
         val binding = LayoutInflater.from(parent.context).let { inflater ->
-            TableCalonPembeliColumnHeaderBinding.inflate(inflater, parent, false)
+            TableDatabaseUserColumnHeaderBinding.inflate(inflater, parent, false)
         }
 
         return CalonPembeliColumnHeaderViewHolder(binding)
@@ -119,14 +119,14 @@ class CalonPembeliTableAdapter(): AbstractTableAdapter<CalonPembeliColumnHeader,
     /**
      * Row Header
      */
-    class CalonPembeliRowHeaderViewHolder(itemBinding: TableCalonPembeliRowHeaderBinding): AbstractViewHolder(itemBinding.root) {
+    class CalonPembeliRowHeaderViewHolder(itemBinding: TableDatabaseUserRowHeaderBinding): AbstractViewHolder(itemBinding.root) {
         val container = itemBinding.root
         val tvRowHeader = itemBinding.tvRhNomor
     }
 
     override fun onCreateRowHeaderViewHolder(parent: ViewGroup, viewType: Int): AbstractViewHolder {
         val binding = LayoutInflater.from(parent.context).let { inflater ->
-            TableCalonPembeliRowHeaderBinding.inflate(inflater, parent, false)
+            TableDatabaseUserRowHeaderBinding.inflate(inflater, parent, false)
         }
 
         return CalonPembeliRowHeaderViewHolder(binding)
@@ -148,7 +148,7 @@ class CalonPembeliTableAdapter(): AbstractTableAdapter<CalonPembeliColumnHeader,
      */
     override fun onCreateCornerView(parent: ViewGroup): View {
         return LayoutInflater.from(parent.context).let { inflater ->
-            TableCalonPembeliCornerViewBinding.inflate(inflater, parent, false).let { binding ->
+            TableDatabaseUserCornerViewBinding.inflate(inflater, parent, false).let { binding ->
                 binding.root
             }
         }

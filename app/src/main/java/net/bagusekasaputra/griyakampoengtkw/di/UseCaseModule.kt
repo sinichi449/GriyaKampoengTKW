@@ -8,9 +8,9 @@ import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.CreateBackupAsyn
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.biayaLain.*
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.biayaMarketing.GetAllBiayaMarketingByKavlingKodeAsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.block.GetAllBlocksAsyncUseCase
-import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.calonPembeli.GetAllCalonPembeliAsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.catatanPembayaran.GetCatatanPembayaranAsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.dataDiri.GetDataDiriAsyncUseCase
+import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.databaseUser.GetAllDatabaseUserAsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.feeMarketing.GetFeeMarketingByKavlingKodeAsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.fotoPembayaran.AddFotoPembayaranAsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.fotoPembayaran.DeleteFotoPembayaranAsyncUseCase
@@ -447,10 +447,10 @@ object UseCaseModule {
 
 
     /**
-     * Calon Pembeli
+     * Database User
      */
     @Provides
-    fun provideGetAllCalonPembeliUseCase(calonPembeliRepository: CalonPembeliRepository): GetAllCalonPembeliAsyncUseCase {
-        return GetAllCalonPembeliAsyncUseCase(calonPembeliRepository)
+    fun provideGetAllDatabaseUserUseCase(databaseUserRepository: DatabaseUserRepository): GetAllDatabaseUserAsyncUseCase {
+        return GetAllDatabaseUserAsyncUseCase(databaseUserRepository)
     }
 }

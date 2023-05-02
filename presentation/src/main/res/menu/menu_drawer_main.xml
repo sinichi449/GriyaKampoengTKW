@@ -9,8 +9,8 @@
         app:showAsAction="ifRoom"/>
 
     <item
-        android:id="@id/nav_calon_pembeli"
-        android:title="List Calon Pembeli"
+        android:id="@id/nav_database_user"
+        android:title="Database User"
         android:icon="@drawable/baseline_calon_pembeli_24"
         app:showAsAction="ifRoom"/>
 

@@ -300,10 +300,10 @@ object RepositoryModule {
     }
 
     /**
-     * Calon Pembeli
+     * Database User
      */
     @Provides
-    fun provideCalonPembeliRepository(): CalonPembeliRepository {
-        return CalonPembeliRepositoryImpl()
+    fun provideDatabaseUserRepository(): DatabaseUserRepository {
+        return DatabaseUserRepositoryImpl()
     }
 }

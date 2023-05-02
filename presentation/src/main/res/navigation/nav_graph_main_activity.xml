@@ -10,10 +10,10 @@
         android:label="Management Kavling"
         tools:layout="@layout/fragment_management_kavling" />
     <fragment
-        android:id="@+id/nav_calon_pembeli"
-        android:name="net.bagusekasaputra.griyakampoengtkw.presentation.fragment.CalonPembeliFragment"
-        android:label="Calon Pembeli"
-        tools:layout="@layout/fragment_calon_pembeli" />
+        android:id="@+id/nav_database_user"
+        android:name="net.bagusekasaputra.griyakampoengtkw.presentation.fragment.DatabaseUserFragment"
+        android:label="Database User"
+        tools:layout="@layout/fragment_database_user" />
     <fragment
         android:id="@+id/nav_uang_masuk_virtual"
         android:name="net.bagusekasaputra.griyakampoengtkw.presentation.fragment.UangMasukVirtualFragment"

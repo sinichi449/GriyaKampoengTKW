@@ -1,11 +1,11 @@
-package net.bagusekasaputra.griyakampoengtkw.presentation.tableview.calonPembeli
+package net.bagusekasaputra.griyakampoengtkw.presentation.tableview.databaseUser
 
-import net.bagusekasaputra.griyakampoengtkw.domain.entity.CalonPembeli
+import net.bagusekasaputra.griyakampoengtkw.domain.entity.DatabaseUser
 import net.bagusekasaputra.griyakampoengtkw.presentation.tableview.ITableView
 
-class TableCalonPembeli(
-    private val listCalonPembeli: List<CalonPembeli>,
-): ITableView<TableCalonPembeli.CalonPembeliColumnHeader, TableCalonPembeli.CalonPembeliRowHeader, TableCalonPembeli.CalonPembeliCell> {
+class TableDatabaseUser(
+    private val listDatabaseUser: List<DatabaseUser>,
+): ITableView<TableDatabaseUser.CalonPembeliColumnHeader, TableDatabaseUser.CalonPembeliRowHeader, TableDatabaseUser.CalonPembeliCell> {
 
     data class CalonPembeliColumnHeader(
         val text: String,
@@ -31,7 +31,7 @@ class TableCalonPembeli(
     override fun getRowHeaderItems(): List<CalonPembeliRowHeader> {
         val listRowHeader = mutableListOf<CalonPembeliRowHeader>()
 
-        repeat(listCalonPembeli.size) {
+        repeat(listDatabaseUser.size) {
             listRowHeader.add(
                 CalonPembeliRowHeader(it)
             )
@@ -43,7 +43,7 @@ class TableCalonPembeli(
     override fun getCellItems(): List<List<CalonPembeliCell>> {
         val listCell = mutableListOf<List<CalonPembeliCell>>()
 
-        listCalonPembeli.forEach { calonPembeli ->
+        listDatabaseUser.forEach { calonPembeli ->
             val cell = mutableListOf<CalonPembeliCell>()
 
             cell.add(CalonPembeliCell(calonPembeli.nama))

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="wrap_content"
+    android:layout_width="100dp"
     android:layout_height="@dimen/table_pembayaran_cell_height"
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
@@ -12,7 +12,9 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintBottom_toBottomOf="parent"
-        android:text="Cell Data"
+        android:text="Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor"
+        android:singleLine="true"
+        android:ellipsize="end"
         android:gravity="center"
         android:layout_marginHorizontal="8dp"
         android:textSize="@dimen/table_pembayaran_cell_text_size"
