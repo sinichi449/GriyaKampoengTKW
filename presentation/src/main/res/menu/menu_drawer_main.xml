@@ -9,6 +9,12 @@
         app:showAsAction="ifRoom"/>
 
     <item
+        android:id="@id/nav_calon_pembeli"
+        android:title="List Calon Pembeli"
+        android:icon="@drawable/baseline_calon_pembeli_24"
+        app:showAsAction="ifRoom"/>
+
+    <item
         android:id="@id/nav_uang_masuk_virtual"
         android:title="Uang Masuk Virtual"
         android:icon="@drawable/outline_uang_masuk_virtual_24"

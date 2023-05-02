@@ -9,14 +9,14 @@ plugins {
 android {
     signingConfigs {
         debug {
-            storeFile file('C:\\Users\\Bagus\\StudioProjects\\keystore.jks')
+            storeFile file('/home/bagus/AndroidProjects/keystore.jks')
             storePassword 'r4h4s14d3cH!'
             keyAlias 'key0'
             keyPassword 'r4h4s14d3cH!'
         }
 
         release {
-            storeFile file('C:\\Users\\Bagus\\StudioProjects\\keystore.jks')
+            storeFile file('/home/bagus/AndroidProjects/keystore.jks')
             storePassword 'r4h4s14d3cH!'
             keyAlias 'key0'
             keyPassword 'r4h4s14d3cH!'

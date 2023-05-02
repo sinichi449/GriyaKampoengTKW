@@ -299,4 +299,11 @@ object RepositoryModule {
         return RekapBesarDetailRepositoryImpl(internalFile)
     }
 
+    /**
+     * Calon Pembeli
+     */
+    @Provides
+    fun provideCalonPembeliRepository(): CalonPembeliRepository {
+        return CalonPembeliRepositoryImpl()
+    }
 }

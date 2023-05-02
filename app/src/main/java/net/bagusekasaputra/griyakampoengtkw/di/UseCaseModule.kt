@@ -8,6 +8,7 @@ import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.CreateBackupAsyn
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.biayaLain.*
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.biayaMarketing.GetAllBiayaMarketingByKavlingKodeAsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.block.GetAllBlocksAsyncUseCase
+import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.calonPembeli.GetAllCalonPembeliAsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.catatanPembayaran.GetCatatanPembayaranAsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.dataDiri.GetDataDiriAsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.feeMarketing.GetFeeMarketingByKavlingKodeAsyncUseCase
@@ -442,5 +443,14 @@ object UseCaseModule {
     @Provides
     fun provideGetRekapBesarDetailUseCase(rekapBesarDetailRepository: RekapBesarDetailRepository): GetRekapBesarDetailAsyncUseCase {
         return GetRekapBesarDetailAsyncUseCase(rekapBesarDetailRepository)
+    }
+
+
+    /**
+     * Calon Pembeli
+     */
+    @Provides
+    fun provideGetAllCalonPembeliUseCase(calonPembeliRepository: CalonPembeliRepository): GetAllCalonPembeliAsyncUseCase {
+        return GetAllCalonPembeliAsyncUseCase(calonPembeliRepository)
     }
 }
