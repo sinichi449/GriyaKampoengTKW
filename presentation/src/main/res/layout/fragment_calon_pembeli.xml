@@ -67,7 +67,8 @@
                     app:row_header_width="@dimen/table_general_numeric_row_header_width"
                     app:show_horizontal_separator="true"
                     app:show_vertical_separator="true"
-                    app:separator_color="@color/black"/>
+                    app:separator_color="@color/black"
+                    app:allow_click_inside_cell="true"/>
 
             </androidx.appcompat.widget.LinearLayoutCompat>
 

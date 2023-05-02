@@ -1,5 +1,7 @@
 package net.bagusekasaputra.griyakampoengtkw.presentation.tableview.calonPembeli
 
+import android.text.SpannableString
+import android.text.style.UnderlineSpan
 import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.View
@@ -13,13 +15,12 @@ import net.bagusekasaputra.griyakampoengtkw.presentation.databinding.TableCalonP
 import net.bagusekasaputra.griyakampoengtkw.presentation.databinding.TableCalonPembeliColumnHeaderBinding
 import net.bagusekasaputra.griyakampoengtkw.presentation.databinding.TableCalonPembeliCornerViewBinding
 import net.bagusekasaputra.griyakampoengtkw.presentation.databinding.TableCalonPembeliRowHeaderBinding
-import net.bagusekasaputra.griyakampoengtkw.presentation.tableview.biayaLain.TableBiayaLainViewAdapter
+import net.bagusekasaputra.griyakampoengtkw.presentation.tableview.calonPembeli.TableCalonPembeli.CalonPembeliCell
 import net.bagusekasaputra.griyakampoengtkw.presentation.tableview.calonPembeli.TableCalonPembeli.CalonPembeliColumnHeader
 import net.bagusekasaputra.griyakampoengtkw.presentation.tableview.calonPembeli.TableCalonPembeli.CalonPembeliRowHeader
-import net.bagusekasaputra.griyakampoengtkw.presentation.tableview.calonPembeli.TableCalonPembeli.CalonPembeliCell
 
 
-class CalonPembeliTableAdapter: AbstractTableAdapter<CalonPembeliColumnHeader, CalonPembeliRowHeader, CalonPembeliCell>() {
+class CalonPembeliTableAdapter(): AbstractTableAdapter<CalonPembeliColumnHeader, CalonPembeliRowHeader, CalonPembeliCell>() {
 
 
     /**
@@ -45,10 +46,20 @@ class CalonPembeliTableAdapter: AbstractTableAdapter<CalonPembeliColumnHeader, C
     ) {
         val viewHolder = holder as CalonPembeliCellViewHolder
 
-        viewHolder.tvCell.text = cellItemModel?.text ?: "-"
+        viewHolder.tvCell.text = cellItemModel?.text ?: "-".run {
+            // Underline only "No Hp" cells (column 1)
+            if (columnPosition == 1) {
+                val content = SpannableString(this)
+                content.setSpan(UnderlineSpan(), 0, this.length, 0)
 
-        // Align text to start on Nama column
-        if (columnPosition == 0) {
+                content
+            } else {
+                this
+            }
+        }
+
+        // Align text to start on "Nama", "TikTok", and "Keterangan" column
+        if (columnPosition == 0 || columnPosition == 2 || columnPosition == 3) {
             viewHolder.tvCell.gravity = Gravity.START
         } else {
             viewHolder.tvCell.gravity = Gravity.CENTER

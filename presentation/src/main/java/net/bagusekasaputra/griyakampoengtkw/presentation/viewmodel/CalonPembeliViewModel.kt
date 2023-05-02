@@ -22,6 +22,8 @@ class CalonPembeliViewModel @Inject constructor(
     val listCalonPembeliLive: LiveData<List<CalonPembeli>?>
         get() = _listCalonPembeliLive
 
+    val showExtendedFab = MutableLiveData(false)
+
     var gettingListJob: Job? = null
 
 

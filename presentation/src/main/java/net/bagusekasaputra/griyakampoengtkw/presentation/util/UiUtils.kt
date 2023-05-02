@@ -9,8 +9,23 @@ import android.view.ViewGroup
 import android.view.ViewParent
 import androidx.core.widget.NestedScrollView
 import com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
+import com.google.android.material.floatingactionbutton.FloatingActionButton
 
 object UiUtils {
+
+    // Method helper for extended floating button on extended or shrink events
+    fun extendOrShrinkExtendedFab(extendedFabs: ExtendedFloatingActionButton, anotherFabs: List<FloatingActionButton>, extend: Boolean) {
+        if (extend) {
+            extendedFabs.extend()
+        } else {
+            extendedFabs.shrink()
+        }
+
+        anotherFabs.forEach { fab ->
+            if (extend) fab.show()
+            else fab.hide()
+        }
+    }
 
     fun hideExtendedFabOnVerticalScroll(nestedScrollView: NestedScrollView?, extendedFabs: ExtendedFloatingActionButton?) {
         nestedScrollView?.setOnScrollChangeListener(NestedScrollView.OnScrollChangeListener
