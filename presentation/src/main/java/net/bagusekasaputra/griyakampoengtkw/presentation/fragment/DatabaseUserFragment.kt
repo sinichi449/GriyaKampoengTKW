@@ -86,9 +86,9 @@ class DatabaseUserFragment : Fragment() {
         // Set Column Width
         binding.tableViewCalonPembeli.run {
             setColumnWidth(0, 350) // Nama
-            setColumnWidth(1, 400) // No Hp
-            setColumnWidth(2, 400) // Tiktok
-            setColumnWidth(3, 500) // Keterangan
+            setColumnWidth(3, 400) // No Hp
+            setColumnWidth(4, 400) // Tiktok
+            setColumnWidth(6, 300) // Keterangan
         }
 
         binding.tableViewCalonPembeli.tableViewListener = object : ITableViewListener {

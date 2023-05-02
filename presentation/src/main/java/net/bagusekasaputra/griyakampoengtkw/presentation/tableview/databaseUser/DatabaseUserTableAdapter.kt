@@ -58,8 +58,8 @@ class DatabaseUserTableAdapter(): AbstractTableAdapter<CalonPembeliColumnHeader,
             }
         }
 
-        // Align text to start on "Nama", "TikTok", and "Keterangan" column
-        if (columnPosition == 0 || columnPosition == 2 || columnPosition == 3) {
+        if (columnPosition == TableDatabaseUser.COLUMN_KETERANGAN ||
+                columnPosition == TableDatabaseUser.COLUMN_NAMA) {
             viewHolder.tvCell.gravity = Gravity.START
         } else {
             viewHolder.tvCell.gravity = Gravity.CENTER
