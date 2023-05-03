@@ -15,13 +15,13 @@ import net.bagusekasaputra.griyakampoengtkw.presentation.databinding.FragmentDat
 import net.bagusekasaputra.griyakampoengtkw.presentation.tableview.databaseUser.DatabaseUserTableAdapter
 import net.bagusekasaputra.griyakampoengtkw.presentation.tableview.databaseUser.TableDatabaseUser
 import net.bagusekasaputra.griyakampoengtkw.presentation.util.UiUtils
-import net.bagusekasaputra.griyakampoengtkw.presentation.viewmodel.CalonPembeliViewModel
+import net.bagusekasaputra.griyakampoengtkw.presentation.viewmodel.DatabaseUserViewModel
 
 @AndroidEntryPoint
 class DatabaseUserFragment : Fragment() {
 
     private lateinit var binding: FragmentDatabaseUserBinding
-    private val viewModel: CalonPembeliViewModel by viewModels()
+    private val viewModel: DatabaseUserViewModel by viewModels()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -156,7 +156,7 @@ class DatabaseUserFragment : Fragment() {
     }
 
     private fun sync() {
-        viewModel.getListCalonPembeli(
+        viewModel.getListDatabaseUser(
             onComplete = {
                 binding.swipeRefreshCalonPembeli.isRefreshing = false
             },

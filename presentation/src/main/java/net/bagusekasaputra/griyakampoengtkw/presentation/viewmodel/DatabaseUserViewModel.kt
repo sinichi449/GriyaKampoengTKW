@@ -14,7 +14,7 @@ import net.bagusekasaputra.griyakampoengtkw.domain.entity.DatabaseUser
 import javax.inject.Inject
 
 @HiltViewModel
-class CalonPembeliViewModel @Inject constructor(
+class DatabaseUserViewModel @Inject constructor(
     private val getAllDatabaseUserAsyncUseCase: GetAllDatabaseUserAsyncUseCase,
 ): ViewModel() {
 
@@ -27,7 +27,7 @@ class CalonPembeliViewModel @Inject constructor(
     var gettingListJob: Job? = null
 
 
-    fun getListCalonPembeli(
+    fun getListDatabaseUser(
         onComplete: () -> Unit,
         onFailure: (msg: String) -> Unit
     ) {
@@ -47,7 +47,7 @@ class CalonPembeliViewModel @Inject constructor(
 
                     withContext(Dispatchers.Main) {
                         onComplete()
-                        onFailure("Gagal mendapatkan List Calon Pembeli: ${it.message}")
+                        onFailure("Gagal mendapatkan List Database User: ${it.message}")
                     }
                 }
             }
