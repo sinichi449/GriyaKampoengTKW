@@ -21,6 +21,12 @@
         app:showAsAction="ifRoom"/>
 
     <item
+        android:id="@id/nav_biaya_pribadi"
+        android:title="Biaya Pribadi"
+        android:icon="@drawable/baseline_biaya_pribadi_24"
+        app:showAsAction="ifRoom"/>
+
+    <item
         android:id="@id/nav_pengaturan"
         android:title="Pengaturan"
         android:icon="@drawable/settings_24px"

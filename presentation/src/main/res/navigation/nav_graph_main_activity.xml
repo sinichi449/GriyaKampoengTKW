@@ -19,6 +19,11 @@
         android:name="net.bagusekasaputra.griyakampoengtkw.presentation.fragment.IndenBookingFragment"
         android:label="Inden Booking"
         tools:layout="@layout/fragment_inden_booking" />
+    <fragment
+        android:id="@+id/nav_biaya_pribadi"
+        android:name="net.bagusekasaputra.griyakampoengtkw.presentation.fragment.BiayaPribadiFragment"
+        android:label="Biaya Pribadi"
+        tools:layout="@layout/fragment_biaya_pribadi" />
     <activity
         android:id="@+id/nav_pengaturan"
         android:name="net.bagusekasaputra.griyakampoengtkw.presentation.activities.SettingsActivity"

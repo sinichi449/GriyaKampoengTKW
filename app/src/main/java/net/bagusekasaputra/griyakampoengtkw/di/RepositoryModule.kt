@@ -315,4 +315,12 @@ object RepositoryModule {
     fun provideIndenBookingRepository(): IndenBookingRepository {
         return IndenBookingRepositoryImpl()
     }
+
+    /**
+     * Biaya Pribadi
+     */
+    @Provides
+    fun provideBiayaPribadiRepository(): BiayaPribadiRepository {
+        return BiayaPribadiRepositoryImpl()
+    }
 }

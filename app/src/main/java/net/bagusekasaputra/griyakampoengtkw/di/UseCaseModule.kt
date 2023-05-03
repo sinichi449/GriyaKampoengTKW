@@ -7,6 +7,7 @@ import dagger.hilt.android.components.ViewModelComponent
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.CreateBackupAsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.biayaLain.*
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.biayaMarketing.GetAllBiayaMarketingByKavlingKodeAsyncUseCase
+import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.biayaPribadi.GetAllBiayaPribadiAsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.block.GetAllBlocksAsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.catatanPembayaran.GetCatatanPembayaranAsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.dataDiri.GetDataDiriAsyncUseCase
@@ -462,5 +463,14 @@ object UseCaseModule {
     @Provides
     fun provideGetAllIndenBookingUseCase(indenBookingRepository: IndenBookingRepository): GetAllIndenBookingAsyncUseCase {
         return GetAllIndenBookingAsyncUseCase(indenBookingRepository)
+    }
+
+
+    /**
+     * Biaya Pribadi
+     */
+    @Provides
+    fun provideGetAllBiayaPribadiUseCase(biayaPribadiRepository: BiayaPribadiRepository): GetAllBiayaPribadiAsyncUseCase {
+        return GetAllBiayaPribadiAsyncUseCase(biayaPribadiRepository)
     }
 }
