@@ -6,6 +6,15 @@ import java.util.Locale
 
 object NumberUtil {
 
+    fun formatDoubleToString(double: Double): String {
+        val decimalFormat = DecimalFormat("###,###,###.##", DecimalFormatSymbols(Locale.US))
+        return decimalFormat.format(double)
+    }
+
+    fun formatStringToDouble(string: String): Double {
+        return string.replace(",", "").toDouble()
+    }
+
     fun formatLongToString(number: Long): String {
         val decimalFormat = DecimalFormat("###,###,###", DecimalFormatSymbols(Locale.US))
         return decimalFormat.format(number)

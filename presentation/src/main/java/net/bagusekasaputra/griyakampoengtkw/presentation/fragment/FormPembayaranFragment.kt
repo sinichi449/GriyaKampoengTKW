@@ -11,6 +11,7 @@ import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AlertDialog
 import androidx.core.content.ContextCompat
+import androidx.core.widget.addTextChangedListener
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
@@ -22,6 +23,7 @@ import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
 import net.bagusekasaputra.griyakampoengtkw.domain.DataMode
 import net.bagusekasaputra.griyakampoengtkw.domain.NumberUtil
+import net.bagusekasaputra.griyakampoengtkw.domain.entity.BaselinePembayaran
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.HargaKavling
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.Pembayaran
 import net.bagusekasaputra.griyakampoengtkw.presentation.R
@@ -58,9 +60,6 @@ class FormPembayaranFragment : Fragment() {
     private var isAllFabsVisible = false
 
     private var offlineMode = false
-
-    // Dialog options for Baseline Pembayaran
-    private var angsuranDialogBinding: DialogBaselineAngsuranPerBulanBinding? = null
 
     @Inject
     lateinit var sharedPrefs: SharedPreferences
@@ -173,7 +172,7 @@ class FormPembayaranFragment : Fragment() {
             }
         }
 
-        binding.layoutLoadingFormPembayaran?.setOnClickListener {
+        binding.layoutUangBaselineAngsuran?.setOnClickListener {
             showSetBaselinePembayaranDialog()
         }
 
@@ -662,8 +661,52 @@ class FormPembayaranFragment : Fragment() {
     }
 
     private fun showSetBaselinePembayaranDialog() {
-        // TODO
-        Toast.makeText(requireContext(), "Baseline clicked!", Toast.LENGTH_SHORT).show()
+        val hargaKavling = viewModel.hargaKavlingLive.value
+
+        if (hargaKavling != null) {
+            val dialogBinding = DialogBaselineAngsuranPerBulanBinding.inflate(layoutInflater)
+            val dialog = MaterialAlertDialogBuilder(requireContext()).apply {
+                setCancelable(false)
+                setView(dialogBinding.root)
+            }.create()
+
+            DialogUtil.additionalDialogSetting(requireContext(), dialog)
+
+            var biayaAngsuranPerBulan = 0.0
+
+            dialogBinding.edtInfoHargaKavling.setText("Rp. ${NumberUtil.formatLongToString(hargaKavling.hargaLong)}")
+            dialogBinding.btnHitung.setOnClickListener {
+                val opsiTahun = dialogBinding.edtOpsiTahunAngsuran.text.toString()
+                biayaAngsuranPerBulan = BaselinePembayaran.hitungAngsuranPerBulan(hargaKavling, opsiTahun.toInt())
+                val text = "${NumberUtil.formatLongToString(hargaKavling.hargaLong)} / $opsiTahun = ${NumberUtil.formatDoubleToString(biayaAngsuranPerBulan)}"
+
+                dialogBinding.tvPerhitungan.text = text
+                dialogBinding.edtUangAngsuranPerBulan.setText(biayaAngsuranPerBulan.toString())
+            }
+            dialogBinding.edtUangAngsuranPerBulan.addTextChangedListener {
+                it?.toString()?.also { string ->
+                    if (string.isNotEmpty()) {
+                        val text = "= Rp. ${NumberUtil.formatDoubleToString(string.toDouble())}"
+
+                        dialogBinding.tvInfoParsedUangAngsuranRupiah.text = text
+                    } else {
+                        dialogBinding.tvInfoParsedUangAngsuranRupiah.text = "Rp. 0"
+                    }
+                }
+            }
+
+            dialog.show()
+
+            dialogBinding.btnTambahkan.setOnClickListener {
+                // TODO
+            }
+            dialogBinding.btnBatal.setOnClickListener {
+                // TODO: Cancel tambahkanJob
+                dialog.dismiss()
+            }
+        } else {
+            Snackbar.make(binding.root, "Harga Kavling masih kosong!", Snackbar.LENGTH_SHORT).show()
+        }
     }
 
     private fun showTerminSelectionButtonsDialog() {

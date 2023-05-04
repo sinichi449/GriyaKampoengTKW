@@ -10,7 +10,7 @@ class BaselinePembayaranRepositoryImpl: BaselinePembayaranRepository {
 
     override fun get(kavling: String): Flow<Result<BaselinePembayaran?>> {
         return flow {
-            delay(5000L)
+            delay(1000L)
 
             if (kavling == "D1") {
                 emit(Result.success(BaselinePembayaran(kavling = "D1", jumlahUang = 6_900_000L,)))

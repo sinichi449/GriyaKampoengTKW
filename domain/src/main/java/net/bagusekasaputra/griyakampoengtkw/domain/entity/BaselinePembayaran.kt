@@ -16,9 +16,9 @@ data class BaselinePembayaran(
         fun hitungAngsuranPerBulan(hargaKavling: HargaKavling, opsiTahun: Int): Double {
             // Tambah Luasan doesn't included
             val mHargaKavling = BigDecimal(hargaKavling.hargaLong)
-            val mOpsiTahun = BigDecimal(opsiTahun)
+            val mOpsiTahun = BigDecimal(opsiTahun * 12) // Multiplied by 12 to convert to Bulan
 
-            val mAngsuranPerBulan = mHargaKavling.divide(mOpsiTahun, 3, RoundingMode.HALF_UP)
+            val mAngsuranPerBulan = mHargaKavling.divide(mOpsiTahun, 2, RoundingMode.HALF_UP)
 
             return mAngsuranPerBulan.toDouble()
         }

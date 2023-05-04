@@ -45,6 +45,7 @@
             android:layout_height="wrap_content"
             android:hint="Opsi Tahun Angsuran"
             app:startIconDrawable="@drawable/ic_baseline_calendar_month_24"
+            app:endIconMode="clear_text"
             style="@style/DenseOutlinedTextInputLayout"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
@@ -55,19 +56,23 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 style="@style/DenseOutlineEditText"
-                android:text="4" />
+                android:text="4"
+                android:inputType="number"/>
 
         </com.google.android.material.textfield.TextInputLayout>
 
-        <com.google.android.material.textview.MaterialTextView
-            android:layout_width="wrap_content"
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btn_hitung"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
             app:layout_constraintStart_toEndOf="@id/til_opsi_tahun_angsuran"
+            app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="@id/til_opsi_tahun_angsuran"
             app:layout_constraintBottom_toBottomOf="@id/til_opsi_tahun_angsuran"
-            android:layout_marginStart="8dp"
-            android:text="Tahun"
-            style="@style/TextAppearance.MaterialComponents.Subtitle1"/>
+            android:layout_marginStart="16dp"
+            android:text="Hitung"
+            android:backgroundTint="@color/abang"
+            android:textColor="@color/white"/>
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
@@ -80,7 +85,7 @@
         android:id="@+id/tv_perhitungan"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="230,000,000 / 4 = ..."
+        android:text="0 / 0 = 0"
         style="@style/TextAppearance.MaterialComponents.Body1"
         android:layout_marginHorizontal="8dp"
         android:layout_marginTop="16dp"/>
@@ -90,13 +95,16 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
         app:startIconDrawable="@drawable/ic_baseline_attach_money_24"
-        style="@style/Widget.MaterialComponents.TextInputLayout.FilledBox.Dense">
+        app:endIconMode="clear_text"
+        android:hint="Uang Angsuran Per Bulan"
+        style="@style/DenseOutlinedTextInputLayout">
 
         <com.google.android.material.textfield.TextInputEditText
             android:id="@+id/edt_uang_angsuran_per_bulan"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            style="@style/Widget.MaterialComponents.TextInputEditText.FilledBox.Dense"/>
+            style="@style/DenseOutlineEditText"
+            android:inputType="numberDecimal"/>
 
     </com.google.android.material.textfield.TextInputLayout>
 
@@ -105,7 +113,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="4dp"
-        android:text="= Rp. 6,900,000"
+        android:text="= Rp. 0"
         android:layout_marginHorizontal="8dp"
         style="@style/TextAppearance.MaterialComponents.Headline6"
         android:textSize="18sp"/>
