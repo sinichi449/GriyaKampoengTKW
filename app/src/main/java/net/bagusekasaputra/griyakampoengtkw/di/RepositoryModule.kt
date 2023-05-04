@@ -323,4 +323,12 @@ object RepositoryModule {
     fun provideBiayaPribadiRepository(): BiayaPribadiRepository {
         return BiayaPribadiRepositoryImpl()
     }
+
+    /**
+     * Baseline Pembayaran
+     */
+    @Provides
+    fun provideBaselinePembayaranRepository(): BaselinePembayaranRepository {
+        return BaselinePembayaranRepositoryImpl()
+    }
 }

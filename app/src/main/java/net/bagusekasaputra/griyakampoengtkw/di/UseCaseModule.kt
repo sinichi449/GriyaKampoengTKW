@@ -5,6 +5,8 @@ import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.android.components.ViewModelComponent
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.CreateBackupAsyncUseCase
+import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.baselinePembayaran.GetBaselinePembayaranByKavlingAsyncUseCase
+import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.baselinePembayaran.SetBaselinePembayaranAsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.biayaLain.*
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.biayaMarketing.GetAllBiayaMarketingByKavlingKodeAsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.biayaPribadi.GetAllBiayaPribadiAsyncUseCase
@@ -472,5 +474,19 @@ object UseCaseModule {
     @Provides
     fun provideGetAllBiayaPribadiUseCase(biayaPribadiRepository: BiayaPribadiRepository): GetAllBiayaPribadiAsyncUseCase {
         return GetAllBiayaPribadiAsyncUseCase(biayaPribadiRepository)
+    }
+
+
+    /**
+     * Baseline Pembayaran
+     */
+    @Provides
+    fun provideGetBaselinePembayaranByKavlingUseCase(baselinePembayaranRepository: BaselinePembayaranRepository): GetBaselinePembayaranByKavlingAsyncUseCase {
+        return GetBaselinePembayaranByKavlingAsyncUseCase(baselinePembayaranRepository)
+    }
+
+    @Provides
+    fun provideSetBaselinePembayaranUseCase(baselinePembayaranRepository: BaselinePembayaranRepository): SetBaselinePembayaranAsyncUseCase {
+        return SetBaselinePembayaranAsyncUseCase(baselinePembayaranRepository)
     }
 }

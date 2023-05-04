@@ -13,6 +13,7 @@ import androidx.appcompat.app.AlertDialog
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
+import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.github.dhaval2404.imagepicker.ImagePicker
@@ -35,6 +36,7 @@ import net.bagusekasaputra.griyakampoengtkw.presentation.tableview.formPembayara
 import net.bagusekasaputra.griyakampoengtkw.presentation.util.*
 import net.bagusekasaputra.griyakampoengtkw.presentation.util.DialogUtil.additionalDialogSetting
 import net.bagusekasaputra.griyakampoengtkw.presentation.viewmodel.DetailViewModel
+import net.bagusekasaputra.griyakampoengtkw.presentation.viewmodel.FormPembayaranViewModel
 import net.bagusekasaputra.griyakampoengtkw.presentation.viewmodel.ImageViewModel
 import java.io.File
 import java.util.*
@@ -50,11 +52,15 @@ class FormPembayaranFragment : Fragment() {
     private lateinit var binding: FragmentFormPembayaranBinding
     private val viewModel: DetailViewModel by activityViewModels()
     private val imageViewModel: ImageViewModel by activityViewModels()
+    private val pembayaranViewModel: FormPembayaranViewModel by viewModels()
 
     private var currentKavlingKode: String? = null
     private var isAllFabsVisible = false
 
     private var offlineMode = false
+
+    // Dialog options for Baseline Pembayaran
+    private var angsuranDialogBinding: DialogBaselineAngsuranPerBulanBinding? = null
 
     @Inject
     lateinit var sharedPrefs: SharedPreferences
@@ -167,6 +173,10 @@ class FormPembayaranFragment : Fragment() {
             }
         }
 
+        binding.layoutLoadingFormPembayaran?.setOnClickListener {
+            showSetBaselinePembayaranDialog()
+        }
+
         // Even when I already set the visibility of FabAction into View.GONE,
         // to prevent the user from writing the data on offline mode, it's still
         // showing when I scroll the screen.
@@ -202,17 +212,6 @@ class FormPembayaranFragment : Fragment() {
         syncPembayaran()
     }
 
-    /**
-     * Synchronizations of:
-     *
-     * 1. Harga Kavling
-     *
-     * 2. List Pembayaran
-     *
-     * 3. Foto Kuitansi
-     *
-     * 4. Catatan Pembayaran
-     */
     private fun syncPembayaran() {
         viewModel.getHargaKavling(currentKavlingKode!!) { failMsg ->
             Toast.makeText(requireContext(), failMsg, Toast.LENGTH_LONG).show()
@@ -220,12 +219,21 @@ class FormPembayaranFragment : Fragment() {
         viewModel.getAllPembayaran(currentKavlingKode!!) { failMsg ->
             Toast.makeText(requireContext(), failMsg, Toast.LENGTH_LONG).show()
         }
-//        imageViewModel.getFotoKuitansi(currentKavlingKode!!) { failMsg ->
-//            Toast.makeText(requireContext(), failMsg, Toast.LENGTH_SHORT).show()
-//        }
         viewModel.getCatatanPembayaran(currentKavlingKode!!) { failMsg ->
             Toast.makeText(requireContext(), failMsg, Toast.LENGTH_SHORT).show()
         }
+        pembayaranViewModel.getBaselinePembayaran(
+            kavling = currentKavlingKode!!,
+            onLoading = {
+                binding.progressBarBaselineAngsuran?.visibility = View.VISIBLE
+                binding.layoutUangBaselineAngsuran?.visibility = View.GONE
+            },
+            onComplete = {
+                binding.progressBarBaselineAngsuran?.visibility = View.GONE
+                binding.layoutUangBaselineAngsuran?.visibility = View.VISIBLE
+            },
+            onFailure = { Toast.makeText(requireContext(), it, Toast.LENGTH_LONG).show() },
+        )
     }
 
     private fun onLoadingFormPembayaran(finished: Boolean) {
@@ -259,6 +267,14 @@ class FormPembayaranFragment : Fragment() {
                 (NumberUtil.formatStringToLong(hargaKavling.harga) + NumberUtil.formatStringToLong(hargaKavling.tambahanLuas)).let {
                     binding.tvTotalHarga?.text = NumberUtil.formatLongToString(it)
                 }
+            }
+        }
+
+        pembayaranViewModel.baselinePembayaranLive.observe(requireActivity()) {
+            if (it != null) {
+                binding.tvBaselineAngsuranBulanan?.text = "Rp. ${it.parsedJumlahUang}"
+            } else {
+                binding.tvBaselineAngsuranBulanan?.text = "-"
             }
         }
 
@@ -643,6 +659,11 @@ class FormPembayaranFragment : Fragment() {
 
         pembayaranTableViewAdapter.setAllItems(columnHeaders, rowHeaders, cellLists)
         pembayaranTableViewAdapter.notifyDataSetChanged()
+    }
+
+    private fun showSetBaselinePembayaranDialog() {
+        // TODO
+        Toast.makeText(requireContext(), "Baseline clicked!", Toast.LENGTH_SHORT).show()
     }
 
     private fun showTerminSelectionButtonsDialog() {
