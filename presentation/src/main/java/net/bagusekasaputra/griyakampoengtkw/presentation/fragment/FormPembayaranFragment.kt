@@ -41,6 +41,8 @@ import net.bagusekasaputra.griyakampoengtkw.presentation.viewmodel.DetailViewMod
 import net.bagusekasaputra.griyakampoengtkw.presentation.viewmodel.FormPembayaranViewModel
 import net.bagusekasaputra.griyakampoengtkw.presentation.viewmodel.ImageViewModel
 import java.io.File
+import java.text.DecimalFormat
+import java.text.DecimalFormatSymbols
 import java.util.*
 import javax.inject.Inject
 
@@ -672,16 +674,20 @@ class FormPembayaranFragment : Fragment() {
 
             DialogUtil.additionalDialogSetting(requireContext(), dialog)
 
-            var biayaAngsuranPerBulan = 0.0
+            var tempBiayaAngsuran: Double
 
             dialogBinding.edtInfoHargaKavling.setText("Rp. ${NumberUtil.formatLongToString(hargaKavling.hargaLong)}")
             dialogBinding.btnHitung.setOnClickListener {
                 val opsiTahun = dialogBinding.edtOpsiTahunAngsuran.text.toString()
-                biayaAngsuranPerBulan = BaselinePembayaran.hitungAngsuranPerBulan(hargaKavling, opsiTahun.toInt())
-                val text = "${NumberUtil.formatLongToString(hargaKavling.hargaLong)} / $opsiTahun = ${NumberUtil.formatDoubleToString(biayaAngsuranPerBulan)}"
+                tempBiayaAngsuran = BaselinePembayaran.hitungAngsuranPerBulan(hargaKavling, opsiTahun.toInt())
+
+                val tahunToBulan = opsiTahun.toInt() * 12
+                val text = "${NumberUtil.formatLongToString(hargaKavling.hargaLong)} / $tahunToBulan Bulan = Rp. ${NumberUtil.formatDoubleToString(tempBiayaAngsuran)}"
 
                 dialogBinding.tvPerhitungan.text = text
-                dialogBinding.edtUangAngsuranPerBulan.setText(biayaAngsuranPerBulan.toString())
+
+                val uangAngsuranStr = DecimalFormat("#", DecimalFormatSymbols(Locale.US)).format(tempBiayaAngsuran)// Prevent 1E77 or alike (exponents)
+                dialogBinding.edtUangAngsuranPerBulan.setText(uangAngsuranStr)
             }
             dialogBinding.edtUangAngsuranPerBulan.addTextChangedListener {
                 it?.toString()?.also { string ->
@@ -695,15 +701,40 @@ class FormPembayaranFragment : Fragment() {
                 }
             }
 
-            dialog.show()
-
             dialogBinding.btnTambahkan.setOnClickListener {
-                // TODO
+                val isInvalidInput = InputUtil.isNullOrEmptyEditTexts(dialogBinding.edtUangAngsuranPerBulan)
+
+                if (!isInvalidInput) {
+                    val biayaAngsuran = dialogBinding.edtUangAngsuranPerBulan.text?.toString()?.toLong() ?: 0L
+
+                    pembayaranViewModel.insertBaselinePembayaran(
+                        kavling = currentKavlingKode!!,
+                        jumlahUang = biayaAngsuran,
+                        onLoading = {
+                            dialogBinding.btnTambahkan.text = "Menyimpan ..."
+                            dialogBinding.btnTambahkan.isEnabled = false
+                        },
+                        onComplete = {
+                            Toast.makeText(requireContext(), "Berhasil mengubah Angsuran Bulanan: Rp ${NumberUtil.formatLongToString(biayaAngsuran)}", Toast.LENGTH_SHORT)
+                                .show()
+
+                            dialog.dismiss()
+                        },
+                        onFailure = {
+                            Toast.makeText(requireContext(), it, Toast.LENGTH_LONG).show()
+
+                            dialogBinding.btnTambahkan.isEnabled = true
+                            dialogBinding.btnTambahkan.text = "Tambahkan"
+                        }
+                    )
+                }
             }
             dialogBinding.btnBatal.setOnClickListener {
                 // TODO: Cancel tambahkanJob
                 dialog.dismiss()
             }
+
+            dialog.show()
         } else {
             Snackbar.make(binding.root, "Harga Kavling masih kosong!", Snackbar.LENGTH_SHORT).show()
         }

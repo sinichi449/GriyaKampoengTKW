@@ -1,5 +1,6 @@
 package net.bagusekasaputra.griyakampoengtkw.presentation.viewmodel
 
+import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -33,7 +34,7 @@ class FormPembayaranViewModel @Inject constructor(
         get() = _jumlahAngsuranPerBulanLive
 
     private var readBaselinePembayaranJob: Job? = null
-    private var writeBaselinePembayaranJob: Job? = null
+    var writeBaselinePembayaranJob: Job? = null
 
 
 
@@ -74,12 +75,16 @@ class FormPembayaranViewModel @Inject constructor(
     fun insertBaselinePembayaran(
         kavling: String,
         jumlahUang: Long,
+        onLoading: () -> Unit,
         onComplete: () -> Unit,
         onFailure: (msg: String) -> Unit,
     ) {
         writeBaselinePembayaranJob?.cancel()
 
+        onLoading()
+
         writeBaselinePembayaranJob = CoroutineScope(Dispatchers.IO).launch {
+            Log.d("DEBUG_ME", "BaselinePembayaran: Sending to use case")
             val request = SetBaselinePembayaranAsyncUseCase.Request(
                 BaselinePembayaran(
                     kavling = kavling,
@@ -98,8 +103,6 @@ class FormPembayaranViewModel @Inject constructor(
 
                     withContext(Dispatchers.Main) {
                         onFailure("ERROR menambahkan Baseline Pembayaran: ${it.message}")
-
-                        onComplete()
                     }
                 }
             }
