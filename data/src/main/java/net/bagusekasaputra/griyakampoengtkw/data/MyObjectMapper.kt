@@ -3,6 +3,7 @@ package net.bagusekasaputra.griyakampoengtkw.data
 import android.content.ContentResolver
 import android.net.Uri
 import net.bagusekasaputra.griyakampoengtkw.data.model.AppUpdateModel
+import net.bagusekasaputra.griyakampoengtkw.data.model.BaselinePembayaranModel
 import net.bagusekasaputra.griyakampoengtkw.data.model.BiayaLainModel
 import net.bagusekasaputra.griyakampoengtkw.data.model.BiayaMarketingModel
 import net.bagusekasaputra.griyakampoengtkw.data.model.BlockModel
@@ -18,6 +19,7 @@ import net.bagusekasaputra.griyakampoengtkw.data.model.PembayaranModel
 import net.bagusekasaputra.griyakampoengtkw.domain.ImageUtil
 import net.bagusekasaputra.griyakampoengtkw.domain.NumberUtil
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.AppUpdate
+import net.bagusekasaputra.griyakampoengtkw.domain.entity.BaselinePembayaran
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.BiayaLain
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.BiayaMarketing
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.Block
@@ -358,6 +360,30 @@ object MyObjectMapper {
             ImageSpr(
                 kavlingKode = it.kavlingKode,
                 bitmap = ImageUtil.getBitmapFromUri(contentResolver, Uri.parse(it.dstUri))
+            )
+        }
+    }
+
+
+    /**
+     * Baseline Pembayaran
+     */
+    fun mapBaselinePembayaran(model: BaselinePembayaranModel): BaselinePembayaran {
+        return model.let {
+            BaselinePembayaran(
+                kavling = it.kavling,
+                jumlahUang = it.jumlahUang,
+                timeMillis = it.timeMillis,
+            )
+        }
+    }
+
+    fun mapBaselinePembayaran(baselinePembayaran: BaselinePembayaran): BaselinePembayaranModel {
+        return baselinePembayaran.let {
+            BaselinePembayaranModel(
+                kavling = it.kavling,
+                jumlahUang = it.jumlahUang,
+                timeMillis = it.timeMillis,
             )
         }
     }

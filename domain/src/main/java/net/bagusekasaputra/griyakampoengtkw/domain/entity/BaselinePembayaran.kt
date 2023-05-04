@@ -5,7 +5,6 @@ import java.math.BigDecimal
 import java.math.RoundingMode
 
 data class BaselinePembayaran(
-    val id: Long = 0L,
     val kavling: String,
     val jumlahUang: Long,
     var timeMillis: Long = System.currentTimeMillis()

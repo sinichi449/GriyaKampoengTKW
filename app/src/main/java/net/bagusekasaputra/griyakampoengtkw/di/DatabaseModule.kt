@@ -70,7 +70,8 @@ object DatabaseModule {
         return Room.databaseBuilder(
             appContext, MyRoomDatabase::class.java, "griya_kampoeng_tkw.db"
         )
-            .addMigrations(MIGRATION_2_3, MIGRATION_9_10, MIGRATION_10_11, MIGRATION_15_16)
+            .fallbackToDestructiveMigration()
+//            .addMigrations(MIGRATION_2_3, MIGRATION_9_10, MIGRATION_10_11, MIGRATION_15_16)
             .build()
     }
 

@@ -8,6 +8,7 @@ import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
 import net.bagusekasaputra.griyakampoeng.tkw.data.local.MyRoomDatabase
+import net.bagusekasaputra.griyakampoeng.tkw.data.local.baselinePembayaran.RoomBaselinePembayaranLocalDataSource
 import net.bagusekasaputra.griyakampoeng.tkw.data.local.biayaLain.RoomBiayaLainDataSource
 import net.bagusekasaputra.griyakampoeng.tkw.data.local.biayaMarketing.RoomBiayaMarketingDataSource
 import net.bagusekasaputra.griyakampoeng.tkw.data.local.block.RoomBlockDataSource
@@ -40,6 +41,7 @@ import net.bagusekasaputra.griyakampoengtkw.data.backup.pembayaran.BackupPembaya
 import net.bagusekasaputra.griyakampoengtkw.data.interfaces.backup.*
 import net.bagusekasaputra.griyakampoengtkw.data.interfaces.local.*
 import net.bagusekasaputra.griyakampoengtkw.data.interfaces.remote.*
+import net.bagusekasaputra.griyakampoengtkw.data.remote.baselinePembayaran.FirebaseBaselinePembayaranDataSource
 import net.bagusekasaputra.griyakampoengtkw.data.remote.biayaLain.FirebaseBiayaLainDataSource
 import net.bagusekasaputra.griyakampoengtkw.data.remote.fotoPembayaran.StorageFotoPembayaranDataSource
 import net.bagusekasaputra.griyakampoengtkw.data.remote.imageDataDiri.StorageImageDataDiriDataSource
@@ -357,5 +359,19 @@ object DataSourceModule {
     @Provides
     fun provideBackupRestoreDataSource(): BackupRestoreDataSource {
         return BackupRestoreDataSourceImpl()
+    }
+
+
+    /**
+     * Baseline Pembayaran
+     */
+    @Provides
+    fun provideLocalBaselinePembayaranDataSource(myRoomDatabase: MyRoomDatabase): LocalBaselinePembayaranDataSource {
+        return RoomBaselinePembayaranLocalDataSource(myRoomDatabase)
+    }
+
+    @Provides
+    fun provideRemoteBaselinePembayaranDataSource(): RemoteBaselinePembayaranDataSource {
+        return FirebaseBaselinePembayaranDataSource()
     }
 }

@@ -1,8 +1,9 @@
 package net.bagusekasaputra.griyakampoeng.tkw.data.local
 
-import androidx.room.AutoMigration
 import androidx.room.Database
 import androidx.room.RoomDatabase
+import net.bagusekasaputra.griyakampoeng.tkw.data.local.baselinePembayaran.BaselinePembayaranRoomDao
+import net.bagusekasaputra.griyakampoeng.tkw.data.local.baselinePembayaran.BaselinePembayaranRoomEntity
 import net.bagusekasaputra.griyakampoeng.tkw.data.local.biayaLain.BiayaLainDao
 import net.bagusekasaputra.griyakampoeng.tkw.data.local.biayaLain.BiayaLainRoomEntity
 import net.bagusekasaputra.griyakampoeng.tkw.data.local.biayaMarketing.BiayaMarketingV2RoomDao
@@ -40,14 +41,16 @@ import net.bagusekasaputra.griyakampoeng.tkw.data.local.pengingat.PengingatRoomE
                FotoPembayaranEntity::class, PembayaranRoomEntity::class, HargaKavlingRoomEntity::class,
                CatatanPembayaranRoomEntity::class, FeeMarketingRoomEntity::class,
                 BiayaMarketingV2RoomEntity::class, PengingatRoomEntity::class, MetadataEntity::class,
-               BiayaLainRoomEntity::class],
-    version = 16,
+               BiayaLainRoomEntity::class, BaselinePembayaranRoomEntity::class],
+    version = 19,
     exportSchema = true,
     autoMigrations = [
-        AutoMigration(from = 11, to = 12),
-        AutoMigration(from = 12, to = 13),
-        AutoMigration(from = 13, to = 14),
-        AutoMigration(from = 14, to = 15),
+//        AutoMigration(from = 11, to = 12),
+//        AutoMigration(from = 12, to = 13),
+//        AutoMigration(from = 13, to = 14),
+//        AutoMigration(from = 14, to = 15),
+//        AutoMigration(from = 16, to = 17),
+//        AutoMigration(from = 17, to = 18),
     ]
 )
 abstract class MyRoomDatabase: RoomDatabase() {
@@ -81,4 +84,6 @@ abstract class MyRoomDatabase: RoomDatabase() {
     abstract fun getPengingatDao(): PengingatRoomDao
 
     abstract fun getBiayaLainDao(): BiayaLainDao
+
+    abstract fun getBaselinePembayaranDao(): BaselinePembayaranRoomDao
 }

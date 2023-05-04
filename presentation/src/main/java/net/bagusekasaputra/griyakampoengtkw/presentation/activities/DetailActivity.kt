@@ -22,6 +22,7 @@ import net.bagusekasaputra.griyakampoengtkw.presentation.fragment.FormPembayaran
 import net.bagusekasaputra.griyakampoengtkw.presentation.receiver.ProgressReceiver
 import net.bagusekasaputra.griyakampoengtkw.presentation.util.GriyaNodes
 import net.bagusekasaputra.griyakampoengtkw.presentation.viewmodel.DetailViewModel
+import net.bagusekasaputra.griyakampoengtkw.presentation.viewmodel.FormPembayaranViewModel
 import net.bagusekasaputra.griyakampoengtkw.presentation.viewmodel.ImageViewModel
 import javax.inject.Inject
 
@@ -31,6 +32,7 @@ class DetailActivity : AppCompatActivity() {
     private lateinit var binding: ActivityDetailBinding
     private lateinit var pagerAdapter: DetailViewPagerAdapter
     private val viewModel: DetailViewModel by viewModels()
+    private val pembayaranViewModel: FormPembayaranViewModel by viewModels()
     private val imageViewModel: ImageViewModel by viewModels()
 
     // SharedPreferences to load the user settings, such as offline mode
@@ -73,6 +75,7 @@ class DetailActivity : AppCompatActivity() {
         if (pathDataLama != null) {
             viewModel.dataMode = DataMode.DATA_LAMA
             imageViewModel.dataMode = DataMode.DATA_LAMA
+            pembayaranViewModel.dataMode = DataMode.DATA_LAMA
 
             binding.connectivityStatus.constraintConnectivity.visibility = View.VISIBLE
             binding.connectivityStatus.tvStatus.text = "Mode Data Lama"
@@ -84,6 +87,8 @@ class DetailActivity : AppCompatActivity() {
         if (offlineMode) {
             viewModel.offlineMode = true
             imageViewModel.dataMode = DataMode.OFFLINE
+            pembayaranViewModel.dataMode = DataMode.OFFLINE
+
             binding.connectivityStatus.constraintConnectivity.visibility = View.VISIBLE
         }
 

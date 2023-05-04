@@ -328,7 +328,17 @@ object RepositoryModule {
      * Baseline Pembayaran
      */
     @Provides
-    fun provideBaselinePembayaranRepository(): BaselinePembayaranRepository {
-        return BaselinePembayaranRepositoryImpl()
+    fun provideBaselinePembayaranRepository(
+        localDataSource: LocalBaselinePembayaranDataSource,
+        remoteDataSource: RemoteBaselinePembayaranDataSource,
+        localMetadata: LocalMetadataDataSource,
+        remoteMetadata: RemoteMetadataDataSource,
+    ): BaselinePembayaranRepository {
+        return BaselinePembayaranRepositoryImpl(
+            localDataSource,
+            remoteDataSource,
+            localMetadata,
+            remoteMetadata,
+        )
     }
 }

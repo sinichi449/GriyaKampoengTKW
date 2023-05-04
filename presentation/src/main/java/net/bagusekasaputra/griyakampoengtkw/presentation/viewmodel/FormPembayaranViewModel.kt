@@ -11,6 +11,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import net.bagusekasaputra.griyakampoengtkw.domain.DataMode
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.baselinePembayaran.GetBaselinePembayaranByKavlingAsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.baselinePembayaran.SetBaselinePembayaranAsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.BaselinePembayaran
@@ -33,6 +34,9 @@ class FormPembayaranViewModel @Inject constructor(
     val jumlahAngsuranPerBulanLive: LiveData<Double?>
         get() = _jumlahAngsuranPerBulanLive
 
+
+    var dataMode = DataMode.ONLINE
+
     private var readBaselinePembayaranJob: Job? = null
     var writeBaselinePembayaranJob: Job? = null
 
@@ -49,7 +53,7 @@ class FormPembayaranViewModel @Inject constructor(
         onLoading()
 
         readBaselinePembayaranJob = viewModelScope.launch {
-            val request = GetBaselinePembayaranByKavlingAsyncUseCase.Request(kavling)
+            val request = GetBaselinePembayaranByKavlingAsyncUseCase.Request(kavling, dataMode)
 
             getBaselinePembayaranByKavlingAsyncUseCase.execute(request).collect { result ->
                 result.onSuccess {
