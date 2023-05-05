@@ -15,7 +15,7 @@
         app:title="Kompresi Bitmap">
 
         <SeekBarPreference
-            android:defaultValue="256"
+            android:defaultValue="512"
             android:max="512"
             android:title="Foto Data Diri"
             app:key="max_size_foto_data_diri"
@@ -24,7 +24,7 @@
             app:updatesContinuously="true"/>
 
         <SeekBarPreference
-            android:defaultValue="256"
+            android:defaultValue="512"
             android:max="512"
             android:title="Foto Pembayaran"
             app:key="max_size_foto_pembayaran"
@@ -33,11 +33,20 @@
             app:updatesContinuously="true"/>
 
         <SeekBarPreference
-            android:defaultValue="1024"
+            android:defaultValue="2048"
             android:max="2048"
             android:title="Foto SPR"
             app:key="max_size_foto_spr"
             app:min="256"
+            app:showSeekBarValue="true"
+            app:updatesContinuously="true"/>
+
+        <SeekBarPreference
+            android:defaultValue="512"
+            android:max="512"
+            android:title="Foto Inden Booking"
+            app:key="max_size_foto_inden_booking"
+            app:min="64"
             app:showSeekBarValue="true"
             app:updatesContinuously="true"/>
 

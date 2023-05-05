@@ -2,12 +2,14 @@ package net.bagusekasaputra.griyakampoengtkw.presentation.activities
 
 import android.app.ProgressDialog
 import android.graphics.Bitmap
+import android.net.Uri
 import android.os.Bundle
 import android.util.Log
 import android.widget.ImageView
 import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.net.toUri
 import com.igreenwood.loupe.Loupe
 import dagger.hilt.android.AndroidEntryPoint
 import net.bagusekasaputra.griyakampoengtkw.presentation.ImageTransport
@@ -15,6 +17,7 @@ import net.bagusekasaputra.griyakampoengtkw.presentation.R
 import net.bagusekasaputra.griyakampoengtkw.presentation.databinding.ActivityFullImageBinding
 import net.bagusekasaputra.griyakampoengtkw.presentation.util.GriyaNodes
 import net.bagusekasaputra.griyakampoengtkw.presentation.viewmodel.ImageViewModel
+import java.io.File
 
 @AndroidEntryPoint
 class FullImageActivity : AppCompatActivity() {
@@ -70,6 +73,15 @@ class FullImageActivity : AppCompatActivity() {
 
     private fun createLoupe(bitmap: Bitmap) {
         binding.imgFullProfilCostumer.setImageBitmap(bitmap)
+
+        val loupe = Loupe.create(binding.imgFullProfilCostumer, binding.container) {
+            onViewTranslateListener = translateListener
+            maxZoom = 5.0f
+        }
+    }
+
+    private fun createLoupe(uri: Uri) {
+        binding.imgFullProfilCostumer.setImageURI(uri)
 
         val loupe = Loupe.create(binding.imgFullProfilCostumer, binding.container) {
             onViewTranslateListener = translateListener
@@ -150,6 +162,12 @@ class FullImageActivity : AppCompatActivity() {
                         createLoupe(it.bitmap)
                     }
                 }
+            }
+            GriyaNodes.INTENT_FOTO_INDEN_BOOKING -> {
+                val pathFoto = mapContent["pathFoto"]!!
+                val uri = File(pathFoto).toUri()
+
+                createLoupe(uri)
             }
         }
     }

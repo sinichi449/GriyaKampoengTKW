@@ -63,6 +63,15 @@ class IndenBookingTableAdapter: AbstractTableAdapter<TableIndenBooking.IbColumnH
     class IbRowHeaderViewHolder(binding: TableIndenBookingRowHeaderBinding): AbstractViewHolder(binding.root) {
         val container = binding.root
         val tvRowHeader = binding.tvRhNomor
+        var colorId = R.color.white
+
+        override fun setSelected(selectionState: SelectionState) {
+            super.setSelected(selectionState)
+
+            if (selectionState != SelectionState.SELECTED) {
+                setBackgroundColor(ContextCompat.getColor(container.context, colorId))
+            }
+        }
     }
 
     override fun onCreateRowHeaderViewHolder(parent: ViewGroup, viewType: Int): AbstractViewHolder {
@@ -89,6 +98,10 @@ class IndenBookingTableAdapter: AbstractTableAdapter<TableIndenBooking.IbColumnH
         rowPosition: Int
     ) {
         val viewHolder = holder as IbRowHeaderViewHolder
+
+        if (rowHeaderItemModel?.sudahIsiFoto == true) {
+            viewHolder.colorId = com.evrencoskun.tableview.R.color.table_view_default_selected_background_color
+        }
 
         viewHolder.tvRowHeader.text = rowHeaderItemModel?.nomor?.toString() ?: "0"
     }

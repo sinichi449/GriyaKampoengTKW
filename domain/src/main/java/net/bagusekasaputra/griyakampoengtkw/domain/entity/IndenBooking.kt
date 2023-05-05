@@ -6,6 +6,7 @@ data class IndenBooking(
     val namaCostumer: String,
     val tanggalDibayar: Date,
     val jumlahUang: Long,
+    val fotoPembayaranPath: String,
     val noHp: String,
     val keterangan: String = "-",
     var timeMillis: Long = System.currentTimeMillis(),

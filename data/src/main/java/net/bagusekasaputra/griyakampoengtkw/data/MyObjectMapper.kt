@@ -402,6 +402,7 @@ object MyObjectMapper {
                 namaCostumer = it.namaCostumer,
                 tanggalDibayar = it.tanggalDibayar.toDate(),
                 jumlahUang = it.jumlahUang,
+                fotoPembayaranPath = it.fotoPembayaranPath,
                 noHp = it.noHp,
                 keterangan = it.keterangan,
                 timeMillis = it.timeMillis,
@@ -416,6 +417,7 @@ object MyObjectMapper {
                 namaCostumer = it.namaCostumer,
                 tanggalDibayar = it.tanggalDibayar.toSlashedString(),
                 jumlahUang = it.jumlahUang,
+                fotoPembayaranPath = it.fotoPembayaranPath,
                 noHp = it.noHp,
                 keterangan = it.keterangan,
             )

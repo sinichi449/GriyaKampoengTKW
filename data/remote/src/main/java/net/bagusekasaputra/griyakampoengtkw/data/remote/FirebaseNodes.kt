@@ -14,8 +14,10 @@ object FirebaseNodes {
     const val UNMIGRATED = "unmigrated"
     const val METADATA_ROOT = "metadata"
     const val BASELINE_PEMBAYARAN = "baselinePembayaran"
+    const val INDEN_BOOKING = "indenBooking"
 
     const val IMAGE_DATA_DIRI = "data_diri_images"
     const val IMAGES_FOTO_PEMBAYARAN = "foto_pembayaran_images"
     const val IMAGE_SPR = "spr_images"
+    const val IMAGE_INDEN_BOOKING = "inden_booking_images"
 }

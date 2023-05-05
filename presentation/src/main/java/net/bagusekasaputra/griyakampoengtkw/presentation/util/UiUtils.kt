@@ -10,6 +10,8 @@ import android.view.ViewParent
 import androidx.core.widget.NestedScrollView
 import com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
 import com.google.android.material.floatingactionbutton.FloatingActionButton
+import net.bagusekasaputra.griyakampoengtkw.presentation.ImageTransport
+import net.bagusekasaputra.griyakampoengtkw.presentation.activities.FullImageActivity
 
 object UiUtils {
 
@@ -61,5 +63,11 @@ object UiUtils {
         val intent = Intent(Intent.ACTION_VIEW)
         intent.data = Uri.parse(url)
         context.startActivity(intent)
+    }
+
+    fun <T> openFotoFull(context: Context, imageTransport: ImageTransport<T>) {
+        val fullImageIntent = Intent(context, FullImageActivity::class.java)
+        fullImageIntent.putExtra(GriyaNodes.INTENT_SOURCE_IMAGE, imageTransport)
+        context.startActivity(fullImageIntent)
     }
 }

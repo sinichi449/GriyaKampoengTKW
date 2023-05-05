@@ -26,6 +26,10 @@ class IndenBookingViewModel @Inject constructor(
     val listIndenBookingLive: LiveData<List<IndenBooking>?>
         get() = _listIndenBookingLive
 
+    private val _pathFotoIndenBookingLive = MutableLiveData<String?>()
+    val pathFotoIndenBookingLive: LiveData<String?>
+        get() = _pathFotoIndenBookingLive
+
     val showFab = MutableLiveData(false)
 
     var dataMode = DataMode.ONLINE
@@ -34,7 +38,9 @@ class IndenBookingViewModel @Inject constructor(
     var writeIndenBookingJob: Job? = null
 
 
-    fun getListIndenBooking(onComplete: () -> Unit, onFailure: (msg: String) -> Unit) {
+    fun getListIndenBooking(onProgress: () -> Unit, onComplete: () -> Unit, onFailure: (msg: String) -> Unit) {
+        onProgress()
+
         readIndenBookingJob = viewModelScope.launch {
             val request = GetAllIndenBookingAsyncUseCase.Request(dataMode)
 
@@ -82,6 +88,10 @@ class IndenBookingViewModel @Inject constructor(
                 }
             }
         }
+    }
+
+    fun updatePathFotoIndenBooking(path: String) {
+        _pathFotoIndenBookingLive.value = path
     }
 
     override fun onCleared() {

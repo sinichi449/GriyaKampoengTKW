@@ -8,4 +8,6 @@ interface RemoteIndenBookingDataSource {
 
     suspend fun insert(model: IndenBookingModel): Result<Nothing?>
 
+    suspend fun getFotoPembayaranPath(model: IndenBookingModel): Result<String?>
+
 }

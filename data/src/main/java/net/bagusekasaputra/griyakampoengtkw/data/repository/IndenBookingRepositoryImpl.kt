@@ -24,11 +24,14 @@ class IndenBookingRepositoryImpl(
 
     private val metadataHelper = MetadataHelper(localMetadata, remoteMetadata, "indenBooking")
     private var hasMetadataChecked = false
+    private var isMetadataInvalid = false
 
     override fun getAll(dataMode: DataMode): Flow<Result<List<IndenBooking>?>> {
         return flow {
             if (!hasMetadataChecked) {
                 metadataHelper.checkCache {
+                    isMetadataInvalid = true
+
                     localDataSource.deleteAll().onFailure {
                         it.printStackTrace()
 
@@ -50,21 +53,26 @@ class IndenBookingRepositoryImpl(
                 emit(mapResult)
             }
             val flowOnline = flow {
-                val remoteResult = remoteDataSource.getAll()
+                if (isMetadataInvalid) {
+                    val remoteResult = remoteDataSource.getAll()
+                    if (remoteResult.isSuccess) {
+                        val listModel = remoteResult.getOrNull()
+                        listModel?.forEach { model ->
+                            val downloadImageResult = remoteDataSource.getFotoPembayaranPath(model)
+                            if (downloadImageResult.isSuccess) {
+                                downloadImageResult.getOrNull()?.also {
+                                    model.fotoPembayaranPath = it
+                                }
+                            }
+                        }
 
-                if (remoteResult.isSuccess) {
-                    val listModel = remoteResult.getOrNull()
-
-                    if (listModel != null) {
-                        localDataSource.insertAll(listModel)
+                        localDataSource.insertAll(listModel ?: emptyList())
                     } else {
-                        emit(Result.success(null))
-                    }
-                } else {
-                    val errorCause = remoteResult.exceptionOrNull() ?: Throwable("IndenBookingRepo::getAll() -> Unknown ERROR trying to get to Remote Data Source!")
-                    errorCause.printStackTrace()
+                        val errorCause = remoteResult.exceptionOrNull() ?: Throwable("Unknown ERROR getAll() method IndenBookingRepository")
+                        errorCause.printStackTrace()
 
-                    emit(Result.failure(errorCause))
+                        emit(Result.failure(errorCause))
+                    }
                 }
 
                 emitAll(flowOffline)
@@ -91,6 +99,7 @@ class IndenBookingRepositoryImpl(
                 metadataHelper.updateMetadata()
 
                 val localResult = localDataSource.insert(model)
+
                 if (localResult.isFailure) {
                     val errorLocal = localResult.exceptionOrNull()
                     errorLocal?.printStackTrace()

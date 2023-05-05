@@ -1,6 +1,7 @@
 package net.bagusekasaputra.griyakampoengtkw.presentation.fragment
 
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -8,13 +9,18 @@ import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
+import androidx.recyclerview.widget.RecyclerView
 import com.evrencoskun.tableview.TableView
+import com.evrencoskun.tableview.listener.ITableViewListener
+import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.IndenBooking
+import net.bagusekasaputra.griyakampoengtkw.presentation.ImageTransport
 import net.bagusekasaputra.griyakampoengtkw.presentation.databinding.FragmentIndenBookingBinding
 import net.bagusekasaputra.griyakampoengtkw.presentation.dialog.ModifyIndenBookingDialog
 import net.bagusekasaputra.griyakampoengtkw.presentation.tableview.indenBooking.IndenBookingTableAdapter
 import net.bagusekasaputra.griyakampoengtkw.presentation.tableview.indenBooking.TableIndenBooking
+import net.bagusekasaputra.griyakampoengtkw.presentation.util.GriyaNodes
 import net.bagusekasaputra.griyakampoengtkw.presentation.util.UiUtils
 import net.bagusekasaputra.griyakampoengtkw.presentation.viewmodel.IndenBookingViewModel
 import net.bagusekasaputra.griyakampoengtkw.presentation.viewmodel.MainViewModel
@@ -67,6 +73,8 @@ class IndenBookingFragment : Fragment() {
         viewModel.listIndenBookingLive.observe(requireActivity()) {
             it?.also {
                 binding.tableViewIndenBooking.setItem(it)
+
+                Log.d("DEBUG_ME", "List inden booking: $it")
             }
         }
 
@@ -96,6 +104,86 @@ class IndenBookingFragment : Fragment() {
         )
 
         // TODO: Set Column width
+
+        tableViewListener = object : ITableViewListener {
+            override fun onCellClicked(cellView: RecyclerView.ViewHolder, column: Int, row: Int) {
+
+            }
+
+            override fun onCellDoubleClicked(
+                cellView: RecyclerView.ViewHolder,
+                column: Int,
+                row: Int
+            ) {
+
+            }
+
+            override fun onCellLongPressed(
+                cellView: RecyclerView.ViewHolder,
+                column: Int,
+                row: Int
+            ) {
+
+            }
+
+            override fun onColumnHeaderClicked(
+                columnHeaderView: RecyclerView.ViewHolder,
+                column: Int
+            ) {
+
+            }
+
+            override fun onColumnHeaderDoubleClicked(
+                columnHeaderView: RecyclerView.ViewHolder,
+                column: Int
+            ) {
+
+            }
+
+            override fun onColumnHeaderLongPressed(
+                columnHeaderView: RecyclerView.ViewHolder,
+                column: Int
+            ) {
+
+            }
+
+            override fun onRowHeaderClicked(rowHeaderView: RecyclerView.ViewHolder, row: Int) {
+                val indenBooking = listIndenBooking[row - 1]
+                val pathFoto = indenBooking.fotoPembayaranPath
+
+                if (pathFoto.isEmpty()) {
+                    Snackbar.make(binding.root, "Tidak Tersedia Foto Pembayaran Inden Booking!", Snackbar.LENGTH_SHORT)
+                        .show()
+                } else {
+                    val imageTransport = ImageTransport(
+                        sendIntention = GriyaNodes.INTENT_FOTO_INDEN_BOOKING,
+                        content = mapOf(
+                            Pair("pathFoto", indenBooking.fotoPembayaranPath)
+                        ),
+                        dataMode = mainViewModel.dataMode,
+                    )
+                    UiUtils.openFotoFull(requireContext(), imageTransport)
+                }
+            }
+
+            override fun onRowHeaderDoubleClicked(
+                rowHeaderView: RecyclerView.ViewHolder,
+                row: Int
+            ) {
+
+            }
+
+            override fun onRowHeaderLongPressed(rowHeaderView: RecyclerView.ViewHolder, row: Int) {
+
+            }
+
+        }
+    }
+
+    private fun showAddIndenBookingDialog() {
+        ModifyIndenBookingDialog().apply {
+            isCancelable = false
+        }.show(childFragmentManager, null)
     }
 
     private fun showAddIndenBookingDialog() {
@@ -106,6 +194,9 @@ class IndenBookingFragment : Fragment() {
 
     private fun sync() {
         viewModel.getListIndenBooking(
+            onProgress = {
+                binding.swipeRefreshIndenBooking.isRefreshing = true
+            },
             onComplete = {
                 binding.swipeRefreshIndenBooking.isRefreshing = false
             },

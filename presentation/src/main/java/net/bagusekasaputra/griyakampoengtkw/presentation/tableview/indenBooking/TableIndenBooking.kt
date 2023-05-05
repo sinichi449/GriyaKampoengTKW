@@ -20,7 +20,7 @@ class TableIndenBooking(
 
     class IbColumnHeader(val text: String)
 
-    class IbRowHeader(val nomor: Int)
+    class IbRowHeader(val nomor: Int, val sudahIsiFoto: Boolean)
 
     class IbCell(val text: String)
 
@@ -36,8 +36,10 @@ class TableIndenBooking(
 
     override fun getRowHeaderItems(): List<IbRowHeader> {
         val listRowHeader = mutableListOf<IbRowHeader>()
-        repeat(listIndenBooking.size) {
-            listRowHeader.add(IbRowHeader(it))
+        listIndenBooking.forEachIndexed { index, indenBooking ->
+            val sudahIsiFoto = indenBooking.fotoPembayaranPath.isNotEmpty()
+
+            listRowHeader.add(IbRowHeader(index.plus(1), sudahIsiFoto))
         }
 
         return listRowHeader

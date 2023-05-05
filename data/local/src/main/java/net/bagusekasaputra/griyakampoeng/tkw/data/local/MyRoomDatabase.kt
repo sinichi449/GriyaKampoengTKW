@@ -26,6 +26,8 @@ import net.bagusekasaputra.griyakampoeng.tkw.data.local.imageDataDiri.ImageDataD
 import net.bagusekasaputra.griyakampoeng.tkw.data.local.imageDataDiri.ImageDataDiriRoomEntity
 import net.bagusekasaputra.griyakampoeng.tkw.data.local.imageSpr.ImageSprRoomDao
 import net.bagusekasaputra.griyakampoeng.tkw.data.local.imageSpr.ImageSprRoomEntity
+import net.bagusekasaputra.griyakampoeng.tkw.data.local.indenBooking.IndenBookingRoomDao
+import net.bagusekasaputra.griyakampoeng.tkw.data.local.indenBooking.IndenBookingRoomEntity
 import net.bagusekasaputra.griyakampoeng.tkw.data.local.kavling.KavlingRoomDao
 import net.bagusekasaputra.griyakampoeng.tkw.data.local.kavling.KavlingRoomEntity
 import net.bagusekasaputra.griyakampoeng.tkw.data.local.metadata.MetadataDao
@@ -41,17 +43,9 @@ import net.bagusekasaputra.griyakampoeng.tkw.data.local.pengingat.PengingatRoomE
                FotoPembayaranEntity::class, PembayaranRoomEntity::class, HargaKavlingRoomEntity::class,
                CatatanPembayaranRoomEntity::class, FeeMarketingRoomEntity::class,
                 BiayaMarketingV2RoomEntity::class, PengingatRoomEntity::class, MetadataEntity::class,
-               BiayaLainRoomEntity::class, BaselinePembayaranRoomEntity::class],
-    version = 19,
+               BiayaLainRoomEntity::class, BaselinePembayaranRoomEntity::class, IndenBookingRoomEntity::class],
+    version = 20,
     exportSchema = true,
-    autoMigrations = [
-//        AutoMigration(from = 11, to = 12),
-//        AutoMigration(from = 12, to = 13),
-//        AutoMigration(from = 13, to = 14),
-//        AutoMigration(from = 14, to = 15),
-//        AutoMigration(from = 16, to = 17),
-//        AutoMigration(from = 17, to = 18),
-    ]
 )
 abstract class MyRoomDatabase: RoomDatabase() {
 
@@ -86,4 +80,6 @@ abstract class MyRoomDatabase: RoomDatabase() {
     abstract fun getBiayaLainDao(): BiayaLainDao
 
     abstract fun getBaselinePembayaranDao(): BaselinePembayaranRoomDao
+
+    abstract fun getIndenBookingDao(): IndenBookingRoomDao
 }
