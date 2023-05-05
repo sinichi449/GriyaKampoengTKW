@@ -6,20 +6,24 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import com.evrencoskun.tableview.TableView
 import dagger.hilt.android.AndroidEntryPoint
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.IndenBooking
 import net.bagusekasaputra.griyakampoengtkw.presentation.databinding.FragmentIndenBookingBinding
+import net.bagusekasaputra.griyakampoengtkw.presentation.dialog.ModifyIndenBookingDialog
 import net.bagusekasaputra.griyakampoengtkw.presentation.tableview.indenBooking.IndenBookingTableAdapter
 import net.bagusekasaputra.griyakampoengtkw.presentation.tableview.indenBooking.TableIndenBooking
 import net.bagusekasaputra.griyakampoengtkw.presentation.util.UiUtils
 import net.bagusekasaputra.griyakampoengtkw.presentation.viewmodel.IndenBookingViewModel
+import net.bagusekasaputra.griyakampoengtkw.presentation.viewmodel.MainViewModel
 
 @AndroidEntryPoint
 class IndenBookingFragment : Fragment() {
 
     private lateinit var binding: FragmentIndenBookingBinding
+    private val mainViewModel: MainViewModel by activityViewModels()
     private val viewModel: IndenBookingViewModel by viewModels()
 
     override fun onCreateView(
@@ -35,6 +39,8 @@ class IndenBookingFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        viewModel.dataMode = mainViewModel.dataMode
+
         setupViewModel()
 
         binding.swipeRefreshIndenBooking.setOnRefreshListener {
@@ -45,6 +51,15 @@ class IndenBookingFragment : Fragment() {
             val isExtended = viewModel.showFab.value ?: false
 
             viewModel.showFab.value = !isExtended
+        }
+
+        binding.fabTambahkan.setOnClickListener {
+            showAddIndenBookingDialog()
+        }
+
+        binding.fabUbah.setOnClickListener {
+            // TODO
+            Toast.makeText(requireContext(), "NOT YET IMPLEMENTED!", Toast.LENGTH_SHORT).show()
         }
     }
 
@@ -81,6 +96,12 @@ class IndenBookingFragment : Fragment() {
         )
 
         // TODO: Set Column width
+    }
+
+    private fun showAddIndenBookingDialog() {
+        ModifyIndenBookingDialog().apply {
+            isCancelable = false
+        }.show(childFragmentManager, null)
     }
 
     private fun sync() {

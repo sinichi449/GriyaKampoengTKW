@@ -21,6 +21,7 @@ import net.bagusekasaputra.griyakampoeng.tkw.data.local.fotoPembayaran.device.De
 import net.bagusekasaputra.griyakampoeng.tkw.data.local.hargaKavling.RoomHargaKavlingDataSource
 import net.bagusekasaputra.griyakampoeng.tkw.data.local.imageDataDiri.LocalImageDataDiriDataSourceImpl
 import net.bagusekasaputra.griyakampoeng.tkw.data.local.imageSpr.LocalImageSprDataSourceImpl
+import net.bagusekasaputra.griyakampoeng.tkw.data.local.indenBooking.RoomIndenBookingDataSource
 import net.bagusekasaputra.griyakampoeng.tkw.data.local.kavling.RoomKavlingDataSource
 import net.bagusekasaputra.griyakampoeng.tkw.data.local.metadata.RoomMetadataDataSource
 import net.bagusekasaputra.griyakampoeng.tkw.data.local.pembayaran.RoomPembayaranLocalDataSource
@@ -46,6 +47,7 @@ import net.bagusekasaputra.griyakampoengtkw.data.remote.biayaLain.FirebaseBiayaL
 import net.bagusekasaputra.griyakampoengtkw.data.remote.fotoPembayaran.StorageFotoPembayaranDataSource
 import net.bagusekasaputra.griyakampoengtkw.data.remote.imageDataDiri.StorageImageDataDiriDataSource
 import net.bagusekasaputra.griyakampoengtkw.data.remote.imageSpr.StorageImageSprDataSource
+import net.bagusekasaputra.griyakampoengtkw.data.remote.indenBooking.FirebaseIndenBookingDataSource
 import net.bagusekasaputra.griyakampoengtkw.data.remote.kavling.FirebaseKavlingDataSource
 import net.bagusekasaputra.griyakampoengtkw.data.remote.metadata.FirebaseMetadataDataSource
 import java.io.File
@@ -374,4 +376,19 @@ object DataSourceModule {
     fun provideRemoteBaselinePembayaranDataSource(databaseReference: DatabaseReference): RemoteBaselinePembayaranDataSource {
         return FirebaseBaselinePembayaranDataSource(databaseReference)
     }
+
+
+    /**
+     * Inden Booking
+     */
+    @Provides
+    fun provideLocalIndenBookingDataSource(roomDatabase: MyRoomDatabase): LocalIndenBookingDataSource {
+        return RoomIndenBookingDataSource(roomDatabase)
+    }
+
+    @Provides
+    fun provideRemoteIndenBookingDataSource(databaseReference: DatabaseReference): RemoteIndenBookingDataSource {
+        return FirebaseIndenBookingDataSource(databaseReference)
+    }
+
 }

@@ -1,56 +1,108 @@
 package net.bagusekasaputra.griyakampoengtkw.data.repository
 
+import android.util.Log
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.emitAll
 import kotlinx.coroutines.flow.flow
+import net.bagusekasaputra.griyakampoengtkw.data.DataUtil
+import net.bagusekasaputra.griyakampoengtkw.data.MetadataHelper
+import net.bagusekasaputra.griyakampoengtkw.data.MyObjectMapper
+import net.bagusekasaputra.griyakampoengtkw.data.interfaces.local.LocalIndenBookingDataSource
+import net.bagusekasaputra.griyakampoengtkw.data.interfaces.local.LocalMetadataDataSource
+import net.bagusekasaputra.griyakampoengtkw.data.interfaces.remote.RemoteIndenBookingDataSource
+import net.bagusekasaputra.griyakampoengtkw.data.interfaces.remote.RemoteMetadataDataSource
+import net.bagusekasaputra.griyakampoengtkw.domain.DataMode
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.IndenBooking
 import net.bagusekasaputra.griyakampoengtkw.domain.repository.IndenBookingRepository
-import java.util.Calendar
-import kotlin.random.Random
 
-class IndenBookingRepositoryImpl: IndenBookingRepository {
+class IndenBookingRepositoryImpl(
+    private val localDataSource: LocalIndenBookingDataSource,
+    private val remoteDataSource: RemoteIndenBookingDataSource,
+    localMetadata: LocalMetadataDataSource,
+    remoteMetadata: RemoteMetadataDataSource,
+): IndenBookingRepository {
 
-    override fun getAll(): Flow<Result<List<IndenBooking>?>> {
+    private val metadataHelper = MetadataHelper(localMetadata, remoteMetadata, "indenBooking")
+    private var hasMetadataChecked = false
+
+    override fun getAll(dataMode: DataMode): Flow<Result<List<IndenBooking>?>> {
         return flow {
-            val noHp6DigitPertama = "+6281-335-"
-            val jumlahIndenBooking = Random.nextInt(from = 1, until = 50)
-            val tanggalLimit = Calendar.getInstance().run {
-                set(Calendar.DAY_OF_MONTH, 1)
-                set(Calendar.MONTH, 1)
-                set(Calendar.YEAR, 2020)
+            if (!hasMetadataChecked) {
+                metadataHelper.checkCache {
+                    localDataSource.deleteAll().onFailure {
+                        it.printStackTrace()
 
-                timeInMillis
+                        Log.d("DEBUG_ME", "IndenBookingRepo::34 -> FAILED to clear all cache: ${it.message}")
+                    }
+                    metadataHelper.updateMetadata()
+                }
+
+                hasMetadataChecked = true
             }
-            val tanggalSekarang = System.currentTimeMillis()
 
-            val listIndenBooking = mutableListOf<IndenBooking>()
-            repeat(jumlahIndenBooking) {
-                val noHp3DigitTengah = Random.nextInt(from = 0, until = 999).run {
-                    this.toString().padStart(3, '0')
-                }
-                val noHp3DigitTerakhir = Random.nextInt(from = 0, until = 999).run {
-                    this.toString().padStart(3, '0')
-                }
-                val randomDate = Random.nextLong(from = tanggalLimit, until = tanggalSekarang).run {
-                    val calendar = Calendar.getInstance()
-                    calendar.timeInMillis = this
-
-                    calendar.time
-                }
-                val randomUangDibayar = Random.nextLong(from = 1L, until = 50L) * 1_000_000L
-
-                listIndenBooking.add(
-                    IndenBooking(
-                        id = it.toLong(),
-                        namaCostumer = "Costumer $it",
-                        tanggalDibayar = randomDate,
-                        jumlahUang = randomUangDibayar,
-                        noHp = "$noHp6DigitPertama-$noHp3DigitTengah-$noHp3DigitTerakhir",
-                        keterangan = "-",
-                    )
+            val flowOffline = flow {
+                val localResult = localDataSource.getAll()
+                val mapResult = DataUtil.mapListResult(
+                    originResult = localResult,
+                    targetMapper = MyObjectMapper::mapIndenBooking,
                 )
+
+                emit(mapResult)
+            }
+            val flowOnline = flow {
+                val remoteResult = remoteDataSource.getAll()
+
+                if (remoteResult.isSuccess) {
+                    val listModel = remoteResult.getOrNull()
+
+                    if (listModel != null) {
+                        localDataSource.insertAll(listModel)
+                    } else {
+                        emit(Result.success(null))
+                    }
+                } else {
+                    val errorCause = remoteResult.exceptionOrNull() ?: Throwable("IndenBookingRepo::getAll() -> Unknown ERROR trying to get to Remote Data Source!")
+                    errorCause.printStackTrace()
+
+                    emit(Result.failure(errorCause))
+                }
+
+                emitAll(flowOffline)
+            }
+            val flowDataLama = flow {
+                // TODO
+                emit(Result.success(null))
             }
 
-            emit(Result.success(listIndenBooking))
+            when (dataMode) {
+                DataMode.ONLINE -> emitAll(flowOnline)
+                DataMode.OFFLINE -> emitAll(flowOffline)
+                DataMode.DATA_LAMA -> emitAll(flowDataLama)
+            }
+        }
+    }
+
+    override fun insert(indenBooking: IndenBooking): Flow<Result<Nothing?>> {
+        return flow {
+            val model = MyObjectMapper.mapIndenBooking(indenBooking)
+            val remoteResult = remoteDataSource.insert(model)
+
+            if (remoteResult.isSuccess) {
+                metadataHelper.updateMetadata()
+
+                val localResult = localDataSource.insert(model)
+                if (localResult.isFailure) {
+                    val errorLocal = localResult.exceptionOrNull()
+                    errorLocal?.printStackTrace()
+
+                    Log.d("DEBUG_ME", "IndenBookingRepositoryImpl::insert() -> Gagal menambahkan Inden Booking ke Local Data Source: ${errorLocal?.message}")
+                }
+
+                emit(Result.success(null))
+            } else {
+                val errorCause = remoteResult.exceptionOrNull() ?: Throwable("IndenBookingRepositoryImpl::insert() -> UNKNOWN ERROR: Gagal menambahkan Inden Booking ke Remote")
+                emit(Result.failure(errorCause))
+            }
         }
     }
 }

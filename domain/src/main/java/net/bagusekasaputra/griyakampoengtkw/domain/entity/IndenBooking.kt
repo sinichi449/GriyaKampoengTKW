@@ -3,7 +3,6 @@ package net.bagusekasaputra.griyakampoengtkw.domain.entity
 import java.util.Date
 
 data class IndenBooking(
-    val id: Long = 0L,
     val namaCostumer: String,
     val tanggalDibayar: Date,
     val jumlahUang: Long,

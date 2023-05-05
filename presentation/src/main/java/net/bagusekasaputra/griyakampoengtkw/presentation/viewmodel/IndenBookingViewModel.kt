@@ -5,10 +5,13 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import net.bagusekasaputra.griyakampoengtkw.domain.DataMode
+import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.indenBooking.AddNewIndenBookingAsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.indenBooking.GetAllIndenBookingAsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.IndenBooking
 import javax.inject.Inject
@@ -16,6 +19,7 @@ import javax.inject.Inject
 @HiltViewModel
 class IndenBookingViewModel @Inject constructor(
     private val getAllIndenBookingAsyncUseCase: GetAllIndenBookingAsyncUseCase,
+    private val addNewIndenBookingAsyncUseCase: AddNewIndenBookingAsyncUseCase,
 ): ViewModel() {
 
     private val _listIndenBookingLive = MutableLiveData<List<IndenBooking>?>()
@@ -24,12 +28,15 @@ class IndenBookingViewModel @Inject constructor(
 
     val showFab = MutableLiveData(false)
 
-    private var indenBookingJob: Job? = null
+    var dataMode = DataMode.ONLINE
+
+    private var readIndenBookingJob: Job? = null
+    var writeIndenBookingJob: Job? = null
 
 
     fun getListIndenBooking(onComplete: () -> Unit, onFailure: (msg: String) -> Unit) {
-        indenBookingJob = viewModelScope.launch {
-            val request = GetAllIndenBookingAsyncUseCase.Request
+        readIndenBookingJob = viewModelScope.launch {
+            val request = GetAllIndenBookingAsyncUseCase.Request(dataMode)
 
             getAllIndenBookingAsyncUseCase.execute(request).collect { result ->
                 result.onSuccess {
@@ -50,10 +57,36 @@ class IndenBookingViewModel @Inject constructor(
         }
     }
 
+    fun insertIndenBooking(
+        indenBooking: IndenBooking,
+        onProgress: () -> Unit,
+        onComplete: () -> Unit,
+        onFailure: (msg: String) -> Unit
+    ) {
+        onProgress()
+
+        writeIndenBookingJob = CoroutineScope(Dispatchers.IO).launch {
+            val request = AddNewIndenBookingAsyncUseCase.Request(indenBooking)
+            addNewIndenBookingAsyncUseCase.execute(request).collect { result ->
+                result.onSuccess {
+                    withContext(Dispatchers.Main) {
+                        onComplete()
+                    }
+                }
+                result.onFailure {
+                    it.printStackTrace()
+
+                    withContext(Dispatchers.Main) {
+                        onFailure("Gagal menambahkan Inden Booking: ${it.message}")
+                    }
+                }
+            }
+        }
+    }
 
     override fun onCleared() {
         super.onCleared()
 
-        indenBookingJob?.cancel()
+        readIndenBookingJob?.cancel()
     }
 }

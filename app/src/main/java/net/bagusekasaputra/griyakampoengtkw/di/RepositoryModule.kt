@@ -307,15 +307,6 @@ object RepositoryModule {
         return DatabaseUserRepositoryImpl()
     }
 
-
-    /**
-     * Inden Booking
-     */
-    @Provides
-    fun provideIndenBookingRepository(): IndenBookingRepository {
-        return IndenBookingRepositoryImpl()
-    }
-
     /**
      * Biaya Pribadi
      */
@@ -335,6 +326,25 @@ object RepositoryModule {
         remoteMetadata: RemoteMetadataDataSource,
     ): BaselinePembayaranRepository {
         return BaselinePembayaranRepositoryImpl(
+            localDataSource,
+            remoteDataSource,
+            localMetadata,
+            remoteMetadata,
+        )
+    }
+
+
+    /**
+     * Inden Booking
+     */
+    @Provides
+    fun provideIndenBookingRepository(
+        localDataSource: LocalIndenBookingDataSource,
+        remoteDataSource: RemoteIndenBookingDataSource,
+        localMetadata: LocalMetadataDataSource,
+        remoteMetadata: RemoteMetadataDataSource,
+    ): IndenBookingRepository {
+        return IndenBookingRepositoryImpl(
             localDataSource,
             remoteDataSource,
             localMetadata,

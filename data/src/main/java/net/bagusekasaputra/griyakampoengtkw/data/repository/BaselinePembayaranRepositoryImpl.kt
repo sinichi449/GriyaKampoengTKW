@@ -34,6 +34,7 @@ class BaselinePembayaranRepositoryImpl(
 
                         Log.d("DEBUG_ME", "FAILED attempt to Invalidate/Purge \"Baseline Pembayaran\" cache: ${it.message}")
                     }
+                    metadataHelper.updateMetadata()
                 }
 
                 hasMetadataChecked = true

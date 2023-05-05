@@ -69,4 +69,5 @@ dependencies {
     implementation 'io.github.igreenwood.loupe:extensions:1.0.1'
     implementation "jp.wasabeef:recyclerview-animators:4.0.2"
     implementation 'com.github.abhishekti7:UnicornFilePicker:1.0.2'
+    implementation 'com.github.atwa:filepicker:1.0.7'
 }
