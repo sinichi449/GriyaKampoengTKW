@@ -15,6 +15,7 @@ import net.bagusekasaputra.griyakampoengtkw.domain.DataMode
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.baselinePembayaran.GetBaselinePembayaranByKavlingAsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.baselinePembayaran.SetBaselinePembayaranAsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.BaselinePembayaran
+import net.bagusekasaputra.griyakampoengtkw.domain.entity.HargaKavling
 import javax.inject.Inject
 
 /**
@@ -109,6 +110,22 @@ class FormPembayaranViewModel @Inject constructor(
                         onFailure("ERROR menambahkan Baseline Pembayaran: ${it.message}")
                     }
                 }
+            }
+        }
+    }
+
+    fun hitungAngsuranPerBulan(hargaKavling: HargaKavling, timeFrame: Int, opsiTimeframe: String): Double {
+        return when (opsiTimeframe) {
+            "Tahun" -> {
+                val tahunToBulan = timeFrame * 12
+
+                BaselinePembayaran.hitungAngsuranPerBulan(hargaKavling, tahunToBulan)
+            }
+            "Bulan" -> {
+                BaselinePembayaran.hitungAngsuranPerBulan(hargaKavling, timeFrame)
+            }
+            else -> {
+                throw Exception("Opsi timeframe tidak dikenali: $opsiTimeframe")
             }
         }
     }

@@ -12,12 +12,12 @@ data class BaselinePembayaran(
     val parsedJumlahUang = NumberUtil.formatLongToString(jumlahUang)
 
     companion object {
-        fun hitungAngsuranPerBulan(hargaKavling: HargaKavling, opsiTahun: Int): Double {
+        fun hitungAngsuranPerBulan(hargaKavling: HargaKavling, timeframeBulan: Int): Double {
             // Tambah Luasan doesn't included
             val mHargaKavling = BigDecimal(hargaKavling.hargaLong)
-            val mOpsiTahun = BigDecimal(opsiTahun * 12) // Multiplied by 12 to convert to Bulan
+            val mTimeFrameBulan = BigDecimal(timeframeBulan)
 
-            val mAngsuranPerBulan = mHargaKavling.divide(mOpsiTahun, 2, RoundingMode.HALF_UP)
+            val mAngsuranPerBulan = mHargaKavling.divide(mTimeFrameBulan, 2, RoundingMode.HALF_UP)
 
             return mAngsuranPerBulan.toDouble()
         }

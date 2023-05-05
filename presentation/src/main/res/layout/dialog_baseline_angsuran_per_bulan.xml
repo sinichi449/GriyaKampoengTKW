@@ -40,10 +40,10 @@
         android:layout_marginTop="8dp">
 
         <com.google.android.material.textfield.TextInputLayout
-            android:id="@+id/til_opsi_tahun_angsuran"
+            android:id="@+id/til_opsi_timeframe_angsuran"
             android:layout_width="150dp"
             android:layout_height="wrap_content"
-            android:hint="Opsi Tahun Angsuran"
+            android:hint="Opsi Timeframe"
             app:startIconDrawable="@drawable/ic_baseline_calendar_month_24"
             app:endIconMode="clear_text"
             style="@style/DenseOutlinedTextInputLayout"
@@ -52,7 +52,7 @@
             app:layout_constraintBottom_toBottomOf="parent">
 
             <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/edt_opsi_tahun_angsuran"
+                android:id="@+id/edt_opsi_timeframe_angsuran"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 style="@style/DenseOutlineEditText"
@@ -61,20 +61,26 @@
 
         </com.google.android.material.textfield.TextInputLayout>
 
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/btn_hitung"
+        <Spinner
+            android:id="@+id/spinner_timeframe_angsuran"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            app:layout_constraintStart_toEndOf="@id/til_opsi_tahun_angsuran"
+            app:layout_constraintStart_toEndOf="@id/til_opsi_timeframe_angsuran"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="@id/til_opsi_tahun_angsuran"
-            app:layout_constraintBottom_toBottomOf="@id/til_opsi_tahun_angsuran"
-            android:layout_marginStart="16dp"
-            android:text="Hitung"
-            android:backgroundTint="@color/abang"
-            android:textColor="@color/white"/>
+            app:layout_constraintTop_toTopOf="@id/til_opsi_timeframe_angsuran"
+            app:layout_constraintBottom_toBottomOf="@id/til_opsi_timeframe_angsuran"
+            android:layout_marginStart="16dp"/>
 
     </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/btn_hitung"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:text="Hitung"
+        android:backgroundTint="@color/abang"
+        android:textColor="@color/white"/>
 
     <com.google.android.material.divider.MaterialDivider
         android:layout_width="match_parent"

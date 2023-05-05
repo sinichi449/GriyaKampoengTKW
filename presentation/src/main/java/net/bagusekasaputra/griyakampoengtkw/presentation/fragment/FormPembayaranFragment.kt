@@ -7,6 +7,7 @@ import android.content.Intent
 import android.content.SharedPreferences
 import android.os.Bundle
 import android.view.*
+import android.widget.ArrayAdapter
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AlertDialog
@@ -22,7 +23,6 @@ import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
 import net.bagusekasaputra.griyakampoengtkw.domain.DataMode
 import net.bagusekasaputra.griyakampoengtkw.domain.NumberUtil
-import net.bagusekasaputra.griyakampoengtkw.domain.entity.BaselinePembayaran
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.HargaKavling
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.Pembayaran
 import net.bagusekasaputra.griyakampoengtkw.presentation.R
@@ -673,20 +673,43 @@ class FormPembayaranFragment : Fragment() {
 
             DialogUtil.additionalDialogSetting(requireContext(), dialog)
 
-            var tempBiayaAngsuran: Double
-
             dialogBinding.edtInfoHargaKavling.setText("Rp. ${NumberUtil.formatLongToString(hargaKavling.hargaLong)}")
+            dialogBinding.spinnerTimeframeAngsuran.apply {
+                val listOpsiTimeframe = listOf("Tahun", "Bulan")
+                adapter = ArrayAdapter(
+                    requireContext(), android.R.layout.simple_spinner_dropdown_item, listOpsiTimeframe
+                )
+            }
             dialogBinding.btnHitung.setOnClickListener {
-                val opsiTahun = dialogBinding.edtOpsiTahunAngsuran.text.toString()
-                tempBiayaAngsuran = BaselinePembayaran.hitungAngsuranPerBulan(hargaKavling, opsiTahun.toInt())
+                val timeFrame = dialogBinding.edtOpsiTimeframeAngsuran.text.toString().toInt()
+                val opsiTimeFrame = dialogBinding.spinnerTimeframeAngsuran.selectedItem.toString()
+                val biayaAngsuranPerBulan = try {
+                    pembayaranViewModel.hitungAngsuranPerBulan(
+                        hargaKavling,
+                        timeFrame,
+                        opsiTimeFrame
+                    )
+                } catch (e: Exception) {
+                    e.printStackTrace()
 
-                val tahunToBulan = opsiTahun.toInt() * 12
-                val text = "${NumberUtil.formatLongToString(hargaKavling.hargaLong)} / $tahunToBulan Bulan = Rp. ${NumberUtil.formatDoubleToString(tempBiayaAngsuran)}"
+                    Toast.makeText(requireContext(), e.message, Toast.LENGTH_LONG).show()
 
-                dialogBinding.tvPerhitungan.text = text
+                    0.0
+                }
 
-                val uangAngsuranStr = DecimalFormat("#", DecimalFormatSymbols(Locale.US)).format(tempBiayaAngsuran)// Prevent 1E77 or alike (exponents)
-                dialogBinding.edtUangAngsuranPerBulan.setText(uangAngsuranStr)
+                dialogBinding.tvPerhitungan.text = StringBuilder().run {
+                    append("${NumberUtil.formatLongToString(hargaKavling.hargaLong)} ")
+                    append("/ ${if (opsiTimeFrame == "Tahun") "$timeFrame Tahun (${timeFrame * 12} Bulan) " else "$timeFrame Bulan"} ")
+                    append("= Rp. ${NumberUtil.formatDoubleToString(biayaAngsuranPerBulan)}")
+
+                    toString()
+                }
+
+                dialogBinding.edtUangAngsuranPerBulan.setText(biayaAngsuranPerBulan.let {
+                    DecimalFormat("#", DecimalFormatSymbols(Locale.US))
+                        .format(it)
+                    // Prevent 1E77 or alike (exponents)
+                })
             }
             dialogBinding.edtUangAngsuranPerBulan.addTextChangedListener {
                 it?.toString()?.also { string ->
