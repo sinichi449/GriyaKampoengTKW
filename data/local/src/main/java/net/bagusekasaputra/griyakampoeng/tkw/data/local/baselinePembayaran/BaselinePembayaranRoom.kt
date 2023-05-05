@@ -22,7 +22,7 @@ interface BaselinePembayaranRoomDao {
     @Query("SELECT * FROM baselinePembayaran WHERE kavling=:kavling")
     fun get(kavling: String): BaselinePembayaranRoomEntity
 
-    @Insert(onConflict = OnConflictStrategy.IGNORE)
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun insert(entity: BaselinePembayaranRoomEntity): Long
 
     @Query("DELETE FROM baselinePembayaran")

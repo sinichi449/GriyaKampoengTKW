@@ -88,6 +88,13 @@ class BaselinePembayaranRepositoryImpl(
             if (remoteResult.isSuccess) {
                 metadataHelper.updateMetadata()
 
+                val localResult = localDataSource.insert(model)
+                if (localResult.isFailure) {
+                    val errorLocal = localResult.exceptionOrNull()
+                    errorLocal?.printStackTrace()
+
+                    Log.d("DEBUG_ME", "BaselinePembayaranRepo::98 -> Gagal menulis cache ${errorLocal?.message}")
+                }
                 emit(Result.success(null))
             } else {
                 val errorCause = remoteResult.exceptionOrNull()
