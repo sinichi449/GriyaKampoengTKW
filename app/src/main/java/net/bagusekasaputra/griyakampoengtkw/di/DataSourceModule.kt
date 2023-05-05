@@ -371,7 +371,7 @@ object DataSourceModule {
     }
 
     @Provides
-    fun provideRemoteBaselinePembayaranDataSource(): RemoteBaselinePembayaranDataSource {
-        return FirebaseBaselinePembayaranDataSource()
+    fun provideRemoteBaselinePembayaranDataSource(databaseReference: DatabaseReference): RemoteBaselinePembayaranDataSource {
+        return FirebaseBaselinePembayaranDataSource(databaseReference)
     }
 }
