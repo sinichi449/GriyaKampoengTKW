@@ -382,8 +382,11 @@ object DataSourceModule {
      * Inden Booking
      */
     @Provides
-    fun provideLocalIndenBookingDataSource(roomDatabase: MyRoomDatabase): LocalIndenBookingDataSource {
-        return RoomIndenBookingDataSource(roomDatabase)
+    fun provideLocalIndenBookingDataSource(
+        roomDatabase: MyRoomDatabase,
+        @ExternalDir externalFilesDir: File?,
+    ): LocalIndenBookingDataSource {
+        return RoomIndenBookingDataSource(roomDatabase, externalFilesDir)
     }
 
     @Provides

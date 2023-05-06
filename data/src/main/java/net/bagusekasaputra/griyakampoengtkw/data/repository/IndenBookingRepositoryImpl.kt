@@ -36,11 +36,7 @@ class IndenBookingRepositoryImpl(
 
                     metadataHelper.updateLocalMetadataOnInvalid()
 
-                    localDataSource.deleteAll()
-                        .onSuccess {
-                            isMetadataInvalid = false
-                        }
-                        .onFailure {
+                    localDataSource.deleteAll().onFailure {
                         it.printStackTrace()
 
                         Log.d("DEBUG_ME", "IndenBookingRepo::34 -> FAILED to clear all cache: ${it.message}")
@@ -59,6 +55,8 @@ class IndenBookingRepositoryImpl(
             }
             val flowOnline = flow {
                 if (isMetadataInvalid) {
+                    isMetadataInvalid = false
+
                     val remoteResult = remoteDataSource.getAll()
                     if (remoteResult.isSuccess) {
                         val listModel = remoteResult.getOrNull()

@@ -120,7 +120,7 @@ class FirebaseIndenBookingDataSource(
                 .addOnCompleteListener {
                     printLog("uploadFotoPembayaran", "Completed uploading \"$fileName\" into Remmote Server!")
 
-                    deleteImageCacheAfterUpload(model.fotoPembayaranPath)
+                    cleanAndMoveImagePostUpload(model)
                     trySendBlocking(Result.success(null))
                 }
                 .addOnFailureListener {
@@ -136,8 +136,12 @@ class FirebaseIndenBookingDataSource(
         }.first()
     }
 
-    private fun deleteImageCacheAfterUpload(path: String) {
-        File(path).delete()
+    private fun cleanAndMoveImagePostUpload(model: IndenBookingModel) {
+        val file = File(model.fotoPembayaranPath)
+
+        // Move file
+        val dstTargetMove = File(externalFilesDir, model.getStorageFolderAndFileName())
+        file.renameTo(dstTargetMove)
     }
 
     private fun printLog(methodName: String, message: String) {

@@ -4,9 +4,11 @@ import net.bagusekasaputra.griyakampoeng.tkw.data.local.MyRoomDatabase
 import net.bagusekasaputra.griyakampoeng.tkw.data.local.RoomRequestHelper
 import net.bagusekasaputra.griyakampoengtkw.data.interfaces.local.LocalIndenBookingDataSource
 import net.bagusekasaputra.griyakampoengtkw.data.model.IndenBookingModel
+import java.io.File
 
 class RoomIndenBookingDataSource(
-    roomDatabase: MyRoomDatabase
+    roomDatabase: MyRoomDatabase,
+    private val externalFilesDir: File?,
 ): LocalIndenBookingDataSource {
 
     private val dao = roomDatabase.getIndenBookingDao()
@@ -20,6 +22,12 @@ class RoomIndenBookingDataSource(
     }
 
     override suspend fun insert(model: IndenBookingModel): Result<Nothing?> {
+        /**
+         * We must change the foto Pembayaran path,
+         * because this insert() method mainly called by Remote Data Source.
+         */
+        model.fotoPembayaranPath = model.getFileFotoPembayaran(externalFilesDir).absolutePath
+
         return RoomRequestHelper.doNonGetOperation {
             dao.insert(model.toEntity())
         }
@@ -28,6 +36,8 @@ class RoomIndenBookingDataSource(
     override suspend fun insertAll(listModel: List<IndenBookingModel>): Result<Nothing?> {
         return RoomRequestHelper.doNonGetOperation {
             listModel.forEach {
+                it.fotoPembayaranPath = it.getFileFotoPembayaran(externalFilesDir).absolutePath
+
                 dao.insert(it.toEntity())
             }
         }

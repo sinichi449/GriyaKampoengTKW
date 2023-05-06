@@ -24,6 +24,10 @@ data class IndenBookingModel(
         return "$DST_FOLDER/${getFileName()}"
     }
 
+    fun getFileFotoPembayaran(externalFilesDir: File?): File {
+        return File(externalFilesDir, getStorageFolderAndFileName())
+    }
+
     companion object {
         const val DST_FOLDER = "inden_booking_images"
 
