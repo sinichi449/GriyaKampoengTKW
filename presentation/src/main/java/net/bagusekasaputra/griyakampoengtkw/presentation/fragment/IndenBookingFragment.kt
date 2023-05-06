@@ -4,6 +4,8 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.AdapterView
+import android.widget.ArrayAdapter
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
@@ -47,6 +49,31 @@ class IndenBookingFragment : Fragment() {
         viewModel.dataMode = mainViewModel.dataMode
 
         setupViewModel()
+
+        binding.spinnerUrutkan.apply {
+            val listOpsiFilter = listOf("Nama", "Tanggal", "Jumlah Uang")
+            adapter = ArrayAdapter(requireContext(),
+                android.R.layout.simple_spinner_dropdown_item,
+                listOpsiFilter,
+            )
+
+            onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
+                override fun onItemSelected(p0: AdapterView<*>?, p1: View?, position: Int, p3: Long) {
+                    try {
+                        viewModel.sortListIndenBooking(listOpsiFilter[position])
+                    } catch (e: Exception) {
+                        e.printStackTrace()
+
+                        Toast.makeText(requireContext(), e.message, Toast.LENGTH_LONG).show()
+                    }
+                }
+
+                override fun onNothingSelected(p0: AdapterView<*>?) {
+
+                }
+
+            }
+        }
 
         binding.swipeRefreshIndenBooking.setOnRefreshListener {
             sync()

@@ -120,6 +120,30 @@ class IndenBookingViewModel @Inject constructor(
         }
     }
 
+
+    fun sortListIndenBooking(method: String) {
+        when (method) {
+            "Nama" -> {
+                _listIndenBookingLive.value = _listIndenBookingLive.value?.sortedBy {
+                    it.namaCostumer
+                }
+            }
+            "Tanggal" -> {
+                _listIndenBookingLive.value = _listIndenBookingLive.value?.sortedBy {
+                    it.tanggalDibayar.time
+                }
+            }
+            "Jumlah Uang" -> {
+                _listIndenBookingLive.value = _listIndenBookingLive.value?.sortedBy {
+                    it.jumlahUang
+                }
+            }
+            else -> {
+                throw Exception("Unknown sort method \"$method\"!")
+            }
+        }
+    }
+
     fun updatePathFotoIndenBooking(path: String) {
         _pathFotoIndenBookingLive.value = path
     }
