@@ -4,6 +4,7 @@ import android.app.Activity
 import android.app.Dialog
 import android.content.SharedPreferences
 import android.os.Bundle
+import android.view.View
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.net.toFile
@@ -17,6 +18,7 @@ import net.bagusekasaputra.griyakampoengtkw.domain.entity.IndenBooking
 import net.bagusekasaputra.griyakampoengtkw.presentation.custom.ThousandSeparatorTextWatcher
 import net.bagusekasaputra.griyakampoengtkw.presentation.databinding.DialogModifyIndenBookingBinding
 import net.bagusekasaputra.griyakampoengtkw.presentation.toDate
+import net.bagusekasaputra.griyakampoengtkw.presentation.toSlashedDate
 import net.bagusekasaputra.griyakampoengtkw.presentation.util.DatePickerHelper
 import net.bagusekasaputra.griyakampoengtkw.presentation.util.DialogUtil
 import net.bagusekasaputra.griyakampoengtkw.presentation.util.InputUtil
@@ -24,7 +26,9 @@ import net.bagusekasaputra.griyakampoengtkw.presentation.viewmodel.IndenBookingV
 import javax.inject.Inject
 
 @AndroidEntryPoint
-class ModifyIndenBookingDialog: DialogFragment() {
+class ModifyIndenBookingDialog(
+    private val selectedIndenBooking: IndenBooking? = null
+): DialogFragment() {
 
     private val viewModel: IndenBookingViewModel by activityViewModels()
 
@@ -69,7 +73,28 @@ class ModifyIndenBookingDialog: DialogFragment() {
         DialogUtil.additionalDialogSetting(requireContext(), dialog)
 
         val datePickerHelper = DatePickerHelper(requireContext(), binding.btnPililhTanggal, binding.edtTanggalPembayaran)
-        datePickerHelper.setupDateDefaultOrPick(true)
+        val isEditMode = selectedIndenBooking != null
+        if (isEditMode) {
+            binding.tvDialogTitle.text = "Ubah Inden Booking"
+            binding.btnTambahkan.text = "Ubah"
+            binding.btnHapus.visibility = View.VISIBLE
+
+            // Fill the layout with existing data
+            selectedIndenBooking?.also {
+                binding.edtNamaCostumer.setText(it.namaCostumer)
+                binding.edtTanggalPembayaran.setText(it.tanggalDibayar.toSlashedDate())
+                binding.edtJumlahUangDibayar.setText(NumberUtil.formatLongToString(it.jumlahUang))
+                binding.edtFotoPembayaranPath.setText(it.fotoPembayaranPath)
+                binding.edtNoHp.setText(it.noHp)
+                binding.edtKeterangan.setText(it.keterangan)
+            }
+        } else {
+            datePickerHelper.setupDateDefaultOrPick(true)
+
+            binding.tvDialogTitle.text = "Tambahkan Inden Booking"
+            binding.btnTambahkan.text = "Tambahkan"
+            binding.btnHapus.visibility = View.GONE
+        }
 
         binding.edtJumlahUangDibayar.apply {
             addTextChangedListener(ThousandSeparatorTextWatcher(this))

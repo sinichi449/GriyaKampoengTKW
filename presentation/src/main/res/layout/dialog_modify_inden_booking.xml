@@ -11,9 +11,10 @@
         android:orientation="vertical">
 
         <com.google.android.material.textview.MaterialTextView
+            android:id="@+id/tv_dialog_title"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Inden Booking"
+            android:text="Tambahkan / Edit Inden Booking"
             style="@style/TextAppearance.MaterialComponents.Headline6"
             android:gravity="center"/>
 
@@ -187,8 +188,17 @@
             android:layout_height="wrap_content"
             android:text="Batal"
             app:cornerRadius="8dp"
-            android:backgroundTint="@color/abang"
             style="@style/NormalDialogButton"/>
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btn_hapus"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="36dp"
+            style="@style/NormalDialogButton"
+            android:backgroundTint="@color/abang"
+            android:text="Hapus"
+            android:visibility="gone"/>
 
     </androidx.appcompat.widget.LinearLayoutCompat>
 

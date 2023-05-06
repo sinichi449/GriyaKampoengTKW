@@ -52,20 +52,20 @@ class IndenBookingFragment : Fragment() {
             sync()
         }
 
-        binding.extendedFabActions.setOnClickListener {
-            val isExtended = viewModel.showFab.value ?: false
-
-            viewModel.showFab.value = !isExtended
-        }
+//        binding.extendedFabActions.setOnClickListener {
+//            val isExtended = viewModel.showFab.value ?: false
+//
+//            viewModel.showFab.value = !isExtended
+//        }
 
         binding.fabTambahkan.setOnClickListener {
             showAddIndenBookingDialog()
         }
 
-        binding.fabUbah.setOnClickListener {
-            // TODO
-            Toast.makeText(requireContext(), "NOT YET IMPLEMENTED!", Toast.LENGTH_SHORT).show()
-        }
+//        binding.fabUbah.setOnClickListener {
+//            // TODO
+//            Toast.makeText(requireContext(), "NOT YET IMPLEMENTED!", Toast.LENGTH_SHORT).show()
+//        }
     }
 
     private fun setupViewModel() {
@@ -75,18 +75,18 @@ class IndenBookingFragment : Fragment() {
             }
         }
 
-        viewModel.showFab.observe(requireActivity()) {
-            it?.also { extend ->
-                UiUtils.extendOrShrinkExtendedFab(
-                    extendedFabs = binding.extendedFabActions,
-                    anotherFabs = listOf(
-                        binding.fabTambahkan,
-                        binding.fabUbah,
-                    ),
-                    extend = extend,
-                )
-            }
-        }
+//        viewModel.showFab.observe(requireActivity()) {
+//            it?.also { extend ->
+//                UiUtils.extendOrShrinkExtendedFab(
+//                    extendedFabs = binding.extendedFabActions,
+//                    anotherFabs = listOf(
+//                        binding.fabTambahkan,
+//                        binding.fabUbah,
+//                    ),
+//                    extend = extend,
+//                )
+//            }
+//        }
     }
 
     private fun TableView.setItem(listIndenBooking: List<IndenBooking>) {
@@ -178,7 +178,8 @@ class IndenBookingFragment : Fragment() {
             }
 
             override fun onRowHeaderLongPressed(rowHeaderView: RecyclerView.ViewHolder, row: Int) {
-
+                ModifyIndenBookingDialog(listIndenBooking[row])
+                    .show(childFragmentManager, null)
             }
 
         }

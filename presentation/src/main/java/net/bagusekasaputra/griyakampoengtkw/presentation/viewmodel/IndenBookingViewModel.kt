@@ -31,12 +31,10 @@ class IndenBookingViewModel @Inject constructor(
         get() = _pathFotoIndenBookingLive
 
     val showFab = MutableLiveData(false)
-
     var dataMode = DataMode.ONLINE
 
     private var readIndenBookingJob: Job? = null
     var writeIndenBookingJob: Job? = null
-
 
     fun getListIndenBooking(onProgress: () -> Unit, onComplete: () -> Unit, onFailure: (msg: String) -> Unit) {
         onProgress()
