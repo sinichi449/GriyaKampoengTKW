@@ -160,26 +160,28 @@ class ModifyIndenBookingDialog(
         }
 
         binding.btnHapus.setOnClickListener {
-            viewModel.deleteIndenBooking(
-                indenBooking = selectedIndenBooking!!,
-                onProgress = {
-                    binding.btnTambahkan.isEnabled = false
-                    binding.btnHapus.isEnabled = false
-                    binding.btnHapus.text = "Menghapus ..."
-                },
-                onComplete = {
-                    Toast.makeText(requireContext(), "Berhasil menghapus!", Toast.LENGTH_SHORT).show()
+            deleteConfirmationDialog {
+                viewModel.deleteIndenBooking(
+                    indenBooking = selectedIndenBooking!!,
+                    onProgress = {
+                        binding.btnTambahkan.isEnabled = false
+                        binding.btnHapus.isEnabled = false
+                        binding.btnHapus.text = "Menghapus ..."
+                    },
+                    onComplete = {
+                        Toast.makeText(requireContext(), "Berhasil menghapus!", Toast.LENGTH_SHORT).show()
 
-                    dismiss()
-                },
-                onFailure = {
-                    Toast.makeText(requireContext(), it, Toast.LENGTH_LONG).show()
+                        dismiss()
+                    },
+                    onFailure = {
+                        Toast.makeText(requireContext(), it, Toast.LENGTH_LONG).show()
 
-                    binding.btnTambahkan.isEnabled = true
-                    binding.btnHapus.isEnabled = true
-                    binding.btnHapus.text = "Hapus"
-                }
-            )
+                        binding.btnTambahkan.isEnabled = true
+                        binding.btnHapus.isEnabled = true
+                        binding.btnHapus.text = "Hapus"
+                    }
+                )
+            }
         }
 
         return dialog
@@ -191,5 +193,21 @@ class ModifyIndenBookingDialog(
                 binding.edtFotoPembayaranPath.setText(pathFoto)
             }
         }
+    }
+
+    private fun deleteConfirmationDialog(onConfirm: () -> Unit) {
+        MaterialAlertDialogBuilder(requireContext()).apply {
+            setTitle("Hapus Inden Booking?")
+            setMessage("Apakah Anda yakin untuk menghapus?")
+            setPositiveButton("Ya") { dialog, _ ->
+                onConfirm()
+
+                dialog.dismiss()
+            }
+            setNegativeButton("Tidak") { dialog, _ ->
+                dialog.dismiss()
+            }
+        }.create()
+            .show()
     }
 }
