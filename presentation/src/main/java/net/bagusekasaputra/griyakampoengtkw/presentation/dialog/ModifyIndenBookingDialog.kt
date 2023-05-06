@@ -159,6 +159,29 @@ class ModifyIndenBookingDialog(
             dismiss()
         }
 
+        binding.btnHapus.setOnClickListener {
+            viewModel.deleteIndenBooking(
+                indenBooking = selectedIndenBooking!!,
+                onProgress = {
+                    binding.btnTambahkan.isEnabled = false
+                    binding.btnHapus.isEnabled = false
+                    binding.btnHapus.text = "Menghapus ..."
+                },
+                onComplete = {
+                    Toast.makeText(requireContext(), "Berhasil menghapus!", Toast.LENGTH_SHORT).show()
+
+                    dismiss()
+                },
+                onFailure = {
+                    Toast.makeText(requireContext(), it, Toast.LENGTH_LONG).show()
+
+                    binding.btnTambahkan.isEnabled = true
+                    binding.btnHapus.isEnabled = true
+                    binding.btnHapus.text = "Hapus"
+                }
+            )
+        }
+
         return dialog
     }
 

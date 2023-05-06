@@ -1,6 +1,7 @@
 package net.bagusekasaputra.griyakampoengtkw.data.repository
 
 import android.util.Log
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.emitAll
 import kotlinx.coroutines.flow.flow
@@ -14,6 +15,7 @@ import net.bagusekasaputra.griyakampoengtkw.data.interfaces.remote.RemoteMetadat
 import net.bagusekasaputra.griyakampoengtkw.domain.DataMode
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.IndenBooking
 import net.bagusekasaputra.griyakampoengtkw.domain.repository.IndenBookingRepository
+import kotlin.random.Random
 
 class IndenBookingRepositoryImpl(
     private val localDataSource: LocalIndenBookingDataSource,
@@ -115,6 +117,17 @@ class IndenBookingRepositoryImpl(
                 val errorCause = remoteResult.exceptionOrNull() ?: Throwable("IndenBookingRepositoryImpl::insert() -> UNKNOWN ERROR: Gagal menambahkan Inden Booking ke Remote")
                 emit(Result.failure(errorCause))
             }
+        }
+    }
+
+    override fun delete(indenBooking: IndenBooking): Flow<Result<Nothing?>> {
+        return flow {
+            // TODO
+            delay(3000L)
+
+            val isSuccess = Random.nextBoolean()
+            if (isSuccess) emit(Result.success(null))
+            else emit(Result.failure(Throwable("RANDOM ERROR!")))
         }
     }
 }

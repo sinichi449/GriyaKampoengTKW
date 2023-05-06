@@ -12,6 +12,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import net.bagusekasaputra.griyakampoengtkw.domain.DataMode
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.indenBooking.AddNewIndenBookingAsyncUseCase
+import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.indenBooking.DeleteSingleIndenBookingAsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.indenBooking.GetAllIndenBookingAsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.IndenBooking
 import javax.inject.Inject
@@ -20,6 +21,7 @@ import javax.inject.Inject
 class IndenBookingViewModel @Inject constructor(
     private val getAllIndenBookingAsyncUseCase: GetAllIndenBookingAsyncUseCase,
     private val addNewIndenBookingAsyncUseCase: AddNewIndenBookingAsyncUseCase,
+    private val deleteSingleIndenBookingAsyncUseCase: DeleteSingleIndenBookingAsyncUseCase,
 ): ViewModel() {
 
     private val _listIndenBookingLive = MutableLiveData<List<IndenBooking>?>()
@@ -82,6 +84,36 @@ class IndenBookingViewModel @Inject constructor(
 
                     withContext(Dispatchers.Main) {
                         onFailure("Gagal menambahkan Inden Booking: ${it.message}")
+                    }
+                }
+            }
+        }
+    }
+
+    fun deleteIndenBooking(
+        indenBooking: IndenBooking,
+        onProgress: () -> Unit,
+        onComplete: () -> Unit,
+        onFailure: (msg: String) -> Unit,
+    ) {
+        writeIndenBookingJob?.cancel()
+
+        onProgress()
+
+        writeIndenBookingJob = CoroutineScope(Dispatchers.IO).launch {
+            val request = DeleteSingleIndenBookingAsyncUseCase.Request(indenBooking)
+            deleteSingleIndenBookingAsyncUseCase.execute(request).collect { result ->
+                result.onSuccess {
+                    withContext(Dispatchers.Main) {
+                        onComplete()
+                    }
+                }
+
+                result.onFailure {
+                    it.printStackTrace()
+
+                    withContext(Dispatchers.Main) {
+                        onFailure("Gagal menghapus Inden Booking: ${it.message}")
                     }
                 }
             }
