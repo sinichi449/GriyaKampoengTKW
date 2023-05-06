@@ -105,6 +105,42 @@ class FirebaseIndenBookingDataSource(
         }.first()
     }
 
+    override suspend fun deleteFotoPembayaran(model: IndenBookingModel): Result<Nothing?> {
+        return callbackFlow<Result<Nothing?>> {
+            fotoIndenBookingRef.child(model.getFileName())
+                .delete()
+                .addOnSuccessListener {
+                    deleteFoto(model)
+
+                    trySendBlocking(Result.success(null))
+                }
+                .addOnFailureListener {
+                    it.printStackTrace()
+
+                    trySendBlocking(Result.failure(it))
+                }
+
+            awaitClose {  }
+        }.first()
+    }
+
+    override suspend fun delete(model: IndenBookingModel): Result<Nothing?> {
+        return callbackFlow<Result<Nothing?>> {
+            indenBookingRef.child(model.timeMillis.toString())
+                .removeValue()
+                .addOnCompleteListener {
+                    trySendBlocking(Result.success(null))
+                }
+                .addOnFailureListener {
+                    it.printStackTrace()
+
+                    trySendBlocking(Result.failure(it))
+                }
+
+            awaitClose {  }
+        }.first()
+    }
+
     private suspend fun uploadFotoPembayaranIndenBooking(model: IndenBookingModel): Result<Nothing?> {
         return callbackFlow<Result<Nothing?>> {
             val localUri = File(model.fotoPembayaranPath).toUri()
@@ -142,6 +178,11 @@ class FirebaseIndenBookingDataSource(
         // Move file
         val dstTargetMove = File(externalFilesDir, model.getStorageFolderAndFileName())
         file.renameTo(dstTargetMove)
+    }
+
+    private fun deleteFoto(model: IndenBookingModel) {
+        model.getFileFotoPembayaran(externalFilesDir)
+            .delete()
     }
 
     private fun printLog(methodName: String, message: String) {

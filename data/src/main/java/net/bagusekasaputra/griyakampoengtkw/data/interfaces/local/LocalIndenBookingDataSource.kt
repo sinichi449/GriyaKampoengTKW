@@ -11,5 +11,7 @@ interface LocalIndenBookingDataSource {
 
     suspend fun insertAll(listModel: List<IndenBookingModel>): Result<Nothing?>
 
+    suspend fun delete(model: IndenBookingModel): Result<Nothing?>
+
     suspend fun deleteAll(): Result<Nothing?>
 }

@@ -43,6 +43,12 @@ class RoomIndenBookingDataSource(
         }
     }
 
+    override suspend fun delete(model: IndenBookingModel): Result<Nothing?> {
+        return RoomRequestHelper.doNonGetOperation {
+            dao.deleteSingle(model.toEntity().timeMillis)
+        }
+    }
+
     override suspend fun deleteAll(): Result<Nothing?> {
         return RoomRequestHelper.doNonGetOperation {
             dao.deleteAll()

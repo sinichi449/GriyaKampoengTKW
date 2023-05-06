@@ -31,4 +31,7 @@ interface IndenBookingRoomDao {
 
     @Query("DELETE FROM indenBooking")
     fun deleteAll()
+
+    @Query("DELETE FROM indenBooking WHERE timeMillis=:timeMillis")
+    fun deleteSingle(timeMillis: Long)
 }

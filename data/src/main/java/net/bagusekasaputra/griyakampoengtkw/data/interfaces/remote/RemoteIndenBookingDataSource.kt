@@ -10,4 +10,8 @@ interface RemoteIndenBookingDataSource {
 
     suspend fun getFotoPembayaranPath(model: IndenBookingModel): Result<String?>
 
+    suspend fun deleteFotoPembayaran(model: IndenBookingModel): Result<Nothing?>
+
+    suspend fun delete(model: IndenBookingModel): Result<Nothing?>
+
 }

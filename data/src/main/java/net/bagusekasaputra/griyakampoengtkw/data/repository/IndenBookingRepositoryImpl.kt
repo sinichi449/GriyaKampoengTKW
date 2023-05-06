@@ -1,8 +1,10 @@
 package net.bagusekasaputra.griyakampoengtkw.data.repository
 
 import android.util.Log
-import kotlinx.coroutines.delay
+import kotlinx.coroutines.channels.awaitClose
+import kotlinx.coroutines.channels.trySendBlocking
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.callbackFlow
 import kotlinx.coroutines.flow.emitAll
 import kotlinx.coroutines.flow.flow
 import net.bagusekasaputra.griyakampoengtkw.data.DataUtil
@@ -15,7 +17,6 @@ import net.bagusekasaputra.griyakampoengtkw.data.interfaces.remote.RemoteMetadat
 import net.bagusekasaputra.griyakampoengtkw.domain.DataMode
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.IndenBooking
 import net.bagusekasaputra.griyakampoengtkw.domain.repository.IndenBookingRepository
-import kotlin.random.Random
 
 class IndenBookingRepositoryImpl(
     private val localDataSource: LocalIndenBookingDataSource,
@@ -26,7 +27,7 @@ class IndenBookingRepositoryImpl(
 
     private val metadataHelper = MetadataHelper(localMetadata, remoteMetadata, "indenBooking")
     private var hasMetadataChecked = false
-    private var isMetadataInvalid = false
+    private var hasWipedLocalDataSource = false
 
     override fun getAll(dataMode: DataMode): Flow<Result<List<IndenBooking>?>> {
         return flow {
@@ -34,11 +35,13 @@ class IndenBookingRepositoryImpl(
                 hasMetadataChecked = true
 
                 metadataHelper.checkCache {
-                    isMetadataInvalid = true
-
                     metadataHelper.updateLocalMetadataOnInvalid()
 
-                    localDataSource.deleteAll().onFailure {
+                    localDataSource.deleteAll()
+                        .onSuccess {
+                            hasWipedLocalDataSource = true
+                        }
+                        .onFailure {
                         it.printStackTrace()
 
                         Log.d("DEBUG_ME", "IndenBookingRepo::34 -> FAILED to clear all cache: ${it.message}")
@@ -56,8 +59,8 @@ class IndenBookingRepositoryImpl(
                 emit(mapResult)
             }
             val flowOnline = flow {
-                if (isMetadataInvalid) {
-                    isMetadataInvalid = false
+                if (hasWipedLocalDataSource) {
+                    hasWipedLocalDataSource = false
 
                     val remoteResult = remoteDataSource.getAll()
                     if (remoteResult.isSuccess) {
@@ -121,13 +124,38 @@ class IndenBookingRepositoryImpl(
     }
 
     override fun delete(indenBooking: IndenBooking): Flow<Result<Nothing?>> {
-        return flow {
-            // TODO
-            delay(3000L)
+        return callbackFlow {
+            val model = MyObjectMapper.mapIndenBooking(indenBooking)
+            remoteDataSource.delete(model)
+                .onSuccess {
+                    metadataHelper.updateMetadataOnDataChange()
 
-            val isSuccess = Random.nextBoolean()
-            if (isSuccess) emit(Result.success(null))
-            else emit(Result.failure(Throwable("RANDOM ERROR!")))
+                    val storageFotoResult = remoteDataSource.deleteFotoPembayaran(model)
+                    if (storageFotoResult.isSuccess) {
+                        val localResult = localDataSource.delete(model)
+                        if (localResult.isFailure) {
+                            val errorCause = localResult.exceptionOrNull() ?: Throwable("Unknwon Error delete() Inden Booking")
+                            errorCause.printStackTrace()
+
+                            Log.d("DEBUG_ME", "IndenBookingRepoImpl::delete() -> Error Local Data Source on delete: ${errorCause.message}")
+                        }
+
+                        trySendBlocking(Result.success(null))
+                    } else {
+                        val errorCause = storageFotoResult.exceptionOrNull() ?: Throwable("Unknown Error delete Foto Pembayaran Inden Booking")
+                        errorCause.printStackTrace()
+                        Log.d("DEBUG_ME", "IndenBookingRepoImpl::delete() -> Error deleting Inden Booking: ${errorCause.message}")
+
+                        trySendBlocking(Result.failure(errorCause))
+                    }
+                }
+                .onFailure {
+                    it.printStackTrace()
+
+                    trySendBlocking(Result.failure(it))
+                }
+
+            awaitClose {  }
         }
     }
 }
