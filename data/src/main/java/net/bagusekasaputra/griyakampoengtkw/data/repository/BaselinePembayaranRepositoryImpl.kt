@@ -28,16 +28,17 @@ class BaselinePembayaranRepositoryImpl(
     override fun get(kavling: String, dataMode: DataMode): Flow<Result<BaselinePembayaran?>> {
         return flow {
             if (!hasMetadataChecked) {
+                hasMetadataChecked = true
+
                 metadataHelper.checkCache {
+                    metadataHelper.updateLocalMetadataOnInvalid()
+
                     localDataSource.deleteAll().onFailure {
                         it.printStackTrace()
 
                         Log.d("DEBUG_ME", "FAILED attempt to Invalidate/Purge \"Baseline Pembayaran\" cache: ${it.message}")
                     }
-                    metadataHelper.updateMetadata()
                 }
-
-                hasMetadataChecked = true
             }
 
             val flowOffline = flow {
@@ -87,7 +88,7 @@ class BaselinePembayaranRepositoryImpl(
             val remoteResult = remoteDataSource.insert(model)
 
             if (remoteResult.isSuccess) {
-                metadataHelper.updateMetadata()
+                metadataHelper.updateLocalMetadataOnInvalid()
 
                 val localResult = localDataSource.insert(model)
                 if (localResult.isFailure) {

@@ -29,18 +29,23 @@ class IndenBookingRepositoryImpl(
     override fun getAll(dataMode: DataMode): Flow<Result<List<IndenBooking>?>> {
         return flow {
             if (!hasMetadataChecked) {
+                hasMetadataChecked = true
+
                 metadataHelper.checkCache {
                     isMetadataInvalid = true
 
-                    localDataSource.deleteAll().onFailure {
+                    metadataHelper.updateLocalMetadataOnInvalid()
+
+                    localDataSource.deleteAll()
+                        .onSuccess {
+                            isMetadataInvalid = false
+                        }
+                        .onFailure {
                         it.printStackTrace()
 
                         Log.d("DEBUG_ME", "IndenBookingRepo::34 -> FAILED to clear all cache: ${it.message}")
                     }
-                    metadataHelper.updateMetadata()
                 }
-
-                hasMetadataChecked = true
             }
 
             val flowOffline = flow {
@@ -96,7 +101,7 @@ class IndenBookingRepositoryImpl(
             val remoteResult = remoteDataSource.insert(model)
 
             if (remoteResult.isSuccess) {
-                metadataHelper.updateMetadata()
+                metadataHelper.updateMetadataOnDataChange()
 
                 val localResult = localDataSource.insert(model)
 

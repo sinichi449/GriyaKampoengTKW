@@ -1,7 +1,6 @@
 package net.bagusekasaputra.griyakampoengtkw.presentation.fragment
 
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -73,8 +72,6 @@ class IndenBookingFragment : Fragment() {
         viewModel.listIndenBookingLive.observe(requireActivity()) {
             it?.also {
                 binding.tableViewIndenBooking.setItem(it)
-
-                Log.d("DEBUG_ME", "List inden booking: $it")
             }
         }
 
@@ -103,11 +100,18 @@ class IndenBookingFragment : Fragment() {
             tableIndenBooking.getCellItems(),
         )
 
-        // TODO: Set Column width
+        setColumnWidth(TableIndenBooking.COLUMN_NAMA_COSTUMER, 400)
+        setColumnWidth(TableIndenBooking.COLUMN_TANGGAL_DIBAYAR, 300) // Tanggal Dibayar
+        setColumnWidth(TableIndenBooking.COLUMN_JUMLAH_UANG, 350) // Jumlah Uang
+        setColumnWidth(TableIndenBooking.COLUMN_NO_HP, 400) // No Hp
+        setColumnWidth(TableIndenBooking.COLUMN_KETERANGAN, 500) // Keterangan
 
         tableViewListener = object : ITableViewListener {
             override fun onCellClicked(cellView: RecyclerView.ViewHolder, column: Int, row: Int) {
-
+                if (column == TableIndenBooking.COLUMN_NO_HP) {
+                    val noHp = listIndenBooking[row].noHp
+                    UiUtils.openWhatsapp(requireContext(), noHp)
+                }
             }
 
             override fun onCellDoubleClicked(
@@ -148,7 +152,7 @@ class IndenBookingFragment : Fragment() {
             }
 
             override fun onRowHeaderClicked(rowHeaderView: RecyclerView.ViewHolder, row: Int) {
-                val indenBooking = listIndenBooking[row - 1]
+                val indenBooking = listIndenBooking[row]
                 val pathFoto = indenBooking.fotoPembayaranPath
 
                 if (pathFoto.isEmpty()) {
@@ -185,13 +189,6 @@ class IndenBookingFragment : Fragment() {
             isCancelable = false
         }.show(childFragmentManager, null)
     }
-
-    private fun showAddIndenBookingDialog() {
-        ModifyIndenBookingDialog().apply {
-            isCancelable = false
-        }.show(childFragmentManager, null)
-    }
-
     private fun sync() {
         viewModel.getListIndenBooking(
             onProgress = {
