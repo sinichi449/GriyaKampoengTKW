@@ -1,5 +1,12 @@
 package net.bagusekasaputra.griyakampoengtkw.presentation.fragment
 
+import android.app.NotificationChannel
+import android.app.NotificationManager
+import android.content.BroadcastReceiver
+import android.content.Context
+import android.content.Intent
+import android.content.IntentFilter
+import android.os.Build
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -7,9 +14,12 @@ import android.view.ViewGroup
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
 import android.widget.Toast
+import androidx.core.app.NotificationCompat
+import androidx.core.app.NotificationManagerCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
+import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import androidx.recyclerview.widget.RecyclerView
 import com.evrencoskun.tableview.TableView
 import com.evrencoskun.tableview.listener.ITableViewListener
@@ -17,14 +27,17 @@ import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.IndenBooking
 import net.bagusekasaputra.griyakampoengtkw.presentation.ImageTransport
+import net.bagusekasaputra.griyakampoengtkw.presentation.R
 import net.bagusekasaputra.griyakampoengtkw.presentation.databinding.FragmentIndenBookingBinding
 import net.bagusekasaputra.griyakampoengtkw.presentation.dialog.ModifyIndenBookingDialog
 import net.bagusekasaputra.griyakampoengtkw.presentation.tableview.indenBooking.IndenBookingTableAdapter
 import net.bagusekasaputra.griyakampoengtkw.presentation.tableview.indenBooking.TableIndenBooking
 import net.bagusekasaputra.griyakampoengtkw.presentation.util.GriyaNodes
+import net.bagusekasaputra.griyakampoengtkw.presentation.util.NotificationUtil
 import net.bagusekasaputra.griyakampoengtkw.presentation.util.UiUtils
 import net.bagusekasaputra.griyakampoengtkw.presentation.viewmodel.IndenBookingViewModel
 import net.bagusekasaputra.griyakampoengtkw.presentation.viewmodel.MainViewModel
+import javax.inject.Inject
 
 @AndroidEntryPoint
 class IndenBookingFragment : Fragment() {
@@ -32,6 +45,44 @@ class IndenBookingFragment : Fragment() {
     private lateinit var binding: FragmentIndenBookingBinding
     private val mainViewModel: MainViewModel by activityViewModels()
     private val viewModel: IndenBookingViewModel by viewModels()
+
+    private val PROGRESS_CHANNEL = "GktProgress"
+
+    private val uploadBroadcastReceiver = object : BroadcastReceiver() {
+        override fun onReceive(context: Context?, intent: Intent?) {
+            val progress = intent?.extras?.getInt("EXTRAS_PROGRESS") ?: 20
+            val isComplete = intent?.extras?.getBoolean("EXTRAS_IS_COMPLETED") ?: false
+
+            val notificationManager = NotificationManagerCompat.from(requireContext())
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                val channel = NotificationChannel(PROGRESS_CHANNEL, NotificationUtil.CHANNEL_NAME, NotificationManager.IMPORTANCE_HIGH)
+                notificationManager.createNotificationChannel(channel)
+            }
+            val notification = NotificationCompat.Builder(requireContext(), PROGRESS_CHANNEL).apply {
+                setSmallIcon(if (!isComplete) R.drawable.ic_baseline_hourglass_top_24 else R.drawable.ic_baseline_check_circle_18)
+                setContentTitle(if (!isComplete) "Sedang mengupload..." else "Selesai upload!")
+                if (!isComplete) {
+                    setProgress(100, progress, false)
+                    setOngoing(true)
+                } else {
+                    setOngoing(false)
+                    setContentText("Berhasil mengupload foto Inden Booking!")
+                }
+            }.build()
+
+            notificationManager.notify(NotificationUtil.UPLOAD_INDEN_BOOKING_ID, notification)
+        }
+
+    }
+
+    @Inject
+    lateinit var localBroadcastManager: LocalBroadcastManager
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+
+        localBroadcastManager.registerReceiver(uploadBroadcastReceiver, IntentFilter("net.bagusekasaputra.griyakampoengtkw.ACTION.UPLOAD_PROGRESS"))
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -235,5 +286,11 @@ class IndenBookingFragment : Fragment() {
         super.onResume()
 
         sync()
+    }
+
+    override fun onDestroy() {
+        localBroadcastManager.unregisterReceiver(uploadBroadcastReceiver)
+
+        super.onDestroy()
     }
 }

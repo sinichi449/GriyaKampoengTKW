@@ -1,7 +1,9 @@
 package net.bagusekasaputra.griyakampoengtkw.data.remote.indenBooking
 
+import android.content.Intent
 import android.util.Log
 import androidx.core.net.toUri
+import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.ktx.getValue
 import com.google.firebase.storage.StorageReference
@@ -14,11 +16,14 @@ import net.bagusekasaputra.griyakampoengtkw.data.model.IndenBookingModel
 import net.bagusekasaputra.griyakampoengtkw.data.remote.FirebaseNodes
 import net.bagusekasaputra.griyakampoengtkw.data.remote.FirebaseRequestHelper
 import java.io.File
+import java.math.BigDecimal
+import java.math.RoundingMode
 
 class FirebaseIndenBookingDataSource(
     databaseReference: DatabaseReference,
     storageReference: StorageReference,
     private val externalFilesDir: File?,
+    private val localBroadcast: LocalBroadcastManager,
 ): RemoteIndenBookingDataSource {
 
     private val indenBookingRef = databaseReference.child(FirebaseNodes.INDEN_BOOKING)
@@ -151,12 +156,25 @@ class FirebaseIndenBookingDataSource(
             fotoIndenBookingRef.child(fileName)
                 .putFile(localUri)
                 .addOnProgressListener {
-                    printLog("uploadFotoPembayaran", "Uploading \"$fileName\" is ${it.bytesTransferred} / ${it.totalByteCount} bytes ...")
+                    val intent = Intent("net.bagusekasaputra.griyakampoengtkw.ACTION.UPLOAD_PROGRESS")
+                    val progress = BigDecimal(it.bytesTransferred)
+                        .divide(BigDecimal(it.totalByteCount), 2, RoundingMode.CEILING)
+                        .multiply(BigDecimal(100))
+                        .toInt()
+                    intent.putExtra("EXTRAS_PROGRESS", progress)
+                    localBroadcast.sendBroadcast(intent)
+
+                    printLog("uploadFotoPembayaran", "Uploading \"$fileName\" is $progress%")
                 }
                 .addOnCompleteListener {
                     printLog("uploadFotoPembayaran", "Completed uploading \"$fileName\" into Remmote Server!")
 
                     cleanAndMoveImagePostUpload(model)
+
+                    val intent = Intent("net.bagusekasaputra.griyakampoengtkw.ACTION.UPLOAD_PROGRESS")
+                    intent.putExtra("EXTRAS_IS_COMPLETED", true)
+                    localBroadcast.sendBroadcast(intent)
+
                     trySendBlocking(Result.success(null))
                 }
                 .addOnFailureListener {

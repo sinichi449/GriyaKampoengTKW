@@ -1,6 +1,7 @@
 package net.bagusekasaputra.griyakampoengtkw.di
 
 import android.content.SharedPreferences
+import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import com.google.firebase.database.DatabaseReference
 import com.google.firebase.storage.StorageReference
 import dagger.Module
@@ -393,9 +394,15 @@ object DataSourceModule {
     fun provideRemoteIndenBookingDataSource(
         databaseReference: DatabaseReference,
         storageReference: StorageReference,
-        @ExternalDir externalFilesDir: File?
+        @ExternalDir externalFilesDir: File?,
+        localBroadcast: LocalBroadcastManager,
     ): RemoteIndenBookingDataSource {
-        return FirebaseIndenBookingDataSource(databaseReference, storageReference, externalFilesDir)
+        return FirebaseIndenBookingDataSource(
+            databaseReference,
+            storageReference,
+            externalFilesDir,
+            localBroadcast
+        )
     }
 
 }
