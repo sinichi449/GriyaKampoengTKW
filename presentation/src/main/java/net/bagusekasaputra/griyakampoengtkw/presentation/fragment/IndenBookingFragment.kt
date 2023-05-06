@@ -18,7 +18,6 @@ import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
-import androidx.fragment.app.viewModels
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import androidx.recyclerview.widget.RecyclerView
 import com.evrencoskun.tableview.TableView
@@ -44,7 +43,7 @@ class IndenBookingFragment : Fragment() {
 
     private lateinit var binding: FragmentIndenBookingBinding
     private val mainViewModel: MainViewModel by activityViewModels()
-    private val viewModel: IndenBookingViewModel by viewModels()
+    private val viewModel: IndenBookingViewModel by activityViewModels()
 
     private val PROGRESS_CHANNEL = "GktProgress"
 
@@ -111,7 +110,7 @@ class IndenBookingFragment : Fragment() {
             onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
                 override fun onItemSelected(p0: AdapterView<*>?, p1: View?, position: Int, p3: Long) {
                     try {
-                        viewModel.sortListIndenBooking(listOpsiFilter[position])
+                        viewModel.sortListIndenBooking(position)
                     } catch (e: Exception) {
                         e.printStackTrace()
 
@@ -186,10 +185,10 @@ class IndenBookingFragment : Fragment() {
 
         tableViewListener = object : ITableViewListener {
             override fun onCellClicked(cellView: RecyclerView.ViewHolder, column: Int, row: Int) {
-                if (column == TableIndenBooking.COLUMN_NO_HP) {
-                    val noHp = listIndenBooking[row].noHp
-                    UiUtils.openWhatsapp(requireContext(), noHp)
-                }
+//                if (column == TableIndenBooking.COLUMN_NO_HP) {
+//                    val noHp = listIndenBooking[row].noHp
+//                    UiUtils.openWhatsapp(requireContext(), noHp)
+//                }
             }
 
             override fun onCellDoubleClicked(
@@ -230,8 +229,8 @@ class IndenBookingFragment : Fragment() {
             }
 
             override fun onRowHeaderClicked(rowHeaderView: RecyclerView.ViewHolder, row: Int) {
-                val indenBooking = listIndenBooking[row]
-                val pathFoto = indenBooking.fotoPembayaranPath
+                val indenBooking = viewModel.listIndenBookingLive.value?.get(row)
+                val pathFoto = indenBooking?.fotoPembayaranPath ?: ""
 
                 if (pathFoto.isEmpty()) {
                     Snackbar.make(binding.root, "Tidak Tersedia Foto Pembayaran Inden Booking!", Snackbar.LENGTH_SHORT)
@@ -240,7 +239,7 @@ class IndenBookingFragment : Fragment() {
                     val imageTransport = ImageTransport(
                         sendIntention = GriyaNodes.INTENT_FOTO_INDEN_BOOKING,
                         content = mapOf(
-                            Pair("pathFoto", indenBooking.fotoPembayaranPath)
+                            Pair("pathFoto", pathFoto)
                         ),
                         dataMode = mainViewModel.dataMode,
                     )
@@ -256,8 +255,11 @@ class IndenBookingFragment : Fragment() {
             }
 
             override fun onRowHeaderLongPressed(rowHeaderView: RecyclerView.ViewHolder, row: Int) {
-                ModifyIndenBookingDialog(listIndenBooking[row])
-                    .show(childFragmentManager, null)
+                val indenBooking = viewModel.listIndenBookingLive.value?.get(row)
+                if (indenBooking != null) {
+                    ModifyIndenBookingDialog(indenBooking)
+                        .show(childFragmentManager, null)
+                }
             }
 
         }
