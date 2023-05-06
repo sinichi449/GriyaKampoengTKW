@@ -3,6 +3,7 @@ package net.bagusekasaputra.griyakampoengtkw.data.repository
 import android.util.Log
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.channels.trySendBlocking
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
 import kotlinx.coroutines.flow.emitAll
@@ -17,6 +18,7 @@ import net.bagusekasaputra.griyakampoengtkw.data.interfaces.remote.RemoteMetadat
 import net.bagusekasaputra.griyakampoengtkw.domain.DataMode
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.IndenBooking
 import net.bagusekasaputra.griyakampoengtkw.domain.repository.IndenBookingRepository
+import kotlin.random.Random
 
 class IndenBookingRepositoryImpl(
     private val localDataSource: LocalIndenBookingDataSource,
@@ -156,6 +158,16 @@ class IndenBookingRepositoryImpl(
                 }
 
             awaitClose {  }
+        }
+    }
+
+    override fun update(oldData: IndenBooking, newData: IndenBooking): Flow<Result<Nothing?>> {
+        return flow {
+            delay(3000L)
+
+            val isSuccess = Random.nextBoolean()
+            if (isSuccess) emit(Result.success(null))
+            else emit(Result.failure(Throwable("RANDOM ERROR RepoImpl!")))
         }
     }
 }

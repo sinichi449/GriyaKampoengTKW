@@ -13,6 +13,7 @@ import kotlinx.coroutines.withContext
 import net.bagusekasaputra.griyakampoengtkw.domain.DataMode
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.indenBooking.AddNewIndenBookingAsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.indenBooking.DeleteSingleIndenBookingAsyncUseCase
+import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.indenBooking.EditIndenBookingAsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.indenBooking.GetAllIndenBookingAsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.IndenBooking
 import javax.inject.Inject
@@ -22,6 +23,7 @@ class IndenBookingViewModel @Inject constructor(
     private val getAllIndenBookingAsyncUseCase: GetAllIndenBookingAsyncUseCase,
     private val addNewIndenBookingAsyncUseCase: AddNewIndenBookingAsyncUseCase,
     private val deleteSingleIndenBookingAsyncUseCase: DeleteSingleIndenBookingAsyncUseCase,
+    private val editIndenBookingAsyncUseCase: EditIndenBookingAsyncUseCase,
 ): ViewModel() {
 
     private val _listIndenBookingLive = MutableLiveData<List<IndenBooking>?>()
@@ -114,6 +116,36 @@ class IndenBookingViewModel @Inject constructor(
 
                     withContext(Dispatchers.Main) {
                         onFailure("Gagal menghapus Inden Booking: ${it.message}")
+                    }
+                }
+            }
+        }
+    }
+
+    fun editIndenBooking(
+        oldData: IndenBooking,
+        newData: IndenBooking,
+        onProgress: () -> Unit,
+        onComplete: () -> Unit,
+        onFailure: (msg: String) -> Unit,
+    ) {
+        writeIndenBookingJob?.cancel()
+
+        onProgress()
+
+        writeIndenBookingJob = CoroutineScope(Dispatchers.IO).launch {
+            val request = EditIndenBookingAsyncUseCase.Request(oldData, newData)
+            editIndenBookingAsyncUseCase.execute(request).collect { result ->
+                result.onSuccess {
+                    withContext(Dispatchers.Main) {
+                        onComplete()
+                    }
+                }
+                result.onFailure {
+                    it.printStackTrace()
+
+                    withContext(Dispatchers.Main) {
+                        onFailure("Gagal mengubah Inden Booking: ${it.message}")
                     }
                 }
             }

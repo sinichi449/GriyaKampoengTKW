@@ -11,4 +11,6 @@ interface IndenBookingRepository {
     fun insert(indenBooking: IndenBooking): Flow<Result<Nothing?>>
 
     fun delete(indenBooking: IndenBooking): Flow<Result<Nothing?>>
+
+    fun update(oldData: IndenBooking, newData: IndenBooking): Flow<Result<Nothing?>>
 }

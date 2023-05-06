@@ -75,6 +75,8 @@ class ModifyIndenBookingDialog(
         val datePickerHelper = DatePickerHelper(requireContext(), binding.btnPililhTanggal, binding.edtTanggalPembayaran)
         val isEditMode = selectedIndenBooking != null
         if (isEditMode) {
+            datePickerHelper.setupDateDefaultOrPick(false)
+
             binding.tvDialogTitle.text = "Ubah Inden Booking"
             binding.btnTambahkan.text = "Ubah"
             binding.btnHapus.visibility = View.VISIBLE
@@ -128,28 +130,57 @@ class ModifyIndenBookingDialog(
                 val fotoPembayaranPath = binding.edtFotoPembayaranPath.text.toString()
                 val noHp = binding.edtNoHp.text.toString().ifEmpty { "" }
                 val keterangan = binding.edtKeterangan.text.toString().ifEmpty { "-" }
+                val indenBooking = IndenBooking(namaCostumer, tanggalDibayar, jumlahUang, fotoPembayaranPath, noHp, keterangan)
 
-                viewModel.insertIndenBooking(
-                    indenBooking = IndenBooking(namaCostumer, tanggalDibayar, jumlahUang, fotoPembayaranPath, noHp, keterangan),
-                    onProgress = {
-                        binding.btnTambahkan.apply {
-                            isEnabled = false
-                            text = "Menyimpan ..."
-                        }
-                    },
-                    onComplete = {
-                        Toast.makeText(requireContext(), "Berhasil menambahkan Inden Booking!", Toast.LENGTH_SHORT).show()
+                if (isEditMode) {
+                    viewModel.editIndenBooking(
+                        oldData = selectedIndenBooking!!,
+                        newData = indenBooking,
+                        onProgress = {
+                            binding.btnTambahkan.isEnabled = false
+                            binding.btnHapus.isEnabled = false
+                            binding.btnTambahkan.text = "Mengubah ..."
+                        },
+                        onComplete = {
+                            Toast.makeText(requireContext(), "Berhasil mengubah Inden Booking!", Toast.LENGTH_SHORT).show()
 
-                        dismiss()
-                    },
-                    onFailure = {
-                        binding.btnTambahkan.apply {
-                            isEnabled = true
-                            text = "Tambahkan"
+                            dismiss()
+                        },
+                        onFailure = {
+                            binding.btnTambahkan.isEnabled = true
+                            binding.btnHapus.isEnabled = true
+                            binding.btnTambahkan.text = "Ubah"
+
+                            Toast.makeText(requireContext(), it, Toast.LENGTH_LONG).show()
                         }
-                        Toast.makeText(requireContext(), it, Toast.LENGTH_LONG).show()
-                    }
-                )
+                    )
+                } else {
+                    viewModel.insertIndenBooking(
+                        indenBooking = indenBooking,
+                        onProgress = {
+                            binding.btnTambahkan.apply {
+                                isEnabled = false
+                                text = "Menyimpan ..."
+                            }
+                        },
+                        onComplete = {
+                            Toast.makeText(
+                                requireContext(),
+                                "Berhasil menambahkan Inden Booking!",
+                                Toast.LENGTH_SHORT
+                            ).show()
+
+                            dismiss()
+                        },
+                        onFailure = {
+                            binding.btnTambahkan.apply {
+                                isEnabled = true
+                                text = "Tambahkan"
+                            }
+                            Toast.makeText(requireContext(), it, Toast.LENGTH_LONG).show()
+                        }
+                    )
+                }
             }
         }
 

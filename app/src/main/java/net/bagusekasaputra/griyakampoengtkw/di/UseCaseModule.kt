@@ -22,6 +22,7 @@ import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.fotoPembayaran.I
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.hargaKavling.GetHargaKavlingAsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.indenBooking.AddNewIndenBookingAsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.indenBooking.DeleteSingleIndenBookingAsyncUseCase
+import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.indenBooking.EditIndenBookingAsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.indenBooking.GetAllIndenBookingAsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.kavling.GetKavlingByBlockAsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.kavling.GetListUnmigratedKavlingsAsyncUseCase
@@ -477,6 +478,11 @@ object UseCaseModule {
     @Provides
     fun provideDeleteSingleIndenBookingUseCase(indenBookingRepository: IndenBookingRepository): DeleteSingleIndenBookingAsyncUseCase {
         return DeleteSingleIndenBookingAsyncUseCase(indenBookingRepository)
+    }
+
+    @Provides
+    fun provideEditIndenBookingUseCase(indenBookingRepository: IndenBookingRepository): EditIndenBookingAsyncUseCase {
+        return EditIndenBookingAsyncUseCase(indenBookingRepository)
     }
 
 
