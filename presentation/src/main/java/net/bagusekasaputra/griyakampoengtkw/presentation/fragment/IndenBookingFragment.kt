@@ -50,8 +50,10 @@ class IndenBookingFragment : Fragment() {
 
     private val uploadBroadcastReceiver = object : BroadcastReceiver() {
         override fun onReceive(context: Context?, intent: Intent?) {
+            val title = intent?.extras?.getString("EXTRAS_TITLE")
             val progress = intent?.extras?.getInt("EXTRAS_PROGRESS") ?: 20
             val isComplete = intent?.extras?.getBoolean("EXTRAS_IS_COMPLETED") ?: false
+            val textOnComplete = intent?.extras?.getString("EXTRAS_TEXT_ON_COMPLETE")
 
             val notificationManager = NotificationManagerCompat.from(requireContext())
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
@@ -60,13 +62,13 @@ class IndenBookingFragment : Fragment() {
             }
             val notification = NotificationCompat.Builder(requireContext(), PROGRESS_CHANNEL).apply {
                 setSmallIcon(if (!isComplete) R.drawable.ic_baseline_hourglass_top_24 else R.drawable.ic_baseline_check_circle_18)
-                setContentTitle(if (!isComplete) "Sedang mengupload..." else "Selesai upload!")
+                setContentTitle(title)
                 if (!isComplete) {
                     setProgress(100, progress, false)
                     setOngoing(true)
                 } else {
                     setOngoing(false)
-                    setContentText("Berhasil mengupload foto Inden Booking!")
+                    setContentText(textOnComplete)
                 }
             }.build()
 
@@ -81,7 +83,7 @@ class IndenBookingFragment : Fragment() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        localBroadcastManager.registerReceiver(uploadBroadcastReceiver, IntentFilter("net.bagusekasaputra.griyakampoengtkw.ACTION.UPLOAD_PROGRESS"))
+        localBroadcastManager.registerReceiver(uploadBroadcastReceiver, IntentFilter("net.bagusekasaputra.griyakampoengtkw.ACTION.TRANSFER_PROGRESS"))
     }
 
     override fun onCreateView(

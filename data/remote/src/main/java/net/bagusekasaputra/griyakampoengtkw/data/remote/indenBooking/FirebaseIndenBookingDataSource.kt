@@ -15,6 +15,7 @@ import net.bagusekasaputra.griyakampoengtkw.data.interfaces.remote.RemoteIndenBo
 import net.bagusekasaputra.griyakampoengtkw.data.model.IndenBookingModel
 import net.bagusekasaputra.griyakampoengtkw.data.remote.FirebaseNodes
 import net.bagusekasaputra.griyakampoengtkw.data.remote.FirebaseRequestHelper
+import net.bagusekasaputra.griyakampoengtkw.data.remote.NotificationUtil
 import java.io.File
 import java.math.BigDecimal
 import java.math.RoundingMode
@@ -87,9 +88,27 @@ class FirebaseIndenBookingDataSource(
             fotoIndenBookingRef.child(fileName)
                 .getFile(dstFile)
                 .addOnProgressListener {
+                    val progress = BigDecimal(it.bytesTransferred)
+                        .divide(BigDecimal(it.totalByteCount), 2, RoundingMode.CEILING)
+                        .multiply(BigDecimal(100))
+                        .toInt()
+                    val intent = Intent(NotificationUtil.INTENT_ACTION).apply {
+                        putExtra(NotificationUtil.EXTRAS_TITLE, "Mengunduh \"$fileName\" ...")
+                        putExtra(NotificationUtil.EXTRAS_PROGRESS, progress)
+                        putExtra(NotificationUtil.EXTRAS_IS_COMPLETE, false)
+                    }
+                    localBroadcast.sendBroadcast(intent)
+
                     printLog("downloadFotoPembayaranIndenBooking", "Downloading \"$fileName\" is ${it.bytesTransferred}/${it.totalByteCount} bytes ...")
                 }
                 .addOnCompleteListener {
+                    val intent = Intent(NotificationUtil.INTENT_ACTION).apply {
+                        putExtra(NotificationUtil.EXTRAS_TITLE, "Selesai mengunduh")
+                        putExtra(NotificationUtil.EXTRAS_IS_COMPLETE, true)
+                        putExtra(NotificationUtil.EXTRAS_TEXT_ON_COMPLETE, "\"$fileName\"")
+                    }
+                    localBroadcast.sendBroadcast(intent)
+
                     printLog("downloadFotoPembayaranIndenBooking", "Completed download \"$fileName\" !")
                     if (dstFile.exists()) {
                         trySendBlocking(Result.success(dstFile.absolutePath))
@@ -156,12 +175,15 @@ class FirebaseIndenBookingDataSource(
             fotoIndenBookingRef.child(fileName)
                 .putFile(localUri)
                 .addOnProgressListener {
-                    val intent = Intent("net.bagusekasaputra.griyakampoengtkw.ACTION.UPLOAD_PROGRESS")
                     val progress = BigDecimal(it.bytesTransferred)
                         .divide(BigDecimal(it.totalByteCount), 2, RoundingMode.CEILING)
                         .multiply(BigDecimal(100))
                         .toInt()
-                    intent.putExtra("EXTRAS_PROGRESS", progress)
+                    val intent = Intent(NotificationUtil.INTENT_ACTION).apply {
+                        putExtra(NotificationUtil.EXTRAS_TITLE, "Mengupload \"$fileName\" ...")
+                        putExtra(NotificationUtil.EXTRAS_PROGRESS, progress)
+                        putExtra(NotificationUtil.EXTRAS_IS_COMPLETE, false)
+                    }
                     localBroadcast.sendBroadcast(intent)
 
                     printLog("uploadFotoPembayaran", "Uploading \"$fileName\" is $progress%")
@@ -171,8 +193,11 @@ class FirebaseIndenBookingDataSource(
 
                     cleanAndMoveImagePostUpload(model)
 
-                    val intent = Intent("net.bagusekasaputra.griyakampoengtkw.ACTION.UPLOAD_PROGRESS")
-                    intent.putExtra("EXTRAS_IS_COMPLETED", true)
+                    val intent = Intent(NotificationUtil.INTENT_ACTION).apply {
+                        putExtra(NotificationUtil.EXTRAS_TITLE, "Berhasil mengupload")
+                        putExtra(NotificationUtil.EXTRAS_IS_COMPLETE, true)
+                        putExtra(NotificationUtil.EXTRAS_TEXT_ON_COMPLETE, "\"$fileName\"")
+                    }
                     localBroadcast.sendBroadcast(intent)
 
                     trySendBlocking(Result.success(null))
