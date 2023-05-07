@@ -1,6 +1,7 @@
 package net.bagusekasaputra.griyakampoengtkw.presentation.fragment.rekap.detail
 
 import android.os.Bundle
+import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -75,7 +76,13 @@ class RekapDetailUangMasukFragment : Fragment() {
     }
 
     private fun TableView.setAllItems(mapListPembayaranWithNamaCostumer: Map<String, List<PembayaranWithNamaCostumer>?>) {
-        val adapter = RbdWithKavling_TableViewAdapter()
+        val adapter = RbdWithKavling_TableViewAdapter(onCellTextCreated = { position, tvCell ->
+            if (position == 0) {
+                tvCell.gravity = Gravity.START
+            } else {
+                tvCell.gravity = Gravity.CENTER
+            }
+        })
         setAdapter(adapter)
 
         val columnHeader = listOf(
