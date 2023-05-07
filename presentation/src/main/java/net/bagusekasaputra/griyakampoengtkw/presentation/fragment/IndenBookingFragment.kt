@@ -22,6 +22,7 @@ import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import androidx.recyclerview.widget.RecyclerView
 import com.evrencoskun.tableview.TableView
 import com.evrencoskun.tableview.listener.ITableViewListener
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.IndenBooking
@@ -185,10 +186,20 @@ class IndenBookingFragment : Fragment() {
 
         tableViewListener = object : ITableViewListener {
             override fun onCellClicked(cellView: RecyclerView.ViewHolder, column: Int, row: Int) {
-//                if (column == TableIndenBooking.COLUMN_NO_HP) {
-//                    val noHp = listIndenBooking[row].noHp
-//                    UiUtils.openWhatsapp(requireContext(), noHp)
-//                }
+                val indenBooking = viewModel.listIndenBookingLive.value?.get(row)
+                when (column) {
+                    TableIndenBooking.COLUMN_NO_HP -> {
+                        val noHp = indenBooking?.noHp ?: ""
+                        UiUtils.openWhatsapp(requireContext(), noHp)
+                    }
+                    TableIndenBooking.COLUMN_KETERANGAN -> {
+                        MaterialAlertDialogBuilder(requireContext()).apply {
+                            setTitle(indenBooking?.namaCostumer)
+                            setMessage(indenBooking?.keterangan)
+                        }.create()
+                            .show()
+                    }
+                }
             }
 
             override fun onCellDoubleClicked(

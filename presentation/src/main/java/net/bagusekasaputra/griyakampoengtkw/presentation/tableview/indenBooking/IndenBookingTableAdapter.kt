@@ -1,5 +1,6 @@
 package net.bagusekasaputra.griyakampoengtkw.presentation.tableview.indenBooking
 
+import android.text.TextUtils
 import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.View
@@ -134,6 +135,12 @@ class IndenBookingTableAdapter: AbstractTableAdapter<TableIndenBooking.IbColumnH
             viewHolder.tvCell.gravity = Gravity.START
         } else {
             viewHolder.tvCell.gravity = Gravity.CENTER
+        }
+
+        // Add ellipsis
+        if (columnPosition == TableIndenBooking.COLUMN_KETERANGAN) {
+            viewHolder.tvCell.setLines(2)
+            viewHolder.tvCell.ellipsize = TextUtils.TruncateAt.MIDDLE
         }
 
         viewHolder.container.layoutParams.width = ConstraintLayout.LayoutParams.WRAP_CONTENT
