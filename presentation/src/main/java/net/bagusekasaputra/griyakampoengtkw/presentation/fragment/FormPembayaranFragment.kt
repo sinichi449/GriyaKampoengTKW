@@ -160,7 +160,7 @@ class FormPembayaranFragment : Fragment() {
             syncPembayaran()
         }
 
-        binding.imgEditCatatan?.setOnClickListener {
+        binding.cardCatatanPembayaran?.setOnClickListener {
             val currentCatatan = binding.tvCatatan?.text.toString()
             val tidakAdaCatatan = requireContext().getString(R.string.tidak_ada_catatan)
 
@@ -280,7 +280,11 @@ class FormPembayaranFragment : Fragment() {
 
         viewModel.listPembayaranLive.observe(requireActivity()) { listPembayaran ->
             if ((listPembayaran != null) and (listPembayaran?.isNotEmpty() == true)) {
-                binding.tvSisaBlmTerbayar?.text = listPembayaran?.last()?.sisaBelumTerbayar
+                binding.tvSisaBlmTerbayar?.text = StringBuilder().run {
+                    append("Rp. ")
+                    append(listPembayaran?.last()?.sisaBelumTerbayar)
+                    toString()
+                }
             } else {
                 clearPembayaranField()
             }
