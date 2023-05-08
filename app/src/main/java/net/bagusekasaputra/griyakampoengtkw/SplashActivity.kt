@@ -9,6 +9,8 @@ import android.view.WindowManager
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
+import androidx.biometric.BiometricManager
+import androidx.biometric.BiometricPrompt
 import androidx.core.content.ContextCompat
 import androidx.core.content.edit
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
@@ -40,6 +42,9 @@ class SplashActivity : AppCompatActivity() {
 
     private lateinit var bindingPure: ActivitySplashPureBinding
     private lateinit var bindingLoading: ActivitySplashWithLoadingBinding
+    // Need to be initialized at onCreate()
+    private lateinit var biometricManager: BiometricManager
+    private lateinit var biometricPrompt: BiometricPrompt
     @Inject
     lateinit var sharedPreferences: SharedPreferences
 
@@ -58,6 +63,30 @@ class SplashActivity : AppCompatActivity() {
         // Disable Dark Theme
         AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
 
+        biometricManager = BiometricManager.from(this)
+        biometricPrompt = BiometricUtil.instanceOfBiometricPrompt(this,
+            onFailure = { errorCode: Int, _ ->
+                if (errorCode == BiometricPrompt.ERROR_USER_CANCELED ||
+                        errorCode == BiometricPrompt.ERROR_NEGATIVE_BUTTON ||
+                        errorCode == BiometricPrompt.ERROR_CANCELED) {
+                    MaterialAlertDialogBuilder(this).apply {
+                        setTitle("Authentikasi Gagal")
+                        setMessage("Aplikasi ini memerlukan autentikasi pengguna. Jika tidak ada proses autentikasi yang berjalan sukses, aplikasi ini akan keluar.")
+                        setPositiveButton("OK") { dialog, _ ->
+                            dialog.dismiss()
+                        }
+                        setCancelable(false)
+
+                        setOnDismissListener { finish() }
+                    }.create()
+                        .show()
+                }
+            },
+            onSuccess = {
+                connectivityCheckAndInitServer()
+            }
+        )
+
         showSplashScreen(1.5f)
     }
 
@@ -67,62 +96,66 @@ class SplashActivity : AppCompatActivity() {
             bindingLoading = ActivitySplashWithLoadingBinding.inflate(layoutInflater)
             setContentView(bindingLoading.root)
 
-            CoroutineScope(Dispatchers.IO).launch {
-                deviceOnline().collect { online ->
-                    if (online) {
-                        withContext(Dispatchers.Main) {
-                            bindingLoading.layoutCekKoneksi.tvInfoPeriksaInternet.text = "Memeriksa status server"
-                        }
-                        // Check Maintenance status
-                        val isMaintenance = checkMaintenance()
-
-                        isMaintenance.onSuccess { maintenance ->
-                            if (maintenance) {
-                                withContext(Dispatchers.Main) {
-                                    MaterialAlertDialogBuilder(this@SplashActivity)
-                                        .setTitle("Server Maintenance")
-                                        .setCancelable(false)
-                                        .setMessage("Mohon maaf, untuk saat ini server sedang menjalani proses pemeliharaan. Anda hanya bisa membuka Data Lama. Silakan coba lagi nanti.")
-                                        .setPositiveButton("Oke") { dialog, _ ->
-                                            dialog.dismiss()
-
-                                            showJenisDataChoice(isOnline = true, shouldShowDataBaruOption = false)
-                                        }
-                                        .create()
-                                        .show()
-                                }
-                            } else {
-                                withContext(Dispatchers.Main) {
-                                    showJenisDataChoice(isOnline = true, shouldShowDataBaruOption = true)
-                                }
-                            }
-                        }
-
-                        isMaintenance.onFailure {
-                            withContext(Dispatchers.Main) {
-                                Toast.makeText(this@SplashActivity, "Gagal mengecek status server: $it", Toast.LENGTH_LONG).show()
-                                showJenisDataChoice(isOnline = true, shouldShowDataBaruOption = false)
-                            }
-                        }
-                    } else {
-                        withContext(Dispatchers.Main) {
-                            Toast.makeText(
-                                this@SplashActivity,
-                                "Device terdeteksi offline, mohon cek koneksi Anda.",
-                                Toast.LENGTH_LONG
-                            ).show()
-
-                            showJenisDataChoice(isOnline = false, shouldShowDataBaruOption = false)
-                        }
-                    }
-                }
-
-            }
+            BiometricUtil.beginAuthentication(this, biometricManager, biometricPrompt)
         }
         // Convert integer to long milliseconds
         val millis = (seconds * 1000).toLong()
 
         handler.postDelayed(splashRunnable, millis)
+    }
+
+    private fun connectivityCheckAndInitServer() {
+        CoroutineScope(Dispatchers.IO).launch {
+            deviceOnline().collect { online ->
+                if (online) {
+                    withContext(Dispatchers.Main) {
+                        bindingLoading.layoutCekKoneksi.tvInfoPeriksaInternet.text = "Memeriksa status server"
+                    }
+                    // Check Maintenance status
+                    val isMaintenance = checkMaintenance()
+
+                    isMaintenance.onSuccess { maintenance ->
+                        if (maintenance) {
+                            withContext(Dispatchers.Main) {
+                                MaterialAlertDialogBuilder(this@SplashActivity)
+                                    .setTitle("Server Maintenance")
+                                    .setCancelable(false)
+                                    .setMessage("Mohon maaf, untuk saat ini server sedang menjalani proses pemeliharaan. Anda hanya bisa membuka Data Lama. Silakan coba lagi nanti.")
+                                    .setPositiveButton("Oke") { dialog, _ ->
+                                        dialog.dismiss()
+
+                                        showJenisDataChoice(isOnline = true, shouldShowDataBaruOption = false)
+                                    }
+                                    .create()
+                                    .show()
+                            }
+                        } else {
+                            withContext(Dispatchers.Main) {
+                                showJenisDataChoice(isOnline = true, shouldShowDataBaruOption = true)
+                            }
+                        }
+                    }
+
+                    isMaintenance.onFailure {
+                        withContext(Dispatchers.Main) {
+                            Toast.makeText(this@SplashActivity, "Gagal mengecek status server: $it", Toast.LENGTH_LONG).show()
+                            showJenisDataChoice(isOnline = true, shouldShowDataBaruOption = false)
+                        }
+                    }
+                } else {
+                    withContext(Dispatchers.Main) {
+                        Toast.makeText(
+                            this@SplashActivity,
+                            "Device terdeteksi offline, mohon cek koneksi Anda.",
+                            Toast.LENGTH_LONG
+                        ).show()
+
+                        showJenisDataChoice(isOnline = false, shouldShowDataBaruOption = false)
+                    }
+                }
+            }
+
+        }
     }
 
     private fun deviceOnline(): Flow<Boolean> {
