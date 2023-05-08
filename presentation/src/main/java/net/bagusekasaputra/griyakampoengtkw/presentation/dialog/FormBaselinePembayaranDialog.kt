@@ -1,6 +1,5 @@
 package net.bagusekasaputra.griyakampoengtkw.presentation.dialog
 
-import android.R
 import android.app.Dialog
 import android.os.Bundle
 import android.widget.ArrayAdapter
@@ -9,6 +8,7 @@ import androidx.core.widget.addTextChangedListener
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.activityViewModels
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import dagger.hilt.android.AndroidEntryPoint
 import net.bagusekasaputra.griyakampoengtkw.domain.NumberUtil
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.BaselinePembayaran
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.HargaKavling
@@ -20,9 +20,11 @@ import java.text.DecimalFormat
 import java.text.DecimalFormatSymbols
 import java.util.Locale
 
+@AndroidEntryPoint
 class FormBaselinePembayaranDialog(
     private val currentKavlingKode: String,
     private val hargaKavling: HargaKavling,
+    private val baselinePembayaran: BaselinePembayaran? = null,
 ): DialogFragment() {
 
     private lateinit var binding: DialogBaselineAngsuranPerBulanBinding
@@ -41,9 +43,28 @@ class FormBaselinePembayaranDialog(
         binding.spinnerTimeframeAngsuran.apply {
             val listOpsiTimeframe = listOf("Tahun", "Bulan")
             adapter = ArrayAdapter(
-                requireContext(), R.layout.simple_spinner_dropdown_item, listOpsiTimeframe
+                requireContext(),
+                android.R.layout.simple_spinner_dropdown_item,
+                listOpsiTimeframe
             )
         }
+
+        val isEditMode = baselinePembayaran != null
+        if (isEditMode) {
+            binding.tvDialogTitle.text = "Ubah Angsuran Bulanan"
+            binding.btnTambahkan.text = "Ubah"
+            baselinePembayaran?.also {
+                binding.edtOpsiTimeframeAngsuran.setText(it.opsiBulan.toString())
+                binding.spinnerTimeframeAngsuran.setSelection(1) // Default to "Bulan"
+                binding.edtUangAngsuranPerBulan.setText(it.jumlahUang.toString())
+                binding.tvInfoParsedUangAngsuranRupiah.text = "= Rp. ${it.parsedJumlahUang}"
+                binding.edtMaksimalTanggalPembayaran.setText(it.tanggalPembayaranMaks.toString())
+            }
+        } else {
+            binding.tvDialogTitle.text = "Tambah Angsuran Bulanan"
+            binding.btnTambahkan.text = "Tambahkan"
+        }
+
         binding.btnHitung.setOnClickListener {
             val timeFrame = binding.edtOpsiTimeframeAngsuran.text.toString().toInt()
             val opsiTimeFrame = binding.spinnerTimeframeAngsuran.selectedItem.toString()
@@ -123,7 +144,7 @@ class FormBaselinePembayaranDialog(
                         Toast.makeText(requireContext(), it, Toast.LENGTH_LONG).show()
 
                         binding.btnTambahkan.isEnabled = true
-                        binding.btnTambahkan.text = "Tambahkan"
+                        binding.btnTambahkan.text = if (isEditMode) "Ubah" else "Tambahkan"
                     }
                 )
             }

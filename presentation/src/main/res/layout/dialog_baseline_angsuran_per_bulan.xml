@@ -7,6 +7,7 @@
     android:orientation="vertical">
 
     <com.google.android.material.textview.MaterialTextView
+        android:id="@+id/tv_dialog_title"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="Angsuran Bulanan"
@@ -125,12 +126,12 @@
         android:textSize="18sp"/>
 
     <com.google.android.material.textfield.TextInputLayout
-        android:layout_width="match_parent"
+        android:layout_width="150dp"
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
         app:startIconDrawable="@drawable/ic_baseline_calendar_month_24"
         app:endIconMode="clear_text"
-        android:hint="Tgl. Pembayaran Maksimal"
+        android:hint="Tgl. Pembayaran"
         style="@style/DenseOutlinedTextInputLayout">
 
         <com.google.android.material.textfield.TextInputEditText

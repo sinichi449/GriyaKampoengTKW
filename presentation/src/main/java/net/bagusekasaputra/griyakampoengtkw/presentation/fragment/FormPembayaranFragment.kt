@@ -174,7 +174,8 @@ class FormPembayaranFragment : Fragment() {
             val hargaKavling = viewModel.hargaKavlingLive.value
 
             if (hargaKavling != null) {
-                FormBaselinePembayaranDialog(currentKavlingKode!!, hargaKavling)
+                val baselinePembayaran = pembayaranViewModel.baselinePembayaranLive.value
+                FormBaselinePembayaranDialog(currentKavlingKode!!, hargaKavling, baselinePembayaran)
                     .show(childFragmentManager, null)
             } else {
                 Snackbar.make(binding.root, "Harga Kavling masih kosong!", Snackbar.LENGTH_SHORT).show()
