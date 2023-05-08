@@ -36,6 +36,8 @@
                 android:orientation="vertical"
                 app:layout_constraintGuide_percent="0.35"/>
 
+
+
             <com.google.android.material.textview.MaterialTextView
                 android:id="@+id/tvInfo_sisa_belum_bayar_bulan_ini"
                 android:layout_width="0dp"
@@ -59,7 +61,7 @@
                 app:layout_constraintBottom_toBottomOf="@id/tvInfo_sisa_belum_bayar_bulan_ini"
                 android:layout_marginStart="16dp"
                 style="@style/TextAppearance.MaterialComponents.Subtitle1"
-                android:text="Rp. 250,000" />
+                android:text="-" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 

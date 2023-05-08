@@ -231,7 +231,7 @@
                         app:layout_constraintBottom_toBottomOf="@id/tvInfo_sisa_belum_bayar_bulan_ini"
                         android:layout_marginStart="16dp"
                         style="@style/TextAppearance.MaterialComponents.Body2"
-                        android:text="Rp. 250,000" />
+                        android:text="-" />
 
                 </androidx.constraintlayout.widget.ConstraintLayout>
 

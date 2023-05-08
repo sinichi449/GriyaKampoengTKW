@@ -1,5 +1,9 @@
 package net.bagusekasaputra.griyakampoengtkw.domain
 
+import android.os.Build
+import androidx.annotation.RequiresApi
+import java.time.LocalDate
+import java.time.ZoneId
 import java.util.Calendar
 import java.util.Date
 
@@ -119,4 +123,20 @@ object DateUtil {
 
     fun Date.isWithinRange(startDate: Date, endDate: Date)
             = !(this.before(startDate) || this.after(endDate))
+
+    @RequiresApi(Build.VERSION_CODES.O)
+    fun Date.toLocalDate(): LocalDate {
+        return this.toInstant()
+            .atZone(ZoneId.systemDefault())
+            .toLocalDate()
+    }
+
+    @RequiresApi(Build.VERSION_CODES.O)
+    fun LocalDate.toDate(): Date {
+        return Date.from(this
+            .atStartOfDay()
+            .atZone(ZoneId.systemDefault())
+            .toInstant()
+        )
+    }
 }

@@ -31,11 +31,6 @@ class FormPembayaranViewModel @Inject constructor(
     val baselinePembayaranLive: LiveData<BaselinePembayaran?>
         get() = _baselinePembayaranLive
 
-    private val _jumlahAngsuranPerBulanLive = MutableLiveData<Double?>()
-    val jumlahAngsuranPerBulanLive: LiveData<Double?>
-        get() = _jumlahAngsuranPerBulanLive
-
-
     var dataMode = DataMode.ONLINE
 
     private var readBaselinePembayaranJob: Job? = null
@@ -124,13 +119,4 @@ class FormPembayaranViewModel @Inject constructor(
         }
     }
 
-    fun hitungSisaBelumBayarBulanIni(): Long {
-        // TODO
-        return 0L
-    }
-
-    fun getSisaBulanWaktuAngsuran(): Int {
-        // TODO
-        return 0
-    }
 }

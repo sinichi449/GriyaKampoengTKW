@@ -20,6 +20,7 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
 import net.bagusekasaputra.griyakampoengtkw.domain.DataMode
+import net.bagusekasaputra.griyakampoengtkw.domain.DateUtil.toDate
 import net.bagusekasaputra.griyakampoengtkw.domain.NumberUtil
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.HargaKavling
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.Pembayaran
@@ -277,11 +278,29 @@ class FormPembayaranFragment : Fragment() {
             it?.also { baselinePembayaran ->
                 binding.tvMinimalAngsuran?.text = "Rp. ${baselinePembayaran.parsedJumlahUang}"
                 binding.tvMaksimalTanggalBayar?.text = baselinePembayaran.tanggalPembayaranMaks.toString()
-                binding.tvSisaBelumBayarBulanIni.text = pembayaranViewModel.hitungSisaBelumBayarBulanIni().run {
-                    "Rp. ${NumberUtil.formatLongToString(this)}"
-                }
-                binding.tvSisaWaktuAngsuran?.text = pembayaranViewModel.getSisaBulanWaktuAngsuran().toString().run {
-                    "$this Bulan"
+
+                val listPembayaran = viewModel.listPembayaranLive.value
+                if (listPembayaran != null) {
+                    try {
+                        binding.tvSisaBelumBayarBulanIni.text = listPembayaran.run {
+                            val sisaBelumBayar = baselinePembayaran.hitungSisaBlmBayarBulanIni(this)
+
+                            "Rp. ${NumberUtil.formatLongToString(sisaBelumBayar)}"
+                        }
+                        binding.tvSisaWaktuAngsuran?.text = Pembayaran.sortPembayaran(listPembayaran).run {
+                            val tanggalPembelian = Pembayaran.getTanggalPembelian(this).toDate()
+                            val sisaBulanAngsuran = baselinePembayaran.hitungSisaBulanAngsuran(tanggalPembelian)
+
+                            "$sisaBulanAngsuran Bulan"
+                        }
+                    } catch (e: Exception) {
+                        e.printStackTrace()
+                        Toast.makeText(
+                            requireContext(),
+                            "Terjadi kesalahan : ${e.message}",
+                            Toast.LENGTH_LONG
+                        ).show()
+                    }
                 }
             }
         }
