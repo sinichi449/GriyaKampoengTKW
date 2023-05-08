@@ -173,7 +173,7 @@ class FormPembayaranFragment : Fragment() {
             }
         }
 
-        binding.layoutUangBaselineAngsuran?.setOnClickListener {
+        binding.layoutTitleAngsuranBulanan?.setOnClickListener {
             showSetBaselinePembayaranDialog()
         }
 
@@ -225,12 +225,10 @@ class FormPembayaranFragment : Fragment() {
         pembayaranViewModel.getBaselinePembayaran(
             kavling = currentKavlingKode!!,
             onLoading = {
-                binding.progressBarBaselineAngsuran?.visibility = View.VISIBLE
-                binding.layoutUangBaselineAngsuran?.visibility = View.GONE
+                // TODO
             },
             onComplete = {
-                binding.progressBarBaselineAngsuran?.visibility = View.GONE
-                binding.layoutUangBaselineAngsuran?.visibility = View.VISIBLE
+                // TODO
             },
             onFailure = { Toast.makeText(requireContext(), it, Toast.LENGTH_LONG).show() },
         )
@@ -271,10 +269,8 @@ class FormPembayaranFragment : Fragment() {
         }
 
         pembayaranViewModel.baselinePembayaranLive.observe(requireActivity()) {
-            if (it != null) {
-                binding.tvBaselineAngsuranBulanan?.text = "Rp. ${it.parsedJumlahUang}"
-            } else {
-                binding.tvBaselineAngsuranBulanan?.text = "-"
+            it?.also { baselinePembayaran ->
+                binding.tvMinimalAngsuran?.text = "Rp. ${baselinePembayaran.parsedJumlahUang}"
             }
         }
 
