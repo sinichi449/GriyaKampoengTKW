@@ -376,7 +376,9 @@ object MyObjectMapper {
         return model.let {
             BaselinePembayaran(
                 kavling = it.kavling,
+                opsiBulan = it.opsiBulan,
                 jumlahUang = it.jumlahUang,
+                tanggalPembayaranMaks = it.tanggalPembayaranMaks,
                 timeMillis = it.timeMillis,
             )
         }
@@ -386,7 +388,9 @@ object MyObjectMapper {
         return baselinePembayaran.let {
             BaselinePembayaranModel(
                 kavling = it.kavling,
+                opsiBulan = it.opsiBulan,
                 jumlahUang = it.jumlahUang,
+                tanggalPembayaranMaks = it.tanggalPembayaranMaks,
                 timeMillis = it.timeMillis,
             )
         }

@@ -78,8 +78,7 @@ class FormPembayaranViewModel @Inject constructor(
     }
 
     fun insertBaselinePembayaran(
-        kavling: String,
-        jumlahUang: Long,
+        baselinePembayaran: BaselinePembayaran,
         onLoading: () -> Unit,
         onComplete: () -> Unit,
         onFailure: (msg: String) -> Unit,
@@ -90,12 +89,7 @@ class FormPembayaranViewModel @Inject constructor(
 
         writeBaselinePembayaranJob = CoroutineScope(Dispatchers.IO).launch {
             Log.d("DEBUG_ME", "BaselinePembayaran: Sending to use case")
-            val request = SetBaselinePembayaranAsyncUseCase.Request(
-                BaselinePembayaran(
-                    kavling = kavling,
-                    jumlahUang = jumlahUang,
-                )
-            )
+            val request = SetBaselinePembayaranAsyncUseCase.Request(baselinePembayaran)
             setBaselinePembayaranAsyncUseCase.execute(request).collect { result ->
                 result.onSuccess {
                     withContext(Dispatchers.Main) {
@@ -128,5 +122,15 @@ class FormPembayaranViewModel @Inject constructor(
                 throw Exception("Opsi timeframe tidak dikenali: $opsiTimeframe")
             }
         }
+    }
+
+    fun hitungSisaBelumBayarBulanIni(): Long {
+        // TODO
+        return 0L
+    }
+
+    fun getSisaBulanWaktuAngsuran(): Int {
+        // TODO
+        return 0
     }
 }

@@ -11,7 +11,9 @@ import androidx.room.Query
 data class BaselinePembayaranRoomEntity(
     @PrimaryKey
     var kavling: String,
+    var opsiBulan: Int,
     var jumlahUang: Long,
+    var tanggalPembayaranMaks: Int,
     var timeMillis: Long,
 )
 

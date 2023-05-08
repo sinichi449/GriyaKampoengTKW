@@ -275,6 +275,13 @@ class FormPembayaranFragment : Fragment() {
         pembayaranViewModel.baselinePembayaranLive.observe(requireActivity()) {
             it?.also { baselinePembayaran ->
                 binding.tvMinimalAngsuran?.text = "Rp. ${baselinePembayaran.parsedJumlahUang}"
+                binding.tvMaksimalTanggalBayar?.text = baselinePembayaran.tanggalPembayaranMaks.toString()
+                binding.tvSisaBelumBayarBulanIni.text = pembayaranViewModel.hitungSisaBelumBayarBulanIni().run {
+                    "Rp. ${NumberUtil.formatLongToString(this)}"
+                }
+                binding.tvSisaWaktuAngsuran?.text = pembayaranViewModel.getSisaBulanWaktuAngsuran().toString().run {
+                    "$this Bulan"
+                }
             }
         }
 

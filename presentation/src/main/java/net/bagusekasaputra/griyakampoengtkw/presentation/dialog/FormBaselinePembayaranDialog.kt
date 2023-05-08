@@ -10,6 +10,7 @@ import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.activityViewModels
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import net.bagusekasaputra.griyakampoengtkw.domain.NumberUtil
+import net.bagusekasaputra.griyakampoengtkw.domain.entity.BaselinePembayaran
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.HargaKavling
 import net.bagusekasaputra.griyakampoengtkw.presentation.databinding.DialogBaselineAngsuranPerBulanBinding
 import net.bagusekasaputra.griyakampoengtkw.presentation.util.DialogUtil
@@ -87,14 +88,27 @@ class FormBaselinePembayaranDialog(
         }
 
         binding.btnTambahkan.setOnClickListener {
-            val isInvalidInput = InputUtil.isNullOrEmptyEditTexts(binding.edtUangAngsuranPerBulan)
+            val isInvalidInput = InputUtil.isNullOrEmptyEditTexts(
+                binding.edtOpsiTimeframeAngsuran,
+                binding.edtUangAngsuranPerBulan,
+                binding.edtMaksimalTanggalPembayaran,
+            )
 
             if (!isInvalidInput) {
+                val opsiBulan = binding.spinnerTimeframeAngsuran.selectedItemPosition.let { position ->
+                    val numTimeFrame = binding.edtOpsiTimeframeAngsuran.text.toString().toInt()
+                    if (position == 0) {
+                        numTimeFrame * 12
+                    } else {
+                        numTimeFrame
+                    }
+                }
                 val biayaAngsuran = binding.edtUangAngsuranPerBulan.text?.toString()?.toLong() ?: 0L
+                val tanggalPembayaranMaksimal = binding.edtMaksimalTanggalPembayaran.text.toString().toInt()
+                val baselinePembayaran = BaselinePembayaran(currentKavlingKode, opsiBulan, biayaAngsuran, tanggalPembayaranMaksimal)
 
                 pembayaranViewModel.insertBaselinePembayaran(
-                    kavling = currentKavlingKode,
-                    jumlahUang = biayaAngsuran,
+                    baselinePembayaran = baselinePembayaran,
                     onLoading = {
                         binding.btnTambahkan.text = "Menyimpan ..."
                         binding.btnTambahkan.isEnabled = false

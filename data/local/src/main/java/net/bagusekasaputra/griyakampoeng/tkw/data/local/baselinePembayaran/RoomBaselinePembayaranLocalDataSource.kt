@@ -55,7 +55,9 @@ class RoomBaselinePembayaranLocalDataSource(
         return if (model != null) {
             BaselinePembayaranRoomEntity(
                 kavling = model.kavling,
+                opsiBulan = model.opsiBulan,
                 jumlahUang = model.jumlahUang,
+                tanggalPembayaranMaks = model.tanggalPembayaranMaks,
                 timeMillis = model.timeMillis,
             )
         } else {
@@ -67,7 +69,9 @@ class RoomBaselinePembayaranLocalDataSource(
         return if (entity != null) {
             BaselinePembayaranModel(
                 kavling = entity.kavling,
+                opsiBulan = entity.opsiBulan,
                 jumlahUang = entity.jumlahUang,
+                tanggalPembayaranMaks = entity.tanggalPembayaranMaks,
                 timeMillis = entity.timeMillis,
             )
         } else {

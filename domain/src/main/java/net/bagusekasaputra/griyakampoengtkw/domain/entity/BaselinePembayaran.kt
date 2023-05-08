@@ -6,7 +6,9 @@ import java.math.RoundingMode
 
 data class BaselinePembayaran(
     val kavling: String,
+    val opsiBulan: Int,
     val jumlahUang: Long,
+    val tanggalPembayaranMaks: Int,
     var timeMillis: Long = System.currentTimeMillis()
 ) {
     val parsedJumlahUang = NumberUtil.formatLongToString(jumlahUang)
