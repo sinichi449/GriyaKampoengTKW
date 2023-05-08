@@ -254,7 +254,8 @@
                         app:row_header_width="@dimen/table_pembayaran_row_header_wdith"
                         app:separator_color="@color/black"
                         app:show_horizontal_separator="true"
-                        app:show_vertical_separator="true"/>
+                        app:show_vertical_separator="true"
+                        app:allow_click_inside_cell="true"/>
 
                     <androidx.constraintlayout.widget.ConstraintLayout
                         android:id="@+id/layout_loading_form_pembayaran"

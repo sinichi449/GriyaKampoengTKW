@@ -927,8 +927,8 @@ class DetailViewModel @Inject constructor(
     fun getPembayaranTableColumnHeaders(): List<PembayaranColumnHeader> {
         return listOf(
             PembayaranColumnHeader(text = "Tanggal"),
-            PembayaranColumnHeader(text = "Jumlah Uang dibayar"),
-            PembayaranColumnHeader(text = "Total Uang Masuk"),
+            PembayaranColumnHeader(text = "Uang Dibayar"),
+            PembayaranColumnHeader(text = "Total Uang"),
             PembayaranColumnHeader(text = "Persentase"),
             PembayaranColumnHeader(text = "Keterangan Progress"),
         )

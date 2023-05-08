@@ -1,10 +1,11 @@
 package net.bagusekasaputra.griyakampoengtkw.presentation.tableview.formPembayaran
 
 import android.graphics.Typeface
+import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.LinearLayout
+import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.content.ContextCompat
 import com.evrencoskun.tableview.adapter.AbstractTableAdapter
 import com.evrencoskun.tableview.adapter.recyclerview.holder.AbstractViewHolder
@@ -14,9 +15,9 @@ import net.bagusekasaputra.griyakampoengtkw.presentation.databinding.TablePembay
 import net.bagusekasaputra.griyakampoengtkw.presentation.databinding.TablePembayaranCornerLayoutBinding
 import net.bagusekasaputra.griyakampoengtkw.presentation.databinding.TablePembayaranRowHeaderLayoutBinding
 
-class PembayaranTableViewAdapter(): AbstractTableAdapter<PembayaranColumnHeader, PembayaranRowHeader, PembayaranCell>() {
+class PembayaranTableViewAdapter: AbstractTableAdapter<PembayaranColumnHeader, PembayaranRowHeader, PembayaranCell>() {
 
-    private object Kolom {
+    object Kolom {
         const val TANGGAL = 0
         const val JUMLAH_UANG_DIBAYAR = 1
         const val TOTAL_UANG_MASUK = 2
@@ -51,9 +52,6 @@ class PembayaranTableViewAdapter(): AbstractTableAdapter<PembayaranColumnHeader,
         viewHolder.content.text = cellItemModel?.mData as String? ?: "-"
 
         // Setting text alignment
-        val alignEnd = { viewHolder.content.textAlignment = View.TEXT_ALIGNMENT_VIEW_END }
-        val alignStart = { viewHolder.content.textAlignment = View.TEXT_ALIGNMENT_VIEW_START }
-        val alignCenter = { viewHolder.content.textAlignment = View.TEXT_ALIGNMENT_CENTER }
 
         when (columnPosition) {
 //            Kolom.TANGGAL, Kolom.PERSENTASE ->  alignCenter()
@@ -61,10 +59,12 @@ class PembayaranTableViewAdapter(): AbstractTableAdapter<PembayaranColumnHeader,
 //                alignEnd()
                 viewHolder.content.typeface = Typeface.SERIF
             }
-            Kolom.KETERANGAN_PROSES -> alignStart()
+            Kolom.KETERANGAN_PROSES -> {
+                viewHolder.content.gravity = Gravity.START
+            }
         }
 
-        viewHolder.container.layoutParams.width = LinearLayout.LayoutParams.WRAP_CONTENT
+        viewHolder.container.layoutParams.width = ConstraintLayout.LayoutParams.WRAP_CONTENT
         viewHolder.content.requestLayout()
     }
 
@@ -108,7 +108,7 @@ class PembayaranTableViewAdapter(): AbstractTableAdapter<PembayaranColumnHeader,
         viewHolder.content.text = columnHeaderItemModel?.text ?: "N/A"
 
 
-        viewHolder.container.layoutParams.width = LinearLayout.LayoutParams.WRAP_CONTENT
+        viewHolder.container.layoutParams.width = ConstraintLayout.LayoutParams.WRAP_CONTENT
         viewHolder.content.requestLayout()
     }
 

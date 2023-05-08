@@ -30,8 +30,8 @@ android {
         minSdk 21
         targetSdk 32
 
-        versionCode 55
-        versionName "2.0.9"
+        versionCode 56
+        versionName "2.0.9.1"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         signingConfig signingConfigs.debug

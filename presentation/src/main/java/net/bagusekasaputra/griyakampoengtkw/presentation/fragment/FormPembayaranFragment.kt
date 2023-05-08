@@ -15,6 +15,7 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.evrencoskun.tableview.listener.ITableViewListener
 import com.github.dhaval2404.imagepicker.ImagePicker
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.snackbar.Snackbar
@@ -689,7 +690,82 @@ class FormPembayaranFragment : Fragment() {
         }
 
         pembayaranTableViewAdapter.setAllItems(columnHeaders, rowHeaders, cellLists)
-        pembayaranTableViewAdapter.notifyDataSetChanged()
+
+        binding.tableFormPembayaran.apply {
+            setColumnWidth(PembayaranTableViewAdapter.Kolom.TANGGAL, 250)
+            setColumnWidth(PembayaranTableViewAdapter.Kolom.JUMLAH_UANG_DIBAYAR, 350)
+            setColumnWidth(PembayaranTableViewAdapter.Kolom.TOTAL_UANG_MASUK, 350)
+            setColumnWidth(PembayaranTableViewAdapter.Kolom.PERSENTASE, 250)
+            setColumnWidth(PembayaranTableViewAdapter.Kolom.KETERANGAN_PROSES, 500)
+        }
+
+        binding.tableFormPembayaran.tableViewListener = object : ITableViewListener {
+            override fun onCellClicked(cellView: RecyclerView.ViewHolder, column: Int, row: Int) {
+                if (column == PembayaranTableViewAdapter.Kolom.KETERANGAN_PROSES) {
+                    viewModel.listPembayaranLive.value?.also {
+                        val pembayaran = it[row]
+                        MaterialAlertDialogBuilder(requireContext())
+                            .setTitle("$currentKavlingKode - ${pembayaran.termin}")
+                            .setMessage(pembayaran.keterangan)
+                            .create()
+                            .show()
+                    }
+                }
+            }
+
+            override fun onCellDoubleClicked(
+                cellView: RecyclerView.ViewHolder,
+                column: Int,
+                row: Int
+            ) {
+
+            }
+
+            override fun onCellLongPressed(
+                cellView: RecyclerView.ViewHolder,
+                column: Int,
+                row: Int
+            ) {
+
+            }
+
+            override fun onColumnHeaderClicked(
+                columnHeaderView: RecyclerView.ViewHolder,
+                column: Int
+            ) {
+
+            }
+
+            override fun onColumnHeaderDoubleClicked(
+                columnHeaderView: RecyclerView.ViewHolder,
+                column: Int
+            ) {
+
+            }
+
+            override fun onColumnHeaderLongPressed(
+                columnHeaderView: RecyclerView.ViewHolder,
+                column: Int
+            ) {
+
+            }
+
+            override fun onRowHeaderClicked(rowHeaderView: RecyclerView.ViewHolder, row: Int) {
+
+            }
+
+            override fun onRowHeaderDoubleClicked(
+                rowHeaderView: RecyclerView.ViewHolder,
+                row: Int
+            ) {
+
+            }
+
+            override fun onRowHeaderLongPressed(rowHeaderView: RecyclerView.ViewHolder, row: Int) {
+
+            }
+
+        }
     }
 
     private fun showTerminSelectionButtonsDialog() {

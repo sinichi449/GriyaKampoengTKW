@@ -11,7 +11,8 @@
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            android:layout_height="wrap_content"
+            android:paddingBottom="36dp">
 
             <com.evrencoskun.tableview.TableView
                 android:id="@+id/table_form_pembayaran"
@@ -27,7 +28,17 @@
                 app:show_horizontal_separator="true"
                 app:show_vertical_separator="true"
                 app:separator_color="@color/black"
-                android:paddingBottom="36dp"/>
+                app:allow_click_inside_cell="true"/>
+
+            <com.google.android.material.divider.MaterialDivider
+                android:id="@+id/divier_tabel_sisa_blm_bayar"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/table_form_pembayaran"
+                android:layout_marginHorizontal="16dp"
+                android:layout_marginTop="24dp"/>
 
             <androidx.constraintlayout.widget.Guideline
                 android:id="@+id/guideline_vertical"
@@ -36,16 +47,14 @@
                 android:orientation="vertical"
                 app:layout_constraintGuide_percent="0.35"/>
 
-
-
             <com.google.android.material.textview.MaterialTextView
                 android:id="@+id/tvInfo_sisa_belum_bayar_bulan_ini"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintEnd_toStartOf="@id/guideline_vertical"
-                app:layout_constraintTop_toBottomOf="@id/table_form_pembayaran"
-                android:layout_marginTop="8dp"
+                app:layout_constraintTop_toBottomOf="@id/divier_tabel_sisa_blm_bayar"
+                android:layout_marginTop="16dp"
                 android:layout_marginStart="16dp"
                 style="@style/TextAppearance.MaterialComponents.Headline6"
                 android:textSize="@dimen/form_pembayaran_title_text_size"
