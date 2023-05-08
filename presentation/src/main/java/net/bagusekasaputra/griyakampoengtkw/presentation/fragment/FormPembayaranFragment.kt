@@ -7,12 +7,10 @@ import android.content.Intent
 import android.content.SharedPreferences
 import android.os.Bundle
 import android.view.*
-import android.widget.ArrayAdapter
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AlertDialog
 import androidx.core.content.ContextCompat
-import androidx.core.widget.addTextChangedListener
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -30,6 +28,7 @@ import net.bagusekasaputra.griyakampoengtkw.presentation.activities.FullImageAct
 import net.bagusekasaputra.griyakampoengtkw.presentation.adapter.recyclerview.TerminRecyclerAdapter
 import net.bagusekasaputra.griyakampoengtkw.presentation.custom.ThousandSeparatorTextWatcher
 import net.bagusekasaputra.griyakampoengtkw.presentation.databinding.*
+import net.bagusekasaputra.griyakampoengtkw.presentation.dialog.FormBaselinePembayaranDialog
 import net.bagusekasaputra.griyakampoengtkw.presentation.tableview.formPembayaran.PembayaranCell
 import net.bagusekasaputra.griyakampoengtkw.presentation.tableview.formPembayaran.PembayaranColumnHeader
 import net.bagusekasaputra.griyakampoengtkw.presentation.tableview.formPembayaran.PembayaranRowHeader
@@ -40,8 +39,6 @@ import net.bagusekasaputra.griyakampoengtkw.presentation.viewmodel.DetailViewMod
 import net.bagusekasaputra.griyakampoengtkw.presentation.viewmodel.FormPembayaranViewModel
 import net.bagusekasaputra.griyakampoengtkw.presentation.viewmodel.ImageViewModel
 import java.io.File
-import java.text.DecimalFormat
-import java.text.DecimalFormatSymbols
 import java.util.*
 import javax.inject.Inject
 
@@ -174,7 +171,14 @@ class FormPembayaranFragment : Fragment() {
         }
 
         binding.layoutTitleAngsuranBulanan?.setOnClickListener {
-            showSetBaselinePembayaranDialog()
+            val hargaKavling = viewModel.hargaKavlingLive.value
+
+            if (hargaKavling != null) {
+                FormBaselinePembayaranDialog(currentKavlingKode!!, hargaKavling)
+                    .show(childFragmentManager, null)
+            } else {
+                Snackbar.make(binding.root, "Harga Kavling masih kosong!", Snackbar.LENGTH_SHORT).show()
+            }
         }
 
         // Even when I already set the visibility of FabAction into View.GONE,
@@ -659,107 +663,6 @@ class FormPembayaranFragment : Fragment() {
 
         pembayaranTableViewAdapter.setAllItems(columnHeaders, rowHeaders, cellLists)
         pembayaranTableViewAdapter.notifyDataSetChanged()
-    }
-
-    private fun showSetBaselinePembayaranDialog() {
-        val hargaKavling = viewModel.hargaKavlingLive.value
-
-        if (hargaKavling != null) {
-            val dialogBinding = DialogBaselineAngsuranPerBulanBinding.inflate(layoutInflater)
-            val dialog = MaterialAlertDialogBuilder(requireContext()).apply {
-                setCancelable(false)
-                setView(dialogBinding.root)
-            }.create()
-
-            DialogUtil.additionalDialogSetting(requireContext(), dialog)
-
-            dialogBinding.edtInfoHargaKavling.setText("Rp. ${NumberUtil.formatLongToString(hargaKavling.hargaLong)}")
-            dialogBinding.spinnerTimeframeAngsuran.apply {
-                val listOpsiTimeframe = listOf("Tahun", "Bulan")
-                adapter = ArrayAdapter(
-                    requireContext(), android.R.layout.simple_spinner_dropdown_item, listOpsiTimeframe
-                )
-            }
-            dialogBinding.btnHitung.setOnClickListener {
-                val timeFrame = dialogBinding.edtOpsiTimeframeAngsuran.text.toString().toInt()
-                val opsiTimeFrame = dialogBinding.spinnerTimeframeAngsuran.selectedItem.toString()
-                val biayaAngsuranPerBulan = try {
-                    pembayaranViewModel.hitungAngsuranPerBulan(
-                        hargaKavling,
-                        timeFrame,
-                        opsiTimeFrame
-                    )
-                } catch (e: Exception) {
-                    e.printStackTrace()
-
-                    Toast.makeText(requireContext(), e.message, Toast.LENGTH_LONG).show()
-
-                    0.0
-                }
-
-                dialogBinding.tvPerhitungan.text = StringBuilder().run {
-                    append("${NumberUtil.formatLongToString(hargaKavling.hargaLong)} ")
-                    append("/ ${if (opsiTimeFrame == "Tahun") "$timeFrame Tahun (${timeFrame * 12} Bulan) " else "$timeFrame Bulan"} ")
-                    append("= Rp. ${NumberUtil.formatDoubleToString(biayaAngsuranPerBulan)}")
-
-                    toString()
-                }
-
-                dialogBinding.edtUangAngsuranPerBulan.setText(biayaAngsuranPerBulan.let {
-                    DecimalFormat("#", DecimalFormatSymbols(Locale.US))
-                        .format(it)
-                    // Prevent 1E77 or alike (exponents)
-                })
-            }
-            dialogBinding.edtUangAngsuranPerBulan.addTextChangedListener {
-                it?.toString()?.also { string ->
-                    if (string.isNotEmpty()) {
-                        val text = "= Rp. ${NumberUtil.formatDoubleToString(string.toDouble())}"
-
-                        dialogBinding.tvInfoParsedUangAngsuranRupiah.text = text
-                    } else {
-                        dialogBinding.tvInfoParsedUangAngsuranRupiah.text = "Rp. 0"
-                    }
-                }
-            }
-
-            dialogBinding.btnTambahkan.setOnClickListener {
-                val isInvalidInput = InputUtil.isNullOrEmptyEditTexts(dialogBinding.edtUangAngsuranPerBulan)
-
-                if (!isInvalidInput) {
-                    val biayaAngsuran = dialogBinding.edtUangAngsuranPerBulan.text?.toString()?.toLong() ?: 0L
-
-                    pembayaranViewModel.insertBaselinePembayaran(
-                        kavling = currentKavlingKode!!,
-                        jumlahUang = biayaAngsuran,
-                        onLoading = {
-                            dialogBinding.btnTambahkan.text = "Menyimpan ..."
-                            dialogBinding.btnTambahkan.isEnabled = false
-                        },
-                        onComplete = {
-                            Toast.makeText(requireContext(), "Berhasil mengubah Angsuran Bulanan: Rp ${NumberUtil.formatLongToString(biayaAngsuran)}", Toast.LENGTH_SHORT)
-                                .show()
-
-                            dialog.dismiss()
-                        },
-                        onFailure = {
-                            Toast.makeText(requireContext(), it, Toast.LENGTH_LONG).show()
-
-                            dialogBinding.btnTambahkan.isEnabled = true
-                            dialogBinding.btnTambahkan.text = "Tambahkan"
-                        }
-                    )
-                }
-            }
-            dialogBinding.btnBatal.setOnClickListener {
-                // TODO: Cancel tambahkanJob
-                dialog.dismiss()
-            }
-
-            dialog.show()
-        } else {
-            Snackbar.make(binding.root, "Harga Kavling masih kosong!", Snackbar.LENGTH_SHORT).show()
-        }
     }
 
     private fun showTerminSelectionButtonsDialog() {
