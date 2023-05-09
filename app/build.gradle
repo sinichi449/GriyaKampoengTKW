@@ -9,17 +9,17 @@ plugins {
 android {
     signingConfigs {
         debug {
-            storeFile file('/home/bagus/AndroidProjects/keystore.jks')
-            storePassword 'r4h4s14d3cH!'
-            keyAlias 'key0'
-            keyPassword 'r4h4s14d3cH!'
+            storeFile file(STORE_FILE)
+            storePassword STORE_PASSWORD
+            keyAlias STORE_KEY_ALIAS
+            keyPassword STORE_KEY_PASSWORD
         }
 
         release {
-            storeFile file('/home/bagus/AndroidProjects/keystore.jks')
-            storePassword 'r4h4s14d3cH!'
-            keyAlias 'key0'
-            keyPassword 'r4h4s14d3cH!'
+            storeFile file(STORE_FILE)
+            storePassword STORE_PASSWORD
+            keyAlias STORE_KEY_ALIAS
+            keyPassword STORE_KEY_PASSWORD
         }
     }
     namespace 'net.bagusekasaputra.griyakampoengtkw'
