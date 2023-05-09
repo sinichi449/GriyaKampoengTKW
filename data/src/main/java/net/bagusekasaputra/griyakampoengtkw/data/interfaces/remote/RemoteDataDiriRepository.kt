@@ -7,6 +7,8 @@ interface RemoteDataDiriRepository {
 
     suspend fun getDataDiri(kavlingKode: String): Result<DataDiriModel?>
 
+    suspend fun getFromBackup(backupName: String, kavling: String): Result<DataDiriModel?>
+
     fun addDataDiri(kavlingKode: String, dataDiriModel: DataDiriModel): Flow<Result<Boolean>>
 
     fun deleteDataDiri(kavlingKode: String): Flow<Result<Boolean>>

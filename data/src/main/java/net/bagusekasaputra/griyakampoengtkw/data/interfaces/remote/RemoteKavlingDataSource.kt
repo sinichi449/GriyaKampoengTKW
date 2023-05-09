@@ -14,5 +14,5 @@ interface RemoteKavlingDataSource {
 
     suspend fun setKavlingBelumDiisi(kavlingKode: String, belumIsi: Boolean)
 
-    suspend fun getUnmigratedKavlings(): Result<List<String>?>
+    suspend fun getUnmigratedKavlings(backupName: String): Result<List<String>?>
 }

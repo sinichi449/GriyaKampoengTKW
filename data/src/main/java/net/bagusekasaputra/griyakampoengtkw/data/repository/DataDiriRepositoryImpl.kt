@@ -9,6 +9,7 @@ import kotlinx.coroutines.flow.emitAll
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flow
 import net.bagusekasaputra.griyakampoengtkw.data.DataUtil
+import net.bagusekasaputra.griyakampoengtkw.data.MyObjectMapper
 import net.bagusekasaputra.griyakampoengtkw.data.MyObjectMapper.mapDataDiri
 import net.bagusekasaputra.griyakampoengtkw.data.interfaces.backup.BackupDataDiriDataSource
 import net.bagusekasaputra.griyakampoengtkw.data.interfaces.local.LocalDataDiriDataSource
@@ -141,6 +142,17 @@ class DataDiriRepositoryImpl(
                 DataMode.ONLINE -> emitAll(flowOnline)
                 DataMode.DATA_LAMA -> emitAll(flowDataLama)
             }
+        }
+    }
+
+    override fun getDataDiriFromRemoteBackup(backupName: String, kavlingKode: String): Flow<Result<DataDiri?>> {
+        return flow {
+            val remoteResult = remoteDataDiriRepository.getFromBackup(backupName,kavlingKode)
+
+            emit(DataUtil.mapSingleResult(
+                originResult = remoteResult,
+                targetMapper = MyObjectMapper::mapDataDiri,
+            ))
         }
     }
 

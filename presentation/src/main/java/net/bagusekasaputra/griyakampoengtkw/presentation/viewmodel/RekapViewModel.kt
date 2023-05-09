@@ -182,7 +182,6 @@ class RekapViewModel @Inject constructor(
         }
     }
 
-
     fun getListKavlingDataLama(
         onProgress: () -> Unit,
         onSuccess: (listUnmigratedKavling: List<UnmigratedKavling>?) -> Unit,
@@ -191,7 +190,7 @@ class RekapViewModel @Inject constructor(
         kavlingLamaRekapBesarJob = viewModelScope.launch {
             onProgress()
 
-            val request = GetListUnmigratedKavlingsAsyncUseCase.Request
+            val request = GetListUnmigratedKavlingsAsyncUseCase.Request("")
             getListUnmigratedKavlingsAsyncUseCase.execute(request).collect { result ->
                 result.onSuccess {
                     val listKavlingStr = mutableListOf<String>().apply {

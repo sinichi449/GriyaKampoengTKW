@@ -82,11 +82,14 @@ class FirebaseKavlingDataSource(
             }
     }
 
-    override suspend fun getUnmigratedKavlings(): Result<List<String>?> {
+    override suspend fun getUnmigratedKavlings(backupName: String): Result<List<String>?> {
+        val pathToFirebaseChild = "${FirebaseNodes.BACKUPS}/$backupName/${FirebaseNodes.UNMIGRATED}"
         return FirebaseRequestHelper.getOperation(
-            pathToChild = databaseReference.child(FirebaseNodes.UNMIGRATED),
+            pathToChild = databaseReference.child(pathToFirebaseChild),
             onGetSnapshot = {
-                it.getValue<List<String>>()
+                val listUnmigratedKavling = it.getValue<List<String>>()
+
+                listUnmigratedKavling
             },
             timeOutMsg = "Waktu habis mendapatkan Kavling Data Lama!",
             onClosedConnection = {}

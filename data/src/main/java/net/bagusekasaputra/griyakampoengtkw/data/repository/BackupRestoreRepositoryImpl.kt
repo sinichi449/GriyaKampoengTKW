@@ -4,6 +4,7 @@ import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.channels.trySendBlocking
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
+import kotlinx.coroutines.flow.flow
 import net.bagusekasaputra.griyakampoengtkw.data.MyObjectMapper
 import net.bagusekasaputra.griyakampoengtkw.data.interfaces.backup.BackupBiayaLainDataSource
 import net.bagusekasaputra.griyakampoengtkw.data.interfaces.backup.BackupBiayaMarketingDataSource
@@ -18,6 +19,7 @@ import net.bagusekasaputra.griyakampoengtkw.data.interfaces.backup.BackupImageSP
 import net.bagusekasaputra.griyakampoengtkw.data.interfaces.backup.BackupKavlingDataSource
 import net.bagusekasaputra.griyakampoengtkw.data.interfaces.backup.BackupPembayaranDataSource
 import net.bagusekasaputra.griyakampoengtkw.data.interfaces.backup.BackupRestoreDataSource
+import net.bagusekasaputra.griyakampoengtkw.data.interfaces.remote.RemoteBackupRestoreDataSource
 import net.bagusekasaputra.griyakampoengtkw.data.model.BiayaLainModel
 import net.bagusekasaputra.griyakampoengtkw.data.model.BiayaMarketingModel
 import net.bagusekasaputra.griyakampoengtkw.data.model.CatatanPembayaranModel
@@ -48,7 +50,14 @@ class BackupRestoreRepositoryImpl(
     private val backupFotoPembayaranDataSource: BackupFotoPembayaranDataSource,
     private val backupImageSPRDataSource: BackupImageSPRDataSource,
     private val backupRestoreDataSource: BackupRestoreDataSource,
+    private val remoteBackupRestoreDataSource: RemoteBackupRestoreDataSource,
 ): BackupRestoreRepository {
+
+    override fun getListBackups(): Flow<Result<List<String>?>> {
+        return flow {
+            emit(remoteBackupRestoreDataSource.getListBackup())
+        }
+    }
 
     override fun createBackup(backupRestoreEntity: BackupRestoreEntity): Flow<Result<Nothing?>> {
         return callbackFlow {

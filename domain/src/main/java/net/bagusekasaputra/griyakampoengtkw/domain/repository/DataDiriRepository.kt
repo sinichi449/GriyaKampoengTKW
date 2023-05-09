@@ -12,6 +12,8 @@ interface DataDiriRepository {
 
     fun getDataDiri(kavlingKode: String, dataMode: DataMode): Flow<Result<DataDiri?>>
 
+    fun getDataDiriFromRemoteBackup(backupName: String, kavlingKode: String): Flow<Result<DataDiri?>>
+
     fun addDataDiri(kavlingKode: String, dataDiri: DataDiri): Flow<Result<Boolean>>
 
     fun deleteDataDiri(kavlingKode: String): Flow<Result<Boolean>>

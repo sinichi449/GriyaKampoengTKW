@@ -5,7 +5,6 @@ import kotlinx.coroutines.channels.trySendBlocking
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
 import kotlinx.coroutines.flow.first
-import net.bagusekasaputra.griyakampoengtkw.domain.DataMode
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.AsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.UnmigratedKavling
 import net.bagusekasaputra.griyakampoengtkw.domain.repository.DataDiriRepository
@@ -16,17 +15,17 @@ class GetListUnmigratedKavlingsAsyncUseCase(
     private val dataDiriRepository: DataDiriRepository,
 ): AsyncUseCase<GetListUnmigratedKavlingsAsyncUseCase.Request, List<UnmigratedKavling>>() {
 
-    object Request: AsyncUseCase.Request
+    data class Request(val backupName: String): AsyncUseCase.Request
 
     override fun process(request: Request): Flow<Result<List<UnmigratedKavling>?>> {
         return callbackFlow {
             try {
-                val resultListKavling = kavlingRepository.getUnmigratedKavlings()
+                val resultListKavling = kavlingRepository.getUnmigratedKavlings(request.backupName)
                     .first().getOrThrow()
 
                 val listUnmigratedKavling = mutableListOf<UnmigratedKavling>()
                 resultListKavling?.forEach { kavling ->
-                    val dataDiriKavlingLama = dataDiriRepository.getDataDiri(kavling, DataMode.DATA_LAMA)
+                    val dataDiriKavlingLama = dataDiriRepository.getDataDiriFromRemoteBackup(request.backupName, kavling)
                         .first().getOrThrow()
 
                     listUnmigratedKavling.add(

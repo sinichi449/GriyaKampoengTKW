@@ -15,5 +15,5 @@ interface KavlingRepository {
 
     fun removeKavling(blockCode: String, kavlingKode: String): Flow<Result<Nothing?>>
 
-    fun getUnmigratedKavlings(): Flow<Result<List<String>?>>
+    fun getUnmigratedKavlings(backupName: String): Flow<Result<List<String>?>>
 }

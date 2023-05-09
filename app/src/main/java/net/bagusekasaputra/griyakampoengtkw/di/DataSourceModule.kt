@@ -43,6 +43,7 @@ import net.bagusekasaputra.griyakampoengtkw.data.backup.pembayaran.BackupPembaya
 import net.bagusekasaputra.griyakampoengtkw.data.interfaces.backup.*
 import net.bagusekasaputra.griyakampoengtkw.data.interfaces.local.*
 import net.bagusekasaputra.griyakampoengtkw.data.interfaces.remote.*
+import net.bagusekasaputra.griyakampoengtkw.data.remote.backupRestore.FirebaseBackupRestoreDataSource
 import net.bagusekasaputra.griyakampoengtkw.data.remote.baselinePembayaran.FirebaseBaselinePembayaranDataSource
 import net.bagusekasaputra.griyakampoengtkw.data.remote.biayaLain.FirebaseBiayaLainDataSource
 import net.bagusekasaputra.griyakampoengtkw.data.remote.fotoPembayaran.StorageFotoPembayaranDataSource
@@ -362,6 +363,11 @@ object DataSourceModule {
     @Provides
     fun provideBackupRestoreDataSource(): BackupRestoreDataSource {
         return BackupRestoreDataSourceImpl()
+    }
+
+    @Provides
+    fun provideRemoteBackupRestoreDataSource(databaseReference: DatabaseReference): RemoteBackupRestoreDataSource {
+        return FirebaseBackupRestoreDataSource(databaseReference)
     }
 
 
