@@ -10,6 +10,8 @@ interface PembayaranRepository {
 
     fun getBatchBackup(listKavling: List<String>): Flow<Result<Map<String, List<Pembayaran>?>?>>
 
+    fun getBatchFromRemoteBackup(backupName: String, listKavling: List<String>): Flow<Result<Map<String, List<Pembayaran>?>?>>
+
     fun getAllPembayaran(kavlingKode: String, dataMode: DataMode): Flow<Result<List<Pembayaran>?>>
 
     // I need to get a strictly from online/remote data source because the normal get method

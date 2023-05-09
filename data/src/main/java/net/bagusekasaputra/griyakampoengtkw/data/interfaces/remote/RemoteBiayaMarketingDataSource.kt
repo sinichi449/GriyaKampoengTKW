@@ -6,6 +6,8 @@ interface RemoteBiayaMarketingDataSource {
 
     suspend fun getAllBiayaMarketing(kavlingKode: String): Result<List<BiayaMarketingModel>?>
 
+    suspend fun getFromBackup(backupName: String, kavlingKode: String): Result<List<BiayaMarketingModel>?>
+
     suspend fun addBiayaMarketing(
         kavlingKode: String,
         biayaMarketingModel: BiayaMarketingModel

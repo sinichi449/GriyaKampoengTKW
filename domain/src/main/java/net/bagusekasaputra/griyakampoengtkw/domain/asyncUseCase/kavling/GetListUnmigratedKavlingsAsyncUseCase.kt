@@ -25,7 +25,7 @@ class GetListUnmigratedKavlingsAsyncUseCase(
 
                 val listUnmigratedKavling = mutableListOf<UnmigratedKavling>()
                 resultListKavling?.forEach { kavling ->
-                    val dataDiriKavlingLama = dataDiriRepository.getDataDiriFromRemoteBackup(request.backupName, kavling)
+                    val dataDiriKavlingLama = dataDiriRepository.getFromRemoteBackup(request.backupName, kavling)
                         .first().getOrThrow()
 
                     listUnmigratedKavling.add(

@@ -9,6 +9,7 @@ import kotlinx.coroutines.flow.emitAll
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flow
 import net.bagusekasaputra.griyakampoengtkw.data.DataUtil
+import net.bagusekasaputra.griyakampoengtkw.data.MyObjectMapper
 import net.bagusekasaputra.griyakampoengtkw.data.MyObjectMapper.mapPembayaran
 import net.bagusekasaputra.griyakampoengtkw.data.interfaces.backup.BackupPembayaranDataSource
 import net.bagusekasaputra.griyakampoengtkw.data.interfaces.local.LocalMetadataDataSource
@@ -109,6 +110,33 @@ class PembayaranRepositoryImpl(
             }
 
             awaitClose {  }
+        }
+    }
+
+    override fun getBatchFromRemoteBackup(
+        backupName: String,
+        listKavling: List<String>
+    ): Flow<Result<Map<String, List<Pembayaran>?>?>> {
+        return flow {
+            val mapPembayaran = mutableMapOf<String, List<Pembayaran>?>()
+
+            listKavling.forEach { kavling ->
+                val remoteResult = remotePembayaranSource.getAllFromBackup(backupName, kavling)
+                if (remoteResult.isSuccess) {
+                    val listModel = remoteResult.getOrNull()
+                    val listPembayaran = listModel?.map { MyObjectMapper.mapPembayaran(it) }
+
+                    mapPembayaran[kavling] = listPembayaran
+                } else {
+                    val errorCause = remoteResult.exceptionOrNull() ?: Throwable("Unknown Error getting Backup \"$backupName\" List Pembayaran at kavling $kavling")
+
+                    errorCause.printStackTrace()
+
+                    emit(Result.failure(errorCause))
+                }
+            }
+
+            emit(Result.success(mapPembayaran))
         }
     }
 

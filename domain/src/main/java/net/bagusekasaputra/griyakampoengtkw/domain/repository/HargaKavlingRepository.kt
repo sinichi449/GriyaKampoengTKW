@@ -10,6 +10,8 @@ interface HargaKavlingRepository {
 
     fun getBatchBackup(listKavling: List<String>): Flow<Result<Map<String, HargaKavling?>?>>
 
+    fun getBatchFromRemoteBackup(backupName: String, listKavling: List<String>): Flow<Result<Map<String, HargaKavling?>?>>
+
     fun getHargaKavling(kavlingKode: String, dataMode: DataMode): Flow<Result<HargaKavling?>>
 
     fun getSingleHargaKavlingForPembayaran(kavlingKode: String): Flow<HargaKavling>

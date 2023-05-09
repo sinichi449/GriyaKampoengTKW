@@ -1,15 +1,21 @@
 package net.bagusekasaputra.griyakampoengtkw.data.remote.biayaMarketing
 
 import android.util.Log
+import com.google.firebase.database.DataSnapshot
+import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.DatabaseReference
+import com.google.firebase.database.ValueEventListener
 import com.google.firebase.database.ktx.getValue
 import net.bagusekasaputra.griyakampoengtkw.data.interfaces.remote.RemoteBiayaMarketingDataSource
 import net.bagusekasaputra.griyakampoengtkw.data.model.BiayaMarketingModel
 import net.bagusekasaputra.griyakampoengtkw.data.remote.FirebaseNodes
 import net.bagusekasaputra.griyakampoengtkw.data.remote.FirebaseRequestHelper
+import kotlin.coroutines.resume
+import kotlin.coroutines.resumeWithException
+import kotlin.coroutines.suspendCoroutine
 
 class FirebaseBiayaMarketingDataSource(
-    databaseReference: DatabaseReference,
+    private val databaseReference: DatabaseReference,
 ): RemoteBiayaMarketingDataSource {
 
     private val biayaMarketingRef = databaseReference.child(FirebaseNodes.BIAYA_MARKETING)
@@ -36,6 +42,39 @@ class FirebaseBiayaMarketingDataSource(
             timeOutMsg = "Waktu habis mendapatkan biaya marketing dari server",
             onClosedConnection = {},
         )
+    }
+
+    override suspend fun getFromBackup(
+        backupName: String,
+        kavlingKode: String
+    ): Result<List<BiayaMarketingModel>?> {
+        return suspendCoroutine { continuation ->
+            val backupBiayaMarketingRef = FirebaseNodes
+                .getBackupNode(databaseReference, backupName, FirebaseNodes.BIAYA_MARKETING)
+                .child(kavlingKode)
+            val eventListener = object : ValueEventListener {
+                override fun onDataChange(snapshot: DataSnapshot) {
+                    val mapBiayaMarketing = snapshot.getValue<HashMap<String, BiayaMarketingModel>>()
+                    val listBiayaMarketing = mutableListOf<BiayaMarketingModel>()
+
+                    mapBiayaMarketing?.keys?.forEach { namaBiaya ->
+                        val biayaMarketing = mapBiayaMarketing[namaBiaya]
+                        if (biayaMarketing != null) {
+                            listBiayaMarketing.add(biayaMarketing)
+                        }
+                    }
+
+                    continuation.resume(Result.success(listBiayaMarketing))
+                }
+
+                override fun onCancelled(error: DatabaseError) {
+                    continuation.resumeWithException(error.toException())
+                }
+
+            }
+
+            backupBiayaMarketingRef.addListenerForSingleValueEvent(eventListener)
+        }
     }
 
     override suspend fun addBiayaMarketing(

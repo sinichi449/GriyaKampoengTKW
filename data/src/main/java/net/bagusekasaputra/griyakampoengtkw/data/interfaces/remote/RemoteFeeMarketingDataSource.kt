@@ -6,6 +6,8 @@ interface RemoteFeeMarketingDataSource {
 
     suspend fun getByKavlingKode(kavlingKode: String): Result<FeeMarketingModel?>
 
+    suspend fun getFromBackup(backupName: String, kavlingKode: String): Result<FeeMarketingModel?>
+
     suspend fun addFeeMarketing(kavlingKode: String, feeMarketingModel: FeeMarketingModel): Result<Nothing?>
 
     suspend fun updateFeeMarketing(

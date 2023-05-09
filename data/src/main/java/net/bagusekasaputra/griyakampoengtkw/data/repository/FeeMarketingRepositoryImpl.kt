@@ -9,6 +9,7 @@ import kotlinx.coroutines.flow.emitAll
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flow
 import net.bagusekasaputra.griyakampoengtkw.data.DataUtil
+import net.bagusekasaputra.griyakampoengtkw.data.MyObjectMapper
 import net.bagusekasaputra.griyakampoengtkw.data.MyObjectMapper.mapFeeMarketing
 import net.bagusekasaputra.griyakampoengtkw.data.interfaces.backup.BackupFeeMarketingDataSource
 import net.bagusekasaputra.griyakampoengtkw.data.interfaces.local.LocalFeeMarketingDataSource
@@ -111,6 +112,33 @@ class FeeMarketingRepositoryImpl(
             }
 
             awaitClose {  }
+        }
+    }
+
+    override fun getBatchFromRemoteBackup(
+        backupName: String,
+        kavlingList: List<String>
+    ): Flow<Result<Map<String, FeeMarketing?>?>> {
+        return flow {
+            val mapFeeMarketing = mutableMapOf<String, FeeMarketing?>()
+
+            kavlingList.forEach { kavling ->
+                val remoteResult = remoteFeeMarketingDataSource.getFromBackup(backupName, kavling)
+                if (remoteResult.isSuccess) {
+                    val model = remoteResult.getOrNull()
+                    val feeMarketing = model?.let { MyObjectMapper.mapFeeMarketing(it) }
+
+                    mapFeeMarketing[kavling] = feeMarketing
+                } else {
+                    val errorCause = remoteResult.exceptionOrNull()
+                        ?: Throwable("Unknown Error getting Backup \"$backupName\" Fee Marketing at kavling $kavling")
+                    errorCause.printStackTrace()
+
+                    emit(Result.failure(errorCause))
+                }
+            }
+
+            emit(Result.success(mapFeeMarketing))
         }
     }
 

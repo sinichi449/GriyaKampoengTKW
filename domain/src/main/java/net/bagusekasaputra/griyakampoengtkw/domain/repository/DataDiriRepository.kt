@@ -10,9 +10,11 @@ interface DataDiriRepository {
 
     fun getBatchBackup(listKavling: List<String>): Flow<Result<Map<String, DataDiri?>?>>
 
+    fun getBatchFromRemoteBackup(backupName: String, listKavling: List<String>): Flow<Result<Map<String, DataDiri?>?>>
+
     fun getDataDiri(kavlingKode: String, dataMode: DataMode): Flow<Result<DataDiri?>>
 
-    fun getDataDiriFromRemoteBackup(backupName: String, kavlingKode: String): Flow<Result<DataDiri?>>
+    fun getFromRemoteBackup(backupName: String, kavlingKode: String): Flow<Result<DataDiri?>>
 
     fun addDataDiri(kavlingKode: String, dataDiri: DataDiri): Flow<Result<Boolean>>
 

@@ -1,14 +1,20 @@
 package net.bagusekasaputra.griyakampoengtkw.data.remote.pembayaran
 
+import com.google.firebase.database.DataSnapshot
+import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.DatabaseReference
+import com.google.firebase.database.ValueEventListener
 import com.google.firebase.database.ktx.getValue
 import net.bagusekasaputra.griyakampoengtkw.data.interfaces.remote.RemotePembayaranSource
 import net.bagusekasaputra.griyakampoengtkw.data.model.PembayaranModel
 import net.bagusekasaputra.griyakampoengtkw.data.remote.FirebaseNodes
 import net.bagusekasaputra.griyakampoengtkw.data.remote.FirebaseRequestHelper
+import kotlin.coroutines.resume
+import kotlin.coroutines.resumeWithException
+import kotlin.coroutines.suspendCoroutine
 
 class FirebasePembayaranSource(
-    databaseReference: DatabaseReference
+    private val databaseReference: DatabaseReference
 ): RemotePembayaranSource {
 
     private val pembayaranRef = databaseReference.child(FirebaseNodes.FORM_PEMBAYARAN)
@@ -34,6 +40,39 @@ class FirebasePembayaranSource(
             timeOutMsg = "Waktu habis mendapatkan data pembayaran",
             onClosedConnection = {},
         )
+    }
+
+    override suspend fun getAllFromBackup(
+        backupName: String,
+        kavlingKode: String
+    ): Result<List<PembayaranModel>?> {
+        return suspendCoroutine { continuation ->
+            val backupPembayaranRef = FirebaseNodes
+                .getBackupNode(databaseReference, backupName, FirebaseNodes.FORM_PEMBAYARAN)
+                .child(kavlingKode)
+            val eventListener = object : ValueEventListener {
+                override fun onDataChange(snapshot: DataSnapshot) {
+                    val terminMap = snapshot.getValue<HashMap<String, PembayaranModel>>()
+                    val listPembayaran = mutableListOf<PembayaranModel>()
+
+                    terminMap?.keys?.forEach {
+                        val pembayaran = terminMap[it]
+                        if (pembayaran != null) {
+                            listPembayaran.add(pembayaran)
+                        }
+                    }
+
+                    continuation.resume(Result.success(listPembayaran))
+                }
+
+                override fun onCancelled(error: DatabaseError) {
+                    continuation.resumeWithException(error.toException())
+                }
+
+            }
+
+            backupPembayaranRef.addListenerForSingleValueEvent(eventListener)
+        }
     }
 
     override suspend fun addPembayaranModel(

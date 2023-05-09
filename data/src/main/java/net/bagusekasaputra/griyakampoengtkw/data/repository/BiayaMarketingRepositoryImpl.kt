@@ -9,6 +9,7 @@ import kotlinx.coroutines.flow.emitAll
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flow
 import net.bagusekasaputra.griyakampoengtkw.data.DataUtil
+import net.bagusekasaputra.griyakampoengtkw.data.MyObjectMapper
 import net.bagusekasaputra.griyakampoengtkw.data.MyObjectMapper.mapBiayaMarketing
 import net.bagusekasaputra.griyakampoengtkw.data.interfaces.backup.BackupBiayaMarketingDataSource
 import net.bagusekasaputra.griyakampoengtkw.data.interfaces.local.LocalBiayaMarketingDataSource
@@ -121,6 +122,34 @@ class BiayaMarketingRepositoryImpl(
             }
 
             awaitClose {  }
+        }
+    }
+
+    override fun getBatchFromRemoteBackup(
+        backupName: String,
+        listKavling: List<String>
+    ): Flow<Result<Map<String, List<BiayaMarketing>?>?>> {
+        // TODO
+        return flow {
+            val mapBiayaMarketing = mutableMapOf<String, List<BiayaMarketing>?>()
+
+            listKavling.forEach { kavling ->
+                val remoteResult = remoteBiayaMarketingDataSource.getFromBackup(backupName, kavling)
+                if (remoteResult.isSuccess) {
+                    val listModel = remoteResult.getOrNull()
+                    val listBiayaMarketing = listModel?.map { MyObjectMapper.mapBiayaMarketing(it) }
+
+                    mapBiayaMarketing[kavling] = listBiayaMarketing
+                } else {
+                    val errorCause = remoteResult.exceptionOrNull()
+                        ?: Throwable("Unknown Error Backup \"$backupName\" getting List Biaya Marketing at kavling $kavling")
+                    errorCause.printStackTrace()
+
+                    emit(Result.failure(errorCause))
+                }
+            }
+
+            emit(Result.success(mapBiayaMarketing))
         }
     }
 

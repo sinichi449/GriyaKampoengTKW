@@ -19,7 +19,6 @@ import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.rekap.CalculateR
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.rekap.GetListRekapGlobalAsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.rekap.GetRekapBesarDetailAsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.Kavling
-import net.bagusekasaputra.griyakampoengtkw.domain.entity.UnmigratedKavling
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.rekap.PeriodeRekap
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.rekap.RekapBesarDetail
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.rekap.RekapBesarOverview
@@ -81,7 +80,7 @@ class RekapViewModel @Inject constructor(
 
 
     var fabScrollMode = FabMode.Downward
-
+    var selectedBackupName: String? = null
 
     var gettingRekapBesarJob: Job? = null
     var kavlingLamaRekapBesarJob: Job? = null
@@ -141,6 +140,7 @@ class RekapViewModel @Inject constructor(
                 periodeRekap = periode,
                 startDate = startDate,
                 endDate = endDate,
+                backupName = selectedBackupName,
                 listIncludedKavlingDataLama = _listKavlingDataLamaRekapBesarIncludedLive.value!!,
             )
             calculateRekapBesarAndGetRekapBesarOverview.execute(request).collect { result ->
@@ -177,33 +177,6 @@ class RekapViewModel @Inject constructor(
                     withContext(Dispatchers.Main) {
                         onFailure("Gagal mendapatkan Rekap Besar Detail: ${it.message}")
                     }
-                }
-            }
-        }
-    }
-
-    fun getListKavlingDataLama(
-        onProgress: () -> Unit,
-        onSuccess: (listUnmigratedKavling: List<UnmigratedKavling>?) -> Unit,
-        onFailure: (msg: String) -> Unit
-    ) {
-        kavlingLamaRekapBesarJob = viewModelScope.launch {
-            onProgress()
-
-            val request = GetListUnmigratedKavlingsAsyncUseCase.Request("")
-            getListUnmigratedKavlingsAsyncUseCase.execute(request).collect { result ->
-                result.onSuccess {
-                    val listKavlingStr = mutableListOf<String>().apply {
-                        it?.forEach { unmigratedKavling ->
-                            add(unmigratedKavling.kavlingKode)
-                        }
-                    }
-                    setListDataLamaRekapBesarIncluded(listKavlingStr)
-
-                    onSuccess(it)
-                }
-                result.onFailure {
-                    onFailure("ERROR: Gagal mendapatkan Kavling data Lama -> ${it.message}")
                 }
             }
         }

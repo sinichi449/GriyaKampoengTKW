@@ -13,6 +13,8 @@ import net.bagusekasaputra.griyakampoengtkw.domain.entity.BiayaLain
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.BiayaLain.Companion.filterPeriode
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.BiayaMarketing
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.BiayaMarketing.Companion.filterPeriode
+import net.bagusekasaputra.griyakampoengtkw.domain.entity.DataDiri
+import net.bagusekasaputra.griyakampoengtkw.domain.entity.FeeMarketing
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.FeeMarketing.Companion.filterPeriode
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.HargaKavling
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.Kavling
@@ -48,6 +50,7 @@ class CalculateRekapBesarAndGetRekapBesarOverview(
         val startDate: Date? = null,
         val endDate: Date? = null,
         val listKavling: List<String> = Kavling.getGriyaKavlingList(),
+        val backupName: String? = null,
         val listIncludedKavlingDataLama: List<String> = emptyList(),
     ): AsyncUseCase.Request
 
@@ -55,6 +58,11 @@ class CalculateRekapBesarAndGetRekapBesarOverview(
     val messageProgress: LiveData<String>
         get() = _messageProgress
 
+
+    /**
+     * Temporarily disable HargaKavling Data Lama query. And that means so too Total Sisa Belum Bayar
+     * for Data Lama, because it affects the Rekap Besar's "Sisa Belum Bayar" display.
+     */
     override fun process(request: Request): Flow<Result<RekapBesarOverview?>> {
         return callbackFlow {
             try {
@@ -73,11 +81,24 @@ class CalculateRekapBesarAndGetRekapBesarOverview(
                 val mapListBiayaMarketingBaru = biayaMarketingRepository.getBatchOnline(request.listKavling).first().getOrThrow()?.toMutableMap()
 
                 // Data Lama
-                val mapListPembayaranLama = pembayaranRepository.getBatchBackup(request.listIncludedKavlingDataLama).first().getOrThrow()
-                val mapListDataDiriLama = dataDiriRepository.getBatchBackup(request.listIncludedKavlingDataLama).first().getOrThrow()
-                val mapHargaKavlingLama = hargaKavlingRepository.getBatchBackup(request.listIncludedKavlingDataLama).first().getOrThrow()?.toMutableMap()
-                val mapFeeMarketingLama = feeMarketingRepository.getBatchBackup(request.listIncludedKavlingDataLama).first().getOrThrow()?.toMutableMap()
-                val mapListBiayaMarketingLama = biayaMarketingRepository.getBatchBackup(request.listIncludedKavlingDataLama).first().getOrThrow()?.toMutableMap()
+                val mapListPembayaranLama: Map<String, List<Pembayaran>?>?
+                val mapListDataDiriLama: Map<String, DataDiri?>?
+                val mapHargaKavlingLama: MutableMap<String, HargaKavling?>?
+                val mapFeeMarketingLama: MutableMap<String, FeeMarketing?>?
+                val mapListBiayaMarketingLama: MutableMap<String, List<BiayaMarketing>?>?
+                if (request.backupName != null) {
+                    mapListPembayaranLama = pembayaranRepository.getBatchFromRemoteBackup(request.backupName, request.listIncludedKavlingDataLama).first().getOrThrow()
+                    mapListDataDiriLama = dataDiriRepository.getBatchFromRemoteBackup(request.backupName, request.listIncludedKavlingDataLama).first().getOrThrow()
+//                    mapHargaKavlingLama = hargaKavlingRepository.getBatchFromRemoteBackup(request.backupName, request.listIncludedKavlingDataLama).first().getOrThrow()?.toMutableMap()
+                    mapFeeMarketingLama = feeMarketingRepository.getBatchFromRemoteBackup(request.backupName, request.listIncludedKavlingDataLama).first().getOrThrow()?.toMutableMap()
+                    mapListBiayaMarketingLama = biayaMarketingRepository.getBatchFromRemoteBackup(request.backupName, request.listIncludedKavlingDataLama).first().getOrThrow()?.toMutableMap()
+                } else {
+                    mapListPembayaranLama = null
+                    mapListDataDiriLama = null
+                    mapHargaKavlingLama = null
+                    mapFeeMarketingLama = null
+                    mapListBiayaMarketingLama = null
+                }
 
 
                 // No matter what kavling (old/new), Biaya Lain always lonely :V
@@ -137,19 +158,20 @@ class CalculateRekapBesarAndGetRekapBesarOverview(
                 val mMapPembayaranWithNamaCostumerLama = mutableMapOf<String, List<PembayaranWithNamaCostumer>?>()
                 request.listIncludedKavlingDataLama.forEach { kavlingLama ->
                     val listPembayaranRekapLama = mapListPembayaranLama?.get(kavlingLama)?.filterPeriode(request.periodeRekap, request.startDate, request.endDate)
-                    val hargaKavlingLama = mapHargaKavlingLama?.get(kavlingLama)
+//                    val hargaKavlingLama = mapHargaKavlingLama?.get(kavlingLama)
                     val feeMarketingLama = mapFeeMarketingLama?.get(kavlingLama)?.filterPeriode(request.periodeRekap, request.startDate, request.endDate)
                     val listBiayaMarketingLama = mapListBiayaMarketingLama?.get(kavlingLama)?.filterPeriode(request.periodeRekap, request.startDate, request.endDate)
                     val dataDiriLama = mapListDataDiriLama?.get(kavlingLama)
 
 
                     val totalPembayaranPerKavlingLama = Pembayaran.hitungTotalUangMasuk(listPembayaranRekapLama ?: emptyList())
-                    val totalSisaBelumBayarPerKavlingLama = Pembayaran.hitungTotalSisaBelumBayar(hargaKavlingLama  ?: HargaKavling(kavlingLama, "0", "0"), totalPembayaranPerKavlingLama)
+
+//                    val totalSisaBelumBayarPerKavlingLama = Pembayaran.hitungTotalSisaBelumBayar(hargaKavlingLama  ?: HargaKavling(kavlingLama, "0", "0"), totalPembayaranPerKavlingLama)
                     val totalBiayaMarketingPerKavlingLama = BiayaMarketing.hitungTotalBiayaMarketing(listBiayaMarketingLama ?: emptyList())
 
                     // Sum it UP!
                     totalUangMasuk += totalPembayaranPerKavlingLama
-                    totalSisaBelumBayar += totalSisaBelumBayarPerKavlingLama
+//                    totalSisaBelumBayar += totalSisaBelumBayarPerKavlingLama
                     totalFeeMarketing += feeMarketingLama?.parsedBiayaMarketer ?: 0L
                     totalBiayaMarketing += totalBiayaMarketingPerKavlingLama
 

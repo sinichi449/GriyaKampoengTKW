@@ -39,6 +39,8 @@ class IncludeDataLamaRekapBesarDialog: DialogFragment() {
             val backupName = withContext(Dispatchers.Main) {
                 val selectedBackup = getUserSelectedBackup(listBackup.toTypedArray())
 
+                rekapViewModel.selectedBackupName = listBackup[selectedBackup]
+
                 listBackup[selectedBackup]
             }
 

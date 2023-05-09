@@ -94,6 +94,33 @@ class DataDiriRepositoryImpl(
         }
     }
 
+    override fun getBatchFromRemoteBackup(
+        backupName: String,
+        listKavling: List<String>
+    ): Flow<Result<Map<String, DataDiri?>?>> {
+        return flow {
+            val mapDataDiri = mutableMapOf<String, DataDiri?>()
+
+            listKavling.forEach { kavling ->
+                val remoteResult = remoteDataDiriRepository.getFromBackup(backupName, kavling)
+                if (remoteResult.isSuccess) {
+                    val model = remoteResult.getOrNull()
+                    val dataDiri = model?.let { MyObjectMapper.mapDataDiri(it) }
+
+                    mapDataDiri[kavling] = dataDiri
+                } else {
+                    val errorCause = remoteResult.exceptionOrNull()
+                        ?: Throwable("Unknown Error getting Backup \"$backupName\" Data Diri at kavling $kavling")
+                    errorCause.printStackTrace()
+
+                    emit(Result.failure(errorCause))
+                }
+            }
+
+            emit(Result.success(mapDataDiri))
+        }
+    }
+
     override fun getDataDiri(kavlingKode: String, dataMode: DataMode): Flow<Result<DataDiri?>> {
         return flow {
             val flowOffline = flow<Result<DataDiri?>> {
@@ -145,7 +172,7 @@ class DataDiriRepositoryImpl(
         }
     }
 
-    override fun getDataDiriFromRemoteBackup(backupName: String, kavlingKode: String): Flow<Result<DataDiri?>> {
+    override fun getFromRemoteBackup(backupName: String, kavlingKode: String): Flow<Result<DataDiri?>> {
         return flow {
             val remoteResult = remoteDataDiriRepository.getFromBackup(backupName,kavlingKode)
 

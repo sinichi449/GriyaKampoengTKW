@@ -6,6 +6,8 @@ interface RemoteHargaKavlingSource {
 
     suspend fun getHargaKavlingModel(kavlingKode: String): Result<HargaKavlingModel?>
 
+    suspend fun getFromBackup(backupName: String, kavlingKode: String): Result<HargaKavlingModel?>
+
     suspend fun addHargaKavlingModel(hargaKavlingModel: HargaKavlingModel): Result<Nothing?>
 
     suspend fun deleteHargaKavlingModel(kavlingKode: String): Result<Nothing?>

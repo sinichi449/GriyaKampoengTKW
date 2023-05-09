@@ -12,6 +12,8 @@ interface BiayaMarketingRepository {
 
     fun getBatchBackup(listKavling: List<String>): Flow<Result<Map<String, List<BiayaMarketing>?>>>
 
+    fun getBatchFromRemoteBackup(backupName: String, listKavling: List<String>): Flow<Result<Map<String, List<BiayaMarketing>?>?>>
+
     fun getAllByKavlingKode(kavlingKode: String, dataMode: DataMode): Flow<Result<List<BiayaMarketing>?>>
 
     // I need to get a strictly from online/remote data source because the normal get method

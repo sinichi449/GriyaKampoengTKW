@@ -9,6 +9,7 @@ import kotlinx.coroutines.flow.emitAll
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flow
 import net.bagusekasaputra.griyakampoengtkw.data.DataUtil
+import net.bagusekasaputra.griyakampoengtkw.data.MyObjectMapper
 import net.bagusekasaputra.griyakampoengtkw.data.MyObjectMapper.mapHargaKavling
 import net.bagusekasaputra.griyakampoengtkw.data.interfaces.backup.BackupHargaKavlingDataSource
 import net.bagusekasaputra.griyakampoengtkw.data.interfaces.local.LocalHargaKavlingDataSource
@@ -88,6 +89,33 @@ class HargaKavlingRepositoryImpl(
             }
 
             awaitClose {  }
+        }
+    }
+
+    override fun getBatchFromRemoteBackup(
+        backupName: String,
+        listKavling: List<String>
+    ): Flow<Result<Map<String, HargaKavling?>?>> {
+        return flow {
+            val mapHargaKavling = mutableMapOf<String, HargaKavling?>()
+
+            listKavling.forEach { kavling ->
+                val remoteResult = remoteHargaKavlingSource.getFromBackup(backupName, kavling)
+                if (remoteResult.isSuccess) {
+                    val model = remoteResult.getOrNull()
+                    val hargaKavling = model?.let { MyObjectMapper.mapHargaKavling(it) }
+
+                    mapHargaKavling[kavling] = hargaKavling
+                } else {
+                    val errorCause = remoteResult.exceptionOrNull()
+                        ?: Throwable("Unknown Error getting Backup \"$backupName\" Harga Kavling at kavling $kavling")
+                    errorCause.printStackTrace()
+
+                    emit(Result.failure(errorCause))
+                }
+            }
+
+            emit(Result.success(mapHargaKavling))
         }
     }
 
