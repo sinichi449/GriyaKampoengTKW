@@ -23,7 +23,7 @@ android {
         }
     }
     namespace 'net.bagusekasaputra.griyakampoengtkw'
-    compileSdk 32
+    compileSdk 33
 
     // Increase versionCode as Build process occur
     def versionPropsFile = file('version.properties')
@@ -39,7 +39,7 @@ android {
         defaultConfig {
             applicationId "net.bagusekasaputra.griyakampoengtkw"
             minSdk 21
-            targetSdk 32
+            targetSdk 33
 
             versionCode code
             versionName "2.0.9.1"
