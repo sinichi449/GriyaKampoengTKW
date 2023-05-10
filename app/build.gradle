@@ -25,22 +25,42 @@ android {
     namespace 'net.bagusekasaputra.griyakampoengtkw'
     compileSdk 32
 
-    defaultConfig {
-        applicationId "net.bagusekasaputra.griyakampoengtkw"
-        minSdk 21
-        targetSdk 32
+    // Increase versionCode as Build process occur
+    def versionPropsFile = file('version.properties')
+    if (versionPropsFile.canRead()) {
+        def Properties versionProps = new Properties()
+        versionProps.load(new FileInputStream(versionPropsFile))
 
-        versionCode 56
-        versionName "2.0.9.1"
+        def code = versionProps['VERSION_CODE'].toInteger() + 1
 
-        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
-        signingConfig signingConfigs.debug
+        versionProps['VERSION_CODE'] = code.toString()
+        versionProps.store(versionPropsFile.newWriter(), null)
+
+        defaultConfig {
+            applicationId "net.bagusekasaputra.griyakampoengtkw"
+            minSdk 21
+            targetSdk 32
+
+            versionCode code
+            versionName "2.0.9.1"
+
+            testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+            signingConfig signingConfigs.debug
+        }
+    } else {
+        throw new GradleException("Could not read version.properties!")
     }
 
     buildTypes {
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+        }
+    }
+    // Automatically name the apk to to the "<AppName>-v<VersionName>(<VersionCode>).apk" format
+    android.applicationVariants.all { variant ->
+        variant.outputs.each { output ->
+            output.outputFileName = "GriyaKampoengTKW_v${variant.versionName}(${variant.versionCode})-${variant.name}.apk"
         }
     }
     compileOptions {
