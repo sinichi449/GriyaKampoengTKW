@@ -2,6 +2,7 @@ package net.bagusekasaputra.griyakampoengtkw.domain
 
 import android.os.Build
 import androidx.annotation.RequiresApi
+import java.lang.IllegalArgumentException
 import java.time.LocalDate
 import java.time.ZoneId
 import java.util.Calendar
@@ -39,6 +40,33 @@ object DateUtil {
         }.time
         val tanggalTerakhir = Calendar.getInstance().apply {
             // Set ke tanggal terakhir bulan sekarang (otomatis mengikuti bulan)
+            set(Calendar.DAY_OF_MONTH, getActualMaximum(Calendar.DATE))
+
+            set(Calendar.HOUR_OF_DAY, 0)
+            set(Calendar.MINUTE, 0)
+            set(Calendar.SECOND, 0)
+            set(Calendar.MILLISECOND, 0)
+        }.time
+
+        return listOf(tanggalPertama, tanggalTerakhir)
+    }
+
+    fun getMonthlyRangeDate(calendarMonth: Int, year: Int): List<Date> {
+        // Get first and end of day in current month
+        val tanggalPertama = Calendar.getInstance().apply {
+            set(Calendar.YEAR, year)
+            set(Calendar.MONTH, calendarMonth)
+            // Set ke tanggal 1 sesuai static atribut dari Calendar
+            set(Calendar.DAY_OF_MONTH, 1)
+
+            set(Calendar.HOUR_OF_DAY, 0)
+            set(Calendar.MINUTE, 0)
+            set(Calendar.SECOND, 0)
+            set(Calendar.MILLISECOND, 0)
+        }.time
+        val tanggalTerakhir = Calendar.getInstance().apply {
+            set(Calendar.YEAR, year)
+            set(Calendar.MONTH, calendarMonth)
             set(Calendar.DAY_OF_MONTH, getActualMaximum(Calendar.DATE))
 
             set(Calendar.HOUR_OF_DAY, 0)
@@ -92,6 +120,24 @@ object DateUtil {
         }
 
         return listOf(startDate.time, endDate.time)
+    }
+
+    fun namaBulanShort(bulan: Int): String {
+        return when (bulan) {
+            1 -> "Jan"
+            2 -> "Feb"
+            3 -> "Mar"
+            4 -> "Apr"
+            5 -> "Mei"
+            6 -> "Jun"
+            7 -> "Jul"
+            8 -> "Aug"
+            9 -> "Sep"
+            10 -> "Okt"
+            11 -> "Nov"
+            12 -> "Des"
+            else -> throw IllegalArgumentException("Tidak ada nama bulan yang sesuai untuk Bulan $bulan")
+        }
     }
 
     fun String.toDate(): Date {

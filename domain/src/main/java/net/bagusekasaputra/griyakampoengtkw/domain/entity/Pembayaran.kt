@@ -1,5 +1,6 @@
 package net.bagusekasaputra.griyakampoengtkw.domain.entity
 
+import net.bagusekasaputra.griyakampoengtkw.domain.DateUtil
 import net.bagusekasaputra.griyakampoengtkw.domain.DateUtil.getCustomRangeDate
 import net.bagusekasaputra.griyakampoengtkw.domain.DateUtil.getMonthlyRangeDate
 import net.bagusekasaputra.griyakampoengtkw.domain.DateUtil.getWeeklyRangeDate
@@ -7,6 +8,7 @@ import net.bagusekasaputra.griyakampoengtkw.domain.DateUtil.isWithinRange
 import net.bagusekasaputra.griyakampoengtkw.domain.DateUtil.toDate
 import net.bagusekasaputra.griyakampoengtkw.domain.NumberUtil
 import net.bagusekasaputra.griyakampoengtkw.domain.PembayaranSorterUtil
+import net.bagusekasaputra.griyakampoengtkw.domain.entity.pembayaran.PembayaranBulanan
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.rekap.PeriodeRekap
 import java.util.Calendar
 import java.util.Date
@@ -122,6 +124,39 @@ data class Pembayaran(
                     }
                 }
             }
+        }
+
+        fun groupIntoBulanan(kavling: String, sortedListPembayaran: List<Pembayaran>): List<PembayaranBulanan> {
+            val listPembayaranBulanan = mutableListOf<PembayaranBulanan>()
+
+            var listBulanTahun = mutableListOf<Pair<Int, Int>>()
+            sortedListPembayaran.forEach { pembayaran ->
+                val tanggalPembayaran = Calendar.getInstance().apply {
+                    time = pembayaran.tanggal.toDate()
+                }
+                val bulanPembayaran = tanggalPembayaran.get(Calendar.MONTH)
+                val tahunPembayaran = tanggalPembayaran.get(Calendar.YEAR)
+
+                listBulanTahun.add(Pair(bulanPembayaran, tahunPembayaran))
+            }
+            listBulanTahun = listBulanTahun.distinct().toMutableList() // Filter out duplicate
+
+            listBulanTahun.forEach { bulanTahun ->
+                val rangeTanggal = DateUtil.getMonthlyRangeDate(bulanTahun.first, bulanTahun.second)
+                val tanggalPertama = rangeTanggal[0]
+                val tanggalTerakhir = rangeTanggal[1]
+                val listOnlySpecifiedBulan = sortedListPembayaran.filterPeriode(PeriodeRekap.CUSTOM, tanggalPertama, tanggalTerakhir)
+
+                if (listOnlySpecifiedBulan != null) {
+                    listPembayaranBulanan.add(PembayaranBulanan(kavling,
+                        bulanTahun.first.plus(1), // Bulan yang ada diisini pake formatnya Calendar, so harus +1
+                        bulanTahun.second,
+                        listOnlySpecifiedBulan,
+                    ))
+                }
+            }
+
+            return PembayaranBulanan.sort(listPembayaranBulanan)
         }
     }
 }
