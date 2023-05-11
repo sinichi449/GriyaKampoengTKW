@@ -1,0 +1,135 @@
+package net.bagusekasaputra.griyakampoengtkw.presentation.tableview
+
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
+import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.core.content.ContextCompat
+import com.evrencoskun.tableview.adapter.AbstractTableAdapter
+import com.evrencoskun.tableview.adapter.recyclerview.holder.AbstractViewHolder
+import net.bagusekasaputra.griyakampoengtkw.presentation.R
+import net.bagusekasaputra.griyakampoengtkw.presentation.databinding.TableGenericCellViewBinding
+import net.bagusekasaputra.griyakampoengtkw.presentation.databinding.TableGenericColumnHeaderBinding
+import net.bagusekasaputra.griyakampoengtkw.presentation.databinding.TableGenericSingleCornerViewBinding
+import net.bagusekasaputra.griyakampoengtkw.presentation.databinding.TableGenericSingleRowHeaderBinding
+import net.bagusekasaputra.griyakampoengtkw.presentation.tableview.AbstractTableWrapper.CellItem
+import net.bagusekasaputra.griyakampoengtkw.presentation.tableview.AbstractTableWrapper.ColumnHeader
+import net.bagusekasaputra.griyakampoengtkw.presentation.tableview.AbstractTableWrapper.RowHeader
+
+class GktTableViewAdapter(
+    private val additionalCellActions: (cellViewHolder: MyCellViewHolder, cellItem: CellItem?, column: Int, row: Int) -> Unit = { _, _, _, _ -> },
+): AbstractTableAdapter<ColumnHeader, RowHeader, CellItem>() {
+
+    class MyCellViewHolder(cellBinding: TableGenericCellViewBinding): AbstractViewHolder(cellBinding.root) {
+        val container = cellBinding.root
+        val tvCell = cellBinding.tvCellData
+    }
+
+    override fun onCreateCellViewHolder(parent: ViewGroup, viewType: Int): AbstractViewHolder {
+        val cellBinding = TableGenericCellViewBinding.inflate(
+            getLayoutInflater(parent),
+            parent, false,
+        )
+
+        return MyCellViewHolder(cellBinding)
+    }
+
+
+    class MyColumnHeaderViewHolder(colHeaderBinding: TableGenericColumnHeaderBinding): AbstractViewHolder(colHeaderBinding.root) {
+        val container = colHeaderBinding.root
+        val tvColumnHeader = colHeaderBinding.tvChData
+
+        override fun setSelected(selectionState: SelectionState) {
+            super.setSelected(selectionState)
+
+            if (selectionState != SelectionState.SELECTED) {
+                val color = { resId: Int ->
+                    ContextCompat.getColor(container.context, resId)
+                }
+
+                container.setBackgroundColor(color(R.color.abang))
+                tvColumnHeader.setTextColor(color(R.color.white))
+            }
+        }
+    }
+
+    override fun onCreateColumnHeaderViewHolder(
+        parent: ViewGroup,
+        viewType: Int
+    ): AbstractViewHolder {
+        val colHeaderBinding = TableGenericColumnHeaderBinding.inflate(
+            getLayoutInflater(parent), parent, false
+        )
+
+        return MyColumnHeaderViewHolder(colHeaderBinding)
+    }
+
+
+    class MySingleRowHeaderViewHolder(singleRowHeaderBinding: TableGenericSingleRowHeaderBinding): AbstractViewHolder(singleRowHeaderBinding.root) {
+        val container = singleRowHeaderBinding.root
+        val tvRowHeader = singleRowHeaderBinding.tvRhNomor
+    }
+
+    override fun onCreateRowHeaderViewHolder(parent: ViewGroup, viewType: Int): AbstractViewHolder {
+        val singleRowHeaderBinding = TableGenericSingleRowHeaderBinding.inflate(
+            getLayoutInflater(parent), parent, false
+        )
+
+        return MySingleRowHeaderViewHolder(singleRowHeaderBinding)
+    }
+
+
+    override fun onCreateCornerView(parent: ViewGroup): View {
+        val singleCornerBinding = TableGenericSingleCornerViewBinding.inflate(
+            getLayoutInflater(parent), parent, false
+        )
+
+        return singleCornerBinding.root
+    }
+
+
+    override fun onBindRowHeaderViewHolder(
+        holder: AbstractViewHolder,
+        rowHeaderItemModel: RowHeader?,
+        rowPosition: Int
+    ) {
+        val viewHolder = holder as MySingleRowHeaderViewHolder
+
+        viewHolder.tvRowHeader.text = rowHeaderItemModel?.getText() ?: "-"
+    }
+
+    override fun onBindColumnHeaderViewHolder(
+        holder: AbstractViewHolder,
+        columnHeaderItemModel: ColumnHeader?,
+        columnPosition: Int
+    ) {
+        val viewHolder = holder as MyColumnHeaderViewHolder
+
+        viewHolder.tvColumnHeader.text = columnHeaderItemModel?.getText() ?: "NULL"
+
+        viewHolder.container.layoutParams.width = ConstraintLayout.LayoutParams.WRAP_CONTENT
+        viewHolder.tvColumnHeader.requestLayout()
+    }
+
+    override fun onBindCellViewHolder(
+        holder: AbstractViewHolder,
+        cellItemModel: CellItem?,
+        columnPosition: Int,
+        rowPosition: Int
+    ) {
+        val viewHolder = holder as MyCellViewHolder
+
+        viewHolder.tvCell.text = cellItemModel?.getText() ?: "N/A"
+
+        additionalCellActions(viewHolder, cellItemModel, columnPosition, rowPosition)
+
+        viewHolder.container.layoutParams.width = ConstraintLayout.LayoutParams.WRAP_CONTENT
+        viewHolder.tvCell.requestLayout()
+    }
+
+
+    private fun getLayoutInflater(parent: ViewGroup): LayoutInflater {
+        return LayoutInflater.from(parent.context)
+    }
+
+}
