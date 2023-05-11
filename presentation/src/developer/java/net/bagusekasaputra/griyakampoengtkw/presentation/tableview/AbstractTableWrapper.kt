@@ -1,5 +1,7 @@
 package net.bagusekasaputra.griyakampoengtkw.presentation.tableview
 
+import android.view.View
+import android.widget.TextView
 import com.evrencoskun.tableview.TableView
 import com.evrencoskun.tableview.adapter.recyclerview.holder.AbstractViewHolder
 import com.evrencoskun.tableview.listener.ITableViewListener
@@ -13,6 +15,8 @@ abstract class AbstractTableWrapper(
     private var doubleRowHeaderConfig: DoubleRowHeaderConfiguration? = null
     private var additionalCellActions: (cellViewHolder: GktTableViewAdapter.MyCellViewHolder, cellItem: CellItem?, column: Int, row: Int) -> Unit = { _, _, _, _ ->}
     private var additionalRowHeaderActions: (rowHeaderViewHolder: AbstractViewHolder, rowHeaderItem: RowHeader?, row: Int) -> Unit = { _, _, _ -> }
+    private var additionalColumnHeaderActions: (columnHeaderViewHolder: GktTableViewAdapter.MyColumnHeaderViewHolder, columnHeaderItem: ColumnHeader?, columnPosition: Int) -> Unit = { _, _, _ -> }
+    private var additionalCornerViewAction: (view: View, text: TextView) -> Unit = { _, _ -> }
 
     abstract fun getColumnHeaderItems(): List<ColumnHeader>
     abstract fun getRowHeaderItems(): List<RowHeader>
@@ -48,11 +52,25 @@ abstract class AbstractTableWrapper(
         return this
     }
 
+    fun setAdditionalColumnHeaderActions(action: (columnHeaderViewHolder: GktTableViewAdapter.MyColumnHeaderViewHolder, columnHeaderItem: ColumnHeader?, columnPosition: Int) -> Unit): AbstractTableWrapper {
+        additionalColumnHeaderActions = action
+
+        return this
+    }
+
+    fun setAdditionalCornerViewActions(action: (view: View, text: TextView) -> Unit): AbstractTableWrapper {
+        additionalCornerViewAction = action
+
+        return this
+    }
+
     fun createTable() {
         val adapter = GktTableViewAdapter(
             doubleRowHeaderConfig,
             additionalCellActions,
             additionalRowHeaderActions,
+            additionalColumnHeaderActions,
+            additionalCornerViewAction,
         )
         tableView.setAdapter(adapter)
 

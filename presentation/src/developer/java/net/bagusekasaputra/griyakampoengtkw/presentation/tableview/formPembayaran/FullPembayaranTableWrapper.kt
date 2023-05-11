@@ -1,8 +1,10 @@
 package net.bagusekasaputra.griyakampoengtkw.presentation.tableview.formPembayaran
 
 import android.graphics.Typeface
+import android.view.Gravity
 import com.evrencoskun.tableview.TableView
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.Pembayaran
+import net.bagusekasaputra.griyakampoengtkw.presentation.R
 import net.bagusekasaputra.griyakampoengtkw.presentation.tableview.AbstractTableWrapper
 import net.bagusekasaputra.griyakampoengtkw.presentation.tableview.GktTableViewAdapter
 
@@ -19,8 +21,9 @@ class FullPembayaranTableWrapper(
 
         setAdditionalCellActions { cellViewHolder: GktTableViewAdapter.MyCellViewHolder, _: CellItem?, column: Int, _: Int ->
             when (column) {
-                BulananPembayaranTableWrapper.UANG_MASUK,
-                BulananPembayaranTableWrapper.JUMLAH_TUNGGAKAN -> cellViewHolder.tvCell.typeface = Typeface.SERIF
+                UANG_DIBAYAR, TOTAL -> cellViewHolder.tvCell.typeface = Typeface.SERIF
+                PERSENTASE -> cellViewHolder.tvCell.typeface = Typeface.MONOSPACE
+                KETERANGAN_PROGRESS -> cellViewHolder.tvCell.gravity = Gravity.START
             }
         }
 
@@ -29,12 +32,12 @@ class FullPembayaranTableWrapper(
             val sudahIsiFotoPembayaran = parseRowHeader?.get(2)?.toBoolean()
 
             val viewHolder = rowHeaderViewHolder as GktTableViewAdapter.MyDoubleRowHeaderViewHolder
-            val backgroundColor = viewHolder.getColor(if (sudahIsiFotoPembayaran == true)
+            val backgroundColor = if (sudahIsiFotoPembayaran == true)
                 com.evrencoskun.tableview.R.color.table_view_default_selected_background_color
                 else com.evrencoskun.tableview.R.color.table_view_default_unselected_background_color
-            )
 
-            viewHolder.background = backgroundColor
+            viewHolder.containerBackground = backgroundColor
+            viewHolder.rowHeadersTextColor = R.color.black
         }
     }
 

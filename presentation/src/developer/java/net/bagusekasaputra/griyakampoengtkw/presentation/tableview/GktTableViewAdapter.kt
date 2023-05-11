@@ -3,6 +3,7 @@ package net.bagusekasaputra.griyakampoengtkw.presentation.tableview
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.TextView
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.content.ContextCompat
 import com.evrencoskun.tableview.adapter.AbstractTableAdapter
@@ -20,8 +21,10 @@ import net.bagusekasaputra.griyakampoengtkw.presentation.tableview.AbstractTable
 
 class GktTableViewAdapter(
     private val doubleRowHeaderConfig: DoubleRowHeaderConfiguration? = null,
-    private val additionalCellActions: (cellViewHolder: MyCellViewHolder, cellItem: CellItem?, column: Int, row: Int) -> Unit = { _, _, _, _ -> },
-    private val additionalRowHeaderActions: (rowHeaderViewHolder: AbstractViewHolder, rowHeaderItem: RowHeader?, rowPosition: Int) -> Unit = { _, _, _ -> }
+    private val additionalCellActions: (cellViewHolder: MyCellViewHolder, cellItem: CellItem?, column: Int, row: Int) -> Unit,
+    private val additionalRowHeaderActions: (rowHeaderViewHolder: AbstractViewHolder, rowHeaderItem: RowHeader?, rowPosition: Int) -> Unit,
+    private val additionalColumnHeaderActions: (columnHeaderViewHolder: MyColumnHeaderViewHolder, columnHeaderItem: ColumnHeader?, columnPosition: Int) -> Unit,
+    private val additionalCornerViewActions: (view: View, text: TextView) -> Unit,
 ): AbstractTableAdapter<ColumnHeader, RowHeader, CellItem>() {
 
     data class DoubleRowHeaderConfiguration(
@@ -47,6 +50,8 @@ class GktTableViewAdapter(
     class MyColumnHeaderViewHolder(colHeaderBinding: TableGenericColumnHeaderBinding): AbstractViewHolder(colHeaderBinding.root) {
         val container = colHeaderBinding.root
         val tvColumnHeader = colHeaderBinding.tvChData
+        var containerBackground = R.color.abang
+        var textColumnHeaderColor = R.color.white
 
         override fun setSelected(selectionState: SelectionState) {
             super.setSelected(selectionState)
@@ -56,8 +61,8 @@ class GktTableViewAdapter(
                     ContextCompat.getColor(container.context, resId)
                 }
 
-                container.setBackgroundColor(color(R.color.abang))
-                tvColumnHeader.setTextColor(color(R.color.white))
+                container.setBackgroundColor(color(containerBackground))
+                tvColumnHeader.setTextColor(color(textColumnHeaderColor))
             }
         }
     }
@@ -77,24 +82,42 @@ class GktTableViewAdapter(
     class MySingleRowHeaderViewHolder(singleRowHeaderBinding: TableGenericSingleRowHeaderBinding): AbstractViewHolder(singleRowHeaderBinding.root) {
         val container = singleRowHeaderBinding.root
         val tvRowHeader = singleRowHeaderBinding.tvRhNomor
+        var containerBackground = R.color.white
+        var rowHeaderTextColor = R.color.black
+
+        override fun setSelected(selectionState: SelectionState) {
+            super.setSelected(selectionState)
+
+            if (selectionState != SelectionState.SELECTED) {
+                val color = { resId: Int ->
+                    ContextCompat.getColor(container.context, resId)
+                }
+
+                container.setBackgroundColor(color(containerBackground))
+                tvRowHeader.setTextColor(color(rowHeaderTextColor))
+            }
+        }
     }
 
     class MyDoubleRowHeaderViewHolder(doubleRowHeaderBinding: TableGenericDoubleRowHeaderBinding): AbstractViewHolder(doubleRowHeaderBinding.root) {
         val container = doubleRowHeaderBinding.root
         val tvNomor = doubleRowHeaderBinding.tvRhNomor
         val tvData = doubleRowHeaderBinding.tvRhData
-        var background = getColor(R.color.white)
+        var containerBackground = R.color.abang
+        var rowHeadersTextColor = R.color.white
 
         override fun setSelected(selectionState: SelectionState) {
             super.setSelected(selectionState)
 
             if (selectionState != SelectionState.SELECTED) {
-                setBackgroundColor(background)
-            }
-        }
+                val color = { resId: Int ->
+                    ContextCompat.getColor(container.context, resId)
+                }
 
-        fun getColor(resId: Int): Int {
-            return ContextCompat.getColor(container.context, resId)
+                container.setBackgroundColor(color(containerBackground))
+                tvNomor.setTextColor(color(rowHeadersTextColor))
+                tvData.setTextColor(color(rowHeadersTextColor))
+            }
         }
     }
 
@@ -117,21 +140,26 @@ class GktTableViewAdapter(
 
     override fun onCreateCornerView(parent: ViewGroup): View {
         val cornerView: View
+        val cornerText: TextView
         if (doubleRowHeaderConfig != null) {
             val doubleCornerBinding = TableGenericDoubleCornerViewBinding.inflate(
                 getLayoutInflater(parent), parent, false
             )
 
-            doubleCornerBinding.tvCornerTitle.text = doubleRowHeaderConfig.cornerTitle
-
             cornerView = doubleCornerBinding.root
+            cornerText = doubleCornerBinding.tvCornerTitle
+
+            cornerText.text = doubleRowHeaderConfig.cornerTitle
         } else {
             val singleCornerBinding = TableGenericSingleCornerViewBinding.inflate(
                 getLayoutInflater(parent), parent, false,
             )
 
             cornerView = singleCornerBinding.root
+            cornerText = singleCornerBinding.tvCornerText
         }
+
+        additionalCornerViewActions(cornerView, cornerText)
 
         return cornerView
     }
@@ -171,6 +199,8 @@ class GktTableViewAdapter(
 
         viewHolder.tvColumnHeader.text = columnHeaderItemModel?.getText() ?: "NULL"
 
+        additionalColumnHeaderActions(viewHolder, columnHeaderItemModel, columnPosition)
+
         viewHolder.container.layoutParams.width = ConstraintLayout.LayoutParams.WRAP_CONTENT
         viewHolder.tvColumnHeader.requestLayout()
     }
@@ -195,5 +225,4 @@ class GktTableViewAdapter(
     private fun getLayoutInflater(parent: ViewGroup): LayoutInflater {
         return LayoutInflater.from(parent.context)
     }
-
 }
