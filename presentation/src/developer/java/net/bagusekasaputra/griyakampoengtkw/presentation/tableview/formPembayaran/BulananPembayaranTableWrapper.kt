@@ -5,7 +5,7 @@ import net.bagusekasaputra.griyakampoengtkw.domain.NumberUtil
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.pembayaran.PembayaranBulanan
 import net.bagusekasaputra.griyakampoengtkw.presentation.tableview.AbstractTableWrapper
 
-class PembayaranBulananTableWrapper(
+class BulananPembayaranTableWrapper(
     tablePembayaranBulanan: TableView,
     private val pembayaranBulanans: List<PembayaranBulanan>,
 ): AbstractTableWrapper(tablePembayaranBulanan) {

@@ -17,6 +17,7 @@ import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.baselinePembayar
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.pembayaran.GetListPembayaranBulananAsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.BaselinePembayaran
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.HargaKavling
+import net.bagusekasaputra.griyakampoengtkw.domain.entity.Pembayaran
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.pembayaran.PembayaranBulanan
 import javax.inject.Inject
 
@@ -30,6 +31,10 @@ class FormPembayaranViewModel @Inject constructor(
     private val getListPembayaranBulananAsyncUseCase: GetListPembayaranBulananAsyncUseCase,
 ): ViewModel() {
 
+    private val _pembayaranBulanansLive = MutableLiveData<List<PembayaranBulanan>?>(null)
+    val pembayaranBulanansLive: LiveData<List<PembayaranBulanan>?>
+        get() = _pembayaranBulanansLive
+
     private val _baselinePembayaranLive = MutableLiveData<BaselinePembayaran?>()
     val baselinePembayaranLive: LiveData<BaselinePembayaran?>
         get() = _baselinePembayaranLive
@@ -38,10 +43,25 @@ class FormPembayaranViewModel @Inject constructor(
     }
 
 
-    private val _pembayaranBulanansLive = MutableLiveData<List<PembayaranBulanan>?>(null)
-    val pembayaranBulanansLive: LiveData<List<PembayaranBulanan>?>
-        get() = _pembayaranBulanansLive
+    private val _fullPembayaransLive = MutableLiveData<List<Pembayaran>?>(null)
+    val fullPembayaransLive: LiveData<List<Pembayaran>?>
+        get() = _fullPembayaransLive
+    private fun setFullPembayaran(pembayaranBulanans: List<PembayaranBulanan>?) {
+        val pembayarans = mutableListOf<Pembayaran>()
+        pembayaranBulanans?.forEach {
+            pembayarans.addAll(it.listPembayaran)
+        }
 
+        if (pembayarans.isEmpty()) {
+            _fullPembayaransLive.postValue(null)
+        } else {
+            _fullPembayaransLive.postValue(pembayarans)
+        }
+    }
+
+
+
+    var currentKavlingKode: String? = null
     var dataMode = DataMode.ONLINE
 
     private var readBaselinePembayaranJob: Job? = null
@@ -73,6 +93,7 @@ class FormPembayaranViewModel @Inject constructor(
                     _pembayaranBulanansLive.postValue(it)
 
                     setBaselinePembayaran(it?.get(0)?.baselinePembayaran)
+                    setFullPembayaran(it)
 
                     withContext(Dispatchers.Main) {
                         onSuccess()

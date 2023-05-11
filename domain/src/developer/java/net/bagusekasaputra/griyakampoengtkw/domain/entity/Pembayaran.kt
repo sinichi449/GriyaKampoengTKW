@@ -75,6 +75,10 @@ data class Pembayaran(
             return hargaKavling.hargaDanTambahLuasan - jumlahUangMasukKavling
         }
 
+        fun getSisaBelumTerbayar(pembayarans: List<Pembayaran>): String {
+            return pembayarans.last().sisaBelumTerbayar
+        }
+
         fun sortPembayaran(listPembayaran: List<Pembayaran>) = PembayaranSorterUtil(listPembayaran).getSortedList()
 
         fun getTanggalPembelian(sortedListPembayaran: List<Pembayaran>) =

@@ -1,4 +1,4 @@
-package net.bagusekasaputra.griyakampoengtkw.presentation.fragment
+package net.bagusekasaputra.griyakampoengtkw.presentation.fragment.pembayaran
 
 import android.Manifest
 import android.annotation.SuppressLint
@@ -14,6 +14,8 @@ import androidx.appcompat.app.AlertDialog
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
+import androidx.navigation.NavController
+import androidx.navigation.fragment.NavHostFragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.evrencoskun.tableview.listener.ITableViewListener
@@ -22,11 +24,9 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
 import net.bagusekasaputra.griyakampoengtkw.domain.DataMode
-import net.bagusekasaputra.griyakampoengtkw.domain.DateUtil.toDate
 import net.bagusekasaputra.griyakampoengtkw.domain.NumberUtil
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.HargaKavling
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.Pembayaran
-import net.bagusekasaputra.griyakampoengtkw.domain.entity.pembayaran.PembayaranBulanan
 import net.bagusekasaputra.griyakampoengtkw.presentation.R
 import net.bagusekasaputra.griyakampoengtkw.presentation.activities.FullImageActivity
 import net.bagusekasaputra.griyakampoengtkw.presentation.adapter.recyclerview.TerminRecyclerAdapter
@@ -35,11 +35,7 @@ import net.bagusekasaputra.griyakampoengtkw.presentation.databinding.*
 import net.bagusekasaputra.griyakampoengtkw.presentation.dialog.FormBaselinePembayaranDialog
 import net.bagusekasaputra.griyakampoengtkw.presentation.tableview.AbstractTableWrapper
 import net.bagusekasaputra.griyakampoengtkw.presentation.tableview.GktTableViewAdapter
-import net.bagusekasaputra.griyakampoengtkw.presentation.tableview.formPembayaran.PembayaranBulananTableWrapper
-import net.bagusekasaputra.griyakampoengtkw.presentation.tableview.formPembayaran.PembayaranCell
-import net.bagusekasaputra.griyakampoengtkw.presentation.tableview.formPembayaran.PembayaranColumnHeader
-import net.bagusekasaputra.griyakampoengtkw.presentation.tableview.formPembayaran.PembayaranRowHeader
-import net.bagusekasaputra.griyakampoengtkw.presentation.tableview.formPembayaran.PembayaranTableViewAdapter
+import net.bagusekasaputra.griyakampoengtkw.presentation.tableview.formPembayaran.FullPembayaranTableWrapper
 import net.bagusekasaputra.griyakampoengtkw.presentation.util.*
 import net.bagusekasaputra.griyakampoengtkw.presentation.util.DialogUtil.additionalDialogSetting
 import net.bagusekasaputra.griyakampoengtkw.presentation.viewmodel.DetailViewModel
@@ -58,6 +54,8 @@ class FormPembayaranFragment : Fragment() {
     }
 
     private lateinit var binding: FragmentFormPembayaranBinding
+    private lateinit var navController: NavController
+
     private val viewModel: DetailViewModel by activityViewModels()
     private val imageViewModel: ImageViewModel by activityViewModels()
     private val pembayaranViewModel: FormPembayaranViewModel by activityViewModels()
@@ -122,6 +120,8 @@ class FormPembayaranFragment : Fragment() {
 
         arguments?.getString(GriyaNodes.INTENT_KAVLING_KODE)?.let {
             currentKavlingKode = it
+            // Current Kavling Kode
+            pembayaranViewModel.currentKavlingKode = it
         }
 
         setHasOptionsMenu(true)
@@ -139,6 +139,9 @@ class FormPembayaranFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        navController = (childFragmentManager.findFragmentById(R.id.navHostFragment_pembayaran)
+                as NavHostFragment).navController
+
         // Creating foto pembayaran Directory on external storage
         File(requireContext().getExternalFilesDir(null), "foto_pembayaran_images").let {
             if (it.exists().not()) it.mkdir()
@@ -147,6 +150,8 @@ class FormPembayaranFragment : Fragment() {
         setupExtendedFloatingButton()
 
         setupViewModel()
+
+        syncPembayaran()
 
         // Disable write operation interfaces on offline mode such as
         // edit HargaKavling and CatatanPembayaran, and disable Fabs.
@@ -228,12 +233,6 @@ class FormPembayaranFragment : Fragment() {
         }
     }
 
-    override fun onResume() {
-        super.onResume()
-
-        syncPembayaran()
-    }
-
     private fun syncPembayaran() {
         viewModel.getHargaKavling(currentKavlingKode!!) { failMsg ->
             Toast.makeText(requireContext(), failMsg, Toast.LENGTH_LONG).show()
@@ -256,21 +255,15 @@ class FormPembayaranFragment : Fragment() {
     }
 
     private fun onLoadingFormPembayaran(finished: Boolean) {
-        binding.tableFormPembayaran.visibility = if (finished) View.VISIBLE else View.GONE
+        binding.tableFormPembayaran?.visibility = if (finished) View.VISIBLE else View.GONE
         binding.layoutLoadingFormPembayaran?.visibility = if (finished) View.GONE else View.VISIBLE
+        binding.navHostFragmentPembayaran?.visibility = if (finished) View.VISIBLE else View.GONE
     }
 
     private fun setupViewModel() {
         viewModel.isFinishOperation.observe(requireActivity()) { finish ->
             finish?.let {
                 binding.swipeRefreshFormPembayaran.isRefreshing = !it
-            }
-        }
-
-        viewModel.formPembayaranRefreshed.observe(requireActivity()) { refreshed ->
-            if (refreshed != null) {
-                val isFinish = refreshed == true
-                onLoadingFormPembayaran(isFinish)
             }
         }
 
@@ -310,12 +303,6 @@ class FormPembayaranFragment : Fragment() {
 
                             "Rp. ${NumberUtil.formatLongToString(sisaBelumBayar)}"
                         }
-                        binding.tvSisaWaktuAngsuran?.text = Pembayaran.sortPembayaran(listPembayaran).run {
-                            val tanggalPembelian = Pembayaran.getTanggalPembelian(this).toDate()
-                            val sisaBulanAngsuran = baselinePembayaran.hitungSisaBulanAngsuran(tanggalPembelian)
-
-                            "$sisaBulanAngsuran Bulan"
-                        }
                     } catch (e: Exception) {
                         e.printStackTrace()
                         Toast.makeText(
@@ -328,59 +315,12 @@ class FormPembayaranFragment : Fragment() {
             }
         }
 
-        pembayaranViewModel.pembayaranBulanansLive.observe(requireActivity()) {
-            it?.also { pembayaranBulanans ->
-                val listPembayaran = mutableListOf<Pembayaran>()
-                pembayaranBulanans.forEach { pemBulanan ->
-                    listPembayaran.addAll(pemBulanan.listPembayaran)
-                }
-
-                if (listPembayaran.isNotEmpty()) {
-                    binding.tvSisaBlmTerbayar?.text = StringBuilder().run {
-                        append("Rp. ")
-                        append(listPembayaran.last().sisaBelumTerbayar)
-                        toString()
-                    }
-                } else {
+        pembayaranViewModel.fullPembayaransLive.observe(requireActivity()) {
+            it?.also { pembayarans ->
+                if (pembayarans.isEmpty()) {
                     clearPembayaranField()
-                }
-
-                // I think this will immune to the null value, since I set default values
-                //  to Column and Row Headers, and the Cell Items.
-                viewModel.listPembayaranLive.value = listPembayaran
-                val pembayaranColumnHeaders = viewModel.getPembayaranTableColumnHeaders()
-                val pembayaranRowHeaders = viewModel.getPembayaranTableRowHeaders()
-                val pembayaranCellItems = viewModel.getPembayaranTableCellItems()
-
-                setupTableViewFormPembayaran(pembayaranColumnHeaders, pembayaranRowHeaders, pembayaranCellItems)
-
-                // Tabel Pembayaran Bulanan
-                val tablePembayaranBulanan = binding.tablePembayaranBulanan
-                if (tablePembayaranBulanan != null) {
-                    val pbColumnHeaderConfigs = listOf(
-                        Pair(PembayaranBulananTableWrapper.BULAN, 300),
-                        Pair(PembayaranBulananTableWrapper.UANG_MASUK, 400),
-                        Pair(PembayaranBulananTableWrapper.JUMLAH_TUNGGAKAN, 400),
-                    )
-                    val pbCellActions = { cellViewHolder: GktTableViewAdapter.MyCellViewHolder, _: AbstractTableWrapper.CellItem?, column: Int, _: Int ->
-                        when (column) {
-                            PembayaranBulananTableWrapper.UANG_MASUK,
-                            PembayaranBulananTableWrapper.JUMLAH_TUNGGAKAN -> cellViewHolder.tvCell.typeface = Typeface.SERIF
-                        }
-                    }
-
-                    PembayaranBulananTableWrapper(tablePembayaranBulanan, pembayaranBulanans)
-                        .addWidthColumnHeader(pbColumnHeaderConfigs)
-                        .createTable(pbCellActions)
-                }
-
-                // Total Tunggakan
-                val totalTunggakan = PembayaranBulanan.hitungSemuaTunggakan(pembayaranBulanans)
-                binding.tvTotalTunggakan?.text = StringBuilder().run {
-                    append("Rp. ")
-                    append(NumberUtil.formatLongToString(totalTunggakan))
-
-                    toString()
+                } else {
+                    setTableLandscapePembayaran(pembayarans)
                 }
             }
         }
@@ -388,24 +328,8 @@ class FormPembayaranFragment : Fragment() {
         pembayaranViewModel.tableTypeLive.observe(requireActivity()) {
             it?.also { tableType ->
                 when (tableType) {
-                    TablePembayaranType.FORM_PEMBAYARAN -> {
-                        binding.tableFormPembayaran.visibility = View.VISIBLE
-                        binding.layoutSisaTotalPembayaran?.visibility = View.VISIBLE
-
-                        binding.tablePembayaranBulanan?.visibility = View.GONE
-                        binding.layoutTotalTunggakan?.visibility = View.GONE
-
-                        binding.btnLihatPembayaranBulanan?.text = "Lihat Per Bulan"
-                    }
-                    TablePembayaranType.PEMBAYARAN_BULANAN -> {
-                        binding.tableFormPembayaran.visibility = View.GONE
-                        binding.layoutSisaTotalPembayaran?.visibility = View.GONE
-
-                        binding.tablePembayaranBulanan?.visibility = View.VISIBLE
-                        binding.layoutTotalTunggakan?.visibility = View.VISIBLE
-
-                        binding.btnLihatPembayaranBulanan?.text = "Lihat Semua"
-                    }
+                    TablePembayaranType.FORM_PEMBAYARAN -> navController.navigate(R.id.nav_pembayaran_full_tabel)
+                    TablePembayaranType.PEMBAYARAN_BULANAN -> navController.navigate(R.id.nav_pembayaran_bulanan_tabel)
                 }
             }
         }
@@ -749,98 +673,111 @@ class FormPembayaranFragment : Fragment() {
      * TvTambahanLuas, and TvTotalHarga.
      */
     private fun clearPembayaranField() {
-        binding.tvSisaBlmTerbayar?.text = "0"
         binding.tvTambahanLuas?.text = "0"
         binding.tvTotalHarga?.text = "0"
     }
 
-    private fun setupTableViewFormPembayaran(
-        columnHeaders: List<PembayaranColumnHeader>,
-        rowHeaders: List<PembayaranRowHeader>,
-        cellLists: List<List<PembayaranCell>>,
-    ) {
-        val pembayaranTableViewAdapter = PembayaranTableViewAdapter()
-
-        binding.tableFormPembayaran.apply {
-            setAdapter(pembayaranTableViewAdapter)
-        }
-
-        pembayaranTableViewAdapter.setAllItems(columnHeaders, rowHeaders, cellLists)
-
-        binding.tableFormPembayaran.apply {
-            setColumnWidth(PembayaranTableViewAdapter.Kolom.TANGGAL, 250)
-            setColumnWidth(PembayaranTableViewAdapter.Kolom.JUMLAH_UANG_DIBAYAR, 350)
-            setColumnWidth(PembayaranTableViewAdapter.Kolom.TOTAL_UANG_MASUK, 350)
-            setColumnWidth(PembayaranTableViewAdapter.Kolom.PERSENTASE, 250)
-            setColumnWidth(PembayaranTableViewAdapter.Kolom.KETERANGAN_PROSES, 500)
-        }
-
-        binding.tableFormPembayaran.tableViewListener = object : ITableViewListener {
-            override fun onCellClicked(cellView: RecyclerView.ViewHolder, column: Int, row: Int) {
-                if (column == PembayaranTableViewAdapter.Kolom.KETERANGAN_PROSES) {
-                    viewModel.listPembayaranLive.value?.also {
-                        val pembayaran = it[row]
-                        MaterialAlertDialogBuilder(requireContext())
-                            .setTitle("$currentKavlingKode - ${pembayaran.termin}")
-                            .setMessage(pembayaran.keterangan)
-                            .create()
-                            .show()
+    private fun setTableLandscapePembayaran(pembayarans: List<Pembayaran>) {
+        val tableLandscapePembayaran = binding.tableFormPembayaran
+        if (tableLandscapePembayaran != null) {
+            val widthColumnHeaders = listOf(
+                Pair(FullPembayaranTableWrapper.TANGGAL, 250),
+                Pair(FullPembayaranTableWrapper.UANG_DIBAYAR, 350),
+                Pair(FullPembayaranTableWrapper.TOTAL, 350),
+                Pair(FullPembayaranTableWrapper.PERSENTASE, 250),
+                Pair(FullPembayaranTableWrapper.KETERANGAN_PROGRESS, 500),
+            )
+            val listener = object : ITableViewListener {
+                override fun onCellClicked(
+                    cellView: RecyclerView.ViewHolder,
+                    column: Int,
+                    row: Int
+                ) {
+                    if (column == FullPembayaranTableWrapper.KETERANGAN_PROGRESS) {
+                        pembayaranViewModel.fullPembayaransLive.value?.also {
+                            val pembayaran = it[row]
+                            MaterialAlertDialogBuilder(requireContext())
+                                .setTitle("${viewModel.currentKavlingKode} - ${pembayaran.termin}")
+                                .setMessage(pembayaran.keterangan)
+                                .create()
+                                .show()
+                        }
                     }
                 }
+
+                override fun onCellDoubleClicked(
+                    cellView: RecyclerView.ViewHolder,
+                    column: Int,
+                    row: Int
+                ) {
+
+                }
+
+                override fun onCellLongPressed(
+                    cellView: RecyclerView.ViewHolder,
+                    column: Int,
+                    row: Int
+                ) {
+
+                }
+
+                override fun onColumnHeaderClicked(
+                    columnHeaderView: RecyclerView.ViewHolder,
+                    column: Int
+                ) {
+
+                }
+
+                override fun onColumnHeaderDoubleClicked(
+                    columnHeaderView: RecyclerView.ViewHolder,
+                    column: Int
+                ) {
+
+                }
+
+                override fun onColumnHeaderLongPressed(
+                    columnHeaderView: RecyclerView.ViewHolder,
+                    column: Int
+                ) {
+
+                }
+
+                override fun onRowHeaderClicked(rowHeaderView: RecyclerView.ViewHolder, row: Int) {
+
+                }
+
+                override fun onRowHeaderDoubleClicked(
+                    rowHeaderView: RecyclerView.ViewHolder,
+                    row: Int
+                ) {
+
+                }
+
+                override fun onRowHeaderLongPressed(
+                    rowHeaderView: RecyclerView.ViewHolder,
+                    row: Int
+                ) {
+
+                }
             }
+            val additionalCellSetup =
+                { cellViewHolder: GktTableViewAdapter.MyCellViewHolder, _: AbstractTableWrapper.CellItem?, column: Int, _: Int ->
+                    when (column) {
+                        FullPembayaranTableWrapper.UANG_DIBAYAR,
+                        FullPembayaranTableWrapper.TOTAL -> {
+                            cellViewHolder.tvCell.typeface = Typeface.SERIF
+                        }
 
-            override fun onCellDoubleClicked(
-                cellView: RecyclerView.ViewHolder,
-                column: Int,
-                row: Int
-            ) {
+                        FullPembayaranTableWrapper.KETERANGAN_PROGRESS -> {
+                            cellViewHolder.tvCell.gravity = Gravity.START
+                        }
+                    }
+                }
 
-            }
-
-            override fun onCellLongPressed(
-                cellView: RecyclerView.ViewHolder,
-                column: Int,
-                row: Int
-            ) {
-
-            }
-
-            override fun onColumnHeaderClicked(
-                columnHeaderView: RecyclerView.ViewHolder,
-                column: Int
-            ) {
-
-            }
-
-            override fun onColumnHeaderDoubleClicked(
-                columnHeaderView: RecyclerView.ViewHolder,
-                column: Int
-            ) {
-
-            }
-
-            override fun onColumnHeaderLongPressed(
-                columnHeaderView: RecyclerView.ViewHolder,
-                column: Int
-            ) {
-
-            }
-
-            override fun onRowHeaderClicked(rowHeaderView: RecyclerView.ViewHolder, row: Int) {
-
-            }
-
-            override fun onRowHeaderDoubleClicked(
-                rowHeaderView: RecyclerView.ViewHolder,
-                row: Int
-            ) {
-
-            }
-
-            override fun onRowHeaderLongPressed(rowHeaderView: RecyclerView.ViewHolder, row: Int) {
-
-            }
-
+            FullPembayaranTableWrapper(tableLandscapePembayaran, pembayarans)
+                .addWidthColumnHeader(widthColumnHeaders)
+                .addTableListener(listener)
+                .createTable(additionalCellSetup)
         }
     }
 
@@ -1210,6 +1147,8 @@ class FormPembayaranFragment : Fragment() {
             Snackbar.make(binding.root, "Data Diri costumer atau Form Pembayaran masih kosong", Snackbar.LENGTH_SHORT)
                 .show()
         } else {
+            val pembayarans = pembayaranViewModel.fullPembayaransLive.value
+            val sisaBelumBayar = if (pembayarans.isNullOrEmpty()) "0" else Pembayaran.getSisaBelumTerbayar(pembayarans)
             val excelExporter = ExcelExporter(
                 blockKode = blockKode,
                 kavlingNumber = kavlingNum,
@@ -1217,7 +1156,7 @@ class FormPembayaranFragment : Fragment() {
                 hargaKavling = binding.tvHarga?.text.toString(),
                 tambahLuasan = binding.tvTambahanLuas?.text.toString(),
                 totalHarga = binding.tvTotalHarga?.text.toString(),
-                sisaBelumTerbayar = binding.tvSisaBlmTerbayar?.text.toString(),
+                sisaBelumTerbayar = sisaBelumBayar,
                 dataPembayaran = viewModel.listPembayaranLive.value ?: emptyList()
             )
             val workbook = excelExporter.createPembayaranSpreadsheet()

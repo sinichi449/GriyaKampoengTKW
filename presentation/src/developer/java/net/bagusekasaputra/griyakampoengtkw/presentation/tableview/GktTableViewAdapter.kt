@@ -10,6 +10,8 @@ import com.evrencoskun.tableview.adapter.recyclerview.holder.AbstractViewHolder
 import net.bagusekasaputra.griyakampoengtkw.presentation.R
 import net.bagusekasaputra.griyakampoengtkw.presentation.databinding.TableGenericCellViewBinding
 import net.bagusekasaputra.griyakampoengtkw.presentation.databinding.TableGenericColumnHeaderBinding
+import net.bagusekasaputra.griyakampoengtkw.presentation.databinding.TableGenericDoubleCornerViewBinding
+import net.bagusekasaputra.griyakampoengtkw.presentation.databinding.TableGenericDoubleRowHeaderBinding
 import net.bagusekasaputra.griyakampoengtkw.presentation.databinding.TableGenericSingleCornerViewBinding
 import net.bagusekasaputra.griyakampoengtkw.presentation.databinding.TableGenericSingleRowHeaderBinding
 import net.bagusekasaputra.griyakampoengtkw.presentation.tableview.AbstractTableWrapper.CellItem
@@ -17,8 +19,14 @@ import net.bagusekasaputra.griyakampoengtkw.presentation.tableview.AbstractTable
 import net.bagusekasaputra.griyakampoengtkw.presentation.tableview.AbstractTableWrapper.RowHeader
 
 class GktTableViewAdapter(
+    private val doubleRowHeaderConfig: DoubleRowHeaderConfiguration? = null,
     private val additionalCellActions: (cellViewHolder: MyCellViewHolder, cellItem: CellItem?, column: Int, row: Int) -> Unit = { _, _, _, _ -> },
 ): AbstractTableAdapter<ColumnHeader, RowHeader, CellItem>() {
+
+    data class DoubleRowHeaderConfiguration(
+        val cornerTitle: String,
+        val cornerTextSeparator: String,
+    )
 
     class MyCellViewHolder(cellBinding: TableGenericCellViewBinding): AbstractViewHolder(cellBinding.root) {
         val container = cellBinding.root
@@ -70,21 +78,48 @@ class GktTableViewAdapter(
         val tvRowHeader = singleRowHeaderBinding.tvRhNomor
     }
 
-    override fun onCreateRowHeaderViewHolder(parent: ViewGroup, viewType: Int): AbstractViewHolder {
-        val singleRowHeaderBinding = TableGenericSingleRowHeaderBinding.inflate(
-            getLayoutInflater(parent), parent, false
-        )
+    class MyDoubleRowHeaderViewHolder(doubleRowHeaderBinding: TableGenericDoubleRowHeaderBinding): AbstractViewHolder(doubleRowHeaderBinding.root) {
+        val container = doubleRowHeaderBinding.root
+        val tvNomor = doubleRowHeaderBinding.tvRhNomor
+        val tvData = doubleRowHeaderBinding.tvRhData
+    }
 
-        return MySingleRowHeaderViewHolder(singleRowHeaderBinding)
+    override fun onCreateRowHeaderViewHolder(parent: ViewGroup, viewType: Int): AbstractViewHolder {
+        return if (doubleRowHeaderConfig != null) {
+            val doubleRowHeader = TableGenericDoubleRowHeaderBinding.inflate(
+                getLayoutInflater(parent), parent, false
+            )
+
+            MyDoubleRowHeaderViewHolder(doubleRowHeader)
+        } else {
+            val singleRowHeader = TableGenericSingleRowHeaderBinding.inflate(
+                getLayoutInflater(parent), parent, false
+            )
+
+            MySingleRowHeaderViewHolder(singleRowHeader)
+        }
     }
 
 
     override fun onCreateCornerView(parent: ViewGroup): View {
-        val singleCornerBinding = TableGenericSingleCornerViewBinding.inflate(
-            getLayoutInflater(parent), parent, false
-        )
+        val cornerView: View
+        if (doubleRowHeaderConfig != null) {
+            val doubleCornerBinding = TableGenericDoubleCornerViewBinding.inflate(
+                getLayoutInflater(parent), parent, false
+            )
 
-        return singleCornerBinding.root
+            doubleCornerBinding.tvCornerTitle.text = doubleRowHeaderConfig.cornerTitle
+
+            cornerView = doubleCornerBinding.root
+        } else {
+            val singleCornerBinding = TableGenericSingleCornerViewBinding.inflate(
+                getLayoutInflater(parent), parent, false,
+            )
+
+            cornerView = singleCornerBinding.root
+        }
+
+        return cornerView
     }
 
 
@@ -93,9 +128,22 @@ class GktTableViewAdapter(
         rowHeaderItemModel: RowHeader?,
         rowPosition: Int
     ) {
-        val viewHolder = holder as MySingleRowHeaderViewHolder
+        if (doubleRowHeaderConfig != null) {
+            val viewHolder = holder as MyDoubleRowHeaderViewHolder
 
-        viewHolder.tvRowHeader.text = rowHeaderItemModel?.getText() ?: "-"
+            val separateNomorAndData = rowHeaderItemModel?.getText()
+                ?.split(doubleRowHeaderConfig.cornerTextSeparator)
+            val nomor = separateNomorAndData?.get(0)
+            val mData = separateNomorAndData?.get(1)
+
+            viewHolder.tvNomor.text = nomor ?: "N/A"
+            viewHolder.tvData.text = mData ?: "N/A"
+
+        } else {
+            val viewHolder = holder as MySingleRowHeaderViewHolder
+
+            viewHolder.tvRowHeader.text = rowHeaderItemModel?.getText() ?: "-"
+        }
     }
 
     override fun onBindColumnHeaderViewHolder(

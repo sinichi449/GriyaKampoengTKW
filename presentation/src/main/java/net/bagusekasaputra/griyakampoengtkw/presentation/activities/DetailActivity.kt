@@ -18,7 +18,7 @@ import net.bagusekasaputra.griyakampoengtkw.presentation.adapter.viewpager.Detai
 import net.bagusekasaputra.griyakampoengtkw.presentation.databinding.ActivityDetailBinding
 import net.bagusekasaputra.griyakampoengtkw.presentation.fragment.BiayaMarketingFragment
 import net.bagusekasaputra.griyakampoengtkw.presentation.fragment.DataDiriFragment
-import net.bagusekasaputra.griyakampoengtkw.presentation.fragment.FormPembayaranFragment
+import net.bagusekasaputra.griyakampoengtkw.presentation.fragment.pembayaran.FormPembayaranFragment
 import net.bagusekasaputra.griyakampoengtkw.presentation.receiver.ProgressReceiver
 import net.bagusekasaputra.griyakampoengtkw.presentation.util.GriyaNodes
 import net.bagusekasaputra.griyakampoengtkw.presentation.viewmodel.DetailViewModel

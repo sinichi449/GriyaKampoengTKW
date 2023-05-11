@@ -1,4 +1,4 @@
-package net.bagusekasaputra.griyakampoengtkw.presentation.fragment
+package net.bagusekasaputra.griyakampoengtkw.presentation.fragment.pembayaran
 
 import android.Manifest
 import android.annotation.SuppressLint

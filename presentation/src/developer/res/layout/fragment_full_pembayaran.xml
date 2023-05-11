@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    tools:context=".fragment.pembayaran.FullPembayaranFragment"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <com.evrencoskun.tableview.TableView
+        android:id="@+id/table_form_pembayaran"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:column_header_height="@dimen/table_pembayaran_column_header_height"
+        app:row_header_width="@dimen/table_general_double_row_header_width"
+        app:separator_color="@color/black"
+        app:show_horizontal_separator="true"
+        app:show_vertical_separator="true"
+        app:allow_click_inside_cell="true"
+        android:layout_marginHorizontal="4dp"/>
+
+    <com.google.android.material.divider.MaterialDivider
+        android:id="@+id/divider_table_pembayaran_sisa_belum_bayar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/table_form_pembayaran"
+        android:layout_marginTop="16dp"/>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/layout_sisa_total_pembayaran"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/divider_table_pembayaran_sisa_belum_bayar"
+        android:layout_marginTop="8dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:visibility="visible"
+        android:layout_marginHorizontal="8dp">
+
+        <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/guideline_sisa_total_pembayaran"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            app:layout_constraintGuide_percent="0.5"/>
+
+        <com.google.android.material.textview.MaterialTextView
+            android:id="@+id/tv_info_sisa_blm_terbayar"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toStartOf="@id/guideline_sisa_total_pembayaran"
+            android:text="Sisa Pembayaran"
+            style="@style/TextAppearance.MaterialComponents.Headline6"
+            android:textSize="@dimen/form_pembayaran_title_text_size"/>
+
+        <com.google.android.material.textview.MaterialTextView
+            android:id="@+id/tv_sisa_blm_terbayar"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            app:layout_constraintStart_toEndOf="@id/guideline_sisa_total_pembayaran"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="@id/tv_info_sisa_blm_terbayar"
+            app:layout_constraintBottom_toBottomOf="@id/tv_info_sisa_blm_terbayar"
+            android:layout_marginStart="16dp"
+            android:gravity="end"
+            android:layout_marginEnd="16dp"
+            android:text="Rp. 0"
+            style="@style/TextAppearance.MaterialComponents.Subtitle1"/>
+
+        <com.google.android.material.textview.MaterialTextView
+            android:id="@+id/tvInfo_sisa_waktu_angsuran"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            app:layout_constraintTop_toBottomOf="@id/tv_info_sisa_blm_terbayar"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toStartOf="@id/guideline_sisa_total_pembayaran"
+            android:text="Sisa Wkt. Angsuran"
+            android:layout_marginTop="8dp"
+            style="@style/TextAppearance.MaterialComponents.Headline6"
+            android:textSize="@dimen/form_pembayaran_title_text_size"/>
+
+        <com.google.android.material.textview.MaterialTextView
+            android:id="@+id/tv_sisa_waktu_angsuran"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            app:layout_constraintStart_toEndOf="@id/guideline_sisa_total_pembayaran"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="@id/tvInfo_sisa_waktu_angsuran"
+            app:layout_constraintBottom_toBottomOf="@id/tvInfo_sisa_waktu_angsuran"
+            android:layout_marginStart="16dp"
+            android:layout_marginEnd="16dp"
+            android:gravity="end"
+            android:text="-"
+            style="@style/TextAppearance.MaterialComponents.Subtitle1"/>
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

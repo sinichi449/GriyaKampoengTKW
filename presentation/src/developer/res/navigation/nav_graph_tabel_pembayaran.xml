@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/nav_graph_tabel_pembayaran"
+    app:startDestination="@id/nav_pembayaran_full_tabel">
+
+    <fragment
+        android:id="@+id/nav_pembayaran_full_tabel"
+        android:name="net.bagusekasaputra.griyakampoengtkw.presentation.fragment.pembayaran.FullPembayaranFragment"
+        android:label="Tabel Full"
+        tools:layout="@layout/fragment_full_pembayaran" />
+    <fragment
+        android:id="@+id/nav_pembayaran_bulanan_tabel"
+        android:name="net.bagusekasaputra.griyakampoengtkw.presentation.fragment.pembayaran.BulananPembayaranFragment"
+        android:label="Tabel Bulanan"
+        tools:layout="@layout/fragment_bulanan_pembayaran" />
+</navigation>

@@ -1,5 +1,6 @@
 package net.bagusekasaputra.griyakampoengtkw.domain.entity
 
+import net.bagusekasaputra.griyakampoengtkw.domain.DateUtil.toDate
 import net.bagusekasaputra.griyakampoengtkw.domain.DateUtil.toLocalDate
 import net.bagusekasaputra.griyakampoengtkw.domain.NumberUtil
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.Pembayaran.Companion.filterPeriode
@@ -34,6 +35,12 @@ data class BaselinePembayaran(
         }
 
         return sisaBelumBayarBulanIni
+    }
+
+    fun hitungSisaBulanAngsuran(sortedPembayarans: List<Pembayaran>): Int {
+        val tanggalPembelian = Pembayaran.getTanggalPembelian(sortedPembayarans).toDate()
+
+        return hitungSisaBulanAngsuran(tanggalPembelian)
     }
 
     fun hitungSisaBulanAngsuran(tanggalPembelian: Date): Int {
