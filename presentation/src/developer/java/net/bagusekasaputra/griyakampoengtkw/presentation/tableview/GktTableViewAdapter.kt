@@ -21,6 +21,7 @@ import net.bagusekasaputra.griyakampoengtkw.presentation.tableview.AbstractTable
 class GktTableViewAdapter(
     private val doubleRowHeaderConfig: DoubleRowHeaderConfiguration? = null,
     private val additionalCellActions: (cellViewHolder: MyCellViewHolder, cellItem: CellItem?, column: Int, row: Int) -> Unit = { _, _, _, _ -> },
+    private val additionalRowHeaderActions: (rowHeaderViewHolder: AbstractViewHolder, rowHeaderItem: RowHeader?, rowPosition: Int) -> Unit = { _, _, _ -> }
 ): AbstractTableAdapter<ColumnHeader, RowHeader, CellItem>() {
 
     data class DoubleRowHeaderConfiguration(
@@ -82,6 +83,19 @@ class GktTableViewAdapter(
         val container = doubleRowHeaderBinding.root
         val tvNomor = doubleRowHeaderBinding.tvRhNomor
         val tvData = doubleRowHeaderBinding.tvRhData
+        var background = getColor(R.color.white)
+
+        override fun setSelected(selectionState: SelectionState) {
+            super.setSelected(selectionState)
+
+            if (selectionState != SelectionState.SELECTED) {
+                setBackgroundColor(background)
+            }
+        }
+
+        fun getColor(resId: Int): Int {
+            return ContextCompat.getColor(container.context, resId)
+        }
     }
 
     override fun onCreateRowHeaderViewHolder(parent: ViewGroup, viewType: Int): AbstractViewHolder {
@@ -144,6 +158,8 @@ class GktTableViewAdapter(
 
             viewHolder.tvRowHeader.text = rowHeaderItemModel?.getText() ?: "-"
         }
+
+        additionalRowHeaderActions(holder, rowHeaderItemModel, rowPosition)
     }
 
     override fun onBindColumnHeaderViewHolder(

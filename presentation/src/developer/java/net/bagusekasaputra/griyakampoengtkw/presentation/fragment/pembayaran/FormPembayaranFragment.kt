@@ -5,7 +5,6 @@ import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.Intent
 import android.content.SharedPreferences
-import android.graphics.Typeface
 import android.os.Bundle
 import android.view.*
 import android.widget.Toast
@@ -33,8 +32,6 @@ import net.bagusekasaputra.griyakampoengtkw.presentation.adapter.recyclerview.Te
 import net.bagusekasaputra.griyakampoengtkw.presentation.custom.ThousandSeparatorTextWatcher
 import net.bagusekasaputra.griyakampoengtkw.presentation.databinding.*
 import net.bagusekasaputra.griyakampoengtkw.presentation.dialog.FormBaselinePembayaranDialog
-import net.bagusekasaputra.griyakampoengtkw.presentation.tableview.AbstractTableWrapper
-import net.bagusekasaputra.griyakampoengtkw.presentation.tableview.GktTableViewAdapter
 import net.bagusekasaputra.griyakampoengtkw.presentation.tableview.formPembayaran.FullPembayaranTableWrapper
 import net.bagusekasaputra.griyakampoengtkw.presentation.util.*
 import net.bagusekasaputra.griyakampoengtkw.presentation.util.DialogUtil.additionalDialogSetting
@@ -760,24 +757,11 @@ class FormPembayaranFragment : Fragment() {
 
                 }
             }
-            val additionalCellSetup =
-                { cellViewHolder: GktTableViewAdapter.MyCellViewHolder, _: AbstractTableWrapper.CellItem?, column: Int, _: Int ->
-                    when (column) {
-                        FullPembayaranTableWrapper.UANG_DIBAYAR,
-                        FullPembayaranTableWrapper.TOTAL -> {
-                            cellViewHolder.tvCell.typeface = Typeface.SERIF
-                        }
-
-                        FullPembayaranTableWrapper.KETERANGAN_PROGRESS -> {
-                            cellViewHolder.tvCell.gravity = Gravity.START
-                        }
-                    }
-                }
 
             FullPembayaranTableWrapper(tableLandscapePembayaran, pembayarans)
-                .addWidthColumnHeader(widthColumnHeaders)
-                .addTableListener(listener)
-                .createTable(additionalCellSetup)
+                .setWidthColumnHeader(widthColumnHeaders)
+                .setTableListener(listener)
+                .createTable()
         }
     }
 

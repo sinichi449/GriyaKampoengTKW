@@ -1,6 +1,5 @@
 package net.bagusekasaputra.griyakampoengtkw.presentation.fragment.pembayaran
 
-import android.graphics.Typeface
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -11,8 +10,6 @@ import dagger.hilt.android.AndroidEntryPoint
 import net.bagusekasaputra.griyakampoengtkw.domain.NumberUtil
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.pembayaran.PembayaranBulanan
 import net.bagusekasaputra.griyakampoengtkw.presentation.databinding.FragmentBulananPembayaranBinding
-import net.bagusekasaputra.griyakampoengtkw.presentation.tableview.AbstractTableWrapper
-import net.bagusekasaputra.griyakampoengtkw.presentation.tableview.GktTableViewAdapter
 import net.bagusekasaputra.griyakampoengtkw.presentation.tableview.formPembayaran.BulananPembayaranTableWrapper
 import net.bagusekasaputra.griyakampoengtkw.presentation.viewmodel.FormPembayaranViewModel
 
@@ -48,21 +45,15 @@ class BulananPembayaranFragment : Fragment() {
     }
 
     private fun setTablePembayaranBulanan(pembayaranBulanans: List<PembayaranBulanan>) {
-        val pbColumnHeaderConfigs = listOf(
+        val columnHeaderWidths = listOf(
             Pair(BulananPembayaranTableWrapper.BULAN, 300),
             Pair(BulananPembayaranTableWrapper.UANG_MASUK, 400),
             Pair(BulananPembayaranTableWrapper.JUMLAH_TUNGGAKAN, 400),
         )
-        val pbCellActions = { cellViewHolder: GktTableViewAdapter.MyCellViewHolder, _: AbstractTableWrapper.CellItem?, column: Int, _: Int ->
-            when (column) {
-                BulananPembayaranTableWrapper.UANG_MASUK,
-                BulananPembayaranTableWrapper.JUMLAH_TUNGGAKAN -> cellViewHolder.tvCell.typeface = Typeface.SERIF
-            }
-        }
 
         BulananPembayaranTableWrapper(binding.tablePembayaranBulanan, pembayaranBulanans)
-            .addWidthColumnHeader(pbColumnHeaderConfigs)
-            .createTable(pbCellActions)
+            .setWidthColumnHeader(columnHeaderWidths)
+            .createTable()
     }
 
     private fun setTotalTunggakan(pembayaranBulanans: List<PembayaranBulanan>) {

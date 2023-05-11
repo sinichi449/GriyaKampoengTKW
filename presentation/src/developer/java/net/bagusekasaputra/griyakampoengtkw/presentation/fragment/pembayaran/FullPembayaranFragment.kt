@@ -1,8 +1,6 @@
 package net.bagusekasaputra.griyakampoengtkw.presentation.fragment.pembayaran
 
-import android.graphics.Typeface
 import android.os.Bundle
-import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -15,8 +13,6 @@ import dagger.hilt.android.AndroidEntryPoint
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.BaselinePembayaran
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.Pembayaran
 import net.bagusekasaputra.griyakampoengtkw.presentation.databinding.FragmentFullPembayaranBinding
-import net.bagusekasaputra.griyakampoengtkw.presentation.tableview.AbstractTableWrapper
-import net.bagusekasaputra.griyakampoengtkw.presentation.tableview.GktTableViewAdapter
 import net.bagusekasaputra.griyakampoengtkw.presentation.tableview.formPembayaran.FullPembayaranTableWrapper
 import net.bagusekasaputra.griyakampoengtkw.presentation.viewmodel.FormPembayaranViewModel
 
@@ -145,22 +141,10 @@ class FullPembayaranFragment : Fragment() {
 
             }
         }
-        val additionalCellSetup = { cellViewHolder: GktTableViewAdapter.MyCellViewHolder, _: AbstractTableWrapper.CellItem?, column: Int, _: Int ->
-            when (column) {
-                FullPembayaranTableWrapper.UANG_DIBAYAR,
-                FullPembayaranTableWrapper.TOTAL -> {
-                    cellViewHolder.tvCell.typeface = Typeface.SERIF
-                }
-
-                FullPembayaranTableWrapper.KETERANGAN_PROGRESS -> {
-                    cellViewHolder.tvCell.gravity = Gravity.START
-                }
-            }
-        }
 
         FullPembayaranTableWrapper(binding.tableFormPembayaran, pembayarans)
-            .addTableListener(listener)
-            .addWidthColumnHeader(widthColumnHeaders)
-            .createTable(additionalCellSetup)
+            .setTableListener(listener)
+            .setWidthColumnHeader(widthColumnHeaders)
+            .createTable()
     }
 }

@@ -1,11 +1,13 @@
 package net.bagusekasaputra.griyakampoengtkw.presentation.tableview.formPembayaran
 
+import android.graphics.Typeface
 import com.evrencoskun.tableview.TableView
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.Pembayaran
 import net.bagusekasaputra.griyakampoengtkw.presentation.tableview.AbstractTableWrapper
+import net.bagusekasaputra.griyakampoengtkw.presentation.tableview.GktTableViewAdapter
 
 class FullPembayaranTableWrapper(
-    tableFullPembayaran: TableView,
+    private val tableFullPembayaran: TableView,
     private val pembayarans: List<Pembayaran>,
 ): AbstractTableWrapper(tableFullPembayaran) {
 
@@ -14,6 +16,26 @@ class FullPembayaranTableWrapper(
 
     init {
         useDoubleCorner(cornerTitle, cornerSeparator)
+
+        setAdditionalCellActions { cellViewHolder: GktTableViewAdapter.MyCellViewHolder, _: CellItem?, column: Int, _: Int ->
+            when (column) {
+                BulananPembayaranTableWrapper.UANG_MASUK,
+                BulananPembayaranTableWrapper.JUMLAH_TUNGGAKAN -> cellViewHolder.tvCell.typeface = Typeface.SERIF
+            }
+        }
+
+        setAdditionalRowHeaderActions { rowHeaderViewHolder, rowHeaderItem, _ ->
+            val parseRowHeader = rowHeaderItem?.getText()?.split(cornerSeparator)
+            val sudahIsiFotoPembayaran = parseRowHeader?.get(2)?.toBoolean()
+
+            val viewHolder = rowHeaderViewHolder as GktTableViewAdapter.MyDoubleRowHeaderViewHolder
+            val backgroundColor = viewHolder.getColor(if (sudahIsiFotoPembayaran == true)
+                com.evrencoskun.tableview.R.color.table_view_default_selected_background_color
+                else com.evrencoskun.tableview.R.color.table_view_default_unselected_background_color
+            )
+
+            viewHolder.background = backgroundColor
+        }
     }
 
     data class PbColumnHeader(val columnHeaderText: String): ColumnHeader {
@@ -51,7 +73,9 @@ class FullPembayaranTableWrapper(
         val rowHeaders = mutableListOf<PbRowHeader>()
         pembayarans.forEachIndexed { index, pembayaran ->
             val nomor = index.plus(1).toString()
-            val cornerAndRhData = "${nomor}${cornerSeparator}${pembayaran.termin}"
+            val sudahIsiFoto = pembayaran.sudahIsiFotoPembayaran
+            val cornerAndRhData = "${nomor}${cornerSeparator}${pembayaran.termin}" +
+                    "${cornerSeparator}$sudahIsiFoto"
 
             rowHeaders.add(PbRowHeader(cornerAndRhData))
         }
