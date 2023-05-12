@@ -16,7 +16,7 @@ data class PembayaranBulanan(
     val totalTunggakan = baselinePembayaran.jumlahUang - totalUangMasuk
 
     val bulanStr = DateUtil.namaBulanShort(bulan)
-    val parsedBulanTahun = "$bulanStr-$tahun"
+    val parsedBulanTahun = "$bulanStr $tahun"
 
     companion object {
         fun sort(listPembayaranBulanan: List<PembayaranBulanan>): List<PembayaranBulanan> {
