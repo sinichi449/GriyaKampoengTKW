@@ -91,7 +91,23 @@ android {
     // Automatically name the apk to to the "<AppName>-v<VersionName>(<VersionCode>).apk" format
     android.applicationVariants.all { variant ->
         variant.outputs.each { output ->
-            output.outputFileName = "GriyaKampoengTKW_v${variant.versionName}(${variant.versionCode})_${variant.getFlavorName()}-${variant.buildType.name}.apk"
+            def String flavorName
+            if (variant.getFlavorName() == "developer") {
+                flavorName = "dev"
+            } else {
+                flavorName = variant.getFlavorName()
+            }
+
+            def fileName = "GriyaKampoengTKW_v${variant.versionName}(${variant.versionCode})-${flavorName}"
+            def buildType = variant.buildType.name
+            def String outputName
+            if (buildType != "release") {
+                outputName = fileName + "-" + buildType
+            } else {
+                outputName = fileName
+            }
+
+            output.outputFileName = outputName + ".apk"
         }
     }
     compileOptions {
