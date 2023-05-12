@@ -1,0 +1,39 @@
+Index: data/remote/src/main/java/net/bagusekasaputra/griyakampoengtkw/data/remote/FirebaseNodes.kt
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>package net.bagusekasaputra.griyakampoengtkw.data.remote\n\nimport com.google.firebase.database.DatabaseReference\n\nobject FirebaseNodes {\n    const val BIAYA_MARKETING = \"biayaMarketing\"\n    const val BLOCKS = \"blocks\"\n    const val CATATAN_PEMBAYARAN = \"catatanPembayaran\"\n    const val DATA_DIRI = \"dataDiri\"\n    const val FEE_MARKETING = \"feeMarketing\"\n    const val FORM_PEMBAYARAN = \"formPembayaran\"\n    const val HARGA_KAVLING = \"hargaKavling\"\n    const val KAVLINGS = \"kavlings\"\n    const val UPDATE = \"update\"\n    const val BIAYA_LAIN = \"biayaLain\"\n    const val UNMIGRATED = \"unmigrated\"\n    const val METADATA_ROOT = \"metadata\"\n    const val BASELINE_PEMBAYARAN = \"baselinePembayaran\"\n    const val INDEN_BOOKING = \"indenBooking\"\n    const val BACKUPS = \"backups\"\n    const val MAINTENTANCE = \"maintenance\"\n\n    const val IMAGE_DATA_DIRI = \"data_diri_images\"\n    const val IMAGES_FOTO_PEMBAYARAN = \"foto_pembayaran_images\"\n    const val IMAGE_SPR = \"spr_images\"\n    const val IMAGE_INDEN_BOOKING = \"inden_booking_images\"\n\n    fun getBackupNode(databaseReference: DatabaseReference, backupName: String, node: String): DatabaseReference {\n        return databaseReference.child(\"$BACKUPS/$backupName/$node\")\n    }\n}
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/data/remote/src/main/java/net/bagusekasaputra/griyakampoengtkw/data/remote/FirebaseNodes.kt b/data/remote/src/main/java/net/bagusekasaputra/griyakampoengtkw/data/remote/FirebaseNodes.kt
+--- a/data/remote/src/main/java/net/bagusekasaputra/griyakampoengtkw/data/remote/FirebaseNodes.kt	(revision 1ebef0d0aa974b921751e39a7972f779d4fd7084)
++++ b/data/remote/src/main/java/net/bagusekasaputra/griyakampoengtkw/data/remote/FirebaseNodes.kt	(date 1683903907157)
+@@ -1,6 +1,9 @@
+ package net.bagusekasaputra.griyakampoengtkw.data.remote
+ 
+ import com.google.firebase.database.DatabaseReference
++import com.google.firebase.database.FirebaseDatabase
++import com.google.firebase.storage.FirebaseStorage
++import com.google.firebase.storage.StorageReference
+ 
+ object FirebaseNodes {
+     const val BIAYA_MARKETING = "biayaMarketing"
+@@ -25,7 +28,17 @@
+     const val IMAGE_SPR = "spr_images"
+     const val IMAGE_INDEN_BOOKING = "inden_booking_images"
+ 
++    const val URL = "https://griya-kampoeng-tkw-mobile-default-rtdb.asia-southeast1.firebasedatabase.app/"
++
+     fun getBackupNode(databaseReference: DatabaseReference, backupName: String, node: String): DatabaseReference {
+         return databaseReference.child("$BACKUPS/$backupName/$node")
+     }
++
++    fun getRealtimeDatabaseRef(): DatabaseReference {
++        return FirebaseDatabase.getInstance(URL).reference
++    }
++
++    fun getStorageReference(): StorageReference {
++        return FirebaseStorage.getInstance().reference
++    }
+ }
+\ No newline at end of file
