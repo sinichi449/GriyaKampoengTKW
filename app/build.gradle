@@ -25,42 +25,56 @@ android {
     namespace 'net.bagusekasaputra.griyakampoengtkw'
     compileSdk 33
 
-    defaultConfig {
-        applicationId "net.bagusekasaputra.griyakampoengtkw"
-        minSdk 21
-        targetSdk 33
-
-        versionCode 60
-        versionName "2.0.9.1"
-
-        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
-        signingConfig signingConfigs.debug
-    }
-
     // Increase versionCode as Build process occur
     def versionPropsFile = file('version.properties')
     if (versionPropsFile.canRead()) {
         def Properties versionProps = new Properties()
         versionProps.load(new FileInputStream(versionPropsFile))
 
+        def appVersionCode = versionProps['APP_VERSION_CODE'].toInteger()
+        def stableVersionName = versionProps['STABLE_VERSION_NAME']
+        def developerVersionName = versionProps['DEVELOPER_VERSION_NAME']
+
         flavorDimensions 'distribution'
         productFlavors {
             stable {
                 dimension 'distribution'
-                versionName versionProps['STABLE_VERSION_NAME']
-                versionCode versionProps['STABLE_VERSION_CODE'].toInteger()
+                versionName stableVersionName
+                versionCode appVersionCode
                 signingConfig signingConfigs.release
             }
             developer {
                 dimension 'distribution'
-                versionName versionProps['DEVELOPER_VERSION_NAME']
-                versionCode versionProps['DEVELOPER_VERSION_CODE'].toInteger()
+                versionName developerVersionName
+                versionCode appVersionCode
                 signingConfig signingConfigs.debug
             }
         }
 
-//        versionProps.store(versionPropsFile.newWriter(), null)
+        defaultConfig {
+            applicationId "net.bagusekasaputra.griyakampoengtkw"
+            minSdk 21
+            targetSdk 33
 
+            versionCode appVersionCode
+
+            testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+            signingConfig signingConfigs.debug
+        }
+
+        def List<String> executedTasks = gradle.startParameter.taskNames
+        if (executedTasks.contains("assembleDeveloperRelease") ||
+            executedTasks.contains("assembleStableRelease")) {
+            println(">> Detected attempt to build Release! Increasing the Version Code now ...")
+
+            versionProps['APP_VERSION_CODE'] = (appVersionCode + 1).toString()
+            versionProps['DEVELOPER_VERSION_NAME'] = developerVersionName
+            versionProps['STABLE_VERSION_NAME'] = stableVersionName
+
+            // Save file
+            versionProps.store(versionPropsFile.newWriter(), null)
+            println(">> Version Code has been updated!")
+        }
 
     } else {
         throw new GradleException("Could not read version.properties!")
