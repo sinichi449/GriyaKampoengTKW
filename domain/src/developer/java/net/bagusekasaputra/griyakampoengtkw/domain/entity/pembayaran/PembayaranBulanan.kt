@@ -88,7 +88,8 @@ data class PembayaranBulanan(
             pembayaranBulanans.forEach {
                 alokasi += -1 * it.tunggakan
                 it.alokasi = alokasi
-                it.kelunasan = if (alokasi >= 0) Kelunasan.LUNAS
+
+                it.kelunasan = if (it.tunggakan <= 0) Kelunasan.LUNAS
                     else Kelunasan.KURANG
 
                 newList.add(it)
