@@ -28,6 +28,9 @@ import net.bagusekasaputra.griyakampoengtkw.presentation.viewmodel.BiayaLainView
 import net.bagusekasaputra.griyakampoengtkw.presentation.viewmodel.MainViewModel
 import javax.inject.Inject
 
+/**
+ * Have checking app update, while the Developer build has none
+ */
 @AndroidEntryPoint
 class MainActivity : AppCompatActivity() {
 
