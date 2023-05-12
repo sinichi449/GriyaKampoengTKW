@@ -1,17 +1,22 @@
 package net.bagusekasaputra.griyakampoengtkw.presentation.fragment.pembayaran
 
 import android.os.Bundle
+import android.text.SpannableString
+import android.text.style.StrikethroughSpan
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import dagger.hilt.android.AndroidEntryPoint
 import net.bagusekasaputra.griyakampoengtkw.domain.NumberUtil
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.pembayaran.PembayaranBulanan
+import net.bagusekasaputra.griyakampoengtkw.presentation.R
 import net.bagusekasaputra.griyakampoengtkw.presentation.databinding.FragmentBulananPembayaranBinding
 import net.bagusekasaputra.griyakampoengtkw.presentation.tableview.formPembayaran.BulananPembayaranTableWrapper
 import net.bagusekasaputra.griyakampoengtkw.presentation.viewmodel.FormPembayaranViewModel
+import kotlin.math.absoluteValue
 
 @AndroidEntryPoint
 class BulananPembayaranFragment : Fragment() {
@@ -48,9 +53,9 @@ class BulananPembayaranFragment : Fragment() {
         val columnHeaderWidths = listOf(
             Pair(BulananPembayaranTableWrapper.BULAN, 250),
             Pair(BulananPembayaranTableWrapper.UANG_MASUK, 300),
-            Pair(BulananPembayaranTableWrapper.JUMLAH_TUNGGAKAN, 300),
+            Pair(BulananPembayaranTableWrapper.TUNGGAKAN, 300),
             Pair(BulananPembayaranTableWrapper.ALOKASI, 300),
-            Pair(BulananPembayaranTableWrapper.STATUS, 250),
+            Pair(BulananPembayaranTableWrapper.KELUNASAN, 250),
         )
 
         BulananPembayaranTableWrapper(binding.tablePembayaranBulanan, pembayaranBulanans)
@@ -60,9 +65,22 @@ class BulananPembayaranFragment : Fragment() {
 
     private fun setTotalTunggakan(pembayaranBulanans: List<PembayaranBulanan>) {
         val totalTunggakan = PembayaranBulanan.hitungSemuaTunggakan(pembayaranBulanans)
-        val textTunggakan = if (totalTunggakan < 0) "-Rp. " else "Rp. " +
-                NumberUtil.formatLongToString(totalTunggakan)
+        val absoluteTunggakanStr = NumberUtil.formatLongToString(totalTunggakan.absoluteValue)
 
-        binding.tvTotalTunggakan.text = textTunggakan
+        val textBackgroundColor: Int
+        if (totalTunggakan <= 0) {
+            val textTunggakan = (if (totalTunggakan == 0L) "Rp" else "- Rp. ") + absoluteTunggakanStr
+            textBackgroundColor = ContextCompat.getColor(requireContext(), R.color.pembayaran_bulanan_lunas)
+
+            binding.tvTotalTunggakan.text = SpannableString(textTunggakan).apply {
+                setSpan(StrikethroughSpan(), 0, textTunggakan.length, 0)
+            }
+        } else {
+            val textTunggakan = "Rp. $absoluteTunggakanStr"
+            textBackgroundColor = ContextCompat.getColor(requireContext(), R.color.pembayaran_bulanan_belum_lunas)
+
+            binding.tvTotalTunggakan.text = textTunggakan
+        }
+        binding.layoutBackgroundPelunasan.setBackgroundColor(textBackgroundColor)
     }
 }
