@@ -48,27 +48,47 @@
         <com.google.android.material.textview.MaterialTextView
             android:id="@+id/tvInfo_total_tunggakan"
             android:layout_width="0dp"
-            android:layout_height="wrap_content"
+            android:layout_height="0dp"
             app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="@id/layout_container_background_pelunasan"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toStartOf="@id/guideline_total_tunggakan"
+            android:gravity="center_vertical"
             android:text="Total Tunggakan"
             style="@style/TextAppearance.MaterialComponents.Headline6"
             android:textSize="@dimen/form_pembayaran_title_text_size"/>
 
-        <com.google.android.material.textview.MaterialTextView
-            android:id="@+id/tv_total_tunggakan"
+        <androidx.appcompat.widget.LinearLayoutCompat
+            android:id="@+id/layout_container_background_pelunasan"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             app:layout_constraintStart_toEndOf="@id/guideline_total_tunggakan"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="@id/tvInfo_total_tunggakan"
-            app:layout_constraintBottom_toBottomOf="@id/tvInfo_total_tunggakan"
             android:layout_marginStart="16dp"
             android:layout_marginEnd="16dp"
-            android:gravity="end"
-            android:text="Rp. 0"
-            style="@style/TextAppearance.MaterialComponents.Subtitle1"/>
+            android:gravity="end|center">
+
+            <androidx.appcompat.widget.LinearLayoutCompat
+                android:id="@+id/layout_background_pelunasan"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@color/pembayaran_bulanan_lunas"
+                android:paddingVertical="2dp"
+                android:paddingHorizontal="12dp">
+
+                <com.google.android.material.textview.MaterialTextView
+                    android:id="@+id/tv_total_tunggakan"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    android:text="Rp. 0"
+                    style="@style/TextAppearance.MaterialComponents.Subtitle1"/>
+
+            </androidx.appcompat.widget.LinearLayoutCompat>
+
+
+        </androidx.appcompat.widget.LinearLayoutCompat>
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

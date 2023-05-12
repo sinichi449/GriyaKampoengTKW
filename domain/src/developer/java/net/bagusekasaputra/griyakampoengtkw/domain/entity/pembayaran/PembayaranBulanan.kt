@@ -17,15 +17,17 @@ data class PembayaranBulanan(
     var kelunasan: Kelunasan = Kelunasan.NIL,
     var alokasi: Long = 0L,
 ) {
-    val totalUangMasuk = Pembayaran.hitungTotalUangMasuk(listPembayaran)
-    val totalTunggakan = baselinePembayaran.jumlahUang - totalUangMasuk
+    val uangMasuk = Pembayaran.hitungTotalUangMasuk(listPembayaran)
+    val tunggakan = baselinePembayaran.jumlahUang - uangMasuk
 
     val bulanStr = DateUtil.namaBulanShort(bulan)
     val parsedBulanTahun = "$bulanStr $tahun"
+    val bulanTahunDate = "1/$bulan/$tahun".toDate()
 
     enum class Kelunasan(val str: String) {
-        LUNAS("Lunas"), BELUM_LUNAS("Blm. Lunas"), NIL("NIL")
+        LUNAS("LUNAS"), KURANG("KURANG"), NIL("NIL")
     }
+
 
     companion object {
         fun groupPembayaranIntoBulanan(kavling: String, baselinePembayaran: BaselinePembayaran, sortedListPembayaran: List<Pembayaran>): List<PembayaranBulanan> {
@@ -74,7 +76,7 @@ data class PembayaranBulanan(
         fun hitungSemuaTunggakan(pembayaranBulanans: List<PembayaranBulanan>): Long {
             var mTotal = 0L
             pembayaranBulanans.forEach {
-                mTotal += it.totalTunggakan
+                mTotal += it.tunggakan
             }
 
             return mTotal
@@ -84,13 +86,14 @@ data class PembayaranBulanan(
             val newList = mutableListOf<PembayaranBulanan>()
             var alokasi = 0L
             pembayaranBulanans.forEach {
-                alokasi += -1 * it.totalTunggakan
+                alokasi += -1 * it.tunggakan
                 it.alokasi = alokasi
                 it.kelunasan = if (alokasi >= 0) Kelunasan.LUNAS
-                    else Kelunasan.BELUM_LUNAS
+                    else Kelunasan.KURANG
 
                 newList.add(it)
             }
+
 
             return newList
         }

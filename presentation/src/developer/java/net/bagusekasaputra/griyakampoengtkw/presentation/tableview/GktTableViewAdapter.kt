@@ -35,6 +35,21 @@ class GktTableViewAdapter(
     class MyCellViewHolder(cellBinding: TableGenericCellViewBinding): AbstractViewHolder(cellBinding.root) {
         val container = cellBinding.root
         val tvCell = cellBinding.tvCellData
+        var cellBackgroundColor = R.color.white
+        var cellTextColor = R.color.black
+
+        override fun setSelected(selectionState: SelectionState) {
+            super.setSelected(selectionState)
+
+            if (selectionState != SelectionState.SELECTED) {
+                val color = { resId: Int ->
+                    ContextCompat.getColor(container.context, resId)
+                }
+
+                container.setBackgroundColor(color(cellBackgroundColor))
+                tvCell.setTextColor(color(cellTextColor))
+            }
+        }
     }
 
     override fun onCreateCellViewHolder(parent: ViewGroup, viewType: Int): AbstractViewHolder {

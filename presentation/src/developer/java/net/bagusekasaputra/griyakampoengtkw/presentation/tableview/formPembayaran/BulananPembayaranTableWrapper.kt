@@ -17,6 +17,14 @@ class BulananPembayaranTableWrapper(
 
     private val separatorKelunasan = "<>"
 
+    private fun getNomorAndKelunasan(rowHeaderItem: RowHeader?): Pair<String, String> {
+        val nomorAndKelunasan = rowHeaderItem?.getText()?.split(separatorKelunasan)
+        val nomor = nomorAndKelunasan?.get(0).toString()
+        val kelunasan = nomorAndKelunasan?.get(1).toString()
+
+        return Pair(nomor, kelunasan)
+    }
+
     init {
         val background = R.color.purple_500
 
@@ -28,14 +36,11 @@ class BulananPembayaranTableWrapper(
 
             viewHolder.tvRowHeader.typeface = Typeface.SANS_SERIF
 
-            val nomorAndKelunasan = rowHeaderItem?.getText()?.split(separatorKelunasan)
-            val nomor = nomorAndKelunasan?.get(0)
-            val kelunasan = nomorAndKelunasan?.get(1)
-
-            viewHolder.tvRowHeader.text = nomor ?: "0"
-            viewHolder.containerBackground = when (kelunasan) {
+            val nomorAndKelunasan = getNomorAndKelunasan(rowHeaderItem)
+            viewHolder.tvRowHeader.text = nomorAndKelunasan.first
+            viewHolder.containerBackground = when (nomorAndKelunasan.second) {
                 Kelunasan.LUNAS.name -> R.color.pembayaran_bulanan_lunas
-                Kelunasan.BELUM_LUNAS.name -> R.color.pembayaran_bulanan_belum_lunas
+                Kelunasan.KURANG.name -> R.color.pembayaran_bulanan_belum_lunas
                 else -> R.color.pembayaran_bulanan_nil
             }
         }
@@ -44,10 +49,26 @@ class BulananPembayaranTableWrapper(
                 tablePembayaranBulanan.context, background,
             ))
         }
-        setAdditionalCellActions { cellViewHolder, _, column, _ ->
+        setAdditionalCellActions { cellViewHolder, cellItem, column, _ ->
             when (column) {
-                UANG_MASUK, JUMLAH_TUNGGAKAN, ALOKASI -> cellViewHolder.tvCell.typeface = Typeface.SERIF
-                STATUS -> cellViewHolder.tvCell.typeface = Typeface.DEFAULT_BOLD
+                UANG_MASUK, TUNGGAKAN -> cellViewHolder.tvCell.typeface = Typeface.SERIF
+                ALOKASI -> {
+                    cellViewHolder.tvCell.typeface = Typeface.SERIF
+
+                    val alokasiStr = cellItem?.getText() ?: "0"
+                    val alokasi = NumberUtil.formatStringToLong(alokasiStr)
+                    cellViewHolder.cellBackgroundColor = if (alokasi <= 0)
+                            android.R.color.darker_gray else R.color.white
+                }
+                KELUNASAN -> {
+                    cellViewHolder.tvCell.typeface = Typeface.DEFAULT_BOLD
+
+                    cellViewHolder.cellBackgroundColor = when (cellItem?.getText()) {
+                        Kelunasan.LUNAS.str -> R.color.pembayaran_bulanan_lunas
+                        Kelunasan.KURANG.str -> R.color.pembayaran_bulanan_belum_lunas
+                        else -> R.color.pembayaran_bulanan_nil
+                    }
+                }
             }
         }
     }
@@ -55,9 +76,9 @@ class BulananPembayaranTableWrapper(
     companion object {
         const val BULAN = 0
         const val UANG_MASUK = 1
-        const val JUMLAH_TUNGGAKAN = 2
+        const val TUNGGAKAN = 2
         const val ALOKASI = 3
-        const val STATUS = 4
+        const val KELUNASAN = 4
     }
 
     override fun getColumnHeaderItems(): List<ColumnHeader> {
@@ -65,9 +86,9 @@ class BulananPembayaranTableWrapper(
         columnHeaders.apply {
             add(BULAN, PbColumnHeader("Bulan"))
             add(UANG_MASUK, PbColumnHeader("Uang Masuk"))
-            add(JUMLAH_TUNGGAKAN, PbColumnHeader("Jumlah Tunggakan"))
+            add(TUNGGAKAN, PbColumnHeader("Tunggakan"))
             add(ALOKASI, PbColumnHeader("Alokasi"))
-            add(STATUS, PbColumnHeader("Status"))
+            add(KELUNASAN, PbColumnHeader("Kelunasan"))
         }
 
         return columnHeaders
@@ -89,10 +110,10 @@ class BulananPembayaranTableWrapper(
         pembayaranBulanans.forEach {
             val item = mutableListOf<CellItem>().apply {
                 add(BULAN, PbCell(it.parsedBulanTahun))
-                add(UANG_MASUK, PbCell(NumberUtil.formatLongToString(it.totalUangMasuk)))
-                add(JUMLAH_TUNGGAKAN, PbCell(NumberUtil.formatLongToString(it.totalTunggakan)))
+                add(UANG_MASUK, PbCell(NumberUtil.formatLongToString(it.uangMasuk)))
+                add(TUNGGAKAN, PbCell(NumberUtil.formatLongToString(it.tunggakan)))
                 add(ALOKASI, PbCell(NumberUtil.formatLongToString(it.alokasi)))
-                add(STATUS, PbCell(it.kelunasan.str))
+                add(KELUNASAN, PbCell(it.kelunasan.str))
             }
 
             cellItems.add(item)
