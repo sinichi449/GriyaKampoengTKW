@@ -5,6 +5,7 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flow
 import net.bagusekasaputra.griyakampoengtkw.domain.DataMode
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.AsyncUseCase
+import net.bagusekasaputra.griyakampoengtkw.domain.entity.BaselinePembayaran
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.Pembayaran
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.pembayaran.PembayaranBulanan
 import net.bagusekasaputra.griyakampoengtkw.domain.repository.BaselinePembayaranRepository
@@ -31,7 +32,7 @@ class GetListPembayaranBulananAsyncUseCase(
             val hargaKavling = hargaKavlingRepository.getHargaKavling(request.kavlingKode, request.dataMode)
                 .first().getOrThrow()
 
-            if (baseline != null && hargaKavling != null && pembayarans != null) {
+            if (hargaKavling != null && pembayarans != null) {
                 val maskedPembayaran = Pembayaran.maskPembayaran(pembayarans, hargaKavling,
                     onCekFotoPembayaran = { termin ->
                         val sudahIsiFotoPembayaran = fotoPembayaranRepository
@@ -42,10 +43,23 @@ class GetListPembayaranBulananAsyncUseCase(
                         sudahIsiFotoPembayaran
                     }
                 )
-                val listPembayaranBulanan = PembayaranBulanan
-                    .groupPembayaranIntoBulanan(request.kavlingKode, baseline, maskedPembayaran)
-                val maskedPembayaranBulanans = PembayaranBulanan.mask(listPembayaranBulanan)
 
+                val pembayaranBulanans = if (baseline != null) {
+                    PembayaranBulanan.groupPembayaranIntoBulanan(
+                        request.kavlingKode, baseline, maskedPembayaran
+                    )
+                } else {
+                    emit(Result.failure(IllegalStateException("Angsuran Bulanan masih kosong. Mohon segera isi!")))
+
+                    val defaultBaseline = BaselinePembayaran(request.kavlingKode, 0, 0L, 1)
+
+                    PembayaranBulanan.groupPembayaranIntoBulanan(
+                        request.kavlingKode, defaultBaseline, maskedPembayaran
+                    )
+                }
+
+
+                val maskedPembayaranBulanans = PembayaranBulanan.mask(pembayaranBulanans)
                 emit(Result.success(maskedPembayaranBulanans))
             } else {
                 emit(Result.success(null))
