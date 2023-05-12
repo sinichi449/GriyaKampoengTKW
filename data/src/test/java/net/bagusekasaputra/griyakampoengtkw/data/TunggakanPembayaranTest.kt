@@ -1,82 +1,40 @@
 package net.bagusekasaputra.griyakampoengtkw.data
 
 import com.google.gson.Gson
-import com.google.gson.GsonBuilder
 import com.google.gson.reflect.TypeToken
-import net.bagusekasaputra.griyakampoengtkw.domain.DateUtil
-import net.bagusekasaputra.griyakampoengtkw.domain.DateUtil.toDate
-import net.bagusekasaputra.griyakampoengtkw.domain.NumberUtil
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.BaselinePembayaran
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.Pembayaran
-import net.bagusekasaputra.griyakampoengtkw.domain.entity.Pembayaran.Companion.filterPeriode
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.pembayaran.PembayaranBulanan
-import net.bagusekasaputra.griyakampoengtkw.domain.entity.rekap.PeriodeRekap
 import org.junit.Test
-import java.io.BufferedOutputStream
-import java.io.BufferedWriter
-import java.io.FileWriter
-import java.util.Calendar
 
 class TunggakanPembayaranTest {
 
     @Test
-    fun pembayaran_bulanan_test() {
-        val listPembayaranBulanan = Pembayaran.groupIntoBulanan("A11", getListPembayaran())
-        val jsonResult = GsonBuilder()
-            .setPrettyPrinting()
-            .create()
-            .toJson(listPembayaranBulanan)
+    fun rekursif_tunggakan_test() {
+        val listPembayaran = Pembayaran.sortPembayaran(getListPembayaran())
+        val baseline = getBaselinePembayaran()
+        val pembayaranBulanans = PembayaranBulanan.groupPembayaranIntoBulanan("A11", baseline, listPembayaran)
 
-        val fileWriter = FileWriter("tes_pembayaran_bulanan.json")
-        val bufferedWriter = BufferedWriter(fileWriter)
-        bufferedWriter.write(jsonResult)
-        bufferedWriter.close()
+        val maskedPembayaranBulanans = PembayaranBulanan.mask(pembayaranBulanans)
+        maskedPembayaranBulanans.forEach {
+            println(lineHeader())
+            println(it.parsedBulanTahun)
+            println("")
+            println("Total Uang Masuk   : ${it.totalUangMasuk}")
+            println("Tunggakan          : ${it.totalTunggakan}")
+            println("Alokasi            : ${it.alokasi}")
+            println("Kelunasan          : ${it.kelunasan.str}")
+            println(lineHeader())
+        }
     }
 
-    @Test
-    fun apakah_pembayaran_bulanan_sudah_urut() {
-        val sortedListPembayaran = Pembayaran.sortPembayaran(getListPembayaran())
-        val listPembayaranBulanan = Pembayaran.groupIntoBulanan("A11", sortedListPembayaran)
-        val jsonResult = GsonBuilder()
-            .setPrettyPrinting()
-            .create()
-            .toJson(listPembayaranBulanan)
-
-        val fileWriter = FileWriter("tes_sorted_pembayaran_bulanan.json")
-        val bufferedWriter = BufferedWriter(fileWriter)
-        bufferedWriter.write(jsonResult)
-        bufferedWriter.close()
-    }
-
-    @Test
-    fun buat_list_tunggakan() {
-        val kavling = "A11"
-        val sortedListPembayaran = Pembayaran.sortPembayaran(getListPembayaran())
-        val listPembayaranBulanan = Pembayaran.groupIntoBulanan(kavling, sortedListPembayaran)
-        val baseline = BaselinePembayaran(kavling, 48, 4_687_500L, 15)
-
-        val listTunggakan = mutableListOf<Pair<PembayaranBulanan, String>>()
-        listPembayaranBulanan.forEach {
-            val jumlahTunggakanStr = NumberUtil.formatLongToString(it.jumlahUangTunggakan(baseline))
-            listTunggakan.add(Pair(it, jumlahTunggakanStr))
+    private fun lineHeader(): String {
+        val line = StringBuilder()
+        repeat(30) {
+            line.append("=")
         }
 
-        val jsonResult = GsonBuilder()
-            .setPrettyPrinting()
-            .create()
-            .toJson(listTunggakan)
-
-        val fileWriter = FileWriter("tes_tunggakan_pembayaran.json")
-        val bufferedWriter = BufferedWriter(fileWriter)
-        bufferedWriter.write(jsonResult)
-        bufferedWriter.close()
-
-        var totalTunggakan = 0L
-        listTunggakan.forEach {
-            val tunggakan = NumberUtil.formatStringToLong(it.second)
-            totalTunggakan += tunggakan
-        }
-        println("Total Tunggakan : ${NumberUtil.formatLongToString(totalTunggakan)}")
+        return line.toString()
     }
 
     private fun getListPembayaran(): List<Pembayaran> {
@@ -103,5 +61,9 @@ class TunggakanPembayaranTest {
         }
 
         return listPembayaran
+    }
+
+    private fun getBaselinePembayaran(): BaselinePembayaran {
+        return BaselinePembayaran("A11", 48, 4_687_500L, 15)
     }
 }

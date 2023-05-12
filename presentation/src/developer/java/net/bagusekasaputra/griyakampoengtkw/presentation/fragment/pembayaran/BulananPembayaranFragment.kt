@@ -46,9 +46,11 @@ class BulananPembayaranFragment : Fragment() {
 
     private fun setTablePembayaranBulanan(pembayaranBulanans: List<PembayaranBulanan>) {
         val columnHeaderWidths = listOf(
-            Pair(BulananPembayaranTableWrapper.BULAN, 300),
-            Pair(BulananPembayaranTableWrapper.UANG_MASUK, 400),
-            Pair(BulananPembayaranTableWrapper.JUMLAH_TUNGGAKAN, 400),
+            Pair(BulananPembayaranTableWrapper.BULAN, 250),
+            Pair(BulananPembayaranTableWrapper.UANG_MASUK, 300),
+            Pair(BulananPembayaranTableWrapper.JUMLAH_TUNGGAKAN, 300),
+            Pair(BulananPembayaranTableWrapper.ALOKASI, 300),
+            Pair(BulananPembayaranTableWrapper.STATUS, 250),
         )
 
         BulananPembayaranTableWrapper(binding.tablePembayaranBulanan, pembayaranBulanans)

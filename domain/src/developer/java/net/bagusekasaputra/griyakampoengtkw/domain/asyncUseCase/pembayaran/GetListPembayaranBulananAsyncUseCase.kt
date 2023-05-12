@@ -42,10 +42,11 @@ class GetListPembayaranBulananAsyncUseCase(
                         sudahIsiFotoPembayaran
                     }
                 )
-                val listPembayaranBulanan = Pembayaran
-                    .groupIntoBulanan(request.kavlingKode, baseline, maskedPembayaran)
+                val listPembayaranBulanan = PembayaranBulanan
+                    .groupPembayaranIntoBulanan(request.kavlingKode, baseline, maskedPembayaran)
+                val maskedPembayaranBulanans = PembayaranBulanan.mask(listPembayaranBulanan)
 
-                emit(Result.success(listPembayaranBulanan))
+                emit(Result.success(maskedPembayaranBulanans))
             } else {
                 emit(Result.success(null))
             }

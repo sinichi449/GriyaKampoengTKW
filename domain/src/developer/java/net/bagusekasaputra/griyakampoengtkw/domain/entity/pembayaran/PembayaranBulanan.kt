@@ -1,0 +1,98 @@
+package net.bagusekasaputra.griyakampoengtkw.domain.entity.pembayaran
+
+import net.bagusekasaputra.griyakampoengtkw.domain.DateUtil
+import net.bagusekasaputra.griyakampoengtkw.domain.DateUtil.toDate
+import net.bagusekasaputra.griyakampoengtkw.domain.entity.BaselinePembayaran
+import net.bagusekasaputra.griyakampoengtkw.domain.entity.Pembayaran
+import net.bagusekasaputra.griyakampoengtkw.domain.entity.Pembayaran.Companion.filterPeriode
+import net.bagusekasaputra.griyakampoengtkw.domain.entity.rekap.PeriodeRekap
+import java.util.Calendar
+
+data class PembayaranBulanan(
+    val kavling: String,
+    val bulan: Int, // NOT  Calendar type of Bulan
+    val tahun: Int,
+    val listPembayaran: List<Pembayaran>,
+    val baselinePembayaran: BaselinePembayaran,
+    var kelunasan: Kelunasan = Kelunasan.NIL,
+    var alokasi: Long = 0L,
+) {
+    val totalUangMasuk = Pembayaran.hitungTotalUangMasuk(listPembayaran)
+    val totalTunggakan = baselinePembayaran.jumlahUang - totalUangMasuk
+
+    val bulanStr = DateUtil.namaBulanShort(bulan)
+    val parsedBulanTahun = "$bulanStr $tahun"
+
+    enum class Kelunasan(val str: String) {
+        LUNAS("Lunas"), BELUM_LUNAS("Blm. Lunas"), NIL("NIL")
+    }
+
+    companion object {
+        fun groupPembayaranIntoBulanan(kavling: String, baselinePembayaran: BaselinePembayaran, sortedListPembayaran: List<Pembayaran>): List<PembayaranBulanan> {
+            val listPembayaranBulanan = mutableListOf<PembayaranBulanan>()
+
+            var listBulanTahun = mutableListOf<Pair<Int, Int>>()
+            sortedListPembayaran.forEach { pembayaran ->
+                val tanggalPembayaran = Calendar.getInstance().apply {
+                    time = pembayaran.tanggal.toDate()
+                }
+                val bulanPembayaran = tanggalPembayaran.get(Calendar.MONTH)
+                val tahunPembayaran = tanggalPembayaran.get(Calendar.YEAR)
+
+                listBulanTahun.add(Pair(bulanPembayaran, tahunPembayaran))
+            }
+            listBulanTahun = listBulanTahun.distinct().toMutableList() // Filter out duplicate
+
+            listBulanTahun.forEach { bulanTahun ->
+                val rangeTanggal = DateUtil.getMonthlyRangeDate(bulanTahun.first, bulanTahun.second)
+                val tanggalPertama = rangeTanggal[0]
+                val tanggalTerakhir = rangeTanggal[1]
+                val listOnlySpecifiedBulan = sortedListPembayaran.filterPeriode(PeriodeRekap.CUSTOM, tanggalPertama, tanggalTerakhir)
+
+                if (listOnlySpecifiedBulan != null) {
+                    listPembayaranBulanan.add(PembayaranBulanan(kavling,
+                        bulanTahun.first.plus(1), // Bulan yang ada diisini pake formatnya Calendar, so harus +1
+                        bulanTahun.second,
+                        listOnlySpecifiedBulan,
+                        baselinePembayaran,
+                    ))
+                }
+            }
+
+            return PembayaranBulanan.sort(listPembayaranBulanan)
+        }
+
+        fun sort(listPembayaranBulanan: List<PembayaranBulanan>): List<PembayaranBulanan> {
+            return listPembayaranBulanan.sortedBy {
+                // Convert bulan dan tahun ke objek Date, lalu diurut pakai "time" (timeMillis)
+                val date = "1/${it.bulan}/${it.tahun}".toDate()
+
+                date.time
+            }
+        }
+
+        fun hitungSemuaTunggakan(pembayaranBulanans: List<PembayaranBulanan>): Long {
+            var mTotal = 0L
+            pembayaranBulanans.forEach {
+                mTotal += it.totalTunggakan
+            }
+
+            return mTotal
+        }
+
+        fun mask(pembayaranBulanans: List<PembayaranBulanan>): List<PembayaranBulanan> {
+            val newList = mutableListOf<PembayaranBulanan>()
+            var alokasi = 0L
+            pembayaranBulanans.forEach {
+                alokasi += -1 * it.totalTunggakan
+                it.alokasi = alokasi
+                it.kelunasan = if (alokasi >= 0) Kelunasan.LUNAS
+                    else Kelunasan.BELUM_LUNAS
+
+                newList.add(it)
+            }
+
+            return newList
+        }
+    }
+}

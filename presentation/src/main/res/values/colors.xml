@@ -9,6 +9,9 @@
     <color name="white">#FFFFFFFF</color>
 
     <color name="abang">#E93303</color>
+    <color name="pembayaran_bulanan_lunas">#66BB6A</color>
+    <color name="pembayaran_bulanan_belum_lunas">#EF5350</color>
+    <color name="pembayaran_bulanan_nil">#E1E1E1</color>
 
     <!-- From palette -->
     <color name="primaryColor">#fafafa</color>
