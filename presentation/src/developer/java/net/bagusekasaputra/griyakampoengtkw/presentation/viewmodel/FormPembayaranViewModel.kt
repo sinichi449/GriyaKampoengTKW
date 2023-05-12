@@ -192,6 +192,41 @@ class FormPembayaranViewModel @Inject constructor(
         }
     }
 
+    fun getSudahIsiFotoPembayaranTermins(): Array<String> {
+        val terminList = ArrayList<String>()
+
+        _fullPembayaransLive.value?.forEach { pembayaran ->
+            if (pembayaran.sudahIsiFotoPembayaran) {
+                terminList.add(pembayaran.termin)
+            }
+        }
+
+        return terminList.toTypedArray()
+    }
+
+    fun getBelumIsiFotoPembayaranTermins(): Array<String> {
+        val terminList = ArrayList<String>()
+
+        _fullPembayaransLive.value?.forEach { pembayaran ->
+            if (!pembayaran.sudahIsiFotoPembayaran) {
+                terminList.add(pembayaran.termin)
+            }
+        }
+
+        return terminList.toTypedArray()
+    }
+
+    fun getTerminFromListPembayaran(): Array<String> {
+        val terminList = ArrayList<String>()
+
+        _fullPembayaransLive.value?.forEach { pembayaran ->
+            terminList.add(pembayaran.termin)
+        }
+
+        // We need to convert into an Array ... How botherful.
+        return terminList.toTypedArray()
+    }
+
 
     enum class TablePembayaranType {
         FORM_PEMBAYARAN, PEMBAYARAN_BULANAN

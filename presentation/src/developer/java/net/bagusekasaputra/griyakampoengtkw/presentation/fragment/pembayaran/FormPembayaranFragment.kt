@@ -783,10 +783,10 @@ class FormPembayaranFragment : Fragment() {
         onTerminClick: (selectedTermin: String) -> Unit,
     ) {
         val listTerminPembayaran = when (mode) {
-            OperasiFotoPembayaran.TAMBAH -> viewModel.getBelumIsiFotoTerminPembayaran()
-            OperasiFotoPembayaran.UBAH -> viewModel.getAllArrayTerminPembayaran()
-            OperasiFotoPembayaran.HAPUS -> viewModel.getSudahIsiFotoTerminPembayaran()
-            OperasiFotoPembayaran.LIHAT -> viewModel.getSudahIsiFotoTerminPembayaran()
+            OperasiFotoPembayaran.TAMBAH -> pembayaranViewModel.getBelumIsiFotoPembayaranTermins()
+            OperasiFotoPembayaran.UBAH -> pembayaranViewModel.getTerminFromListPembayaran()
+            OperasiFotoPembayaran.HAPUS -> pembayaranViewModel.getSudahIsiFotoPembayaranTermins()
+            OperasiFotoPembayaran.LIHAT -> pembayaranViewModel.getSudahIsiFotoPembayaranTermins()
         }
 
         MaterialAlertDialogBuilder(requireContext()).apply {
