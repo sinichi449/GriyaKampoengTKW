@@ -12,7 +12,7 @@ import net.bagusekasaputra.griyakampoengtkw.domain.repository.PembayaranReposito
 
 @Module
 @InstallIn(ViewModelComponent::class)
-object UseCaseTestModule {
+object UseCaseDeveloperModule {
 
     /**
      * Pembayaran Bulanan

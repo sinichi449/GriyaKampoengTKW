@@ -1,8 +1,6 @@
 package net.bagusekasaputra.griyakampoengtkw.presentation.activities
 
-import android.content.Intent
 import android.content.SharedPreferences
-import android.net.Uri
 import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
@@ -17,14 +15,11 @@ import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.navigateUp
 import androidx.navigation.ui.onNavDestinationSelected
 import androidx.navigation.ui.setupWithNavController
-import com.google.android.material.dialog.MaterialAlertDialogBuilder
-import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
 import net.bagusekasaputra.griyakampoengtkw.domain.DataMode
 import net.bagusekasaputra.griyakampoengtkw.presentation.R
 import net.bagusekasaputra.griyakampoengtkw.presentation.databinding.ActivityMainBinding
 import net.bagusekasaputra.griyakampoengtkw.presentation.util.GriyaNodes
-import net.bagusekasaputra.griyakampoengtkw.presentation.viewmodel.BiayaLainViewModel
 import net.bagusekasaputra.griyakampoengtkw.presentation.viewmodel.MainViewModel
 import javax.inject.Inject
 
@@ -37,7 +32,6 @@ class MainActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityMainBinding
     private val viewModel: MainViewModel by viewModels()
-    private val biayaLainViewModel: BiayaLainViewModel by viewModels()
 
     private lateinit var navController: NavController
     private lateinit var appBarConfiguration: AppBarConfiguration
@@ -66,7 +60,7 @@ class MainActivity : AppCompatActivity() {
         binding.toolbarMain.setupWithNavController(navController, appBarConfiguration)
         setSupportActionBar(binding.toolbarMain)
 
-        binding.navViewMain?.setupWithNavController(navController)
+        binding.navViewMain.setupWithNavController(navController)
 
         // Connectivity check
         val deviceOnline = intent.getBooleanExtra(GriyaNodes.INTENT_IS_ONLINE, true)
@@ -95,59 +89,10 @@ class MainActivity : AppCompatActivity() {
 
             binding.connectivityStatus.constraintConnectivity.visibility = View.VISIBLE
         }
-
-        checkUpdate()
-
-
     }
 
     override fun onSupportNavigateUp(): Boolean {
         return navController.navigateUp(appBarConfiguration)
-    }
-
-    private fun checkUpdate() {
-        // Getting BuildConfig from Splash Activity, and check available update.
-        val appVersionName = intent.getStringExtra("versionName")
-        val appVersionCode = intent.getIntExtra("versionCode", 0)
-        if (appVersionName != null) {
-            if ((appVersionName != "") and (appVersionCode != 0)) {
-                viewModel.checkUpdates(
-                    versionName = appVersionName,
-                    versionCode = appVersionCode,
-                    onAvailable = {
-                        MaterialAlertDialogBuilder(this)
-                            .setTitle("Update Tersedia!")
-                            .setMessage(
-                                it.releaseNotes.let { notes ->
-                                    val result = StringBuilder()
-
-                                    notes.forEach { text ->
-                                        result.append("- ")
-                                            .append(text)
-                                            .append("\n")
-                                    }
-
-                                    return@let result.toString()
-                                }
-                            )
-                            .setPositiveButton("Update") { _, _ ->
-                                openBrowser(Uri.parse(it.url))
-                            }
-                            .create()
-                            .show()
-                    },
-                    onFailure = {
-                        Snackbar.make(binding.root, it, Snackbar.LENGTH_SHORT).show()
-                    }
-                )
-            }
-        }
-    }
-
-    private fun openBrowser(uri: Uri) {
-        val intent = Intent(Intent.ACTION_VIEW)
-        intent.data = uri
-        startActivity(intent)
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
