@@ -38,12 +38,14 @@ android {
         flavorDimensions 'distribution'
         productFlavors {
             stable {
+                applicationId "net.bagusekasaputra.griyakampoengtkw.stable"
                 dimension 'distribution'
                 versionName stableVersionName
                 versionCode appVersionCode
                 signingConfig signingConfigs.release
             }
             developer {
+                applicationId "net.bagusekasaputra.griyakampoengtkw.developer"
                 dimension 'distribution'
                 versionName developerVersionName
                 versionCode appVersionCode

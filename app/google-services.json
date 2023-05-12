@@ -34,6 +34,64 @@
           ]
         }
       }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:599654176470:android:2a9fddab24268732a4db77",
+        "android_client_info": {
+          "package_name": "net.bagusekasaputra.griyakampoengtkw.developer"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "599654176470-rmpc3jmadqdutb2ia74fhotcutvjbqu3.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCPa6jePpE8sQOSWjpEi-Qt7-hxnbISZ8A"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "599654176470-rmpc3jmadqdutb2ia74fhotcutvjbqu3.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:599654176470:android:95d0686bfb726a5ba4db77",
+        "android_client_info": {
+          "package_name": "net.bagusekasaputra.griyakampoengtkw.stable"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "599654176470-rmpc3jmadqdutb2ia74fhotcutvjbqu3.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCPa6jePpE8sQOSWjpEi-Qt7-hxnbISZ8A"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "599654176470-rmpc3jmadqdutb2ia74fhotcutvjbqu3.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
     }
   ],
   "configuration_version": "1"
