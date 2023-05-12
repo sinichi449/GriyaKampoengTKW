@@ -9,6 +9,7 @@
     <color name="white">#FFFFFFFF</color>
 
     <color name="abang">#E93303</color>
+    <color name="app_theme_color">#5903E9</color>
 
     <color name="md_theme_light_primary">#6750A4</color>
     <color name="md_theme_light_onPrimary">#FFFFFF</color>
