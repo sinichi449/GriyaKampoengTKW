@@ -14,8 +14,11 @@ import kotlinx.coroutines.withContext
 import net.bagusekasaputra.griyakampoengtkw.domain.DataMode
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.baselinePembayaran.GetBaselinePembayaranByKavlingAsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.baselinePembayaran.SetBaselinePembayaranAsyncUseCase
+import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.pembayaran.GetListPembayaranBulananAsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.BaselinePembayaran
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.HargaKavling
+import net.bagusekasaputra.griyakampoengtkw.domain.entity.Pembayaran
+import net.bagusekasaputra.griyakampoengtkw.domain.entity.pembayaran.PembayaranBulanan
 import javax.inject.Inject
 
 /**
@@ -25,18 +28,88 @@ import javax.inject.Inject
 class FormPembayaranViewModel @Inject constructor(
     private val getBaselinePembayaranByKavlingAsyncUseCase: GetBaselinePembayaranByKavlingAsyncUseCase,
     private val setBaselinePembayaranAsyncUseCase: SetBaselinePembayaranAsyncUseCase,
+    private val getListPembayaranBulananAsyncUseCase: GetListPembayaranBulananAsyncUseCase,
 ): ViewModel() {
+
+    private val _pembayaranBulanansLive = MutableLiveData<List<PembayaranBulanan>?>(null)
+    val pembayaranBulanansLive: LiveData<List<PembayaranBulanan>?>
+        get() = _pembayaranBulanansLive
 
     private val _baselinePembayaranLive = MutableLiveData<BaselinePembayaran?>()
     val baselinePembayaranLive: LiveData<BaselinePembayaran?>
         get() = _baselinePembayaranLive
+    private fun setBaselinePembayaran(baselinePembayaran: BaselinePembayaran?) {
+        _baselinePembayaranLive.postValue(baselinePembayaran)
+    }
 
+
+    private val _fullPembayaransLive = MutableLiveData<List<Pembayaran>?>(null)
+    val fullPembayaransLive: LiveData<List<Pembayaran>?>
+        get() = _fullPembayaransLive
+    private fun setFullPembayaran(pembayaranBulanans: List<PembayaranBulanan>?) {
+        val pembayarans = mutableListOf<Pembayaran>()
+        pembayaranBulanans?.forEach {
+            pembayarans.addAll(it.listPembayaran)
+        }
+
+        if (pembayarans.isEmpty()) {
+            _fullPembayaransLive.postValue(null)
+        } else {
+            _fullPembayaransLive.postValue(pembayarans)
+        }
+    }
+
+
+
+    var currentKavlingKode: String? = null
     var dataMode = DataMode.ONLINE
 
     private var readBaselinePembayaranJob: Job? = null
     var writeBaselinePembayaranJob: Job? = null
 
+    var readPembayaranBulananJob: Job? = null
 
+    // Change the TableView on FormPembayaran fragment
+    val tableTypeLive = MutableLiveData(TablePembayaranType.FORM_PEMBAYARAN)
+    fun setTableType(type: TablePembayaranType) {
+        tableTypeLive.value = type
+    }
+
+
+    fun getListPembayaranBulanan(
+        kavling: String,
+        onLoading: () -> Unit,
+        onSuccess: () -> Unit,
+        onFailure: (msg: String) -> Unit
+    ) {
+        readPembayaranBulananJob?.cancel()
+
+        onLoading()
+
+        readPembayaranBulananJob = viewModelScope.launch {
+            val request = GetListPembayaranBulananAsyncUseCase.Request(kavling, dataMode)
+            getListPembayaranBulananAsyncUseCase.execute(request).collect { result ->
+                result.onSuccess {
+                    _pembayaranBulanansLive.postValue(it)
+
+                    setBaselinePembayaran(it?.get(0)?.baselinePembayaran)
+                    setFullPembayaran(it)
+
+                    withContext(Dispatchers.Main) {
+                        onSuccess()
+                    }
+                }
+
+                result.onFailure {
+                    it.printStackTrace()
+
+                    withContext(Dispatchers.Main) {
+                        onFailure("Gagal mendapatkan List Pembayaran Bulanan : ${it.message}")
+                    }
+                }
+            }
+        }
+    }
 
     fun getBaselinePembayaran(
         kavling: String,
@@ -119,4 +192,43 @@ class FormPembayaranViewModel @Inject constructor(
         }
     }
 
+    fun getSudahIsiFotoPembayaranTermins(): Array<String> {
+        val terminList = ArrayList<String>()
+
+        _fullPembayaransLive.value?.forEach { pembayaran ->
+            if (pembayaran.sudahIsiFotoPembayaran) {
+                terminList.add(pembayaran.termin)
+            }
+        }
+
+        return terminList.toTypedArray()
+    }
+
+    fun getBelumIsiFotoPembayaranTermins(): Array<String> {
+        val terminList = ArrayList<String>()
+
+        _fullPembayaransLive.value?.forEach { pembayaran ->
+            if (!pembayaran.sudahIsiFotoPembayaran) {
+                terminList.add(pembayaran.termin)
+            }
+        }
+
+        return terminList.toTypedArray()
+    }
+
+    fun getTerminFromListPembayaran(): Array<String> {
+        val terminList = ArrayList<String>()
+
+        _fullPembayaransLive.value?.forEach { pembayaran ->
+            terminList.add(pembayaran.termin)
+        }
+
+        // We need to convert into an Array ... How botherful.
+        return terminList.toTypedArray()
+    }
+
+
+    enum class TablePembayaranType {
+        FORM_PEMBAYARAN, PEMBAYARAN_BULANAN
+    }
 }

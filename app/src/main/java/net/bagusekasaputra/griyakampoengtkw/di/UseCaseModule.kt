@@ -28,6 +28,7 @@ import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.indenBooking.Get
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.kavling.GetKavlingByBlockAsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.kavling.GetListUnmigratedKavlingsAsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.pembayaran.GetAllPembayaranAsyncUseCase
+import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.pembayaran.GetListPembayaranBulananAsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.pengingat.*
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.rekap.CalculateRekapBesarAndGetRekapBesarOverview
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.rekap.GetListRekapGlobalAsyncUseCase
@@ -179,6 +180,20 @@ object UseCaseModule {
     @Provides
     fun provideDeleteAllPembayaran(pembayaranRepository: PembayaranRepository, fotoPembayaranRepository: FotoPembayaranRepository): DeleteAllPembayaranUseCase {
         return DeleteAllPembayaranUseCase(pembayaranRepository, fotoPembayaranRepository)
+    }
+
+
+    /**
+     * Pembayaran Bulanan
+     */
+    @Provides
+    fun provideGetListPembayaranBulananUseCase(
+        pembayaranRepository: PembayaranRepository,
+        baselinePembayaranRepository: BaselinePembayaranRepository,
+        hargaKavlingRepository: HargaKavlingRepository,
+        fotoPembayaranRepository: FotoPembayaranRepository,
+    ): GetListPembayaranBulananAsyncUseCase {
+        return GetListPembayaranBulananAsyncUseCase(pembayaranRepository, baselinePembayaranRepository, hargaKavlingRepository, fotoPembayaranRepository)
     }
 
 

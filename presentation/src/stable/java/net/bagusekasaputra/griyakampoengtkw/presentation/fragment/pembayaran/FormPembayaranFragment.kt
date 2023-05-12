@@ -13,15 +13,15 @@ import androidx.appcompat.app.AlertDialog
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
+import androidx.navigation.NavController
+import androidx.navigation.fragment.NavHostFragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.evrencoskun.tableview.listener.ITableViewListener
 import com.github.dhaval2404.imagepicker.ImagePicker
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
 import net.bagusekasaputra.griyakampoengtkw.domain.DataMode
-import net.bagusekasaputra.griyakampoengtkw.domain.DateUtil.toDate
 import net.bagusekasaputra.griyakampoengtkw.domain.NumberUtil
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.HargaKavling
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.Pembayaran
@@ -31,14 +31,11 @@ import net.bagusekasaputra.griyakampoengtkw.presentation.adapter.recyclerview.Te
 import net.bagusekasaputra.griyakampoengtkw.presentation.custom.ThousandSeparatorTextWatcher
 import net.bagusekasaputra.griyakampoengtkw.presentation.databinding.*
 import net.bagusekasaputra.griyakampoengtkw.presentation.dialog.FormBaselinePembayaranDialog
-import net.bagusekasaputra.griyakampoengtkw.presentation.tableview.formPembayaran.PembayaranCell
-import net.bagusekasaputra.griyakampoengtkw.presentation.tableview.formPembayaran.PembayaranColumnHeader
-import net.bagusekasaputra.griyakampoengtkw.presentation.tableview.formPembayaran.PembayaranRowHeader
-import net.bagusekasaputra.griyakampoengtkw.presentation.tableview.formPembayaran.PembayaranTableViewAdapter
 import net.bagusekasaputra.griyakampoengtkw.presentation.util.*
 import net.bagusekasaputra.griyakampoengtkw.presentation.util.DialogUtil.additionalDialogSetting
 import net.bagusekasaputra.griyakampoengtkw.presentation.viewmodel.DetailViewModel
 import net.bagusekasaputra.griyakampoengtkw.presentation.viewmodel.FormPembayaranViewModel
+import net.bagusekasaputra.griyakampoengtkw.presentation.viewmodel.FormPembayaranViewModel.TablePembayaranType
 import net.bagusekasaputra.griyakampoengtkw.presentation.viewmodel.ImageViewModel
 import java.io.File
 import java.util.*
@@ -52,6 +49,8 @@ class FormPembayaranFragment : Fragment() {
     }
 
     private lateinit var binding: FragmentFormPembayaranBinding
+    private lateinit var navController: NavController
+
     private val viewModel: DetailViewModel by activityViewModels()
     private val imageViewModel: ImageViewModel by activityViewModels()
     private val pembayaranViewModel: FormPembayaranViewModel by activityViewModels()
@@ -116,6 +115,8 @@ class FormPembayaranFragment : Fragment() {
 
         arguments?.getString(GriyaNodes.INTENT_KAVLING_KODE)?.let {
             currentKavlingKode = it
+            // Current Kavling Kode
+            pembayaranViewModel.currentKavlingKode = it
         }
 
         setHasOptionsMenu(true)
@@ -133,6 +134,10 @@ class FormPembayaranFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        navController = (childFragmentManager.findFragmentById(R.id.navHostFragment_pembayaran)
+                as NavHostFragment).navController
+
+        // Creating foto pembayaran Directory on external storage
         File(requireContext().getExternalFilesDir(null), "foto_pembayaran_images").let {
             if (it.exists().not()) it.mkdir()
         }
@@ -140,6 +145,8 @@ class FormPembayaranFragment : Fragment() {
         setupExtendedFloatingButton()
 
         setupViewModel()
+
+        syncPembayaran()
 
         // Disable write operation interfaces on offline mode such as
         // edit HargaKavling and CatatanPembayaran, and disable Fabs.
@@ -195,12 +202,20 @@ class FormPembayaranFragment : Fragment() {
                 extendedFabs = binding.fabActions,
             )
 
-        startStorageRequest.launch(
-            Array<String>(2) {
+        startStorageRequest.launch(Array(2) {
                 Manifest.permission.WRITE_EXTERNAL_STORAGE
                 Manifest.permission.READ_EXTERNAL_STORAGE
+            })
+
+        binding.btnLihatPembayaranBulanan?.setOnClickListener {
+            val currentTablePembayaranType = pembayaranViewModel.tableTypeLive.value
+
+            if (currentTablePembayaranType == TablePembayaranType.FORM_PEMBAYARAN) {
+                pembayaranViewModel.setTableType(TablePembayaranType.PEMBAYARAN_BULANAN)
+            } else {
+                pembayaranViewModel.setTableType(TablePembayaranType.FORM_PEMBAYARAN)
             }
-        )
+        }
 
         binding.fabAddPembayaranData?.setOnClickListener {
             showAddFormPembayaranDialog()
@@ -213,50 +228,36 @@ class FormPembayaranFragment : Fragment() {
         }
     }
 
-    override fun onResume() {
-        super.onResume()
-
-        syncPembayaran()
-    }
-
     private fun syncPembayaran() {
         viewModel.getHargaKavling(currentKavlingKode!!) { failMsg ->
-            Toast.makeText(requireContext(), failMsg, Toast.LENGTH_LONG).show()
-        }
-        viewModel.getAllPembayaran(currentKavlingKode!!) { failMsg ->
             Toast.makeText(requireContext(), failMsg, Toast.LENGTH_LONG).show()
         }
         viewModel.getCatatanPembayaran(currentKavlingKode!!) { failMsg ->
             Toast.makeText(requireContext(), failMsg, Toast.LENGTH_SHORT).show()
         }
-        pembayaranViewModel.getBaselinePembayaran(
-            kavling = currentKavlingKode!!,
+        pembayaranViewModel.getListPembayaranBulanan(currentKavlingKode!!,
             onLoading = {
-                // TODO
+                onLoadingFormPembayaran(false)
             },
-            onComplete = {
-                // TODO
+            onSuccess = {
+                onLoadingFormPembayaran(true)
+                binding.btnLihatPembayaranBulanan?.visibility = View.VISIBLE
             },
-            onFailure = { Toast.makeText(requireContext(), it, Toast.LENGTH_LONG).show() },
+            onFailure = {
+                Toast.makeText(requireContext(), it, Toast.LENGTH_LONG).show()
+            }
         )
     }
 
     private fun onLoadingFormPembayaran(finished: Boolean) {
-        binding.tableFormPembayaran.visibility = if (finished) View.VISIBLE else View.GONE
         binding.layoutLoadingFormPembayaran?.visibility = if (finished) View.GONE else View.VISIBLE
+        binding.navHostFragmentPembayaran?.visibility = if (finished) View.VISIBLE else View.GONE
     }
 
     private fun setupViewModel() {
         viewModel.isFinishOperation.observe(requireActivity()) { finish ->
             finish?.let {
                 binding.swipeRefreshFormPembayaran.isRefreshing = !it
-            }
-        }
-
-        viewModel.formPembayaranRefreshed.observe(requireActivity()) { refreshed ->
-            if (refreshed != null) {
-                val isFinish = refreshed == true
-                onLoadingFormPembayaran(isFinish)
             }
         }
 
@@ -275,6 +276,14 @@ class FormPembayaranFragment : Fragment() {
             }
         }
 
+        viewModel.catatanPembayaranLive.observe(requireActivity()) { catatanPembayaran ->
+            if (catatanPembayaran != null) {
+                binding.tvCatatan?.text = catatanPembayaran.content
+            } else {
+                binding.tvCatatan?.text = requireContext().getString(R.string.tidak_ada_catatan)
+            }
+        }
+
         pembayaranViewModel.baselinePembayaranLive.observe(requireActivity()) {
             it?.also { baselinePembayaran ->
                 binding.tvMinimalAngsuran?.text = "Rp. ${baselinePembayaran.parsedJumlahUang}"
@@ -288,12 +297,6 @@ class FormPembayaranFragment : Fragment() {
 
                             "Rp. ${NumberUtil.formatLongToString(sisaBelumBayar)}"
                         }
-                        binding.tvSisaWaktuAngsuran?.text = Pembayaran.sortPembayaran(listPembayaran).run {
-                            val tanggalPembelian = Pembayaran.getTanggalPembelian(this).toDate()
-                            val sisaBulanAngsuran = baselinePembayaran.hitungSisaBulanAngsuran(tanggalPembelian)
-
-                            "$sisaBulanAngsuran Bulan"
-                        }
                     } catch (e: Exception) {
                         e.printStackTrace()
                         Toast.makeText(
@@ -306,31 +309,20 @@ class FormPembayaranFragment : Fragment() {
             }
         }
 
-        viewModel.listPembayaranLive.observe(requireActivity()) { listPembayaran ->
-            if ((listPembayaran != null) and (listPembayaran?.isNotEmpty() == true)) {
-                binding.tvSisaBlmTerbayar?.text = StringBuilder().run {
-                    append("Rp. ")
-                    append(listPembayaran?.last()?.sisaBelumTerbayar)
-                    toString()
+        pembayaranViewModel.tableTypeLive.observe(requireActivity()) {
+            it?.also { tableType ->
+                when (tableType) {
+                    TablePembayaranType.FORM_PEMBAYARAN -> {
+                        navController.navigate(R.id.nav_pembayaran_full_tabel)
+
+                        binding.btnLihatPembayaranBulanan?.text = "Lihat Per Bulan"
+                    }
+                    TablePembayaranType.PEMBAYARAN_BULANAN -> {
+                        navController.navigate(R.id.nav_pembayaran_bulanan_tabel)
+
+                        binding.btnLihatPembayaranBulanan?.text = "Lihat Semua"
+                    }
                 }
-            } else {
-                clearPembayaranField()
-            }
-
-            // I think this will immune to the null value, since I set default values
-            //  to Column and Row Headers, and the Cell Items.
-            val pembayaranColumnHeaders = viewModel.getPembayaranTableColumnHeaders()
-            val pembayaranRowHeaders = viewModel.getPembayaranTableRowHeaders()
-            val pembayaranCellItems = viewModel.getPembayaranTableCellItems()
-
-            populateTableView(pembayaranColumnHeaders, pembayaranRowHeaders, pembayaranCellItems)
-        }
-
-        viewModel.catatanPembayaranLive.observe(requireActivity()) { catatanPembayaran ->
-            if (catatanPembayaran != null) {
-                binding.tvCatatan?.text = catatanPembayaran.content
-            } else {
-                binding.tvCatatan?.text = requireContext().getString(R.string.tidak_ada_catatan)
             }
         }
     }
@@ -673,99 +665,8 @@ class FormPembayaranFragment : Fragment() {
      * TvTambahanLuas, and TvTotalHarga.
      */
     private fun clearPembayaranField() {
-        binding.tvSisaBlmTerbayar?.text = "0"
         binding.tvTambahanLuas?.text = "0"
         binding.tvTotalHarga?.text = "0"
-    }
-
-    private fun populateTableView(
-        columnHeaders: List<PembayaranColumnHeader>,
-        rowHeaders: List<PembayaranRowHeader>,
-        cellLists: List<List<PembayaranCell>>,
-    ) {
-        val pembayaranTableViewAdapter = PembayaranTableViewAdapter()
-
-        binding.tableFormPembayaran.apply {
-            setAdapter(pembayaranTableViewAdapter)
-        }
-
-        pembayaranTableViewAdapter.setAllItems(columnHeaders, rowHeaders, cellLists)
-
-        binding.tableFormPembayaran.apply {
-            setColumnWidth(PembayaranTableViewAdapter.Kolom.TANGGAL, 250)
-            setColumnWidth(PembayaranTableViewAdapter.Kolom.JUMLAH_UANG_DIBAYAR, 350)
-            setColumnWidth(PembayaranTableViewAdapter.Kolom.TOTAL_UANG_MASUK, 350)
-            setColumnWidth(PembayaranTableViewAdapter.Kolom.PERSENTASE, 250)
-            setColumnWidth(PembayaranTableViewAdapter.Kolom.KETERANGAN_PROSES, 500)
-        }
-
-        binding.tableFormPembayaran.tableViewListener = object : ITableViewListener {
-            override fun onCellClicked(cellView: RecyclerView.ViewHolder, column: Int, row: Int) {
-                if (column == PembayaranTableViewAdapter.Kolom.KETERANGAN_PROSES) {
-                    viewModel.listPembayaranLive.value?.also {
-                        val pembayaran = it[row]
-                        MaterialAlertDialogBuilder(requireContext())
-                            .setTitle("$currentKavlingKode - ${pembayaran.termin}")
-                            .setMessage(pembayaran.keterangan)
-                            .create()
-                            .show()
-                    }
-                }
-            }
-
-            override fun onCellDoubleClicked(
-                cellView: RecyclerView.ViewHolder,
-                column: Int,
-                row: Int
-            ) {
-
-            }
-
-            override fun onCellLongPressed(
-                cellView: RecyclerView.ViewHolder,
-                column: Int,
-                row: Int
-            ) {
-
-            }
-
-            override fun onColumnHeaderClicked(
-                columnHeaderView: RecyclerView.ViewHolder,
-                column: Int
-            ) {
-
-            }
-
-            override fun onColumnHeaderDoubleClicked(
-                columnHeaderView: RecyclerView.ViewHolder,
-                column: Int
-            ) {
-
-            }
-
-            override fun onColumnHeaderLongPressed(
-                columnHeaderView: RecyclerView.ViewHolder,
-                column: Int
-            ) {
-
-            }
-
-            override fun onRowHeaderClicked(rowHeaderView: RecyclerView.ViewHolder, row: Int) {
-
-            }
-
-            override fun onRowHeaderDoubleClicked(
-                rowHeaderView: RecyclerView.ViewHolder,
-                row: Int
-            ) {
-
-            }
-
-            override fun onRowHeaderLongPressed(rowHeaderView: RecyclerView.ViewHolder, row: Int) {
-
-            }
-
-        }
     }
 
     private fun showTerminSelectionButtonsDialog() {
@@ -819,7 +720,7 @@ class FormPembayaranFragment : Fragment() {
             setView(dialogBinding.root)
         }.create()
 
-        DialogUtil.additionalDialogSetting(requireContext(), dialogView)
+        additionalDialogSetting(requireContext(), dialogView)
 
         // if Edit Mode, ENABLE the Delete Button, set the text as the one before,and change the Dialog Title
         if (editMode) {
@@ -882,10 +783,10 @@ class FormPembayaranFragment : Fragment() {
         onTerminClick: (selectedTermin: String) -> Unit,
     ) {
         val listTerminPembayaran = when (mode) {
-            OperasiFotoPembayaran.TAMBAH -> viewModel.getBelumIsiFotoTerminPembayaran()
-            OperasiFotoPembayaran.UBAH -> viewModel.getAllArrayTerminPembayaran()
-            OperasiFotoPembayaran.HAPUS -> viewModel.getSudahIsiFotoTerminPembayaran()
-            OperasiFotoPembayaran.LIHAT -> viewModel.getSudahIsiFotoTerminPembayaran()
+            OperasiFotoPembayaran.TAMBAH -> pembayaranViewModel.getBelumIsiFotoPembayaranTermins()
+            OperasiFotoPembayaran.UBAH -> pembayaranViewModel.getTerminFromListPembayaran()
+            OperasiFotoPembayaran.HAPUS -> pembayaranViewModel.getSudahIsiFotoPembayaranTermins()
+            OperasiFotoPembayaran.LIHAT -> pembayaranViewModel.getSudahIsiFotoPembayaranTermins()
         }
 
         MaterialAlertDialogBuilder(requireContext()).apply {
@@ -1134,6 +1035,8 @@ class FormPembayaranFragment : Fragment() {
             Snackbar.make(binding.root, "Data Diri costumer atau Form Pembayaran masih kosong", Snackbar.LENGTH_SHORT)
                 .show()
         } else {
+            val pembayarans = pembayaranViewModel.fullPembayaransLive.value
+            val sisaBelumBayar = if (pembayarans.isNullOrEmpty()) "0" else Pembayaran.getSisaBelumTerbayar(pembayarans)
             val excelExporter = ExcelExporter(
                 blockKode = blockKode,
                 kavlingNumber = kavlingNum,
@@ -1141,7 +1044,7 @@ class FormPembayaranFragment : Fragment() {
                 hargaKavling = binding.tvHarga?.text.toString(),
                 tambahLuasan = binding.tvTambahanLuas?.text.toString(),
                 totalHarga = binding.tvTotalHarga?.text.toString(),
-                sisaBelumTerbayar = binding.tvSisaBlmTerbayar?.text.toString(),
+                sisaBelumTerbayar = sisaBelumBayar,
                 dataPembayaran = viewModel.listPembayaranLive.value ?: emptyList()
             )
             val workbook = excelExporter.createPembayaranSpreadsheet()

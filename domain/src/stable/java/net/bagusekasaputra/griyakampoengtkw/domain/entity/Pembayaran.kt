@@ -8,6 +8,8 @@ import net.bagusekasaputra.griyakampoengtkw.domain.DateUtil.toDate
 import net.bagusekasaputra.griyakampoengtkw.domain.NumberUtil
 import net.bagusekasaputra.griyakampoengtkw.domain.PembayaranSorterUtil
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.rekap.PeriodeRekap
+import java.math.BigDecimal
+import java.math.RoundingMode
 import java.util.Calendar
 import java.util.Date
 
@@ -31,6 +33,17 @@ data class Pembayaran(
 
     fun getJenisTermin(): String {
         return termin.split(" ")[0]
+    }
+
+    fun hitungPersentase(hargaKavling: HargaKavling): Double {
+        val floatTotalUangMasuk = NumberUtil.formatStringToLong(totalUangMasuk).toFloat()
+        val floatHargaKavling = hargaKavling.toFloat()
+        val persentase = floatTotalUangMasuk.div(floatHargaKavling).let {
+            val bigDecimal = it.toBigDecimal().setScale(4, RoundingMode.HALF_UP)
+            return@let bigDecimal.multiply(BigDecimal.valueOf(100))
+        }
+
+        return persentase.toDouble()
     }
 
     companion object {
@@ -58,6 +71,10 @@ data class Pembayaran(
 
         fun hitungTotalSisaBelumBayar(hargaKavling: HargaKavling, jumlahUangMasukKavling: Long): Long {
             return hargaKavling.hargaDanTambahLuasan - jumlahUangMasukKavling
+        }
+
+        fun getSisaBelumTerbayar(pembayarans: List<Pembayaran>): String {
+            return pembayarans.last().sisaBelumTerbayar
         }
 
         fun sortPembayaran(listPembayaran: List<Pembayaran>) = PembayaranSorterUtil(listPembayaran).getSortedList()
@@ -122,6 +139,28 @@ data class Pembayaran(
                     }
                 }
             }
+        }
+
+        suspend fun maskPembayaran(
+            listPembayaran: List<Pembayaran>,
+            hargaKavling: HargaKavling,
+            onCekFotoPembayaran: suspend (termin: String) -> Boolean,
+        ): List<Pembayaran> {
+            val sortedListPembayaran = sortPembayaran(listPembayaran)
+            val newListPembayaran = ArrayList<Pembayaran>()
+            var totalUangMasuk = 0L
+
+            sortedListPembayaran.forEach {
+                totalUangMasuk += NumberUtil.formatStringToLong(it.jumlahUangDibayar)
+                it.totalUangMasuk = NumberUtil.formatLongToString(totalUangMasuk)
+                it.presentase = it.hitungPersentase(hargaKavling)
+                it.sisaBelumTerbayar = NumberUtil.formatLongToString(hargaKavling - totalUangMasuk)
+                it.sudahIsiFotoPembayaran = onCekFotoPembayaran(it.termin)
+
+                newListPembayaran.add(it)
+            }
+
+            return newListPembayaran
         }
     }
 }

@@ -13,9 +13,6 @@ import net.bagusekasaputra.griyakampoengtkw.domain.repository.FotoPembayaranRepo
 import net.bagusekasaputra.griyakampoengtkw.domain.repository.HargaKavlingRepository
 import net.bagusekasaputra.griyakampoengtkw.domain.repository.PembayaranRepository
 
-/**
- * Hasn't changed since applied to Stable Build
- */
 class GetListPembayaranBulananAsyncUseCase(
     private val pembayaranRepository: PembayaranRepository,
     private val baselinePembayaranRepository: BaselinePembayaranRepository,

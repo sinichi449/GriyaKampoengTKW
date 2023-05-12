@@ -23,6 +23,8 @@ import javax.inject.Inject
 
 /**
  * Soon, all "Pembayaran" related data will be moved here.
+ *
+ * Hasn't been changed since this is used by Stable build.
  */
 @HiltViewModel
 class FormPembayaranViewModel @Inject constructor(

@@ -23,6 +23,9 @@ import net.bagusekasaputra.griyakampoengtkw.presentation.util.GriyaNodes
 import net.bagusekasaputra.griyakampoengtkw.presentation.viewmodel.MainViewModel
 import javax.inject.Inject
 
+/**
+ * Removed App Update checking
+ */
 @AndroidEntryPoint
 class MainActivity : AppCompatActivity() {
 

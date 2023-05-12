@@ -13,6 +13,9 @@ import java.math.RoundingMode
 import java.util.Calendar
 import java.util.Date
 
+/**
+ * Hasn't changed, already applied in Stable Build
+ */
 data class Pembayaran(
     val termin: String,
     val tanggal: String,

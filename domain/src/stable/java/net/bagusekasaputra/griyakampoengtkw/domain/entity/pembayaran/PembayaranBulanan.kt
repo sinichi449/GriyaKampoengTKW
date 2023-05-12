@@ -8,9 +8,6 @@ import net.bagusekasaputra.griyakampoengtkw.domain.entity.Pembayaran.Companion.f
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.rekap.PeriodeRekap
 import java.util.Calendar
 
-/**
- * Hasn't changed, already in Stable Build
- */
 data class PembayaranBulanan(
     val kavling: String,
     val bulan: Int, // NOT  Calendar type of Bulan
