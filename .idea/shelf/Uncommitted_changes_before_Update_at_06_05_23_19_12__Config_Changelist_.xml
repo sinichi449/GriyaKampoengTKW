@@ -1,0 +1,9 @@
+<changelist name="Uncommitted_changes_before_Update_at_06_05_23_19_12_[Config_Changelist]" date="1683375146341" recycled="false" toDelete="true">
+  <option name="PATH" value="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Update_at_06_05_23_19_12_[Config_Changelist]/shelved.patch" />
+  <option name="DESCRIPTION" value="Uncommitted changes before Update at 06/05/23 19.12 [Config Changelist]" />
+  <binary>
+    <option name="BEFORE_PATH" />
+    <option name="AFTER_PATH" value="debug/app-debug.apk" />
+    <option name="SHELVED_PATH" value="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Update_at_06_05_23_19_12_[Config_Changelist]/app-debug.apk" />
+  </binary>
+</changelist>
