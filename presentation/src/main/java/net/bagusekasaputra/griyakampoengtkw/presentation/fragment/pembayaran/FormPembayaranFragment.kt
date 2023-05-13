@@ -157,7 +157,7 @@ class FormPembayaranFragment : Fragment() {
         if (offlineMode || dataMode == DataMode.DATA_LAMA)
             onOfflineState()
 
-        binding.imgEdit.setOnClickListener {
+        binding.imgEdit?.setOnClickListener {
             showEditHargaDialog()
         }
 
@@ -168,8 +168,8 @@ class FormPembayaranFragment : Fragment() {
             syncPembayaran()
         }
 
-        binding.cardCatatanPembayaran.setOnClickListener {
-            val currentCatatan = binding.tvCatatan.text.toString()
+        binding.cardCatatanPembayaran?.setOnClickListener {
+            val currentCatatan = binding.tvCatatan?.text.toString()
             val tidakAdaCatatan = requireContext().getString(R.string.tidak_ada_catatan)
 
             // If tidak ada catatan, then open the add catatan, which means we need to disable
@@ -181,7 +181,7 @@ class FormPembayaranFragment : Fragment() {
             }
         }
 
-        binding.layoutTitleAngsuranBulanan.setOnClickListener {
+        binding.layoutTitleAngsuranBulanan?.setOnClickListener {
             val hargaKavling = viewModel.hargaKavlingLive.value
 
             if (hargaKavling != null) {
@@ -209,22 +209,22 @@ class FormPembayaranFragment : Fragment() {
                 Manifest.permission.READ_EXTERNAL_STORAGE
             })
 
-        binding.btnLihatPembayaranBulanan.setOnClickListener {
-            val currentTablePembayaranType = pembayaranViewModel.tableTypeLive.value
-
-            if (currentTablePembayaranType == TablePembayaranType.FORM_PEMBAYARAN) {
-                pembayaranViewModel.setTableType(TablePembayaranType.PEMBAYARAN_BULANAN)
-            } else {
-                pembayaranViewModel.setTableType(TablePembayaranType.FORM_PEMBAYARAN)
-            }
+        binding.btnLihatPembayaranBulanan?.setOnClickListener {
+            switchTablePembayaran()
         }
 
-        binding.fabAddPembayaranData.setOnClickListener {
+        binding.fabLihatPembayaranBulanan?.setOnClickListener {
+            switchTablePembayaran()
+        }
+        // Hide on scroll
+
+        binding.fabAddPembayaranData?.setOnClickListener {
             showAddFormPembayaranDialog()
             hideFabs()
         }
 
-        binding.fabEditData.setOnClickListener {
+
+        binding.fabEditData?.setOnClickListener {
             showTerminSelectionButtonsDialog()
             hideFabs()
         }
@@ -243,7 +243,6 @@ class FormPembayaranFragment : Fragment() {
             },
             onSuccess = {
                 onLoadingFormPembayaran(true)
-                binding.btnLihatPembayaranBulanan.visibility = View.VISIBLE
             },
             onFailure = {
                 Toast.makeText(requireContext(), it, Toast.LENGTH_LONG).show()
@@ -254,6 +253,9 @@ class FormPembayaranFragment : Fragment() {
     private fun onLoadingFormPembayaran(finished: Boolean) {
         binding.layoutLoadingFormPembayaran.visibility = if (finished) View.GONE else View.VISIBLE
         binding.navHostFragmentPembayaran.visibility = if (finished) View.VISIBLE else View.GONE
+
+        binding.btnLihatPembayaranBulanan?.visibility = if (finished) View.VISIBLE else View.GONE
+        binding.fabLihatPembayaranBulanan?.visibility = if (finished) View.VISIBLE else View.GONE
     }
 
     private fun setupViewModel() {
@@ -269,32 +271,32 @@ class FormPembayaranFragment : Fragment() {
                     Toast.makeText(requireContext(), failMsg, Toast.LENGTH_LONG).show()
                 }
             } else {
-                binding.tvHarga.text = hargaKavling.harga
-                binding.tvTambahanLuas.text = hargaKavling.tambahanLuas
+                binding.tvHarga?.text = hargaKavling.harga
+                binding.tvTambahanLuas?.text = hargaKavling.tambahanLuas
 
                 (NumberUtil.formatStringToLong(hargaKavling.harga) + NumberUtil.formatStringToLong(hargaKavling.tambahanLuas)).let {
-                    binding.tvTotalHarga.text = NumberUtil.formatLongToString(it)
+                    binding.tvTotalHarga?.text = NumberUtil.formatLongToString(it)
                 }
             }
         }
 
         viewModel.catatanPembayaranLive.observe(requireActivity()) { catatanPembayaran ->
             if (catatanPembayaran != null) {
-                binding.tvCatatan.text = catatanPembayaran.content
+                binding.tvCatatan?.text = catatanPembayaran.content
             } else {
-                binding.tvCatatan.text = requireContext().getString(R.string.tidak_ada_catatan)
+                binding.tvCatatan?.text = requireContext().getString(R.string.tidak_ada_catatan)
             }
         }
 
         pembayaranViewModel.baselinePembayaranLive.observe(requireActivity()) {
             it?.also { baselinePembayaran ->
-                binding.tvMinimalAngsuran.text = "Rp. ${baselinePembayaran.parsedJumlahUang}"
-                binding.tvMaksimalTanggalBayar.text = baselinePembayaran.tanggalPembayaranMaks.toString()
+                binding.tvMinimalAngsuran?.text = "Rp. ${baselinePembayaran.parsedJumlahUang}"
+                binding.tvMaksimalTanggalBayar?.text = baselinePembayaran.tanggalPembayaranMaks.toString()
 
                 val listPembayaran = viewModel.listPembayaranLive.value
                 if (listPembayaran != null) {
                     try {
-                        binding.tvSisaBelumBayarBulanIni.text = listPembayaran.run {
+                        binding.tvSisaBelumBayarBulanIni?.text = listPembayaran.run {
                             val sisaBelumBayar = baselinePembayaran.hitungSisaBlmBayarBulanIni(this)
 
                             "Rp. ${NumberUtil.formatLongToString(sisaBelumBayar)}"
@@ -317,27 +319,37 @@ class FormPembayaranFragment : Fragment() {
                     TablePembayaranType.FORM_PEMBAYARAN -> {
                         navController.navigate(R.id.nav_pembayaran_full_tabel)
 
-                        binding.btnLihatPembayaranBulanan.text = "Lihat Per Bulan"
+                        binding.btnLihatPembayaranBulanan?.text = "Lihat Per Bulan"
                     }
                     TablePembayaranType.PEMBAYARAN_BULANAN -> {
                         navController.navigate(R.id.nav_pembayaran_bulanan_tabel)
 
-                        binding.btnLihatPembayaranBulanan.text = "Lihat Semua"
+                        binding.btnLihatPembayaranBulanan?.text = "Lihat Semua"
                     }
                 }
             }
         }
     }
 
+    private fun switchTablePembayaran() {
+        val currentTablePembayaranType = pembayaranViewModel.tableTypeLive.value
+
+        if (currentTablePembayaranType == TablePembayaranType.FORM_PEMBAYARAN) {
+            pembayaranViewModel.setTableType(TablePembayaranType.PEMBAYARAN_BULANAN)
+        } else {
+            pembayaranViewModel.setTableType(TablePembayaranType.FORM_PEMBAYARAN)
+        }
+    }
+
     private fun setupExtendedFloatingButton() {
-        binding.fabAddPembayaranData.visibility = View.GONE
-        binding.fabEditData.visibility = View.GONE
+        binding.fabAddPembayaranData?.visibility = View.GONE
+        binding.fabEditData?.visibility = View.GONE
 //        binding.tvInfoAddPembayaranData?.visibility = View.GONE
 //        binding.tvInfoEditData?.visibility = View.GONE
 
-        binding.fabActions.shrink()
+        binding.fabActions?.shrink()
 
-        binding.fabActions.setOnClickListener {
+        binding.fabActions?.setOnClickListener {
             if (!isAllFabsVisible) {
                 showFabs()
             } else {
@@ -348,7 +360,7 @@ class FormPembayaranFragment : Fragment() {
 
     private fun showAddFormPembayaranDialog() {
         // check harga kavling available
-        val hargaKavling = binding.tvHarga.text.toString().let {
+        val hargaKavling = binding.tvHarga?.text.toString().let {
             NumberUtil.formatStringToLong(it)
         }
 
@@ -619,13 +631,13 @@ class FormPembayaranFragment : Fragment() {
         dialogView.show()
 
         dialogBinding.edtHarga.apply {
-            val harga = binding.tvHarga.text
+            val harga = binding.tvHarga?.text
             if (harga != "0")
                 this.setText(harga)
             addTextChangedListener(ThousandSeparatorTextWatcher(this))
         }
         dialogBinding.edtTambahLuasan.apply {
-            val tambahanLuas = binding.tvTambahanLuas.text
+            val tambahanLuas = binding.tvTambahanLuas?.text
             if (tambahanLuas != "0") this.setText(tambahanLuas)
 
             addTextChangedListener(ThousandSeparatorTextWatcher(this))
@@ -667,12 +679,12 @@ class FormPembayaranFragment : Fragment() {
      * TvTambahanLuas, and TvTotalHarga.
      */
     private fun clearPembayaranField() {
-        binding.tvTambahanLuas.text = "0"
-        binding.tvTotalHarga.text = "0"
+        binding.tvTambahanLuas?.text = "0"
+        binding.tvTotalHarga?.text = "0"
     }
 
     private fun showTerminSelectionButtonsDialog() {
-        val hargaKavling = binding.tvHarga.text.toString().let {
+        val hargaKavling = binding.tvHarga?.text.toString().let {
             NumberUtil.formatStringToLong(it)
         }
 
@@ -727,7 +739,7 @@ class FormPembayaranFragment : Fragment() {
         // if Edit Mode, ENABLE the Delete Button, set the text as the one before,and change the Dialog Title
         if (editMode) {
             dialogBinding.tvInfoTitleTambahCatatan.text = "Ubah Catatan"
-            dialogBinding.edtCatatan.setText(binding.tvCatatan.text)
+            dialogBinding.edtCatatan.setText(binding.tvCatatan?.text)
             dialogBinding.btnHapusCatatan.visibility = View.VISIBLE
         }
 
@@ -990,23 +1002,23 @@ class FormPembayaranFragment : Fragment() {
     }
 
     private fun showFabs() {
-        binding.fabAddPembayaranData.show()
-        binding.fabEditData.show()
+        binding.fabAddPembayaranData?.show()
+        binding.fabEditData?.show()
 //        binding.tvInfoAddPembayaranData?.visibility = View.VISIBLE
 //        binding.tvInfoEditData?.visibility = View.VISIBLE
 
-        binding.fabActions.extend()
+        binding.fabActions?.extend()
 
         isAllFabsVisible = true
     }
 
     private fun hideFabs() {
-        binding.fabAddPembayaranData.hide()
-        binding.fabEditData.hide()
+        binding.fabAddPembayaranData?.hide()
+        binding.fabEditData?.hide()
 //        binding.tvInfoAddPembayaranData?.visibility = View.GONE
 //        binding.tvInfoEditData?.visibility = View.GONE
 
-        binding.fabActions.shrink()
+        binding.fabActions?.shrink()
 
         isAllFabsVisible = false
     }
@@ -1051,11 +1063,11 @@ class FormPembayaranFragment : Fragment() {
 
     private fun onOfflineState() {
         // Disable edit Harga icon
-        binding.imgEdit.visibility = View.GONE
+        binding.imgEdit?.visibility = View.GONE
         // Disable edit Catatan icon
-        binding.imgEditCatatan.visibility = View.GONE
+        binding.imgEditCatatan?.visibility = View.GONE
         // Hide FABS
-        binding.fabActions.visibility = View.GONE
+        binding.fabActions?.visibility = View.GONE
     }
 
     /**
