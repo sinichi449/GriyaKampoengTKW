@@ -28,7 +28,9 @@ import net.bagusekasaputra.griyakampoengtkw.domain.entity.HargaKavling
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.Pembayaran
 import net.bagusekasaputra.griyakampoengtkw.presentation.R
 import net.bagusekasaputra.griyakampoengtkw.presentation.activities.FullImageActivity
+import net.bagusekasaputra.griyakampoengtkw.presentation.activities.PembayaranTabelFullActivity
 import net.bagusekasaputra.griyakampoengtkw.presentation.adapter.recyclerview.TerminRecyclerAdapter
+import net.bagusekasaputra.griyakampoengtkw.presentation.custom.TabelPembayaranNavHelper
 import net.bagusekasaputra.griyakampoengtkw.presentation.custom.ThousandSeparatorTextWatcher
 import net.bagusekasaputra.griyakampoengtkw.presentation.databinding.*
 import net.bagusekasaputra.griyakampoengtkw.presentation.dialog.FormBaselinePembayaranDialog
@@ -43,6 +45,7 @@ import java.io.File
 import java.util.*
 import javax.inject.Inject
 
+@SuppressLint("SetTextI18n")
 @AndroidEntryPoint
 class FormPembayaranFragment : Fragment() {
 
@@ -209,20 +212,40 @@ class FormPembayaranFragment : Fragment() {
                 Manifest.permission.READ_EXTERNAL_STORAGE
             })
 
-        binding.btnLihatPembayaranBulanan?.setOnClickListener {
-            switchTablePembayaran()
+        binding.btnFullscreen?.setOnClickListener {
+            val intent = Intent(requireContext(), PembayaranTabelFullActivity::class.java)
+            intent.putExtra(
+                PembayaranTabelFullActivity.EXTRAS_KAVLING_KODE,
+                pembayaranViewModel.currentKavlingKode!!
+            )
+
+            requireContext().startActivity(intent)
         }
 
-        binding.fabLihatPembayaranBulanan?.setOnClickListener {
-            switchTablePembayaran()
+        val tabelHelper = TabelPembayaranNavHelper(
+            lifecycleOwner = requireActivity(),
+            fragmentManager = childFragmentManager,
+            pembayaranViewModel = pembayaranViewModel,
+            containerId = R.id.navHostFragment_pembayaran,
+            triggerViews = arrayOf(
+                binding.btnLihatPembayaranBulanan,
+                binding.fabLihatPembayaranBulanan,
+            )
+        )
+        tabelHelper.listener = object : TabelPembayaranNavHelper.TabelPembayaranListener {
+            override fun onTabelChanged(tableType: TablePembayaranType) {
+                binding.btnLihatPembayaranBulanan?.text = when (tableType) {
+                    TablePembayaranType.PEMBAYARAN_BULANAN -> "Semua"
+                    TablePembayaranType.FORM_PEMBAYARAN -> "Per Bulan"
+                }
+            }
         }
-        // Hide on scroll
+
 
         binding.fabAddPembayaranData?.setOnClickListener {
             showAddFormPembayaranDialog()
             hideFabs()
         }
-
 
         binding.fabEditData?.setOnClickListener {
             showTerminSelectionButtonsDialog()
@@ -256,6 +279,8 @@ class FormPembayaranFragment : Fragment() {
 
         binding.btnLihatPembayaranBulanan?.visibility = if (finished) View.VISIBLE else View.GONE
         binding.fabLihatPembayaranBulanan?.visibility = if (finished) View.VISIBLE else View.GONE
+
+        binding.btnFullscreen?.visibility = if (finished) View.VISIBLE else View.GONE
     }
 
     private fun setupViewModel() {
@@ -312,34 +337,8 @@ class FormPembayaranFragment : Fragment() {
                 }
             }
         }
-
-        pembayaranViewModel.tableTypeLive.observe(requireActivity()) {
-            it?.also { tableType ->
-                when (tableType) {
-                    TablePembayaranType.FORM_PEMBAYARAN -> {
-                        navController.navigate(R.id.nav_pembayaran_full_tabel)
-
-                        binding.btnLihatPembayaranBulanan?.text = "Lihat Per Bulan"
-                    }
-                    TablePembayaranType.PEMBAYARAN_BULANAN -> {
-                        navController.navigate(R.id.nav_pembayaran_bulanan_tabel)
-
-                        binding.btnLihatPembayaranBulanan?.text = "Lihat Semua"
-                    }
-                }
-            }
-        }
     }
 
-    private fun switchTablePembayaran() {
-        val currentTablePembayaranType = pembayaranViewModel.tableTypeLive.value
-
-        if (currentTablePembayaranType == TablePembayaranType.FORM_PEMBAYARAN) {
-            pembayaranViewModel.setTableType(TablePembayaranType.PEMBAYARAN_BULANAN)
-        } else {
-            pembayaranViewModel.setTableType(TablePembayaranType.FORM_PEMBAYARAN)
-        }
-    }
 
     private fun setupExtendedFloatingButton() {
         binding.fabAddPembayaranData?.visibility = View.GONE
