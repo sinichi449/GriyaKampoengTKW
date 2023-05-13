@@ -13,8 +13,6 @@ import androidx.appcompat.app.AlertDialog
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
-import androidx.navigation.NavController
-import androidx.navigation.fragment.NavHostFragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.github.dhaval2404.imagepicker.ImagePicker
@@ -54,7 +52,6 @@ class FormPembayaranFragment : Fragment() {
     }
 
     private lateinit var binding: FragmentFormPembayaranBinding
-    private lateinit var navController: NavController
 
     private val viewModel: DetailViewModel by activityViewModels()
     private val imageViewModel: ImageViewModel by activityViewModels()
@@ -138,9 +135,6 @@ class FormPembayaranFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
-        navController = (childFragmentManager.findFragmentById(R.id.navHostFragment_pembayaran)
-                as NavHostFragment).navController
 
         // Creating foto pembayaran Directory on external storage
         File(requireContext().getExternalFilesDir(null), "foto_pembayaran_images").let {
