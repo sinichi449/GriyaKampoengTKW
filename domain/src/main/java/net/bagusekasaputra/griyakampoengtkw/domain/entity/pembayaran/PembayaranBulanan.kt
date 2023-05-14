@@ -18,7 +18,8 @@ data class PembayaranBulanan(
     var alokasi: Long = 0L,
 ) {
     val uangMasuk = Pembayaran.hitungTotalUangMasuk(listPembayaran)
-    val tunggakan = baselinePembayaran.jumlahUang - uangMasuk
+    val tunggakan: Long
+        get() = baselinePembayaran.jumlahUang - uangMasuk
 
     val bulanStr = DateUtil.namaBulanShort(bulan)
     val parsedBulanTahun = "$bulanStr $tahun"
@@ -82,6 +83,21 @@ data class PembayaranBulanan(
             return mTotal
         }
 
+        fun isExistPembayaranBulanan(list: List<PembayaranBulanan>, bulan: Int, tahun: Int): Boolean {
+            var isExist = false
+
+            list.forEach {
+                val bulanPembayaran = it.bulan
+                val tahunPembayaran = it.tahun
+
+                if (bulanPembayaran == bulan && tahunPembayaran == tahun) {
+                    isExist = true
+                }
+            }
+
+            return isExist
+        }
+
         fun mask(pembayaranBulanans: List<PembayaranBulanan>): List<PembayaranBulanan> {
             val newList = mutableListOf<PembayaranBulanan>()
             var alokasi = 0L
@@ -95,6 +111,25 @@ data class PembayaranBulanan(
                 newList.add(it)
             }
 
+            val calendar = Calendar.getInstance()
+            val bulanSekarang = calendar.get(Calendar.MONTH) + 1
+            val tahunSekarang = calendar.get(Calendar.YEAR)
+
+            if (!isExistPembayaranBulanan(newList, bulanSekarang, tahunSekarang)) {
+                val kavling = newList[0].kavling
+                val baselinePembayaran = newList[0].baselinePembayaran
+                val lastAlokasi = newList.last().alokasi
+
+                newList.add(PembayaranBulanan(
+                    kavling = kavling,
+                    bulan = bulanSekarang,
+                    tahun = tahunSekarang,
+                    listPembayaran = emptyList(),
+                    baselinePembayaran = baselinePembayaran,
+                    kelunasan = Kelunasan.NIL,
+                    alokasi = lastAlokasi - baselinePembayaran.jumlahUang,
+                ))
+            }
 
             return newList
         }
