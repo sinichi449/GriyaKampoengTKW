@@ -1,8 +1,8 @@
 package net.bagusekasaputra.griyakampoengtkw.presentation.fragment
 
+import android.annotation.SuppressLint
 import android.app.DatePickerDialog
 import android.content.SharedPreferences
-import android.content.res.Configuration
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -24,11 +24,7 @@ import net.bagusekasaputra.griyakampoengtkw.presentation.R
 import net.bagusekasaputra.griyakampoengtkw.presentation.custom.ThousandSeparatorTextWatcher
 import net.bagusekasaputra.griyakampoengtkw.presentation.databinding.DialogActionBiayaLainBinding
 import net.bagusekasaputra.griyakampoengtkw.presentation.databinding.FragmentBiayaLainBinding
-import net.bagusekasaputra.griyakampoengtkw.presentation.tableview.biayaLain.BiayaLainColumnPosition
-import net.bagusekasaputra.griyakampoengtkw.presentation.tableview.biayaLain.BlCell
-import net.bagusekasaputra.griyakampoengtkw.presentation.tableview.biayaLain.BlColumnHeader
-import net.bagusekasaputra.griyakampoengtkw.presentation.tableview.biayaLain.BlRowHeader
-import net.bagusekasaputra.griyakampoengtkw.presentation.tableview.biayaLain.TableBiayaLainViewAdapter
+import net.bagusekasaputra.griyakampoengtkw.presentation.tableview.biayaLain.BiayaLainTableWrapper
 import net.bagusekasaputra.griyakampoengtkw.presentation.toCalendar
 import net.bagusekasaputra.griyakampoengtkw.presentation.toSlashedDate
 import net.bagusekasaputra.griyakampoengtkw.presentation.util.DialogUtil
@@ -38,6 +34,7 @@ import net.bagusekasaputra.griyakampoengtkw.presentation.viewmodel.BiayaLainView
 import java.util.Calendar
 import javax.inject.Inject
 
+@SuppressLint("SetTextI18n")
 @AndroidEntryPoint
 class BiayaLainFragment: Fragment() {
 
@@ -61,7 +58,7 @@ class BiayaLainFragment: Fragment() {
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
         binding = FragmentBiayaLainBinding.inflate(inflater, container, false)
 
         return binding.root
@@ -150,26 +147,10 @@ class BiayaLainFragment: Fragment() {
     }
 
     private fun setupTableBiayaLain(listBiayaLain: List<BiayaLain>) {
-        val adapter = TableBiayaLainViewAdapter()
-
-        binding.tableviewBiayaLain.setAdapter(adapter)
-
-        adapter.setAllItems(
-            BlColumnHeader.getColumnHeaders(),
-            BlRowHeader.getRowHeaders(listBiayaLain.size),
-            BlCell.getListCellItems(listBiayaLain)
-        )
-
-        val isPortrait = requireContext().resources.configuration
-            .orientation == Configuration.ORIENTATION_PORTRAIT
-        binding.tableviewBiayaLain.apply {
-            setColumnWidth(BiayaLainColumnPosition.JENIS_BIAYA, if (isPortrait) 500 else 800)
-            setColumnWidth(BiayaLainColumnPosition.HARGA, if (isPortrait) 300 else 600)
-            setColumnWidth(BiayaLainColumnPosition.TANGGAL, if (isPortrait) 300 else 450)
-        }
-
-        adapter.notifyDataSetChanged()
+        BiayaLainTableWrapper(binding.tableviewBiayaLain, listBiayaLain)
+            .createTable()
     }
+
 
     private fun showActionBiayaLainDialog(biayaLain: BiayaLain?) {
         val dialogBinding = DialogActionBiayaLainBinding.inflate(layoutInflater)
