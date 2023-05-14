@@ -21,6 +21,7 @@ import net.bagusekasaputra.griyakampoengtkw.dataLama.DefaultDataLamaManager
 import net.bagusekasaputra.griyakampoengtkw.databinding.ActivityDataLamaBinding
 import net.bagusekasaputra.griyakampoengtkw.presentation.activities.MainActivity
 
+@Suppress("DEPRECATION")
 @AndroidEntryPoint
 class DataLamaActivity : AppCompatActivity() {
 
@@ -198,6 +199,7 @@ class DataLamaActivity : AppCompatActivity() {
         }
     }
 
+    @Deprecated("Deprecated in Java")
     override fun onBackPressed() {
         finish()
         super.onBackPressed()

@@ -1,5 +1,6 @@
 package net.bagusekasaputra.griyakampoengtkw.presentation.fragment
 
+import android.annotation.SuppressLint
 import android.app.Activity
 import android.app.AlertDialog
 import android.content.Intent
@@ -27,7 +28,6 @@ import com.github.dhaval2404.imagepicker.ImagePicker
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
-import net.bagusekasaputra.griyakampoengtkw.domain.DataMode
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.DataDiri
 import net.bagusekasaputra.griyakampoengtkw.presentation.R
 import net.bagusekasaputra.griyakampoengtkw.presentation.activities.FullImageActivity
@@ -43,6 +43,8 @@ import net.bagusekasaputra.griyakampoengtkw.presentation.viewmodel.ImageViewMode
 import java.io.File
 import javax.inject.Inject
 
+@Suppress("DEPRECATION")
+@SuppressLint("SetTextI18n")
 @AndroidEntryPoint
 class DataDiriFragment : Fragment() {
 
@@ -167,7 +169,7 @@ class DataDiriFragment : Fragment() {
                     } else {
                         val imageTransport = imageViewModel.createImageTransport(
                             sendIntent = GriyaNodes.INTENT_DATA_DIRI,
-                            content = mapOf<String, String>(
+                            content = mapOf(
                                 Pair("kavlingKode", currentKavlingKode!!)
                             ),
                         )
@@ -226,6 +228,7 @@ class DataDiriFragment : Fragment() {
 
         }
     }
+
 
     private fun setLayoutImageDataDiriLoading(isLoading: Boolean) {
         binding.layoutImageProfile?.visibility = if (isLoading) View.GONE else View.VISIBLE
@@ -291,19 +294,19 @@ class DataDiriFragment : Fragment() {
 
         var isAllFabVisible = false
         binding.fabActions.setOnClickListener {
-            if (isAllFabVisible) {
+            isAllFabVisible = if (isAllFabVisible) {
                 binding.fabActions.shrink()
                 binding.fabTambahDataDiri.hide()
                 binding.fabTambahFoto.hide()
 
-                isAllFabVisible = false
+                false
 
             } else {
                 binding.fabActions.extend()
                 binding.fabTambahDataDiri.show()
                 binding.fabTambahFoto.show()
 
-                isAllFabVisible = true
+                true
             }
         }
     }
@@ -484,11 +487,13 @@ class DataDiriFragment : Fragment() {
         dialogBinding.spinnerNegaraBekerja.adapter = arrayAdapter
     }
 
+    @Deprecated("Deprecated in Java")
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
         inflater.inflate(R.menu.menu_data_diri, menu)
         super.onCreateOptionsMenu(menu, inflater)
     }
 
+    @Deprecated("Deprecated in Java")
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         return when (item.itemId) {
             R.id.hapus_foto -> {

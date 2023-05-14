@@ -1,7 +1,6 @@
 package net.bagusekasaputra.griyakampoengtkw.presentation.util.exporter
 
 import android.content.Context
-import net.bagusekasaputra.griyakampoengtkw.domain.NumberUtil
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.DataDiri
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.HargaKavling
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.Pembayaran
@@ -17,18 +16,18 @@ class ExcelDataExporter(
         hargaKavling: HargaKavling,
         pembayarans: List<Pembayaran>
     ) {
-        val blockKode = kavlingKode.substring(0)
-        val kavlingNum = kavlingKode.substring(1)
-
-        val sisaBelumBayar = if (pembayarans.isEmpty()) "0" else Pembayaran.getSisaBelumTerbayar(pembayarans)
+//        val blockKode = kavlingKode.substring(0)
+//        val kavlingNum = kavlingKode.substring(1)
+//
+//        val sisaBelumBayar = if (pembayarans.isEmpty()) "0" else Pembayaran.getSisaBelumTerbayar(pembayarans)
         val excelExporter = ExcelExporter(
-            blockKode = blockKode,
-            kavlingNumber = kavlingNum,
-            namaPembayar = dataDiri.nama,
-            hargaKavling = hargaKavling.harga,
-            tambahLuasan = hargaKavling.tambahanLuas,
-            totalHarga = NumberUtil.formatLongToString(hargaKavling.hargaDanTambahLuasan),
-            sisaBelumTerbayar = sisaBelumBayar,
+//            blockKode = blockKode,
+//            kavlingNumber = kavlingNum,
+//            namaPembayar = dataDiri.nama,
+//            hargaKavling = hargaKavling.harga,
+//            tambahLuasan = hargaKavling.tambahanLuas,
+//            totalHarga = NumberUtil.formatLongToString(hargaKavling.hargaDanTambahLuasan),
+//            sisaBelumTerbayar = sisaBelumBayar,
             dataPembayaran = pembayarans
         )
         val workbook = excelExporter.createPembayaranSpreadsheet()

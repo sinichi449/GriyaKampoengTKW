@@ -1,3 +1,5 @@
+@file:Suppress("DEPRECATION")
+
 package net.bagusekasaputra.griyakampoengtkw.presentation.adapter.viewpager
 
 import androidx.fragment.app.Fragment
@@ -17,7 +19,7 @@ class DetailViewPagerAdapter(fm: FragmentManager): FragmentStatePagerAdapter(fm)
         return fragments[position]
     }
 
-    override fun getPageTitle(position: Int): CharSequence? {
+    override fun getPageTitle(position: Int): CharSequence {
         return titles[position]
     }
 

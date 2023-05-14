@@ -1,3 +1,5 @@
+@file:Suppress("DEPRECATION")
+
 package net.bagusekasaputra.griyakampoengtkw.presentation.receiver
 
 import android.app.NotificationChannel
@@ -70,8 +72,7 @@ class AlarmReceiver : WakefulBroadcastReceiver() {
 
             notificationManager.notify(1234, mNotification)
         } else {
-            val TAG = "DEBUG_ME"
-            Log.d(TAG, "onReceive: Context and Reminder is null")
+            Log.d("DEBUG_ME", "onReceive: Context and Reminder is null")
         }
     }
 }

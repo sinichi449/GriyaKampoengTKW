@@ -1,5 +1,6 @@
 package net.bagusekasaputra.griyakampoengtkw.presentation.fragment
 
+import android.annotation.SuppressLint
 import android.os.Bundle
 import android.view.*
 import android.widget.Toast
@@ -29,12 +30,13 @@ import net.bagusekasaputra.griyakampoengtkw.presentation.util.DialogUtil
 import net.bagusekasaputra.griyakampoengtkw.presentation.util.InputUtil
 import net.bagusekasaputra.griyakampoengtkw.presentation.viewmodel.DetailViewModel
 
+@Suppress("DEPRECATION")
 @AndroidEntryPoint
 class BiayaMarketingFragment : Fragment() {
 
     private lateinit var binding: FragmentBiayaMarketingBinding
     private var currentKavlingKode: String? = null
-    private var areAllFabsVisible: Boolean = false
+    private var areAllFabsVisible = false
 
     private val viewModel: DetailViewModel by activityViewModels()
 
@@ -141,7 +143,7 @@ class BiayaMarketingFragment : Fragment() {
             }
         }
 
-        viewModel.listBiayaMarketingLive.observe(requireActivity()) { _ ->
+        viewModel.listBiayaMarketingLive.observe(requireActivity()) {
             setupTableView()
             setupHeaderText()
         }
@@ -188,16 +190,16 @@ class BiayaMarketingFragment : Fragment() {
         binding.fabActionsBiayaMarketing.shrink()
 
         binding.fabActionsBiayaMarketing.setOnClickListener {
-            if (areAllFabsVisible) {
+            areAllFabsVisible = if (areAllFabsVisible) {
                 binding.fabActionsBiayaMarketing.shrink()
                 hideFabs()
 
-                areAllFabsVisible = false
+                false
             } else {
                 binding.fabActionsBiayaMarketing.extend()
                 showFabs()
 
-                areAllFabsVisible = true
+                true
             }
         }
     }
@@ -212,6 +214,7 @@ class BiayaMarketingFragment : Fragment() {
         binding.fabEditBiayaMarketing.show()
     }
 
+    @SuppressLint("SetTextI18n")
     private fun showTambahBiayaMarketingDialog() {
         val dialogBinding = DialogActionsBiayaMarketingBinding.inflate(layoutInflater)
         val dialogView = MaterialAlertDialogBuilder(requireContext()).apply {
@@ -300,6 +303,7 @@ class BiayaMarketingFragment : Fragment() {
         }
     }
 
+    @SuppressLint("SetTextI18n")
     private fun showEditBiayaMarketingDialog(biayaMarketing: BiayaMarketing) {
         val dialogBinding = DialogActionsBiayaMarketingBinding.inflate(layoutInflater)
         val dialogView = MaterialAlertDialogBuilder(requireContext()).apply {
@@ -420,6 +424,7 @@ class BiayaMarketingFragment : Fragment() {
             .show()
     }
 
+    @SuppressLint("SetTextI18n")
     private fun showAddFeeMarketing() {
         val dialogBinding = DialogActionFeeMarketingBinding.inflate(layoutInflater)
         val dialogView = MaterialAlertDialogBuilder(requireContext()).apply {
@@ -483,6 +488,7 @@ class BiayaMarketingFragment : Fragment() {
         }
     }
 
+    @SuppressLint("SetTextI18n")
     private fun showEditFeeMarketing(
         namaMarketer: String,
         biayaMarketer: String,
@@ -587,11 +593,13 @@ class BiayaMarketingFragment : Fragment() {
     }
 
 
+    @Deprecated("Deprecated in Java")
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
         inflater.inflate(R.menu.menu_biaya_marketing, menu)
         super.onCreateOptionsMenu(menu, inflater)
     }
 
+    @Deprecated("Deprecated in Java")
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         return when (item.itemId) {
             R.id.hapus_semua_biaya_marketing -> {

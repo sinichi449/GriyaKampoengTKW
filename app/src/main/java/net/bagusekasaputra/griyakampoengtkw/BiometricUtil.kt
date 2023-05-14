@@ -8,6 +8,7 @@ import androidx.core.content.ContextCompat
 import androidx.fragment.app.FragmentActivity
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 
+@Suppress("DEPRECATION")
 object BiometricUtil {
 
     fun beginAuthentication(activity: FragmentActivity, biometricManager: BiometricManager, biometricPrompt: BiometricPrompt) {

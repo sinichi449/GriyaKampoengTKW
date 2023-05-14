@@ -1,3 +1,5 @@
+@file:Suppress("DEPRECATION")
+
 package net.bagusekasaputra.griyakampoengtkw.presentation.activities
 
 import android.app.ProgressDialog
@@ -74,7 +76,7 @@ class FullImageActivity : AppCompatActivity() {
     private fun createLoupe(bitmap: Bitmap) {
         binding.imgFullProfilCostumer.setImageBitmap(bitmap)
 
-        val loupe = Loupe.create(binding.imgFullProfilCostumer, binding.container) {
+        Loupe.create(binding.imgFullProfilCostumer, binding.container) {
             onViewTranslateListener = translateListener
             maxZoom = 5.0f
         }
@@ -83,7 +85,7 @@ class FullImageActivity : AppCompatActivity() {
     private fun createLoupe(uri: Uri) {
         binding.imgFullProfilCostumer.setImageURI(uri)
 
-        val loupe = Loupe.create(binding.imgFullProfilCostumer, binding.container) {
+        Loupe.create(binding.imgFullProfilCostumer, binding.container) {
             onViewTranslateListener = translateListener
             maxZoom = 5.0f
         }

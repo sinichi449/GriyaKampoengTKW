@@ -1,3 +1,5 @@
+@file:Suppress("DEPRECATION")
+
 package net.bagusekasaputra.griyakampoengtkw.presentation.fragment.rekap
 
 import android.app.ProgressDialog
@@ -50,7 +52,7 @@ class RekapBesarFragment : Fragment() {
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?,
-    ): View? {
+    ): View {
         // Inflate the layout for this fragment
         binding = FragmentRekapBesarBinding.inflate(inflater, container, false)
 
@@ -298,9 +300,5 @@ class RekapBesarFragment : Fragment() {
         }
 
         return progressDialog
-    }
-
-    private fun uncheckIncludeDataLamaCheckbox() {
-        binding.checkboxIncludeDataLama?.isChecked = false
     }
 }

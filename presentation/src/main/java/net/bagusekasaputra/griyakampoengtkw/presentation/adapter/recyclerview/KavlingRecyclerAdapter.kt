@@ -5,24 +5,19 @@ import android.graphics.Color
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.view.animation.AnimationUtils
 import androidx.recyclerview.widget.RecyclerView
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.Kavling
 import net.bagusekasaputra.griyakampoengtkw.presentation.databinding.LayoutRecyclerKavlingsBinding
 
 class KavlingRecyclerAdapter(
-    private val ctx: Context,
     private val kavlings: List<Kavling>,
     private val onRecyclerItemClick: (position: Int) -> Unit,
     private val onRecyclerItemHold: (anchor: View, position: Int) -> Unit,
 ): RecyclerView.Adapter<KavlingRecyclerAdapter.MyViewHolder>() {
 
     private lateinit var context: Context
-    private var lastPosition = -1
 
-    class MyViewHolder(val binding: LayoutRecyclerKavlingsBinding)
-        : RecyclerView.ViewHolder(binding.root) {
-    }
+    class MyViewHolder(val binding: LayoutRecyclerKavlingsBinding): RecyclerView.ViewHolder(binding.root)
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MyViewHolder {
         this.context = parent.context
@@ -62,21 +57,11 @@ class KavlingRecyclerAdapter(
 //        setAnimation(holder.binding.root, position)
     }
 
-    private fun getColor(colorId: Int): Int {
-        return context.resources.getColor(colorId)
-    }
 
     override fun getItemCount(): Int {
         return kavlings.size
     }
 
-    private fun setAnimation(view: View, pos: Int) {
-        if (pos > lastPosition) {
-            val animation = AnimationUtils.loadAnimation(ctx, android.R.anim.slide_in_left)
-            view.startAnimation(animation)
-            lastPosition = pos
-        }
-    }
 
     private fun clearAnimation(view: View) {
         view.clearAnimation()

@@ -1,3 +1,5 @@
+@file:Suppress("DEPRECATION")
+
 package net.bagusekasaputra.griyakampoengtkw.presentation.adapter.viewpager
 
 import androidx.fragment.app.Fragment

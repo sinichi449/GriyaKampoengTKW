@@ -54,7 +54,7 @@ class CalculateRekapBesarAndGetRekapBesarOverview(
         val listIncludedKavlingDataLama: List<String> = emptyList(),
     ): AsyncUseCase.Request
 
-    private val _messageProgress = MutableLiveData<String>("Menginisialisasi ...")
+    private val _messageProgress = MutableLiveData("Menginisialisasi ...")
     val messageProgress: LiveData<String>
         get() = _messageProgress
 
@@ -83,7 +83,7 @@ class CalculateRekapBesarAndGetRekapBesarOverview(
                 // Data Lama
                 val mapListPembayaranLama: Map<String, List<Pembayaran>?>?
                 val mapListDataDiriLama: Map<String, DataDiri?>?
-                val mapHargaKavlingLama: MutableMap<String, HargaKavling?>?
+//                val mapHargaKavlingLama: MutableMap<String, HargaKavling?>?
                 val mapFeeMarketingLama: MutableMap<String, FeeMarketing?>?
                 val mapListBiayaMarketingLama: MutableMap<String, List<BiayaMarketing>?>?
                 if (request.backupName != null) {
@@ -95,7 +95,7 @@ class CalculateRekapBesarAndGetRekapBesarOverview(
                 } else {
                     mapListPembayaranLama = null
                     mapListDataDiriLama = null
-                    mapHargaKavlingLama = null
+//                    mapHargaKavlingLama = null
                     mapFeeMarketingLama = null
                     mapListBiayaMarketingLama = null
                 }

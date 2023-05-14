@@ -1,5 +1,6 @@
 package net.bagusekasaputra.griyakampoengtkw.presentation.activities
 
+import android.annotation.SuppressLint
 import android.content.IntentFilter
 import android.content.SharedPreferences
 import android.content.res.Configuration
@@ -43,6 +44,7 @@ class DetailActivity : AppCompatActivity() {
 
     private val progressReceiver = ProgressReceiver()
 
+    @SuppressLint("SetTextI18n")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -137,6 +139,8 @@ class DetailActivity : AppCompatActivity() {
         }
     }
 
+    @Deprecated("Deprecated in Java")
+    @Suppress("DEPRECATION")
     override fun onBackPressed() {
         val allowExit = imageViewModel.allowExit.value
 

@@ -1,5 +1,6 @@
 package net.bagusekasaputra.griyakampoengtkw
 
+import android.annotation.SuppressLint
 import android.content.Intent
 import android.content.SharedPreferences
 import android.os.Bundle
@@ -37,6 +38,8 @@ import java.net.InetSocketAddress
 import java.net.Socket
 import javax.inject.Inject
 
+@SuppressLint("CustomSplashScreen")
+@Suppress("DEPRECATION")
 @AndroidEntryPoint
 class SplashActivity : AppCompatActivity() {
 

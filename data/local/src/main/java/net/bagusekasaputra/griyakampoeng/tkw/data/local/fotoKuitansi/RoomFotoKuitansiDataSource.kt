@@ -27,7 +27,7 @@ class RoomFotoKuitansiDataSource(
 
     override suspend fun addFotoKuitansi(fotoKuitansiModel: FotoKuitansiModel): Result<Nothing?> {
         return try {
-            val resultId = fotoKuitansiDao.insert(mapFotoKuitansiEntity(fotoKuitansiModel))
+//            val resultId = fotoKuitansiDao.insert(mapFotoKuitansiEntity(fotoKuitansiModel))
 
             Result.success(null)
         } catch (e: Exception) {
@@ -46,12 +46,12 @@ class RoomFotoKuitansiDataSource(
         }
     }
 
-    private fun mapFotoKuitansiEntity(fotoKuitansiModel: FotoKuitansiModel): FotoKuitansiRoomEntity {
-        return fotoKuitansiModel.let {
-            FotoKuitansiRoomEntity(
-                kavlingKode = it.kavlingKode,
-                fotoUri = it.fotoUri,
-            )
-        }
-    }
+//    private fun mapFotoKuitansiEntity(fotoKuitansiModel: FotoKuitansiModel): FotoKuitansiRoomEntity {
+//        return fotoKuitansiModel.let {
+//            FotoKuitansiRoomEntity(
+//                kavlingKode = it.kavlingKode,
+//                fotoUri = it.fotoUri,
+//            )
+//        }
+//    }
 }

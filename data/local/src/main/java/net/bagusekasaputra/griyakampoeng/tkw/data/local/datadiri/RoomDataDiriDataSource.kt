@@ -77,7 +77,7 @@ class RoomDataDiriDataSource(
                 nama = it.nama,
                 jenisIdentitas = it.jenisIdentitas,
                 noIdentitas = it.noIdentitas ?: "",
-                negaraBekerja = it.negaraBekerja ?: "",
+                negaraBekerja = it.negaraBekerja,
                 alamatKerja = it.alamatKerja ?: "",
                 alamatIndo = it.alamatIndo ?: "",
                 noHp = it.noHp ?: "",

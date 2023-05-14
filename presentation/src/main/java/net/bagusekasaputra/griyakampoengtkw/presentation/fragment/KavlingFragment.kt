@@ -1,5 +1,6 @@
 package net.bagusekasaputra.griyakampoengtkw.presentation.fragment
 
+import android.annotation.SuppressLint
 import android.content.Intent
 import android.content.res.Configuration
 import android.os.Bundle
@@ -50,13 +51,12 @@ class KavlingFragment : Fragment() {
     private lateinit var fabAddKavling: FloatingActionButton
     private lateinit var fabAddBlock: FloatingActionButton
 
-    private var isAllFabsVisible = false
     private lateinit var kavlingRecyclerView: RecyclerView
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
         // Inflate the layout for this fragment
         binding = FragmentKavlingBinding.inflate(inflater, container, false)
 
@@ -162,39 +162,6 @@ class KavlingFragment : Fragment() {
             }
     }
 
-    private fun setupFloatingButtons() {
-        fabAddKavling.visibility = View.GONE
-        fabAddBlock.visibility = View.GONE
-
-        fabActions.shrink()
-
-        fabActions.setOnClickListener {
-            if (isAllFabsVisible) {
-                hideFabs()
-            } else {
-                showFabs()
-            }
-        }
-    }
-
-    private fun hideFabs() {
-        fabActions.shrink()
-
-        fabAddKavling.hide()
-        fabAddBlock.hide()
-
-        isAllFabsVisible = false
-    }
-
-    private fun showFabs() {
-        fabActions.extend()
-
-        fabAddKavling.show()
-        fabAddBlock.show()
-
-        isAllFabsVisible = true
-    }
-
     private fun setupBlockRecyclerview(blocks: List<Block>) {
         val adapter = BlockRecyclerAdapter(blocks) { position ->
             val selectedBlock = blocks[position].kode
@@ -220,7 +187,7 @@ class KavlingFragment : Fragment() {
     }
 
     private fun setupKavlingRecyclerView(kavlings: List<Kavling>) {
-        val adapter = KavlingRecyclerAdapter(requireContext(), kavlings,
+        val adapter = KavlingRecyclerAdapter(kavlings,
             onRecyclerItemClick = {
                 val intent = Intent(requireContext(), DetailActivity::class.java).apply {
                     putExtra(MainActivity.INTENT_KAVLING_KODE, kavlings[it].kode)
@@ -250,6 +217,7 @@ class KavlingFragment : Fragment() {
         Log.d("DEBUG_ME", "KavlingFragment: RecyclerViewKavling's State is $kavlingRecyclerState")
     }
 
+    @SuppressLint("SetTextI18n")
     private fun showAddBlockDialog() {
         val dialogBinding = DialogAddBlockBinding.inflate(layoutInflater)
 //        val addBlockDialog = AlertDialog.Builder(requireContext()).apply {
@@ -306,6 +274,7 @@ class KavlingFragment : Fragment() {
         }
     }
 
+    @SuppressLint("SetTextI18n")
     private fun showAddKavlingDialog() {
         val dialogBinding = DialogAddKavlingBinding.inflate(layoutInflater)
 //        val addKavlingDialog = AlertDialog.Builder(this).apply {
@@ -415,6 +384,7 @@ class KavlingFragment : Fragment() {
         }
     }
 
+    @SuppressLint("SetTextI18n")
     private fun showEditKavlingDialog(kavling: Kavling) {
         val dialogBinding = DialogEditKavlingBinding.inflate(layoutInflater)
 //        val editKavlingDialog = AlertDialog.Builder(requireContext()).apply {

@@ -1,3 +1,5 @@
+@file:Suppress("DEPRECATION")
+
 package net.bagusekasaputra.griyakampoengtkw.presentation.dialog
 
 import android.app.Dialog
@@ -131,7 +133,7 @@ class IncludeDataLamaRekapBesarDialog: DialogFragment() {
                     dialog.dismiss()
                 }
                 setNegativeButton("Cancel") { dialog, _ ->
-                    continuation.resume(emptyList<String>())
+                    continuation.resume(emptyList())
 
                     dialog.dismiss()
                 }

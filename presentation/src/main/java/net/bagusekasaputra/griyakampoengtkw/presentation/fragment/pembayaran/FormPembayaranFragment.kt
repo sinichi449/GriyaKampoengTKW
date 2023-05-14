@@ -6,7 +6,6 @@ import android.app.Activity
 import android.content.Intent
 import android.content.SharedPreferences
 import android.os.Bundle
-import android.util.Log
 import android.view.*
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
@@ -45,12 +44,13 @@ import java.io.File
 import java.util.*
 import javax.inject.Inject
 
+@Suppress("DEPRECATION")
 @SuppressLint("SetTextI18n")
 @AndroidEntryPoint
 class FormPembayaranFragment : Fragment() {
 
     companion object {
-        private const val WRITE_CSV_PERMISSION_REQUEST_CODE = 250
+//        private const val WRITE_CSV_PERMISSION_REQUEST_CODE = 250
     }
 
     private lateinit var binding: FragmentFormPembayaranBinding
@@ -104,9 +104,7 @@ class FormPembayaranFragment : Fragment() {
         }
 
     private val startStorageRequest =
-        registerForActivityResult(ActivityResultContracts.RequestMultiplePermissions()) { result ->
-
-        }
+        registerForActivityResult(ActivityResultContracts.RequestMultiplePermissions()) {}
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -493,9 +491,8 @@ class FormPembayaranFragment : Fragment() {
         dialogBinding.tvTitle.text = "Ubah Form"
         dialogBinding.apply {
             val mapTermin = getJenisPembayaranAndUrutan(pembayaran.termin)
-            val jenisPembayaran = mapTermin["jenis"]!!
 
-            when (jenisPembayaran) {
+            when (mapTermin["jenis"]!!) {
                 "ITJ" -> rbItj.isChecked = true
                 "DP" -> rbDp.isChecked = true
                 "Termin" -> rbTermin.isChecked = true
@@ -506,7 +503,7 @@ class FormPembayaranFragment : Fragment() {
             setText(mapTermin["urutan"])
         }
         dialogBinding.edtTanggal.setText(pembayaran.tanggal)
-        dialogBinding.edtJumlahUangDibayar.setText(pembayaran.jumlahUangDibayar.toString())
+        dialogBinding.edtJumlahUangDibayar.setText(pembayaran.jumlahUangDibayar)
         dialogBinding.edtKeteranganProgress.setText(pembayaran.keterangan)
 
         fun getPembayaranFromEdt(): Pembayaran? {
@@ -516,8 +513,8 @@ class FormPembayaranFragment : Fragment() {
                 Pembayaran(
                     termin = dialogBinding.edtTermin.text.toString().let { urutanTermin ->
                         if (dialogBinding.rbItj.isChecked) "ITJ $urutanTermin"
-                        else if (dialogBinding.rbDp.isChecked) "DP ${urutanTermin}"
-                        else if (dialogBinding.rbTermin.isChecked) "Termin ${urutanTermin}"
+                        else if (dialogBinding.rbDp.isChecked) "DP $urutanTermin"
+                        else if (dialogBinding.rbTermin.isChecked) "Termin $urutanTermin"
                         else "Termin 999" // this is ridiciously wrong
                     },
                     tanggal = dialogBinding.edtTanggal.text.toString(),
@@ -684,10 +681,10 @@ class FormPembayaranFragment : Fragment() {
      * This is clearing the pembayaran field: TableLayout, TvSisaBelumBayar,
      * TvTambahanLuas, and TvTotalHarga.
      */
-    private fun clearPembayaranField() {
-        binding.tvTambahanLuas?.text = "0"
-        binding.tvTotalHarga?.text = "0"
-    }
+//    private fun clearPembayaranField() {
+//        binding.tvTambahanLuas?.text = "0"
+//        binding.tvTotalHarga?.text = "0"
+//    }
 
     private fun showTerminSelectionButtonsDialog() {
         val hargaKavling = binding.tvHarga?.text.toString().let {
@@ -825,11 +822,13 @@ class FormPembayaranFragment : Fragment() {
             .show()
     }
 
+    @Deprecated("Deprecated in Java")
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
         inflater.inflate(R.menu.menu_pembayaran, menu)
         super.onCreateOptionsMenu(menu, inflater)
     }
 
+    @Deprecated("Deprecated in Java")
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         return when (item.itemId) {
             R.id.hapus_semua_pembayaran -> {
@@ -919,7 +918,7 @@ class FormPembayaranFragment : Fragment() {
                     onTerminClick = { selectedTermin ->
                         val imageTransport = imageViewModel.createImageTransport(
                             sendIntent = GriyaNodes.INTENT_FOTO_PEMBAYARAN,
-                            content = mapOf<String, String>(
+                            content = mapOf(
                                 Pair("kavlingKode", currentKavlingKode!!),
                                 Pair("termin", selectedTermin),
                             ),
@@ -1037,7 +1036,7 @@ class FormPembayaranFragment : Fragment() {
 
     @SuppressLint("ClickableViewAccessibility")
     private fun imgVisibilityOnClick(dialogView: AlertDialog, dialogBinding: DialogAddFormPembayaranBinding) {
-        dialogBinding.imgVisibility.setOnTouchListener { view, motionEvent ->
+        dialogBinding.imgVisibility.setOnTouchListener { _, motionEvent ->
             if (motionEvent.action == MotionEvent.ACTION_DOWN) {
                 dialogBinding.root.alpha = 0.0f
                 dialogView.window?.setBackgroundDrawableResource(android.R.color.transparent)

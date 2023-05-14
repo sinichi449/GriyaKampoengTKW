@@ -8,11 +8,8 @@ import net.bagusekasaputra.griyakampoengtkw.domain.entity.Pembayaran
 import net.bagusekasaputra.griyakampoengtkw.presentation.util.GriyaNodes.Companion.LOG_TAG
 import org.apache.poi.hssf.usermodel.HSSFFont
 import org.apache.poi.hssf.usermodel.HSSFWorkbook
-import org.apache.poi.ss.usermodel.Cell
 import org.apache.poi.ss.usermodel.CellStyle
 import org.apache.poi.ss.usermodel.Font
-import org.apache.poi.ss.usermodel.IndexedColors
-import org.apache.poi.ss.usermodel.Row
 import org.apache.poi.ss.usermodel.Sheet
 import org.apache.poi.ss.usermodel.Workbook
 import org.apache.poi.ss.util.CellRangeAddress
@@ -21,13 +18,13 @@ import java.io.FileOutputStream
 import java.io.IOException
 
 class ExcelExporter(
-    private val blockKode: String,
-    private val kavlingNumber: String,
-    private val namaPembayar: String,
-    private val hargaKavling: String,
-    private val tambahLuasan: String,
-    private val totalHarga: String,
-    private val sisaBelumTerbayar: String,
+//    private val blockKode: String,
+//    private val kavlingNumber: String,
+//    private val namaPembayar: String,
+//    private val hargaKavling: String,
+//    private val tambahLuasan: String,
+//    private val totalHarga: String,
+//    private val sisaBelumTerbayar: String,
     private val dataPembayaran: List<Pembayaran>,
 ) {
 
@@ -45,7 +42,7 @@ class ExcelExporter(
 
             isSuccess = true
 
-            Toast.makeText(ctx, "File saved to: ${file.toString()}", Toast.LENGTH_SHORT).show()
+            Toast.makeText(ctx, "File saved to: $file", Toast.LENGTH_SHORT).show()
         } catch (e: IOException) {
             Log.d(LOG_TAG, "Error writing: ${e.message}")
             Toast.makeText(ctx, "Error writing file: ${e.message}", Toast.LENGTH_LONG).show()
@@ -72,20 +69,20 @@ class ExcelExporter(
 
         val headerTitlePosition = 0
         val subtitleHeaderPosition = 1
-        val hargaRowPosition = 2
-        val tambahLuasanRowPosition = 3
-        val sisaBelumTerbayarRowPosition = HashMap<String, Int>().apply {
-            put("header_row", 3)
-            put("header_column", 2)
-            put("content_row", 4)
-            put("content_column", 2)
-        }
-        val totalHargaPosition = HashMap<String, Int>().apply {
-            put("content_row", 4)
-            put("content_column", 1)
-        }
+//        val hargaRowPosition = 2
+//        val tambahLuasanRowPosition = 3
+//        val sisaBelumTerbayarRowPosition = HashMap<String, Int>().apply {
+//            put("header_row", 3)
+//            put("header_column", 2)
+//            put("content_row", 4)
+//            put("content_column", 2)
+//        }
+//        val totalHargaPosition = HashMap<String, Int>().apply {
+//            put("content_row", 4)
+//            put("content_column", 1)
+//        }
         val dataRowHeaderPosition = 6
-        val dataRowCellsPosition = 7
+//        val dataRowCellsPosition = 7
 
 
         val mergedCellSize = headers.size-1
@@ -98,19 +95,19 @@ class ExcelExporter(
          */
         val titleRange = CellRangeAddress(headerTitlePosition, headerTitlePosition, 0, mergedCellSize)
         pembayaranSheet.addMergedRegion(titleRange)
-        val titleHeader = pembayaranSheet.createRow(headerTitlePosition)
-        val titleCell = titleHeader.createCell(0).apply {
-            val cellStyle = workbook.createCellStyle()
-            val fontStyle = workbook.createFont()
-
-            fontStyle.boldweight = Font.BOLDWEIGHT_BOLD
-            cellStyle.alignment = CellStyle.ALIGN_CENTER
-
-            cellStyle.setFont(fontStyle)
-
-            this.cellStyle = cellStyle
-            this.setCellValue("FORM PEMBAYARAN GRIYA KAMPOENG TKW BLOK. $blockKode KAV.$kavlingNumber")
-        }
+//        val titleHeader = pembayaranSheet.createRow(headerTitlePosition)
+//        val titleCell = titleHeader.createCell(0).apply {
+//            val cellStyle = workbook.createCellStyle()
+//            val fontStyle = workbook.createFont()
+//
+//            fontStyle.boldweight = Font.BOLDWEIGHT_BOLD
+//            cellStyle.alignment = CellStyle.ALIGN_CENTER
+//
+//            cellStyle.setFont(fontStyle)
+//
+//            this.cellStyle = cellStyle
+//            this.setCellValue("FORM PEMBAYARAN GRIYA KAMPOENG TKW BLOK. $blockKode KAV.$kavlingNumber")
+//        }
 
 
         /**
@@ -118,90 +115,90 @@ class ExcelExporter(
          */
         val subtitleRange = CellRangeAddress(subtitleHeaderPosition, subtitleHeaderPosition, 0, mergedCellSize)
         pembayaranSheet.addMergedRegion(subtitleRange)
-        val subtitleRow = pembayaranSheet.createRow(subtitleHeaderPosition)
-        val subtitleCell = subtitleRow.createCell(0).apply {
-            val cellStyle = workbook.createCellStyle()
-
-            cellStyle.alignment = CellStyle.ALIGN_CENTER
-
-            this.cellStyle = cellStyle
-            this.setCellValue(namaPembayar.uppercase())
-        }
+//        val subtitleRow = pembayaranSheet.createRow(subtitleHeaderPosition)
+//        val subtitleCell = subtitleRow.createCell(0).apply {
+//            val cellStyle = workbook.createCellStyle()
+//
+//            cellStyle.alignment = CellStyle.ALIGN_CENTER
+//
+//            this.cellStyle = cellStyle
+//            this.setCellValue(namaPembayar.uppercase())
+//        }
 
 
         /**
          * Harga
          */
-        val hargaRow = pembayaranSheet.createRow(hargaRowPosition).apply {
-            // Harga title
-            this.createCell(0).apply {
-                this.setCellValue("Harga")
-            }
-            // Harga value
-            this.createCell(1).apply {
-                this.setCellValue(hargaKavling)
-            }
-        }
+//        val hargaRow = pembayaranSheet.createRow(hargaRowPosition).apply {
+//            // Harga title
+//            this.createCell(0).apply {
+//                this.setCellValue("Harga")
+//            }
+//            // Harga value
+//            this.createCell(1).apply {
+//                this.setCellValue(hargaKavling)
+//            }
+//        }
 
 
         /**
          * Tambah Luasan
          */
-        val tambahLuasanRow = pembayaranSheet.createRow(tambahLuasanRowPosition).apply {
-            // Tambah Luasan title
-            this.createCell(0).apply {
-                this.setCellValue("Tambah Luasan")
-            }
-            // Tambah Luasan value
-            this.createCell(1).apply {
-                val cellStyle = workbook.createCellStyle()
-                cellStyle.borderBottom = CellStyle.BORDER_THIN
-
-                this.cellStyle = cellStyle
-
-                this.setCellValue(tambahLuasan)
-            }
-
-            /**
-             * Sisa belum terbayar header
-             */
-            this.createCell(sisaBelumTerbayarRowPosition["header_column"]!!).apply {
-                val fontStyle = workbook.createFont().apply {
-                    boldweight = HSSFFont.BOLDWEIGHT_BOLD
-                }
-                val cellStyle = workbook.createCellStyle().apply {
-                    alignment = CellStyle.ALIGN_CENTER
-                    setFont(fontStyle)
-                }
-
-                this.cellStyle = cellStyle
-                this.setCellValue("Sisa blm terbayar")
-            }
-        }
+//        val tambahLuasanRow = pembayaranSheet.createRow(tambahLuasanRowPosition).apply {
+//            // Tambah Luasan title
+//            this.createCell(0).apply {
+//                this.setCellValue("Tambah Luasan")
+//            }
+//            // Tambah Luasan value
+//            this.createCell(1).apply {
+//                val cellStyle = workbook.createCellStyle()
+//                cellStyle.borderBottom = CellStyle.BORDER_THIN
+//
+//                this.cellStyle = cellStyle
+//
+//                this.setCellValue(tambahLuasan)
+//            }
+//
+//            /**
+//             * Sisa belum terbayar header
+//             */
+//            this.createCell(sisaBelumTerbayarRowPosition["header_column"]!!).apply {
+//                val fontStyle = workbook.createFont().apply {
+//                    boldweight = HSSFFont.BOLDWEIGHT_BOLD
+//                }
+//                val cellStyle = workbook.createCellStyle().apply {
+//                    alignment = CellStyle.ALIGN_CENTER
+//                    setFont(fontStyle)
+//                }
+//
+//                this.cellStyle = cellStyle
+//                this.setCellValue("Sisa blm terbayar")
+//            }
+//        }
 
 
         /**
          * Total
          */
-        val totalRow = pembayaranSheet.createRow(totalHargaPosition["content_row"]!!).apply {
-            // Total value
-            this.createCell(totalHargaPosition["content_column"]!!).apply {
-                this.setCellValue(totalHarga)
-            }
-
-            /**
-             * Sisa belum terbayar value
-             */
-            this.createCell(sisaBelumTerbayarRowPosition["content_column"]!!).apply {
-                val cellStyle = workbook.createCellStyle().apply {
-                    alignment = CellStyle.ALIGN_RIGHT
-                    fillBackgroundColor = IndexedColors.DARK_YELLOW.index
-                }
-
-                this.cellStyle = cellStyle
-                this.setCellValue(sisaBelumTerbayar)
-            }
-        }
+//        val totalRow = pembayaranSheet.createRow(totalHargaPosition["content_row"]!!).apply {
+//            // Total value
+//            this.createCell(totalHargaPosition["content_column"]!!).apply {
+//                this.setCellValue(totalHarga)
+//            }
+//
+//            /**
+//             * Sisa belum terbayar value
+//             */
+//            this.createCell(sisaBelumTerbayarRowPosition["content_column"]!!).apply {
+//                val cellStyle = workbook.createCellStyle().apply {
+//                    alignment = CellStyle.ALIGN_RIGHT
+//                    fillBackgroundColor = IndexedColors.DARK_YELLOW.index
+//                }
+//
+//                this.cellStyle = cellStyle
+//                this.setCellValue(sisaBelumTerbayar)
+//            }
+//        }
 
 
         /**
@@ -220,15 +217,15 @@ class ExcelExporter(
         /**
          * Pembayaran List Data
          */
-        dataPembayaran.forEachIndexed { index, pembayaran ->
-            val dataRow = pembayaranSheet.createRow(index + dataRowCellsPosition)
+        dataPembayaran.forEachIndexed { _, _ ->
+//            val dataRow = pembayaranSheet.createRow(index + dataRowCellsPosition)
 
-            val terminCell = createDataCell(workbook, dataRow, 0, pembayaran.termin)
-            val tanggalCell = createDataCell(workbook, dataRow, 1, pembayaran.tanggal)
-            val jumlahUangDibayarCell = createDataCell(workbook, dataRow, 2, pembayaran.jumlahUangDibayar)
-            val totalUangMasukCell = createDataCell(workbook, dataRow, 3, pembayaran.totalUangMasuk)
-            val persentaseCell = createDataCell(workbook, dataRow, 4, "${pembayaran.presentase.toString()}%")
-            val keteranganCell = createDataCell(workbook, dataRow, 5, pembayaran.keterangan)
+//            val terminCell = createDataCell(workbook, dataRow, 0, pembayaran.termin)
+//            val tanggalCell = createDataCell(workbook, dataRow, 1, pembayaran.tanggal)
+//            val jumlahUangDibayarCell = createDataCell(workbook, dataRow, 2, pembayaran.jumlahUangDibayar)
+//            val totalUangMasukCell = createDataCell(workbook, dataRow, 3, pembayaran.totalUangMasuk)
+//            val persentaseCell = createDataCell(workbook, dataRow, 4, "${pembayaran.presentase.toString()}%")
+//            val keteranganCell = createDataCell(workbook, dataRow, 5, pembayaran.keterangan)
         }
 
 
@@ -264,34 +261,34 @@ class ExcelExporter(
         return headerCellStyle
     }
 
-    private fun getDataCellStyle(workbook: Workbook, position: Int): CellStyle {
-        val dataFont: Font = workbook.createFont().apply {
-            this.fontName = "Arial"
-            this.color = IndexedColors.BLACK.index
-        }
+//    private fun getDataCellStyle(workbook: Workbook, position: Int): CellStyle {
+//        val dataFont: Font = workbook.createFont().apply {
+//            this.fontName = "Arial"
+//            this.color = IndexedColors.BLACK.index
+//        }
+//
+//        val dataCellStyle: CellStyle = workbook.createCellStyle().apply {
+//            this.setFont(dataFont)
+//            setAllBorder(this, CellStyle.BORDER_THIN)
+//
+//            when (position) {
+//                0, 1, 4 -> this.alignment = CellStyle.ALIGN_CENTER
+//                2, 3 -> this.alignment = CellStyle.ALIGN_RIGHT
+//                5 -> this.alignment = CellStyle.ALIGN_LEFT
+//            }
+//        }
+//
+//        return dataCellStyle
+//    }
 
-        val dataCellStyle: CellStyle = workbook.createCellStyle().apply {
-            this.setFont(dataFont)
-            setAllBorder(this, CellStyle.BORDER_THIN)
-
-            when (position) {
-                0, 1, 4 -> this.alignment = CellStyle.ALIGN_CENTER
-                2, 3 -> this.alignment = CellStyle.ALIGN_RIGHT
-                5 -> this.alignment = CellStyle.ALIGN_LEFT
-            }
-        }
-
-        return dataCellStyle
-    }
-
-    private fun createDataCell(workbook: Workbook, dataRow: Row, position: Int, cellValue: String): Cell {
-        return dataRow.createCell(position).apply {
-            this.cellStyle = getDataCellStyle(workbook, position)
-
-            this.setCellValue(cellValue)
-
-        }
-    }
+//    private fun createDataCell(workbook: Workbook, dataRow: Row, position: Int, cellValue: String): Cell {
+//        return dataRow.createCell(position).apply {
+//            this.cellStyle = getDataCellStyle(workbook, position)
+//
+//            this.setCellValue(cellValue)
+//
+//        }
+//    }
 
     private fun setAllBorder(cellStyle: CellStyle, borderStyle: Short) {
         cellStyle.borderTop = borderStyle
