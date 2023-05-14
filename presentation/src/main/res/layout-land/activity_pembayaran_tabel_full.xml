@@ -17,7 +17,22 @@
         app:show_horizontal_separator="true"
         app:show_vertical_separator="true"
         app:allow_click_inside_cell="true"
-        android:layout_marginHorizontal="4dp"/>
+        android:layout_marginHorizontal="4dp"
+        android:visibility="gone"/>
+
+    <com.evrencoskun.tableview.TableView
+        android:id="@+id/columnHeader_tabel_bulanan_pembayaran"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/table_pembayaran_column_header_height"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:column_header_height="@dimen/table_pembayaran_column_header_height"
+        app:row_header_width="@dimen/table_general_numeric_row_header_width"
+        app:separator_color="@color/black"
+        app:show_horizontal_separator="true"
+        app:show_vertical_separator="true"
+        android:visibility="gone"/>
 
     <androidx.core.widget.NestedScrollView
         android:layout_width="match_parent"
@@ -47,9 +62,10 @@
                 android:layout_height="wrap_content"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/navHostFragment_full_pembayaran"
+                app:layout_constraintBottom_toBottomOf="parent"
                 android:layout_marginTop="36dp"
                 android:layout_marginEnd="16dp"
-                android:layout_marginBottom="16dp"
+                android:layout_marginBottom="240dp"
                 style="@style/NormalDialogButton"
                 android:text="Per Bulan"
                 android:drawableRight="@drawable/baseline_navigate_next_24"

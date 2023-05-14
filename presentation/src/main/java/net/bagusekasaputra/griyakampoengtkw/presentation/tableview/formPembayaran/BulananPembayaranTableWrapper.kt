@@ -16,14 +16,13 @@ class BulananPembayaranTableWrapper(
 ): AbstractTableWrapper(tablePembayaranBulanan) {
 
     private val separatorKelunasan = "<>"
-
-    private fun getNomorAndKelunasan(rowHeaderItem: RowHeader?): Pair<String, String> {
-        val nomorAndKelunasan = rowHeaderItem?.getText()?.split(separatorKelunasan)
-        val nomor = nomorAndKelunasan?.get(0).toString()
-        val kelunasan = nomorAndKelunasan?.get(1).toString()
-
-        return Pair(nomor, kelunasan)
-    }
+    private val columnHeaderWidths = listOf(
+        Pair(BULAN, 250),
+        Pair(UANG_MASUK, 300),
+        Pair(TUNGGAKAN, 300),
+        Pair(ALOKASI, 300),
+        Pair(KELUNASAN, 250),
+    )
 
     init {
         val background = R.color.purple_500
@@ -71,6 +70,8 @@ class BulananPembayaranTableWrapper(
                 }
             }
         }
+
+        setWidthColumnHeader(columnHeaderWidths)
     }
 
     companion object {
@@ -120,6 +121,14 @@ class BulananPembayaranTableWrapper(
         }
 
         return cellItems
+    }
+
+    private fun getNomorAndKelunasan(rowHeaderItem: RowHeader?): Pair<String, String> {
+        val nomorAndKelunasan = rowHeaderItem?.getText()?.split(separatorKelunasan)
+        val nomor = nomorAndKelunasan?.get(0).toString()
+        val kelunasan = nomorAndKelunasan?.get(1).toString()
+
+        return Pair(nomor, kelunasan)
     }
 
     private data class PbColumnHeader(val columnHeaderText: String): ColumnHeader {

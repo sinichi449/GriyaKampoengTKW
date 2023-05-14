@@ -8,10 +8,13 @@ import android.widget.Toast
 import androidx.activity.viewModels
 import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
+import net.bagusekasaputra.griyakampoengtkw.domain.entity.BaselinePembayaran
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.Pembayaran
+import net.bagusekasaputra.griyakampoengtkw.domain.entity.pembayaran.PembayaranBulanan
 import net.bagusekasaputra.griyakampoengtkw.presentation.R
 import net.bagusekasaputra.griyakampoengtkw.presentation.custom.TabelPembayaranNavHelper
 import net.bagusekasaputra.griyakampoengtkw.presentation.databinding.ActivityPembayaranTabelFullBinding
+import net.bagusekasaputra.griyakampoengtkw.presentation.tableview.formPembayaran.BulananPembayaranTableWrapper
 import net.bagusekasaputra.griyakampoengtkw.presentation.tableview.formPembayaran.FullPembayaranTableWrapper
 import net.bagusekasaputra.griyakampoengtkw.presentation.viewmodel.FormPembayaranViewModel
 import net.bagusekasaputra.griyakampoengtkw.presentation.viewmodel.FormPembayaranViewModel.TablePembayaranType
@@ -61,28 +64,30 @@ class PembayaranTabelFullActivity : AppCompatActivity() {
                         binding.btnSwitchTabel?.text = "Per Bulan"
 
                         binding.columnHeaderTabelFullPembayaran?.apply {
-                            visibility = View.VISIBLE
+                            val emptyPembayaran = Pembayaran("ITJ 1", "01/01/1979", "0", "0", 0.0, "0", "", 0L)
 
-                            val emptyPembayaran = Pembayaran(
-                                "ITJ 1",
-                                "01/01/1979",
-                                "0",
-                                "0",
-                                0.0,
-                                "0",
-                                "",
-                                0L
-                            )
                             FullPembayaranTableWrapper(this, listOf(emptyPembayaran))
-                                .setAdditionalColumnHeaderActions { columnHeaderViewHolder, _, _ ->
-                                    columnHeaderViewHolder.container.layoutParams.height = 0
-                                }
                                 .createTable()
+
+                            visibility = View.VISIBLE
                         }
+                        binding.columnHeaderTabelBulananPembayaran?.visibility = View.GONE
                     }
                     TablePembayaranType.PEMBAYARAN_BULANAN -> {
                         binding.btnSwitchTabel?.text = "Semua"
+
                         binding.columnHeaderTabelFullPembayaran?.visibility = View.GONE
+                        binding.columnHeaderTabelBulananPembayaran?.apply {
+                            val emptyBaselinePembayaran = BaselinePembayaran(kavling ?: "D1", 48, 0, 1)
+                            val emptyPembayaranBulanans = listOf(
+                                PembayaranBulanan(kavling ?: "D1", 1, 1, emptyList(), emptyBaselinePembayaran)
+                            )
+
+                            BulananPembayaranTableWrapper(this, emptyPembayaranBulanans)
+                                .createTable()
+
+                            visibility = View.VISIBLE
+                        }
                     }
                 }
             }
