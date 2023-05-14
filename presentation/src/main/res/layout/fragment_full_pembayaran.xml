@@ -56,7 +56,6 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toStartOf="@id/guideline_sisa_total_pembayaran"
             android:text="Sisa Wkt. Angsuran"
-            android:layout_marginTop="8dp"
             style="@style/TextAppearance.MaterialComponents.Headline6"
             android:textSize="@dimen/form_pembayaran_title_text_size"/>
 
@@ -68,6 +67,7 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="@id/tvInfo_sisa_waktu_angsuran"
             app:layout_constraintBottom_toBottomOf="@id/tvInfo_sisa_waktu_angsuran"
+            android:layout_marginTop="8dp"
             android:layout_marginStart="16dp"
             android:layout_marginEnd="16dp"
             android:gravity="end"
