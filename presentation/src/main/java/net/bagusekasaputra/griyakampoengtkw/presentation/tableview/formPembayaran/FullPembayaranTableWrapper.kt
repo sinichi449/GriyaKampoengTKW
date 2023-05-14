@@ -41,9 +41,8 @@ class FullPembayaranTableWrapper(
             val sudahIsiFotoPembayaran = parseRowHeader?.get(2)?.toBoolean()
 
             val viewHolder = rowHeaderViewHolder as GktTableViewAdapter.MyDoubleRowHeaderViewHolder
-            val backgroundColor = if (sudahIsiFotoPembayaran == true)
-                com.evrencoskun.tableview.R.color.table_view_default_selected_background_color
-                else com.evrencoskun.tableview.R.color.table_view_default_unselected_background_color
+            val backgroundColor = if (sudahIsiFotoPembayaran == true) 
+                R.color.table_selected_color else R.color.white
 
             viewHolder.containerBackground = backgroundColor
             viewHolder.rowHeadersTextColor = R.color.black
