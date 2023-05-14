@@ -305,8 +305,8 @@ object RepositoryModule {
      * Database Use
      */
     @Provides
-    fun provideDatabaseUserRepository(): DatabaseUserRepository {
-        return DatabaseUserRepositoryImpl()
+    fun provideDatabaseUserRepository(remoteDatabaseUserDataSource: RemoteDatabaseUserDataSource): DatabaseUserRepository {
+        return DatabaseUserRepositoryImpl(remoteDatabaseUserDataSource)
     }
 
     /**

@@ -33,6 +33,7 @@ import net.bagusekasaputra.griyakampoengtkw.presentation.R
 import net.bagusekasaputra.griyakampoengtkw.presentation.activities.FullImageActivity
 import net.bagusekasaputra.griyakampoengtkw.presentation.databinding.DialogTambahDataDiriBinding
 import net.bagusekasaputra.griyakampoengtkw.presentation.databinding.FragmentDataDiriBinding
+import net.bagusekasaputra.griyakampoengtkw.presentation.util.Consts
 import net.bagusekasaputra.griyakampoengtkw.presentation.util.DialogUtil
 import net.bagusekasaputra.griyakampoengtkw.presentation.util.GriyaNodes
 import net.bagusekasaputra.griyakampoengtkw.presentation.util.InputUtil
@@ -56,21 +57,6 @@ class DataDiriFragment : Fragment() {
 
     @Inject
     lateinit var sharedPrefs: SharedPreferences
-
-    private val negaraBekerjaList = ArrayList<String>().apply {
-        add("Hongkong")
-        add("Macau")
-        add("Taiwan")
-        add("Jepang")
-        add("Singapore")
-        add("Malaysia")
-        add("Arab Saudi")
-        add("Abu Dhabi")
-        add("Bangladesh")
-        add("Kamboja")
-        add("Brunei Darussalam")
-        add("Korea")
-    }
 
     private fun createImagePickerResultLauncher(onResultOk: (uri: Uri?) -> Unit): ActivityResultLauncher<Intent> {
         return registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
@@ -481,7 +467,7 @@ class DataDiriFragment : Fragment() {
 
     private fun setupSpinner(dialogBinding: DialogTambahDataDiriBinding) {
         arrayAdapter = ArrayAdapter<String>(
-            requireContext(), android.R.layout.simple_spinner_dropdown_item, negaraBekerjaList
+            requireContext(), android.R.layout.simple_spinner_dropdown_item, Consts.negaraBekerjaList
         )
 
         dialogBinding.spinnerNegaraBekerja.adapter = arrayAdapter

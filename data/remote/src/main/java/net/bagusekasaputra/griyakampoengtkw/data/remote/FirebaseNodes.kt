@@ -17,6 +17,7 @@ object FirebaseNodes {
     const val METADATA_ROOT = "metadata"
     const val BASELINE_PEMBAYARAN = "baselinePembayaran"
     const val INDEN_BOOKING = "indenBooking"
+    const val DATABASE_USER = "databaseUser"
     const val BACKUPS = "backups"
     const val MAINTENTANCE = "maintenance"
 

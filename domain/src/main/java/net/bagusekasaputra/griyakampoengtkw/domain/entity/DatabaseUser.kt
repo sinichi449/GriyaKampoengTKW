@@ -3,15 +3,14 @@ package net.bagusekasaputra.griyakampoengtkw.domain.entity
 import java.util.Date
 
 data class DatabaseUser(
-    var id: Long = 0L,
     val nama: String,
     val tanggal: Date,
     val noHp: String = "",
-    private val _usernameTiktok: String = "",
+    val _usernameTiktok: String = "",
     val lokasiIndo: String,
     val negaraBekerja: String,
     val keterangan: String = "",
-    var lastModified: Long,
+    var lastModified: Long = System.currentTimeMillis(),
 ) {
     val usernameTiktok = "@$_usernameTiktok"
 

@@ -15,6 +15,7 @@ import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.block.GetAllBloc
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.catatanPembayaran.GetCatatanPembayaranAsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.dataDiri.GetDataDiriAsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.databaseUser.GetAllDatabaseUserAsyncUseCase
+import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.databaseUser.InsertDatabaseUserAsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.feeMarketing.GetFeeMarketingByKavlingKodeAsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.fotoPembayaran.AddFotoPembayaranAsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.fotoPembayaran.DeleteFotoPembayaranAsyncUseCase
@@ -480,6 +481,11 @@ object UseCaseModule {
     @Provides
     fun provideGetAllDatabaseUserUseCase(databaseUserRepository: DatabaseUserRepository): GetAllDatabaseUserAsyncUseCase {
         return GetAllDatabaseUserAsyncUseCase(databaseUserRepository)
+    }
+
+    @Provides
+    fun provideInsertDatabaseUserUseCase(databaseUserRepository: DatabaseUserRepository): InsertDatabaseUserAsyncUseCase {
+        return InsertDatabaseUserAsyncUseCase(databaseUserRepository)
     }
 
 

@@ -7,4 +7,6 @@ interface DatabaseUserRepository {
 
     fun getAll(): Flow<Result<List<DatabaseUser>?>>
 
+    fun insert(databaseUser: DatabaseUser): Flow<Result<Nothing?>>
+
 }

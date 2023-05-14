@@ -9,6 +9,7 @@ import net.bagusekasaputra.griyakampoengtkw.data.model.BiayaMarketingModel
 import net.bagusekasaputra.griyakampoengtkw.data.model.BlockModel
 import net.bagusekasaputra.griyakampoengtkw.data.model.CatatanPembayaranModel
 import net.bagusekasaputra.griyakampoengtkw.data.model.DataDiriModel
+import net.bagusekasaputra.griyakampoengtkw.data.model.DatabaseUserModel
 import net.bagusekasaputra.griyakampoengtkw.data.model.FeeMarketingModel
 import net.bagusekasaputra.griyakampoengtkw.data.model.FotoPembayaranModel
 import net.bagusekasaputra.griyakampoengtkw.data.model.HargaKavlingModel
@@ -28,6 +29,7 @@ import net.bagusekasaputra.griyakampoengtkw.domain.entity.BiayaMarketing
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.Block
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.CatatanPembayaran
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.DataDiri
+import net.bagusekasaputra.griyakampoengtkw.domain.entity.DatabaseUser
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.FeeMarketing
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.FotoPembayaran
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.HargaKavling
@@ -427,4 +429,39 @@ object MyObjectMapper {
             )
         }
     }
+
+
+    /**
+     * Database User
+     */
+    fun mapDatabaseUser(model: DatabaseUserModel): DatabaseUser {
+        return model.let {
+            DatabaseUser(
+                nama = it.nama,
+                tanggal = it.tanggal.toDate(),
+                noHp = it.noHp,
+                _usernameTiktok = it.usernameTiktok,
+                lokasiIndo = it.lokasiIndo,
+                negaraBekerja = it.negaraBekerja,
+                keterangan = it.keterangan,
+                lastModified = it.lastModified,
+            )
+        }
+    }
+
+    fun mapDatabaseUser(databaseUser: DatabaseUser): DatabaseUserModel {
+        return databaseUser.let {
+            DatabaseUserModel(
+                nama = it.nama,
+                tanggal = it.tanggal.toSlashedString(),
+                noHp = it.noHp,
+                usernameTiktok = it._usernameTiktok,
+                lokasiIndo = it.lokasiIndo,
+                negaraBekerja = it.negaraBekerja,
+                keterangan = it.keterangan,
+                lastModified = it.lastModified,
+            )
+        }
+    }
+
 }

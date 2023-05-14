@@ -12,6 +12,7 @@ import com.evrencoskun.tableview.listener.ITableViewListener
 import dagger.hilt.android.AndroidEntryPoint
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.DatabaseUser
 import net.bagusekasaputra.griyakampoengtkw.presentation.databinding.FragmentDatabaseUserBinding
+import net.bagusekasaputra.griyakampoengtkw.presentation.dialog.DatabaseUserDialog
 import net.bagusekasaputra.griyakampoengtkw.presentation.tableview.DatabaseUserTableWrapper
 import net.bagusekasaputra.griyakampoengtkw.presentation.util.UiUtils
 import net.bagusekasaputra.griyakampoengtkw.presentation.viewmodel.DatabaseUserViewModel
@@ -42,7 +43,8 @@ class DatabaseUserFragment : Fragment() {
         }
 
         binding.fabAddUser.setOnClickListener {
-            // TODO
+            DatabaseUserDialog(null)
+                .show(childFragmentManager, null)
         }
     }
 
