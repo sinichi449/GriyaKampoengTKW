@@ -68,13 +68,6 @@ class FullPembayaranFragment : Fragment() {
     }
 
     private fun setTablePembayaran(pembayarans: List<Pembayaran>) {
-        val widthColumnHeaders = listOf(
-            Pair(FullPembayaranTableWrapper.TANGGAL, 250),
-            Pair(FullPembayaranTableWrapper.UANG_DIBAYAR, 350),
-            Pair(FullPembayaranTableWrapper.TOTAL, 350),
-            Pair(FullPembayaranTableWrapper.PERSENTASE, 250),
-            Pair(FullPembayaranTableWrapper.KETERANGAN_PROGRESS, 500),
-        )
         val listener = object : ITableViewListener {
             override fun onCellClicked(cellView: RecyclerView.ViewHolder, column: Int, row: Int) {
                 if (column == FullPembayaranTableWrapper.KETERANGAN_PROGRESS) {
@@ -144,7 +137,6 @@ class FullPembayaranFragment : Fragment() {
 
         FullPembayaranTableWrapper(binding.tableFormPembayaran, pembayarans)
             .setTableListener(listener)
-            .setWidthColumnHeader(widthColumnHeaders)
             .createTable()
     }
 }

@@ -1,38 +1,62 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.core.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
-    <androidx.constraintlayout.widget.ConstraintLayout
+    <com.evrencoskun.tableview.TableView
+        android:id="@+id/columnHeader_tabel_full_pembayaran"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="@dimen/table_pembayaran_column_header_height"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:column_header_height="@dimen/table_pembayaran_column_header_height"
+        app:row_header_width="@dimen/table_general_double_row_header_width"
+        app:separator_color="@color/black"
+        app:show_horizontal_separator="true"
+        app:show_vertical_separator="true"
+        app:allow_click_inside_cell="true"
+        android:layout_marginHorizontal="4dp"/>
 
-        <androidx.fragment.app.FragmentContainerView
-            android:id="@+id/navHostFragment_full_pembayaran"
-            android:name="androidx.navigation.fragment.NavHostFragment"
+    <androidx.core.widget.NestedScrollView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/columnHeader_tabel_full_pembayaran">
+
+        <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            app:defaultNavHost="true"
-            app:navGraph="@navigation/nav_graph_tabel_pembayaran"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="parent"/>
+            android:layout_height="wrap_content">
 
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/btn_switch_tabel"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/navHostFragment_full_pembayaran"
-            android:layout_marginTop="36dp"
-            android:layout_marginEnd="16dp"
-            android:layout_marginBottom="16dp"
-            style="@style/NormalDialogButton"
-            android:text="Per Bulan"
-            android:drawableRight="@drawable/baseline_navigate_next_24"
-            android:drawableTint="@color/white"/>
+            <androidx.fragment.app.FragmentContainerView
+                android:id="@+id/navHostFragment_full_pembayaran"
+                android:name="androidx.navigation.fragment.NavHostFragment"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:defaultNavHost="true"
+                app:navGraph="@navigation/nav_graph_tabel_pembayaran"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent"/>
 
-    </androidx.constraintlayout.widget.ConstraintLayout>
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btn_switch_tabel"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/navHostFragment_full_pembayaran"
+                android:layout_marginTop="36dp"
+                android:layout_marginEnd="16dp"
+                android:layout_marginBottom="16dp"
+                style="@style/NormalDialogButton"
+                android:text="Per Bulan"
+                android:drawableRight="@drawable/baseline_navigate_next_24"
+                android:drawableTint="@color/white"/>
 
-</androidx.core.widget.NestedScrollView>
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+    </androidx.core.widget.NestedScrollView>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

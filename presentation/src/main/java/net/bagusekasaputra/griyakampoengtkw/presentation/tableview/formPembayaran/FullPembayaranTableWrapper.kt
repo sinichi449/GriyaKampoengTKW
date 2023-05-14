@@ -15,9 +15,18 @@ class FullPembayaranTableWrapper(
 
     private val cornerSeparator = "<>"
     private val cornerTitle = "Termin"
+    var widthColumnHeaders = listOf(
+        Pair(TANGGAL, 250),
+        Pair(UANG_DIBAYAR, 350),
+        Pair(TOTAL, 350),
+        Pair(PERSENTASE, 250),
+        Pair(KETERANGAN_PROGRESS, 500),
+    )
 
     init {
         useDoubleCorner(cornerTitle, cornerSeparator)
+
+        setWidthColumnHeader(widthColumnHeaders)
 
         setAdditionalCellActions { cellViewHolder: GktTableViewAdapter.MyCellViewHolder, _: CellItem?, column: Int, _: Int ->
             when (column) {
