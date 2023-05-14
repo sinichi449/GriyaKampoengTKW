@@ -16,7 +16,6 @@ import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.catatanPembayara
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.dataDiri.GetDataDiriAsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.feeMarketing.GetFeeMarketingByKavlingKodeAsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.hargaKavling.GetHargaKavlingAsyncUseCase
-import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.pembayaran.GetAllPembayaranAsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.*
 import net.bagusekasaputra.griyakampoengtkw.domain.usecase.biayaMarketing.AddBiayaMarketingUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.usecase.biayaMarketing.DeleteAllBiayaMarketingUseCase
@@ -31,13 +30,9 @@ import net.bagusekasaputra.griyakampoengtkw.domain.usecase.feeMarketing.DeleteFe
 import net.bagusekasaputra.griyakampoengtkw.domain.usecase.feeMarketing.UpdateFeeMarketingUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.usecase.hargakavling.AddHargaKavlingUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.usecase.pembayaran.AddPembayaranUseCase
-import net.bagusekasaputra.griyakampoengtkw.domain.usecase.pembayaran.DeleteAllPembayaranUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.usecase.pembayaran.DeletePembayaranByTerminUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.usecase.pembayaran.UpdatePembayaranUseCase
 import net.bagusekasaputra.griyakampoengtkw.presentation.logEvent
-import net.bagusekasaputra.griyakampoengtkw.presentation.tableview.formPembayaran.PembayaranCell
-import net.bagusekasaputra.griyakampoengtkw.presentation.tableview.formPembayaran.PembayaranColumnHeader
-import net.bagusekasaputra.griyakampoengtkw.presentation.tableview.formPembayaran.PembayaranRowHeader
 import javax.inject.Inject
 
 @HiltViewModel
@@ -47,11 +42,11 @@ class DetailViewModel @Inject constructor(
     private val deleteDataDiriUseCase: DeleteDataDiriUseCase,
     private val getHargaKavlingAsyncUseCase: GetHargaKavlingAsyncUseCase,
     private val addHargaKavlingUseCase: AddHargaKavlingUseCase,
-    private val getAllPembayaranAsyncUseCase: GetAllPembayaranAsyncUseCase,
+//    private val getAllPembayaranAsyncUseCase: GetAllPembayaranAsyncUseCase,
     private val addPembayaranUseCase: AddPembayaranUseCase,
     private val updatePembayaranUseCase: UpdatePembayaranUseCase,
     private val deletePembayaranByTerminUseCase: DeletePembayaranByTerminUseCase,
-    private val deleteAllPembayaranUseCase: DeleteAllPembayaranUseCase,
+//    private val deleteAllPembayaranUseCase: DeleteAllPembayaranUseCase,
     private val getAllBiayaMarketingByKavlingKodeAsyncUseCase: GetAllBiayaMarketingByKavlingKodeAsyncUseCase,
     private val addBiayaMarketingUseCase: AddBiayaMarketingUseCase,
     private val editBiayaMarketingUseCase: EditBiayaMarketingUseCase,
@@ -236,30 +231,30 @@ class DetailViewModel @Inject constructor(
     /**
      * Pembayaran
      */
-    fun getAllPembayaran(kavlingKode: String, onFailure: (cause: String) -> Unit) {
-        if (formPembayaranRefreshed.value != true) {
-            logEvent("Syncing pembayaran ...")
-            val request = GetAllPembayaranAsyncUseCase.Request(kavlingKode, dataMode)
-
-            val gettingAllPembayaranJob = asyncHelper.doWork(
-                request = request,
-                asyncUseCase = getAllPembayaranAsyncUseCase,
-                onSuccess = {
-                    // so many bugs caused by this unchecked isNotEmpty()
-                    if (it?.isNotEmpty() == true)
-                        listPembayaranLive.postValue(it)
-
-                    formPembayaranRefreshed.postValue(true)
-                },
-                onFailure = {
-                    onFailure("Gagal mendapatkan pembayaran: ${it.message}")
-                },
-                successMsgOnUiThread = false,
-            )
-
-            asyncJobs.add(gettingAllPembayaranJob)
-        }
-    }
+//    fun getAllPembayaran(kavlingKode: String, onFailure: (cause: String) -> Unit) {
+//        if (formPembayaranRefreshed.value != true) {
+//            logEvent("Syncing pembayaran ...")
+//            val request = GetAllPembayaranAsyncUseCase.Request(kavlingKode, dataMode)
+//
+//            val gettingAllPembayaranJob = asyncHelper.doWork(
+//                request = request,
+//                asyncUseCase = getAllPembayaranAsyncUseCase,
+//                onSuccess = {
+//                    // so many bugs caused by this unchecked isNotEmpty()
+//                    if (it?.isNotEmpty() == true)
+//                        listPembayaranLive.postValue(it)
+//
+//                    formPembayaranRefreshed.postValue(true)
+//                },
+//                onFailure = {
+//                    onFailure("Gagal mendapatkan pembayaran: ${it.message}")
+//                },
+//                successMsgOnUiThread = false,
+//            )
+//
+//            asyncJobs.add(gettingAllPembayaranJob)
+//        }
+//    }
 
     fun addPembayaran(
         kavlingKode: String,
@@ -350,32 +345,33 @@ class DetailViewModel @Inject constructor(
         }
     }
 
-    fun deleteAllPembayaran(kavlingKode: String, onComplete: (msg: String) -> Unit) {
-        formPembayaranRefreshed.value = false
-        isFinishOperation.value = false
 
-        CoroutineScope(Dispatchers.IO).launch {
-            val request = DeleteAllPembayaranUseCase.Request(kavlingKode)
-
-            deleteAllPembayaranUseCase.execute(request).collect { response ->
-                val result = response.data.result
-
-                if (result.isSuccess) {
-                    withContext(Dispatchers.Main) {
-                        listPembayaranLive.postValue(null)
-                        onComplete("Berhasil menghapus semua pembayaran di $kavlingKode")
-                    }
-                    listPembayaranLive.postValue(null)
-                } else {
-                    withContext(Dispatchers.Main) {
-                        onComplete("Gagal menghapus pembayaran: ${result.exceptionOrNull()?.message ?: "null"}")
-                    }
-                }
-
-                isFinishOperation.postValue(true)
-            }
-        }
-    }
+//    fun deleteAllPembayaran(kavlingKode: String, onComplete: (msg: String) -> Unit) {
+//        formPembayaranRefreshed.value = false
+//        isFinishOperation.value = false
+//
+//        CoroutineScope(Dispatchers.IO).launch {
+//            val request = DeleteAllPembayaranUseCase.Request(kavlingKode)
+//
+//            deleteAllPembayaranUseCase.execute(request).collect { response ->
+//                val result = response.data.result
+//
+//                if (result.isSuccess) {
+//                    withContext(Dispatchers.Main) {
+//                        listPembayaranLive.postValue(null)
+//                        onComplete("Berhasil menghapus semua pembayaran di $kavlingKode")
+//                    }
+//                    listPembayaranLive.postValue(null)
+//                } else {
+//                    withContext(Dispatchers.Main) {
+//                        onComplete("Gagal menghapus pembayaran: ${result.exceptionOrNull()?.message ?: "null"}")
+//                    }
+//                }
+//
+//                isFinishOperation.postValue(true)
+//            }
+//        }
+//    }
 
     /**
      * Fee Marketing
@@ -889,114 +885,13 @@ class DetailViewModel @Inject constructor(
         return totalUangMasukTerakhir - totalBiayaMarketing
     }
 
-    fun getAllArrayTerminPembayaran(): Array<String> {
-        val terminList = ArrayList<String>()
-
-        listPembayaranLive.value?.forEach { pembayaran ->
-            terminList.add(pembayaran.termin)
-        }
-
-        // We need to convert into an Array ... How botherful.
-        return terminList.toTypedArray()
-    }
-
-    fun getBelumIsiFotoTerminPembayaran(): Array<String> {
-        val terminList = ArrayList<String>()
-
-        listPembayaranLive.value?.forEach { pembayaran ->
-            if (pembayaran.sudahIsiFotoPembayaran.not()) {
-                terminList.add(pembayaran.termin)
-            }
-        }
-
-        return terminList.toTypedArray()
-    }
-
-    fun getSudahIsiFotoTerminPembayaran(): Array<String> {
-        val terminList = ArrayList<String>()
-
-        listPembayaranLive.value?.forEach { pembayaran ->
-            if (pembayaran.sudahIsiFotoPembayaran)
-                terminList.add(pembayaran.termin)
-        }
-
-        return terminList.toTypedArray()
-    }
-
-
-    fun getPembayaranTableColumnHeaders(): List<PembayaranColumnHeader> {
-        return listOf(
-            PembayaranColumnHeader(text = "Tanggal"),
-            PembayaranColumnHeader(text = "Uang Dibayar"),
-            PembayaranColumnHeader(text = "Total Uang"),
-            PembayaranColumnHeader(text = "Persentase"),
-            PembayaranColumnHeader(text = "Keterangan Progress"),
-        )
-    }
-
-    fun getPembayaranTableRowHeaders(): List<PembayaranRowHeader> {
-        // In this case the row headers of Pembayaran table are the Termins.
-        // First we populate the termins in a list, then return that list as Row Headers.
-        val termins = mutableListOf<PembayaranRowHeader>()
-
-        val listPembayaran = listPembayaranLive.value
-        if (listPembayaran != null) {
-            listPembayaran.forEach { pembayaran ->
-                // Sudah Isi Foto property means to be used as a marker.
-                // In this case I will mark a yellow background color on the row headers
-                // whenever sudahIsiFoto is true.
-                termins.add(
-                    PembayaranRowHeader(
-                    text = pembayaran.termin,
-                    sudahIsiFoto = pembayaran.sudahIsiFotoPembayaran
-                )
-                )
-            }
-        } else {
-            // If null, return "-" character, I think ...
-            termins.add(PembayaranRowHeader(text = "-"))
-        }
-
-        return termins
-    }
-
-    fun getPembayaranTableCellItems(): List<List<PembayaranCell>> {
-        val firstOrderList = mutableListOf<List<PembayaranCell>>()
-
-        val listPembayaran = listPembayaranLive.value
-        if (listPembayaran != null) {
-            listPembayaran.forEach { pembayaran ->
-                val secondOrderList = mutableListOf<PembayaranCell>().apply {
-                    add(PembayaranCell(mData = pembayaran.tanggal))
-                    add(PembayaranCell(mData = pembayaran.jumlahUangDibayar))
-                    add(PembayaranCell(mData = pembayaran.totalUangMasuk))
-                    add(PembayaranCell(mData = pembayaran.presentase.toString()))
-                    add(PembayaranCell(mData = pembayaran.keterangan))
-                }
-
-                firstOrderList.add(secondOrderList)
-            }
-        } else {
-            firstOrderList.add(
-                listOf(
-                    PembayaranCell(mData = "-"), // Tanggal
-                    PembayaranCell(mData = "-"), // Jumlah Uang dibayar
-                    PembayaranCell(mData = "-"), // Total uang masuk
-                    PembayaranCell(mData = "-"), // Persentase
-                    PembayaranCell(mData = "-"), // Keterangan Progress
-                )
-            )
-        }
-
-        return firstOrderList
-    }
-
 
     enum class JenisPembayaran(val text: String) {
         ITJ("ITJ"),
         DP("DP"),
         TERMIN("Termin"),
     }
+
 
     fun getNextPembayaranSequence(jenisPembayaran: JenisPembayaran): String {
         // Check if not null listPembayaran.
@@ -1028,10 +923,10 @@ class DetailViewModel @Inject constructor(
 
         val listTermins = listPembayaran?.filter { it.termin.startsWith("Termin") }
 
-        if (listTermins?.isNotEmpty() == true) {
-            return listTermins.last().jumlahUangDibayar
+        return if (listTermins?.isNotEmpty() == true) {
+            listTermins.last().jumlahUangDibayar
         } else {
-            return null
+            null
         }
     }
 }
