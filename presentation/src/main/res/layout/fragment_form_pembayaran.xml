@@ -171,7 +171,7 @@
                         android:layout_marginStart="8dp"
                         style="@style/TextAppearance.MaterialComponents.Headline6"
                         android:textSize="14sp"
-                        android:text="Min. Angsuran"/>
+                        android:text="Angsuran"/>
 
                     <com.google.android.material.textview.MaterialTextView
                         android:id="@+id/tv_minimal_angsuran"
