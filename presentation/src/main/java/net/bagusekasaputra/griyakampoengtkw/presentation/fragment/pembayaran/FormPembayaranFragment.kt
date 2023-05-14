@@ -6,6 +6,7 @@ import android.app.Activity
 import android.content.Intent
 import android.content.SharedPreferences
 import android.os.Bundle
+import android.util.Log
 import android.view.*
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
@@ -21,6 +22,7 @@ import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
 import net.bagusekasaputra.griyakampoengtkw.domain.DataMode
 import net.bagusekasaputra.griyakampoengtkw.domain.NumberUtil
+import net.bagusekasaputra.griyakampoengtkw.domain.entity.BaselinePembayaran
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.DataDiri
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.HargaKavling
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.Pembayaran
@@ -307,28 +309,39 @@ class FormPembayaranFragment : Fragment() {
             }
         }
 
-        pembayaranViewModel.baselinePembayaranLive.observe(requireActivity()) {
-            it?.also { baselinePembayaran ->
-                binding.tvMinimalAngsuran?.text = "Rp. ${baselinePembayaran.parsedJumlahUang}"
-                binding.tvMaksimalTanggalBayar?.text = baselinePembayaran.tanggalPembayaranMaks.toString()
-
-                val listPembayaran = viewModel.listPembayaranLive.value
-                if (listPembayaran != null) {
-                    try {
-                        binding.tvSisaBelumBayarBulanIni?.text = listPembayaran.run {
-                            val sisaBelumBayar = baselinePembayaran.hitungSisaBlmBayarBulanIni(this)
-
-                            "Rp. ${NumberUtil.formatLongToString(sisaBelumBayar)}"
-                        }
-                    } catch (e: Exception) {
-                        e.printStackTrace()
-                        Toast.makeText(
-                            requireContext(),
-                            "Terjadi kesalahan : ${e.message}",
-                            Toast.LENGTH_LONG
-                        ).show()
+        pembayaranViewModel.fullPembayaransLive.observe(requireActivity()) {j ->
+            j?.also { listPembayaran ->
+                pembayaranViewModel.baselinePembayaranLive.observe(requireActivity()) { k ->
+                    k?.also { baselinePembayaran ->
+                        setAngsuranBulananDetail(listPembayaran, baselinePembayaran)
                     }
                 }
+            }
+        }
+    }
+
+    private fun setAngsuranBulananDetail(listPembayaran: List<Pembayaran>, baselinePembayaran: BaselinePembayaran) {
+        binding.tvMinimalAngsuran?.text = "Rp. ${baselinePembayaran.parsedJumlahUang}"
+        binding.tvMaksimalTanggalBayar?.text = baselinePembayaran.tanggalPembayaranMaks.toString()
+
+        // Disabling sisa belum bayar if entry hanya berisi ITJ
+        if (listPembayaran.last().termin == "ITJ 1") {
+            binding.tvSisaBelumBayarBulanIni?.visibility = View.GONE
+            binding.tvInfoSisaBelumBayarBulanIni?.visibility = View.GONE
+        } else {
+            binding.tvSisaBelumBayarBulanIni?.visibility = View.VISIBLE
+            binding.tvInfoSisaBelumBayarBulanIni?.visibility = View.VISIBLE
+
+            try {
+                binding.tvSisaBelumBayarBulanIni?.text = listPembayaran.run {
+                    val sisaBelumBayar = baselinePembayaran.hitungSisaBlmBayarBulanIni(this)
+
+                    "Rp. ${NumberUtil.formatLongToString(sisaBelumBayar)}"
+                }
+            } catch (e: Exception) {
+                e.printStackTrace()
+
+                Toast.makeText(requireContext(), "Terjadi kesalahan : ${e.message}", Toast.LENGTH_LONG).show()
             }
         }
     }
