@@ -832,32 +832,38 @@ class FormPembayaranFragment : Fragment() {
                             dialogPembayaran.dismiss()
 
                             // Show the confirmation to delete all Foto Pembayaran
-                            MaterialAlertDialogBuilder(requireContext())
-                                .setTitle("Hapus Semua Foto Pembayaran?")
-                                .setMessage("Perhatian! Menghapus seluruh Pembayaran juga akan menghapus seluruh Foto Pembayaran yang tersimpan. Apakah Anda yakin?")
-                                .setPositiveButton("Ya") { dialogFoto, _ ->
-                                    dialogFoto.dismiss()
+//                            MaterialAlertDialogBuilder(requireContext())
+//                                .setTitle("Hapus Semua Foto Pembayaran?")
+//                                .setMessage("Perhatian! Menghapus seluruh Pembayaran juga akan menghapus seluruh Foto Pembayaran yang tersimpan. Apakah Anda yakin?")
+//                                .setPositiveButton("Ya") { dialogFoto, _ ->
+//                                    dialogFoto.dismiss()
+//
+//                                    viewModel.deleteAllPembayaran(
+//                                        kavlingKode = currentKavlingKode!!,
+//                                        onComplete = { msg ->
+//                                            dialogFoto.dismiss()
+//                                            syncPembayaran()
+//                                            Toast.makeText(
+//                                                requireContext(),
+//                                                msg,
+//                                                Toast.LENGTH_SHORT
+//                                            ).show()
+//                                        }
+//                                    )
+//                                    viewModel.deleteAllPembayaran(currentKavlingKode!!) { msg ->
+//
+//                                    }
+//                                }
+//                                .setNegativeButton("Tidak") { dialogFoto, _ ->
+//                                    dialogFoto.dismiss()
+//                                }
+//                                .create()
+//                                .show()
 
-                                    viewModel.deleteAllPembayaran(
-                                        kavlingKode = currentKavlingKode!!,
-                                        onComplete = { msg ->
-                                            dialogFoto.dismiss()
-                                            syncPembayaran()
-                                            Toast.makeText(
-                                                requireContext(),
-                                                msg,
-                                                Toast.LENGTH_SHORT
-                                            ).show()
-                                        }
-                                    )
-                                    viewModel.deleteAllPembayaran(currentKavlingKode!!) { msg ->
-
-                                    }
-                                }
-                                .setNegativeButton("Tidak") { dialogFoto, _ ->
-                                    dialogFoto.dismiss()
-                                }
-                                .create()
+                            MaterialAlertDialogBuilder(requireContext()).apply {
+                                setTitle("Fitur Dinonaktifkan")
+                                setMessage("Mohon maaf, akses untuk menghapus seluruh pembayaran tidak diizinkan. Hubungi developer untuk informasi lebih lanjut")
+                            }.create()
                                 .show()
                         }
                         .setNegativeButton("Tidak") { dialog, _ ->
