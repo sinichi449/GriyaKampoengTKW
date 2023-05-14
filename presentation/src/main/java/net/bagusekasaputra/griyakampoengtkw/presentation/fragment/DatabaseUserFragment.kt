@@ -12,8 +12,7 @@ import com.evrencoskun.tableview.listener.ITableViewListener
 import dagger.hilt.android.AndroidEntryPoint
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.DatabaseUser
 import net.bagusekasaputra.griyakampoengtkw.presentation.databinding.FragmentDatabaseUserBinding
-import net.bagusekasaputra.griyakampoengtkw.presentation.tableview.databaseUser.DatabaseUserTableAdapter
-import net.bagusekasaputra.griyakampoengtkw.presentation.tableview.databaseUser.TableDatabaseUser
+import net.bagusekasaputra.griyakampoengtkw.presentation.tableview.DatabaseUserTableWrapper
 import net.bagusekasaputra.griyakampoengtkw.presentation.util.UiUtils
 import net.bagusekasaputra.griyakampoengtkw.presentation.viewmodel.DatabaseUserViewModel
 
@@ -21,12 +20,12 @@ import net.bagusekasaputra.griyakampoengtkw.presentation.viewmodel.DatabaseUserV
 class DatabaseUserFragment : Fragment() {
 
     private lateinit var binding: FragmentDatabaseUserBinding
-    private val viewModel: DatabaseUserViewModel by viewModels()
+    private val databaseUserViewModel: DatabaseUserViewModel by viewModels()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
         // Inflate the layout for this fragment
         binding = FragmentDatabaseUserBinding.inflate(inflater, container, false)
 
@@ -42,56 +41,21 @@ class DatabaseUserFragment : Fragment() {
             sync()
         }
 
-        binding.extendedFabActions.setOnClickListener {
-            val isExtended = viewModel.showExtendedFab.value ?: false
-
-            binding.extendedFabActions.run {
-                if (isExtended) shrink()
-                else extend()
-            }
-
-            viewModel.showExtendedFab.value = !isExtended
+        binding.fabAddUser.setOnClickListener {
+            // TODO
         }
     }
 
     private fun setupViewModel() {
-        viewModel.listDatabaseUserLive.observe(requireActivity()) {
+        databaseUserViewModel.listDatabaseUserLive.observe(requireActivity()) {
             it?.also { calonPembelis ->
                 setupTableView(calonPembelis)
-            }
-        }
-
-        viewModel.showExtendedFab.observe(requireActivity()) {
-            it?.also { extend ->
-                UiUtils.extendOrShrinkExtendedFab(
-                    extendedFabs = binding.extendedFabActions,
-                    anotherFabs = listOf(binding.fabTambahkan, binding.fabUbah),
-                    extend = extend
-                )
             }
         }
     }
 
     private fun setupTableView(listDatabaseUser: List<DatabaseUser>) {
-        val adapter = DatabaseUserTableAdapter()
-        binding.tableViewCalonPembeli.setAdapter(adapter)
-
-        val tableDatabaseUser = TableDatabaseUser(listDatabaseUser)
-        adapter.setAllItems(
-            tableDatabaseUser.getColumnHeaderItems(),
-            tableDatabaseUser.getRowHeaderItems(),
-            tableDatabaseUser.getCellItems(),
-        )
-
-        // Set Column Width
-        binding.tableViewCalonPembeli.run {
-            setColumnWidth(0, 350) // Nama
-            setColumnWidth(3, 400) // No Hp
-            setColumnWidth(4, 400) // Tiktok
-            setColumnWidth(6, 300) // Keterangan
-        }
-
-        binding.tableViewCalonPembeli.tableViewListener = object : ITableViewListener {
+        val tableListener = object : ITableViewListener {
             override fun onCellClicked(cellView: RecyclerView.ViewHolder, column: Int, row: Int) {
                 // Open whatsapp on the one of "No Hp" column cell
                 if (column == 1) {
@@ -153,10 +117,14 @@ class DatabaseUserFragment : Fragment() {
             }
 
         }
+
+        DatabaseUserTableWrapper(binding.tableViewCalonPembeli, listDatabaseUser)
+            .setTableListener(tableListener)
+            .createTable()
     }
 
     private fun sync() {
-        viewModel.getListDatabaseUser(
+        databaseUserViewModel.getListDatabaseUser(
             onComplete = {
                 binding.swipeRefreshCalonPembeli.isRefreshing = false
             },
@@ -164,11 +132,5 @@ class DatabaseUserFragment : Fragment() {
                 Toast.makeText(requireContext(), it, Toast.LENGTH_LONG).show()
             }
         )
-    }
-
-    override fun onResume() {
-        super.onResume()
-
-        sync()
     }
 }

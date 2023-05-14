@@ -22,8 +22,6 @@ class DatabaseUserViewModel @Inject constructor(
     val listDatabaseUserLive: LiveData<List<DatabaseUser>?>
         get() = _listDatabaseUserLive
 
-    val showExtendedFab = MutableLiveData(false)
-
     var gettingListJob: Job? = null
 
 
