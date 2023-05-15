@@ -9,7 +9,6 @@
     app:cardCornerRadius="8dp"
     android:elevation="12dp"
     android:layout_marginHorizontal="8dp"
-    app:cardBackgroundColor="@color/abang"
     android:layout_marginTop="16dp"
     app:cardElevation="16dp"
     android:checkable="true"
@@ -22,6 +21,22 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="center">
+
+        <com.devzone.fillprogresslayout.FillProgressLayout
+            android:id="@+id/fillProgress_persen"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:fpl_backgroundColor="@color/black"
+            app:fpl_progressColor="@color/abang"
+            app:fpl_isRounded="false"
+            app:fpl_progress="50"
+            app:fpl_progressDuration="1000"
+            app:fpl_progressDirection="bottom_to_top"
+            app:fpl_shouldRestart="false"/>
 
 
         <ImageView

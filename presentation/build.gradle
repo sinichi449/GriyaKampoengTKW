@@ -81,4 +81,5 @@ dependencies {
     implementation 'com.github.atwa:filepicker:1.0.7'
 
     developerImplementation "com.github.kariot:pdf-invoice-generator:1.0.1"
+    developerImplementation "com.github.JDevZone:FillProgressLayout:v0.0.9"
 }

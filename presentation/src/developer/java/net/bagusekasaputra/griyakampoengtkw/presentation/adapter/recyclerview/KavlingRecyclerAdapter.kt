@@ -40,12 +40,22 @@ class KavlingRecyclerAdapter(
 //            View.GONE else View.VISIBLE
         holder.binding.cardKavling.isChecked = kavlings[position].getSudahIsi()
 
-        holder.binding.cardKavling.setCardBackgroundColor(Color.parseColor(kavlings[position].warna))
+//        holder.binding.cardKavling.setCardBackgroundColor(Color.parseColor(kavlings[position].warna))
 
         holder.binding.imgSudahBayarBulanIni.visibility = if (kavlings[position].sudahBayarBulanIni)
             View.VISIBLE
         else
             View.GONE
+
+        // Fill Layout progress settings
+        val kavling = kavlings[position]
+        val warna = Color.parseColor(kavling.warna)
+        val progress = mapProgressKavling[kavling.kode]?.persentaseBulanIni()
+        holder.binding.fillProgressPersen.setProgressColor(warna)
+        if (progress != null) {
+            holder.binding.fillProgressPersen.setProgress(progress, true)
+        }
+
 
         holder.binding.cardKavling.setOnClickListener {
             onRecyclerItemClick(position)
@@ -55,9 +65,6 @@ class KavlingRecyclerAdapter(
             onRecyclerItemHold(it, position)
             true
         }
-
-
-
 //        setAnimation(holder.binding.root, position)
     }
 
