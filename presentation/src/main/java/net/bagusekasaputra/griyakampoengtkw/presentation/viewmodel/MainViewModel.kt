@@ -1,6 +1,7 @@
 package net.bagusekasaputra.griyakampoengtkw.presentation.viewmodel
 
 import android.os.Parcelable
+import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -14,10 +15,10 @@ import net.bagusekasaputra.griyakampoengtkw.domain.AsyncUseCaseHelper
 import net.bagusekasaputra.griyakampoengtkw.domain.DataMode
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.block.GetAllBlocksAsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.kavling.GetKavlingByBlockAsyncUseCase
-import net.bagusekasaputra.griyakampoengtkw.domain.entity.AppUpdate
+import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.kavling.GetProgressKavlingAsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.Block
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.Kavling
-import net.bagusekasaputra.griyakampoengtkw.domain.usecase.appupdate.GetUpdateInformationUseCase
+import net.bagusekasaputra.griyakampoengtkw.domain.entity.ProgressKavling
 import net.bagusekasaputra.griyakampoengtkw.domain.usecase.block.AddNewBlockUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.usecase.kavling.AddKavlingUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.usecase.kavling.EditKavlingUseCase
@@ -33,7 +34,8 @@ class MainViewModel @Inject constructor(
     private val addKavlingUseCase: AddKavlingUseCase,
     private val editKavlingUseCase: EditKavlingUseCase,
     private val removeKavlingUseCase: RemoveKavlingUseCase,
-    private val getAppUpdateInformationUseCase: GetUpdateInformationUseCase,
+//    private val getAppUpdateInformationUseCase: GetUpdateInformationUseCase,
+    private val getProgressKavlingAsyncUseCase: GetProgressKavlingAsyncUseCase,
 ): ViewModel() {
 
     private val _kavlings = MutableLiveData<List<Kavling>>()
@@ -43,6 +45,11 @@ class MainViewModel @Inject constructor(
     private val _blocksLive = MutableLiveData<List<Block>>()
     val blocksLive: LiveData<List<Block>>
         get() = _blocksLive
+
+    private val _mapProgressKavling = MutableLiveData<Map<String, ProgressKavling>?>(null)
+    val mapProgressKavling: LiveData<Map<String, ProgressKavling>?>
+        get() = _mapProgressKavling
+
 
     val currentBlock = MutableLiveData("A")
 
@@ -307,37 +314,23 @@ class MainViewModel @Inject constructor(
         asyncJobs.add(removeKavlingJob)
     }
 
-    fun checkUpdates(
-        versionName: String,
-        versionCode: Int,
-        onAvailable: (appUpdate: AppUpdate) -> Unit,
-        onFailure: (msg: String) -> Unit,
-    ) {
+    fun getProgressAllKavling(blockKode: String) {
         CoroutineScope(Dispatchers.IO).launch {
-            val currentBuildConfig = GetUpdateInformationUseCase.CurrentBuildConfig(
-                versionName = versionName,
-                versionCode = versionCode,
-            )
-            val request = GetUpdateInformationUseCase.Request(currentBuildConfig)
+            val listKavling = Kavling.getGriyaKavlingList().filter {
+                it.substring(0, 1) == blockKode
+            }
+            val request = GetProgressKavlingAsyncUseCase.Request(listKavling)
 
-            getAppUpdateInformationUseCase.execute(request).collect { response ->
-                val result = response.data.result
-
-                if (result.isSuccess) {
-                    result.getOrNull()?.let { appUpdate ->
-                        withContext(Dispatchers.Main) {
-                            onAvailable(appUpdate)
-                        }
-                    }
-                } else {
-                    withContext(Dispatchers.Main) {
-                        onFailure("Gagal mendapatkan update: ${result.exceptionOrNull()?.message ?: "null"}")
-                    }
+            getProgressKavlingAsyncUseCase.execute(request).collect { result ->
+                result.onSuccess {
+                    _mapProgressKavling.postValue(it)
+                }
+                result.onFailure {
+                    Log.d("STATUS_PEMBAYARAN", "Terjadi kesalahan ViewModel : ${it.message}")
                 }
             }
         }
     }
-
 
     override fun onCleared() {
         logEvent("MainViewModel is about to be cleared!")

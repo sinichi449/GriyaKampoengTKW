@@ -148,6 +148,18 @@ class KavlingFragment : Fragment() {
                 binding.swipeRefreshMain.isRefreshing = !finish
             }
         }
+
+        viewModel.mapProgressKavling.observe(requireActivity()) {
+            if (it != null) {
+                Log.d("STATUS_PEMBAYARAN", "Success KavlingFragment not null!")
+                it.keys.forEach { kavling ->
+                    val persentase = it[kavling]?.persentaseBulanIni()
+                    Log.d("STATUS_PEMBAYARAN", "${kavling}: ${persentase}%")
+                }
+            } else {
+                Log.d("STATUS_PEMBAYARAN", "KavlingFragment got NULL Progress")
+            }
+        }
     }
 
     private fun syncData() {
@@ -173,6 +185,9 @@ class KavlingFragment : Fragment() {
                 blockKode = selectedBlock,
                 onFailure = { Toast.makeText(requireContext(), it, Toast.LENGTH_SHORT).show() }
             )
+
+            // Get Progress Kavling
+            viewModel.getProgressAllKavling(selectedBlock)
         }
 
         binding.recyclerBlocks.adapter = adapter

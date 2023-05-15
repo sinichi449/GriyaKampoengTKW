@@ -9,7 +9,6 @@ import kotlinx.coroutines.flow.emitAll
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flow
 import net.bagusekasaputra.griyakampoengtkw.data.DataUtil
-import net.bagusekasaputra.griyakampoengtkw.data.MyObjectMapper
 import net.bagusekasaputra.griyakampoengtkw.data.MyObjectMapper.mapPembayaran
 import net.bagusekasaputra.griyakampoengtkw.data.interfaces.backup.BackupPembayaranDataSource
 import net.bagusekasaputra.griyakampoengtkw.data.interfaces.local.LocalMetadataDataSource
@@ -124,7 +123,7 @@ class PembayaranRepositoryImpl(
                 val remoteResult = remotePembayaranSource.getAllFromBackup(backupName, kavling)
                 if (remoteResult.isSuccess) {
                     val listModel = remoteResult.getOrNull()
-                    val listPembayaran = listModel?.map { MyObjectMapper.mapPembayaran(it) }
+                    val listPembayaran = listModel?.map { mapPembayaran(it) }
 
                     mapPembayaran[kavling] = listPembayaran
                 } else {
@@ -244,6 +243,37 @@ class PembayaranRepositoryImpl(
 
             Result.failure(e)
         }
+    }
+
+    override suspend fun getUangMasukBulanIni(kavlingKode: String, dataMode: DataMode): Long? {
+        return flow<Long?> {
+            val calendar = Calendar.getInstance()
+            val bulanSekarang = calendar.get(Calendar.MONTH)
+            val tahunSekarang = calendar.get(Calendar.YEAR)
+
+            val pembayaransAll = localPembayaranDataSource.getAllPembayaran(kavlingKode)
+                .onFailure { Log.d("STATUS_PEMBAYARAN", "Gagal mendapatkan list pembayaran: ${it.message}") }
+                .getOrNull()
+            val pembayaransBulanIni = pembayaransAll?.filter {
+                val tanggalDibayar = Calendar.getInstance().apply {
+                    time = it.tanggal.toDate()
+                }
+                val bulanBayar = tanggalDibayar.get(Calendar.MONTH)
+                val tahunBayar = tanggalDibayar.get(Calendar.YEAR)
+
+                bulanBayar == bulanSekarang && tahunBayar == tahunSekarang
+            }
+
+            Log.d("STATUS_PEMBAYARAN", "Pembayaran pada ${bulanSekarang + 1}/${tahunSekarang}: $pembayaransBulanIni")
+
+            if (pembayaransBulanIni != null) {
+                val list = pembayaransBulanIni.map { mapPembayaran(it) }
+
+                emit(Pembayaran.hitungTotalUangMasuk(list))
+            } else {
+                emit(0L)
+            }
+        }.first()
     }
 
     override fun addPembayaran(

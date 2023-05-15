@@ -18,8 +18,6 @@ interface PembayaranRepository {
     // will return the data from local if an error occurred.
     fun getAllOnline(kavlingKode: String): Flow<Result<List<Pembayaran>?>>
 
-    suspend fun sudahBayarAngsuran(kavlingKode: String, bulan: Int, dataMode: DataMode): Result<Boolean?>
-
     fun addPembayaran(kavlingKode: String, hargaKavling: Long, pembayaran: Pembayaran): Flow<Result<Boolean>>
 
     fun updatePembayaran(kavlingKode: String, oldPembayaran: Pembayaran, newPembayaran: Pembayaran): Flow<Result<Boolean>>
@@ -27,4 +25,9 @@ interface PembayaranRepository {
     fun deletePembayaranByTermin(kavlingKode: String, termin: String): Flow<Result<Boolean>>
 
     fun deleteAllPembayaran(kavlingKode: String): Flow<Result<Boolean>>
+
+    suspend fun sudahBayarAngsuran(kavlingKode: String, bulan: Int, dataMode: DataMode): Result<Boolean?>
+
+    // Currently offline only
+    suspend fun getUangMasukBulanIni(kavlingKode: String, dataMode: DataMode): Long?
 }
