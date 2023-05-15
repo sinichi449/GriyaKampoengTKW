@@ -28,6 +28,7 @@ import jp.wasabeef.recyclerview.adapters.ScaleInAnimationAdapter
 import net.bagusekasaputra.griyakampoengtkw.domain.DataMode
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.Block
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.Kavling
+import net.bagusekasaputra.griyakampoengtkw.domain.entity.ProgressKavling
 import net.bagusekasaputra.griyakampoengtkw.presentation.R
 import net.bagusekasaputra.griyakampoengtkw.presentation.activities.DetailActivity
 import net.bagusekasaputra.griyakampoengtkw.presentation.activities.MainActivity
@@ -139,7 +140,23 @@ class KavlingFragment : Fragment() {
 
         viewModel.kavlings.observe(requireActivity()) {
             it?.let {
-                setupKavlingRecyclerView(it)
+                viewModel.mapProgressKavling.observe(requireActivity()) { mapProgressKavling ->
+                    if (mapProgressKavling != null) {
+                        Log.d("STATUS_PEMBAYARAN", "Success KavlingFragment not null!")
+
+                        mapProgressKavling.keys.forEach { kavling ->
+                            val persentase = mapProgressKavling[kavling]?.persentaseBulanIni()
+
+                            Log.d("STATUS_PEMBAYARAN", "${kavling}: ${persentase}%")
+                        }
+
+                        setupKavlingRecyclerView(it, mapProgressKavling)
+                    } else {
+                        Log.d("STATUS_PEMBAYARAN", "KavlingFragment got NULL Progress")
+
+                        setupKavlingRecyclerView(it, emptyMap())
+                    }
+                }
             }
         }
 
@@ -149,17 +166,6 @@ class KavlingFragment : Fragment() {
             }
         }
 
-        viewModel.mapProgressKavling.observe(requireActivity()) {
-            if (it != null) {
-                Log.d("STATUS_PEMBAYARAN", "Success KavlingFragment not null!")
-                it.keys.forEach { kavling ->
-                    val persentase = it[kavling]?.persentaseBulanIni()
-                    Log.d("STATUS_PEMBAYARAN", "${kavling}: ${persentase}%")
-                }
-            } else {
-                Log.d("STATUS_PEMBAYARAN", "KavlingFragment got NULL Progress")
-            }
-        }
     }
 
     private fun syncData() {
@@ -204,8 +210,8 @@ class KavlingFragment : Fragment() {
             LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false)
     }
 
-    private fun setupKavlingRecyclerView(kavlings: List<Kavling>) {
-        val adapter = KavlingRecyclerAdapter(kavlings,
+    private fun setupKavlingRecyclerView(kavlings: List<Kavling>, mapProgressKavling: Map<String, ProgressKavling>) {
+        val adapter = KavlingRecyclerAdapter(kavlings, mapProgressKavling,
             onRecyclerItemClick = {
                 val intent = Intent(requireContext(), DetailActivity::class.java).apply {
                     putExtra(MainActivity.INTENT_KAVLING_KODE, kavlings[it].kode)
