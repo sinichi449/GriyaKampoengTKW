@@ -10,7 +10,7 @@ data class ProgressKavling(
 ) {
 
     fun persentaseBulanIni(): Int {
-        return if (angsuranBulanan > 0L && uangMasukBulanIni > 0L) {
+        return if (angsuranBulanan > 0L || uangMasukBulanIni > 0L) {
             val mAngsuran = BigDecimal(angsuranBulanan)
             val mUangMasuk = BigDecimal(uangMasukBulanIni)
 

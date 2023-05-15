@@ -3,6 +3,7 @@ package net.bagusekasaputra.griyakampoengtkw.data.repository
 import android.util.Log
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.emitAll
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flow
 import net.bagusekasaputra.griyakampoengtkw.data.DataUtil
 import net.bagusekasaputra.griyakampoengtkw.data.MetadataHelper
@@ -104,5 +105,18 @@ class BaselinePembayaranRepositoryImpl(
                 emit(Result.failure(errorCause))
             }
         }
+    }
+
+    override suspend fun getAngsuran(kavling: String, dataMode: DataMode): Long? {
+        return flow<Long?> {
+            val baselinePembayaran = localDataSource.get(kavling)
+                .getOrNull()
+
+            if (baselinePembayaran != null) {
+                emit(baselinePembayaran.jumlahUang)
+            } else {
+                emit(0L)
+            }
+        }.first()
     }
 }

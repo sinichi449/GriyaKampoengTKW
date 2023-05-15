@@ -2,7 +2,6 @@ package net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.kavling
 
 import android.util.Log
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flow
 import net.bagusekasaputra.griyakampoengtkw.domain.DataMode
 import net.bagusekasaputra.griyakampoengtkw.domain.NumberUtil
@@ -27,10 +26,7 @@ class GetProgressKavlingAsyncUseCase(
                 Log.d("STATUS_PEMBAYARAN", "Memproses progress $kavling ...")
 
                 val uangMasukBulanIni = pembayaranRepository.getUangMasukBulanIni(kavling, DataMode.OFFLINE)
-                val baselinePembayaran = baselinePembayaranRepository.get(kavling, DataMode.OFFLINE)
-                    .first()
-                    .getOrNull()
-                val angsuranBulanan = baselinePembayaran?.jumlahUang
+                val angsuranBulanan = baselinePembayaranRepository.getAngsuran(kavling, DataMode.OFFLINE)
 
                 Log.d("STATUS_PEMBAYARAN", "${kavling}: Angsuran Rp. ${NumberUtil.formatLongToString(angsuranBulanan ?: 0L)}")
                 Log.d("STATUS_PEMBAYARAN", "${kavling}: Uang masuk Rp. ${NumberUtil.formatLongToString(uangMasukBulanIni ?: 0L)}")

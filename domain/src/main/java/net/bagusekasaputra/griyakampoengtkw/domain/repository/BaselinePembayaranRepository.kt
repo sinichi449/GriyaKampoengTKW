@@ -10,4 +10,6 @@ interface BaselinePembayaranRepository {
 
     fun insert(baselinePembayaran: BaselinePembayaran): Flow<Result<Nothing?>>
 
+    suspend fun getAngsuran(kavling: String, dataMode: DataMode): Long?
+
 }

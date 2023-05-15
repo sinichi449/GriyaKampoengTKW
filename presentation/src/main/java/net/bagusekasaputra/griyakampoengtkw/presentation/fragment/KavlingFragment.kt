@@ -168,10 +168,13 @@ class KavlingFragment : Fragment() {
         }
 
         val currentBlock = viewModel.currentBlock.value
-        if (currentBlock != null)
+        if (currentBlock != null) {
             viewModel.getKavlings(currentBlock) { failMsg ->
                 Snackbar.make(binding.root, failMsg, Snackbar.LENGTH_LONG).show()
             }
+
+            viewModel.getProgressAllKavling(currentBlock)
+        }
     }
 
     private fun setupBlockRecyclerview(blocks: List<Block>) {
