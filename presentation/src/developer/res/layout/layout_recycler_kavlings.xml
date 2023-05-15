@@ -30,7 +30,7 @@
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:fpl_backgroundColor="@color/black"
+            app:fpl_backgroundColor="@color/purple_700"
             app:fpl_progressColor="@color/abang"
             app:fpl_isRounded="false"
             app:fpl_progress="50"
