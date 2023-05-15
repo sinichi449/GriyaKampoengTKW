@@ -7,10 +7,12 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.Kavling
+import net.bagusekasaputra.griyakampoengtkw.domain.entity.ProgressKavling
 import net.bagusekasaputra.griyakampoengtkw.presentation.databinding.LayoutRecyclerKavlingsBinding
 
 class KavlingRecyclerAdapter(
     private val kavlings: List<Kavling>,
+    private val mapProgressKavling: Map<String, ProgressKavling>,
     private val onRecyclerItemClick: (position: Int) -> Unit,
     private val onRecyclerItemHold: (anchor: View, position: Int) -> Unit,
 ): RecyclerView.Adapter<KavlingRecyclerAdapter.MyViewHolder>() {
@@ -53,6 +55,8 @@ class KavlingRecyclerAdapter(
             onRecyclerItemHold(it, position)
             true
         }
+
+
 
 //        setAnimation(holder.binding.root, position)
     }
