@@ -38,8 +38,9 @@ object RepositoryModule {
         localKavlingDataSource: LocalKavlingDataSource,
         remoteKavlingDataSource: RemoteKavlingDataSource,
         backupKavlingDataSource: BackupKavlingDataSource,
+        localBlockDataSource: LocalBlockDataSource,
     ): KavlingRepository {
-        return KavlingRepositoryImpl(localKavlingDataSource, remoteKavlingDataSource, backupKavlingDataSource)
+        return KavlingRepositoryImpl(localKavlingDataSource, remoteKavlingDataSource, backupKavlingDataSource, localBlockDataSource)
     }
 
 

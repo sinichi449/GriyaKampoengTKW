@@ -8,6 +8,8 @@ data class Kavling(
     val type: String,
     var sudahBayarBulanIni: Boolean = false,
 ) {
+    val blockKode = kode.substring(0, 1)
+
     fun getPanjang(): String {
         return ukuran.split("x")[0]
     }

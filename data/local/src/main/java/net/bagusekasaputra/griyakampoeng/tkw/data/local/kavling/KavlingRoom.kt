@@ -42,4 +42,7 @@ interface KavlingRoomDao {
 
     @Query("DELETE FROM kavlings WHERE kode=:kavlingKode")
     fun deleteKavling(kavlingKode: String)
+
+    @Query("DELETE FROM kavlings")
+    fun deleteAll()
 }

@@ -56,6 +56,16 @@ class RoomKavlingDataSource(
         }
     }
 
+    override suspend fun deleteAll(): Result<Nothing?> {
+        return try {
+            kavlingRoomDao.deleteAll()
+
+            Result.success(null)
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
+    }
+
     private fun mapKavlingRoomEntity(kavlingRoomEntity: KavlingRoomEntity): KavlingModel {
         return kavlingRoomEntity.let {
             KavlingModel(

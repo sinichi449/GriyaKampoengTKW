@@ -8,5 +8,9 @@ interface LocalKavlingDataSource {
 
     suspend fun addKavling(blockKode: String, kavlingModel: KavlingModel): Result<Nothing?>
 
+    suspend fun addAll(kavlingModels: List<KavlingModel>): Result<Nothing?>
+
     suspend fun deleteKavling(kavlingKode: String): Result<Nothing?>
+
+    suspend fun deleteAll(): Result<Nothing?>
 }

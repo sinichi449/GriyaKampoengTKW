@@ -2,6 +2,7 @@ package net.bagusekasaputra.griyakampoengtkw.domain.repository
 
 import kotlinx.coroutines.flow.Flow
 import net.bagusekasaputra.griyakampoengtkw.domain.DataMode
+import net.bagusekasaputra.griyakampoengtkw.domain.entity.Block
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.Kavling
 
 interface KavlingRepository {
@@ -16,4 +17,7 @@ interface KavlingRepository {
     fun removeKavling(blockCode: String, kavlingKode: String): Flow<Result<Nothing?>>
 
     fun getUnmigratedKavlings(backupName: String): Flow<Result<List<String>?>>
+
+    // If List<Block> parameter left empty, then it will get List<Block> from cache
+    suspend fun refreshCache(blocks: List<Block> = emptyList()): Result<Nothing?>
 }

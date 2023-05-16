@@ -5,11 +5,14 @@ import kotlinx.coroutines.flow.emitAll
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flow
 import net.bagusekasaputra.griyakampoengtkw.data.DataUtil
+import net.bagusekasaputra.griyakampoengtkw.data.MyObjectMapper
 import net.bagusekasaputra.griyakampoengtkw.data.MyObjectMapper.mapKavling
 import net.bagusekasaputra.griyakampoengtkw.data.interfaces.backup.BackupKavlingDataSource
+import net.bagusekasaputra.griyakampoengtkw.data.interfaces.local.LocalBlockDataSource
 import net.bagusekasaputra.griyakampoengtkw.data.interfaces.local.LocalKavlingDataSource
 import net.bagusekasaputra.griyakampoengtkw.data.interfaces.remote.RemoteKavlingDataSource
 import net.bagusekasaputra.griyakampoengtkw.domain.DataMode
+import net.bagusekasaputra.griyakampoengtkw.domain.entity.Block
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.Kavling
 import net.bagusekasaputra.griyakampoengtkw.domain.repository.KavlingRepository
 
@@ -17,6 +20,7 @@ class KavlingRepositoryImpl(
     private val localKavlingDataSource: LocalKavlingDataSource,
     private val remoteKavlingDataSource: RemoteKavlingDataSource,
     private val backupKavlingDataSource: BackupKavlingDataSource,
+    private val localBlockDataSource: LocalBlockDataSource,
 ): KavlingRepository {
 
     override fun getKavlingByBlock(
@@ -144,6 +148,36 @@ class KavlingRepositoryImpl(
     override fun getUnmigratedKavlings(backupName: String): Flow<Result<List<String>?>> {
         return flow {
             emit(remoteKavlingDataSource.getUnmigratedKavlings(backupName))
+        }
+    }
+
+    override suspend fun refreshCache(blocks: List<Block>): Result<Nothing?> {
+        return try {
+            localKavlingDataSource.deleteAll().getOrThrow()
+
+            // If blocks parameter is empty, get from cache
+            val mBlocks: List<Block> = blocks.ifEmpty {
+                val cachedBlockModels = localBlockDataSource.getAllBlocks().getOrThrow()
+                val mappedBlockModels = cachedBlockModels?.map { MyObjectMapper.mapBlockModel(it) }
+
+                mappedBlockModels ?: blocks
+            }.ifEmpty {
+                throw Exception("Can't get blocks because the parameter and cached blocks are both empty!")
+            }
+
+            mBlocks.forEach { block ->
+                val kavlingModels = remoteKavlingDataSource.getAllKavlings(block.kode).getOrThrow()
+
+                kavlingModels?.also {
+                    localKavlingDataSource.addAll(it)
+                }
+            }
+
+            Result.success(null)
+        } catch (e: Exception) {
+            e.printStackTrace()
+
+            Result.failure(e)
         }
     }
 
