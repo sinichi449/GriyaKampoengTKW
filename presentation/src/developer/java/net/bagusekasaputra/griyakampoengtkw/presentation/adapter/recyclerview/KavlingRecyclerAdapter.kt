@@ -51,7 +51,10 @@ class KavlingRecyclerAdapter(
         val kavling = kavlings[position]
         val warna = Color.parseColor(kavling.warna)
         val progress = mapProgressKavling[kavling.kode]?.persentaseBulanIni()
-        holder.binding.fillProgressPersen.setProgressColor(warna)
+
+        holder.binding.cardKavling.setCardBackgroundColor(warna)
+        holder.binding.fillProgressPersen.setProgressBackgroundColor(warna)
+        holder.binding.layoutRoot.setBackgroundColor(warna)
         if (progress != null) {
             holder.binding.fillProgressPersen.setProgress(progress, true)
         }
