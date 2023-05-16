@@ -81,4 +81,21 @@ class BlockRepositoryImpl(
         }
     }
 
+    override suspend fun refreshCache(): Result<Nothing?> {
+        return try {
+            localBlockDataSource.deleteAll().getOrThrow()
+
+            val blockModels = remoteBlockDataSource.getAllBlocks().getOrThrow()
+            blockModels?.also {
+                localBlockDataSource.addAll(it).getOrThrow()
+            }
+
+            Result.success(null)
+        } catch (e: Exception) {
+            e.printStackTrace()
+
+            Result.failure(e)
+        }
+    }
+
 }

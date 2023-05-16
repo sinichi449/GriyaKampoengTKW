@@ -30,4 +30,6 @@ interface BlockRoomDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun insert(blockRoom: BlockRoomEntity): Long
 
+    @Query("DELETE FROM blocks")
+    fun deleteAll()
 }

@@ -38,6 +38,30 @@ class RoomBlockDataSource(
         )
     }
 
+    override suspend fun addAll(blockModels: List<BlockModel>): Result<Nothing?> {
+        return try {
+            blockModels.forEach { model ->
+                val blockEntity = mapBlockRoomEntity(model)
+
+                blockRoomDao.insert(blockEntity)
+            }
+
+            Result.success(null)
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
+    }
+
+    override suspend fun deleteAll(): Result<Nothing?> {
+        return try {
+            blockRoomDao.deleteAll()
+
+            Result.success(null)
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
+    }
+
 
     private fun mapBlockRoomEntity(blockRoomEntity: BlockRoomEntity): BlockModel {
         return blockRoomEntity.let {

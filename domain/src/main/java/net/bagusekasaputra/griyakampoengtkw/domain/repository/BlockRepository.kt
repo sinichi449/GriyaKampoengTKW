@@ -10,4 +10,6 @@ interface BlockRepository {
 
     fun addBlock(block: Block): Flow<Result<Nothing?>>
 
+    suspend fun refreshCache(): Result<Nothing?>
+
 }

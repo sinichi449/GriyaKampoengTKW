@@ -8,4 +8,7 @@ interface LocalBlockDataSource {
 
     suspend fun addBlock(blockModel: BlockModel): Result<Nothing?>
 
+    suspend fun addAll(blockModels: List<BlockModel>): Result<Nothing?>
+
+    suspend fun deleteAll(): Result<Nothing?>
 }
