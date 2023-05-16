@@ -44,6 +44,8 @@ class SplashActivity : AppCompatActivity() {
     lateinit var sharedPreferences: SharedPreferences
     @Inject
     lateinit var initRemote: InitRemote
+    @Inject
+    lateinit var cacheAccumulator: CacheAccumulatorForProgressKavling
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -105,7 +107,20 @@ class SplashActivity : AppCompatActivity() {
                         }
                     } else {
                         withContext(Dispatchers.Main) {
-                            showJenisDataChoice(isOnline = true, shouldShowDataBaruOption = true)
+                            val prefsCacheInitiation = "PREFS_HAS_CACHE_INITIATED"
+                            val hasCacheInitiated = sharedPreferences.getBoolean(prefsCacheInitiation, false)
+
+                            if (!hasCacheInitiated) {
+                                initCache(onComplete = {
+                                    sharedPreferences.edit()
+                                        .putBoolean(prefsCacheInitiation, true)
+                                        .apply()
+
+                                    showJenisDataChoice(isOnline = true, shouldShowDataBaruOption = true)
+                                })
+                            } else {
+                                showJenisDataChoice(isOnline = true, shouldShowDataBaruOption = true)
+                            }
                         }
                     }
                 }
@@ -118,32 +133,39 @@ class SplashActivity : AppCompatActivity() {
                 }
             } else {
                 withContext(Dispatchers.Main) {
-                    Toast.makeText(
-                        this@SplashActivity,
-                        "Device terdeteksi offline, mohon cek koneksi Anda.",
-                        Toast.LENGTH_LONG
-                    ).show()
+                    Toast.makeText(this@SplashActivity, "Device terdeteksi offline, mohon cek koneksi Anda.", Toast.LENGTH_LONG).show()
 
                     showJenisDataChoice(isOnline = false, shouldShowDataBaruOption = false)
                 }
             }
         }
     }
-    private suspend fun isDeviceOnline(): Boolean {
-        return suspendCoroutine { continuation ->
-            try {
-                val timeOutMs = 3000
-                val sock = Socket()
-                val sockAddr = InetSocketAddress("8.8.8.8", 53)
 
-                sock.connect(sockAddr, timeOutMs)
-                sock.close()
+    @SuppressLint("SetTextI18n")
+    private fun initCache(onComplete: () -> Unit) {
+        CoroutineScope(Dispatchers.IO).launch {
+            // Change loading text
+            withContext(Dispatchers.Main) {
+                bindingLoading.layoutCekKoneksi.tvInfoPeriksaInternet.text = "Menginisialisasi Cache ..."
+            }
+            val cacheAccumulationResult = cacheAccumulator.execute()
 
-                continuation.resume(true)
-            } catch (e: IOException) {
-                e.printStackTrace()
-
-                continuation.resumeWithException(e)
+            if (cacheAccumulationResult.isSuccess) {
+                withContext(Dispatchers.Main) {
+                    onComplete()
+                }
+            } else {
+                withContext(Dispatchers.Main) {
+                    MaterialAlertDialogBuilder(this@SplashActivity).apply {
+                        setTitle("Kesalahan Inisialisasi")
+                        setMessage("Terdapat masalah dalam mengakumulasi cache aplikasi. Anda tetap dapat menggunakan apliasi Griya Kampoeng TKW Mobile tanpa masalah yang signifikan. Hubungi developer untuk penanganan masalah ini nanti.")
+                        setCancelable(false)
+                        setPositiveButton("OK") { _, _ ->
+                            onComplete()
+                        }
+                    }.create()
+                        .show()
+                }
             }
         }
     }
@@ -189,5 +211,23 @@ class SplashActivity : AppCompatActivity() {
         startActivity(intent)
     }
 
+    private suspend fun isDeviceOnline(): Boolean {
+        return suspendCoroutine { continuation ->
+            try {
+                val timeOutMs = 3000
+                val sock = Socket()
+                val sockAddr = InetSocketAddress("8.8.8.8", 53)
+
+                sock.connect(sockAddr, timeOutMs)
+                sock.close()
+
+                continuation.resume(true)
+            } catch (e: IOException) {
+                e.printStackTrace()
+
+                continuation.resumeWithException(e)
+            }
+        }
+    }
 
 }
