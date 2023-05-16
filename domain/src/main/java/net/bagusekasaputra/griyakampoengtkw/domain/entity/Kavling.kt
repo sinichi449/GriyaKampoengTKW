@@ -23,6 +23,15 @@ data class Kavling(
     }
 
     companion object {
+        fun getKavlingKodes(kavlings: List<Kavling>): List<String> {
+            val kavlingStrs = mutableListOf<String>()
+            kavlings.forEach { kavling ->
+                kavlingStrs.add(kavling.kode)
+            }
+
+            return kavlingStrs
+        }
+
         /**
          * "Complete ukuran" is 6x12. For "6" is "panjang", and "12" is "lebar".
          */
