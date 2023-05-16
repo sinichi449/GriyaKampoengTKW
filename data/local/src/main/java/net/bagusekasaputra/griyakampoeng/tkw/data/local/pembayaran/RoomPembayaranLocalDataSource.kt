@@ -6,7 +6,7 @@ import net.bagusekasaputra.griyakampoengtkw.data.interfaces.local.LocalPembayara
 import net.bagusekasaputra.griyakampoengtkw.data.model.PembayaranModel
 
 class RoomPembayaranLocalDataSource(
-    private val roomDatabase: MyRoomDatabase,
+    roomDatabase: MyRoomDatabase,
 ): LocalPembayaranDataSource {
 
     private val pembayaranDao = roomDatabase.getPembayaranDao()
@@ -86,6 +86,25 @@ class RoomPembayaranLocalDataSource(
                 )
             else
                 pembayaranDao.insertPembayaran(mapPembayaranModel(pembayaranModel, kavlingKode))
+        }
+    }
+
+    override suspend fun addAllPembayaranModel(
+        kavlingKode: String,
+        models: List<PembayaranModel>
+    ): Result<Nothing?> {
+        return try {
+            models.forEach { pembayaranModel ->
+                val pembayaranEntity = mapPembayaranModel(pembayaranModel, kavlingKode)
+
+                pembayaranDao.insertPembayaran(pembayaranEntity)
+            }
+
+            Result.success(null)
+        } catch (e: Exception) {
+            e.printStackTrace()
+
+            Result.failure(e)
         }
     }
 

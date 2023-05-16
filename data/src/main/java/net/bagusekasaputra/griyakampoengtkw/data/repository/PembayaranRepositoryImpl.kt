@@ -276,6 +276,23 @@ class PembayaranRepositoryImpl(
         }.first()
     }
 
+    override suspend fun refreshCache(kavlings: List<String>): Result<Nothing?> {
+        return try {
+            localPembayaranDataSource.deleteAll().getOrThrow()
+            kavlings.forEach { kavling ->
+                val remoteResult = remotePembayaranSource.getAllPembayaran(kavling).getOrThrow()
+
+                remoteResult?.also { pembayaranModels ->
+                    localPembayaranDataSource.addAllPembayaranModel(kavling, pembayaranModels)
+                }
+            }
+
+            Result.success(null)
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
+    }
+
     override fun addPembayaran(
         kavlingKode: String,
         hargaKavling: Long,

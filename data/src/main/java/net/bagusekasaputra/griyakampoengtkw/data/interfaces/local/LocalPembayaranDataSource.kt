@@ -8,6 +8,8 @@ interface LocalPembayaranDataSource {
 
     suspend fun addPembayaranModel(kavlingKode: String, hargaKavling: Long, pembayaranModel: PembayaranModel): Result<Nothing?>
 
+    suspend fun addAllPembayaranModel(kavlingKode: String, models: List<PembayaranModel>): Result<Nothing?>
+
     suspend fun updatePembayaranModel(kavlingKode: String, oldPembayaranModel: PembayaranModel, newPembayaranModel: PembayaranModel): Result<Nothing?>
 
     suspend fun deletePembayaranModelByTermin(kavlingKode: String, termin: String): Result<Nothing?>

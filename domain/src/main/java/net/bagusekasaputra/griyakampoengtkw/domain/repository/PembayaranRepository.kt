@@ -30,4 +30,6 @@ interface PembayaranRepository {
 
     // Currently offline only
     suspend fun getUangMasukBulanIni(kavlingKode: String, dataMode: DataMode): Long?
+
+    suspend fun refreshCache(kavlings: List<String>): Result<Nothing?>
 }
