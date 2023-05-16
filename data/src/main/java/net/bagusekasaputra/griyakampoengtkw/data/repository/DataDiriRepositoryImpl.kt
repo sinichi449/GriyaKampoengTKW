@@ -20,6 +20,7 @@ import net.bagusekasaputra.griyakampoengtkw.data.interfaces.remote.RemoteMetadat
 import net.bagusekasaputra.griyakampoengtkw.data.model.MetadataModel
 import net.bagusekasaputra.griyakampoengtkw.domain.DataMode
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.DataDiri
+import net.bagusekasaputra.griyakampoengtkw.domain.entity.Kavling
 import net.bagusekasaputra.griyakampoengtkw.domain.repository.DataDiriRepository
 
 class DataDiriRepositoryImpl(
@@ -105,7 +106,7 @@ class DataDiriRepositoryImpl(
                 val remoteResult = remoteDataDiriRepository.getFromBackup(backupName, kavling)
                 if (remoteResult.isSuccess) {
                     val model = remoteResult.getOrNull()
-                    val dataDiri = model?.let { MyObjectMapper.mapDataDiri(it) }
+                    val dataDiri = model?.let { mapDataDiri(it) }
 
                     mapDataDiri[kavling] = dataDiri
                 } else {
@@ -123,7 +124,7 @@ class DataDiriRepositoryImpl(
 
     override fun getDataDiri(kavlingKode: String, dataMode: DataMode): Flow<Result<DataDiri?>> {
         return flow {
-            val flowOffline = flow<Result<DataDiri?>> {
+            val flowOffline = flow {
                 val getDataDiriFromLocal = localDataDiriDataSource.getDataDiri(kavlingKode)
 
                 if (getDataDiriFromLocal.isSuccess)
@@ -213,6 +214,27 @@ class DataDiriRepositoryImpl(
 
             // Then, delete on the remote ...
             emitAll(remoteDataDiriRepository.deleteDataDiri(kavlingKode))
+        }
+    }
+
+    override suspend fun refreshCache(kavlings: List<Kavling>): Result<Nothing?> {
+        return try {
+            localDataDiriDataSource.deleteAll().getOrThrow()
+
+            kavlings.forEach { kavling ->
+                val kavlingKode = kavling.kode
+                val dataDiriModel = remoteDataDiriRepository.getDataDiri(kavlingKode).getOrThrow()
+
+                dataDiriModel?.also {
+                    localDataDiriDataSource.addDataDiri(kavlingKode, it).getOrThrow()
+                }
+            }
+
+            Result.success(null)
+        } catch (e: Exception) {
+            e.printStackTrace()
+
+            Result.failure(e)
         }
     }
 

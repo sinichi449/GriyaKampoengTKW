@@ -3,6 +3,7 @@ package net.bagusekasaputra.griyakampoengtkw.domain.repository
 import kotlinx.coroutines.flow.Flow
 import net.bagusekasaputra.griyakampoengtkw.domain.DataMode
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.DataDiri
+import net.bagusekasaputra.griyakampoengtkw.domain.entity.Kavling
 
 interface DataDiriRepository {
 
@@ -19,4 +20,6 @@ interface DataDiriRepository {
     fun addDataDiri(kavlingKode: String, dataDiri: DataDiri): Flow<Result<Boolean>>
 
     fun deleteDataDiri(kavlingKode: String): Flow<Result<Boolean>>
+
+    suspend fun refreshCache(kavlings: List<Kavling>): Result<Nothing?>
 }
