@@ -1,5 +1,8 @@
+@file:Suppress("DEPRECATION")
+
 package net.bagusekasaputra.griyakampoengtkw
 
+import android.annotation.SuppressLint
 import android.content.Intent
 import android.content.SharedPreferences
 import android.os.Bundle
@@ -20,7 +23,6 @@ import kotlinx.coroutines.withContext
 import net.bagusekasaputra.griyakampoengtkw.databinding.ActivitySplashPureBinding
 import net.bagusekasaputra.griyakampoengtkw.databinding.ActivitySplashWithLoadingBinding
 import net.bagusekasaputra.griyakampoengtkw.interfaces.remote.InitRemote
-import net.bagusekasaputra.griyakampoengtkw.R
 import net.bagusekasaputra.griyakampoengtkw.presentation.activities.MainActivity
 import net.bagusekasaputra.griyakampoengtkw.presentation.util.GriyaNodes
 import java.io.IOException
@@ -31,12 +33,12 @@ import kotlin.coroutines.resume
 import kotlin.coroutines.resumeWithException
 import kotlin.coroutines.suspendCoroutine
 
+@SuppressLint("CustomSplashScreen")
 @AndroidEntryPoint
 class SplashActivity : AppCompatActivity() {
 
     private lateinit var bindingPure: ActivitySplashPureBinding
     private lateinit var bindingLoading: ActivitySplashWithLoadingBinding
-
 
     @Inject
     lateinit var sharedPreferences: SharedPreferences
@@ -61,6 +63,7 @@ class SplashActivity : AppCompatActivity() {
         showSplashScreen(1.5f)
     }
 
+    @Suppress("SameParameterValue")
     private fun showSplashScreen(seconds: Float) {
         val handler = Handler()
         val splashRunnable = Runnable {
@@ -75,6 +78,7 @@ class SplashActivity : AppCompatActivity() {
         handler.postDelayed(splashRunnable, millis)
     }
 
+    @SuppressLint("SetTextI18n")
     private fun connectivityCheckAndInitServer() {
         CoroutineScope(Dispatchers.IO).launch {
             if (isDeviceOnline()) {
@@ -167,6 +171,7 @@ class SplashActivity : AppCompatActivity() {
         }
     }
 
+    @Suppress("SameParameterValue")
     private fun goToMainActivity(isOnline: Boolean, isNewDataSelected: Boolean) {
         // I also want to pass a BuildConfig for checking update.
         val intent = Intent(this, MainActivity::class.java)
@@ -183,4 +188,6 @@ class SplashActivity : AppCompatActivity() {
         val intent = Intent(this, DataLamaActivity::class.java)
         startActivity(intent)
     }
+
+
 }
