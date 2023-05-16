@@ -45,6 +45,21 @@ class RoomKavlingDataSource(
         )
     }
 
+    override suspend fun addAll(kavlingModels: List<KavlingModel>): Result<Nothing?> {
+        return try {
+            kavlingModels.forEach { model ->
+                val blokKode = KavlingModel.getBlockKode(model.kode)
+                val kavlingEntity = mapKavlingRoomEntity(blokKode, model)
+
+                kavlingRoomDao.insert(kavlingEntity)
+            }
+
+            Result.success(null)
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
+    }
+
     override suspend fun deleteKavling(kavlingKode: String): Result<Nothing?> {
         return try {
             kavlingRoomDao.deleteKavling(kavlingKode)
