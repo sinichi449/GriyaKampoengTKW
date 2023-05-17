@@ -19,6 +19,8 @@ import net.bagusekasaputra.griyakampoengtkw.data.model.IndenBookingModel
 import net.bagusekasaputra.griyakampoengtkw.data.model.KavlingModel
 import net.bagusekasaputra.griyakampoengtkw.data.model.PembayaranModel
 import net.bagusekasaputra.griyakampoengtkw.data.model.StatusPembayaranModel
+import net.bagusekasaputra.griyakampoengtkw.data.model.StatusPembayaranModel.LogPengembalianModel
+import net.bagusekasaputra.griyakampoengtkw.data.model.StatusPembayaranModel.LogStatusModel
 import net.bagusekasaputra.griyakampoengtkw.domain.DateUtil.toDate
 import net.bagusekasaputra.griyakampoengtkw.domain.DateUtil.toSlashedString
 import net.bagusekasaputra.griyakampoengtkw.domain.ImageUtil
@@ -42,6 +44,8 @@ import net.bagusekasaputra.griyakampoengtkw.domain.entity.images.ImageDataDiriUr
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.images.ImageSprUri
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.statusPembayaran.LogPengembalian
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.statusPembayaran.StatusPembayaran
+import net.bagusekasaputra.griyakampoengtkw.domain.entity.statusPembayaran.StatusPembayaran.LogStatus
+
 
 
 /**
@@ -473,41 +477,116 @@ object MyObjectMapper {
      */
     fun mapStatusPembayaran(model: StatusPembayaranModel): StatusPembayaran {
         return model.let {
-            val statuses = mutableListOf<StatusPembayaran.Status>()
-            it.listStatus.forEach { statusModel ->
-                when (statusModel.namaStatus) {
-                    "Nil" -> statuses.add(StatusPembayaran.Nil(statusModel.tanggal.toDate()))
-                    "Aktif" -> statuses.add(StatusPembayaran.Aktif(statusModel.tanggal.toDate()))
-                    "Suspend" -> statuses.add(StatusPembayaran.Suspend(statusModel.tanggal.toDate()))
-                    "Jeda" -> statuses.add(StatusPembayaran.Jeda(statusModel.tanggal.toDate()))
-                    "Batal" -> {
-                        // Parsing Batal
-                        val logsPengembalian = statusModel.logPengembalians
-                            .map { logPengembalianModel ->
-                                LogPengembalian(
-                                    logPengembalianModel.kavling,
-                                    logPengembalianModel.jumlahUangDikembalikan
-                                )
-                            }
+            val listLogStatuses = mutableListOf<List<LogStatus>>()
+            it.listLogStatuses.forEach { logStatusModels ->
+                val logStatuses = mutableListOf<LogStatus>()
 
-                        statuses.add(StatusPembayaran.Batal(
-                            tanggalBatal = statusModel.tanggal.toDate(),
-                            riwayatTotalUangMasuk = statusModel.riwayatTotalUangMasuk,
-                            costumerPengganti = DataDiri(
-                                statusModel.namaCostumerPengganti,
-                                "KTP",
-                                "", "", "",
-                                "", ""
-                            ),
-                            logsPengembalian = logsPengembalian,
-                        ))
+                logStatusModels.forEach { logStatusModel ->
+                    when (logStatusModel.namaStatus) {
+                        "Nil" -> {
+                            logStatuses.add(StatusPembayaran.Nil(
+                                tanggalDibuka = logStatusModel.tanggal.toDate(),
+                                keteranganNil = logStatusModel.keterangan,
+                                )
+                            )
+                        }
+                        "Aktif" -> {
+                            logStatuses.add(StatusPembayaran.Aktif(
+                                tanggalItj = logStatusModel.tanggal.toDate(),
+                                keteranganAktif = logStatusModel.keterangan,
+                                )
+                            )
+                        }
+                        "Suspend" -> {
+                            logStatuses.add(StatusPembayaran.Suspend(
+                                tanggalSuspend = logStatusModel.tanggal.toDate(),
+                                keteranganSuspend = logStatusModel.keterangan
+                                )
+                            )
+                        }
+                        "Jeda" -> {
+                            logStatuses.add(StatusPembayaran.Jeda(
+                                tanggalJeda = logStatusModel.tanggal.toDate(),
+                                keteranganJeda = logStatusModel.keterangan
+                            )
+                            )
+                        }
+                        "Batal" -> {
+                            // Parsing Batal
+                            val logsPengembalian = logStatusModel.logPengembalians
+                                .map { logPengembalianModel ->
+                                    LogPengembalian(
+                                        kavling = logPengembalianModel.kavling,
+                                        tanggal = logPengembalianModel.tanggal.toDate(),
+                                        jumlahUangDikembalikan = logPengembalianModel.jumlahUangDikembalikan,
+                                        keterangan = logPengembalianModel.keterangan,
+                                    )
+                                }
+
+                            logStatuses.add(StatusPembayaran.Batal(
+                                tanggalBatal = logStatusModel.tanggal.toDate(),
+                                riwayatTotalUangMasuk = logStatusModel.riwayatTotalUangMasuk,
+                                logPengembalians = logsPengembalian,
+                            ))
+                        }
+                        else -> throw IllegalStateException("Tipe Log Status Pembayaran \"${logStatusModel.namaStatus}\" tidak diketahui!")
                     }
                 }
+
+                listLogStatuses.add(logStatuses)
             }
 
             StatusPembayaran(
                 kavling = it.kavling,
-                listStatus = statuses,
+                listLogStatuses = listLogStatuses,
+            )
+        }
+    }
+
+    fun mapStatusPembayaran(statusPembayaran: StatusPembayaran): StatusPembayaranModel {
+        return statusPembayaran.let {
+            val listLogStatusesModels = mutableListOf<List<LogStatusModel>>()
+            it.listLogStatuses.forEach { logStatuses ->
+                val logStatusModels = mutableListOf<LogStatusModel>()
+                logStatuses.forEach { logStatus ->
+                    val namaStatus = logStatus.getTitle()
+                    val tanggal = logStatus.tanggal.toSlashedString()
+                    val keterangan = logStatus.keterangan
+
+                    if (logStatus is StatusPembayaran.Batal) {
+                        val logPengembalianModels = logStatus.logPengembalians
+                            .map { logPengembalian ->
+                                LogPengembalianModel(
+                                    kavling = logPengembalian.kavling,
+                                    tanggal = logPengembalian.tanggal.toSlashedString(),
+                                    jumlahUangDikembalikan = logPengembalian.jumlahUangDikembalikan,
+                                    keterangan = logPengembalian.keterangan,
+                                )
+                            }
+
+                        logStatusModels.add(LogStatusModel(
+                            namaStatus = namaStatus,
+                            tanggal = tanggal,
+                            keterangan = keterangan,
+                            riwayatTotalUangMasuk = logStatus.riwayatTotalUangMasuk,
+                            logPengembalians = logPengembalianModels,
+                        )
+                        )
+                    } else {
+                        logStatusModels.add(LogStatusModel(
+                            namaStatus = namaStatus,
+                            tanggal = tanggal,
+                            keterangan = keterangan,
+                        ))
+                    }
+                }
+
+                listLogStatusesModels.add(logStatusModels)
+            }
+
+            StatusPembayaranModel(
+                kavling = it.kavling,
+                listLogStatuses = listLogStatusesModels,
             )
         }
     }

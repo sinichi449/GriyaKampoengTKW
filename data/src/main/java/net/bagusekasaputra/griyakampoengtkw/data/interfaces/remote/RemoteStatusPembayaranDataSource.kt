@@ -6,4 +6,5 @@ interface RemoteStatusPembayaranDataSource {
 
     suspend fun get(kavling: String): Result<StatusPembayaranModel?>
 
+    suspend fun insert(model: StatusPembayaranModel): Result<Nothing?>
 }

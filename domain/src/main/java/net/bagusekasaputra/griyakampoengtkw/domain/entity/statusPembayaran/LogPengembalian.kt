@@ -6,6 +6,7 @@ data class LogPengembalian(
     val kavling: String,
     val tanggal: Date,
     val jumlahUangDikembalikan: Long,
+    val keterangan: String = "",
 ) {
 
     companion object {

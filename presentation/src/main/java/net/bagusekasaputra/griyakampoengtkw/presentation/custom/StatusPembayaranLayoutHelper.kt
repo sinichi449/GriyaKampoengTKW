@@ -2,7 +2,6 @@ package net.bagusekasaputra.griyakampoengtkw.presentation.custom
 
 import android.annotation.SuppressLint
 import android.content.Context
-import android.graphics.drawable.Drawable
 import android.view.LayoutInflater
 import android.view.View
 import androidx.core.content.ContextCompat
@@ -38,9 +37,10 @@ class StatusPembayaranLayoutHelper(
         binding.tvStatus.text = textStatus
 
         binding.layoutStepper.visibility = View.GONE
+        // TODO: Multiple LogStatuses
         binding.verticalStepperLogStatusPembayaran.stepperAdapter = LogStatusPembayaranStepperAdapter(
             binding.verticalStepperLogStatusPembayaran,
-            statusPembayaran.listStatus
+            statusPembayaran.listLogStatuses.last()
         )
 
         binding.root.isCheckable = true
@@ -68,8 +68,8 @@ class StatusPembayaranLayoutHelper(
     }
 
     companion object {
-        private fun getIndicatorTintColor(status: StatusPembayaran.Status): Int {
-            return when (status) {
+        private fun getIndicatorTintColor(logStatus: StatusPembayaran.LogStatus): Int {
+            return when (logStatus) {
                 is StatusPembayaran.Nil -> R.color.status_pembayaran_nil
                 is StatusPembayaran.Aktif -> R.color.status_pembayaran_aktif
                 is StatusPembayaran.Suspend -> R.color.status_pembayaran_suspend
@@ -86,18 +86,18 @@ class StatusPembayaranLayoutHelper(
 
     class LogStatusPembayaranStepperAdapter(
         private val stepperView: VerticalStepperView,
-        private val statuses: List<StatusPembayaran.Status>,
+        private val logStatuses: List<StatusPembayaran.LogStatus>,
     ): IStepperAdapter {
         override fun getTitle(position: Int): CharSequence {
-            return statuses[position].getTitle()
+            return logStatuses[position].getTitle()
         }
 
         override fun getSummary(position: Int): CharSequence {
-            return statuses[position].tanggal.toSlashedDate()
+            return logStatuses[position].tanggal.toSlashedDate()
         }
 
         override fun size(): Int {
-            return statuses.size
+            return logStatuses.size
         }
 
         @SuppressLint("SetTextI18n")
@@ -105,7 +105,7 @@ class StatusPembayaranLayoutHelper(
             val layoutInflater = LayoutInflater.from(context)
             val stepperBinding = LayoutStepperLogStatusPembayaranBinding.inflate(layoutInflater, parent, false)
 
-            val status = statuses[position]
+            val status = logStatuses[position]
 
             val doneIconTint = getIndicatorTintColor(status)
             parent?.doneIcon?.setTint(getColor(context!!, doneIconTint))
@@ -119,8 +119,6 @@ class StatusPembayaranLayoutHelper(
                     append("Berikut Tabel Pengembalian uang:")
                     append("\n\n")
                     append("INI TABEL!")
-                    append("\n\n")
-                    append("Pengganti untuk unit ini adalah ${status.costumerPengganti.nama}.")
                     append("\n\n")
                 }
                 append("Perubahan terakhir pada ${status.tanggal.toSlashedDate()}")

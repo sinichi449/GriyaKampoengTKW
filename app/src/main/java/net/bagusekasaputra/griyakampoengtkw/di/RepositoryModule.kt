@@ -360,7 +360,9 @@ object RepositoryModule {
      * Status Pembayaran
      */
     @Provides
-    fun provideStatusPembayaranRepository(): StatusPembayaranRepository {
-        return StatusPembayaranRepositoryImpl()
+    fun provideStatusPembayaranRepository(
+        remoteStatusPembayaranDataSource: RemoteStatusPembayaranDataSource,
+    ): StatusPembayaranRepository {
+        return StatusPembayaranRepositoryImpl(remoteStatusPembayaranDataSource)
     }
 }
