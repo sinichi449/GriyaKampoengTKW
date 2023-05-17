@@ -18,6 +18,7 @@ import net.bagusekasaputra.griyakampoengtkw.data.model.ImageSprModel
 import net.bagusekasaputra.griyakampoengtkw.data.model.IndenBookingModel
 import net.bagusekasaputra.griyakampoengtkw.data.model.KavlingModel
 import net.bagusekasaputra.griyakampoengtkw.data.model.PembayaranModel
+import net.bagusekasaputra.griyakampoengtkw.data.model.StatusPembayaranModel
 import net.bagusekasaputra.griyakampoengtkw.domain.DateUtil.toDate
 import net.bagusekasaputra.griyakampoengtkw.domain.DateUtil.toSlashedString
 import net.bagusekasaputra.griyakampoengtkw.domain.ImageUtil
@@ -39,6 +40,8 @@ import net.bagusekasaputra.griyakampoengtkw.domain.entity.Kavling
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.Pembayaran
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.images.ImageDataDiriUri
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.images.ImageSprUri
+import net.bagusekasaputra.griyakampoengtkw.domain.entity.statusPembayaran.LogPengembalian
+import net.bagusekasaputra.griyakampoengtkw.domain.entity.statusPembayaran.StatusPembayaran
 
 
 /**
@@ -464,4 +467,48 @@ object MyObjectMapper {
         }
     }
 
+
+    /**
+     * Status Pembayaran
+     */
+    fun mapStatusPembayaran(model: StatusPembayaranModel): StatusPembayaran {
+        return model.let {
+            val statuses = mutableListOf<StatusPembayaran.Status>()
+            it.listStatus.forEach { statusModel ->
+                when (statusModel.namaStatus) {
+                    "Nil" -> statuses.add(StatusPembayaran.Nil(statusModel.tanggal.toDate()))
+                    "Aktif" -> statuses.add(StatusPembayaran.Aktif(statusModel.tanggal.toDate()))
+                    "Suspend" -> statuses.add(StatusPembayaran.Suspend(statusModel.tanggal.toDate()))
+                    "Jeda" -> statuses.add(StatusPembayaran.Jeda(statusModel.tanggal.toDate()))
+                    "Batal" -> {
+                        // Parsing Batal
+                        val logsPengembalian = statusModel.logPengembalians
+                            .map { logPengembalianModel ->
+                                LogPengembalian(
+                                    logPengembalianModel.kavling,
+                                    logPengembalianModel.jumlahUangDikembalikan
+                                )
+                            }
+
+                        statuses.add(StatusPembayaran.Batal(
+                            tanggalBatal = statusModel.tanggal.toDate(),
+                            riwayatTotalUangMasuk = statusModel.riwayatTotalUangMasuk,
+                            costumerPengganti = DataDiri(
+                                statusModel.namaCostumerPengganti,
+                                "KTP",
+                                "", "", "",
+                                "", ""
+                            ),
+                            logsPengembalian = logsPengembalian,
+                        ))
+                    }
+                }
+            }
+
+            StatusPembayaran(
+                kavling = it.kavling,
+                listStatus = statuses,
+            )
+        }
+    }
 }
