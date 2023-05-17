@@ -1,7 +1,10 @@
 package net.bagusekasaputra.griyakampoengtkw.domain.entity.statusPembayaran
 
+import java.util.Date
+
 data class LogPengembalian(
     val kavling: String,
+    val tanggal: Date,
     val jumlahUangDikembalikan: Long,
 ) {
 
