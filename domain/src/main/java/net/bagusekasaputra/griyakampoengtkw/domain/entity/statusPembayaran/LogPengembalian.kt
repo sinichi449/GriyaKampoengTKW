@@ -1,0 +1,19 @@
+package net.bagusekasaputra.griyakampoengtkw.domain.entity.statusPembayaran
+
+data class LogPengembalian(
+    val kavling: String,
+    val jumlahUangDikembalikan: Long,
+) {
+
+    companion object {
+        fun hitungTotalUangSudahDikembalikan(logs: List<LogPengembalian>): Long {
+            var mTotal = 0L
+
+            logs.forEach {
+                mTotal += it.jumlahUangDikembalikan
+            }
+
+            return mTotal
+        }
+    }
+}

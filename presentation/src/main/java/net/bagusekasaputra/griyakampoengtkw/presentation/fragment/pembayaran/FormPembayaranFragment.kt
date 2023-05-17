@@ -29,6 +29,7 @@ import net.bagusekasaputra.griyakampoengtkw.presentation.R
 import net.bagusekasaputra.griyakampoengtkw.presentation.activities.FullImageActivity
 import net.bagusekasaputra.griyakampoengtkw.presentation.activities.PembayaranTabelFullActivity
 import net.bagusekasaputra.griyakampoengtkw.presentation.adapter.recyclerview.TerminRecyclerAdapter
+import net.bagusekasaputra.griyakampoengtkw.presentation.custom.StatusPembayaranLayoutHelper
 import net.bagusekasaputra.griyakampoengtkw.presentation.custom.TabelPembayaranNavHelper
 import net.bagusekasaputra.griyakampoengtkw.presentation.custom.ThousandSeparatorTextWatcher
 import net.bagusekasaputra.griyakampoengtkw.presentation.databinding.*
@@ -61,6 +62,7 @@ class FormPembayaranFragment : Fragment() {
 
     private var currentKavlingKode: String? = null
     private var isAllFabsVisible = false
+    private var layoutStatusPembayaran: StatusPembayaranLayoutHelper? = null
 
     private var offlineMode = false
 
@@ -153,6 +155,10 @@ class FormPembayaranFragment : Fragment() {
         val dataMode = viewModel.dataMode
         if (offlineMode || dataMode == DataMode.DATA_LAMA)
             onOfflineState()
+
+        binding.layoutStatusPembayaran?.also {
+            layoutStatusPembayaran = StatusPembayaranLayoutHelper(it)
+        }
 
         binding.imgEdit?.setOnClickListener {
             showEditHargaDialog()
@@ -248,6 +254,17 @@ class FormPembayaranFragment : Fragment() {
     }
 
     private fun syncPembayaran() {
+        pembayaranViewModel.getStatusPembayaran(
+            currentKavlingKode!!,
+            onLoading = {
+                layoutStatusPembayaran?.onLoading()
+            },
+            onFailure = {
+                layoutStatusPembayaran?.onFailure()
+
+                Toast.makeText(requireContext(), it, Toast.LENGTH_LONG).show()
+            },
+        )
         viewModel.getHargaKavling(currentKavlingKode!!) { failMsg ->
             Toast.makeText(requireContext(), failMsg, Toast.LENGTH_LONG).show()
         }
@@ -281,6 +298,12 @@ class FormPembayaranFragment : Fragment() {
         viewModel.isFinishOperation.observe(requireActivity()) { finish ->
             finish?.let {
                 binding.swipeRefreshFormPembayaran.isRefreshing = !it
+            }
+        }
+
+        pembayaranViewModel.statusPembayaranLive.observe(requireActivity()) {
+            it?.also { statusPembayaran ->
+                layoutStatusPembayaran?.onSuccess(statusPembayaran)
             }
         }
 

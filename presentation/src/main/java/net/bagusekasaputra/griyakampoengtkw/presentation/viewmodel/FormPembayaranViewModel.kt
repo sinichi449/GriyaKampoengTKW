@@ -15,10 +15,12 @@ import net.bagusekasaputra.griyakampoengtkw.domain.DataMode
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.baselinePembayaran.GetBaselinePembayaranByKavlingAsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.baselinePembayaran.SetBaselinePembayaranAsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.pembayaran.GetListPembayaranBulananAsyncUseCase
+import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.statusPembayaran.GetStatusPembayaranKavlingAsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.BaselinePembayaran
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.HargaKavling
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.Pembayaran
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.pembayaran.PembayaranBulanan
+import net.bagusekasaputra.griyakampoengtkw.domain.entity.statusPembayaran.StatusPembayaran
 import javax.inject.Inject
 
 /**
@@ -29,12 +31,15 @@ class FormPembayaranViewModel @Inject constructor(
     private val getBaselinePembayaranByKavlingAsyncUseCase: GetBaselinePembayaranByKavlingAsyncUseCase,
     private val setBaselinePembayaranAsyncUseCase: SetBaselinePembayaranAsyncUseCase,
     private val getListPembayaranBulananAsyncUseCase: GetListPembayaranBulananAsyncUseCase,
+    private val getStatusPembayaranKavlingAsyncUseCase: GetStatusPembayaranKavlingAsyncUseCase,
 ): ViewModel() {
 
+    // Pembayaran Bulanan
     private val _pembayaranBulanansLive = MutableLiveData<List<PembayaranBulanan>?>(null)
     val pembayaranBulanansLive: LiveData<List<PembayaranBulanan>?>
         get() = _pembayaranBulanansLive
 
+    // Baseline Pembayaran
     private val _baselinePembayaranLive = MutableLiveData<BaselinePembayaran?>()
     val baselinePembayaranLive: LiveData<BaselinePembayaran?>
         get() = _baselinePembayaranLive
@@ -42,7 +47,7 @@ class FormPembayaranViewModel @Inject constructor(
         _baselinePembayaranLive.postValue(baselinePembayaran)
     }
 
-
+    // Full Pembayaran
     private val _fullPembayaransLive = MutableLiveData<List<Pembayaran>?>(null)
     val fullPembayaransLive: LiveData<List<Pembayaran>?>
         get() = _fullPembayaransLive
@@ -59,6 +64,10 @@ class FormPembayaranViewModel @Inject constructor(
         }
     }
 
+    // Status Pembayaran
+    private val _statusPembayaranLive = MutableLiveData<StatusPembayaran?>(null)
+    val statusPembayaranLive: LiveData<StatusPembayaran?>
+        get() = _statusPembayaranLive
 
 
     var currentKavlingKode: String? = null
@@ -170,6 +179,33 @@ class FormPembayaranViewModel @Inject constructor(
 
                     withContext(Dispatchers.Main) {
                         onFailure("ERROR menambahkan Baseline Pembayaran: ${it.message}")
+                    }
+                }
+            }
+        }
+    }
+
+    fun getStatusPembayaran(kavling: String,
+        onLoading: () -> Unit = {},
+        onSuccess: () -> Unit = {},
+        onFailure: (msg: String) -> Unit = {}
+    ) {
+        onLoading()
+
+        CoroutineScope(Dispatchers.IO).launch {
+            val request = GetStatusPembayaranKavlingAsyncUseCase.Request(kavling, dataMode)
+            getStatusPembayaranKavlingAsyncUseCase.execute(request).collect { result ->
+                result.onSuccess {
+                    _statusPembayaranLive.postValue(it)
+
+                    withContext(Dispatchers.Main) {
+                        onSuccess()
+                    }
+                }
+
+                result.onFailure {
+                    withContext(Dispatchers.Main) {
+                        onFailure("Gagal mendapatkan Status Pembayaran: ${it.message}")
                     }
                 }
             }

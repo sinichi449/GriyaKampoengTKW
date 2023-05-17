@@ -36,6 +36,7 @@ import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.rekap.CalculateR
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.rekap.GetListRekapGlobalAsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.rekap.GetRekapBesarDetailAsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.reportKavling.GetAllReportKavlingAsyncUseCase
+import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.statusPembayaran.GetStatusPembayaranKavlingAsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.repository.*
 import net.bagusekasaputra.griyakampoengtkw.domain.usecase.appupdate.GetUpdateInformationUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.usecase.biayaMarketing.*
@@ -546,5 +547,14 @@ object UseCaseModule {
         baselinePembayaranRepository: BaselinePembayaranRepository,
     ): GetProgressKavlingAsyncUseCase {
         return GetProgressKavlingAsyncUseCase(baselinePembayaranRepository, pembayaranRepository)
+    }
+
+
+    /**
+     * Status Pembayaran
+     */
+    @Provides
+    fun provideGetStatusPembayaranKavlingUseCase(statusPembayaranRepository: StatusPembayaranRepository): GetStatusPembayaranKavlingAsyncUseCase {
+        return GetStatusPembayaranKavlingAsyncUseCase(statusPembayaranRepository)
     }
 }

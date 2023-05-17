@@ -354,4 +354,13 @@ object RepositoryModule {
             remoteMetadata,
         )
     }
+
+
+    /**
+     * Status Pembayaran
+     */
+    @Provides
+    fun provideStatusPembayaranRepository(): StatusPembayaranRepository {
+        return StatusPembayaranRepositoryImpl()
+    }
 }
