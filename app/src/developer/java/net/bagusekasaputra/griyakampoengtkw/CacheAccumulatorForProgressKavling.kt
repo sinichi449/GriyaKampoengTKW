@@ -23,16 +23,14 @@ class CacheAccumulatorForProgressKavling @Inject constructor(
     private val pembayaranRepository: PembayaranRepository,
 ) {
 
-    private val dataMode = DataMode.ONLINE
-
     suspend fun execute(): Result<Nothing?> {
         return try {
             val blocks = hoardAllBlocks()
             val kavlings = hoardKavlings(blocks)
 
             hoardDataDiris(kavlings)
-            hoardBaselinePembayarans(kavlings)
             hoardPembayarans(kavlings)
+            hoardBaselinePembayarans(kavlings)
 
             Result.success(null)
         } catch (e: Exception) {
@@ -79,9 +77,11 @@ class CacheAccumulatorForProgressKavling @Inject constructor(
     }
 
     private suspend fun hoardDataDiris(kavlings: List<Kavling>) {
+        dataDiriRepository.refreshCache(kavlings).getOrThrow()
+
         kavlings.forEach { kavling ->
             val kodeKavling = kavling.kode
-            val dataDiri = dataDiriRepository.getDataDiri(kodeKavling, dataMode).first()
+            val dataDiri = dataDiriRepository.getDataDiri(kodeKavling, DataMode.OFFLINE).first()
                 .getOrThrow()
 
             dataDiri?.also { logMessage("hoardDataDiris() -> Data Diri Kav. $kodeKavling acquired!") }
@@ -89,10 +89,12 @@ class CacheAccumulatorForProgressKavling @Inject constructor(
     }
 
     private suspend fun hoardBaselinePembayarans(listKavling: List<Kavling>) {
+        baselinePembayaranRepository.refreshCache(listKavling).getOrThrow()
+
         listKavling.forEach { kavling ->
             val kodeKavling = kavling.kode
 
-            val baselinePembayaran = baselinePembayaranRepository.get(kodeKavling, dataMode)
+            val baselinePembayaran = baselinePembayaranRepository.get(kodeKavling, DataMode.OFFLINE)
                 .first()
                 .getOrThrow()
 
@@ -101,21 +103,16 @@ class CacheAccumulatorForProgressKavling @Inject constructor(
     }
 
     private suspend fun hoardPembayarans(kavlings: List<Kavling>) {
-        logMessage("hoardPembayarans() -> On Progress hoarding Pembayarans ...")
+        val kavlingStrs = Kavling.getKavlingKodes(kavlings)
+        pembayaranRepository.refreshCache(kavlingStrs).getOrThrow()
 
-        val kavlingStrs = mutableListOf<String>().run {
-            kavlings.forEach { kavling ->
-                add(kavling.kode)
+        kavlingStrs.forEach { kavlingKode ->
+            val pembayaran = pembayaranRepository.getAllPembayaran(kavlingKode, DataMode.OFFLINE).first()
+                .getOrThrow()
+            
+            pembayaran?.also {
+                logMessage("hoardPembayarans(): List Pembayaran Kav. $kavlingKode successfully queried!")
             }
-
-            this
-        }
-        val refreshCacheResult = pembayaranRepository.refreshCache(kavlingStrs)
-
-        if (refreshCacheResult.isSuccess) {
-            logMessage("hoardPembayarans() -> SUCCESS Hoarding Pembayarans!")
-        } else {
-            refreshCacheResult.exceptionOrNull()?.also { throw it }
         }
     }
 

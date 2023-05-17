@@ -8,6 +8,8 @@ interface LocalBaselinePembayaranDataSource {
 
     suspend fun insert(model: BaselinePembayaranModel): Result<Nothing?>
 
+    suspend fun addAll(models: List<BaselinePembayaranModel>): Result<Nothing?>
+
     suspend fun deleteAll(): Result<Nothing?>
 
 }

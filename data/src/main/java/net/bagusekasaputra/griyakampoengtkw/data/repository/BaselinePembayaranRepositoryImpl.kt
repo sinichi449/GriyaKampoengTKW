@@ -12,8 +12,10 @@ import net.bagusekasaputra.griyakampoengtkw.data.interfaces.local.LocalBaselineP
 import net.bagusekasaputra.griyakampoengtkw.data.interfaces.local.LocalMetadataDataSource
 import net.bagusekasaputra.griyakampoengtkw.data.interfaces.remote.RemoteBaselinePembayaranDataSource
 import net.bagusekasaputra.griyakampoengtkw.data.interfaces.remote.RemoteMetadataDataSource
+import net.bagusekasaputra.griyakampoengtkw.data.model.BaselinePembayaranModel
 import net.bagusekasaputra.griyakampoengtkw.domain.DataMode
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.BaselinePembayaran
+import net.bagusekasaputra.griyakampoengtkw.domain.entity.Kavling
 import net.bagusekasaputra.griyakampoengtkw.domain.repository.BaselinePembayaranRepository
 
 class BaselinePembayaranRepositoryImpl(
@@ -118,5 +120,27 @@ class BaselinePembayaranRepositoryImpl(
                 emit(0L)
             }
         }.first()
+    }
+
+    override suspend fun refreshCache(kavlings: List<Kavling>): Result<Nothing?> {
+        return try {
+            localDataSource.deleteAll().getOrThrow()
+
+            val baselinePembayaranModels = mutableListOf<BaselinePembayaranModel>()
+            kavlings.forEach {  kavling ->
+                val kavlingKode = kavling.kode
+                val baselinePembayaranModel = remoteDataSource.get(kavlingKode).getOrThrow()
+
+                baselinePembayaranModel?.also { baselinePembayaranModels.add(it) }
+            }
+
+            localDataSource.addAll(baselinePembayaranModels).getOrThrow()
+
+            Result.success(null)
+        } catch (e: Exception) {
+            e.printStackTrace()
+
+            Result.failure(e)
+        }
     }
 }

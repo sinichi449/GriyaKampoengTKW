@@ -2,8 +2,8 @@ package net.bagusekasaputra.griyakampoeng.tkw.data.local
 
 import androidx.room.Database
 import androidx.room.RoomDatabase
-import net.bagusekasaputra.griyakampoeng.tkw.data.local.baselinePembayaran.BaselinePembayaranRoomDao
 import net.bagusekasaputra.griyakampoeng.tkw.data.local.baselinePembayaran.BaselinePembayaranRoomEntity
+import net.bagusekasaputra.griyakampoeng.tkw.data.local.baselinePembayaran.BaselinePembayaranRoomFixDao
 import net.bagusekasaputra.griyakampoeng.tkw.data.local.biayaLain.BiayaLainDao
 import net.bagusekasaputra.griyakampoeng.tkw.data.local.biayaLain.BiayaLainRoomEntity
 import net.bagusekasaputra.griyakampoeng.tkw.data.local.biayaMarketing.BiayaMarketingV2RoomDao
@@ -79,7 +79,7 @@ abstract class MyRoomDatabase: RoomDatabase() {
 
     abstract fun getBiayaLainDao(): BiayaLainDao
 
-    abstract fun getBaselinePembayaranDao(): BaselinePembayaranRoomDao
+    abstract fun getBaselinePembayaranDao(): BaselinePembayaranRoomFixDao
 
     abstract fun getIndenBookingDao(): IndenBookingRoomDao
 }

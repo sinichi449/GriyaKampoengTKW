@@ -2,7 +2,7 @@
   "formatVersion": 1,
   "database": {
     "version": 21,
-    "identityHash": "7c4d138d87bcc733bbae32cf707632d4",
+    "identityHash": "d82d11f70c47d2ba0b3263ff433e7613",
     "entities": [
       {
         "tableName": "kavlings",
@@ -714,8 +714,14 @@
       },
       {
         "tableName": "baselinePembayaran",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`kavling` TEXT NOT NULL, `opsiBulan` INTEGER NOT NULL, `jumlahUang` INTEGER NOT NULL, `tanggalPembayaranMaks` INTEGER NOT NULL, `timeMillis` INTEGER NOT NULL, PRIMARY KEY(`kavling`))",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `kavling` TEXT NOT NULL, `opsiBulan` INTEGER NOT NULL, `jumlahUang` INTEGER NOT NULL, `tanggalPembayaranMaks` INTEGER NOT NULL, `timeMillis` INTEGER NOT NULL)",
         "fields": [
+          {
+            "fieldPath": "id",
+            "columnName": "id",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
           {
             "fieldPath": "kavling",
             "columnName": "kavling",
@@ -749,11 +755,21 @@
         ],
         "primaryKey": {
           "columnNames": [
-            "kavling"
+            "id"
           ],
-          "autoGenerate": false
+          "autoGenerate": true
         },
-        "indices": [],
+        "indices": [
+          {
+            "name": "index_baselinePembayaran_kavling",
+            "unique": true,
+            "columnNames": [
+              "kavling"
+            ],
+            "orders": [],
+            "createSql": "CREATE UNIQUE INDEX IF NOT EXISTS `index_baselinePembayaran_kavling` ON `${TABLE_NAME}` (`kavling`)"
+          }
+        ],
         "foreignKeys": []
       },
       {
@@ -816,7 +832,7 @@
     "views": [],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '7c4d138d87bcc733bbae32cf707632d4')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'd82d11f70c47d2ba0b3263ff433e7613')"
     ]
   }
 }

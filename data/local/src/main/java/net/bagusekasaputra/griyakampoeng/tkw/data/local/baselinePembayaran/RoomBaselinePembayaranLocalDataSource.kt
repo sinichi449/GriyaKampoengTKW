@@ -26,14 +26,30 @@ class RoomBaselinePembayaranLocalDataSource(
     override suspend fun insert(model: BaselinePembayaranModel): Result<Nothing?> {
         return try {
             val entity = mapBaselinePembayaranModel(model)!!
-            val resultId = dao.insert(entity)
 
-            Log.d("DEBUG_ME", "LocalBaselinePembayaran: Inserting success ${model.kavling} with id $resultId")
+            dao.insert(entity)
 
             Result.success(null)
         } catch (e: Exception) {
             e.printStackTrace()
 
+            Result.failure(e)
+        }
+    }
+
+    override suspend fun addAll(models: List<BaselinePembayaranModel>): Result<Nothing?> {
+        return try {
+            val baselinePembayaranEntities = models.map {
+                mapBaselinePembayaranModel(it)!!
+            }
+            val resultId = dao.insertAll(baselinePembayaranEntities)
+
+            resultId.forEach {
+                Log.d("INIT_CACHE", "Inserting Baseline Pembayaran success with id \"$it\"")
+            }
+
+            Result.success(null)
+        } catch (e: Exception) {
             Result.failure(e)
         }
     }
