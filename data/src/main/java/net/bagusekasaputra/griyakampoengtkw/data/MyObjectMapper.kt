@@ -21,6 +21,7 @@ import net.bagusekasaputra.griyakampoengtkw.data.model.PembayaranModel
 import net.bagusekasaputra.griyakampoengtkw.data.model.StatusPembayaranModel
 import net.bagusekasaputra.griyakampoengtkw.data.model.StatusPembayaranModel.LogPengembalianModel
 import net.bagusekasaputra.griyakampoengtkw.data.model.StatusPembayaranModel.LogStatusModel
+import net.bagusekasaputra.griyakampoengtkw.data.model.PromotionModel
 import net.bagusekasaputra.griyakampoengtkw.domain.DateUtil.toDate
 import net.bagusekasaputra.griyakampoengtkw.domain.DateUtil.toSlashedString
 import net.bagusekasaputra.griyakampoengtkw.domain.ImageUtil
@@ -40,6 +41,7 @@ import net.bagusekasaputra.griyakampoengtkw.domain.entity.ImageSpr
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.IndenBooking
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.Kavling
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.Pembayaran
+import net.bagusekasaputra.griyakampoengtkw.domain.entity.Promotion
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.images.ImageDataDiriUri
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.images.ImageSprUri
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.statusPembayaran.LogPengembalian
@@ -587,6 +589,18 @@ object MyObjectMapper {
             StatusPembayaranModel(
                 kavling = it.kavling,
                 listLogStatuses = listLogStatusesModels,
+            )
+        }
+    }
+
+    /**
+     * Promotion
+     */
+    fun mapPromotion(model: PromotionModel): Promotion {
+        return model.let {
+            Promotion(
+                title = it.title,
+                texts = it.texts,
             )
         }
     }

@@ -28,6 +28,7 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import net.bagusekasaputra.griyakampoengtkw.data.remote.FirebaseNodes
 import net.bagusekasaputra.griyakampoengtkw.databinding.ActivitySplashPureBinding
 import net.bagusekasaputra.griyakampoengtkw.databinding.ActivitySplashWithLoadingBinding
 import net.bagusekasaputra.griyakampoengtkw.presentation.R
@@ -93,6 +94,7 @@ class SplashActivity : AppCompatActivity() {
         showSplashScreen(1.5f)
     }
 
+    @Suppress("SameParameterValue")
     private fun showSplashScreen(seconds: Float) {
         val handler = Handler()
         val splashRunnable = Runnable {
@@ -107,6 +109,7 @@ class SplashActivity : AppCompatActivity() {
         handler.postDelayed(splashRunnable, millis)
     }
 
+    @SuppressLint("SetTextI18n")
     private fun connectivityCheckAndInitServer() {
         CoroutineScope(Dispatchers.IO).launch {
             deviceOnline().collect { online ->
@@ -221,7 +224,7 @@ class SplashActivity : AppCompatActivity() {
     private suspend fun checkMaintenance(): Result<Boolean> {
         return callbackFlow<Result<Boolean>> {
             val database = FirebaseDatabase.getInstance(GriyaNodes.firebaseUrl)
-            val maintenanceRef = database.reference.child("maintenance")
+            val maintenanceRef = database.reference.child(FirebaseNodes.MAINTENTANCE)
 
             maintenanceRef
                 .get()

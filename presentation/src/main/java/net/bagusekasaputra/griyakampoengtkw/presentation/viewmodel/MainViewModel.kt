@@ -5,6 +5,7 @@ import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -16,9 +17,13 @@ import net.bagusekasaputra.griyakampoengtkw.domain.DataMode
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.block.GetAllBlocksAsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.kavling.GetKavlingByBlockAsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.kavling.GetProgressKavlingAsyncUseCase
+import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.promotion.GetPromotionMessageAsyncUseCase
+import net.bagusekasaputra.griyakampoengtkw.domain.entity.AppUpdate
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.Block
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.Kavling
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.ProgressKavling
+import net.bagusekasaputra.griyakampoengtkw.domain.entity.Promotion
+import net.bagusekasaputra.griyakampoengtkw.domain.usecase.appupdate.GetUpdateInformationUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.usecase.block.AddNewBlockUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.usecase.kavling.AddKavlingUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.usecase.kavling.EditKavlingUseCase
@@ -36,6 +41,8 @@ class MainViewModel @Inject constructor(
     private val removeKavlingUseCase: RemoveKavlingUseCase,
 //    private val getAppUpdateInformationUseCase: GetUpdateInformationUseCase,
     private val getProgressKavlingAsyncUseCase: GetProgressKavlingAsyncUseCase,
+    private val getAppUpdateInformationUseCase: GetUpdateInformationUseCase,
+    private val getPromotionMessageAsyncUseCase: GetPromotionMessageAsyncUseCase,
 ): ViewModel() {
 
     private val _kavlings = MutableLiveData<List<Kavling>>()
@@ -49,6 +56,12 @@ class MainViewModel @Inject constructor(
     private val _mapProgressKavling = MutableLiveData<Map<String, ProgressKavling>?>(null)
     val mapProgressKavling: LiveData<Map<String, ProgressKavling>?>
         get() = _mapProgressKavling
+
+
+    // Promotion Message
+    private val _promotionMessage = MutableLiveData<Promotion?>(null)
+    val promotionMessage: LiveData<Promotion?>
+        get() = _promotionMessage
 
 
     val currentBlock = MutableLiveData("A")
@@ -327,6 +340,25 @@ class MainViewModel @Inject constructor(
                 }
                 result.onFailure {
                     Log.d("STATUS_PEMBAYARAN", "Terjadi kesalahan ViewModel : ${it.message}")
+                }
+            }
+        }
+    }
+
+    /**
+     * Promotion Message
+     */
+    fun getPromotionMessage(onFailure: (msg: String) -> Unit = {}) {
+        viewModelScope.launch {
+            val request = GetPromotionMessageAsyncUseCase.Request
+            getPromotionMessageAsyncUseCase.execute(request).collect { result ->
+                result.onSuccess {
+                    _promotionMessage.postValue(it)
+                }
+                result.onFailure {
+                    withContext(Dispatchers.Main) {
+                        onFailure("Gagal mendapatkan Promotion Message: ${it.message}")
+                    }
                 }
             }
         }

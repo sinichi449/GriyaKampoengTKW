@@ -1,5 +1,6 @@
 package net.bagusekasaputra.griyakampoengtkw.presentation.activities
 
+import android.annotation.SuppressLint
 import android.content.Intent
 import android.content.SharedPreferences
 import android.net.Uri
@@ -17,14 +18,15 @@ import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.navigateUp
 import androidx.navigation.ui.onNavDestinationSelected
 import androidx.navigation.ui.setupWithNavController
+import com.crowdfire.cfalertdialog.CFAlertDialog
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
 import net.bagusekasaputra.griyakampoengtkw.domain.DataMode
+import net.bagusekasaputra.griyakampoengtkw.domain.entity.Promotion
 import net.bagusekasaputra.griyakampoengtkw.presentation.R
 import net.bagusekasaputra.griyakampoengtkw.presentation.databinding.ActivityMainBinding
 import net.bagusekasaputra.griyakampoengtkw.presentation.util.GriyaNodes
-import net.bagusekasaputra.griyakampoengtkw.presentation.viewmodel.BiayaLainViewModel
 import net.bagusekasaputra.griyakampoengtkw.presentation.viewmodel.MainViewModel
 import javax.inject.Inject
 
@@ -40,7 +42,7 @@ class MainActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityMainBinding
     private val viewModel: MainViewModel by viewModels()
-    private val biayaLainViewModel: BiayaLainViewModel by viewModels()
+//    private val biayaLainViewModel: BiayaLainViewModel by viewModels()
 
     private lateinit var navController: NavController
     private lateinit var appBarConfiguration: AppBarConfiguration
@@ -49,6 +51,7 @@ class MainActivity : AppCompatActivity() {
     @Inject
     lateinit var sharedPrefs: SharedPreferences
 
+    @SuppressLint("SetTextI18n")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -99,7 +102,47 @@ class MainActivity : AppCompatActivity() {
             binding.connectivityStatus.constraintConnectivity.visibility = View.VISIBLE
         }
 
+        setupViewModel()
+
         checkUpdate()
+
+        // Get Promotion Message
+        viewModel.getPromotionMessage(onFailure = {
+            Toast.makeText(this, it, Toast.LENGTH_LONG).show()
+        })
+    }
+
+    private fun setupViewModel() {
+        viewModel.promotionMessage.observe(this) {
+            it?.also {
+                showPromotionMessageDialog(it)
+            }
+        }
+    }
+
+    private fun showPromotionMessageDialog(promotion: Promotion) {
+        val message = StringBuilder()
+        promotion.texts.forEach {
+            message.append("- ")
+                .append(it)
+                .append("\n")
+        }
+
+        CFAlertDialog.Builder(this).apply {
+            setDialogStyle(CFAlertDialog.CFAlertStyle.ALERT)
+            setTitle(promotion.title)
+            setMessage(message)
+            addButton(
+                "Siapkan",
+                -1,
+                -1,
+                CFAlertDialog.CFAlertActionStyle.DEFAULT,
+                CFAlertDialog.CFAlertActionAlignment.JUSTIFIED
+            ) { dialog, _ ->
+                dialog.dismiss()
+            }
+        }.create()
+            .show()
     }
 
     override fun onSupportNavigateUp(): Boolean {

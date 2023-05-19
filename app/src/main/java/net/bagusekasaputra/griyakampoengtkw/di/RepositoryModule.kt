@@ -365,4 +365,12 @@ object RepositoryModule {
     ): StatusPembayaranRepository {
         return StatusPembayaranRepositoryImpl(remoteStatusPembayaranDataSource)
     }
+
+    /**
+     * Promotion
+     */
+    @Provides
+    fun providePromotionRepository(remotePromotionDataSource: RemotePromotionDataSource): PromotionRepository {
+        return PromotionRepositoryImpl(remotePromotionDataSource)
+    }
 }

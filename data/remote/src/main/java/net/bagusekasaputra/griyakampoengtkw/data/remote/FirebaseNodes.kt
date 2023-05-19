@@ -20,6 +20,7 @@ object FirebaseNodes {
     const val DATABASE_USER = "databaseUser"
     const val BACKUPS = "backups"
     const val STATUS_PEMBAYARAN = "statusPembayaran"
+    const val PROMOTION = "promotion"
     const val MAINTENTANCE = "maintenance"
 
     const val IMAGE_DATA_DIRI = "data_diri_images"

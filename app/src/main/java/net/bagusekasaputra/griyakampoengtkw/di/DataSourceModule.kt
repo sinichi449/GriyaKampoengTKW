@@ -56,6 +56,7 @@ import net.bagusekasaputra.griyakampoengtkw.data.remote.indenBooking.FirebaseInd
 import net.bagusekasaputra.griyakampoengtkw.data.remote.kavling.FirebaseKavlingDataSource
 import net.bagusekasaputra.griyakampoengtkw.data.remote.metadata.FirebaseMetadataDataSource
 import net.bagusekasaputra.griyakampoengtkw.data.remote.statusPembayaran.FirebaseStatusPembayaranDataSource
+import net.bagusekasaputra.griyakampoengtkw.data.remote.promotion.FirebasePromotionDataSource
 import java.io.File
 import javax.inject.Qualifier
 
@@ -431,5 +432,12 @@ object DataSourceModule {
     @Provides
     fun provideRemoteStatusPembayaranDataSource(databaseReference: DatabaseReference): RemoteStatusPembayaranDataSource {
         return FirebaseStatusPembayaranDataSource(databaseReference)
+    }
+    /**
+     * Promotion
+     */
+    @Provides
+    fun provideRemotePromotionDataSource(databaseReference: DatabaseReference): RemotePromotionDataSource {
+        return FirebasePromotionDataSource(databaseReference)
     }
 }
