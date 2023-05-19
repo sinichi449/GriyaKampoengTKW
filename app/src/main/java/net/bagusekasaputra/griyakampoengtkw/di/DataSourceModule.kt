@@ -54,6 +54,7 @@ import net.bagusekasaputra.griyakampoengtkw.data.remote.imageSpr.StorageImageSpr
 import net.bagusekasaputra.griyakampoengtkw.data.remote.indenBooking.FirebaseIndenBookingDataSource
 import net.bagusekasaputra.griyakampoengtkw.data.remote.kavling.FirebaseKavlingDataSource
 import net.bagusekasaputra.griyakampoengtkw.data.remote.metadata.FirebaseMetadataDataSource
+import net.bagusekasaputra.griyakampoengtkw.data.remote.promotion.FirebasePromotionDataSource
 import java.io.File
 import javax.inject.Qualifier
 
@@ -413,4 +414,11 @@ object DataSourceModule {
         )
     }
 
+    /**
+     * Promotion
+     */
+    @Provides
+    fun provideRemotePromotionDataSource(databaseReference: DatabaseReference): RemotePromotionDataSource {
+        return FirebasePromotionDataSource(databaseReference)
+    }
 }

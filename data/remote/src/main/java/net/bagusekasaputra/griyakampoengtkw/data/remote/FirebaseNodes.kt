@@ -18,6 +18,7 @@ object FirebaseNodes {
     const val BASELINE_PEMBAYARAN = "baselinePembayaran"
     const val INDEN_BOOKING = "indenBooking"
     const val BACKUPS = "backups"
+    const val PROMOTION = "promotion"
     const val MAINTENTANCE = "maintenance"
 
     const val IMAGE_DATA_DIRI = "data_diri_images"

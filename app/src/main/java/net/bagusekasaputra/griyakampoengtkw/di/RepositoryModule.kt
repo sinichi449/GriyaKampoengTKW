@@ -353,4 +353,12 @@ object RepositoryModule {
             remoteMetadata,
         )
     }
+
+    /**
+     * Promotion
+     */
+    @Provides
+    fun providePromotionRepository(remotePromotionDataSource: RemotePromotionDataSource): PromotionRepository {
+        return PromotionRepositoryImpl(remotePromotionDataSource)
+    }
 }

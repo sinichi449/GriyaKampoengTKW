@@ -30,6 +30,7 @@ import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.kavling.GetListU
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.pembayaran.GetAllPembayaranAsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.pembayaran.GetListPembayaranBulananAsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.pengingat.*
+import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.promotion.GetPromotionMessageAsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.rekap.CalculateRekapBesarAndGetRekapBesarOverview
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.rekap.GetListRekapGlobalAsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.rekap.GetRekapBesarDetailAsyncUseCase
@@ -527,5 +528,14 @@ object UseCaseModule {
     @Provides
     fun provideSetBaselinePembayaranUseCase(baselinePembayaranRepository: BaselinePembayaranRepository): SetBaselinePembayaranAsyncUseCase {
         return SetBaselinePembayaranAsyncUseCase(baselinePembayaranRepository)
+    }
+
+
+    /**
+     * Promotion
+     */
+    @Provides
+    fun provideGetPromotionMessageUseCase(promotionRepository: PromotionRepository): GetPromotionMessageAsyncUseCase {
+        return GetPromotionMessageAsyncUseCase(promotionRepository)
     }
 }

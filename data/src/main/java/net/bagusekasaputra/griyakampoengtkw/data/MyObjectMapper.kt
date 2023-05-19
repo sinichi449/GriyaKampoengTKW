@@ -17,6 +17,7 @@ import net.bagusekasaputra.griyakampoengtkw.data.model.ImageSprModel
 import net.bagusekasaputra.griyakampoengtkw.data.model.IndenBookingModel
 import net.bagusekasaputra.griyakampoengtkw.data.model.KavlingModel
 import net.bagusekasaputra.griyakampoengtkw.data.model.PembayaranModel
+import net.bagusekasaputra.griyakampoengtkw.data.model.PromotionModel
 import net.bagusekasaputra.griyakampoengtkw.domain.DateUtil.toDate
 import net.bagusekasaputra.griyakampoengtkw.domain.DateUtil.toSlashedString
 import net.bagusekasaputra.griyakampoengtkw.domain.ImageUtil
@@ -35,6 +36,7 @@ import net.bagusekasaputra.griyakampoengtkw.domain.entity.ImageSpr
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.IndenBooking
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.Kavling
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.Pembayaran
+import net.bagusekasaputra.griyakampoengtkw.domain.entity.Promotion
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.images.ImageDataDiriUri
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.images.ImageSprUri
 
@@ -424,6 +426,18 @@ object MyObjectMapper {
                 fotoPembayaranPath = it.fotoPembayaranPath,
                 noHp = it.noHp,
                 keterangan = it.keterangan,
+            )
+        }
+    }
+
+    /**
+     * Promotion
+     */
+    fun mapPromotion(model: PromotionModel): Promotion {
+        return model.let {
+            Promotion(
+                title = it.title,
+                texts = it.texts,
             )
         }
     }
