@@ -2,13 +2,24 @@
 <androidx.appcompat.widget.LinearLayoutCompat xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical">
+    android:orientation="vertical"
+    android:theme="@style/Theme.GriyaKampung.BlackWhite">
 
     <com.google.android.material.textview.MaterialTextView
         android:id="@+id/item_content"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="12dp"/>
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/btn_lihat_tabel"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        style="@style/NormalDialogButton"
+        android:text="Tabel Pengembalian"
+        android:drawableEnd="@drawable/baseline_navigate_next_24"
+        android:drawableTint="@color/white"
+        android:visibility="gone"/>
 
     <androidx.appcompat.widget.LinearLayoutCompat
         android:layout_width="wrap_content"
