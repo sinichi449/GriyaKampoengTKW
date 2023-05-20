@@ -174,7 +174,7 @@ class KavlingFragment : Fragment() {
                     "A" -> "A Lantai 1"
                     "B" -> "B Lantai 2"
                     "C" -> "C Lantai 1 (Type Custom)"
-                    else -> ""
+                    else -> "D (Developer)"
                 }
 
                 binding.tvInfoBlock?.text = "$infoBlokText $keteranganBlok"
