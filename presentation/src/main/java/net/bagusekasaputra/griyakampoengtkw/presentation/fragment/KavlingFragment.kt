@@ -131,6 +131,7 @@ class KavlingFragment : Fragment() {
         Log.d("DEBUG_ME", "KavlingFragment: Saving KavlingRecyclerView's State onStop() ...")
     }
 
+    @SuppressLint("SetTextI18n")
     private fun setupViewModel() {
         viewModel.blocksLive.observe(requireActivity()) {
             it?.let {
@@ -163,6 +164,22 @@ class KavlingFragment : Fragment() {
         viewModel.isFinishOperation.observe(requireActivity()) {
             it?.let { finish ->
                 binding.swipeRefreshMain.isRefreshing = !finish
+            }
+        }
+
+        viewModel.currentBlock.observe(requireActivity()) { blockKode ->
+            val infoBlokText = "Blok"
+            if (blockKode != null) {
+                val keteranganBlok = when (blockKode) {
+                    "A" -> "A Lantai 1"
+                    "B" -> "B Lantai 2"
+                    "C" -> "C Lantai 1 (Type Custom)"
+                    else -> ""
+                }
+
+                binding.tvInfoBlock?.text = "$infoBlokText $keteranganBlok"
+            } else {
+                binding.tvInfoBlock?.text = infoBlokText
             }
         }
 
