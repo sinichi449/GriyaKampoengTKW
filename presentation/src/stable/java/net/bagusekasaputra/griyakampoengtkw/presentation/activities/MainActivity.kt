@@ -12,6 +12,7 @@ import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.edit
+import androidx.core.text.HtmlCompat
 import androidx.navigation.NavController
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.AppBarConfiguration
@@ -26,6 +27,8 @@ import net.bagusekasaputra.griyakampoengtkw.domain.DataMode
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.Promotion
 import net.bagusekasaputra.griyakampoengtkw.presentation.R
 import net.bagusekasaputra.griyakampoengtkw.presentation.databinding.ActivityMainBinding
+import net.bagusekasaputra.griyakampoengtkw.presentation.databinding.DialogPromotionFooterBinding
+import net.bagusekasaputra.griyakampoengtkw.presentation.databinding.DialogPromotionHeaderBinding
 import net.bagusekasaputra.griyakampoengtkw.presentation.util.GriyaNodes
 import net.bagusekasaputra.griyakampoengtkw.presentation.viewmodel.MainViewModel
 import javax.inject.Inject
@@ -127,20 +130,18 @@ class MainActivity : AppCompatActivity() {
                 .append(it)
                 .append("\n")
         }
+        val headerView = DialogPromotionHeaderBinding.inflate(layoutInflater)
+        val footerView = DialogPromotionFooterBinding.inflate(layoutInflater)
+
+        val footerText = "<i>Investasikan gajimu untuk Rumah Impianmu!</i>"
+        footerView.tvFooter.text = HtmlCompat.fromHtml(footerText, HtmlCompat.FROM_HTML_MODE_LEGACY)
 
         CFAlertDialog.Builder(this).apply {
             setDialogStyle(CFAlertDialog.CFAlertStyle.ALERT)
+            setHeaderView(headerView.root)
             setTitle(promotion.title)
             setMessage(message)
-            addButton(
-                "Siapkan",
-                -1,
-                -1,
-                CFAlertDialog.CFAlertActionStyle.DEFAULT,
-                CFAlertDialog.CFAlertActionAlignment.JUSTIFIED
-            ) { dialog, _ ->
-                dialog.dismiss()
-            }
+            setFooterView(footerView.root)
         }.create()
             .show()
     }
