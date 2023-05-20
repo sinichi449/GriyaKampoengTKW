@@ -24,7 +24,7 @@ import net.bagusekasaputra.griyakampoengtkw.presentation.viewmodel.MainViewModel
 import javax.inject.Inject
 
 /**
- * Removed App Update checking
+ * Removed App Update checking and Promotion Benner
  */
 @AndroidEntryPoint
 class MainActivity : AppCompatActivity() {

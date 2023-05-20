@@ -31,7 +31,7 @@ import net.bagusekasaputra.griyakampoengtkw.presentation.viewmodel.MainViewModel
 import javax.inject.Inject
 
 /**
- * Have checking app update, while the Developer build has none
+ * App Update and Promotion Banner
  */
 @AndroidEntryPoint
 class MainActivity : AppCompatActivity() {
