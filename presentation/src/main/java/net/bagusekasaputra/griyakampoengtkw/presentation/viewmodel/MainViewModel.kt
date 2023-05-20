@@ -96,7 +96,7 @@ class MainViewModel @Inject constructor(
      *
      * Whenever the "GET" operation is success, we need to update these value into TRUE.
      */
-    val blockRefreshed = MutableLiveData<Boolean>(false)
+    val blockRefreshed = MutableLiveData(false)
     val kavlingsRefreshed = mapOf(
         Pair("A", MutableLiveData(false)),
         Pair("B", MutableLiveData(false)),
@@ -340,6 +340,37 @@ class MainViewModel @Inject constructor(
                 }
                 result.onFailure {
                     Log.d("STATUS_PEMBAYARAN", "Terjadi kesalahan ViewModel : ${it.message}")
+                }
+            }
+        }
+    }
+
+    fun checkUpdates(
+        versionName: String,
+        versionCode: Int,
+        onAvailable: (appUpdate: AppUpdate) -> Unit,
+        onFailure: (msg: String) -> Unit,
+    ) {
+        CoroutineScope(Dispatchers.IO).launch {
+            val currentBuildConfig = GetUpdateInformationUseCase.CurrentBuildConfig(
+                versionName = versionName,
+                versionCode = versionCode,
+            )
+            val request = GetUpdateInformationUseCase.Request(currentBuildConfig)
+
+            getAppUpdateInformationUseCase.execute(request).collect { response ->
+                val result = response.data.result
+
+                if (result.isSuccess) {
+                    result.getOrNull()?.let { appUpdate ->
+                        withContext(Dispatchers.Main) {
+                            onAvailable(appUpdate)
+                        }
+                    }
+                } else {
+                    withContext(Dispatchers.Main) {
+                        onFailure("Gagal mendapatkan update: ${result.exceptionOrNull()?.message ?: "null"}")
+                    }
                 }
             }
         }
