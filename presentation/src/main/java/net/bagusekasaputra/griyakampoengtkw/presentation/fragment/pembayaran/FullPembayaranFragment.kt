@@ -10,7 +10,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.evrencoskun.tableview.listener.ITableViewListener
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import dagger.hilt.android.AndroidEntryPoint
-import net.bagusekasaputra.griyakampoengtkw.domain.entity.BaselinePembayaran
+import net.bagusekasaputra.griyakampoengtkw.domain.NumberUtil
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.Pembayaran
 import net.bagusekasaputra.griyakampoengtkw.presentation.databinding.FragmentFullPembayaranBinding
 import net.bagusekasaputra.griyakampoengtkw.presentation.tableview.formPembayaran.FullPembayaranTableWrapper
@@ -38,34 +38,35 @@ class FullPembayaranFragment : Fragment() {
     }
 
     private fun setupViewModel() {
-        viewModel.baselinePembayaranLive.observe(requireActivity()) {
-            it?.also { baseline -> setSisaWaktuAngsuran(baseline) }
-        }
+        viewModel.baselinePembayaranLive.observe(requireActivity()) { j ->
+            j?.also { baseline ->
+//                setSisaWaktuAngsuran(baseline)
+                viewModel.fullPembayaransLive.observe(requireActivity()) { k ->
+                    k?.also { pembayarans ->
+                        setTablePembayaran(pembayarans)
 
-        viewModel.fullPembayaransLive.observe(requireActivity()) {
-            it?.also { pembayarans ->
-                setTablePembayaran(pembayarans)
+                        binding.tvSisaBlmTerbayarBulanIni.text = pembayarans.run {
+                            val sisaBelumBayar = baseline.hitungSisaBlmBayarBulanIni(this)
 
-                binding.tvSisaBlmTerbayar.text = StringBuilder().run {
-                    append("Rp. ")
-                    append(Pembayaran.getSisaBelumTerbayar(pembayarans))
-                    toString()
+                            "Rp. ${NumberUtil.formatLongToString(sisaBelumBayar)}"
+                        }
+                    }
                 }
             }
         }
     }
 
-    private fun setSisaWaktuAngsuran(baselinePembayaran: BaselinePembayaran) {
-        val sortedPembayarans = viewModel.fullPembayaransLive.value
-        if (!sortedPembayarans.isNullOrEmpty()) {
-            val sisaBulan = baselinePembayaran.hitungSisaBulanAngsuran(sortedPembayarans)
-            binding.tvSisaWaktuAngsuran.text = StringBuilder().run {
-                append(sisaBulan)
-                append(" Bulan")
-                toString()
-            }
-        }
-    }
+//    private fun setSisaWaktuAngsuran(baselinePembayaran: BaselinePembayaran) {
+//        val sortedPembayarans = viewModel.fullPembayaransLive.value
+//        if (!sortedPembayarans.isNullOrEmpty()) {
+//            val sisaBulan = baselinePembayaran.hitungSisaBulanAngsuran(sortedPembayarans)
+//            binding.tvSisaWaktuAngsuran.text = StringBuilder().run {
+//                append(sisaBulan)
+//                append(" Bulan")
+//                toString()
+//            }
+//        }
+//    }
 
     private fun setTablePembayaran(pembayarans: List<Pembayaran>) {
         val listener = object : ITableViewListener {

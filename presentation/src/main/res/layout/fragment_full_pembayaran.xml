@@ -48,51 +48,26 @@
             android:orientation="vertical"
             app:layout_constraintGuide_percent="0.5"/>
 
+
         <com.google.android.material.textview.MaterialTextView
-            android:id="@+id/tvInfo_sisa_waktu_angsuran"
+            android:id="@+id/tv_info_sisa_blm_terbayar_bulan_ini"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toStartOf="@id/guideline_sisa_total_pembayaran"
-            android:text="Sisa Wkt. Angsuran"
+            android:text="Sisa Blm Dibayar Bulan Ini"
             style="@style/TextAppearance.MaterialComponents.Headline6"
             android:textSize="@dimen/form_pembayaran_title_text_size"/>
 
         <com.google.android.material.textview.MaterialTextView
-            android:id="@+id/tv_sisa_waktu_angsuran"
+            android:id="@+id/tv_sisa_blm_terbayar_bulan_ini"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             app:layout_constraintStart_toEndOf="@id/guideline_sisa_total_pembayaran"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="@id/tvInfo_sisa_waktu_angsuran"
-            app:layout_constraintBottom_toBottomOf="@id/tvInfo_sisa_waktu_angsuran"
-            android:layout_marginTop="8dp"
-            android:layout_marginStart="16dp"
-            android:layout_marginEnd="16dp"
-            android:gravity="end"
-            android:text="-"
-            style="@style/TextAppearance.MaterialComponents.Subtitle1"/>
-
-        <com.google.android.material.textview.MaterialTextView
-            android:id="@+id/tv_info_sisa_blm_terbayar"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            app:layout_constraintTop_toBottomOf="@id/tvInfo_sisa_waktu_angsuran"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toStartOf="@id/guideline_sisa_total_pembayaran"
-            android:text="Sisa Pembayaran"
-            style="@style/TextAppearance.MaterialComponents.Headline6"
-            android:textSize="@dimen/form_pembayaran_title_text_size"/>
-
-        <com.google.android.material.textview.MaterialTextView
-            android:id="@+id/tv_sisa_blm_terbayar"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            app:layout_constraintStart_toEndOf="@id/guideline_sisa_total_pembayaran"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="@id/tv_info_sisa_blm_terbayar"
-            app:layout_constraintBottom_toBottomOf="@id/tv_info_sisa_blm_terbayar"
+            app:layout_constraintTop_toTopOf="@id/tv_info_sisa_blm_terbayar_bulan_ini"
+            app:layout_constraintBottom_toBottomOf="@id/tv_info_sisa_blm_terbayar_bulan_ini"
             android:layout_marginStart="16dp"
             android:gravity="end"
             android:layout_marginEnd="16dp"
