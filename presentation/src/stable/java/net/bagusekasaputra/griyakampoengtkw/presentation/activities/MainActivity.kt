@@ -116,11 +116,11 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun setupViewModel() {
-        viewModel.promotionMessage.observe(this) {
-            it?.also {
-                showPromotionMessageDialog(it)
-            }
-        }
+//        viewModel.promotionMessage.observe(this) {
+//            it?.also {
+//                showPromotionMessageDialog(it)
+//            }
+//        }
     }
 
     private fun showPromotionMessageDialog(promotion: Promotion) {
