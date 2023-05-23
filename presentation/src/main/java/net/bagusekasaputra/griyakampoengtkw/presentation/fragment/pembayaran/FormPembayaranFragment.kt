@@ -212,6 +212,10 @@ class FormPembayaranFragment : Fragment() {
                 Manifest.permission.READ_EXTERNAL_STORAGE
             })
 
+
+        // Prevent showing Sisa Belum dibayar bulan ini
+        pembayaranViewModel.isFullScreenTable = false
+
         binding.btnFullscreen?.setOnClickListener {
             val intent = Intent(requireContext(), PembayaranTabelFullActivity::class.java)
             intent.putExtra(

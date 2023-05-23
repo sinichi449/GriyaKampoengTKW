@@ -1,11 +1,11 @@
 package net.bagusekasaputra.griyakampoengtkw.presentation.activities
 
 import android.annotation.SuppressLint
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.View
 import android.widget.Toast
 import androidx.activity.viewModels
+import androidx.appcompat.app.AppCompatActivity
 import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.BaselinePembayaran
@@ -47,6 +47,9 @@ class PembayaranTabelFullActivity : AppCompatActivity() {
                 },
             )
         }
+
+        // Show sisa blm dibayar bulan ini
+        pembayaranViewModel.isFullScreenTable = true
 
         val tabelNavHelper = TabelPembayaranNavHelper(
             lifecycleOwner = this,

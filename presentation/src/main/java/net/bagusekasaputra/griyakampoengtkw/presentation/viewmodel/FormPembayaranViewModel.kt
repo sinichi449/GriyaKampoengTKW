@@ -72,6 +72,7 @@ class FormPembayaranViewModel @Inject constructor(
 
     var currentKavlingKode: String? = null
     var dataMode = DataMode.ONLINE
+    var isFullScreenTable = false
 
     private var readBaselinePembayaranJob: Job? = null
     var writeBaselinePembayaranJob: Job? = null
