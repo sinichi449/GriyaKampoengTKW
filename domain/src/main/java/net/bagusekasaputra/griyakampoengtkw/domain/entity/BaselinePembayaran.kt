@@ -31,7 +31,7 @@ data class BaselinePembayaran(
         val sisaBelumBayarBulanIni = jumlahUang - totalPembayaranBulanIni
 
         if (sisaBelumBayarBulanIni < 0L) {
-            return 0L
+            throw IllegalStateException("Sisa Belum Bayar mencapai angka Minus : $sisaBelumBayarBulanIni")
         }
 
         return sisaBelumBayarBulanIni

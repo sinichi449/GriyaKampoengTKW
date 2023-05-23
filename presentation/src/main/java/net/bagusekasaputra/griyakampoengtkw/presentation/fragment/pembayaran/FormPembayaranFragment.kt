@@ -353,10 +353,16 @@ class FormPembayaranFragment : Fragment() {
             binding.tvSisaBelumBayarBulanIni?.visibility = View.VISIBLE
             binding.tvInfoSisaBelumBayarBulanIni?.visibility = View.VISIBLE
 
-            binding.tvSisaBelumBayarBulanIni?.text = listPembayaran.run {
-                val sisaBelumBayar = baselinePembayaran.hitungSisaBlmBayarBulanIni(this)
+            try {
+                binding.tvSisaBelumBayarBulanIni?.text = listPembayaran.run {
+                    val sisaBelumBayar = baselinePembayaran.hitungSisaBlmBayarBulanIni(this)
 
-                "Rp. ${NumberUtil.formatLongToString(sisaBelumBayar)}"
+                    "Rp. ${NumberUtil.formatLongToString(sisaBelumBayar)}"
+                }
+            } catch (e: Exception) {
+                e.printStackTrace()
+
+                Toast.makeText(requireContext(), "Terjadi kesalahan : ${e.message}", Toast.LENGTH_LONG).show()
             }
         }
     }
