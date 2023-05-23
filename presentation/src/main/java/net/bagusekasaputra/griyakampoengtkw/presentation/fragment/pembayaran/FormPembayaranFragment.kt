@@ -1006,7 +1006,7 @@ class FormPembayaranFragment : Fragment() {
             dialogBinding.tilTermin.isEnabled = true
 
             dialogBinding.edtTermin.setText(
-                viewModel.getNextPembayaranSequence(DetailViewModel.JenisPembayaran.ITJ)
+                pembayaranViewModel.getNextPembayaranSequence(FormPembayaranViewModel.JenisPembayaran.ITJ)
             )
 //            dialogBinding.tilTermin.hint = "Masukkan urutan ITJ"
         }
@@ -1015,7 +1015,7 @@ class FormPembayaranFragment : Fragment() {
             dialogBinding.tilTermin.isEnabled = true
 
             dialogBinding.edtTermin.setText(
-                viewModel.getNextPembayaranSequence(DetailViewModel.JenisPembayaran.DP)
+                pembayaranViewModel.getNextPembayaranSequence(FormPembayaranViewModel.JenisPembayaran.DP)
             )
 //            dialogBinding.tilTermin.hint = "Masukkan urutan DP"
         }
@@ -1024,11 +1024,11 @@ class FormPembayaranFragment : Fragment() {
             dialogBinding.tilTermin.isEnabled = true
 
             dialogBinding.edtTermin.setText(
-                viewModel.getNextPembayaranSequence(DetailViewModel.JenisPembayaran.TERMIN)
+                pembayaranViewModel.getNextPembayaranSequence(FormPembayaranViewModel.JenisPembayaran.TERMIN)
             )
 
             // Set automatic Jumlah Uang Dibayar for Termin type
-            val jumlahUangDibayar = viewModel.getTerminJumlahUangDibayar()
+            val jumlahUangDibayar = pembayaranViewModel.getTerminJumlahUangDibayar()
             if (jumlahUangDibayar != null) {
                 dialogBinding.edtJumlahUangDibayar.setText(jumlahUangDibayar)
             }
