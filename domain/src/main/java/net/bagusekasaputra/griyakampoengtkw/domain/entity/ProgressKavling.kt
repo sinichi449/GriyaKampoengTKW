@@ -17,8 +17,12 @@ data class ProgressKavling(
             val persentase = mUangMasuk
                 .divide(mAngsuran, 2, RoundingMode.HALF_UP)
                 .multiply(BigDecimal(100))
+                .toInt()
 
-            persentase.toInt()
+            if (persentase > 100) {
+                return 100
+            }
+            return persentase
         } else {
             0
         }
