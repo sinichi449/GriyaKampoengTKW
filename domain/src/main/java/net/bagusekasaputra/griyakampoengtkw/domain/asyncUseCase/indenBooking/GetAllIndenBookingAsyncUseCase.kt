@@ -17,7 +17,7 @@ class GetAllIndenBookingAsyncUseCase(
 
     override fun process(request: Request): Flow<Result<List<IndenBooking>?>> {
         return flow {
-            val indenBookings = mutableListOf<IndenBooking>()
+            val indenBookingList = mutableListOf<IndenBooking>()
 
             val keyIds = indenBookingRepository.getAllKeyIds(request.dataMode).getOrThrow()
             keyIds?.forEach { keyId ->
@@ -36,7 +36,7 @@ class GetAllIndenBookingAsyncUseCase(
                     Pembayaran.hitungTotalUangMasuk(it)
                 } ?: 0L
 
-                indenBookings.add(IndenBooking(
+                indenBookingList.add(IndenBooking(
                     namaCostumer = namaCostumer,
                     noIdentitas = noIdentitas,
                     totalUangMasuk = uangMasuk,
@@ -45,7 +45,7 @@ class GetAllIndenBookingAsyncUseCase(
                 ))
             }
 
-            emit(Result.success(indenBookings))
+            emit(Result.success(indenBookingList))
         }
     }
 }

@@ -43,8 +43,12 @@ class IndenBookingRepositoryImpl(
         keyId: String,
         dataMode: DataMode
     ): Result<HargaRumahIndenBooking?> {
-        // TODO
-        return Result.success(null)
+        val remoteResult = remoteDataSource.getHargaRumah(keyId)
+
+        return DataUtil.mapSingleResult(
+            originResult = remoteResult,
+            targetMapper = MyObjectMapper::mapHargaRumah,
+        )
     }
 
     override suspend fun getFotoIdentitas(keyId: String, dataMode: DataMode): Result<Uri?> {
