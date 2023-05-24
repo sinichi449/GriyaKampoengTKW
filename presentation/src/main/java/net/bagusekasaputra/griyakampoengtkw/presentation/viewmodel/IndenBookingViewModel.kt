@@ -8,6 +8,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import net.bagusekasaputra.griyakampoengtkw.domain.DataMode
@@ -16,6 +17,7 @@ import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.indenBooking.Del
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.indenBooking.EditIndenBookingAsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.indenBooking.GetAllIndenBookingAsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.IndenBooking
+import net.bagusekasaputra.griyakampoengtkw.presentation.model.IndenBookingUiModel
 import javax.inject.Inject
 
 @HiltViewModel
@@ -30,6 +32,11 @@ class IndenBookingViewModel @Inject constructor(
     val listIndenBookingLive: LiveData<List<IndenBooking>?>
         get() = _listIndenBookingLive
 
+    private val _uiModelIndenBooking = MutableLiveData<List<IndenBookingUiModel>>()
+    val uiModelIndenBooking: LiveData<List<IndenBookingUiModel>>
+        get() = _uiModelIndenBooking
+
+
     private val _pathFotoIndenBookingLive = MutableLiveData<String?>()
     val pathFotoIndenBookingLive: LiveData<String?>
         get() = _pathFotoIndenBookingLive
@@ -40,27 +47,21 @@ class IndenBookingViewModel @Inject constructor(
     private var readIndenBookingJob: Job? = null
     var writeIndenBookingJob: Job? = null
 
-    fun getListIndenBooking(onProgress: () -> Unit, onComplete: () -> Unit, onFailure: (msg: String) -> Unit) {
+    fun getListIndenBooking(
+        onProgress: () -> Unit,
+        onComplete: () -> Unit,
+        onFailure: (msg: String) -> Unit
+    ) {
         onProgress()
 
         readIndenBookingJob = viewModelScope.launch {
-            val request = GetAllIndenBookingAsyncUseCase.Request(dataMode)
+            delay(5000L)
 
-            getAllIndenBookingAsyncUseCase.execute(request).collect { result ->
-                result.onSuccess {
-                    _listIndenBookingLive.postValue(it)
-                    withContext(Dispatchers.Main) {
-                        onComplete()
-                    }
-                }
-                result.onFailure {
-                    it.printStackTrace()
+            val listIndenBooking = IndenBookingUiModel.getDummyModels()
+            _uiModelIndenBooking.postValue(listIndenBooking)
 
-                    withContext(Dispatchers.Main) {
-                        onFailure("Gagal mendapatkan List Inden Booking: ${it.message}")
-                        onComplete()
-                    }
-                }
+            withContext(Dispatchers.Main) {
+                onComplete()
             }
         }
     }
