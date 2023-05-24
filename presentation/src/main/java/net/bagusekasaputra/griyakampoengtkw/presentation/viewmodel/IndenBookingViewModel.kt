@@ -59,7 +59,7 @@ class IndenBookingViewModel @Inject constructor(
         onProgress()
 
         readIndenBookingJob = viewModelScope.launch {
-            delay(5000L)
+            delay(3000L)
 
             val listIndenBooking = IndenBookingUiModel.getDummyModels()
             _uiModelIndenBooking.postValue(listIndenBooking)

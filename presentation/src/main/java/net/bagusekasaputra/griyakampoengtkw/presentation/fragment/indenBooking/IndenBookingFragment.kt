@@ -112,10 +112,15 @@ class IndenBookingFragment : Fragment() {
                     adapter = IndenBookingRecyclerAdapter(it, onClick = { position ->
                         val intent = Intent(requireContext(), DetailIndenBookingActivity::class.java)
                         val namaCostumerExtra = it[position].namaCostumer
+                        val sortingNum = position.toString().padStart(3, '0')
 
                         intent.putExtra(
                             DetailIndenBookingActivity.EXTRAS_NAMA_COSTUMER,
                             namaCostumerExtra
+                        )
+                        intent.putExtra(
+                            DetailIndenBookingActivity.EXTRAS_NOMOR_URUT,
+                            sortingNum
                         )
 
                         requireActivity().startActivity(intent)

@@ -22,6 +22,7 @@ class DetailIndenBookingActivity : AppCompatActivity() {
 
     companion object {
         const val EXTRAS_NAMA_COSTUMER = "EXTRAS_NAMA_COSTUMER"
+        const val EXTRAS_NOMOR_URUT = "EXTRAS_NOMOR_URUT"
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -39,8 +40,10 @@ class DetailIndenBookingActivity : AppCompatActivity() {
         } else {
             viewModel.namaCostumer = namaCostumer
         }
+        val sortingNum = intent?.extras?.getString(EXTRAS_NOMOR_URUT)
 
         binding.toolbarDetail.title = viewModel.namaCostumer
+        binding.toolbarDetail.subtitle = "Inden Booking #${sortingNum}"
 
         setupViewPager()
     }
