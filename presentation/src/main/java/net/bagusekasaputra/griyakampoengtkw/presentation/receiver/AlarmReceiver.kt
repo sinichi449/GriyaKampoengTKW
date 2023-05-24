@@ -15,7 +15,7 @@ import androidx.core.app.NotificationCompat
 import androidx.legacy.content.WakefulBroadcastReceiver
 import dagger.hilt.android.AndroidEntryPoint
 import net.bagusekasaputra.griyakampoengtkw.presentation.R
-import net.bagusekasaputra.griyakampoengtkw.presentation.activities.MainActivity
+import net.bagusekasaputra.griyakampoengtkw.presentation.activity.MainActivity
 import net.bagusekasaputra.griyakampoengtkw.presentation.util.GriyaNodes
 
 @AndroidEntryPoint

@@ -8,21 +8,21 @@
 
     <application>
         <activity
-            android:name=".activities.DetailIndenBookingActivity"
+            android:name=".activity.DetailIndenBookingActivity"
             android:exported="false"
             android:theme="@style/Theme.GriyaKampung.BlackWhite"/>
         <activity
-            android:name=".activities.PembayaranTabelFullActivity"
+            android:name=".activity.PembayaranTabelFullActivity"
             android:configChanges="orientation|keyboardHidden"
             android:exported="false"
             android:screenOrientation="landscape"
             android:theme="@style/Theme.GriyaKampung.BlackWhite" />
         <activity
-            android:name=".activities.RekapBesarDetailActivity"
+            android:name=".activity.RekapBesarDetailActivity"
             android:exported="false"
             android:theme="@style/Theme.GriyaKampung.BlackWhite" />
         <activity
-            android:name=".activities.SettingsActivity"
+            android:name=".activity.SettingsActivity"
             android:exported="false"
             android:label="@string/title_activity_settings"
             android:theme="@style/Theme.GriyaKampung.BlackWhite">

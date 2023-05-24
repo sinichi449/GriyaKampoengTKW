@@ -1,6 +1,6 @@
 @file:Suppress("DEPRECATION")
 
-package net.bagusekasaputra.griyakampoengtkw.presentation.activities
+package net.bagusekasaputra.griyakampoengtkw.presentation.activity
 
 import abhishekti7.unicorn.filepicker.UnicornFilePicker
 import android.annotation.SuppressLint

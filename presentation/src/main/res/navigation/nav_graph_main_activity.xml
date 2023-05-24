@@ -26,6 +26,6 @@
         tools:layout="@layout/fragment_biaya_pribadi" />
     <activity
         android:id="@+id/nav_pengaturan"
-        android:name="net.bagusekasaputra.griyakampoengtkw.presentation.activities.SettingsActivity"
+        android:name="net.bagusekasaputra.griyakampoengtkw.presentation.activity.SettingsActivity"
         android:label="SettingsActivity" />
 </navigation>

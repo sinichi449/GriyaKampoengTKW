@@ -1,4 +1,4 @@
-package net.bagusekasaputra.griyakampoengtkw.presentation.activities
+package net.bagusekasaputra.griyakampoengtkw.presentation.activity
 
 import android.os.Bundle
 import android.view.MenuItem

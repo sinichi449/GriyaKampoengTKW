@@ -24,7 +24,7 @@
             android:name=".DataLamaActivity"
             android:exported="false" />
         <activity
-            android:name=".presentation.activities.FullImageActivity"
+            android:name=".presentation.activity.FullImageActivity"
             android:exported="false"
             android:theme="@style/Theme.MaterialComponents.NoActionBar">
             <meta-data
@@ -32,7 +32,7 @@
                 android:value="" />
         </activity>
         <activity
-            android:name=".presentation.activities.DetailActivity"
+            android:name=".presentation.activity.DetailActivity"
             android:exported="false"
             android:theme="@style/Theme.GriyaKampung.BlackWhite">
             <meta-data
@@ -54,7 +54,7 @@
                 android:value="" />
         </activity>
         <activity
-            android:name=".presentation.activities.MainActivity"
+            android:name=".presentation.activity.MainActivity"
             android:exported="false"
             android:theme="@style/Theme.GriyaKampung.BlackWhite">
             <meta-data

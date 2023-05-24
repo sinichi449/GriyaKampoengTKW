@@ -1,6 +1,6 @@
 @file:Suppress("DEPRECATION")
 
-package net.bagusekasaputra.griyakampoengtkw.presentation.activities
+package net.bagusekasaputra.griyakampoengtkw.presentation.activity
 
 import android.app.ProgressDialog
 import android.content.DialogInterface

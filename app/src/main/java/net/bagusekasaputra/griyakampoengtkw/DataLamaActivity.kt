@@ -19,7 +19,7 @@ import net.bagusekasaputra.griyakampoengtkw.dataLama.AbstractDataLamaManager
 import net.bagusekasaputra.griyakampoengtkw.dataLama.DataLamaModel
 import net.bagusekasaputra.griyakampoengtkw.dataLama.DefaultDataLamaManager
 import net.bagusekasaputra.griyakampoengtkw.databinding.ActivityDataLamaBinding
-import net.bagusekasaputra.griyakampoengtkw.presentation.activities.MainActivity
+import net.bagusekasaputra.griyakampoengtkw.presentation.activity.MainActivity
 
 @Suppress("DEPRECATION")
 @AndroidEntryPoint
