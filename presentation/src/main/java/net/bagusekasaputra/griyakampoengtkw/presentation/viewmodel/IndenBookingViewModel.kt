@@ -41,6 +41,10 @@ class IndenBookingViewModel @Inject constructor(
     val pathFotoIndenBookingLive: LiveData<String?>
         get() = _pathFotoIndenBookingLive
 
+
+    // For distribution to fragments
+    var namaCostumer = "NULL"
+
     val showFab = MutableLiveData(false)
     var dataMode = DataMode.ONLINE
 

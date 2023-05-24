@@ -1,4 +1,4 @@
-package net.bagusekasaputra.griyakampoengtkw.presentation.fragment
+package net.bagusekasaputra.griyakampoengtkw.presentation.fragment.indenBooking
 
 import android.app.NotificationChannel
 import android.app.NotificationManager
@@ -18,9 +18,9 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
 import net.bagusekasaputra.griyakampoengtkw.presentation.R
+import net.bagusekasaputra.griyakampoengtkw.presentation.activities.DetailIndenBookingActivity
 import net.bagusekasaputra.griyakampoengtkw.presentation.adapter.recyclerview.IndenBookingRecyclerAdapter
 import net.bagusekasaputra.griyakampoengtkw.presentation.databinding.FragmentIndenBookingBinding
 import net.bagusekasaputra.griyakampoengtkw.presentation.dialog.ModifyIndenBookingDialog
@@ -101,6 +101,7 @@ class IndenBookingFragment : Fragment() {
             showAddIndenBookingDialog()
         }
 
+        sync()
     }
 
     private fun setupViewModel() {
@@ -109,8 +110,15 @@ class IndenBookingFragment : Fragment() {
                 binding.recyclerViewIndenBooking.apply {
                     layoutManager = LinearLayoutManager(requireContext())
                     adapter = IndenBookingRecyclerAdapter(it, onClick = { position ->
-                        Snackbar.make(binding.root, "${it[position].namaCostumer} clicked!", Snackbar.LENGTH_SHORT)
-                            .show()
+                        val intent = Intent(requireContext(), DetailIndenBookingActivity::class.java)
+                        val namaCostumerExtra = it[position].namaCostumer
+
+                        intent.putExtra(
+                            DetailIndenBookingActivity.EXTRAS_NAMA_COSTUMER,
+                            namaCostumerExtra
+                        )
+
+                        requireActivity().startActivity(intent)
                     })
                 }
             }
@@ -134,12 +142,6 @@ class IndenBookingFragment : Fragment() {
                 Toast.makeText(requireContext(), it, Toast.LENGTH_LONG).show()
             }
         )
-    }
-
-    override fun onResume() {
-        super.onResume()
-
-        sync()
     }
 
     override fun onDestroy() {

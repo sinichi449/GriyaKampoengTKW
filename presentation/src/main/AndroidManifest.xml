@@ -8,11 +8,15 @@
 
     <application>
         <activity
-            android:name=".activities.PembayaranTabelFullActivity"
-            android:screenOrientation="landscape"
-            android:configChanges="orientation|keyboardHidden"
+            android:name=".activities.DetailIndenBookingActivity"
             android:exported="false"
             android:theme="@style/Theme.GriyaKampung.BlackWhite"/>
+        <activity
+            android:name=".activities.PembayaranTabelFullActivity"
+            android:configChanges="orientation|keyboardHidden"
+            android:exported="false"
+            android:screenOrientation="landscape"
+            android:theme="@style/Theme.GriyaKampung.BlackWhite" />
         <activity
             android:name=".activities.RekapBesarDetailActivity"
             android:exported="false"

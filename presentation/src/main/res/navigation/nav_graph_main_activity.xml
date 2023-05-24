@@ -16,7 +16,7 @@
         tools:layout="@layout/fragment_database_user" />
     <fragment
         android:id="@+id/nav_inden_booking"
-        android:name="net.bagusekasaputra.griyakampoengtkw.presentation.fragment.IndenBookingFragment"
+        android:name="net.bagusekasaputra.griyakampoengtkw.presentation.fragment.indenBooking.IndenBookingFragment"
         android:label="Inden Booking"
         tools:layout="@layout/fragment_inden_booking" />
     <fragment
