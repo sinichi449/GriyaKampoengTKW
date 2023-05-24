@@ -3,25 +3,25 @@ package net.bagusekasaputra.griyakampoengtkw.presentation.viewmodel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import net.bagusekasaputra.griyakampoengtkw.domain.DataMode
-import net.bagusekasaputra.griyakampoengtkw.domain.entity.IndenBooking
+import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.indenBooking.GetAllIndenBookingAsyncUseCase
+import net.bagusekasaputra.griyakampoengtkw.domain.entity.indenBooking.IndenBooking
 import javax.inject.Inject
 
 @HiltViewModel
 class IndenBookingViewModel @Inject constructor(
-
+    private val getAllIndenBookingAsyncUseCase: GetAllIndenBookingAsyncUseCase,
 ): ViewModel() {
 
-    private val _uiModelIndenBooking = MutableLiveData<List<IndenBooking>>()
-    val uiModelIndenBooking: LiveData<List<IndenBooking>>
-        get() = _uiModelIndenBooking
+    private val _indenBookings = MutableLiveData<List<IndenBooking>>()
+    val indenBookings: LiveData<List<IndenBooking>>
+        get() = _indenBookings
 
 
     private val _pathFotoIndenBookingLive = MutableLiveData<String?>()
@@ -45,14 +45,23 @@ class IndenBookingViewModel @Inject constructor(
     ) {
         onProgress()
 
-        readIndenBookingJob = viewModelScope.launch {
-            delay(3000L)
+        readIndenBookingJob = CoroutineScope(Dispatchers.IO).launch {
+            val request = GetAllIndenBookingAsyncUseCase.Request(dataMode)
+            getAllIndenBookingAsyncUseCase.execute(request).collect { result ->
+                result.onSuccess {
+                    _indenBookings.postValue(it)
 
-            val listIndenBooking = IndenBooking.getDummyModels()
-            _uiModelIndenBooking.postValue(listIndenBooking)
+                    withContext(Dispatchers.Main) {
+                        onComplete()
+                    }
+                }
 
-            withContext(Dispatchers.Main) {
-                onComplete()
+                result.onFailure {
+                    withContext(Dispatchers.Main) {
+                        onFailure("Terjadi kesalahan mendapatkan Inden Booking: " +
+                                "${it.javaClass.simpleName}:${it.message}")
+                    }
+                }
             }
         }
     }

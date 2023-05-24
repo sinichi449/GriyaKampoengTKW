@@ -50,6 +50,7 @@ import net.bagusekasaputra.griyakampoengtkw.data.remote.databaseUser.FirebaseDat
 import net.bagusekasaputra.griyakampoengtkw.data.remote.fotoPembayaran.StorageFotoPembayaranDataSource
 import net.bagusekasaputra.griyakampoengtkw.data.remote.imageDataDiri.StorageImageDataDiriDataSource
 import net.bagusekasaputra.griyakampoengtkw.data.remote.imageSpr.StorageImageSprDataSource
+import net.bagusekasaputra.griyakampoengtkw.data.remote.indenBooking.FirebaseIndenBookingDataSource
 import net.bagusekasaputra.griyakampoengtkw.data.remote.kavling.FirebaseKavlingDataSource
 import net.bagusekasaputra.griyakampoengtkw.data.remote.metadata.FirebaseMetadataDataSource
 import net.bagusekasaputra.griyakampoengtkw.data.remote.promotion.FirebasePromotionDataSource
@@ -390,7 +391,10 @@ object DataSourceModule {
     /**
      * Inden Booking
      */
-    // TODO
+    @Provides
+    fun provideRemoteIndenBookingDataSource(databaseReference: DatabaseReference): RemoteIndenBookingDataSource {
+        return FirebaseIndenBookingDataSource(databaseReference)
+    }
 
 
     /**

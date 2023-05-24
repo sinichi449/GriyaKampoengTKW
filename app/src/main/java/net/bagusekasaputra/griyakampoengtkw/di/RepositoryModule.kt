@@ -340,7 +340,10 @@ object RepositoryModule {
     /**
      * Inden Booking
      */
-    // TODO
+    @Provides
+    fun provideIndenBookingRepository(remoteDataSource: RemoteIndenBookingDataSource): IndenBookingRepository {
+        return IndenBookingRepositoryImpl(remoteDataSource)
+    }
 
 
     /**

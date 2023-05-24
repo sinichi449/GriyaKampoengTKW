@@ -105,7 +105,7 @@ class IndenBookingFragment : Fragment() {
     }
 
     private fun setupViewModel() {
-        viewModel.uiModelIndenBooking.observe(requireActivity()) {
+        viewModel.indenBookings.observe(requireActivity()) {
             it?.also {
                 binding.recyclerViewIndenBooking.apply {
                     layoutManager = LinearLayoutManager(requireContext())

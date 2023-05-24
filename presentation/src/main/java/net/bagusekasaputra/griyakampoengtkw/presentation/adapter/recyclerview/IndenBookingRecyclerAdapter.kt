@@ -4,11 +4,11 @@ import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import net.bagusekasaputra.griyakampoengtkw.domain.NumberUtil
-import net.bagusekasaputra.griyakampoengtkw.domain.entity.IndenBooking
+import net.bagusekasaputra.griyakampoengtkw.domain.entity.indenBooking.IndenBooking
 import net.bagusekasaputra.griyakampoengtkw.presentation.databinding.LayoutRecyclerIndenBookingBinding
 
 class IndenBookingRecyclerAdapter(
-    private val uiModelIndenBookings: List<IndenBooking>,
+    private val indenBookingList: List<IndenBooking>,
     private val onClick: (position: Int) -> Unit,
 ): RecyclerView.Adapter<IndenBookingRecyclerAdapter.MyViewHolder>() {
 
@@ -29,11 +29,11 @@ class IndenBookingRecyclerAdapter(
     }
 
     override fun getItemCount(): Int {
-        return uiModelIndenBookings.size
+        return indenBookingList.size
     }
 
     override fun onBindViewHolder(holder: MyViewHolder, position: Int) {
-        val indenBooking = uiModelIndenBookings[position]
+        val indenBooking = indenBookingList[position]
 
         if (indenBooking.fotoIdentitas != null) {
             holder.imgFotoIndentitas.setImageURI(indenBooking.fotoIdentitas)
