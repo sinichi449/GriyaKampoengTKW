@@ -3,7 +3,6 @@
 package net.bagusekasaputra.griyakampoengtkw.di
 
 import android.content.SharedPreferences
-import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import com.google.firebase.database.DatabaseReference
 import com.google.firebase.storage.StorageReference
 import dagger.Module
@@ -24,7 +23,6 @@ import net.bagusekasaputra.griyakampoeng.tkw.data.local.fotoPembayaran.device.De
 import net.bagusekasaputra.griyakampoeng.tkw.data.local.hargaKavling.RoomHargaKavlingDataSource
 import net.bagusekasaputra.griyakampoeng.tkw.data.local.imageDataDiri.LocalImageDataDiriDataSourceImpl
 import net.bagusekasaputra.griyakampoeng.tkw.data.local.imageSpr.LocalImageSprDataSourceImpl
-import net.bagusekasaputra.griyakampoeng.tkw.data.local.indenBooking.RoomIndenBookingDataSource
 import net.bagusekasaputra.griyakampoeng.tkw.data.local.kavling.RoomKavlingDataSource
 import net.bagusekasaputra.griyakampoeng.tkw.data.local.metadata.RoomMetadataDataSource
 import net.bagusekasaputra.griyakampoeng.tkw.data.local.pembayaran.RoomPembayaranLocalDataSource
@@ -52,11 +50,10 @@ import net.bagusekasaputra.griyakampoengtkw.data.remote.databaseUser.FirebaseDat
 import net.bagusekasaputra.griyakampoengtkw.data.remote.fotoPembayaran.StorageFotoPembayaranDataSource
 import net.bagusekasaputra.griyakampoengtkw.data.remote.imageDataDiri.StorageImageDataDiriDataSource
 import net.bagusekasaputra.griyakampoengtkw.data.remote.imageSpr.StorageImageSprDataSource
-import net.bagusekasaputra.griyakampoengtkw.data.remote.indenBooking.FirebaseIndenBookingDataSource
 import net.bagusekasaputra.griyakampoengtkw.data.remote.kavling.FirebaseKavlingDataSource
 import net.bagusekasaputra.griyakampoengtkw.data.remote.metadata.FirebaseMetadataDataSource
-import net.bagusekasaputra.griyakampoengtkw.data.remote.statusPembayaran.FirebaseStatusPembayaranDataSource
 import net.bagusekasaputra.griyakampoengtkw.data.remote.promotion.FirebasePromotionDataSource
+import net.bagusekasaputra.griyakampoengtkw.data.remote.statusPembayaran.FirebaseStatusPembayaranDataSource
 import java.io.File
 import javax.inject.Qualifier
 
@@ -393,28 +390,7 @@ object DataSourceModule {
     /**
      * Inden Booking
      */
-    @Provides
-    fun provideLocalIndenBookingDataSource(
-        roomDatabase: MyRoomDatabase,
-        @ExternalDir externalFilesDir: File?,
-    ): LocalIndenBookingDataSource {
-        return RoomIndenBookingDataSource(roomDatabase, externalFilesDir)
-    }
-
-    @Provides
-    fun provideRemoteIndenBookingDataSource(
-        databaseReference: DatabaseReference,
-        storageReference: StorageReference,
-        @ExternalDir externalFilesDir: File?,
-        localBroadcast: LocalBroadcastManager,
-    ): RemoteIndenBookingDataSource {
-        return FirebaseIndenBookingDataSource(
-            databaseReference,
-            storageReference,
-            externalFilesDir,
-            localBroadcast
-        )
-    }
+    // TODO
 
 
     /**

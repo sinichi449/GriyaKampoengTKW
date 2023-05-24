@@ -15,13 +15,12 @@ import net.bagusekasaputra.griyakampoengtkw.data.model.FotoPembayaranModel
 import net.bagusekasaputra.griyakampoengtkw.data.model.HargaKavlingModel
 import net.bagusekasaputra.griyakampoengtkw.data.model.ImageDataDiriModel
 import net.bagusekasaputra.griyakampoengtkw.data.model.ImageSprModel
-import net.bagusekasaputra.griyakampoengtkw.data.model.IndenBookingModel
 import net.bagusekasaputra.griyakampoengtkw.data.model.KavlingModel
 import net.bagusekasaputra.griyakampoengtkw.data.model.PembayaranModel
+import net.bagusekasaputra.griyakampoengtkw.data.model.PromotionModel
 import net.bagusekasaputra.griyakampoengtkw.data.model.StatusPembayaranModel
 import net.bagusekasaputra.griyakampoengtkw.data.model.StatusPembayaranModel.LogPengembalianModel
 import net.bagusekasaputra.griyakampoengtkw.data.model.StatusPembayaranModel.LogStatusModel
-import net.bagusekasaputra.griyakampoengtkw.data.model.PromotionModel
 import net.bagusekasaputra.griyakampoengtkw.domain.DateUtil.toDate
 import net.bagusekasaputra.griyakampoengtkw.domain.DateUtil.toSlashedString
 import net.bagusekasaputra.griyakampoengtkw.domain.ImageUtil
@@ -38,7 +37,6 @@ import net.bagusekasaputra.griyakampoengtkw.domain.entity.FeeMarketing
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.FotoPembayaran
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.HargaKavling
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.ImageSpr
-import net.bagusekasaputra.griyakampoengtkw.domain.entity.IndenBooking
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.Kavling
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.Pembayaran
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.Promotion
@@ -411,33 +409,7 @@ object MyObjectMapper {
     /**
      * Inden Booking
      */
-    fun mapIndenBooking(model: IndenBookingModel): IndenBooking {
-        return model.let {
-            IndenBooking(
-                namaCostumer = it.namaCostumer,
-                tanggalDibayar = it.tanggalDibayar.toDate(),
-                jumlahUang = it.jumlahUang,
-                fotoPembayaranPath = it.fotoPembayaranPath,
-                noHp = it.noHp,
-                keterangan = it.keterangan,
-                timeMillis = it.timeMillis,
-            )
-        }
-    }
-
-    fun mapIndenBooking(indenBooking: IndenBooking): IndenBookingModel {
-        return indenBooking.let {
-            IndenBookingModel(
-                timeMillis = it.timeMillis,
-                namaCostumer = it.namaCostumer,
-                tanggalDibayar = it.tanggalDibayar.toSlashedString(),
-                jumlahUang = it.jumlahUang,
-                fotoPembayaranPath = it.fotoPembayaranPath,
-                noHp = it.noHp,
-                keterangan = it.keterangan,
-            )
-        }
-    }
+    // TODO
 
 
     /**

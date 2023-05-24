@@ -23,7 +23,6 @@ import net.bagusekasaputra.griyakampoengtkw.presentation.R
 import net.bagusekasaputra.griyakampoengtkw.presentation.activities.DetailIndenBookingActivity
 import net.bagusekasaputra.griyakampoengtkw.presentation.adapter.recyclerview.IndenBookingRecyclerAdapter
 import net.bagusekasaputra.griyakampoengtkw.presentation.databinding.FragmentIndenBookingBinding
-import net.bagusekasaputra.griyakampoengtkw.presentation.dialog.ModifyIndenBookingDialog
 import net.bagusekasaputra.griyakampoengtkw.presentation.util.NotificationUtil
 import net.bagusekasaputra.griyakampoengtkw.presentation.viewmodel.IndenBookingViewModel
 import net.bagusekasaputra.griyakampoengtkw.presentation.viewmodel.MainViewModel
@@ -98,7 +97,8 @@ class IndenBookingFragment : Fragment() {
         }
 
         binding.fabTambahkan.setOnClickListener {
-            showAddIndenBookingDialog()
+            // TODO
+            Toast.makeText(requireContext(), "Stub!", Toast.LENGTH_SHORT).show()
         }
 
         sync()
@@ -130,11 +130,6 @@ class IndenBookingFragment : Fragment() {
         }
     }
 
-    private fun showAddIndenBookingDialog() {
-        ModifyIndenBookingDialog().apply {
-            isCancelable = false
-        }.show(childFragmentManager, null)
-    }
     private fun sync() {
         viewModel.getListIndenBooking(
             onProgress = {

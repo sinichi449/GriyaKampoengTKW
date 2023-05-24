@@ -340,20 +340,7 @@ object RepositoryModule {
     /**
      * Inden Booking
      */
-    @Provides
-    fun provideIndenBookingRepository(
-        localDataSource: LocalIndenBookingDataSource,
-        remoteDataSource: RemoteIndenBookingDataSource,
-        localMetadata: LocalMetadataDataSource,
-        remoteMetadata: RemoteMetadataDataSource,
-    ): IndenBookingRepository {
-        return IndenBookingRepositoryImpl(
-            localDataSource,
-            remoteDataSource,
-            localMetadata,
-            remoteMetadata,
-        )
-    }
+    // TODO
 
 
     /**

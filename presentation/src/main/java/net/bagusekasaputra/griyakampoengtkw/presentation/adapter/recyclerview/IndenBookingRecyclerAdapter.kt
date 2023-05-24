@@ -4,11 +4,11 @@ import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import net.bagusekasaputra.griyakampoengtkw.domain.NumberUtil
+import net.bagusekasaputra.griyakampoengtkw.domain.entity.IndenBooking
 import net.bagusekasaputra.griyakampoengtkw.presentation.databinding.LayoutRecyclerIndenBookingBinding
-import net.bagusekasaputra.griyakampoengtkw.presentation.model.IndenBookingUiModel
 
 class IndenBookingRecyclerAdapter(
-    private val uiModelIndenBookings: List<IndenBookingUiModel>,
+    private val uiModelIndenBookings: List<IndenBooking>,
     private val onClick: (position: Int) -> Unit,
 ): RecyclerView.Adapter<IndenBookingRecyclerAdapter.MyViewHolder>() {
 
