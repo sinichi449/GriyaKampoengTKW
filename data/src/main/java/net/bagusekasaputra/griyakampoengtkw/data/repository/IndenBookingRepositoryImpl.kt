@@ -1,5 +1,6 @@
 package net.bagusekasaputra.griyakampoengtkw.data.repository
 
+import android.net.Uri
 import net.bagusekasaputra.griyakampoengtkw.data.DataUtil
 import net.bagusekasaputra.griyakampoengtkw.data.MyObjectMapper
 import net.bagusekasaputra.griyakampoengtkw.data.interfaces.remote.RemoteIndenBookingDataSource
@@ -44,5 +45,9 @@ class IndenBookingRepositoryImpl(
     ): Result<HargaRumahIndenBooking?> {
         // TODO
         return Result.success(null)
+    }
+
+    override suspend fun getFotoIdentitas(keyId: String, dataMode: DataMode): Result<Uri?> {
+        return remoteDataSource.getFotoIdentitas(keyId)
     }
 }

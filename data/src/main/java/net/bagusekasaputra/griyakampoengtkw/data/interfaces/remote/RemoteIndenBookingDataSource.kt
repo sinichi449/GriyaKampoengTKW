@@ -1,5 +1,6 @@
 package net.bagusekasaputra.griyakampoengtkw.data.interfaces.remote
 
+import android.net.Uri
 import net.bagusekasaputra.griyakampoengtkw.data.model.DataDiriModel
 import net.bagusekasaputra.griyakampoengtkw.data.model.PembayaranModel
 
@@ -11,4 +12,5 @@ interface RemoteIndenBookingDataSource {
 
     suspend fun getAllPembayaran(keyId: String): Result<List<PembayaranModel>?>
 
+    suspend fun getFotoIdentitas(keyId: String): Result<Uri?>
 }

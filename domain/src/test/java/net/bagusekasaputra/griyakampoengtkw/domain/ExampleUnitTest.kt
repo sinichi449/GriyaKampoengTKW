@@ -4,6 +4,7 @@ import net.bagusekasaputra.griyakampoengtkw.domain.entity.rekap.RekapGlobal
 import org.junit.Assert.assertEquals
 import org.junit.Test
 import java.util.Calendar
+import java.util.UUID
 
 /**
  * Example local unit test, which will execute on the development machine (host).
@@ -54,5 +55,10 @@ class ExampleUnitTest {
         assertEquals("120,000,000", listRekapGlobal[0].parsedSisaPembayaran)
         assertEquals("180,000,000", listRekapGlobal[1].parsedSisaPembayaran)
         assertEquals("127,912,773", listRekapGlobal[2].parsedSisaPembayaran)
+    }
+
+    @Test
+    fun test_uuid_generate() {
+        println(UUID.randomUUID().toString())
     }
 }

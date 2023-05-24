@@ -392,8 +392,12 @@ object DataSourceModule {
      * Inden Booking
      */
     @Provides
-    fun provideRemoteIndenBookingDataSource(databaseReference: DatabaseReference): RemoteIndenBookingDataSource {
-        return FirebaseIndenBookingDataSource(databaseReference)
+    fun provideRemoteIndenBookingDataSource(
+        databaseReference: DatabaseReference,
+        storageReference: StorageReference,
+        @ExternalDir externalFilesDir: File?,
+    ): RemoteIndenBookingDataSource {
+        return FirebaseIndenBookingDataSource(databaseReference, storageReference, externalFilesDir)
     }
 
 

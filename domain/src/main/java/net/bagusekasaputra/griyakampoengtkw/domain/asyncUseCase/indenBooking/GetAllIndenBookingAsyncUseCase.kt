@@ -27,6 +27,8 @@ class GetAllIndenBookingAsyncUseCase(
                     .getOrThrow()
                 val pembayarans = indenBookingRepository.getAllPembayaran(keyId, request.dataMode)
                     .getOrThrow()
+                val fotoIdentitas = indenBookingRepository.getFotoIdentitas(keyId, request.dataMode)
+                    .getOrThrow()
 
                 val namaCostumer = dataDiri?.nama ?: "NULL"
                 val noIdentitas = dataDiri?.noIdentitas ?: "0000"
@@ -38,6 +40,7 @@ class GetAllIndenBookingAsyncUseCase(
                     namaCostumer = namaCostumer,
                     noIdentitas = noIdentitas,
                     totalUangMasuk = uangMasuk,
+                    fotoIdentitas = fotoIdentitas,
                     keyId = keyId,
                 ))
             }
