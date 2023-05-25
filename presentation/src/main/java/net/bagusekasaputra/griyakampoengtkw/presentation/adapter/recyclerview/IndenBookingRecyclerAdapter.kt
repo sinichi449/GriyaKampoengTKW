@@ -2,12 +2,16 @@ package net.bagusekasaputra.griyakampoengtkw.presentation.adapter.recyclerview
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
+import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.RecyclerView
+import com.bumptech.glide.Glide
 import net.bagusekasaputra.griyakampoengtkw.domain.NumberUtil
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.indenBooking.IndenBooking
+import net.bagusekasaputra.griyakampoengtkw.presentation.R
 import net.bagusekasaputra.griyakampoengtkw.presentation.databinding.LayoutRecyclerIndenBookingBinding
 
 class IndenBookingRecyclerAdapter(
+    private val indenBookingFragment: Fragment, // Glide need this
     private val indenBookingList: List<IndenBooking>,
     private val onClick: (position: Int) -> Unit,
 ): RecyclerView.Adapter<IndenBookingRecyclerAdapter.MyViewHolder>() {
@@ -36,7 +40,11 @@ class IndenBookingRecyclerAdapter(
         val indenBooking = indenBookingList[position]
 
         if (indenBooking.fotoIdentitas != null) {
-            holder.imgFotoIndentitas.setImageURI(indenBooking.fotoIdentitas)
+            Glide.with(indenBookingFragment)
+                .load(indenBooking.fotoIdentitas)
+                .centerCrop()
+                .placeholder(R.drawable.bg_rounded_rectangle)
+                .into(holder.imgFotoIndentitas)
         }
         holder.tvNamaCostumer.text = indenBooking.namaCostumer
         holder.tvNoIdentitas.text = indenBooking.noIdentitas

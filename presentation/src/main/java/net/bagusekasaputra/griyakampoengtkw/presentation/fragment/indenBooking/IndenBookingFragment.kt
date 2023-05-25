@@ -109,21 +109,23 @@ class IndenBookingFragment : Fragment() {
             it?.also {
                 binding.recyclerViewIndenBooking.apply {
                     layoutManager = LinearLayoutManager(requireContext())
-                    adapter = IndenBookingRecyclerAdapter(it, onClick = { position ->
-                        val intent = Intent(requireContext(), DetailIndenBookingActivity::class.java)
-                        val namaCostumerExtra = it[position].namaCostumer
-                        val sortingNum = position.toString().padStart(3, '0')
+                    adapter = IndenBookingRecyclerAdapter(
+                        this@IndenBookingFragment, it,
+                        onClick = { position ->
+                            val intent = Intent(requireContext(), DetailIndenBookingActivity::class.java)
+                            val namaCostumerExtra = it[position].namaCostumer
+                            val sortingNum = position.toString().padStart(3, '0')
 
-                        intent.putExtra(
-                            DetailIndenBookingActivity.EXTRAS_NAMA_COSTUMER,
-                            namaCostumerExtra
-                        )
-                        intent.putExtra(
-                            DetailIndenBookingActivity.EXTRAS_NOMOR_URUT,
-                            sortingNum
-                        )
+                            intent.putExtra(
+                                DetailIndenBookingActivity.EXTRAS_NAMA_COSTUMER,
+                                namaCostumerExtra
+                            )
+                            intent.putExtra(
+                                DetailIndenBookingActivity.EXTRAS_NOMOR_URUT,
+                                sortingNum
+                            )
 
-                        requireActivity().startActivity(intent)
+                            requireActivity().startActivity(intent)
                     })
                 }
             }
