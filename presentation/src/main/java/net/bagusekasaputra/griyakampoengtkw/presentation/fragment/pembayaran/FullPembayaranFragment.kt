@@ -48,13 +48,14 @@ class FullPembayaranFragment : Fragment() {
                         setTablePembayaran(pembayarans)
 
                         if (viewModel.isFullScreenTable) {
-                            binding.tvInfoSisaWaktuAngsuran.visibility = View.GONE
-                            binding.tvInfoSisaBlmTerbayar.visibility = View.GONE
-                            binding.tvSisaWaktuAngsuran.visibility = View.GONE
-                            binding.tvSisaBlmTerbayar.visibility = View.GONE
+                            binding.tvInfoSisaWaktuAngsuran.visibility = View.VISIBLE
+                            binding.tvInfoSisaBlmTerbayar.visibility = View.VISIBLE
+                            binding.tvSisaWaktuAngsuran.visibility = View.VISIBLE
+                            binding.tvSisaBlmTerbayar.visibility = View.VISIBLE
 
                             binding.tvInfoBlmDibayarBulanIni.visibility = View.VISIBLE
                             binding.tvBlmDibayarBulanIni.visibility = View.VISIBLE
+
 
                             binding.tvBlmDibayarBulanIni.text = pembayarans.run {
                                 val blmDibayarBulanIni = baseline.hitungSisaBlmBayarBulanIni(this)
@@ -69,13 +70,12 @@ class FullPembayaranFragment : Fragment() {
 
                             binding.tvInfoBlmDibayarBulanIni.visibility = View.GONE
                             binding.tvBlmDibayarBulanIni.visibility = View.GONE
-
-                            setSisaWaktuAngsuran(baseline)
-                            binding.tvSisaBlmTerbayar.text = StringBuilder().run {
-                                append("Rp. ")
-                                append(Pembayaran.getSisaBelumTerbayar(pembayarans))
-                                toString()
-                            }
+                        }
+                        setSisaWaktuAngsuran(baseline)
+                        binding.tvSisaBlmTerbayar.text = StringBuilder().run {
+                            append("Rp. ")
+                            append(Pembayaran.getSisaBelumTerbayar(pembayarans))
+                            toString()
                         }
                     }
                 }
