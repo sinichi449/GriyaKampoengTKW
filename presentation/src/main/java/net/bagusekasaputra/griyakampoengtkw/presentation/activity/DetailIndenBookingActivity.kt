@@ -42,6 +42,8 @@ class DetailIndenBookingActivity : AppCompatActivity() {
         }
         val keyId = intent?.extras?.getString(EXTRAS_KEY_ID) ?: "NULL_ID"
 
+        viewModel.currentKeyId = keyId
+
         binding.toolbarDetail.title = viewModel.namaCostumer
         binding.toolbarDetail.subtitle = keyId
 
