@@ -23,6 +23,7 @@ import net.bagusekasaputra.griyakampoeng.tkw.data.local.fotoPembayaran.device.De
 import net.bagusekasaputra.griyakampoeng.tkw.data.local.hargaKavling.RoomHargaKavlingDataSource
 import net.bagusekasaputra.griyakampoeng.tkw.data.local.imageDataDiri.LocalImageDataDiriDataSourceImpl
 import net.bagusekasaputra.griyakampoeng.tkw.data.local.imageSpr.LocalImageSprDataSourceImpl
+import net.bagusekasaputra.griyakampoeng.tkw.data.local.indenBooking.RoomIndenBookingDataSource
 import net.bagusekasaputra.griyakampoeng.tkw.data.local.kavling.RoomKavlingDataSource
 import net.bagusekasaputra.griyakampoeng.tkw.data.local.metadata.RoomMetadataDataSource
 import net.bagusekasaputra.griyakampoeng.tkw.data.local.pembayaran.RoomPembayaranLocalDataSource
@@ -398,6 +399,14 @@ object DataSourceModule {
         @ExternalDir externalFilesDir: File?,
     ): RemoteIndenBookingDataSource {
         return FirebaseIndenBookingDataSource(databaseReference, storageReference, externalFilesDir)
+    }
+
+    @Provides
+    fun provideLocalIndenBookingDataSource(
+        myRoomDatabase: MyRoomDatabase,
+        @ExternalDir externalFilesDir: File?,
+    ): LocalIndenBookingDataSource {
+        return RoomIndenBookingDataSource(myRoomDatabase, externalFilesDir)
     }
 
 
