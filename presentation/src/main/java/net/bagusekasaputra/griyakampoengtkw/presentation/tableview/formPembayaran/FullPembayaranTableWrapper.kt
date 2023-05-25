@@ -73,7 +73,7 @@ class FullPembayaranTableWrapper(
             add(TANGGAL, PbColumnHeader("Tanggal"))
             add(UANG_DIBAYAR, PbColumnHeader("Uang Dibayar"))
             add(TOTAL, PbColumnHeader("Total"))
-            add(PERSENTASE, PbColumnHeader("(%)"))
+            add(PERSENTASE, PbColumnHeader("Persentase"))
             add(KETERANGAN_PROGRESS, PbColumnHeader("Keterangan Progress"))
         }
 
@@ -102,7 +102,7 @@ class FullPembayaranTableWrapper(
                 add(TANGGAL, PbCellItem(it.tanggal))
                 add(UANG_DIBAYAR, PbCellItem(it.jumlahUangDibayar))
                 add(TOTAL, PbCellItem(it.totalUangMasuk))
-                add(PERSENTASE, PbCellItem(it.presentase.toString()))
+                add(PERSENTASE, PbCellItem("${it.presentase}%"))
                 add(KETERANGAN_PROGRESS, PbCellItem(it.keterangan))
             }
 
