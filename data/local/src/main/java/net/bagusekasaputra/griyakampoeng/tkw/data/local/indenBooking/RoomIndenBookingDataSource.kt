@@ -15,6 +15,7 @@ class RoomIndenBookingDataSource(
     private val externalFileDir: File?,
 ): LocalIndenBookingDataSource {
 
+    private val dataDiriDao = myRoomDatabase.getDataDiriIndenBookingDao()
     private val fotoIdentitasDao = myRoomDatabase.getFotoIdentitasIndenBookingDao()
 
     override suspend fun getAllKeyIds(): Result<List<String>?> {
@@ -22,7 +23,11 @@ class RoomIndenBookingDataSource(
     }
 
     override suspend fun getDataDiri(keyId: String): Result<DataDiriModel?> {
-        TODO("Not yet implemented")
+        return roomOperation {
+            val entity = dataDiriDao.getByKeyId(keyId)
+
+            entity?.toModel()
+        }
     }
 
     override suspend fun getAllPembayaran(keyId: String): Result<List<PembayaranModel>?> {
@@ -45,7 +50,13 @@ class RoomIndenBookingDataSource(
         keyId: String,
         dataDiriModel: DataDiriModel
     ): Result<Nothing?> {
-        TODO("Not yet implemented")
+        return roomOperation {
+            val entity = dataDiriModel.toEntity(keyId)
+
+            dataDiriDao.insert(entity)
+
+            null
+        }
     }
 
     override suspend fun insertFotoIdentitas(keyId: String, uri: Uri): Result<Nothing?> {
@@ -60,6 +71,7 @@ class RoomIndenBookingDataSource(
 
     override suspend fun invalidate(keyId: String): Result<Nothing?> {
         return roomOperation {
+            dataDiriDao.delete(keyId)
             fotoIdentitasDao.delete(keyId)
 
             val fileFoto = File(externalFileDir, "inden_booking_images/data_diri_images/" +

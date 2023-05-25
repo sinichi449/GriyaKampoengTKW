@@ -24,7 +24,7 @@ interface FotoIdentitasIndenBookingDao {
     @Query("SELECT * FROM foto_identitas_inden_booking WHERE keyId=:keyId")
     fun getByKeyId(keyId: String): FotoIdentitasIndenBookingEntity?
 
-    @Insert(onConflict = OnConflictStrategy.FAIL)
+    @Insert(onConflict = OnConflictStrategy.ABORT)
     fun insert(entity: FotoIdentitasIndenBookingEntity): Long
 
     @Query("DELETE FROM foto_identitas_inden_booking WHERE keyId=:keyId")

@@ -30,31 +30,25 @@ class IndenBookingRepositoryImpl(
     }
 
     override suspend fun getDataDiri(keyId: String, dataMode: DataMode): Result<DataDiri?> {
-//        val invalidCache = checkAndInvalidateCache(keyId)
-//        val localModel = localDataSource.getDataDiri(keyId).getOrThrow()
-//
-//        // Fetch from remote data source if either the cache was invalid
-//        // or the local data source returning null (probably after invalidate() call)
-//        if (invalidCache || localModel == null) {
-//            Log.d("INDEN_BOOKING", "Data Diri on Cache was invalid or Local Data Source is null! " +
-//                    "Fetching from Remote Data Source now.")
-//
-//            remoteDataSource.getDataDiri(keyId).getOrThrow()?.also {
-//                localDataSource.insertDataDiri(keyId, it)
-//            }
-//        } else {
-//            Log.d("INDEN_BOOKING", "Data Diri on Local Data Source is okay, returning from it.")
-//        }
-//
-//        val refreshedLocalResult = localDataSource.getDataDiri(keyId)
-//        return DataUtil.mapSingleResult(
-//            originResult = refreshedLocalResult,
-//            targetMapper = MyObjectMapper::mapDataDiri,
-//        )
-        val remoteResult = remoteDataSource.getDataDiri(keyId)
+        val invalidCache = checkAndInvalidateCache(keyId)
+        val localModel = localDataSource.getDataDiri(keyId).getOrThrow()
 
+        // Fetch from remote data source if either the cache was invalid
+        // or the local data source returning null (probably after invalidate() call)
+        if (invalidCache || localModel == null) {
+            Log.d("INDEN_BOOKING", "Data Diri on Cache was invalid or Local Data Source is null! " +
+                    "Fetching from Remote Data Source now.")
+
+            remoteDataSource.getDataDiri(keyId).getOrThrow()?.also {
+                localDataSource.insertDataDiri(keyId, it)
+            }
+        } else {
+            Log.d("INDEN_BOOKING", "Data Diri on Local Data Source is okay, returning from it.")
+        }
+
+        val refreshedLocalResult = localDataSource.getDataDiri(keyId)
         return DataUtil.mapSingleResult(
-            originResult = remoteResult,
+            originResult = refreshedLocalResult,
             targetMapper = MyObjectMapper::mapDataDiri,
         )
     }
@@ -87,8 +81,10 @@ class IndenBookingRepositoryImpl(
         val isInvalidCache = checkAndInvalidateCache(keyId)
         val localModel = localDataSource.getFotoIdentitas(keyId).getOrThrow()
 
+        // Fetch from remote data source if either the cache was invalid
+        // or the local data source returning null (probably after invalidate() call)
         if (isInvalidCache || localModel == null) {
-            Log.d("INDEN_BOOKING", "Data Diri on Local Data Source either invalidated or null!" +
+            Log.d("INDEN_BOOKING", "Foto Identitas on Local Data Source either invalidated or null!" +
                     " Fetching from Remote Data Source now.")
 
             val remoteModel = remoteDataSource.getFotoIdentitas(keyId).getOrThrow()
@@ -96,7 +92,7 @@ class IndenBookingRepositoryImpl(
                 localDataSource.insertFotoIdentitas(keyId, it)
             }
         } else {
-            Log.d("INDEN_BOOKING", "Data Diri returning from Local Data Source!")
+            Log.d("INDEN_BOOKING", "Foto Identitas returning from Local Data Source!")
         }
 
         return localDataSource.getFotoIdentitas(keyId)
