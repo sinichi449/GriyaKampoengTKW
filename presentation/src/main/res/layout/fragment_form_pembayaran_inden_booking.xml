@@ -56,15 +56,25 @@
                     style="@style/TextAppearance.MaterialComponents.Subtitle1"
                     android:text="0"/>
 
+                <ProgressBar
+                    android:id="@+id/progressBar_loading_harga_rumah"
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    app:layout_constraintStart_toEndOf="@id/tv_harga"
+                    app:layout_constraintTop_toTopOf="@id/tv_harga"
+                    app:layout_constraintBottom_toBottomOf="@id/tv_harga"
+                    android:layout_marginStart="24dp"/>
+
                 <ImageView
-                    android:id="@+id/img_edit"
+                    android:id="@+id/img_edit_harga_rumah"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:src="@drawable/ic_baseline_edit_24"
                     app:layout_constraintStart_toEndOf="@id/tv_harga"
                     app:layout_constraintTop_toTopOf="@id/tv_harga"
                     app:layout_constraintBottom_toBottomOf="@id/tv_harga"
-                    android:layout_marginStart="24dp"/>
+                    android:layout_marginStart="24dp"
+                    android:visibility="gone"/>
 
                 <com.google.android.material.textview.MaterialTextView
                     android:id="@+id/tv_info_tambahan_luas"

@@ -8,6 +8,7 @@ import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import dagger.hilt.android.AndroidEntryPoint
+import net.bagusekasaputra.griyakampoengtkw.domain.NumberUtil
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.Pembayaran
 import net.bagusekasaputra.griyakampoengtkw.presentation.databinding.FragmentFormPembayaranIndenBookingBinding
 import net.bagusekasaputra.griyakampoengtkw.presentation.tableview.formPembayaran.FullPembayaranTableWrapper
@@ -45,6 +46,22 @@ class FormPembayaranIndenBookingFragment : Fragment() {
     }
 
     private fun setupViewModel() {
+        viewModel.hargaRumahIndenBooking.observe(requireActivity()) {
+            it?.also { hargaRumah ->
+                binding.tvHarga.text = StringBuilder()
+                    .append("Rp. ")
+                    .append(NumberUtil.formatLongToString(hargaRumah.harga))
+
+                binding.tvTambahanLuas.text = StringBuilder()
+                    .append("Rp. ")
+                    .append(NumberUtil.formatLongToString(hargaRumah.tambahLuasan))
+
+                binding.tvTotalHarga.text = StringBuilder()
+                    .append("Rp. ")
+                    .append(NumberUtil.formatLongToString(hargaRumah.hargaDanTambahLuasan))
+            }
+        }
+
         viewModel.pembayaranListIndenBooking.observe(requireActivity()) {
             it?.also { pembayarans: List<Pembayaran> ->
                 FullPembayaranTableWrapper(binding.tableFormPembayaran, pembayarans)
@@ -56,6 +73,20 @@ class FormPembayaranIndenBookingFragment : Fragment() {
     private fun sync() {
         val currentKeyId = viewModel.currentKeyId
         if ((currentKeyId != "NULL_ID") || (currentKeyId.isNotEmpty())) {
+            viewModel.getHargaRumah(currentKeyId,
+                onProgress = {
+                    binding.progressBarLoadingHargaRumah.visibility = View.VISIBLE
+                    binding.imgEditHargaRumah.visibility = View.GONE
+                },
+                onComplete = {
+                    binding.progressBarLoadingHargaRumah.visibility = View.GONE
+                    binding.imgEditHargaRumah.visibility = View.VISIBLE
+                },
+                onFailure = {
+                    Toast.makeText(requireContext(), it, Toast.LENGTH_LONG).show()
+                }
+            )
+
             viewModel.getAllPembayaran(currentKeyId,
                 onProgress = {
                     binding.layoutLoadingFormPembayaran.visibility = View.VISIBLE

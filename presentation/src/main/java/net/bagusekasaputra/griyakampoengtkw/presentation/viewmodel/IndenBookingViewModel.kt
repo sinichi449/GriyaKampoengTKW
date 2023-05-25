@@ -15,8 +15,10 @@ import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.indenBooking.Get
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.indenBooking.GetAllPembayaranIndenBookingAsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.indenBooking.GetDataDiriIndenBookingAsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.indenBooking.GetFotoIdentitasIndenBookingAsyncUseCase
+import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.indenBooking.GetHargaRumahIndenBookingAsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.DataDiri
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.Pembayaran
+import net.bagusekasaputra.griyakampoengtkw.domain.entity.indenBooking.HargaRumahIndenBooking
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.indenBooking.IndenBooking
 import javax.inject.Inject
 
@@ -26,6 +28,7 @@ class IndenBookingViewModel @Inject constructor(
     private val getDataDiriIndenBookingAsyncUseCase: GetDataDiriIndenBookingAsyncUseCase,
     private val getFotoIdentitasIndenBookingAsyncUseCase: GetFotoIdentitasIndenBookingAsyncUseCase,
     private val getAllPembayaranIndenBookingAsyncUseCase: GetAllPembayaranIndenBookingAsyncUseCase,
+    private val getHargaRumahIndenBookingAsyncUseCase: GetHargaRumahIndenBookingAsyncUseCase,
 ): ViewModel() {
 
     private val _indenBookings = MutableLiveData<List<IndenBooking>>()
@@ -43,6 +46,10 @@ class IndenBookingViewModel @Inject constructor(
     private val _pembayaranListIndenBooking = MutableLiveData<List<Pembayaran>>()
     val pembayaranListIndenBooking: LiveData<List<Pembayaran>>
         get() = _pembayaranListIndenBooking
+
+    private val _hargaRumahIndenBooking = MutableLiveData<HargaRumahIndenBooking>()
+    val hargaRumahIndenBooking: LiveData<HargaRumahIndenBooking>
+        get() = _hargaRumahIndenBooking
 
     private val _pathFotoIndenBookingLive = MutableLiveData<String?>()
     val pathFotoIndenBookingLive: LiveData<String?>
@@ -138,6 +145,35 @@ class IndenBookingViewModel @Inject constructor(
                 result.onFailure {
                     withContext(Dispatchers.Main) {
                         onFailure("Gagal mendapatkan foto identitas: " +
+                                "${it.javaClass.simpleName}:${it.message}")
+                    }
+                }
+            }
+        }
+    }
+
+    fun getHargaRumah(
+        keyId: String,
+        onProgress: () -> Unit,
+        onComplete: () -> Unit,
+        onFailure: (msg: String) -> Unit,
+    ) {
+        onProgress()
+
+        CoroutineScope(Dispatchers.IO).launch {
+            val request = GetHargaRumahIndenBookingAsyncUseCase.Request(keyId)
+            getHargaRumahIndenBookingAsyncUseCase.execute(request).collect { result ->
+                result.onSuccess {
+                    _hargaRumahIndenBooking.postValue(it)
+
+                    withContext(Dispatchers.Main) {
+                        onComplete()
+                    }
+                }
+
+                result.onFailure {
+                    withContext(Dispatchers.Main) {
+                        onFailure("Gagal mendapatkan Harga Rumah: " +
                                 "${it.javaClass.simpleName}:${it.message}")
                     }
                 }

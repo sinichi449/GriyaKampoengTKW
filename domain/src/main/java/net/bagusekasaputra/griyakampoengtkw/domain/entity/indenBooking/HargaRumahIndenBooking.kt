@@ -12,6 +12,8 @@ data class HargaRumahIndenBooking(
     var keyId: String = "",
 ) {
 
+    val hargaDanTambahLuasan = harga + tambahLuasan
+
     fun toHargaKavling(kavling: String): HargaKavling {
         return HargaKavling(
             kavlingKode = kavling,
