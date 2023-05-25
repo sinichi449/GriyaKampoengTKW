@@ -19,7 +19,7 @@ class FullPembayaranTableWrapper(
         Pair(TANGGAL, 250),
         Pair(UANG_DIBAYAR, 350),
         Pair(TOTAL, 350),
-        Pair(PERSENTASE, 250),
+        Pair(PERSENTASE, 300),
         Pair(KETERANGAN_PROGRESS, 500),
     )
 
