@@ -37,6 +37,8 @@ interface PembayaranIndenBookingDao {
     @Query("DELETE FROM pembayaran_inden_booking WHERE keyId=:keyId")
     fun deleteAllWith(keyId: String)
 
+    @Query("DELETE FROM pembayaran_inden_booking")
+    fun deleteAll()
 }
 
 // Mapper

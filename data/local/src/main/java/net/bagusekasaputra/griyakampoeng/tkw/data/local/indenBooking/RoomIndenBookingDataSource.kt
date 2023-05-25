@@ -95,13 +95,23 @@ class RoomIndenBookingDataSource(
         }
     }
 
-    override suspend fun invalidatePembayaran(keyId: String): Result<Nothing?> {
+    override suspend fun invalidatePembayaran(): Result<Nothing?> {
         return roomOperation {
-            pembayaranDao.deleteAllWith(keyId)
+            pembayaranDao.deleteAll()
 
             null
         }
     }
 
+    override suspend fun invalidateFotoIdentitas(): Result<Nothing?> {
+        return roomOperation {
+            val dstFile = File(externalFileDir, "inden_booking_images/data_diri_images")
+            if (dstFile.exists()) {
+                dstFile.deleteRecursively()
+            }
+
+            null
+        }
+    }
 
 }

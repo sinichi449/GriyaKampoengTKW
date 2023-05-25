@@ -28,5 +28,7 @@ interface LocalIndenBookingDataSource {
 
     suspend fun invalidateDataDiri(): Result<Nothing?>
 
-    suspend fun invalidatePembayaran(keyId: String): Result<Nothing?>
+    suspend fun invalidatePembayaran(): Result<Nothing?>
+
+    suspend fun invalidateFotoIdentitas(): Result<Nothing?>
 }
