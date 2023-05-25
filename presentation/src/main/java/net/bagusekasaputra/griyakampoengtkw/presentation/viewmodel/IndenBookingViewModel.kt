@@ -12,9 +12,11 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import net.bagusekasaputra.griyakampoengtkw.domain.DataMode
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.indenBooking.GetAllIndenBookingAsyncUseCase
+import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.indenBooking.GetAllPembayaranIndenBookingAsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.indenBooking.GetDataDiriIndenBookingAsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.indenBooking.GetFotoIdentitasIndenBookingAsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.DataDiri
+import net.bagusekasaputra.griyakampoengtkw.domain.entity.Pembayaran
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.indenBooking.IndenBooking
 import javax.inject.Inject
 
@@ -23,6 +25,7 @@ class IndenBookingViewModel @Inject constructor(
     private val getAllIndenBookingAsyncUseCase: GetAllIndenBookingAsyncUseCase,
     private val getDataDiriIndenBookingAsyncUseCase: GetDataDiriIndenBookingAsyncUseCase,
     private val getFotoIdentitasIndenBookingAsyncUseCase: GetFotoIdentitasIndenBookingAsyncUseCase,
+    private val getAllPembayaranIndenBookingAsyncUseCase: GetAllPembayaranIndenBookingAsyncUseCase,
 ): ViewModel() {
 
     private val _indenBookings = MutableLiveData<List<IndenBooking>>()
@@ -36,6 +39,10 @@ class IndenBookingViewModel @Inject constructor(
     private val _fotoIdentitasUri = MutableLiveData<Uri>()
     val fotoIdentitasUri: LiveData<Uri>
         get() = _fotoIdentitasUri
+
+    private val _pembayaranListIndenBooking = MutableLiveData<List<Pembayaran>>()
+    val pembayaranListIndenBooking: LiveData<List<Pembayaran>>
+        get() = _pembayaranListIndenBooking
 
     private val _pathFotoIndenBookingLive = MutableLiveData<String?>()
     val pathFotoIndenBookingLive: LiveData<String?>
@@ -131,6 +138,34 @@ class IndenBookingViewModel @Inject constructor(
                 result.onFailure {
                     withContext(Dispatchers.Main) {
                         onFailure("Gagal mendapatkan foto identitas: " +
+                                "${it.javaClass.simpleName}:${it.message}")
+                    }
+                }
+            }
+        }
+    }
+
+    fun getAllPembayaran(
+        keyId: String,
+        onProgress: () -> Unit,
+        onComplete: () -> Unit,
+        onFailure: (msg: String) -> Unit,
+    ) {
+        onProgress()
+
+        CoroutineScope(Dispatchers.IO).launch {
+            val request = GetAllPembayaranIndenBookingAsyncUseCase.Request(keyId)
+            getAllPembayaranIndenBookingAsyncUseCase.execute(request).collect { result ->
+                result.onSuccess {
+                    _pembayaranListIndenBooking.postValue(it)
+
+                    withContext(Dispatchers.Main) {
+                        onComplete()
+                    }
+                }
+                result.onFailure {
+                    withContext(Dispatchers.Main) {
+                        onFailure("Gagal mendapatkan pembayaran: " +
                                 "${it.javaClass.simpleName}:${it.message}")
                     }
                 }

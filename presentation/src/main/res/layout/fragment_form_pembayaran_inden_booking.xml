@@ -1,16 +1,236 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.swiperefreshlayout.widget.SwipeRefreshLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".fragment.indenBooking.FormPembayaranIndenBookingFragment">
+    tools:context=".fragment.indenBooking.FormPembayaranIndenBookingFragment"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:theme="@style/Theme.GriyaKampung.BlackWhite">
 
-    <!-- TODO: Update blank fragment layout -->
-    <TextView
+    <androidx.core.widget.NestedScrollView
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:text="Form Pembayaran"
-        style="@style/TextAppearance.MaterialComponents.Headline5"
-        android:gravity="center"/>
+        android:layout_height="wrap_content">
 
-</FrameLayout>
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingBottom="72dp">
+
+            <!-- Harga Rumah & Tambah Luasan -->
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/layout_harga_rumah_tambah_luasan"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent">
+
+                <androidx.constraintlayout.widget.Guideline
+                    android:id="@+id/guideline_vertical"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    app:layout_constraintGuide_percent="0.5"
+                    android:orientation="vertical"/>
+
+                <com.google.android.material.textview.MaterialTextView
+                    android:id="@+id/tv_info_harga"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:text="Harga"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintEnd_toStartOf="@id/guideline_vertical"
+                    style="@style/TextAppearance.MaterialComponents.Headline6"
+                    android:textSize="@dimen/form_pembayaran_title_text_size"
+                    android:layout_marginStart="16dp"
+                    android:layout_marginTop="16dp"/>
+
+                <com.google.android.material.textview.MaterialTextView
+                    android:id="@+id/tv_harga"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    app:layout_constraintStart_toEndOf="@id/guideline_vertical"
+                    app:layout_constraintTop_toTopOf="@id/tv_info_harga"
+                    app:layout_constraintBottom_toBottomOf="@id/tv_info_harga"
+                    android:layout_marginStart="24dp"
+                    style="@style/TextAppearance.MaterialComponents.Subtitle1"
+                    android:text="0"/>
+
+                <ImageView
+                    android:id="@+id/img_edit"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:src="@drawable/ic_baseline_edit_24"
+                    app:layout_constraintStart_toEndOf="@id/tv_harga"
+                    app:layout_constraintTop_toTopOf="@id/tv_harga"
+                    app:layout_constraintBottom_toBottomOf="@id/tv_harga"
+                    android:layout_marginStart="24dp"/>
+
+                <com.google.android.material.textview.MaterialTextView
+                    android:id="@+id/tv_info_tambahan_luas"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    app:layout_constraintStart_toStartOf="@id/tv_info_harga"
+                    app:layout_constraintTop_toBottomOf="@id/tv_info_harga"
+                    app:layout_constraintEnd_toStartOf="@id/guideline_vertical"
+                    android:text="Tambah Luasan"
+                    style="@style/TextAppearance.MaterialComponents.Headline6"
+                    android:textSize="@dimen/form_pembayaran_title_text_size"
+                    android:layout_marginTop="8dp"/>
+
+                <com.google.android.material.textview.MaterialTextView
+                    android:id="@+id/tv_tambahan_luas"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    app:layout_constraintStart_toStartOf="@id/tv_harga"
+                    app:layout_constraintEnd_toEndOf="@id/tv_harga"
+                    app:layout_constraintTop_toTopOf="@id/tv_info_tambahan_luas"
+                    app:layout_constraintBottom_toBottomOf="@id/tv_info_tambahan_luas"
+                    style="@style/TextAppearance.MaterialComponents.Subtitle1"
+                    android:gravity="center"
+                    android:text="0"/>
+
+                <com.google.android.material.divider.MaterialDivider
+                    android:id="@+id/divider_harga_tambahan_luas"
+                    android:layout_width="0dp"
+                    android:layout_height="2dp"
+                    app:layout_constraintStart_toEndOf="@id/guideline_vertical"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/tv_tambahan_luas"
+                    android:layout_marginTop="8dp"
+                    android:layout_marginHorizontal="16dp"/>
+
+                <com.google.android.material.textview.MaterialTextView
+                    android:id="@+id/tv_total_harga"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    app:layout_constraintStart_toStartOf="@id/tv_tambahan_luas"
+                    app:layout_constraintEnd_toEndOf="@id/tv_tambahan_luas"
+                    app:layout_constraintTop_toBottomOf="@id/divider_harga_tambahan_luas"
+                    android:text="0"
+                    style="@style/TextAppearance.MaterialComponents.Subtitle1"
+                    android:gravity="center"
+                    android:layout_marginTop="8dp"/>
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+            <!-- Loading Screen & Tabel Pembayaran -->
+            <FrameLayout
+                android:id="@+id/layout_tabel_pembayaran"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/layout_harga_rumah_tambah_luasan"
+                android:layout_marginTop="36dp">
+
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:id="@+id/layout_loading_form_pembayaran"
+                    android:layout_width="match_parent"
+                    android:layout_height="300dp">
+
+                    <ProgressBar
+                        android:id="@+id/progress_bar"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:padding="8dp"
+                        app:layout_constraintBottom_toTopOf="@id/tvInfo_loading_form_pembayaran"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:layout_constraintVertical_chainStyle="packed"/>
+
+                    <com.google.android.material.textview.MaterialTextView
+                        android:id="@+id/tvInfo_loading_form_pembayaran"
+                        style="@style/TextAppearance.MaterialComponents.Subtitle1"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Memuat data pembayaran ..."
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toEndOf="@id/progress_bar"
+                        app:layout_constraintStart_toStartOf="@id/progress_bar"
+                        app:layout_constraintTop_toBottomOf="@id/progress_bar"/>
+
+                </androidx.constraintlayout.widget.ConstraintLayout>
+
+                <com.evrencoskun.tableview.TableView
+                    android:id="@+id/table_form_pembayaran"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    app:column_header_height="@dimen/table_pembayaran_column_header_height"
+                    app:row_header_width="@dimen/table_general_double_row_header_width"
+                    app:separator_color="@color/black"
+                    app:show_horizontal_separator="true"
+                    app:show_vertical_separator="true"
+                    app:allow_click_inside_cell="true"
+                    android:layout_marginHorizontal="4dp"
+                    android:visibility="gone"/>
+
+            </FrameLayout>
+
+            <!-- Catatan Pembayaran -->
+            <com.google.android.material.card.MaterialCardView
+                android:id="@+id/card_catatan_pembayaran"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:layout_constraintTop_toBottomOf="@id/layout_tabel_pembayaran"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                android:layout_marginTop="36dp"
+                android:layout_marginHorizontal="8dp"
+                app:strokeWidth="1dp"
+                app:strokeColor="@color/black"
+                app:cardCornerRadius="8dp"
+                app:cardElevation="2dp"
+                android:focusable="true"
+                android:clickable="true">
+
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+
+                    <com.google.android.material.textview.MaterialTextView
+                        android:id="@+id/tv_info_catatan"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent"
+                        android:text="Catatan"
+                        android:layout_marginTop="8dp"
+                        android:layout_marginStart="16dp"
+                        style="@style/TextAppearance.MaterialComponents.Headline6"
+                        android:textSize="@dimen/form_pembayaran_title_text_size"/>
+
+                    <ImageView
+                        android:id="@+id/img_edit_catatan"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:src="@drawable/ic_baseline_edit_24"
+                        app:layout_constraintBottom_toBottomOf="@+id/tv_info_catatan"
+                        app:layout_constraintStart_toEndOf="@+id/tv_info_catatan"
+                        app:layout_constraintTop_toTopOf="@+id/tv_info_catatan"
+                        android:layout_marginStart="8dp"/>
+
+                    <com.google.android.material.textview.MaterialTextView
+                        android:id="@+id/tv_catatan"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintTop_toBottomOf="@id/img_edit_catatan"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        android:text="@string/tidak_ada_catatan"
+                        android:layout_marginTop="16dp"
+                        android:layout_marginBottom="8dp"
+                        android:layout_marginHorizontal="16dp"
+                        style="@style/TextAppearance.MaterialComponents.Body2"/>
+
+                </androidx.constraintlayout.widget.ConstraintLayout>
+
+            </com.google.android.material.card.MaterialCardView>
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+    </androidx.core.widget.NestedScrollView>
+
+</androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
