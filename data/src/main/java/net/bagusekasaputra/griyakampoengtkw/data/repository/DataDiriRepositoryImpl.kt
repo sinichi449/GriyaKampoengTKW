@@ -14,7 +14,7 @@ import net.bagusekasaputra.griyakampoengtkw.data.MyObjectMapper.mapDataDiri
 import net.bagusekasaputra.griyakampoengtkw.data.interfaces.backup.BackupDataDiriDataSource
 import net.bagusekasaputra.griyakampoengtkw.data.interfaces.local.LocalDataDiriDataSource
 import net.bagusekasaputra.griyakampoengtkw.data.interfaces.local.LocalMetadataDataSource
-import net.bagusekasaputra.griyakampoengtkw.data.interfaces.remote.RemoteDataDiriRepository
+import net.bagusekasaputra.griyakampoengtkw.data.interfaces.remote.RemoteDataDiriDataSource
 import net.bagusekasaputra.griyakampoengtkw.data.interfaces.remote.RemoteKavlingDataSource
 import net.bagusekasaputra.griyakampoengtkw.data.interfaces.remote.RemoteMetadataDataSource
 import net.bagusekasaputra.griyakampoengtkw.data.model.MetadataModel
@@ -25,7 +25,7 @@ import net.bagusekasaputra.griyakampoengtkw.domain.repository.DataDiriRepository
 
 class DataDiriRepositoryImpl(
     private val localDataDiriDataSource: LocalDataDiriDataSource,
-    private val remoteDataDiriRepository: RemoteDataDiriRepository,
+    private val remoteDataDiriDataSource: RemoteDataDiriDataSource,
     private val remoteKavlingDataSource: RemoteKavlingDataSource,
     private val backupDataDiriDataSource: BackupDataDiriDataSource,
     private val localMetadata: LocalMetadataDataSource,
@@ -33,6 +33,10 @@ class DataDiriRepositoryImpl(
 ): DataDiriRepository {
 
     private val metadataTable = "dataDiri"
+    private val dataDiriIndenBookingLocalTable = "dataDiriIndenBooking"
+    private val dataDiriIndenBookingRemoteTable = { keyId: String ->
+        "indenBooking/${keyId}/dataDiri"
+    }
 
     override fun getBatchOnline(listKavling: List<String>): Flow<Result<Map<String, DataDiri?>?>> {
         return flow {
@@ -48,7 +52,7 @@ class DataDiriRepositoryImpl(
                     .getOrNull()
 
                 if (localModel == null) {
-                    remoteDataDiriRepository.getDataDiri(kavling)
+                    remoteDataDiriDataSource.getDataDiri(kavling)
                         .onSuccess { model ->
                             model?.let {
                                 localDataDiriDataSource.addDataDiri(kavling, model)
@@ -103,7 +107,7 @@ class DataDiriRepositoryImpl(
             val mapDataDiri = mutableMapOf<String, DataDiri?>()
 
             listKavling.forEach { kavling ->
-                val remoteResult = remoteDataDiriRepository.getFromBackup(backupName, kavling)
+                val remoteResult = remoteDataDiriDataSource.getFromBackup(backupName, kavling)
                 if (remoteResult.isSuccess) {
                     val model = remoteResult.getOrNull()
                     val dataDiri = model?.let { mapDataDiri(it) }
@@ -134,7 +138,7 @@ class DataDiriRepositoryImpl(
             }
             val flowOnline = flow<Result<DataDiri?>> {
                 // Get from remote
-                val getDataDiriRemote = remoteDataDiriRepository.getDataDiri(kavlingKode)
+                val getDataDiriRemote = remoteDataDiriDataSource.getDataDiri(kavlingKode)
 
                 if (getDataDiriRemote.isSuccess) {
                     // Emit the data diri
@@ -175,7 +179,7 @@ class DataDiriRepositoryImpl(
 
     override fun getFromRemoteBackup(backupName: String, kavlingKode: String): Flow<Result<DataDiri?>> {
         return flow {
-            val remoteResult = remoteDataDiriRepository.getFromBackup(backupName,kavlingKode)
+            val remoteResult = remoteDataDiriDataSource.getFromBackup(backupName,kavlingKode)
 
             emit(DataUtil.mapSingleResult(
                 originResult = remoteResult,
@@ -195,7 +199,7 @@ class DataDiriRepositoryImpl(
 
             // Adding mechanism on Local Data Source already available on getDataDiri() method.
 
-            emitAll(remoteDataDiriRepository.addDataDiri(kavlingKode, model))
+            emitAll(remoteDataDiriDataSource.addDataDiri(kavlingKode, model))
         }
     }
 
@@ -213,7 +217,7 @@ class DataDiriRepositoryImpl(
             }
 
             // Then, delete on the remote ...
-            emitAll(remoteDataDiriRepository.deleteDataDiri(kavlingKode))
+            emitAll(remoteDataDiriDataSource.deleteDataDiri(kavlingKode))
         }
     }
 
@@ -223,7 +227,7 @@ class DataDiriRepositoryImpl(
 
             kavlings.forEach { kavling ->
                 val kavlingKode = kavling.kode
-                val dataDiriModel = remoteDataDiriRepository.getDataDiri(kavlingKode).getOrThrow()
+                val dataDiriModel = remoteDataDiriDataSource.getDataDiri(kavlingKode).getOrThrow()
 
                 dataDiriModel?.also {
                     localDataDiriDataSource.addDataDiri(kavlingKode, it).getOrThrow()
@@ -236,6 +240,36 @@ class DataDiriRepositoryImpl(
 
             Result.failure(e)
         }
+    }
+
+    override suspend fun getFromIndenBooking(keyId: String): Result<DataDiri?> {
+        val invalidCache = checkAndInvalidateCache(
+            dataDiriIndenBookingLocalTable,
+            dataDiriIndenBookingRemoteTable(keyId),
+            onInvalid = {
+                localDataDiriDataSource.deleteAllFromIndenBooking()
+            },
+        )
+        val localModel = localDataDiriDataSource.getFromIndenBooking(keyId).getOrThrow()
+
+        // Fetch from remote data source if either the cache was invalid
+        // or the local data source returning null (probably after invalidate() call)
+        if (invalidCache || localModel == null) {
+            Log.d("INDEN_BOOKING", "Data Diri on Cache was invalid or Local Data Source is null! " +
+                    "Fetching from Remote Data Source now.")
+
+            remoteDataDiriDataSource.getFromIndenBooking(keyId).getOrThrow()?.also {
+                localDataDiriDataSource.insertFromIndenBooking(keyId, it)
+            }
+        } else {
+            Log.d("INDEN_BOOKING", "Data Diri on Local Data Source is okay, returning from it.")
+        }
+
+        val refreshedLocalResult = localDataDiriDataSource.getFromIndenBooking(keyId)
+        return DataUtil.mapSingleResult(
+            originResult = refreshedLocalResult,
+            targetMapper = MyObjectMapper::mapDataDiri,
+        )
     }
 
     private suspend fun checkCache() {
@@ -261,6 +295,29 @@ class DataDiriRepositoryImpl(
 
         localMetadata.insert(newMetadata)
         remoteMetadata.update(oldMetadata, newMetadata)
+    }
+
+    // For Inden Booking
+    private suspend fun checkAndInvalidateCache(
+        localTable: String,
+        remoteTable: String,
+        onInvalid: suspend () -> Unit,
+    ): Boolean {
+        var isInvalid = false
+
+        val localTimestamp = localMetadata.get(localTable)?.timestamp
+        val remoteTimestamp = remoteMetadata.get(remoteTable)?.timestamp
+        if (localTimestamp != remoteTimestamp) {
+            isInvalid = true
+
+            onInvalid()
+
+            remoteTimestamp?.also {
+                localMetadata.insert(MetadataModel(localTable, it))
+            }
+        }
+
+        return isInvalid
     }
 
 }

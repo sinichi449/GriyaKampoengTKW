@@ -50,7 +50,7 @@ object RepositoryModule {
     @Provides
     fun provideDataDiriRepository(
         localDataDiriDataSource: LocalDataDiriDataSource,
-        remoteDataDiriRepository: RemoteDataDiriRepository,
+        remoteDataDiriDataSource: RemoteDataDiriDataSource,
         remoteKavlingDataSource: RemoteKavlingDataSource,
         backupDataDiriDataSource: BackupDataDiriDataSource,
         localMetadata: LocalMetadataDataSource,
@@ -58,7 +58,7 @@ object RepositoryModule {
     ): DataDiriRepository {
         return DataDiriRepositoryImpl(
             localDataDiriDataSource,
-            remoteDataDiriRepository,
+            remoteDataDiriDataSource,
             remoteKavlingDataSource,
             backupDataDiriDataSource,
             localMetadata,

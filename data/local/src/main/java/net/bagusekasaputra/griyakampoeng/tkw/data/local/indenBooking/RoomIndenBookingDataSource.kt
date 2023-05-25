@@ -4,7 +4,6 @@ import android.net.Uri
 import net.bagusekasaputra.griyakampoeng.tkw.data.local.MyRoomDatabase
 import net.bagusekasaputra.griyakampoeng.tkw.data.local.RoomRequestHelper.roomOperation
 import net.bagusekasaputra.griyakampoengtkw.data.interfaces.local.LocalIndenBookingDataSource
-import net.bagusekasaputra.griyakampoengtkw.data.model.DataDiriModel
 import net.bagusekasaputra.griyakampoengtkw.data.model.HargaRumahModel
 import net.bagusekasaputra.griyakampoengtkw.data.model.PembayaranModel
 import java.io.File
@@ -21,14 +20,6 @@ class RoomIndenBookingDataSource(
 
     override suspend fun getAllKeyIds(): Result<List<String>?> {
         TODO("Not yet implemented")
-    }
-
-    override suspend fun getDataDiri(keyId: String): Result<DataDiriModel?> {
-        return roomOperation {
-            val entity = dataDiriDao.getByKeyId(keyId)
-
-            entity?.toModel()
-        }
     }
 
     override suspend fun getAllPembayaran(keyId: String): Result<List<PembayaranModel>?> {
@@ -48,19 +39,6 @@ class RoomIndenBookingDataSource(
             val entity = fotoIdentitasDao.getByKeyId(keyId)
 
             entity?.uriStr?.let { Uri.parse(it) }
-        }
-    }
-
-    override suspend fun insertDataDiri(
-        keyId: String,
-        dataDiriModel: DataDiriModel
-    ): Result<Nothing?> {
-        return roomOperation {
-            val entity = dataDiriModel.toEntity(keyId)
-
-            dataDiriDao.insert(entity)
-
-            null
         }
     }
 
@@ -87,13 +65,6 @@ class RoomIndenBookingDataSource(
         }
     }
 
-    override suspend fun invalidateDataDiri(): Result<Nothing?> {
-        return roomOperation {
-            dataDiriDao.deleteAll()
-
-            null
-        }
-    }
 
     override suspend fun invalidatePembayaran(): Result<Nothing?> {
         return roomOperation {

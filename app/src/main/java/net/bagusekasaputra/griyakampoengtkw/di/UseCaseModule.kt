@@ -14,6 +14,7 @@ import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.biayaPribadi.Get
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.block.GetAllBlocksAsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.catatanPembayaran.GetCatatanPembayaranAsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.dataDiri.GetDataDiriAsyncUseCase
+import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.dataDiri.GetDataDiriIndenBookingAsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.databaseUser.GetAllDatabaseUserAsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.databaseUser.InsertDatabaseUserAsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.feeMarketing.GetFeeMarketingByKavlingKodeAsyncUseCase
@@ -24,7 +25,6 @@ import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.fotoPembayaran.I
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.hargaKavling.GetHargaKavlingAsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.indenBooking.GetAllIndenBookingAsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.indenBooking.GetAllPembayaranIndenBookingAsyncUseCase
-import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.indenBooking.GetDataDiriIndenBookingAsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.indenBooking.GetFotoIdentitasIndenBookingAsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.indenBooking.GetHargaRumahIndenBookingAsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.kavling.GetKavlingByBlockAsyncUseCase
@@ -497,13 +497,16 @@ object UseCaseModule {
      * Inden Booking
      */
     @Provides
-    fun providesGetAllIndenBookingUseCase(indenBookingRepository: IndenBookingRepository): GetAllIndenBookingAsyncUseCase {
-        return GetAllIndenBookingAsyncUseCase(indenBookingRepository)
+    fun providesGetAllIndenBookingUseCase(
+        indenBookingRepository: IndenBookingRepository,
+        dataDiriRepository: DataDiriRepository,
+    ): GetAllIndenBookingAsyncUseCase {
+        return GetAllIndenBookingAsyncUseCase(indenBookingRepository, dataDiriRepository)
     }
 
     @Provides
-    fun provideGetDataDiriIndenBookingUseCase(indenBookingRepository: IndenBookingRepository): GetDataDiriIndenBookingAsyncUseCase {
-        return GetDataDiriIndenBookingAsyncUseCase(indenBookingRepository)
+    fun provideGetDataDiriIndenBookingUseCase(dataDiriRepository: DataDiriRepository): GetDataDiriIndenBookingAsyncUseCase {
+        return GetDataDiriIndenBookingAsyncUseCase(dataDiriRepository)
     }
 
     @Provides

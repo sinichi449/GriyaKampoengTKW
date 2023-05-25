@@ -6,7 +6,8 @@ import net.bagusekasaputra.griyakampoengtkw.data.interfaces.local.LocalDataDiriD
 import net.bagusekasaputra.griyakampoengtkw.data.model.DataDiriModel
 
 class RoomDataDiriDataSource(
-    private val roomDatabase: MyRoomDatabase
+    private val roomDatabase: MyRoomDatabase,
+    private val dataDiriIndenBookingDataSource: RoomDataDiriIndenBookingDataSource,
 ): LocalDataDiriDataSource {
 
     private val dataDiriRoomDao = roomDatabase.getDataDiriDao()
@@ -71,6 +72,25 @@ class RoomDataDiriDataSource(
         }
     }
 
+
+    /**
+     * Inden Booking related
+     */
+    override suspend fun getFromIndenBooking(keyId: String): Result<DataDiriModel?> {
+        return dataDiriIndenBookingDataSource.get(keyId)
+    }
+
+    override suspend fun insertFromIndenBooking(
+        keyId: String,
+        model: DataDiriModel
+    ): Result<Nothing?> {
+        return dataDiriIndenBookingDataSource.insert(keyId, model)
+    }
+
+    override suspend fun deleteAllFromIndenBooking(): Result<Nothing?> {
+        return dataDiriIndenBookingDataSource.deleteAll()
+    }
+
     private fun mapDataDiri(dataDiriRoomEntity: DataDiriRoomEntity): DataDiriModel {
         return dataDiriRoomEntity.let {
             DataDiriModel(
@@ -100,4 +120,18 @@ class RoomDataDiriDataSource(
         }
     }
 
+}
+
+/**
+ * This interface will prevent RoomDataDiriDataSource depending on the Inden Booking
+ * counterpart, since it is very unstable, and instead inverting that relation.
+ *
+ * (Dependency Inversion?)
+ */
+interface RoomDataDiriIndenBookingDataSource {
+    suspend fun get(keyId: String): Result<DataDiriModel?>
+
+    suspend fun insert(keyId: String, model: DataDiriModel): Result<Nothing?>
+
+    suspend fun deleteAll(): Result<Nothing?>
 }

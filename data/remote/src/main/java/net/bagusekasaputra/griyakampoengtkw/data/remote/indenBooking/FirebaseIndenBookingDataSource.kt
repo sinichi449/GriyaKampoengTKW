@@ -10,7 +10,6 @@ import com.google.firebase.database.ValueEventListener
 import com.google.firebase.database.ktx.getValue
 import com.google.firebase.storage.StorageReference
 import net.bagusekasaputra.griyakampoengtkw.data.interfaces.remote.RemoteIndenBookingDataSource
-import net.bagusekasaputra.griyakampoengtkw.data.model.DataDiriModel
 import net.bagusekasaputra.griyakampoengtkw.data.model.HargaRumahModel
 import net.bagusekasaputra.griyakampoengtkw.data.model.PembayaranModel
 import net.bagusekasaputra.griyakampoengtkw.data.remote.FirebaseNodes
@@ -59,26 +58,6 @@ class FirebaseIndenBookingDataSource(
             }
 
             indenBookingRef.addListenerForSingleValueEvent(eventListener)
-        }
-    }
-
-    override suspend fun getDataDiri(keyId: String): Result<DataDiriModel?> {
-        return suspendCoroutine { continuation ->
-            val eventListener = object : ValueEventListener {
-                override fun onDataChange(snapshot: DataSnapshot) {
-                    val dataDiri = snapshot.getValue<DataDiriModel>()
-
-                    continuation.resume(Result.success(dataDiri))
-                }
-
-                override fun onCancelled(error: DatabaseError) {
-                    val exception = error.toException()
-                    continuation.resume(Result.failure(exception))
-                }
-            }
-
-            indenBookingRef.child(keyId).child(FirebaseNodes.DATA_DIRI)
-                .addListenerForSingleValueEvent(eventListener)
         }
     }
 

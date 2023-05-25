@@ -10,7 +10,7 @@ import kotlinx.coroutines.channels.trySendBlocking
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
 import kotlinx.coroutines.flow.first
-import net.bagusekasaputra.griyakampoengtkw.data.interfaces.remote.RemoteDataDiriRepository
+import net.bagusekasaputra.griyakampoengtkw.data.interfaces.remote.RemoteDataDiriDataSource
 import net.bagusekasaputra.griyakampoengtkw.data.model.DataDiriModel
 import net.bagusekasaputra.griyakampoengtkw.data.remote.ConnectionUtil
 import net.bagusekasaputra.griyakampoengtkw.data.remote.FirebaseNodes
@@ -19,9 +19,9 @@ import kotlin.coroutines.resume
 import kotlin.coroutines.resumeWithException
 import kotlin.coroutines.suspendCoroutine
 
-class FirebaseDataDiriRepository(
+class FirebaseDataDiriDataSource(
     private val databaseReference: DatabaseReference
-): RemoteDataDiriRepository {
+): RemoteDataDiriDataSource {
 
     private val dataDiriRef = databaseReference.child(FirebaseNodes.DATA_DIRI)
 
@@ -114,6 +114,32 @@ class FirebaseDataDiriRepository(
                 }
 
             awaitClose {  }
+        }
+    }
+
+
+    /**
+     * Inden Booking related
+     */
+    val indenBookingRef = databaseReference.child(FirebaseNodes.INDEN_BOOKING)
+
+    override suspend fun getFromIndenBooking(keyId: String): Result<DataDiriModel?> {
+        return suspendCoroutine { continuation ->
+            val eventListener = object : ValueEventListener {
+                override fun onDataChange(snapshot: DataSnapshot) {
+                    val dataDiri = snapshot.getValue<DataDiriModel>()
+
+                    continuation.resume(Result.success(dataDiri))
+                }
+
+                override fun onCancelled(error: DatabaseError) {
+                    val exception = error.toException()
+                    continuation.resume(Result.failure(exception))
+                }
+            }
+
+            indenBookingRef.child(keyId).child(FirebaseNodes.DATA_DIRI)
+                .addListenerForSingleValueEvent(eventListener)
         }
     }
 

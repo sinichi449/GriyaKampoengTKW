@@ -16,6 +16,7 @@ import net.bagusekasaputra.griyakampoeng.tkw.data.local.biayaMarketing.RoomBiaya
 import net.bagusekasaputra.griyakampoeng.tkw.data.local.block.RoomBlockDataSource
 import net.bagusekasaputra.griyakampoeng.tkw.data.local.catatanPembayaran.RoomCatatanPembayaranDataSource
 import net.bagusekasaputra.griyakampoeng.tkw.data.local.datadiri.RoomDataDiriDataSource
+import net.bagusekasaputra.griyakampoeng.tkw.data.local.datadiri.RoomDataDiriIndenBookingDataSource
 import net.bagusekasaputra.griyakampoeng.tkw.data.local.feeMarketing.RoomFeeMarketingDataSource
 import net.bagusekasaputra.griyakampoeng.tkw.data.local.fotoKuitansi.RoomFotoKuitansiDataSource
 import net.bagusekasaputra.griyakampoeng.tkw.data.local.fotoPembayaran.LocalFotoPembayaranDataSourceImpl
@@ -24,6 +25,7 @@ import net.bagusekasaputra.griyakampoeng.tkw.data.local.hargaKavling.RoomHargaKa
 import net.bagusekasaputra.griyakampoeng.tkw.data.local.imageDataDiri.LocalImageDataDiriDataSourceImpl
 import net.bagusekasaputra.griyakampoeng.tkw.data.local.imageSpr.LocalImageSprDataSourceImpl
 import net.bagusekasaputra.griyakampoeng.tkw.data.local.indenBooking.RoomIndenBookingDataSource
+import net.bagusekasaputra.griyakampoeng.tkw.data.local.indenBooking.dataDiri.RoomDataDiriIndenBookingDataSourceImpl
 import net.bagusekasaputra.griyakampoeng.tkw.data.local.kavling.RoomKavlingDataSource
 import net.bagusekasaputra.griyakampoeng.tkw.data.local.metadata.RoomMetadataDataSource
 import net.bagusekasaputra.griyakampoeng.tkw.data.local.pembayaran.RoomPembayaranLocalDataSource
@@ -133,13 +135,16 @@ object DataSourceModule {
      * Data Diri
      */
     @Provides
-    fun provideLocalDataDiriRepository(roomDatabase: MyRoomDatabase): LocalDataDiriDataSource {
-        return RoomDataDiriDataSource(roomDatabase)
+    fun provideLocalDataDiriRepository(
+        roomDatabase: MyRoomDatabase,
+        dataDiriIndenBookingDataSource: RoomDataDiriIndenBookingDataSource,
+    ): LocalDataDiriDataSource {
+        return RoomDataDiriDataSource(roomDatabase, dataDiriIndenBookingDataSource)
     }
 
     @Provides
-    fun provideRemoteDataDiriRepository(databaseReference: DatabaseReference): RemoteDataDiriRepository {
-        return net.bagusekasaputra.griyakampoengtkw.data.remote.datadiri.FirebaseDataDiriRepository(
+    fun provideRemoteDataDiriRepository(databaseReference: DatabaseReference): RemoteDataDiriDataSource {
+        return net.bagusekasaputra.griyakampoengtkw.data.remote.datadiri.FirebaseDataDiriDataSource(
             databaseReference
         )
     }
@@ -407,6 +412,11 @@ object DataSourceModule {
         @ExternalDir externalFilesDir: File?,
     ): LocalIndenBookingDataSource {
         return RoomIndenBookingDataSource(myRoomDatabase, externalFilesDir)
+    }
+
+    @Provides
+    fun provideRoomDataDiriIndenBookingDataSource(myRoomDatabase: MyRoomDatabase): RoomDataDiriIndenBookingDataSource {
+        return RoomDataDiriIndenBookingDataSourceImpl(myRoomDatabase)
     }
 
 
