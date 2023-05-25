@@ -22,15 +22,27 @@ class IndenBookingRepositoryImpl(
     private val remoteMetadata: RemoteMetadataDataSource,
 ): IndenBookingRepository {
 
-    private val localCacheTable = { keyId: String -> "indenBooking_${keyId}"}
-    private val remoteCacheTable = { keyId: String -> "indenBooking/${keyId}"}
+    private val dataDiriLocalTable = "dataDiriIndenBooking"
+    private val pembayaranLocalTable = "pembayaranIndenBooking"
+    private val dataDiriRemoteTable = { keyId: String ->
+        "indenBooking/${keyId}/dataDiri"
+    }
+    private val pembayaranRemoteTable = { keyId: String ->
+        "indenBooking/${keyId}/formPembayaran"
+    }
 
     override suspend fun getAllKeyIds(dataMode: DataMode): Result<List<String>?> {
         return remoteDataSource.getAllKeyIds()
     }
 
     override suspend fun getDataDiri(keyId: String, dataMode: DataMode): Result<DataDiri?> {
-        val invalidCache = checkAndInvalidateCache(keyId)
+        val invalidCache = checkAndInvalidateCache(
+            dataDiriLocalTable,
+            dataDiriRemoteTable(keyId),
+            onInvalid = {
+                localDataSource.invalidateDataDiri()
+            },
+        )
         val localModel = localDataSource.getDataDiri(keyId).getOrThrow()
 
         // Fetch from remote data source if either the cache was invalid
@@ -57,10 +69,31 @@ class IndenBookingRepositoryImpl(
         keyId: String,
         dataMode: DataMode
     ): Result<List<Pembayaran>?> {
-        val remoteResult = remoteDataSource.getAllPembayaran(keyId)
+        val invalidCache = checkAndInvalidateCache(
+            pembayaranLocalTable,
+            pembayaranRemoteTable(keyId),
+            onInvalid = {
+                localDataSource.invalidatePembayaran(keyId)
+            }
+        )
+        val localModel = localDataSource.getAllPembayaran(keyId).getOrThrow()
 
+        // Fetch from remote data source if either the cache was invalid
+        // or the local data source returning null (probably after invalidate() call)
+        if (invalidCache || localModel == null) {
+            Log.d("INDEN_BOOKING", "Pembayaran on Cache was invalid or Local Data Source is null! " +
+                    "Fetching from Remote Data Source now.")
+
+            remoteDataSource.getAllPembayaran(keyId).getOrThrow()?.also {
+                localDataSource.insertAllPembayaran(keyId, it)
+            }
+        } else {
+            Log.d("INDEN_BOOKING", "Pembayaran on Local Data Source is okay, returning from it.")
+        }
+
+        val refreshedLocalResult = localDataSource.getAllPembayaran(keyId)
         return DataUtil.mapListResult(
-            originResult = remoteResult,
+            originResult = refreshedLocalResult,
             targetMapper = MyObjectMapper::mapPembayaran,
         )
     }
@@ -78,37 +111,43 @@ class IndenBookingRepositoryImpl(
     }
 
     override suspend fun getFotoIdentitas(keyId: String, dataMode: DataMode): Result<Uri?> {
-        val isInvalidCache = checkAndInvalidateCache(keyId)
-        val localModel = localDataSource.getFotoIdentitas(keyId).getOrThrow()
-
-        // Fetch from remote data source if either the cache was invalid
-        // or the local data source returning null (probably after invalidate() call)
-        if (isInvalidCache || localModel == null) {
-            Log.d("INDEN_BOOKING", "Foto Identitas on Local Data Source either invalidated or null!" +
-                    " Fetching from Remote Data Source now.")
-
-            val remoteModel = remoteDataSource.getFotoIdentitas(keyId).getOrThrow()
-            remoteModel?.also {
-                localDataSource.insertFotoIdentitas(keyId, it)
-            }
-        } else {
-            Log.d("INDEN_BOOKING", "Foto Identitas returning from Local Data Source!")
-        }
-
-        return localDataSource.getFotoIdentitas(keyId)
+        return Result.success(null)
+//        val isInvalidCache = checkAndInvalidateCache(keyId)
+//        val localModel = localDataSource.getFotoIdentitas(keyId).getOrThrow()
+//
+//        // Fetch from remote data source if either the cache was invalid
+//        // or the local data source returning null (probably after invalidate() call)
+//        if (isInvalidCache || localModel == null) {
+//            Log.d("INDEN_BOOKING", "Foto Identitas on Local Data Source either invalidated or null!" +
+//                    " Fetching from Remote Data Source now.")
+//
+//            val remoteModel = remoteDataSource.getFotoIdentitas(keyId).getOrThrow()
+//            remoteModel?.also {
+//                localDataSource.insertFotoIdentitas(keyId, it)
+//            }
+//        } else {
+//            Log.d("INDEN_BOOKING", "Foto Identitas returning from Local Data Source!")
+//        }
+//
+//        return localDataSource.getFotoIdentitas(keyId)
     }
 
-    private suspend fun checkAndInvalidateCache(keyId: String): Boolean {
+    private suspend fun checkAndInvalidateCache(
+        localTable: String,
+        remoteTable: String,
+        onInvalid: suspend () -> Unit,
+    ): Boolean {
         var isInvalid = false
 
-        val localTimestamp = localMetadata.get(localCacheTable(keyId))?.timestamp
-        val remoteTimestamp = remoteMetadata.get(remoteCacheTable(keyId))?.timestamp
+        val localTimestamp = localMetadata.get(localTable)?.timestamp
+        val remoteTimestamp = remoteMetadata.get(remoteTable)?.timestamp
         if (localTimestamp != remoteTimestamp) {
             isInvalid = true
-            localDataSource.invalidate(keyId).getOrThrow()
+
+            onInvalid()
 
             remoteTimestamp?.also {
-                localMetadata.insert(MetadataModel(localCacheTable(keyId), it))
+                localMetadata.insert(MetadataModel(localTable, it))
             }
         }
 

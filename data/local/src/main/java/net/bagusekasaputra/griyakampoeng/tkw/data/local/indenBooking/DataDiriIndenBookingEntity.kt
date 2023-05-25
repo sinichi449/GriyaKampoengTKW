@@ -37,6 +37,9 @@ interface DataDiriIndenBookingDao {
     @Query("DELETE FROM data_diri_inden_booking WHERE keyId=:keyId")
     fun delete(keyId: String)
 
+    @Query("DELETE FROM data_diri_inden_booking")
+    fun deleteAll()
+
 }
 
 /**

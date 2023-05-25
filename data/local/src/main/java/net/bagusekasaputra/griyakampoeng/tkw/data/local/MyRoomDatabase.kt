@@ -30,6 +30,8 @@ import net.bagusekasaputra.griyakampoeng.tkw.data.local.indenBooking.DataDiriInd
 import net.bagusekasaputra.griyakampoeng.tkw.data.local.indenBooking.DataDiriIndenBookingEntity
 import net.bagusekasaputra.griyakampoeng.tkw.data.local.indenBooking.FotoIdentitasIndenBookingDao
 import net.bagusekasaputra.griyakampoeng.tkw.data.local.indenBooking.FotoIdentitasIndenBookingEntity
+import net.bagusekasaputra.griyakampoeng.tkw.data.local.indenBooking.PembayaranIndenBookingDao
+import net.bagusekasaputra.griyakampoeng.tkw.data.local.indenBooking.PembayaranIndenBookingEntity
 import net.bagusekasaputra.griyakampoeng.tkw.data.local.kavling.KavlingRoomDao
 import net.bagusekasaputra.griyakampoeng.tkw.data.local.kavling.KavlingRoomEntity
 import net.bagusekasaputra.griyakampoeng.tkw.data.local.metadata.MetadataDao
@@ -46,8 +48,9 @@ import net.bagusekasaputra.griyakampoeng.tkw.data.local.pengingat.PengingatRoomE
                CatatanPembayaranRoomEntity::class, FeeMarketingRoomEntity::class,
                 BiayaMarketingV2RoomEntity::class, PengingatRoomEntity::class, MetadataEntity::class,
                BiayaLainRoomEntity::class, BaselinePembayaranRoomEntity::class,
-               FotoIdentitasIndenBookingEntity::class, DataDiriIndenBookingEntity::class],
-    version = 24,
+               FotoIdentitasIndenBookingEntity::class, DataDiriIndenBookingEntity::class,
+               PembayaranIndenBookingEntity::class],
+    version = 25,
     exportSchema = true,
 )
 abstract class MyRoomDatabase: RoomDatabase() {
@@ -87,4 +90,6 @@ abstract class MyRoomDatabase: RoomDatabase() {
     abstract fun getFotoIdentitasIndenBookingDao(): FotoIdentitasIndenBookingDao
 
     abstract fun getDataDiriIndenBookingDao(): DataDiriIndenBookingDao
+
+    abstract fun getPembayaranIndenBookingDao(): PembayaranIndenBookingDao
 }

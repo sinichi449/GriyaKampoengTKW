@@ -16,6 +16,7 @@ class RoomIndenBookingDataSource(
 ): LocalIndenBookingDataSource {
 
     private val dataDiriDao = myRoomDatabase.getDataDiriIndenBookingDao()
+    private val pembayaranDao  = myRoomDatabase.getPembayaranIndenBookingDao()
     private val fotoIdentitasDao = myRoomDatabase.getFotoIdentitasIndenBookingDao()
 
     override suspend fun getAllKeyIds(): Result<List<String>?> {
@@ -31,7 +32,11 @@ class RoomIndenBookingDataSource(
     }
 
     override suspend fun getAllPembayaran(keyId: String): Result<List<PembayaranModel>?> {
-        TODO("Not yet implemented")
+        return roomOperation {
+            val entityList = pembayaranDao.getAllByKeyId(keyId)
+
+            entityList?.map { it.toModel() }
+        }
     }
 
     override suspend fun getHargaRumah(keyId: String): Result<HargaRumahModel?> {
@@ -59,6 +64,19 @@ class RoomIndenBookingDataSource(
         }
     }
 
+    override suspend fun insertAllPembayaran(
+        keyId: String,
+        pembayaranList: List<PembayaranModel>
+    ): Result<Nothing?> {
+        return roomOperation {
+            val entityList = pembayaranList.map { it.toEntity(keyId) }
+
+            pembayaranDao.insertAll(entityList)
+
+            null
+        }
+    }
+
     override suspend fun insertFotoIdentitas(keyId: String, uri: Uri): Result<Nothing?> {
         return roomOperation {
             val entity = FotoIdentitasIndenBookingEntity(keyId, uri.toString())
@@ -69,16 +87,21 @@ class RoomIndenBookingDataSource(
         }
     }
 
-    override suspend fun invalidate(keyId: String): Result<Nothing?> {
+    override suspend fun invalidateDataDiri(): Result<Nothing?> {
         return roomOperation {
-            dataDiriDao.delete(keyId)
-            fotoIdentitasDao.delete(keyId)
-
-            val fileFoto = File(externalFileDir, "inden_booking_images/data_diri_images/" +
-                    "${keyId}.png")
-            fileFoto.delete()
+            dataDiriDao.deleteAll()
 
             null
         }
     }
+
+    override suspend fun invalidatePembayaran(keyId: String): Result<Nothing?> {
+        return roomOperation {
+            pembayaranDao.deleteAllWith(keyId)
+
+            null
+        }
+    }
+
+
 }

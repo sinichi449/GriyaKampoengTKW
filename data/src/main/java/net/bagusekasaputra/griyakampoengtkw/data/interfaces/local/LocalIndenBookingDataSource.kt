@@ -20,8 +20,13 @@ interface LocalIndenBookingDataSource {
 
     suspend fun insertDataDiri(keyId: String, dataDiriModel: DataDiriModel): Result<Nothing?>
 
+    suspend fun insertAllPembayaran(keyId: String, pembayaranList: List<PembayaranModel>)
+        : Result<Nothing?>
+
     suspend fun insertFotoIdentitas(keyId: String, uri: Uri): Result<Nothing?>
 
 
-    suspend fun invalidate(keyId: String): Result<Nothing?>
+    suspend fun invalidateDataDiri(): Result<Nothing?>
+
+    suspend fun invalidatePembayaran(keyId: String): Result<Nothing?>
 }
