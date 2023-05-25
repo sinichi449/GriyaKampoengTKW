@@ -114,15 +114,15 @@ class IndenBookingFragment : Fragment() {
                         onClick = { position ->
                             val intent = Intent(requireContext(), DetailIndenBookingActivity::class.java)
                             val namaCostumerExtra = it[position].namaCostumer
-                            val sortingNum = position.toString().padStart(3, '0')
+                            val keyId = it[position].keyId
 
                             intent.putExtra(
                                 DetailIndenBookingActivity.EXTRAS_NAMA_COSTUMER,
                                 namaCostumerExtra
                             )
                             intent.putExtra(
-                                DetailIndenBookingActivity.EXTRAS_NOMOR_URUT,
-                                sortingNum
+                                DetailIndenBookingActivity.EXTRAS_KEY_ID,
+                                keyId,
                             )
 
                             requireActivity().startActivity(intent)

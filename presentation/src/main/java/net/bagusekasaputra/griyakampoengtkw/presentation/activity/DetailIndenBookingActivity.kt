@@ -22,7 +22,7 @@ class DetailIndenBookingActivity : AppCompatActivity() {
 
     companion object {
         const val EXTRAS_NAMA_COSTUMER = "EXTRAS_NAMA_COSTUMER"
-        const val EXTRAS_NOMOR_URUT = "EXTRAS_NOMOR_URUT"
+        const val EXTRAS_KEY_ID = "EXTRAS_KEY_ID"
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -40,10 +40,10 @@ class DetailIndenBookingActivity : AppCompatActivity() {
         } else {
             viewModel.namaCostumer = namaCostumer
         }
-        val sortingNum = intent?.extras?.getString(EXTRAS_NOMOR_URUT)
+        val keyId = intent?.extras?.getString(EXTRAS_KEY_ID) ?: "NULL_ID"
 
         binding.toolbarDetail.title = viewModel.namaCostumer
-        binding.toolbarDetail.subtitle = "Inden Booking #${sortingNum}"
+        binding.toolbarDetail.subtitle = keyId
 
         setupViewPager()
     }
