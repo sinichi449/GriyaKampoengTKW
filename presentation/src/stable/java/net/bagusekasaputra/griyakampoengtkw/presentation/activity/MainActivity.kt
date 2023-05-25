@@ -1,4 +1,4 @@
-package net.bagusekasaputra.griyakampoengtkw.presentation.activities
+package net.bagusekasaputra.griyakampoengtkw.presentation.activity
 
 import android.annotation.SuppressLint
 import android.content.Intent

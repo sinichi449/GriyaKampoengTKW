@@ -32,7 +32,7 @@ import net.bagusekasaputra.griyakampoengtkw.data.remote.FirebaseNodes
 import net.bagusekasaputra.griyakampoengtkw.databinding.ActivitySplashPureBinding
 import net.bagusekasaputra.griyakampoengtkw.databinding.ActivitySplashWithLoadingBinding
 import net.bagusekasaputra.griyakampoengtkw.presentation.R
-import net.bagusekasaputra.griyakampoengtkw.presentation.activities.MainActivity
+import net.bagusekasaputra.griyakampoengtkw.presentation.activity.MainActivity
 import net.bagusekasaputra.griyakampoengtkw.presentation.util.GriyaNodes
 import java.io.IOException
 import java.net.InetSocketAddress
