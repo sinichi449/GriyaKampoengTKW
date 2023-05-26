@@ -34,21 +34,24 @@ class KavlingRecyclerAdapter(
 
     override fun onBindViewHolder(holder: MyViewHolder, position: Int) {
         holder.binding.tvCardBlockName.text = kavlings[position].kode
-        holder.binding.tvUkuran.text = kavlings[position].ukuran
+//        holder.binding.tvUkuran.text = kavlings[position].ukuran
         holder.binding.tvTypeRumah.text = kavlings[position].type
 //        holder.binding.imgSudahIsiDataDiri.visibility = if (kavlings[position].belumIsi)
 //            View.GONE else View.VISIBLE
         holder.binding.cardKavling.isChecked = kavlings[position].getSudahIsi()
-
 //        holder.binding.cardKavling.setCardBackgroundColor(Color.parseColor(kavlings[position].warna))
-
         holder.binding.imgSudahBayarBulanIni.visibility = if (kavlings[position].sudahBayarBulanIni)
             View.VISIBLE
         else
             View.GONE
 
-        // Fill Layout progress settings
+        // Special case for all Kavlings in Blok C
         val kavling = kavlings[position]
+        holder.binding.tvUkuran.text = if (kavling.kode == "C1")
+            "93 m2" else kavling.ukuran
+
+
+        // Fill Layout progress settings
         val warna = Color.parseColor(kavling.warna)
         val progress = mapProgressKavling[kavling.kode]?.persentaseBulanIni()
 
