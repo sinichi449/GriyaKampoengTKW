@@ -130,6 +130,7 @@ object RepositoryModule {
         localMetadataDataSource: LocalMetadataDataSource,
         remoteMetadataDataSource: RemoteMetadataDataSource,
         contentResolver: ContentResolver,
+        cacheHelper: CacheHelper,
     ): ImageDataDiriRepository {
         return ImageDataDiriRepositoryImpl(
             localImageDataDiriDataSource,
@@ -138,6 +139,7 @@ object RepositoryModule {
             localMetadataDataSource,
             remoteMetadataDataSource,
             contentResolver,
+            cacheHelper,
         )
     }
 

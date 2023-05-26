@@ -33,4 +33,14 @@ interface LocalImageDataDiriDataSource {
     )
 
     fun deleteAll()
+
+
+    /**
+     * Inden Booking related
+     */
+    suspend fun getFromIndenBooking(keyId: String): Result<Uri?>
+
+    suspend fun insertFromIndenBooking(keyId: String, uri: Uri): Result<Nothing?>
+
+    suspend fun deleteAllFromIndenBooking(): Result<Nothing?>
 }

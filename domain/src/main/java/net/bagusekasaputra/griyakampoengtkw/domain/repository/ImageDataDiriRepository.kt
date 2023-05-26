@@ -21,4 +21,10 @@ interface ImageDataDiriRepository {
 
     fun getUriByKavlingKode(kavlingKode: String): Flow<Result<Uri>>
 
+
+    /**
+     * Inden Booking related
+     */
+    suspend fun getFromIndenBooking(keyId: String): Result<Uri?>
+
 }

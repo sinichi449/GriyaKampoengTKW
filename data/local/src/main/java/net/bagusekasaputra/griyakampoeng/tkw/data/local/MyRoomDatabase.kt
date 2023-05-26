@@ -28,8 +28,8 @@ import net.bagusekasaputra.griyakampoeng.tkw.data.local.imageSpr.ImageSprRoomDao
 import net.bagusekasaputra.griyakampoeng.tkw.data.local.imageSpr.ImageSprRoomEntity
 import net.bagusekasaputra.griyakampoeng.tkw.data.local.indenBooking.dataDiri.DataDiriIndenBookingDao
 import net.bagusekasaputra.griyakampoeng.tkw.data.local.indenBooking.dataDiri.DataDiriIndenBookingEntity
-import net.bagusekasaputra.griyakampoeng.tkw.data.local.indenBooking.FotoIdentitasIndenBookingDao
-import net.bagusekasaputra.griyakampoeng.tkw.data.local.indenBooking.FotoIdentitasIndenBookingEntity
+import net.bagusekasaputra.griyakampoeng.tkw.data.local.indenBooking.imageDataDiri.FotoIdentitasIndenBookingDao
+import net.bagusekasaputra.griyakampoeng.tkw.data.local.indenBooking.imageDataDiri.FotoIdentitasIndenBookingEntity
 import net.bagusekasaputra.griyakampoeng.tkw.data.local.indenBooking.pembayaran.PembayaranIndenBookingDao
 import net.bagusekasaputra.griyakampoeng.tkw.data.local.indenBooking.pembayaran.PembayaranIndenBookingEntity
 import net.bagusekasaputra.griyakampoeng.tkw.data.local.kavling.KavlingRoomDao

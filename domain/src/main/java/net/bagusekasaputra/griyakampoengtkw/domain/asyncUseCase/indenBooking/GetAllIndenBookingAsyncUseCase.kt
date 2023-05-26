@@ -8,6 +8,7 @@ import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.AsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.Pembayaran
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.indenBooking.IndenBooking
 import net.bagusekasaputra.griyakampoengtkw.domain.repository.DataDiriRepository
+import net.bagusekasaputra.griyakampoengtkw.domain.repository.ImageDataDiriRepository
 import net.bagusekasaputra.griyakampoengtkw.domain.repository.IndenBookingRepository
 import net.bagusekasaputra.griyakampoengtkw.domain.repository.PembayaranRepository
 
@@ -15,6 +16,7 @@ class GetAllIndenBookingAsyncUseCase(
     private val indenBookingRepository: IndenBookingRepository,
     private val dataDiriRepository: DataDiriRepository,
     private val pembayaranRepository: PembayaranRepository,
+    private val imageDataDiriRepository: ImageDataDiriRepository,
 ): AsyncUseCase<GetAllIndenBookingAsyncUseCase.Request, List<IndenBooking>>() {
 
     data class Request(val dataMode: DataMode): AsyncUseCase.Request
@@ -31,7 +33,7 @@ class GetAllIndenBookingAsyncUseCase(
                     .getOrThrow()
                 val pembayarans = pembayaranRepository.getAllFromIndenBooking(keyId)
                     .getOrThrow()
-                val fotoIdentitas = indenBookingRepository.getFotoIdentitas(keyId, request.dataMode)
+                val fotoIdentitas = imageDataDiriRepository.getFromIndenBooking(keyId)
                     .getOrThrow()
 
                 val namaCostumer = dataDiri?.nama ?: "NULL"

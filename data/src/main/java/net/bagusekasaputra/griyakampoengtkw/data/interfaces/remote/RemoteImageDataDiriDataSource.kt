@@ -1,5 +1,6 @@
 package net.bagusekasaputra.griyakampoengtkw.data.interfaces.remote
 
+import android.net.Uri
 import kotlinx.coroutines.flow.Flow
 import net.bagusekasaputra.griyakampoengtkw.data.model.ImageDataDiriModel
 
@@ -12,4 +13,10 @@ interface RemoteImageDataDiriDataSource {
     suspend fun update(oldModel: ImageDataDiriModel, newModel: ImageDataDiriModel)
 
     suspend fun delete(imageDataDiriModel: ImageDataDiriModel): Result<Nothing?>
+
+
+    /**
+     * Inden Booking related
+     */
+    suspend fun getFromIndenBooking(keyId: String): Result<Uri?>
 }

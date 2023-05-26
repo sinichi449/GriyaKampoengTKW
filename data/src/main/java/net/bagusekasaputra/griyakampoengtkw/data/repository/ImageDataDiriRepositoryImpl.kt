@@ -10,6 +10,7 @@ import kotlinx.coroutines.flow.callbackFlow
 import kotlinx.coroutines.flow.emitAll
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flow
+import net.bagusekasaputra.griyakampoengtkw.data.CacheHelper
 import net.bagusekasaputra.griyakampoengtkw.data.interfaces.backup.BackupImageDataDiriDataSource
 import net.bagusekasaputra.griyakampoengtkw.data.interfaces.local.LocalImageDataDiriDataSource
 import net.bagusekasaputra.griyakampoengtkw.data.interfaces.local.LocalMetadataDataSource
@@ -29,9 +30,14 @@ class ImageDataDiriRepositoryImpl(
     private val localMetadata: LocalMetadataDataSource,
     private val remoteMetadata: RemoteMetadataDataSource,
     private val contentResolver: ContentResolver,
+    private val cacheHelper: CacheHelper,
 ): ImageDataDiriRepository {
 
     private val metadataTable = "image_data_diri"
+    private val imageIndenBookingLocalTable = "fotoIdentitasIndenBooking"
+    private val imageIndenBookingRemoteTable = { keyId: String ->
+        "indenBooking/${keyId}/dataDiri"
+    }
     // Check server metadata only ONCE
     // for getBatch() method.
     private var hasMetadataChecked = false
@@ -208,6 +214,38 @@ class ImageDataDiriRepositoryImpl(
             awaitClose {  }
         }
     }
+
+
+    /**
+     * Inden Booking related
+     */
+    override suspend fun getFromIndenBooking(keyId: String): Result<Uri?> {
+        val isInvalidCache = cacheHelper.checkAndInvalidateCache(
+            imageIndenBookingLocalTable,
+            imageIndenBookingRemoteTable(keyId),
+            onInvalid = {
+                localImageDataDiri.deleteAllFromIndenBooking()
+            }
+        )
+        val localModel = localImageDataDiri.getFromIndenBooking(keyId).getOrThrow()
+
+        // Fetch from remote data source if either the cache was invalid
+        // or the local data source returning null (probably after invalidate() call)
+        if (isInvalidCache || localModel == null) {
+            Log.d("INDEN_BOOKING", "Foto Identitas on Local Data Source either invalidated or null!" +
+                    " Fetching from Remote Data Source now.")
+
+            val remoteModel = remoteImageDataDiri.getFromIndenBooking(keyId).getOrThrow()
+            remoteModel?.also {
+                localImageDataDiri.insertFromIndenBooking(keyId, it)
+            }
+        } else {
+            Log.d("INDEN_BOOKING", "Foto Identitas returning from Local Data Source!")
+        }
+
+        return localImageDataDiri.getFromIndenBooking(keyId)
+    }
+
 
     private suspend fun updateRemoteMetadataOnWrite() {
         val currentTimemillis = System.currentTimeMillis()

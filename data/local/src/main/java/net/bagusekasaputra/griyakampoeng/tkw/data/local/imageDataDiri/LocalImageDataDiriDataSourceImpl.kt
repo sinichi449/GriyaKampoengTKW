@@ -12,6 +12,7 @@ import java.io.File
 class LocalImageDataDiriDataSourceImpl(
     myRoomDatabase: MyRoomDatabase,
     private val externalFilesDir: File?,
+    private val imageIndenBooking: LocalFotoIdentitasDataSource,
 ): LocalImageDataDiriDataSource {
 
     private val imageDao = myRoomDatabase.getImageDataDiriDao()
@@ -146,4 +147,36 @@ class LocalImageDataDiriDataSourceImpl(
             throw e
         }
     }
+
+
+    /**
+     * Inden Booking related
+     */
+    override suspend fun getFromIndenBooking(keyId: String): Result<Uri?> {
+        return imageIndenBooking.get(keyId)
+    }
+
+    override suspend fun insertFromIndenBooking(keyId: String, uri: Uri): Result<Nothing?> {
+        return imageIndenBooking.insert(keyId, uri)
+    }
+
+    override suspend fun deleteAllFromIndenBooking(): Result<Nothing?> {
+        return imageIndenBooking.deleteAll()
+    }
+}
+
+/**
+ * This interface will prevent dependency to Inden Booking counterpart, since it is very unstable,
+ * and instead inverting that relation.
+ *
+ * (Dependency Inversion?)
+ */
+interface LocalFotoIdentitasDataSource {
+
+    suspend fun get(keyId: String): Result<Uri?>
+
+    suspend fun insert(keyId: String, uri: Uri): Result<Nothing?>
+
+    suspend fun deleteAll(): Result<Nothing?>
+
 }
