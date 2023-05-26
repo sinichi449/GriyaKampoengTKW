@@ -1,5 +1,8 @@
+@file:Suppress("DEPRECATION")
+
 package net.bagusekasaputra.griyakampoengtkw.presentation.fragment.indenBooking
 
+import android.app.Activity
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.content.BroadcastReceiver
@@ -21,6 +24,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import dagger.hilt.android.AndroidEntryPoint
 import net.bagusekasaputra.griyakampoengtkw.presentation.R
 import net.bagusekasaputra.griyakampoengtkw.presentation.activity.DetailIndenBookingActivity
+import net.bagusekasaputra.griyakampoengtkw.presentation.activity.FormActivity
 import net.bagusekasaputra.griyakampoengtkw.presentation.adapter.recyclerview.IndenBookingRecyclerAdapter
 import net.bagusekasaputra.griyakampoengtkw.presentation.databinding.FragmentIndenBookingBinding
 import net.bagusekasaputra.griyakampoengtkw.presentation.util.NotificationUtil
@@ -34,6 +38,8 @@ class IndenBookingFragment : Fragment() {
     private lateinit var binding: FragmentIndenBookingBinding
     private val mainViewModel: MainViewModel by activityViewModels()
     private val viewModel: IndenBookingViewModel by activityViewModels()
+
+    private val REQUEST_CODE_INPUT_NEW_INDEN_BOOKING = 8001
 
     private val PROGRESS_CHANNEL = "GktProgress"
 
@@ -97,8 +103,12 @@ class IndenBookingFragment : Fragment() {
         }
 
         binding.fabTambahkan.setOnClickListener {
-            // TODO
-            Toast.makeText(requireContext(), "Stub!", Toast.LENGTH_SHORT).show()
+            // To FormActivity
+            val intent = Intent(requireContext(), FormActivity::class.java)
+            intent.putExtra(FormActivity.EXTRAS_FORM_TYPE,
+                FormActivity.FORM_DATA_DIRI_INDEN_BOOKING)
+
+            startActivityForResult(intent, REQUEST_CODE_INPUT_NEW_INDEN_BOOKING)
         }
 
         sync()
@@ -144,6 +154,29 @@ class IndenBookingFragment : Fragment() {
                 Toast.makeText(requireContext(), it, Toast.LENGTH_LONG).show()
             }
         )
+    }
+
+    @Deprecated("Deprecated in Java")
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+
+        if (requestCode == REQUEST_CODE_INPUT_NEW_INDEN_BOOKING) {
+            if (resultCode == Activity.RESULT_OK) {
+                data?.extras?.getString(FormActivity.EXTRAS_SUCCESS_DATA)?.also { newKeyId ->
+                    // To Data Diri IndenBooking Fragment
+                    val intent = Intent(requireContext(), DetailIndenBookingActivity::class.java)
+                    intent.putExtra(DetailIndenBookingActivity.EXTRAS_NAMA_COSTUMER, "(...)")
+                    intent.putExtra(DetailIndenBookingActivity.EXTRAS_KEY_ID, newKeyId)
+
+                    startActivity(intent)
+                }
+            } else {
+                data?.extras?.getString(FormActivity.EXTRAS_FAIL_MSG)?.also {
+                    Toast.makeText(requireContext(), "Gagal menambahkan: $it", Toast.LENGTH_LONG)
+                        .show()
+                }
+            }
+        }
     }
 
     override fun onDestroy() {

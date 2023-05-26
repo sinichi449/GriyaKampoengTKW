@@ -1,0 +1,169 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.core.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical"
+    android:theme="@style/Theme.GriyaKampung.BlackWhite">
+
+    <androidx.appcompat.widget.LinearLayoutCompat
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/til_nama"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Nama Costumer"
+            app:startIconDrawable="@drawable/ic_baseline_person_24"
+            app:endIconMode="clear_text"
+            style="@style/DenseOutlinedTextInputLayout">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/edt_nama_costumer"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:inputType="textPersonName"
+                style="@style/DenseOutlineEditText"/>
+
+        </com.google.android.material.textfield.TextInputLayout>
+
+
+        <com.google.android.material.textview.MaterialTextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Jenis Identitas"
+            style="@style/TextAppearance.MaterialComponents.Subtitle1"
+            android:layout_marginTop="24dp"/>
+
+        <RadioGroup
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <com.google.android.material.radiobutton.MaterialRadioButton
+                android:id="@+id/rb_id_ktp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="KTP"
+                android:checked="true"
+                android:theme="@style/Theme.GriyaKampung.Material3"/>
+
+            <RadioButton
+                android:id="@+id/rb_id_passport"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Passport"
+                android:theme="@style/Theme.GriyaKampung.Material3"/>
+
+        </RadioGroup>
+
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/til_no_identitas"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="24dp"
+            android:hint="No. Identitas"
+            app:startIconDrawable="@drawable/ic_baseline_add_card_24"
+            app:endIconMode="clear_text"
+            style="@style/DenseOutlinedTextInputLayout">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/edt_no_identitas"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:inputType="number"
+                style="@style/DenseOutlineEditText"/>
+
+        </com.google.android.material.textfield.TextInputLayout>
+
+
+        <androidx.appcompat.widget.LinearLayoutCompat
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_marginTop="24dp">
+
+            <!-- Negara bekerja spinner -->
+            <com.google.android.material.textview.MaterialTextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                style="@style/TextAppearance.MaterialComponents.Subtitle1"
+                android:text="Negara Bekerja"
+                android:layout_weight="0.5"/>
+
+            <Spinner
+                android:id="@+id/spinner_negara_bekerja"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="0.5"
+                />
+
+        </androidx.appcompat.widget.LinearLayoutCompat>
+
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/til_alamat_kerja"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="24dp"
+            android:hint="Alamat Kerja"
+            app:startIconDrawable="@drawable/ic_baseline_home_work_24"
+            app:endIconMode="clear_text"
+            style="@style/OutlinedTextInputLayout">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/edt_alamat_kerja"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:inputType="textMultiLine"
+                style="@style/OutlineEditText"
+                android:minLines="3"/>
+
+        </com.google.android.material.textfield.TextInputLayout>
+
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/til_alamat_indo"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:hint="Alamat Indo"
+            app:endIconMode="clear_text"
+            app:startIconDrawable="@drawable/ic_baseline_home_24"
+            style="@style/OutlinedTextInputLayout">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/edt_alamat_indo"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:inputType="textMultiLine"
+                style="@style/OutlineEditText"
+                android:minLines="3"/>
+
+        </com.google.android.material.textfield.TextInputLayout>
+
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/til_no_hp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:hint="No Telpon Seluler / WhatsApp"
+            app:endIconMode="clear_text"
+            app:startIconDrawable="@drawable/ic_baseline_phone_24"
+            style="@style/DenseOutlinedTextInputLayout">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/edt_no_handphone"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:inputType="phone|number"
+                style="@style/DenseOutlineEditText"/>
+
+        </com.google.android.material.textfield.TextInputLayout>
+
+    </androidx.appcompat.widget.LinearLayoutCompat>
+
+</androidx.core.widget.NestedScrollView>

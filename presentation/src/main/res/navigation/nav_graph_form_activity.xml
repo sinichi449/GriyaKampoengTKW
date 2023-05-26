@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/nav_graph_form_activity"
+    app:startDestination="@id/nav_form_data_diri_inden_booking">
+
+    <fragment
+        android:id="@+id/nav_form_data_diri_inden_booking"
+        android:name="net.bagusekasaputra.griyakampoengtkw.presentation.form.FormInputDataDiriIndenBookingFragment"
+        android:label="Data Diri (Inden Booking)" />
+</navigation>
