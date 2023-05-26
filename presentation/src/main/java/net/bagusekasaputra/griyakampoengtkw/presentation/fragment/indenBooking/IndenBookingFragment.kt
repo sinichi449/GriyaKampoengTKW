@@ -21,6 +21,7 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
 import net.bagusekasaputra.griyakampoengtkw.presentation.R
 import net.bagusekasaputra.griyakampoengtkw.presentation.activity.DetailIndenBookingActivity
@@ -162,14 +163,7 @@ class IndenBookingFragment : Fragment() {
 
         if (requestCode == REQUEST_CODE_INPUT_NEW_INDEN_BOOKING) {
             if (resultCode == Activity.RESULT_OK) {
-                data?.extras?.getString(FormActivity.EXTRAS_SUCCESS_DATA)?.also { newKeyId ->
-                    // To Data Diri IndenBooking Fragment
-                    val intent = Intent(requireContext(), DetailIndenBookingActivity::class.java)
-                    intent.putExtra(DetailIndenBookingActivity.EXTRAS_NAMA_COSTUMER, "(...)")
-                    intent.putExtra(DetailIndenBookingActivity.EXTRAS_KEY_ID, newKeyId)
-
-                    startActivity(intent)
-                }
+                Snackbar.make(binding.root, "Berhasil menambahkan!", Snackbar.LENGTH_SHORT).show()
             } else {
                 data?.extras?.getString(FormActivity.EXTRAS_FAIL_MSG)?.also {
                     Toast.makeText(requireContext(), "Gagal menambahkan: $it", Toast.LENGTH_LONG)
