@@ -10,8 +10,6 @@ import net.bagusekasaputra.griyakampoengtkw.data.interfaces.remote.RemoteIndenBo
 import net.bagusekasaputra.griyakampoengtkw.data.interfaces.remote.RemoteMetadataDataSource
 import net.bagusekasaputra.griyakampoengtkw.data.model.MetadataModel
 import net.bagusekasaputra.griyakampoengtkw.domain.DataMode
-import net.bagusekasaputra.griyakampoengtkw.domain.entity.DataDiri
-import net.bagusekasaputra.griyakampoengtkw.domain.entity.Pembayaran
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.indenBooking.HargaRumahIndenBooking
 import net.bagusekasaputra.griyakampoengtkw.domain.repository.IndenBookingRepository
 
@@ -22,15 +20,7 @@ class IndenBookingRepositoryImpl(
     private val remoteMetadata: RemoteMetadataDataSource,
 ): IndenBookingRepository {
 
-    private val dataDiriLocalTable = "dataDiriIndenBooking"
-    private val pembayaranLocalTable = "pembayaranIndenBooking"
     private val fotoIdentitasLocalTable = "fotoIdentitasIndenBooking"
-    private val dataDiriRemoteTable = { keyId: String ->
-        "indenBooking/${keyId}/dataDiri"
-    }
-    private val pembayaranRemoteTable = { keyId: String ->
-        "indenBooking/${keyId}/formPembayaran"
-    }
     private val fotoIdentitasRemoteTable = { keyId: String ->
         "indenBooking/${keyId}/dataDiri"
     }
@@ -38,39 +28,6 @@ class IndenBookingRepositoryImpl(
 
     override suspend fun getAllKeyIds(dataMode: DataMode): Result<List<String>?> {
         return remoteDataSource.getAllKeyIds()
-    }
-
-    override suspend fun getAllPembayaran(
-        keyId: String,
-        dataMode: DataMode
-    ): Result<List<Pembayaran>?> {
-        val invalidCache = checkAndInvalidateCache(
-            pembayaranLocalTable,
-            pembayaranRemoteTable(keyId),
-            onInvalid = {
-                localDataSource.invalidatePembayaran()
-            }
-        )
-        val localModel = localDataSource.getAllPembayaran(keyId).getOrThrow()
-
-        // Fetch from remote data source if either the cache was invalid
-        // or the local data source returning null (probably after invalidate() call)
-        if (invalidCache || localModel == null) {
-            Log.d("INDEN_BOOKING", "Pembayaran on Cache was invalid or Local Data Source is null! " +
-                    "Fetching from Remote Data Source now.")
-
-            remoteDataSource.getAllPembayaran(keyId).getOrThrow()?.also {
-                localDataSource.insertAllPembayaran(keyId, it)
-            }
-        } else {
-            Log.d("INDEN_BOOKING", "Pembayaran on Local Data Source is okay, returning from it.")
-        }
-
-        val refreshedLocalResult = localDataSource.getAllPembayaran(keyId)
-        return DataUtil.mapListResult(
-            originResult = refreshedLocalResult,
-            targetMapper = MyObjectMapper::mapPembayaran,
-        )
     }
 
     override suspend fun getHargaRumah(

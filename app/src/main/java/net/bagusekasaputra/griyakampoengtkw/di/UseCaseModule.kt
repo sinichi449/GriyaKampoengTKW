@@ -500,8 +500,9 @@ object UseCaseModule {
     fun providesGetAllIndenBookingUseCase(
         indenBookingRepository: IndenBookingRepository,
         dataDiriRepository: DataDiriRepository,
+        pembayaranRepository: PembayaranRepository
     ): GetAllIndenBookingAsyncUseCase {
-        return GetAllIndenBookingAsyncUseCase(indenBookingRepository, dataDiriRepository)
+        return GetAllIndenBookingAsyncUseCase(indenBookingRepository, dataDiriRepository, pembayaranRepository)
     }
 
     @Provides
@@ -515,8 +516,11 @@ object UseCaseModule {
     }
 
     @Provides
-    fun provideGetAllPembayaranIndenBookingAsyncUseCase(indenBookingRepository: IndenBookingRepository): GetAllPembayaranIndenBookingAsyncUseCase {
-        return GetAllPembayaranIndenBookingAsyncUseCase(indenBookingRepository)
+    fun provideGetAllPembayaranIndenBookingAsyncUseCase(
+        indenBookingRepository: IndenBookingRepository,
+        pembayaranRepository: PembayaranRepository
+    ): GetAllPembayaranIndenBookingAsyncUseCase {
+        return GetAllPembayaranIndenBookingAsyncUseCase(indenBookingRepository, pembayaranRepository)
     }
 
     @Provides

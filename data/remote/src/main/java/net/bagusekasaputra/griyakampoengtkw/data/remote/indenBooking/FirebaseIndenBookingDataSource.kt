@@ -11,7 +11,6 @@ import com.google.firebase.database.ktx.getValue
 import com.google.firebase.storage.StorageReference
 import net.bagusekasaputra.griyakampoengtkw.data.interfaces.remote.RemoteIndenBookingDataSource
 import net.bagusekasaputra.griyakampoengtkw.data.model.HargaRumahModel
-import net.bagusekasaputra.griyakampoengtkw.data.model.PembayaranModel
 import net.bagusekasaputra.griyakampoengtkw.data.remote.FirebaseNodes
 import java.io.File
 import kotlin.coroutines.resume
@@ -58,35 +57,6 @@ class FirebaseIndenBookingDataSource(
             }
 
             indenBookingRef.addListenerForSingleValueEvent(eventListener)
-        }
-    }
-
-    override suspend fun getAllPembayaran(keyId: String): Result<List<PembayaranModel>?> {
-        return suspendCoroutine { continuation ->
-            val eventListener = object : ValueEventListener {
-                override fun onDataChange(snapshot: DataSnapshot) {
-                    val pembayaranList = mutableListOf<PembayaranModel>()
-
-                    val mapPembayaran = snapshot.getValue<HashMap<String, PembayaranModel>>()
-                    mapPembayaran?.keys?.forEach { termin ->
-                        val pembayaran = mapPembayaran[termin]
-
-                        if (pembayaran != null) {
-                            pembayaranList.add(pembayaran)
-                        }
-                    }
-
-                    continuation.resume(Result.success(pembayaranList))
-                }
-
-                override fun onCancelled(error: DatabaseError) {
-                    val exception = error.toException()
-                    continuation.resume(Result.failure(exception))
-                }
-            }
-
-            indenBookingRef.child(keyId).child(FirebaseNodes.FORM_PEMBAYARAN)
-                .addListenerForSingleValueEvent(eventListener)
         }
     }
 

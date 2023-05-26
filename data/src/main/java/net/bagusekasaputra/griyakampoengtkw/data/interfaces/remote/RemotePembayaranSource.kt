@@ -16,4 +16,10 @@ interface RemotePembayaranSource {
 
     suspend fun deleteAllPembayaranModel(kavlingKode: String): Result<Nothing?>
 
+
+    /**
+     * Inden Booking related
+     */
+    suspend fun getAllFromIndenBooking(keyId: String): Result<List<PembayaranModel>?>
+
 }

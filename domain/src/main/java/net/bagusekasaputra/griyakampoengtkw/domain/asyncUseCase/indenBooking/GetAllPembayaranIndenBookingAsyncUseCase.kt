@@ -6,17 +6,19 @@ import net.bagusekasaputra.griyakampoengtkw.domain.DataMode
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.AsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.Pembayaran
 import net.bagusekasaputra.griyakampoengtkw.domain.repository.IndenBookingRepository
+import net.bagusekasaputra.griyakampoengtkw.domain.repository.PembayaranRepository
 
 class GetAllPembayaranIndenBookingAsyncUseCase(
     private val indenBookingRepository: IndenBookingRepository,
+    private val pembayaranRepository: PembayaranRepository
 ): AsyncUseCase<GetAllPembayaranIndenBookingAsyncUseCase.Request, List<Pembayaran>>() {
 
     data class Request(val keyId: String): AsyncUseCase.Request
 
     override fun process(request: Request): Flow<Result<List<Pembayaran>?>> {
         return flow {
-            val pembayaranList = indenBookingRepository
-                .getAllPembayaran(request.keyId, DataMode.ONLINE)
+            val pembayaranList = pembayaranRepository
+                .getAllFromIndenBooking(request.keyId)
                 .getOrThrow()
             val hargaRumah = indenBookingRepository.getHargaRumah(request.keyId, DataMode.ONLINE)
                 .getOrThrow()

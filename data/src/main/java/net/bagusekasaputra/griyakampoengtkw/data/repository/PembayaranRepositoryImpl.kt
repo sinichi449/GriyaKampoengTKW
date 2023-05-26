@@ -8,7 +8,9 @@ import kotlinx.coroutines.flow.callbackFlow
 import kotlinx.coroutines.flow.emitAll
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flow
+import net.bagusekasaputra.griyakampoengtkw.data.CacheHelper
 import net.bagusekasaputra.griyakampoengtkw.data.DataUtil
+import net.bagusekasaputra.griyakampoengtkw.data.MyObjectMapper
 import net.bagusekasaputra.griyakampoengtkw.data.MyObjectMapper.mapPembayaran
 import net.bagusekasaputra.griyakampoengtkw.data.interfaces.backup.BackupPembayaranDataSource
 import net.bagusekasaputra.griyakampoengtkw.data.interfaces.local.LocalMetadataDataSource
@@ -28,9 +30,14 @@ class PembayaranRepositoryImpl(
     private val backupPembayaranDataSource: BackupPembayaranDataSource,
     private val localMetadata: LocalMetadataDataSource,
     private val remoteMetadata: RemoteMetadataDataSource,
+    private val cacheHelper: CacheHelper,
 ): PembayaranRepository {
 
     private val metadataTable = "formPembayaran"
+    private val pembayaranIndenBookingLocalTable = "pembayaranIndenBooking"
+    private val pembayaranIndenBookingRemoteTable = { keyId: String ->
+        "indenBooking/${keyId}/formPembayaran"
+    }
 
     override fun getBatchOnline(listKavling: List<String>): Flow<Result<Map<String, List<Pembayaran>?>?>> {
         return flow {
@@ -293,6 +300,7 @@ class PembayaranRepositoryImpl(
         }
     }
 
+
     override fun addPembayaran(
         kavlingKode: String,
         hargaKavling: Long,
@@ -371,6 +379,39 @@ class PembayaranRepositoryImpl(
                 emit(Result.failure(it))
             }
         }
+    }
+
+    /**
+     * Inden Booking related
+     */
+    override suspend fun getAllFromIndenBooking(keyId: String): Result<List<Pembayaran>?> {
+        val invalidCache = cacheHelper.checkAndInvalidateCache(
+            pembayaranIndenBookingLocalTable,
+            pembayaranIndenBookingRemoteTable(keyId),
+            onInvalid = {
+                localPembayaranDataSource.deleteAllFromIndenBooking()
+            }
+        )
+        val localModel = localPembayaranDataSource.getAllFromIndenBooking(keyId).getOrThrow()
+
+        // Fetch from remote data source if either the cache was invalid
+        // or the local data source returning null (probably after invalidate() call)
+        if (invalidCache || localModel == null) {
+            Log.d("INDEN_BOOKING", "Pembayaran on Cache was invalid or Local Data Source is null! " +
+                    "Fetching from Remote Data Source now.")
+
+            remotePembayaranSource.getAllFromIndenBooking(keyId).getOrThrow()?.also {
+                localPembayaranDataSource.insertAllFromIndenBooking(keyId, it)
+            }
+        } else {
+            Log.d("INDEN_BOOKING", "Pembayaran on Local Data Source is okay, returning from it.")
+        }
+
+        val refreshedLocalResult = localPembayaranDataSource.getAllFromIndenBooking(keyId)
+        return DataUtil.mapListResult(
+            originResult = refreshedLocalResult,
+            targetMapper = MyObjectMapper::mapPembayaran,
+        )
     }
 
     private suspend fun checkCache() {

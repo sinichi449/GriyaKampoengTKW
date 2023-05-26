@@ -17,4 +17,15 @@ interface LocalPembayaranDataSource {
     suspend fun deleteAllPembayaranModel(kavlingKode: String): Result<Nothing?>
 
     suspend fun deleteAll(): Result<Nothing?>
+
+
+    /**
+     * Inden Booking related
+     */
+    suspend fun getAllFromIndenBooking(keyId: String): Result<List<PembayaranModel>?>
+
+    suspend fun insertAllFromIndenBooking(keyId: String, models: List<PembayaranModel>)
+        : Result<Nothing?>
+
+    suspend fun deleteAllFromIndenBooking(): Result<Nothing?>
 }

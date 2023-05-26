@@ -5,6 +5,7 @@ import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
+import net.bagusekasaputra.griyakampoengtkw.data.CacheHelper
 import net.bagusekasaputra.griyakampoengtkw.data.interfaces.backup.*
 import net.bagusekasaputra.griyakampoengtkw.data.interfaces.local.*
 import net.bagusekasaputra.griyakampoengtkw.data.interfaces.remote.*
@@ -77,13 +78,15 @@ object RepositoryModule {
         backupPembayaranDataSource: BackupPembayaranDataSource,
         localMetadata: LocalMetadataDataSource,
         remoteMetadata: RemoteMetadataDataSource,
+        cacheHelper: CacheHelper,
     ): PembayaranRepository {
         return PembayaranRepositoryImpl(
             localPembayaranDataSource,
             remotePembayaranSource,
             backupPembayaranDataSource,
             localMetadata,
-            remoteMetadata
+            remoteMetadata,
+            cacheHelper,
         )
     }
 

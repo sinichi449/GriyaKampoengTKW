@@ -9,10 +9,12 @@ import net.bagusekasaputra.griyakampoengtkw.domain.entity.Pembayaran
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.indenBooking.IndenBooking
 import net.bagusekasaputra.griyakampoengtkw.domain.repository.DataDiriRepository
 import net.bagusekasaputra.griyakampoengtkw.domain.repository.IndenBookingRepository
+import net.bagusekasaputra.griyakampoengtkw.domain.repository.PembayaranRepository
 
 class GetAllIndenBookingAsyncUseCase(
     private val indenBookingRepository: IndenBookingRepository,
     private val dataDiriRepository: DataDiriRepository,
+    private val pembayaranRepository: PembayaranRepository,
 ): AsyncUseCase<GetAllIndenBookingAsyncUseCase.Request, List<IndenBooking>>() {
 
     data class Request(val dataMode: DataMode): AsyncUseCase.Request
@@ -27,7 +29,7 @@ class GetAllIndenBookingAsyncUseCase(
 
                 val dataDiri = dataDiriRepository.getFromIndenBooking(keyId)
                     .getOrThrow()
-                val pembayarans = indenBookingRepository.getAllPembayaran(keyId, request.dataMode)
+                val pembayarans = pembayaranRepository.getAllFromIndenBooking(keyId)
                     .getOrThrow()
                 val fotoIdentitas = indenBookingRepository.getFotoIdentitas(keyId, request.dataMode)
                     .getOrThrow()

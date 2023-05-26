@@ -7,6 +7,7 @@ import net.bagusekasaputra.griyakampoengtkw.data.model.PembayaranModel
 
 class RoomPembayaranLocalDataSource(
     roomDatabase: MyRoomDatabase,
+    private val pembayaranIndenBookingDataSource: LocalPembayaranIndenBookingDataSource,
 ): LocalPembayaranDataSource {
 
     private val pembayaranDao = roomDatabase.getPembayaranDao()
@@ -156,4 +157,39 @@ class RoomPembayaranLocalDataSource(
             Result.failure(e)
         }
     }
+
+
+    /**
+     * Inden Booking related
+     */
+    override suspend fun getAllFromIndenBooking(keyId: String): Result<List<PembayaranModel>?> {
+        return pembayaranIndenBookingDataSource.getAll(keyId)
+    }
+
+    override suspend fun insertAllFromIndenBooking(
+        keyId: String,
+        models: List<PembayaranModel>
+    ): Result<Nothing?> {
+        return pembayaranIndenBookingDataSource.insertAll(keyId, models)
+    }
+
+    override suspend fun deleteAllFromIndenBooking(): Result<Nothing?> {
+        return pembayaranIndenBookingDataSource.deleteAll()
+    }
+}
+
+/**
+ * This interface will prevent dependency to Inden Booking counterpart, since it is very unstable,
+ * and instead inverting that relation.
+ *
+ * (Dependency Inversion?)
+ */
+interface LocalPembayaranIndenBookingDataSource {
+
+    suspend fun getAll(keyId: String): Result<List<PembayaranModel>?>
+
+    suspend fun insertAll(keyId: String, models: List<PembayaranModel>): Result<Nothing?>
+
+    suspend fun deleteAll(): Result<Nothing?>
+
 }

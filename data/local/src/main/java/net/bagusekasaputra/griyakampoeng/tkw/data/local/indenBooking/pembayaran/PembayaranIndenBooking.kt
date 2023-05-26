@@ -1,4 +1,4 @@
-package net.bagusekasaputra.griyakampoeng.tkw.data.local.indenBooking
+package net.bagusekasaputra.griyakampoeng.tkw.data.local.indenBooking.pembayaran
 
 import androidx.room.Dao
 import androidx.room.Entity
