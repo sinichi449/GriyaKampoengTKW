@@ -4,7 +4,8 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".fragment.pembayaran.BulananPembayaranFragment"
-    xmlns:app="http://schemas.android.com/apk/res-auto">
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:theme="@style/Theme.GriyaKampung.BlackWhite">
 
     <com.evrencoskun.tableview.TableView
         android:id="@+id/table_pembayaran_bulanan"
@@ -17,7 +18,8 @@
         app:row_header_width="@dimen/table_general_numeric_row_header_width"
         app:separator_color="@color/black"
         app:show_horizontal_separator="true"
-        app:show_vertical_separator="true"/>
+        app:show_vertical_separator="true"
+        android:layout_marginHorizontal="4dp"/>
 
     <com.google.android.material.divider.MaterialDivider
         android:id="@+id/divider_table_bulanan_total_tunggakan"
@@ -43,7 +45,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            app:layout_constraintGuide_percent="0.5"/>
+            app:layout_constraintGuide_percent="0.375"/>
 
         <com.google.android.material.textview.MaterialTextView
             android:id="@+id/tvInfo_total_tunggakan"
