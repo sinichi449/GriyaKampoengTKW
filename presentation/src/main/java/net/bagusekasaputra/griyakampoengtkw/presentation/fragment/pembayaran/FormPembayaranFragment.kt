@@ -494,6 +494,11 @@ class FormPembayaranFragment : Fragment() {
         dialogBinding.btnHapus.visibility = View.VISIBLE
         dialogBinding.btnTambahkan.text = "Simpan Perubahan"
 
+        // Disable Edit Mode !!
+        with(dialogBinding) {
+            btnTambahkan.isEnabled = false
+        }
+
         // setup datepicker
         DatePickerHelper(
             ctx = requireContext(),
@@ -556,20 +561,20 @@ class FormPembayaranFragment : Fragment() {
             }
         }
 
-        dialogBinding.btnTambahkan.setOnClickListener {
-            // onclick view
-            dialogBinding.btnTambahkan.text = "Menyimpan data ..."
-            dialogBinding.btnTambahkan.isEnabled = false
-            dialogBinding.btnHapus.isEnabled = false
-
-            getPembayaranFromEdt()?.let { newPembayaran ->
-                viewModel.updatePembayaran(currentKavlingKode!!, pembayaran, newPembayaran) { msg ->
-                    Toast.makeText(requireContext(), msg, Toast.LENGTH_SHORT).show()
-                    dialogView.dismiss()
-                    syncPembayaran()
-                }
-            }
-        }
+//        dialogBinding.btnTambahkan.setOnClickListener {
+//            // onclick view
+//            dialogBinding.btnTambahkan.text = "Menyimpan data ..."
+//            dialogBinding.btnTambahkan.isEnabled = false
+//            dialogBinding.btnHapus.isEnabled = false
+//
+//            getPembayaranFromEdt()?.let { newPembayaran ->
+//                viewModel.updatePembayaran(currentKavlingKode!!, pembayaran, newPembayaran) { msg ->
+//                    Toast.makeText(requireContext(), msg, Toast.LENGTH_SHORT).show()
+//                    dialogView.dismiss()
+//                    syncPembayaran()
+//                }
+//            }
+//        }
 
         dialogBinding.btnBatal.setOnClickListener {
             dialogView.dismiss()
