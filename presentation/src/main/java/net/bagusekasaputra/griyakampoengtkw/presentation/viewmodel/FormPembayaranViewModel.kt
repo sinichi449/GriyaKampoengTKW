@@ -69,7 +69,6 @@ class FormPembayaranViewModel @Inject constructor(
     val statusPembayaranLive: LiveData<StatusPembayaran?>
         get() = _statusPembayaranLive
 
-
     var currentKavlingKode: String? = null
     var dataMode = DataMode.ONLINE
     var isFullScreenTable = false
@@ -238,6 +237,8 @@ class FormPembayaranViewModel @Inject constructor(
             }
         }
 
+        Log.d("TERMINS", "Termin is: $terminList")
+
         return terminList.toTypedArray()
     }
 
@@ -250,6 +251,8 @@ class FormPembayaranViewModel @Inject constructor(
             }
         }
 
+        Log.d("TERMINS", "Termin is: $terminList")
+
         return terminList.toTypedArray()
     }
 
@@ -259,6 +262,8 @@ class FormPembayaranViewModel @Inject constructor(
         _fullPembayaransLive.value?.forEach { pembayaran ->
             terminList.add(pembayaran.termin)
         }
+
+        Log.d("TERMINS", "Termin is: $terminList")
 
         // We need to convert into an Array ... How botherful.
         return terminList.toTypedArray()

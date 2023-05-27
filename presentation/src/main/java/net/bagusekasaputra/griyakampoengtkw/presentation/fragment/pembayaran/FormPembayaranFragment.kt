@@ -734,7 +734,7 @@ class FormPembayaranFragment : Fragment() {
                 dialogView.dismiss()
             }
             
-            viewModel.listPembayaranLive.value?.let {
+            pembayaranViewModel.fullPembayaransLive.value?.let {
                 setupTerminRecyclerView(it, dialogView, dialogBinding.recyclerTermin)   
             }
         }
