@@ -60,7 +60,6 @@ class DetailViewModel @Inject constructor(
 
     val dataDiriLive = MutableLiveData<DataDiri?>()
     val hargaKavlingLive = MutableLiveData<HargaKavling>()
-    val listPembayaranLive = MutableLiveData<List<Pembayaran>?>()
     val feeMarketingLive = MutableLiveData<FeeMarketing?>()
     val listBiayaMarketingLive = MutableLiveData<List<BiayaMarketing>?>()
     val catatanPembayaranLive = MutableLiveData<CatatanPembayaran?>()
@@ -725,8 +724,8 @@ class DetailViewModel @Inject constructor(
             0L
     }
 
-    fun getCuanBiayaMarketing(): Long {
-        val lastTotalUangMasuk = listPembayaranLive.value?.last()?.totalUangMasuk ?: "0"
+    fun getCuanBiayaMarketing(pembayarans: List<Pembayaran>?): Long {
+        val lastTotalUangMasuk = pembayarans?.last()?.totalUangMasuk ?: "0"
 
         // The "totalUangMasuk" which got from List<Pembayaran> are already parsed into 0,000,000
         // format by the Use Case, so we can't parse it directly by .toLong() method.
