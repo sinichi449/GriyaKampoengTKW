@@ -1,5 +1,7 @@
 package net.bagusekasaputra.griyakampoengtkw.data
 
+import kotlinx.coroutines.flow.callbackFlow
+import kotlinx.coroutines.flow.first
 import net.bagusekasaputra.griyakampoengtkw.data.interfaces.local.LocalMetadataDataSource
 import net.bagusekasaputra.griyakampoengtkw.data.interfaces.remote.RemoteMetadataDataSource
 import net.bagusekasaputra.griyakampoengtkw.data.model.MetadataModel
@@ -31,4 +33,19 @@ class CacheHelper(
         return isInvalid
     }
 
+    suspend fun updateMetadata(
+        localTable: String,
+        remoteTable: String,
+    ): Result<Nothing?> {
+        return callbackFlow<Result<Nothing?>> {
+            val currentTimemillis = System.currentTimeMillis()
+            val newLocalMetadata = MetadataModel(localTable, currentTimemillis)
+            val newRemoteMetadata = MetadataModel(remoteTable, currentTimemillis)
+
+            remoteMetadataDataSource.update(newRemoteMetadata, newRemoteMetadata)
+            localMetadataDataSource.insert(newLocalMetadata)
+
+            Result.success(null)
+        }.first()
+    }
 }
