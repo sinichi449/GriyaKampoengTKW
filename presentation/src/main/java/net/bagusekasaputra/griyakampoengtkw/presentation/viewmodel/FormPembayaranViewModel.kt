@@ -96,9 +96,6 @@ class FormPembayaranViewModel @Inject constructor(
         tableTypeLive.value = type
     }
 
-    // Sync listener
-    val needSyncPembayaran = MutableLiveData<Boolean>(false)
-
 
     fun getListPembayaranBulanan(
         kavling: String,

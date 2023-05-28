@@ -260,15 +260,6 @@ class FormPembayaranFragment : Fragment() {
     }
 
     private fun setupViewModel() {
-        pembayaranViewModel.needSyncPembayaran.observe(requireActivity()) {
-            it?.also { needRefresh ->
-                if (needRefresh) {
-                    syncPembayaran()
-
-                    pembayaranViewModel.needSyncPembayaran.value = false
-                }
-            }
-        }
         viewModel.isFinishOperation.observe(requireActivity()) { finish ->
             finish?.let {
                 binding.swipeRefreshFormPembayaran.isRefreshing = !it

@@ -60,7 +60,6 @@ class ActionPembayaranItemBottomSheetDialog(): BottomSheetDialogFragment() {
                             termin = currentTermin,
                             uri = uri,
                             onComplete = { msg ->
-                                viewModel.needSyncPembayaran.value = true
                                 Toast.makeText(requireContext(), msg, Toast.LENGTH_SHORT).show()
                             }
                         )
@@ -188,8 +187,6 @@ class ActionPembayaranItemBottomSheetDialog(): BottomSheetDialogFragment() {
                                 termin = currentTermin,
                                 onComplete = { msg ->
                                     dialog.dismiss()
-
-                                    viewModel.needSyncPembayaran.value = true
 
                                     Toast.makeText(requireContext(), msg, Toast.LENGTH_SHORT).show()
                                 }
