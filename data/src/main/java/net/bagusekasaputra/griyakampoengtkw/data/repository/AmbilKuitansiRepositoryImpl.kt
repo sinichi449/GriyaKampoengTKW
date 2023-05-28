@@ -86,6 +86,8 @@ class AmbilKuitansiRepositoryImpl(
                 .onFailure {
                     trySendBlocking(Result.failure(it))
                 }
+
+            awaitClose {  }
         }.first()
     }
 
