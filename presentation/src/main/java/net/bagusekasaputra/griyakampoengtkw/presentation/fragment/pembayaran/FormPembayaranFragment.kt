@@ -257,7 +257,7 @@ class FormPembayaranFragment : Fragment() {
         }
     }
 
-    private fun syncPembayaran() {
+    fun syncPembayaran() {
         pembayaranViewModel.getStatusPembayaran(
             currentKavlingKode!!,
             onLoading = {

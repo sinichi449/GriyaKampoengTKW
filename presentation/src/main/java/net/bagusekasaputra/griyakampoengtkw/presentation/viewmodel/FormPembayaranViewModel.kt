@@ -12,10 +12,12 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import net.bagusekasaputra.griyakampoengtkw.domain.DataMode
+import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.ambilKuitansi.InsertAmbilKuitansiAsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.baselinePembayaran.GetBaselinePembayaranByKavlingAsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.baselinePembayaran.SetBaselinePembayaranAsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.pembayaran.GetListPembayaranBulananAsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.statusPembayaran.GetStatusPembayaranKavlingAsyncUseCase
+import net.bagusekasaputra.griyakampoengtkw.domain.entity.AmbilKuitansi
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.BaselinePembayaran
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.HargaKavling
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.Pembayaran
@@ -32,6 +34,7 @@ class FormPembayaranViewModel @Inject constructor(
     private val setBaselinePembayaranAsyncUseCase: SetBaselinePembayaranAsyncUseCase,
     private val getListPembayaranBulananAsyncUseCase: GetListPembayaranBulananAsyncUseCase,
     private val getStatusPembayaranKavlingAsyncUseCase: GetStatusPembayaranKavlingAsyncUseCase,
+    private val insertAmbilKuitansiAsyncUseCase: InsertAmbilKuitansiAsyncUseCase,
 ): ViewModel() {
 
     // Pembayaran Bulanan
@@ -211,6 +214,33 @@ class FormPembayaranViewModel @Inject constructor(
             }
         }
     }
+
+    fun insertAmbilKuitansi(ambilKuitansi: AmbilKuitansi,
+        onProgress: () -> Unit = {},
+        onSuccess: () -> Unit = {},
+        onFailure: (msg: String) -> Unit = {},
+    ) {
+        onProgress()
+
+        CoroutineScope(Dispatchers.IO).launch {
+            val request = InsertAmbilKuitansiAsyncUseCase.Request(ambilKuitansi)
+            insertAmbilKuitansiAsyncUseCase.execute(request).collect { result ->
+                result.onSuccess {
+                    withContext(Dispatchers.Main) {
+                        onSuccess()
+                    }
+                }
+                result.onFailure {
+                    withContext(Dispatchers.Main) {
+                        onFailure("Gagal mengubah Sudah Ambil Kuitansi: " +
+                                "${it.javaClass.simpleName}:${it.message}")
+                    }
+                }
+            }
+        }
+    }
+
+
 
     fun hitungAngsuranPerBulan(hargaKavling: HargaKavling, timeFrame: Int, opsiTimeframe: String): Double {
         return when (opsiTimeframe) {

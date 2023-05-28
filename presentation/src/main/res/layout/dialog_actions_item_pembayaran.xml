@@ -28,7 +28,17 @@
             app:layout_constraintTop_toTopOf="@id/img_sudah_ambil_kuitansi"
             app:layout_constraintBottom_toBottomOf="@id/img_sudah_ambil_kuitansi"
             style="@style/Widget.AppCompat.CompoundButton.Switch"
-            app:useMaterialThemeColors="true"/>
+            app:useMaterialThemeColors="true"
+            android:visibility="visible"/>
+
+        <ProgressBar
+            android:id="@+id/progress_ambil_kuitansi"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="@id/img_sudah_ambil_kuitansi"
+            app:layout_constraintBottom_toBottomOf="@id/img_sudah_ambil_kuitansi"
+            android:visibility="gone"/>
 
         <com.google.android.material.textview.MaterialTextView
             android:id="@+id/tvInfo_ambil_kuitansi"

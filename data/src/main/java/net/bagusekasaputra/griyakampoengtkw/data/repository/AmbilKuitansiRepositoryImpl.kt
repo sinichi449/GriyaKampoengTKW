@@ -1,5 +1,6 @@
 package net.bagusekasaputra.griyakampoengtkw.data.repository
 
+import kotlinx.coroutines.delay
 import net.bagusekasaputra.griyakampoengtkw.data.CacheHelper
 import net.bagusekasaputra.griyakampoengtkw.data.DataUtil
 import net.bagusekasaputra.griyakampoengtkw.data.MyObjectMapper
@@ -7,6 +8,7 @@ import net.bagusekasaputra.griyakampoengtkw.data.interfaces.local.LocalAmbilKuit
 import net.bagusekasaputra.griyakampoengtkw.data.interfaces.remote.RemoteAmbilKuitansiDataSource
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.AmbilKuitansi
 import net.bagusekasaputra.griyakampoengtkw.domain.repository.AmbilKuitansiRepository
+import kotlin.random.Random
 
 class AmbilKuitansiRepositoryImpl(
     private val localDataSource: LocalAmbilKuitansiDataSource,
@@ -38,7 +40,14 @@ class AmbilKuitansiRepositoryImpl(
     }
 
     override suspend fun insert(ambilKuitansi: AmbilKuitansi): Result<Nothing?> {
-        return Result.success(null)
+        delay(5000L)
+
+        val randomSuccess = Random.nextBoolean()
+        return if (randomSuccess) {
+            Result.success(null)
+        } else {
+            Result.failure(Throwable("Random failure!!"))
+        }
     }
 
 }
