@@ -50,6 +50,7 @@ import net.bagusekasaputra.griyakampoengtkw.data.backup.pembayaran.BackupPembaya
 import net.bagusekasaputra.griyakampoengtkw.data.interfaces.backup.*
 import net.bagusekasaputra.griyakampoengtkw.data.interfaces.local.*
 import net.bagusekasaputra.griyakampoengtkw.data.interfaces.remote.*
+import net.bagusekasaputra.griyakampoengtkw.data.remote.ambilKuitansi.FirebaseAmbilKuitansiDataSource
 import net.bagusekasaputra.griyakampoengtkw.data.remote.backupRestore.FirebaseBackupRestoreDataSource
 import net.bagusekasaputra.griyakampoengtkw.data.remote.baselinePembayaran.FirebaseBaselinePembayaranDataSource
 import net.bagusekasaputra.griyakampoengtkw.data.remote.biayaLain.FirebaseBiayaLainDataSource
@@ -488,5 +489,13 @@ object DataSourceModule {
     @Provides
     fun provideRemotePromotionDataSource(databaseReference: DatabaseReference): RemotePromotionDataSource {
         return FirebasePromotionDataSource(databaseReference)
+    }
+
+    /**
+     * Ambil Kuitansi
+     */
+    @Provides
+    fun provideRemoteAmbilKuitansiDataSource(databaseReference: DatabaseReference): RemoteAmbilKuitansiDataSource {
+        return FirebaseAmbilKuitansiDataSource(databaseReference)
     }
 }

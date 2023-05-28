@@ -2,6 +2,7 @@ package net.bagusekasaputra.griyakampoengtkw.data
 
 import android.content.ContentResolver
 import android.net.Uri
+import net.bagusekasaputra.griyakampoengtkw.data.model.AmbilKuitansiModel
 import net.bagusekasaputra.griyakampoengtkw.data.model.AppUpdateModel
 import net.bagusekasaputra.griyakampoengtkw.data.model.BaselinePembayaranModel
 import net.bagusekasaputra.griyakampoengtkw.data.model.BiayaLainModel
@@ -26,6 +27,7 @@ import net.bagusekasaputra.griyakampoengtkw.domain.DateUtil.toDate
 import net.bagusekasaputra.griyakampoengtkw.domain.DateUtil.toSlashedString
 import net.bagusekasaputra.griyakampoengtkw.domain.ImageUtil
 import net.bagusekasaputra.griyakampoengtkw.domain.NumberUtil
+import net.bagusekasaputra.griyakampoengtkw.domain.entity.AmbilKuitansi
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.AppUpdate
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.BaselinePembayaran
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.BiayaLain
@@ -588,6 +590,19 @@ object MyObjectMapper {
             Promotion(
                 title = it.title,
                 texts = it.texts,
+            )
+        }
+    }
+
+    /**
+     * Ambil Kuitansi
+     */
+    fun mapAmbilKuitansi(model: AmbilKuitansiModel): AmbilKuitansi {
+        return model.let {
+            AmbilKuitansi(
+                kavling = it.kavling,
+                termin = it.termin,
+                sudahAmbil = it.sudahAmbil,
             )
         }
     }

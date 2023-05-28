@@ -1,16 +1,24 @@
 package net.bagusekasaputra.griyakampoengtkw.data.repository
 
+import net.bagusekasaputra.griyakampoengtkw.data.CacheHelper
+import net.bagusekasaputra.griyakampoengtkw.data.DataUtil
+import net.bagusekasaputra.griyakampoengtkw.data.MyObjectMapper
+import net.bagusekasaputra.griyakampoengtkw.data.interfaces.remote.RemoteAmbilKuitansiDataSource
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.AmbilKuitansi
 import net.bagusekasaputra.griyakampoengtkw.domain.repository.AmbilKuitansiRepository
-import kotlin.random.Random
 
-class AmbilKuitansiRepositoryImpl: AmbilKuitansiRepository {
+class AmbilKuitansiRepositoryImpl(
+    private val remoteDataSource: RemoteAmbilKuitansiDataSource,
+    private val cacheHelper: CacheHelper,
+): AmbilKuitansiRepository {
 
     override suspend fun get(kavling: String, termin: String): Result<AmbilKuitansi?> {
-        val randomSudahAmbil = Random.nextBoolean()
-        val ambilKuitansi = AmbilKuitansi(kavling, termin, randomSudahAmbil)
+        val remoteResult = remoteDataSource.get(kavling, termin)
 
-        return Result.success(ambilKuitansi)
+        return DataUtil.mapSingleResult(
+            originResult = remoteResult,
+            targetMapper = MyObjectMapper::mapAmbilKuitansi
+        )
     }
 
 }
