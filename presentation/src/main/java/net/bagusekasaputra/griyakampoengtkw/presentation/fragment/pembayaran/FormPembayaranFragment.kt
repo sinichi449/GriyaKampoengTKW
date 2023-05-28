@@ -24,7 +24,6 @@ import net.bagusekasaputra.griyakampoengtkw.domain.entity.DataDiri
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.HargaKavling
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.Pembayaran
 import net.bagusekasaputra.griyakampoengtkw.presentation.R
-import net.bagusekasaputra.griyakampoengtkw.presentation.activity.FullImageActivity
 import net.bagusekasaputra.griyakampoengtkw.presentation.activity.PembayaranTabelFullActivity
 import net.bagusekasaputra.griyakampoengtkw.presentation.adapter.recyclerview.TerminRecyclerAdapter
 import net.bagusekasaputra.griyakampoengtkw.presentation.custom.StatusPembayaranLayoutHelper
@@ -680,15 +679,6 @@ class FormPembayaranFragment : Fragment() {
         }
     }
 
-    /**
-     * This is clearing the pembayaran field: TableLayout, TvSisaBelumBayar,
-     * TvTambahanLuas, and TvTotalHarga.
-     */
-//    private fun clearPembayaranField() {
-//        binding.tvTambahanLuas?.text = "0"
-//        binding.tvTotalHarga?.text = "0"
-//    }
-
     private fun showTerminSelectionButtonsDialog() {
         val hargaKavling = binding.tvHarga?.text.toString().let {
             NumberUtil.formatStringToLong(it)
@@ -715,7 +705,6 @@ class FormPembayaranFragment : Fragment() {
             }
         }
     }
-
 
     private fun setupTerminRecyclerView(
         listPembayaran: List<Pembayaran>,
@@ -786,34 +775,6 @@ class FormPembayaranFragment : Fragment() {
         dialogBinding.btnBatal.setOnClickListener {
             dialogView.dismiss()
         }
-    }
-
-    private fun showFotoPembayaranSelectionDialog(
-        dialogTitle: String,
-        mode: OperasiFotoPembayaran,
-        onTerminClick: (selectedTermin: String) -> Unit,
-    ) {
-        val listTerminPembayaran = when (mode) {
-            OperasiFotoPembayaran.TAMBAH -> pembayaranViewModel.getBelumIsiFotoPembayaranTermins()
-            OperasiFotoPembayaran.UBAH -> pembayaranViewModel.getTerminFromListPembayaran()
-            OperasiFotoPembayaran.HAPUS -> pembayaranViewModel.getSudahIsiFotoPembayaranTermins()
-            OperasiFotoPembayaran.LIHAT -> pembayaranViewModel.getSudahIsiFotoPembayaranTermins()
-        }
-
-        MaterialAlertDialogBuilder(requireContext()).apply {
-            setTitle(dialogTitle)
-            setItems(listTerminPembayaran) { dialog, selectionPosition ->
-                val selectedTermin = listTerminPembayaran[selectionPosition]
-
-                // Updated currentTermin here
-                updateSelectedTermin(selectedTermin)
-
-                dialog.dismiss()
-
-                onTerminClick(selectedTermin)
-            }
-        }.create()
-            .show()
     }
 
     @Deprecated("Deprecated in Java")
@@ -894,50 +855,13 @@ class FormPembayaranFragment : Fragment() {
                 true
             }
             R.id.lihat_foto -> {
-                showFotoPembayaranSelectionDialog(
-                    dialogTitle = "Lihat Foto Pembayaran",
-                    mode = OperasiFotoPembayaran.LIHAT,
-                    onTerminClick = { selectedTermin ->
-                        val imageTransport = imageViewModel.createImageTransport(
-                            sendIntent = GriyaNodes.INTENT_FOTO_PEMBAYARAN,
-                            content = mapOf(
-                                Pair("kavlingKode", currentKavlingKode!!),
-                                Pair("termin", selectedTermin),
-                            ),
-                        )
+                Toast.makeText(requireContext(), "Dipindahkan!", Toast.LENGTH_SHORT).show()
 
-                        val fullImageIntent = Intent(requireContext(), FullImageActivity::class.java)
-                        fullImageIntent.putExtra(GriyaNodes.INTENT_SOURCE_IMAGE, imageTransport)
-                        startActivity(fullImageIntent)
-                    }
-                )
                 true
             }
             R.id.hapus_foto -> {
-                showFotoPembayaranSelectionDialog(
-                    dialogTitle = "Hapus Foto Pembayaran",
-                    mode = OperasiFotoPembayaran.HAPUS,
-                    onTerminClick = { selectedTermin ->
-                        // Show delete confirmation
-                        MaterialAlertDialogBuilder(requireContext()).apply {
-                            setTitle("Hapus Foto Pembayaran $selectedTermin?")
-                            setMessage("Apakah Anda yakin menghapus Foto Pembayaran pada termin $selectedTermin?")
-                            setPositiveButton("Ya") { dialog, _ ->
-                                imageViewModel.deleteFotoPembayaran(
-                                    kavlingKode = currentKavlingKode!!,
-                                    termin = selectedTermin,
-                                    onComplete = { msg ->
-                                        dialog.dismiss()
-                                        syncPembayaran()
-                                        Snackbar.make(binding.root, msg, Snackbar.LENGTH_SHORT).show()
-                                    }
-                                )
-                            }
-                            setNegativeButton("Tidak") { dialog, _ -> dialog.dismiss()}
-                        }.create()
-                            .show()
-                    }
-                )
+                Toast.makeText(requireContext(), "Dipindahkan!", Toast.LENGTH_SHORT).show()
+
                 true
             }
             R.id.export_excel -> {

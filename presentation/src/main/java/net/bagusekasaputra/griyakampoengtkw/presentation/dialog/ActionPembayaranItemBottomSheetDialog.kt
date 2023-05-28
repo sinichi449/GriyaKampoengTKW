@@ -2,6 +2,7 @@ package net.bagusekasaputra.griyakampoengtkw.presentation.dialog
 
 import android.annotation.SuppressLint
 import android.app.Activity
+import android.content.Intent
 import android.content.SharedPreferences
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -12,9 +13,12 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.fragment.app.activityViewModels
 import com.github.dhaval2404.imagepicker.ImagePicker
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import dagger.hilt.android.AndroidEntryPoint
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.AmbilKuitansi
+import net.bagusekasaputra.griyakampoengtkw.presentation.activity.FullImageActivity
 import net.bagusekasaputra.griyakampoengtkw.presentation.databinding.DialogActionsItemPembayaranBinding
+import net.bagusekasaputra.griyakampoengtkw.presentation.util.GriyaNodes
 import net.bagusekasaputra.griyakampoengtkw.presentation.util.NotificationUtil
 import net.bagusekasaputra.griyakampoengtkw.presentation.viewmodel.FormPembayaranViewModel
 import net.bagusekasaputra.griyakampoengtkw.presentation.viewmodel.ImageViewModel
@@ -157,14 +161,43 @@ class ActionPembayaranItemBottomSheetDialog(): BottomSheetDialogFragment() {
             dialogBinding.cardLihatFotoPembayaran.apply {
                 visibility = View.VISIBLE
                 setOnClickListener {
-                    Toast.makeText(requireContext(), "Lihat Foto", Toast.LENGTH_SHORT).show()
+                    val imageTransport = imageViewModel.createImageTransport(
+                        sendIntent = GriyaNodes.INTENT_FOTO_PEMBAYARAN,
+                        content = mapOf(
+                            Pair("kavlingKode", currentKavling),
+                            Pair("termin", currentTermin),
+                        ),
+                    )
+
+                    val fullImageIntent = Intent(requireContext(), FullImageActivity::class.java)
+                    fullImageIntent.putExtra(GriyaNodes.INTENT_SOURCE_IMAGE, imageTransport)
+                    startActivity(fullImageIntent)
                 }
             }
 
             dialogBinding.cardHapusFotoPembayaran.apply {
                 visibility = View.VISIBLE
                 setOnClickListener {
-                    Toast.makeText(requireContext(), "Hapus Foto", Toast.LENGTH_SHORT).show()
+                    // Show delete confirmation
+                    MaterialAlertDialogBuilder(requireContext()).apply {
+                        setTitle("Hapus Foto Pembayaran $currentTermin?")
+                        setMessage("Apakah Anda yakin menghapus Foto Pembayaran pada termin $currentTermin?")
+                        setPositiveButton("Ya") { dialog, _ ->
+                            imageViewModel.deleteFotoPembayaran(
+                                kavlingKode = currentKavling,
+                                termin = currentTermin,
+                                onComplete = { msg ->
+                                    dialog.dismiss()
+
+                                    viewModel.needSyncPembayaran.value = true
+
+                                    Toast.makeText(requireContext(), msg, Toast.LENGTH_SHORT).show()
+                                }
+                            )
+                        }
+                        setNegativeButton("Tidak") { dialog, _ -> dialog.dismiss()}
+                    }.create()
+                        .show()
                 }
             }
         } else {
