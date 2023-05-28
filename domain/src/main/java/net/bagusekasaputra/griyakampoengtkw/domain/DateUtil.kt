@@ -2,7 +2,6 @@ package net.bagusekasaputra.griyakampoengtkw.domain
 
 import android.os.Build
 import androidx.annotation.RequiresApi
-import java.lang.IllegalArgumentException
 import java.time.LocalDate
 import java.time.ZoneId
 import java.util.Calendar
@@ -120,6 +119,20 @@ object DateUtil {
         }
 
         return listOf(startDate.time, endDate.time)
+    }
+
+    fun getListMonths(dateFrom: Date, dateTo: Date): List<Date> {
+        val calendar = Calendar.getInstance()
+        calendar.time = dateFrom
+
+        val months = mutableListOf<Date>()
+
+        while (calendar.time.time <= dateTo.time) {
+            months.add(calendar.time)
+            calendar.add(Calendar.MONTH, 1)
+        }
+
+        return months
     }
 
     fun namaBulanShort(bulan: Int): String {

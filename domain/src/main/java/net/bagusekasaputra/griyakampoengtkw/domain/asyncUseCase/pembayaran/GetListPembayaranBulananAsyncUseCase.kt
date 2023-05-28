@@ -70,9 +70,7 @@ class GetListPembayaranBulananAsyncUseCase(
                     )
                 }
 
-
-                val maskedPembayaranBulanans = PembayaranBulanan.mask(pembayaranBulanans)
-                emit(Result.success(maskedPembayaranBulanans))
+                emit(Result.success(pembayaranBulanans))
             } else {
                 emit(Result.success(null))
             }

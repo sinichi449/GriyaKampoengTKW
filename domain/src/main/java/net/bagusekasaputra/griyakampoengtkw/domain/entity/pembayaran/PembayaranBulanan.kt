@@ -1,7 +1,9 @@
 package net.bagusekasaputra.griyakampoengtkw.domain.entity.pembayaran
 
+import android.util.Log
 import net.bagusekasaputra.griyakampoengtkw.domain.DateUtil
 import net.bagusekasaputra.griyakampoengtkw.domain.DateUtil.toDate
+import net.bagusekasaputra.griyakampoengtkw.domain.DateUtil.toSlashedString
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.BaselinePembayaran
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.Pembayaran
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.Pembayaran.Companion.filterPeriode
@@ -14,12 +16,18 @@ data class PembayaranBulanan(
     val tahun: Int,
     val listPembayaran: List<Pembayaran>,
     val baselinePembayaran: BaselinePembayaran,
-    var kelunasan: Kelunasan = Kelunasan.NIL,
     var alokasi: Long = 0L,
 ) {
     val uangMasuk = Pembayaran.hitungTotalUangMasuk(listPembayaran)
     val tunggakan: Long
         get() = baselinePembayaran.jumlahUang - uangMasuk
+
+    val kelunasan: Kelunasan
+        get() = if (tunggakan <= 0) {
+            Kelunasan.LUNAS
+        } else {
+            Kelunasan.KURANG
+        }
 
     val bulanStr = DateUtil.namaBulanShort(bulan)
     val parsedBulanTahun = "$bulanStr $tahun"
@@ -31,41 +39,56 @@ data class PembayaranBulanan(
 
 
     companion object {
-        fun groupPembayaranIntoBulanan(kavling: String, baselinePembayaran: BaselinePembayaran, sortedListPembayaran: List<Pembayaran>): List<PembayaranBulanan> {
-            val listPembayaranBulanan = mutableListOf<PembayaranBulanan>()
-
-            var listBulanTahun = mutableListOf<Pair<Int, Int>>()
-            sortedListPembayaran.forEach { pembayaran ->
-                val tanggalPembayaran = Calendar.getInstance().apply {
-                    time = pembayaran.tanggal.toDate()
-                }
-                val bulanPembayaran = tanggalPembayaran.get(Calendar.MONTH)
-                val tahunPembayaran = tanggalPembayaran.get(Calendar.YEAR)
-
-                listBulanTahun.add(Pair(bulanPembayaran, tahunPembayaran))
+        fun groupPembayaranIntoBulanan(
+            kavling: String,
+            baselinePembayaran: BaselinePembayaran,
+            sortedListPembayaran: List<Pembayaran>
+        ): List<PembayaranBulanan> {
+            val sortedPembayaranByDate = sortedListPembayaran.sortedBy {
+                it.tanggal.toDate().time
             }
-            listBulanTahun = listBulanTahun.distinct().toMutableList() // Filter out duplicate
+            return if (sortedPembayaranByDate.isNotEmpty()) {
+                val tanggalPembayaranPertama = sortedPembayaranByDate.first().tanggal.toDate()
+                val tanggalSekarang = Calendar.getInstance().time
 
-            listBulanTahun.forEach { bulanTahun ->
-                val rangeTanggal = DateUtil.getMonthlyRangeDate(bulanTahun.first, bulanTahun.second)
-                val tanggalPertama = rangeTanggal[0]
-                val tanggalTerakhir = rangeTanggal[1]
-                val listOnlySpecifiedBulan = sortedListPembayaran.filterPeriode(PeriodeRekap.CUSTOM, tanggalPertama, tanggalTerakhir)
+                val listBulan = DateUtil.getListMonths(
+                    tanggalPembayaranPertama, tanggalSekarang
+                )
+                val pembayaranBulanans = mutableListOf<PembayaranBulanan>()
 
-                if (listOnlySpecifiedBulan != null) {
-                    listPembayaranBulanan.add(PembayaranBulanan(kavling,
-                        bulanTahun.first.plus(1), // Bulan yang ada diisini pake formatnya Calendar, so harus +1
-                        bulanTahun.second,
-                        listOnlySpecifiedBulan,
-                        baselinePembayaran,
+                listBulan.forEach {
+                    Log.d("PEMBAYARAN_BULANAN", "Tgl : ${it.toSlashedString()}")
+                    val calendar = Calendar.getInstance().apply {
+                        time = it
+                    }
+                    val rangeSatuBulan = DateUtil.getMonthlyRangeDate(
+                        calendarMonth = calendar.get(Calendar.MONTH),
+                        year = calendar.get(Calendar.YEAR)
+                    )
+                    val listPembayaran = sortedListPembayaran.filterPeriode(
+                        periode = PeriodeRekap.CUSTOM,
+                        start = rangeSatuBulan[0],
+                        end = rangeSatuBulan[1],
+                    )
+
+                    pembayaranBulanans.add(PembayaranBulanan(
+                        kavling = kavling,
+                        bulan = calendar.get(Calendar.MONTH) + 1,
+                        tahun = calendar.get(Calendar.YEAR),
+                        listPembayaran = listPembayaran ?: emptyList(),
+                        baselinePembayaran = baselinePembayaran,
                     ))
                 }
-            }
 
-            return PembayaranBulanan.sort(listPembayaranBulanan)
+                val sortedByMonthsPembayaranBulanans = sort(pembayaranBulanans)
+
+                hitungAlokasi(sortedByMonthsPembayaranBulanans)
+            } else {
+                emptyList()
+            }
         }
 
-        fun sort(listPembayaranBulanan: List<PembayaranBulanan>): List<PembayaranBulanan> {
+        private fun sort(listPembayaranBulanan: List<PembayaranBulanan>): List<PembayaranBulanan> {
             return listPembayaranBulanan.sortedBy {
                 // Convert bulan dan tahun ke objek Date, lalu diurut pakai "time" (timeMillis)
                 val date = "1/${it.bulan}/${it.tahun}".toDate()
@@ -98,16 +121,12 @@ data class PembayaranBulanan(
             return isExist
         }
 
-        fun mask(pembayaranBulanans: List<PembayaranBulanan>): List<PembayaranBulanan> {
+        private fun hitungAlokasi(sortedPembayaranBulanan: List<PembayaranBulanan>): List<PembayaranBulanan> {
             val newList = mutableListOf<PembayaranBulanan>()
             var alokasi = 0L
-            pembayaranBulanans.forEach {
+            sortedPembayaranBulanan.forEach {
                 alokasi += -1 * it.tunggakan
                 it.alokasi = alokasi
-
-                it.kelunasan = if (it.tunggakan <= 0) Kelunasan.LUNAS
-                    else Kelunasan.KURANG
-
                 newList.add(it)
             }
 
@@ -126,7 +145,6 @@ data class PembayaranBulanan(
                     tahun = tahunSekarang,
                     listPembayaran = emptyList(),
                     baselinePembayaran = baselinePembayaran,
-                    kelunasan = Kelunasan.NIL,
                     alokasi = lastAlokasi - baselinePembayaran.jumlahUang,
                 ))
             }
