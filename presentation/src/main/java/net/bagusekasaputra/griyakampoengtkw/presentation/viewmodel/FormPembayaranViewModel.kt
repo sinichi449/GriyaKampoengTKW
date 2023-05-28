@@ -23,6 +23,7 @@ import net.bagusekasaputra.griyakampoengtkw.domain.entity.HargaKavling
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.Pembayaran
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.pembayaran.PembayaranBulanan
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.statusPembayaran.StatusPembayaran
+import net.bagusekasaputra.griyakampoengtkw.presentation.combineWith
 import javax.inject.Inject
 
 /**
@@ -71,6 +72,14 @@ class FormPembayaranViewModel @Inject constructor(
     private val _statusPembayaranLive = MutableLiveData<StatusPembayaran?>(null)
     val statusPembayaranLive: LiveData<StatusPembayaran?>
         get() = _statusPembayaranLive
+
+
+    // Combine
+    val baselineAndFullPembayaran = _baselinePembayaranLive
+        .combineWith(_fullPembayaransLive) { baselinePembayaran, pembayarans ->
+            Pair(baselinePembayaran, pembayarans)
+        }
+
 
     var currentKavlingKode: String? = null
     var dataMode = DataMode.ONLINE

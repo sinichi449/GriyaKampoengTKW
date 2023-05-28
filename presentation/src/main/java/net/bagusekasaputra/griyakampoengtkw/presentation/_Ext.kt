@@ -1,6 +1,8 @@
 package net.bagusekasaputra.griyakampoengtkw.presentation
 
 import android.util.Log
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MediatorLiveData
 import net.bagusekasaputra.griyakampoengtkw.presentation.util.GriyaNodes
 import java.math.BigDecimal
 import java.text.SimpleDateFormat
@@ -11,6 +13,23 @@ import kotlin.math.pow
 
 fun logEvent(msg: String) {
     Log.d(GriyaNodes.LOG_TAG, msg)
+}
+
+/**
+ * Helper Extension for livedata
+ */
+fun <T, K, R> LiveData<T>.combineWith(
+    liveData: LiveData<K>,
+    block: (T?, K?) -> R
+): LiveData<R> {
+    val result = MediatorLiveData<R>()
+    result.addSource(this) {
+        result.value = block(this.value, liveData.value)
+    }
+    result.addSource(liveData) {
+        result.value = block(this.value, liveData.value)
+    }
+    return result
 }
 
 /**

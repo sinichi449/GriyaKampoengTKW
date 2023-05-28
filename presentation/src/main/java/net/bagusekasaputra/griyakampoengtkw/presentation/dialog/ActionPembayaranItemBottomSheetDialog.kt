@@ -10,17 +10,25 @@ import androidx.fragment.app.activityViewModels
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import dagger.hilt.android.AndroidEntryPoint
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.AmbilKuitansi
-import net.bagusekasaputra.griyakampoengtkw.domain.entity.Pembayaran
 import net.bagusekasaputra.griyakampoengtkw.presentation.databinding.DialogActionsItemPembayaranBinding
 import net.bagusekasaputra.griyakampoengtkw.presentation.viewmodel.FormPembayaranViewModel
 
 @AndroidEntryPoint
-class ActionPembayaranItemBottomSheetDialog(
-    private val pembayaran: Pembayaran,
-): BottomSheetDialogFragment() {
+class ActionPembayaranItemBottomSheetDialog(): BottomSheetDialogFragment() {
 
     private lateinit var dialogBinding: DialogActionsItemPembayaranBinding
     private val viewModel by activityViewModels<FormPembayaranViewModel>()
+    private var indexPembayaran: Int? = null
+
+    companion object {
+        const val EXTRAS_INDEX_PEMBAYARAN_POSITION = "EXTRAS_INDEX_PEMBAYARAN_POSITION"
+    }
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+
+        indexPembayaran = arguments?.getInt(EXTRAS_INDEX_PEMBAYARAN_POSITION)
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -36,44 +44,53 @@ class ActionPembayaranItemBottomSheetDialog(
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        val kavling = viewModel.currentKavlingKode!!
-        val termin = pembayaran.termin
-        dialogBinding.tvKavlingTermin.text = "Kav. $kavling - $termin"
+        val pembayaran = viewModel.fullPembayaransLive.value?.get(indexPembayaran!!)
 
-        // Only allow modify switch sudah ambil kuitansi if sudah isi pembayaran
-        with(dialogBinding.switchSudahAmbilKuitansi) {
-            isEnabled = pembayaran.sudahIsiFotoPembayaran
-            visibility = View.VISIBLE
-            isChecked = pembayaran.sudahAmbilKuitansi
-            setOnCheckedChangeListener { _, isChecked ->
-                val ambilKuitansi = AmbilKuitansi(
-                    kavling = kavling,
-                    termin = termin,
-                    sudahAmbil = isChecked,
-                )
+        if (pembayaran != null) {
+            val kavling = viewModel.currentKavlingKode!!
+            val termin = pembayaran.termin
 
-                viewModel.insertAmbilKuitansi(ambilKuitansi,
-                    onProgress = {
-                        this@ActionPembayaranItemBottomSheetDialog.isCancelable = false
-                        isEnabled = false
+            // Dialog title
+            dialogBinding.tvKavlingTermin.text = "Kav. $kavling - $termin"
 
-                        visibility = View.GONE
-                        dialogBinding.progressAmbilKuitansi.visibility = View.VISIBLE
-                    },
-                    onSuccess = {
-                        this@ActionPembayaranItemBottomSheetDialog.isCancelable = true
-                        isEnabled = true
+            // Only allow modify switch sudah ambil kuitansi if sudah isi pembayaran
+            with(dialogBinding.switchSudahAmbilKuitansi) {
+                isEnabled = pembayaran.sudahIsiFotoPembayaran
+                visibility = View.VISIBLE
+                isChecked = pembayaran.sudahAmbilKuitansi
+                setOnCheckedChangeListener { _, isChecked ->
+                    val ambilKuitansi = AmbilKuitansi(
+                        kavling = kavling,
+                        termin = termin,
+                        sudahAmbil = isChecked,
+                    )
 
-                        visibility = View.VISIBLE
-                        dialogBinding.progressAmbilKuitansi.visibility = View.GONE
-                    },
-                    onFailure = {
-                        this@ActionPembayaranItemBottomSheetDialog.dismiss()
+                    viewModel.insertAmbilKuitansi(ambilKuitansi,
+                        onProgress = {
+                            this@ActionPembayaranItemBottomSheetDialog.isCancelable = false
+                            isEnabled = false
 
-                        Toast.makeText(requireContext(), it, Toast.LENGTH_LONG).show()
-                    }
-                )
+                            visibility = View.GONE
+                            dialogBinding.progressAmbilKuitansi.visibility = View.VISIBLE
+                        },
+                        onSuccess = {
+                            this@ActionPembayaranItemBottomSheetDialog.isCancelable = true
+                            isEnabled = true
+
+                            visibility = View.VISIBLE
+                            dialogBinding.progressAmbilKuitansi.visibility = View.GONE
+                        },
+                        onFailure = {
+                            this@ActionPembayaranItemBottomSheetDialog.dismiss()
+
+                            Toast.makeText(requireContext(), it, Toast.LENGTH_LONG).show()
+                        }
+                    )
+                }
             }
+        } else {
+            Toast.makeText(requireContext(), "Pembayaran is null!", Toast.LENGTH_LONG).show()
         }
     }
+
 }
