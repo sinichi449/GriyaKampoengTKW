@@ -122,7 +122,12 @@ class ActionPembayaranItemBottomSheetDialog(): BottomSheetDialogFragment() {
             } else {
                 dialogBinding.cardAmbilKuitansi.visibility = View.GONE
 
-                dialogBinding.cardTambahkanFotoPembayaran.visibility = View.VISIBLE
+                dialogBinding.cardTambahkanFotoPembayaran.apply {
+                    visibility = View.VISIBLE
+                    setOnClickListener {
+                        Toast.makeText(requireContext(), "Tambahkan", Toast.LENGTH_SHORT).show()
+                    }
+                }
 
                 dialogBinding.cardLihatFotoPembayaran.visibility = View.GONE
 
