@@ -1,5 +1,7 @@
 package net.bagusekasaputra.griyakampoengtkw.data
 
+import kotlinx.coroutines.channels.awaitClose
+import kotlinx.coroutines.channels.trySendBlocking
 import kotlinx.coroutines.flow.callbackFlow
 import kotlinx.coroutines.flow.first
 import net.bagusekasaputra.griyakampoengtkw.data.interfaces.local.LocalMetadataDataSource
@@ -45,7 +47,9 @@ class CacheHelper(
             remoteMetadataDataSource.update(newRemoteMetadata, newRemoteMetadata)
             localMetadataDataSource.insert(newLocalMetadata)
 
-            Result.success(null)
+            trySendBlocking(Result.success(null))
+
+            awaitClose {  }
         }.first()
     }
 }

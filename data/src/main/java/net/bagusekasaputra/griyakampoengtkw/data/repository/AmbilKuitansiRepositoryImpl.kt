@@ -1,6 +1,9 @@
 package net.bagusekasaputra.griyakampoengtkw.data.repository
 
-import kotlinx.coroutines.delay
+import kotlinx.coroutines.channels.awaitClose
+import kotlinx.coroutines.channels.trySendBlocking
+import kotlinx.coroutines.flow.callbackFlow
+import kotlinx.coroutines.flow.first
 import net.bagusekasaputra.griyakampoengtkw.data.CacheHelper
 import net.bagusekasaputra.griyakampoengtkw.data.DataUtil
 import net.bagusekasaputra.griyakampoengtkw.data.MyObjectMapper
@@ -8,7 +11,6 @@ import net.bagusekasaputra.griyakampoengtkw.data.interfaces.local.LocalAmbilKuit
 import net.bagusekasaputra.griyakampoengtkw.data.interfaces.remote.RemoteAmbilKuitansiDataSource
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.AmbilKuitansi
 import net.bagusekasaputra.griyakampoengtkw.domain.repository.AmbilKuitansiRepository
-import kotlin.random.Random
 
 class AmbilKuitansiRepositoryImpl(
     private val localDataSource: LocalAmbilKuitansiDataSource,
@@ -40,14 +42,24 @@ class AmbilKuitansiRepositoryImpl(
     }
 
     override suspend fun insert(ambilKuitansi: AmbilKuitansi): Result<Nothing?> {
-        delay(5000L)
+        return callbackFlow<Result<Nothing?>> {
+            val model = MyObjectMapper.mapAmbilKuitansi(ambilKuitansi)
+            val remoteResult = remoteDataSource.update(model)
 
-        val randomSuccess = Random.nextBoolean()
-        return if (randomSuccess) {
-            Result.success(null)
-        } else {
-            Result.failure(Throwable("Random failure!!"))
-        }
+            remoteResult
+                .onSuccess {
+                    localDataSource.update(model)
+
+                    cacheHelper.updateMetadata(cacheTable, cacheTable)
+
+                    trySendBlocking(Result.success(null))
+                }
+                .onFailure {
+                    trySendBlocking(Result.failure(it))
+                }
+
+            awaitClose {  }
+        }.first()
     }
 
 }

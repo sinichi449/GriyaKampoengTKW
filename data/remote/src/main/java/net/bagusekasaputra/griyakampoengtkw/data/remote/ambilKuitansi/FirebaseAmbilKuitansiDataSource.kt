@@ -38,4 +38,18 @@ class FirebaseAmbilKuitansiDataSource(
         }
     }
 
+    override suspend fun update(model: AmbilKuitansiModel): Result<Nothing?> {
+        return suspendCoroutine { continuation ->
+            val childPath = "${model.kavling}/${model.termin}"
+
+            ambilKuitansiRef.child(childPath)
+                .setValue(model.sudahAmbil)
+                .addOnSuccessListener {
+                    continuation.resume(Result.success(null))
+                }
+                .addOnFailureListener {
+                    continuation.resume(Result.failure(it))
+                }
+        }
+    }
 }

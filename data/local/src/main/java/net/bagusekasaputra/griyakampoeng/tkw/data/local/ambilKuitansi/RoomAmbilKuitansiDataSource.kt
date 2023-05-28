@@ -29,6 +29,20 @@ class RoomAmbilKuitansiDataSource(
         }
     }
 
+    override suspend fun update(model: AmbilKuitansiModel): Result<Nothing?> {
+        return roomOperation {
+            // Delete then insert
+            val oldEntity = dao.get(model.kavling, model.termin)
+            if (oldEntity != null) {
+                dao.delete(model.kavling, model.termin)
+            }
+
+            dao.insert(model.toEntity())
+
+            null
+        }
+    }
+
     override suspend fun deleteAll(): Result<Nothing?> {
         return roomOperation {
             dao.deleteAll()

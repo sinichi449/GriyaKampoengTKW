@@ -606,4 +606,14 @@ object MyObjectMapper {
             )
         }
     }
+
+    fun mapAmbilKuitansi(ambilKuitansi: AmbilKuitansi): AmbilKuitansiModel {
+        return ambilKuitansi.let {
+            AmbilKuitansiModel(
+                kavling = it.kavling,
+                termin = it.termin,
+                sudahAmbil = it.sudahAmbil,
+            )
+        }
+    }
 }

@@ -27,6 +27,9 @@ interface AmbilKuitansiDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun insert(entity: AmbilKuitansiRoomEntity): Long
 
+    @Query("DELETE FROM ambil_kuitansi WHERE kavling=:kavling AND termin=:termin")
+    fun delete(kavling: String, termin: String)
+
     @Query("DELETE FROM ambil_kuitansi")
     fun deleteAll()
 

@@ -6,4 +6,6 @@ interface RemoteAmbilKuitansiDataSource {
 
     suspend fun get(kavling: String, termin: String): Result<AmbilKuitansiModel?>
 
+    suspend fun update(model: AmbilKuitansiModel): Result<Nothing?>
+
 }

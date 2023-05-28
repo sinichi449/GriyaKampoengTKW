@@ -8,5 +8,7 @@ interface LocalAmbilKuitansiDataSource {
 
     suspend fun insert(model: AmbilKuitansiModel): Result<Nothing?>
 
+    suspend fun update(model: AmbilKuitansiModel): Result<Nothing?>
+
     suspend fun deleteAll(): Result<Nothing?>
 }

@@ -16,7 +16,6 @@ import net.bagusekasaputra.griyakampoengtkw.presentation.viewmodel.FormPembayara
 @AndroidEntryPoint
 class ActionPembayaranItemBottomSheetDialog(
     private val pembayaran: Pembayaran,
-    private val onSyncRequest: () -> Unit,
 ): BottomSheetDialogFragment() {
 
     private lateinit var dialogBinding: DialogActionsItemPembayaranBinding

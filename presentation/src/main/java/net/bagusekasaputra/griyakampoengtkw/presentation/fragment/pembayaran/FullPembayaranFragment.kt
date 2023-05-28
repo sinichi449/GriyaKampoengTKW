@@ -149,11 +149,7 @@ class FullPembayaranFragment : Fragment() {
             }
 
             override fun onRowHeaderClicked(rowHeaderView: RecyclerView.ViewHolder, row: Int) {
-                ActionPembayaranItemBottomSheetDialog(pembayarans[row],
-                    onSyncRequest = {
-                        (requireParentFragment() as FormPembayaranFragment).syncPembayaran()
-                    }
-                )
+                ActionPembayaranItemBottomSheetDialog(pembayarans[row])
                     .show(childFragmentManager, null)
             }
 
