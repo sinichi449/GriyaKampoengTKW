@@ -13,8 +13,8 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import net.bagusekasaputra.griyakampoengtkw.domain.DataMode
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.ambilKuitansi.InsertAmbilKuitansiAsyncUseCase
-import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.baselinePembayaran.GetBaselinePembayaranByKavlingAsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.baselinePembayaran.SetBaselinePembayaranAsyncUseCase
+import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.pembayaran.DeletePembayaranAsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.pembayaran.GetListPembayaranBulananAsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.statusPembayaran.GetStatusPembayaranKavlingAsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.AmbilKuitansi
@@ -23,6 +23,7 @@ import net.bagusekasaputra.griyakampoengtkw.domain.entity.HargaKavling
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.Pembayaran
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.pembayaran.PembayaranBulanan
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.statusPembayaran.StatusPembayaran
+import net.bagusekasaputra.griyakampoengtkw.domain.usecase.pembayaran.AddPembayaranUseCase
 import net.bagusekasaputra.griyakampoengtkw.presentation.combineWith
 import javax.inject.Inject
 
@@ -31,10 +32,11 @@ import javax.inject.Inject
  */
 @HiltViewModel
 class FormPembayaranViewModel @Inject constructor(
-    private val getBaselinePembayaranByKavlingAsyncUseCase: GetBaselinePembayaranByKavlingAsyncUseCase,
     private val setBaselinePembayaranAsyncUseCase: SetBaselinePembayaranAsyncUseCase,
     private val getListPembayaranBulananAsyncUseCase: GetListPembayaranBulananAsyncUseCase,
     private val getStatusPembayaranKavlingAsyncUseCase: GetStatusPembayaranKavlingAsyncUseCase,
+    private val addPembayaranUseCase: AddPembayaranUseCase,
+    private val deletePembayaranAsyncUseCase: DeletePembayaranAsyncUseCase,
     private val insertAmbilKuitansiAsyncUseCase: InsertAmbilKuitansiAsyncUseCase,
 ): ViewModel() {
 
@@ -132,34 +134,50 @@ class FormPembayaranViewModel @Inject constructor(
         }
     }
 
-    fun getBaselinePembayaran(
-        kavling: String,
-        onLoading: () -> Unit,
-        onComplete: () -> Unit,
-        onFailure: (msg: String) -> Unit
+    fun addPembayaran(
+        kavlingKode: String,
+        hargaKavling: Long,
+        pembayaran: Pembayaran,
+        onComplete: (msg: String) -> Unit,
     ) {
-        readBaselinePembayaranJob?.cancel()
+        CoroutineScope(Dispatchers.IO).launch {
+            val request = AddPembayaranUseCase.Request(kavlingKode, hargaKavling, pembayaran)
 
-        onLoading()
-
-        readBaselinePembayaranJob = viewModelScope.launch {
-            val request = GetBaselinePembayaranByKavlingAsyncUseCase.Request(kavling, dataMode)
-
-            getBaselinePembayaranByKavlingAsyncUseCase.execute(request).collect { result ->
+            addPembayaranUseCase.execute(request).collect { response ->
+                val result = response.data.result
                 result.onSuccess {
-                    _baselinePembayaranLive.postValue(it)
-
                     withContext(Dispatchers.Main) {
-                        onComplete()
+                        onComplete("Berhasil menambahkan pembayaran")
                     }
                 }
-
                 result.onFailure {
-                    it.printStackTrace()
-
                     withContext(Dispatchers.Main) {
-                        onFailure("Gagal mendapatkan baseline pembayaran: ${it.message}")
-                        onComplete()
+                        onComplete("Gagal menambahkan pembayaran: ${result.exceptionOrNull()?.message?: "null"}")
+                    }
+                }
+            }
+        }
+    }
+
+    fun deletePembayaran(kavling: String, pembayaran: Pembayaran,
+         onProgress: () -> Unit = {},
+         onSuccess: () -> Unit = {},
+         onFailure: (msg: String) -> Unit = {},
+    ) {
+        onProgress()
+
+        CoroutineScope(Dispatchers.IO).launch {
+            val request = DeletePembayaranAsyncUseCase.Request(kavling, pembayaran)
+            deletePembayaranAsyncUseCase.execute(request).collect { result ->
+                result.onSuccess {
+                    withContext(Dispatchers.Main) {
+                        onSuccess()
+                    }
+                }
+                result.onFailure {
+                    withContext(Dispatchers.Main) {
+                        onFailure("Gagal menghapus pembayaran: " +
+                                "${it.javaClass.simpleName}:${it.message}")
                     }
                 }
             }
@@ -267,46 +285,6 @@ class FormPembayaranViewModel @Inject constructor(
         }
     }
 
-    fun getSudahIsiFotoPembayaranTermins(): Array<String> {
-        val terminList = ArrayList<String>()
-
-        _fullPembayaransLive.value?.forEach { pembayaran ->
-            if (pembayaran.sudahIsiFotoPembayaran) {
-                terminList.add(pembayaran.termin)
-            }
-        }
-
-        Log.d("TERMINS", "Termin is: $terminList")
-
-        return terminList.toTypedArray()
-    }
-
-    fun getBelumIsiFotoPembayaranTermins(): Array<String> {
-        val terminList = ArrayList<String>()
-
-        _fullPembayaransLive.value?.forEach { pembayaran ->
-            if (!pembayaran.sudahIsiFotoPembayaran) {
-                terminList.add(pembayaran.termin)
-            }
-        }
-
-        Log.d("TERMINS", "Termin is: $terminList")
-
-        return terminList.toTypedArray()
-    }
-
-    fun getTerminFromListPembayaran(): Array<String> {
-        val terminList = ArrayList<String>()
-
-        _fullPembayaransLive.value?.forEach { pembayaran ->
-            terminList.add(pembayaran.termin)
-        }
-
-        Log.d("TERMINS", "Termin is: $terminList")
-
-        // We need to convert into an Array ... How botherful.
-        return terminList.toTypedArray()
-    }
 
 
     enum class TablePembayaranType {

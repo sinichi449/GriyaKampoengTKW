@@ -12,8 +12,6 @@ import androidx.appcompat.app.AlertDialog
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
-import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
@@ -25,7 +23,6 @@ import net.bagusekasaputra.griyakampoengtkw.domain.entity.HargaKavling
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.Pembayaran
 import net.bagusekasaputra.griyakampoengtkw.presentation.R
 import net.bagusekasaputra.griyakampoengtkw.presentation.activity.PembayaranTabelFullActivity
-import net.bagusekasaputra.griyakampoengtkw.presentation.adapter.recyclerview.TerminRecyclerAdapter
 import net.bagusekasaputra.griyakampoengtkw.presentation.custom.StatusPembayaranLayoutHelper
 import net.bagusekasaputra.griyakampoengtkw.presentation.custom.TabelPembayaranNavHelper
 import net.bagusekasaputra.griyakampoengtkw.presentation.custom.ThousandSeparatorTextWatcher
@@ -58,7 +55,6 @@ class FormPembayaranFragment : Fragment() {
     private val pembayaranViewModel: FormPembayaranViewModel by activityViewModels()
 
     private var currentKavlingKode: String? = null
-    private var isAllFabsVisible = false
     private var layoutStatusPembayaran: StatusPembayaranLayoutHelper? = null
 
     private var offlineMode = false
@@ -103,8 +99,6 @@ class FormPembayaranFragment : Fragment() {
         File(requireContext().getExternalFilesDir(null), "foto_pembayaran_images").let {
             if (it.exists().not()) it.mkdir()
         }
-
-        setupExtendedFloatingButton()
 
         setupViewModel()
 
@@ -163,9 +157,9 @@ class FormPembayaranFragment : Fragment() {
         // So, I put the conditional here for the scroll operation.
         if (offlineMode.not())
             // Hide fabs on scroll
-            UiUtils.hideExtendedFabOnVerticalScroll(
+            UiUtils.hideFabsOnVerticalScroll(
                 nestedScrollView = binding.nestedScrollMain,
-                extendedFabs = binding.fabActions,
+                fab = binding.fabActions,
             )
 
         startStorageRequest.launch(Array(2) {
@@ -207,18 +201,12 @@ class FormPembayaranFragment : Fragment() {
         }
 
 
-        binding.fabAddPembayaranData?.setOnClickListener {
+        binding.fabActions?.setOnClickListener {
             showAddFormPembayaranDialog()
-            hideFabs()
-        }
-
-        binding.fabEditData?.setOnClickListener {
-            showTerminSelectionButtonsDialog()
-            hideFabs()
         }
     }
 
-    fun syncPembayaran() {
+    private fun syncPembayaran() {
         pembayaranViewModel.getStatusPembayaran(
             currentKavlingKode!!,
             onLoading = {
@@ -332,24 +320,6 @@ class FormPembayaranFragment : Fragment() {
         }
     }
 
-
-    private fun setupExtendedFloatingButton() {
-        binding.fabAddPembayaranData?.visibility = View.GONE
-        binding.fabEditData?.visibility = View.GONE
-//        binding.tvInfoAddPembayaranData?.visibility = View.GONE
-//        binding.tvInfoEditData?.visibility = View.GONE
-
-        binding.fabActions?.shrink()
-
-        binding.fabActions?.setOnClickListener {
-            if (!isAllFabsVisible) {
-                showFabs()
-            } else {
-                hideFabs()
-            }
-        }
-    }
-
     private fun showAddFormPembayaranDialog() {
         // check harga kavling available
         val hargaKavling = binding.tvHarga?.text.toString().let {
@@ -424,7 +394,7 @@ class FormPembayaranFragment : Fragment() {
                     )
 
                     // call view model
-                    viewModel.addPembayaran(currentKavlingKode!!, hargaKavling, pembayaran) { msg ->
+                    pembayaranViewModel.addPembayaran(currentKavlingKode!!, hargaKavling, pembayaran) { msg ->
                         Toast.makeText(requireContext(), msg, Toast.LENGTH_SHORT).show()
                         dialogView.dismiss()
                         syncPembayaran()
@@ -436,185 +406,6 @@ class FormPembayaranFragment : Fragment() {
             // on eye icon click
             imgVisibilityOnClick(dialogView, dialogBinding)
         }
-    }
-
-    private fun showEditPembayaranDialog(pembayaran: Pembayaran) {
-        // inflate
-        val dialogBinding = DialogAddFormPembayaranBinding.inflate(layoutInflater)
-        val dialogView = MaterialAlertDialogBuilder(requireContext()).apply {
-            setView(dialogBinding.root)
-            setCancelable(false)
-        }.create()
-
-        // setting layout
-        dialogBinding.edtJumlahUangDibayar.apply {
-            addTextChangedListener(ThousandSeparatorTextWatcher(this))
-        }
-        dialogBinding.tilTermin.isEnabled = true
-        dialogBinding.edtTermin.isEnabled = true
-        dialogBinding.btnHapus.visibility = View.VISIBLE
-        dialogBinding.btnTambahkan.text = "Simpan Perubahan"
-
-        // Disable Edit Mode !!
-        with(dialogBinding) {
-            btnTambahkan.isEnabled = false
-        }
-
-        // setup datepicker
-        DatePickerHelper(
-            ctx = requireContext(),
-            triggerButton = dialogBinding.btnPilihTanggal,
-            targetEdt = dialogBinding.edtTanggal,
-        ).setupDateDefaultOrPick(true)
-
-        additionalDialogSetting(requireContext(), dialogView)
-        dialogView.show()
-
-
-        // misc
-        fun getJenisPembayaranAndUrutan(termin: String): Map<String, String> {
-            val terminDanUrutan = termin.split(" ")
-            return mapOf(
-                Pair("jenis", terminDanUrutan[0]),
-                Pair("urutan", terminDanUrutan[1]),
-            )
-        }
-
-        // populate fields with available pembayaran data
-        dialogBinding.tvTitle.text = "Ubah Form"
-        dialogBinding.apply {
-            val mapTermin = getJenisPembayaranAndUrutan(pembayaran.termin)
-
-            when (mapTermin["jenis"]!!) {
-                "ITJ" -> rbItj.isChecked = true
-                "DP" -> rbDp.isChecked = true
-                "Termin" -> rbTermin.isChecked = true
-            }
-        } // which RadioButton is clicked
-        dialogBinding.edtTermin.apply {
-            val mapTermin = getJenisPembayaranAndUrutan(pembayaran.termin)
-            setText(mapTermin["urutan"])
-        }
-        dialogBinding.edtTanggal.setText(pembayaran.tanggal)
-        dialogBinding.edtJumlahUangDibayar.setText(pembayaran.jumlahUangDibayar)
-        dialogBinding.edtKeteranganProgress.setText(pembayaran.keterangan)
-
-        fun getPembayaranFromEdt(): Pembayaran? {
-            val isInvalidEdt = InputUtil.isNullOrEmptyEditTexts(dialogBinding.edtTermin, dialogBinding.edtTanggal, dialogBinding.edtJumlahUangDibayar)
-
-            return if (!isInvalidEdt) {
-                Pembayaran(
-                    termin = dialogBinding.edtTermin.text.toString().let { urutanTermin ->
-                        if (dialogBinding.rbItj.isChecked) "ITJ $urutanTermin"
-                        else if (dialogBinding.rbDp.isChecked) "DP $urutanTermin"
-                        else if (dialogBinding.rbTermin.isChecked) "Termin $urutanTermin"
-                        else "Termin 999" // this is ridiciously wrong
-                    },
-                    tanggal = dialogBinding.edtTanggal.text.toString(),
-                    jumlahUangDibayar = dialogBinding.edtJumlahUangDibayar.text.toString(),
-                    totalUangMasuk = pembayaran.totalUangMasuk,
-                    presentase = pembayaran.presentase,
-                    keterangan = dialogBinding.edtKeteranganProgress.text.toString(),
-                    timeMillis = System.currentTimeMillis(),
-                )
-            } else {
-                null
-            }
-        }
-
-//        dialogBinding.btnTambahkan.setOnClickListener {
-//            // onclick view
-//            dialogBinding.btnTambahkan.text = "Menyimpan data ..."
-//            dialogBinding.btnTambahkan.isEnabled = false
-//            dialogBinding.btnHapus.isEnabled = false
-//
-//            getPembayaranFromEdt()?.let { newPembayaran ->
-//                viewModel.updatePembayaran(currentKavlingKode!!, pembayaran, newPembayaran) { msg ->
-//                    Toast.makeText(requireContext(), msg, Toast.LENGTH_SHORT).show()
-//                    dialogView.dismiss()
-//                    syncPembayaran()
-//                }
-//            }
-//        }
-
-        dialogBinding.btnBatal.setOnClickListener {
-            dialogView.dismiss()
-        }
-
-        dialogBinding.btnHapus.setOnClickListener {
-            dialogBinding.btnTambahkan.text = "Menghapus data ..."
-            dialogBinding.btnTambahkan.isEnabled = false
-            dialogBinding.btnHapus.isEnabled = false
-
-            // Anonymous function to delete Pembayaran, which will be executed in both
-            // positive or negative response to Delete Foto Pembayaran Dialog below.
-            val deletePembayaran = { kavlingKode: String, termin: String ->
-                // Deleting Pembayaran
-                viewModel.deletePembayaranByTermin(
-                    kavlingKode = kavlingKode,
-                    termin = termin,
-                    onComplete = { msg ->
-                        syncPembayaran()
-                        dialogView.dismiss()
-                        Toast.makeText(requireContext(), msg, Toast.LENGTH_SHORT).show()
-                    }
-                )
-            }
-
-            val kavlingKode = currentKavlingKode!!
-            val termin = pembayaran.termin
-            val sudahIsiFotoPembayaran = pembayaran.sudahIsiFotoPembayaran
-
-            // Show hapus Pembayaran confirmation.
-            // This will also shows a confirmation to delete the Foto Pembayaran,
-            // if "Pembayaran.sudahIsiFotoPembayaran == true".
-            MaterialAlertDialogBuilder(requireContext())
-                .setTitle("Hapus Pembayaran")
-                .setMessage("Apakah Anda yakin menghapus pembayaran $termin?")
-                .setPositiveButton("Ya") { dialogHapus, _ ->
-                    dialogHapus.dismiss()
-
-                    if (sudahIsiFotoPembayaran) {
-                        // Show the confirmation to delete the Foto Pembayaran
-                        MaterialAlertDialogBuilder(requireContext())
-                            .setTitle("Hapus Foto Pembayaran?")
-                            .setMessage("Apakah Anda juga ingin menghapus Foto Pembayaran $termin?")
-                            .setPositiveButton("Ya") { dialogFoto, _ ->
-                                dialogFoto.dismiss()
-
-                                // Deleting Foto Pembayaran
-                                imageViewModel.deleteFotoPembayaran(
-                                    kavlingKode = kavlingKode,
-                                    termin = termin,
-                                    onComplete = {
-                                        // TODO: What might be here?
-                                    }
-                                )
-
-                                // Deleting Pembayaran
-                                deletePembayaran(kavlingKode, termin)
-
-                            }
-                            .setNegativeButton("Tidak") { dialogFoto, _ ->
-                                dialogFoto.dismiss()
-
-                                deletePembayaran(kavlingKode, termin)
-                            }
-                            .create()
-                            .show()
-                    } else {
-                        deletePembayaran(kavlingKode, termin)
-                    }
-
-                }
-                .setNegativeButton("Tidak") { dialog, _ ->
-                    dialog.dismiss()
-                }
-                .create()
-                .show()
-        }
-
-        imgVisibilityOnClick(dialogView, dialogBinding)
     }
 
     private fun showEditHargaDialog() {
@@ -668,50 +459,6 @@ class FormPembayaranFragment : Fragment() {
         dialogBinding.btnBatal.setOnClickListener {
             dialogView.dismiss()
         }
-    }
-
-    private fun showTerminSelectionButtonsDialog() {
-        val hargaKavling = binding.tvHarga?.text.toString().let {
-            NumberUtil.formatStringToLong(it)
-        }
-
-        if (hargaKavling <= 0L) {
-            Toast.makeText(requireContext(), "Harga kavling masih kosong", Toast.LENGTH_SHORT)
-                .show()
-        } else {
-            val dialogBinding = DialogPilihTerminBinding.inflate(layoutInflater)
-            val dialogView = MaterialAlertDialogBuilder(requireContext()).apply {
-                setView(dialogBinding.root)
-            }.create()
-
-            additionalDialogSetting(requireContext(), dialogView)
-            dialogView.show()
-
-            dialogBinding.btnBatal.setOnClickListener {
-                dialogView.dismiss()
-            }
-            
-            pembayaranViewModel.fullPembayaransLive.value?.let {
-                setupTerminRecyclerView(it, dialogView, dialogBinding.recyclerTermin)   
-            }
-        }
-    }
-
-    private fun setupTerminRecyclerView(
-        listPembayaran: List<Pembayaran>,
-        terminDialog: AlertDialog,
-        recyclerTermin: RecyclerView,
-    ) {
-        val termins = ArrayList<String>()
-        
-        listPembayaran.forEach { termins.add(it.termin) }
-
-        val adapter = TerminRecyclerAdapter(termins) {
-            terminDialog.dismiss()
-            showEditPembayaranDialog(listPembayaran[it])
-        }
-        recyclerTermin.adapter = adapter
-        recyclerTermin.layoutManager = LinearLayoutManager(requireContext())
     }
 
     private fun showActionsCatatanDialog(editMode: Boolean) {
@@ -866,14 +613,6 @@ class FormPembayaranFragment : Fragment() {
             else -> return super.onOptionsItemSelected(item)
         }
     }
-
-    /**
-     * On click Radio Button of Jenis Pembayaran (ITJ, DP, Termin) selection.
-     *
-     * Once clicked, it automates the next sequence of selected Jenis Pembayaran. See "getNextPembayaranSequence()".
-     *
-     * It also automates for filling the Jumlah Uang Dibayar for Termin case.
-     */
     private fun onRadioButtonJenisPembayaranClick(dialogBinding: DialogAddFormPembayaranBinding) {
         dialogBinding.rbItj.setOnClickListener {
             dialogBinding.edtTermin.isEnabled = true
@@ -909,28 +648,6 @@ class FormPembayaranFragment : Fragment() {
         }
     }
 
-    private fun showFabs() {
-        binding.fabAddPembayaranData?.show()
-        binding.fabEditData?.show()
-//        binding.tvInfoAddPembayaranData?.visibility = View.VISIBLE
-//        binding.tvInfoEditData?.visibility = View.VISIBLE
-
-        binding.fabActions?.extend()
-
-        isAllFabsVisible = true
-    }
-
-    private fun hideFabs() {
-        binding.fabAddPembayaranData?.hide()
-        binding.fabEditData?.hide()
-//        binding.tvInfoAddPembayaranData?.visibility = View.GONE
-//        binding.tvInfoEditData?.visibility = View.GONE
-
-        binding.fabActions?.shrink()
-
-        isAllFabsVisible = false
-    }
-
     @SuppressLint("ClickableViewAccessibility")
     private fun imgVisibilityOnClick(dialogView: AlertDialog, dialogBinding: DialogAddFormPembayaranBinding) {
         dialogBinding.imgVisibility.setOnTouchListener { _, motionEvent ->
@@ -959,14 +676,6 @@ class FormPembayaranFragment : Fragment() {
 
     private fun shareUiPembayaran() {
         // TODO
-    }
-
-    private fun updateSelectedTermin(selectedTermin: String) {
-        imageViewModel.currentTermin.value = selectedTermin
-    }
-
-    private enum class OperasiFotoPembayaran {
-        LIHAT, TAMBAH, HAPUS, UBAH
     }
 
     private fun onOfflineState() {

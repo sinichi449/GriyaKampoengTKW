@@ -16,7 +16,12 @@ import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.catatanPembayara
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.dataDiri.GetDataDiriAsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.feeMarketing.GetFeeMarketingByKavlingKodeAsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.hargaKavling.GetHargaKavlingAsyncUseCase
-import net.bagusekasaputra.griyakampoengtkw.domain.entity.*
+import net.bagusekasaputra.griyakampoengtkw.domain.entity.BiayaMarketing
+import net.bagusekasaputra.griyakampoengtkw.domain.entity.CatatanPembayaran
+import net.bagusekasaputra.griyakampoengtkw.domain.entity.DataDiri
+import net.bagusekasaputra.griyakampoengtkw.domain.entity.FeeMarketing
+import net.bagusekasaputra.griyakampoengtkw.domain.entity.HargaKavling
+import net.bagusekasaputra.griyakampoengtkw.domain.entity.Pembayaran
 import net.bagusekasaputra.griyakampoengtkw.domain.usecase.biayaMarketing.AddBiayaMarketingUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.usecase.biayaMarketing.DeleteAllBiayaMarketingUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.usecase.biayaMarketing.DeleteSingleBiayaMarketingUseCase
@@ -29,9 +34,6 @@ import net.bagusekasaputra.griyakampoengtkw.domain.usecase.feeMarketing.AddFeeMa
 import net.bagusekasaputra.griyakampoengtkw.domain.usecase.feeMarketing.DeleteFeeMarketingUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.usecase.feeMarketing.UpdateFeeMarketingUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.usecase.hargakavling.AddHargaKavlingUseCase
-import net.bagusekasaputra.griyakampoengtkw.domain.usecase.pembayaran.AddPembayaranUseCase
-import net.bagusekasaputra.griyakampoengtkw.domain.usecase.pembayaran.DeletePembayaranByTerminUseCase
-import net.bagusekasaputra.griyakampoengtkw.domain.usecase.pembayaran.UpdatePembayaranUseCase
 import net.bagusekasaputra.griyakampoengtkw.presentation.logEvent
 import javax.inject.Inject
 
@@ -42,11 +44,6 @@ class DetailViewModel @Inject constructor(
     private val deleteDataDiriUseCase: DeleteDataDiriUseCase,
     private val getHargaKavlingAsyncUseCase: GetHargaKavlingAsyncUseCase,
     private val addHargaKavlingUseCase: AddHargaKavlingUseCase,
-//    private val getAllPembayaranAsyncUseCase: GetAllPembayaranAsyncUseCase,
-    private val addPembayaranUseCase: AddPembayaranUseCase,
-    private val updatePembayaranUseCase: UpdatePembayaranUseCase,
-    private val deletePembayaranByTerminUseCase: DeletePembayaranByTerminUseCase,
-//    private val deleteAllPembayaranUseCase: DeleteAllPembayaranUseCase,
     private val getAllBiayaMarketingByKavlingKodeAsyncUseCase: GetAllBiayaMarketingByKavlingKodeAsyncUseCase,
     private val addBiayaMarketingUseCase: AddBiayaMarketingUseCase,
     private val editBiayaMarketingUseCase: EditBiayaMarketingUseCase,
@@ -226,152 +223,6 @@ class DetailViewModel @Inject constructor(
             }
         }
     }
-
-
-    /**
-     * Pembayaran
-     */
-//    fun getAllPembayaran(kavlingKode: String, onFailure: (cause: String) -> Unit) {
-//        if (formPembayaranRefreshed.value != true) {
-//            logEvent("Syncing pembayaran ...")
-//            val request = GetAllPembayaranAsyncUseCase.Request(kavlingKode, dataMode)
-//
-//            val gettingAllPembayaranJob = asyncHelper.doWork(
-//                request = request,
-//                asyncUseCase = getAllPembayaranAsyncUseCase,
-//                onSuccess = {
-//                    // so many bugs caused by this unchecked isNotEmpty()
-//                    if (it?.isNotEmpty() == true)
-//                        listPembayaranLive.postValue(it)
-//
-//                    formPembayaranRefreshed.postValue(true)
-//                },
-//                onFailure = {
-//                    onFailure("Gagal mendapatkan pembayaran: ${it.message}")
-//                },
-//                successMsgOnUiThread = false,
-//            )
-//
-//            asyncJobs.add(gettingAllPembayaranJob)
-//        }
-//    }
-
-    fun addPembayaran(
-        kavlingKode: String,
-        hargaKavling: Long,
-        pembayaran: Pembayaran,
-        onComplete: (msg: String) -> Unit,
-    ) {
-        formPembayaranRefreshed.value = false
-        isFinishOperation.value = false
-
-        CoroutineScope(Dispatchers.IO).launch {
-            val request = AddPembayaranUseCase.Request(kavlingKode, hargaKavling, pembayaran)
-
-            addPembayaranUseCase.execute(request).collect { response ->
-                val result = response.data.result
-
-                if (result.isSuccess) {
-                    withContext(Dispatchers.Main) {
-                        onComplete("Berhasil menambahkan pembayaran")
-                    }
-                } else {
-                    withContext(Dispatchers.Main) {
-                        onComplete("Gagal menambahkan pembayaran: ${result.exceptionOrNull()?.message?: "null"}")
-                    }
-                }
-
-                isFinishOperation.postValue(true)
-            }
-        }
-    }
-
-    fun updatePembayaran(
-        kavlingKode: String,
-        oldPembayaran: Pembayaran,
-        newPembayaran: Pembayaran,
-        onComplete: (msg: String) -> Unit,
-    ) {
-        formPembayaranRefreshed.value = false
-        isFinishOperation.value = false
-
-        CoroutineScope(Dispatchers.IO).launch {
-            val request = UpdatePembayaranUseCase.Request(kavlingKode, oldPembayaran, newPembayaran)
-
-            updatePembayaranUseCase.execute(request).collect { response ->
-                val result = response.data.result
-
-                if (result.isSuccess) {
-                    withContext(Dispatchers.Main) {
-                        onComplete("Berhasil mengubah pembayaran ${oldPembayaran.termin}")
-                    }
-                } else {
-                    withContext(Dispatchers.Main) {
-                        onComplete("Gagal menghubah pembayaran: ${result.exceptionOrNull()?.message ?: "null"}")
-                    }
-                }
-
-                isFinishOperation.postValue(true)
-            }
-        }
-    }
-
-    fun deletePembayaranByTermin(
-        kavlingKode: String,
-        termin: String,
-        onComplete: (msg: String) -> Unit,
-    ) {
-        formPembayaranRefreshed.value = false
-        isFinishOperation.value = false
-
-        CoroutineScope(Dispatchers.IO).launch {
-            val request = DeletePembayaranByTerminUseCase.Request(kavlingKode, termin)
-
-            deletePembayaranByTerminUseCase.execute(request).collect { response ->
-                val result = response.data.result
-
-                if (result.isSuccess) {
-                    withContext(Dispatchers.Main) {
-                        onComplete("Berhasil menghapus pembayaran $termin")
-                    }
-                } else {
-                    withContext(Dispatchers.Main) {
-                        onComplete("Gagal menghapus pembayaran: ${result.exceptionOrNull()?.message ?: "null"}")
-                    }
-                }
-
-                isFinishOperation.postValue(true)
-            }
-        }
-    }
-
-
-//    fun deleteAllPembayaran(kavlingKode: String, onComplete: (msg: String) -> Unit) {
-//        formPembayaranRefreshed.value = false
-//        isFinishOperation.value = false
-//
-//        CoroutineScope(Dispatchers.IO).launch {
-//            val request = DeleteAllPembayaranUseCase.Request(kavlingKode)
-//
-//            deleteAllPembayaranUseCase.execute(request).collect { response ->
-//                val result = response.data.result
-//
-//                if (result.isSuccess) {
-//                    withContext(Dispatchers.Main) {
-//                        listPembayaranLive.postValue(null)
-//                        onComplete("Berhasil menghapus semua pembayaran di $kavlingKode")
-//                    }
-//                    listPembayaranLive.postValue(null)
-//                } else {
-//                    withContext(Dispatchers.Main) {
-//                        onComplete("Gagal menghapus pembayaran: ${result.exceptionOrNull()?.message ?: "null"}")
-//                    }
-//                }
-//
-//                isFinishOperation.postValue(true)
-//            }
-//        }
-//    }
 
     /**
      * Fee Marketing

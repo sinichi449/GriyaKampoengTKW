@@ -31,6 +31,7 @@ import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.indenBooking.Get
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.kavling.GetKavlingByBlockAsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.kavling.GetListUnmigratedKavlingsAsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.kavling.GetProgressKavlingAsyncUseCase
+import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.pembayaran.DeletePembayaranAsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.pembayaran.GetAllPembayaranAsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.pembayaran.GetListPembayaranBulananAsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.pengingat.*
@@ -177,11 +178,11 @@ object UseCaseModule {
     }
 
     @Provides
-    fun provideDeletePembayaranByTermin(
+    fun provideDeletePembayaranUseCase(
         pembayaranRepository: PembayaranRepository,
         fotoPembayaranRepository: FotoPembayaranRepository
-    ): DeletePembayaranByTerminUseCase {
-        return DeletePembayaranByTerminUseCase(pembayaranRepository, fotoPembayaranRepository)
+    ): DeletePembayaranAsyncUseCase {
+        return DeletePembayaranAsyncUseCase(pembayaranRepository, fotoPembayaranRepository)
     }
 
     @Provides

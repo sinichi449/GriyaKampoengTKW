@@ -56,10 +56,6 @@ class ImageViewModel @Inject constructor(
 
     val fotoPembayaranLive = MutableLiveData<FotoPembayaran?>()
 
-    // Shamefully, I need this to be able to pass an argument of AddFotoPembayaranAsyncUseCase ...
-    // This value is updated on "showFotoPembayaranSelectionDialog()" -> FormPembayaranFragment.
-    val currentTermin  = MutableLiveData<String>()
-
     val isFinishLoadingImage = MutableLiveData<Boolean>()
 
     // Used in detail activity

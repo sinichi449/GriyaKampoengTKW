@@ -213,7 +213,34 @@ class ActionPembayaranItemBottomSheetDialog(): BottomSheetDialogFragment() {
         }
 
         dialogBinding.cardHapusDataPembayaran.setOnClickListener {
-            Toast.makeText(requireContext(), "Hapus Data", Toast.LENGTH_SHORT).show()
+            // Show hapus Pembayaran confirmation.
+            // Foto pembayaran will also deleted!
+            MaterialAlertDialogBuilder(requireContext())
+                .setTitle("Hapus Pembayaran")
+                .setMessage("Apakah Anda yakin menghapus pembayaran $currentTermin? " +
+                        "Foto pembayaran juga akan terhapus!")
+                .setPositiveButton("Ya") { dialogHapus, _ ->
+                    dialogHapus.dismiss()
+
+                    viewModel.deletePembayaran(
+                        kavling = currentKavling,
+                        pembayaran = pembayaran,
+                        onProgress = {
+                            // TODO
+                        },
+                        onSuccess = {
+                            Toast.makeText(requireContext(), "Berhasil menghapus pembayaran!", Toast.LENGTH_SHORT).show()
+                        },
+                        onFailure = {
+                            Toast.makeText(requireContext(), it, Toast.LENGTH_LONG).show()
+                        }
+                    )
+                }
+                .setNegativeButton("Tidak") { dialog, _ ->
+                    dialog.dismiss()
+                }
+                .create()
+                .show()
         }
     }
 

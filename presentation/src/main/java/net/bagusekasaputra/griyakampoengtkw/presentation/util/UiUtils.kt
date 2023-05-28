@@ -40,6 +40,17 @@ object UiUtils {
         )
     }
 
+    fun hideFabsOnVerticalScroll(nestedScrollView: NestedScrollView?, fab: FloatingActionButton?) {
+        nestedScrollView?.setOnScrollChangeListener(NestedScrollView.OnScrollChangeListener
+        { _, _, scrollY, _, oldScrollY ->
+            if (scrollY > oldScrollY)
+                fab?.hide()
+            else
+                fab?.show()
+        }
+        )
+    }
+
     fun scrollToView(scrollViewParent: NestedScrollView, view: View) {
         val childOffset = Point()
         getDeepChildOffset(scrollViewParent, view.parent, view, childOffset)
