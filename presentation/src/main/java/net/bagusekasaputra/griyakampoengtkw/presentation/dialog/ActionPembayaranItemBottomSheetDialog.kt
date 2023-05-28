@@ -100,107 +100,90 @@ class ActionPembayaranItemBottomSheetDialog(): BottomSheetDialogFragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        val pembayaran = viewModel.fullPembayaransLive.value?.get(indexPembayaran!!)
+        val pembayaran = viewModel.fullPembayaransLive.value?.get(indexPembayaran!!)!!
 
-        if (pembayaran != null) {
-            currentKavling = viewModel.currentKavlingKode!!
-            currentTermin = pembayaran.termin
+        currentKavling = viewModel.currentKavlingKode!!
+        currentTermin = pembayaran.termin
 
-            // Dialog title
-            dialogBinding.tvKavlingTermin.text = "Kav. $currentKavling - $currentTermin"
+        // Dialog title
+        dialogBinding.tvKavlingTermin.text = "Kav. $currentKavling - $currentTermin"
 
-            if (pembayaran.sudahIsiFotoPembayaran) {
-                dialogBinding.cardAmbilKuitansi.apply {
-                    visibility = View.VISIBLE
-                    setOnClickListener {
-                        with (dialogBinding.switchSudahAmbilKuitansi) {
-                            isChecked = !isChecked
+        if (pembayaran.sudahIsiFotoPembayaran) {
+            dialogBinding.cardAmbilKuitansi.apply {
+                visibility = View.VISIBLE
+                setOnClickListener {
+                    with (dialogBinding.switchSudahAmbilKuitansi) {
+                        isChecked = !isChecked
+                    }
+                }
+            }
+
+            dialogBinding.switchSudahAmbilKuitansi.apply {
+                visibility = View.VISIBLE
+                isChecked = pembayaran.sudahAmbilKuitansi
+                setOnCheckedChangeListener { _, isChecked ->
+                    val ambilKuitansi = AmbilKuitansi(
+                        kavling = currentKavling,
+                        termin = currentTermin,
+                        sudahAmbil = isChecked,
+                    )
+
+                    viewModel.insertAmbilKuitansi(ambilKuitansi,
+                        onProgress = {
+                            this@ActionPembayaranItemBottomSheetDialog.isCancelable = false
+                            isEnabled = false
+
+                            visibility = View.GONE
+                            dialogBinding.progressAmbilKuitansi.visibility = View.VISIBLE
+                        },
+                        onSuccess = {
+                            this@ActionPembayaranItemBottomSheetDialog.isCancelable = true
+                            isEnabled = true
+
+                            visibility = View.VISIBLE
+                            dialogBinding.progressAmbilKuitansi.visibility = View.GONE
+                        },
+                        onFailure = {
+                            this@ActionPembayaranItemBottomSheetDialog.dismiss()
+
+                            Toast.makeText(requireContext(), it, Toast.LENGTH_LONG).show()
                         }
-                    }
+                    )
                 }
-
-                dialogBinding.switchSudahAmbilKuitansi.apply {
-                    visibility = View.VISIBLE
-                    isChecked = pembayaran.sudahAmbilKuitansi
-                    setOnCheckedChangeListener { _, isChecked ->
-                        val ambilKuitansi = AmbilKuitansi(
-                            kavling = currentKavling,
-                            termin = currentTermin,
-                            sudahAmbil = isChecked,
-                        )
-
-                        viewModel.insertAmbilKuitansi(ambilKuitansi,
-                            onProgress = {
-                                this@ActionPembayaranItemBottomSheetDialog.isCancelable = false
-                                isEnabled = false
-
-                                visibility = View.GONE
-                                dialogBinding.progressAmbilKuitansi.visibility = View.VISIBLE
-                            },
-                            onSuccess = {
-                                this@ActionPembayaranItemBottomSheetDialog.isCancelable = true
-                                isEnabled = true
-
-                                visibility = View.VISIBLE
-                                dialogBinding.progressAmbilKuitansi.visibility = View.GONE
-                            },
-                            onFailure = {
-                                this@ActionPembayaranItemBottomSheetDialog.dismiss()
-
-                                Toast.makeText(requireContext(), it, Toast.LENGTH_LONG).show()
-                            }
-                        )
-                    }
-                }
-
-                dialogBinding.cardTambahkanFotoPembayaran.visibility = View.GONE
-
-                dialogBinding.cardLihatFotoPembayaran.apply {
-                    visibility = View.VISIBLE
-                    setOnClickListener {
-                        Toast.makeText(requireContext(), "Lihat Foto", Toast.LENGTH_SHORT).show()
-                    }
-                }
-
-                dialogBinding.cardUbahFotoPembayaran.apply {
-                    visibility = View.VISIBLE
-                    setOnClickListener {
-                        fotoPembayaranPickerDialog()
-                    }
-                }
-
-                dialogBinding.cardHapusFotoPembayaran.apply {
-                    visibility = View.VISIBLE
-                    setOnClickListener {
-                        Toast.makeText(requireContext(), "Hapus Foto", Toast.LENGTH_SHORT).show()
-                    }
-                }
-            } else {
-                dialogBinding.cardAmbilKuitansi.visibility = View.GONE
-
-                dialogBinding.cardTambahkanFotoPembayaran.apply {
-                    visibility = View.VISIBLE
-                    setOnClickListener {
-                        fotoPembayaranPickerDialog()
-                    }
-                }
-
-                dialogBinding.cardLihatFotoPembayaran.visibility = View.GONE
-
-                dialogBinding.cardUbahFotoPembayaran.visibility = View.GONE
-
-                dialogBinding.cardHapusFotoPembayaran.visibility = View.GONE
             }
 
-            dialogBinding.cardUbahDataPembayaran.setOnClickListener {
-                Toast.makeText(requireContext(), "Dalam perbaikan!", Toast.LENGTH_LONG).show()
+            dialogBinding.cardTambahkanFotoPembayaran.visibility = View.GONE
+
+            dialogBinding.cardLihatFotoPembayaran.apply {
+                visibility = View.VISIBLE
+                setOnClickListener {
+                    Toast.makeText(requireContext(), "Lihat Foto", Toast.LENGTH_SHORT).show()
+                }
             }
 
-            dialogBinding.cardHapusDataPembayaran.setOnClickListener {
-                Toast.makeText(requireContext(), "Hapus Data", Toast.LENGTH_SHORT).show()
+            dialogBinding.cardHapusFotoPembayaran.apply {
+                visibility = View.VISIBLE
+                setOnClickListener {
+                    Toast.makeText(requireContext(), "Hapus Foto", Toast.LENGTH_SHORT).show()
+                }
             }
         } else {
-            Toast.makeText(requireContext(), "Pembayaran is null!", Toast.LENGTH_LONG).show()
+            dialogBinding.cardAmbilKuitansi.visibility = View.GONE
+
+            dialogBinding.cardTambahkanFotoPembayaran.apply {
+                visibility = View.VISIBLE
+                setOnClickListener {
+                    fotoPembayaranPickerDialog()
+                }
+            }
+
+            dialogBinding.cardLihatFotoPembayaran.visibility = View.GONE
+
+            dialogBinding.cardHapusFotoPembayaran.visibility = View.GONE
+        }
+
+        dialogBinding.cardHapusDataPembayaran.setOnClickListener {
+            Toast.makeText(requireContext(), "Hapus Data", Toast.LENGTH_SHORT).show()
         }
     }
 

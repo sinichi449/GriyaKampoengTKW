@@ -29,46 +29,6 @@
             android:layout_marginHorizontal="16dp"
             android:text="Data Pembayaran"/>
 
-        <!-- Ubah Pembayaran -->
-        <com.google.android.material.card.MaterialCardView
-            android:id="@+id/card_ubah_data_pembayaran"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:layout_marginHorizontal="8dp"
-            android:clickable="true"
-            android:focusable="true"
-            app:cardElevation="0dp">
-
-            <androidx.constraintlayout.widget.ConstraintLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:padding="8dp">
-
-                <ImageView
-                    android:id="@+id/img_ubah_pembayaran"
-                    android:layout_width="24dp"
-                    android:layout_height="24dp"
-                    android:src="@drawable/ic_baseline_edit_24"
-                    app:layout_constraintTop_toTopOf="parent"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"/>
-
-                <com.google.android.material.textview.MaterialTextView
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_marginHorizontal="16dp"
-                    app:layout_constraintStart_toEndOf="@id/img_ubah_pembayaran"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintTop_toTopOf="@id/img_ubah_pembayaran"
-                    app:layout_constraintBottom_toBottomOf="@id/img_ubah_pembayaran"
-                    android:text="Ubah Data"
-                    style="@style/TextAppearance.MaterialComponents.Subtitle1"/>
-
-            </androidx.constraintlayout.widget.ConstraintLayout>
-
-        </com.google.android.material.card.MaterialCardView>
-
         <!-- Hapus Pembayaran -->
         <com.google.android.material.card.MaterialCardView
             android:id="@+id/card_hapus_data_pembayaran"
@@ -204,45 +164,6 @@
                     android:layout_marginHorizontal="16dp"
                     style="@style/TextAppearance.MaterialComponents.Subtitle1"
                     android:text="Lihat Foto"/>
-
-            </androidx.constraintlayout.widget.ConstraintLayout>
-
-        </com.google.android.material.card.MaterialCardView>
-
-        <!-- Ubah Foto Pembayaran -->
-        <com.google.android.material.card.MaterialCardView
-            android:id="@+id/card_ubah_foto_pembayaran"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            app:cardElevation="0dp"
-            android:layout_marginTop="8dp"
-            android:layout_marginHorizontal="8dp"
-            android:clickable="true"
-            android:focusable="true">
-
-            <androidx.constraintlayout.widget.ConstraintLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:padding="8dp">
-
-                <ImageView
-                    android:id="@+id/img_ubah_foto_pembayaran"
-                    android:layout_width="24dp"
-                    android:layout_height="24dp"
-                    android:src="@drawable/baseline_image_search_24"
-                    app:layout_constraintTop_toTopOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"/>
-
-                <com.google.android.material.textview.MaterialTextView
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    app:layout_constraintStart_toEndOf="@id/img_ubah_foto_pembayaran"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintTop_toTopOf="@id/img_ubah_foto_pembayaran"
-                    app:layout_constraintBottom_toBottomOf="@id/img_ubah_foto_pembayaran"
-                    android:layout_marginHorizontal="16dp"
-                    style="@style/TextAppearance.MaterialComponents.Subtitle1"
-                    android:text="Ubah Foto"/>
 
             </androidx.constraintlayout.widget.ConstraintLayout>
 
