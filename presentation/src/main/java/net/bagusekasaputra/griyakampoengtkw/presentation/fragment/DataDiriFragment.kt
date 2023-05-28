@@ -261,7 +261,7 @@ class DataDiriFragment : Fragment() {
                 if (it) {
                     NotificationUtil.createNotification(
                         activity = requireActivity(),
-                        title = "Selesai mengupload gambar",
+                        title = "Operasi gambar selesai!",
                         content = "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
                         finished = true,
                     )

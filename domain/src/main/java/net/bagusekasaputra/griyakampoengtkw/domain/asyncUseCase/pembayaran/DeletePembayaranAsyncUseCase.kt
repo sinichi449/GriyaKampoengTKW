@@ -50,7 +50,17 @@ class DeletePembayaranAsyncUseCase(
                                 trySendBlocking(Result.failure(it))
                             }
                     } else {
-                        trySendBlocking(Result.success(null))
+                        // Delete Ambil Kuitansi
+                        ambilKuitansiRepository.delete(
+                            request.kavling,
+                            request.pembayaran.termin
+                        )
+                            .onSuccess {
+                                trySendBlocking(Result.success(null))
+                            }
+                            .onFailure {
+                                trySendBlocking(Result.failure(it))
+                            }
                     }
                 }
                 .onFailure {
