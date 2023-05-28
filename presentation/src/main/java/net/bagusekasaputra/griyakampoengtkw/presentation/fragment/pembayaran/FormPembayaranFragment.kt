@@ -2,7 +2,6 @@ package net.bagusekasaputra.griyakampoengtkw.presentation.fragment.pembayaran
 
 import android.Manifest
 import android.annotation.SuppressLint
-import android.app.Activity
 import android.content.Intent
 import android.content.SharedPreferences
 import android.os.Bundle
@@ -15,7 +14,6 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.github.dhaval2404.imagepicker.ImagePicker
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
@@ -68,42 +66,6 @@ class FormPembayaranFragment : Fragment() {
 
     @Inject
     lateinit var sharedPrefs: SharedPreferences
-
-    private val startForFotoPembayaranResult =
-        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
-            val resultCode = result.resultCode
-            val intent = result.data
-
-            when (resultCode) {
-                Activity.RESULT_OK -> {
-                    val uri = intent?.data
-
-                    uri?.let {
-                        NotificationUtil.createNotification(
-                            activity = requireActivity(),
-                            title = "Upload Foto Pembayaran",
-                            content = "Mohon tunggu sebentar ...",
-                            finished = false,
-                        )
-                        imageViewModel.addFotoPembayaran(
-                            kavlingKode = currentKavlingKode!!,
-                            uri = it,
-                            onComplete = { msg ->
-                                syncPembayaran()
-                                Snackbar.make(binding.root, msg, Snackbar.LENGTH_SHORT).show()
-                            }
-                        )
-                    }
-                }
-                ImagePicker.RESULT_ERROR -> {
-                    Toast.makeText(requireContext(), ImagePicker.getError(intent), Toast.LENGTH_SHORT).show()
-                }
-                else -> {
-                    Toast.makeText(requireContext(), "Operasi dibatalkan", Toast.LENGTH_SHORT)
-                        .show()
-                }
-            }
-        }
 
     private val startStorageRequest =
         registerForActivityResult(ActivityResultContracts.RequestMultiplePermissions()) {}
@@ -299,6 +261,15 @@ class FormPembayaranFragment : Fragment() {
     }
 
     private fun setupViewModel() {
+        pembayaranViewModel.needSyncPembayaran.observe(requireActivity()) {
+            it?.also { needRefresh ->
+                if (needRefresh) {
+                    syncPembayaran()
+
+                    pembayaranViewModel.needSyncPembayaran.value = false
+                }
+            }
+        }
         viewModel.isFinishOperation.observe(requireActivity()) { finish ->
             finish?.let {
                 binding.swipeRefreshFormPembayaran.isRefreshing = !it
@@ -817,15 +788,6 @@ class FormPembayaranFragment : Fragment() {
         }
     }
 
-    private fun showImagePickerDialog() {
-        ImagePicker.with(this)
-            .crop()
-            .compress(sharedPrefs.getInt("max_size_foto_pembayaran", 256))
-            .createIntent {
-                startForFotoPembayaranResult.launch(it)
-            }
-    }
-
     private fun showFotoPembayaranSelectionDialog(
         dialogTitle: String,
         mode: OperasiFotoPembayaran,
@@ -922,24 +884,12 @@ class FormPembayaranFragment : Fragment() {
             R.id.tambahkan_foto -> {
                 // Tambahkan foto will ask for confirmation to overwrite the
                 // existing Foto Pembayaran if it already Exists.
-                showFotoPembayaranSelectionDialog(
-                    dialogTitle = "Tambah Foto Pembayaran",
-                    mode = OperasiFotoPembayaran.TAMBAH,
-                    onTerminClick = {
-                        showImagePickerDialog()
-                    }
-                )
+                Toast.makeText(requireContext(), "Dipindahkan!", Toast.LENGTH_SHORT).show()
 
                 true
             }
             R.id.ubah_foto -> {
-                showFotoPembayaranSelectionDialog(
-                    dialogTitle = "Ubah Foto Pembayaran",
-                    mode = OperasiFotoPembayaran.UBAH,
-                    onTerminClick = {
-                        showImagePickerDialog()
-                    }
-                )
+                Toast.makeText(requireContext(), "Dipindahkan!", Toast.LENGTH_SHORT).show()
 
                 true
             }
