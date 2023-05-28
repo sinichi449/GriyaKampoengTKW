@@ -1,5 +1,6 @@
 package net.bagusekasaputra.griyakampoengtkw.presentation.dialog
 
+import android.annotation.SuppressLint
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -31,40 +32,48 @@ class ActionPembayaranItemBottomSheetDialog(
         return dialogBinding.root
     }
 
+    @SuppressLint("SetTextI18n")
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        dialogBinding.switchSudahAmbilKuitansi.visibility = View.VISIBLE
-        dialogBinding.switchSudahAmbilKuitansi.isChecked = pembayaran.sudahAmbilKuitansi
-        dialogBinding.switchSudahAmbilKuitansi.setOnCheckedChangeListener { _, isChecked ->
-            val ambilKuitansi = AmbilKuitansi(
-                kavling = viewModel.currentKavlingKode!!,
-                termin = pembayaran.termin,
-                sudahAmbil = isChecked,
-            )
+        val kavling = viewModel.currentKavlingKode!!
+        val termin = pembayaran.termin
+        dialogBinding.tvKavlingTermin.text = "Kav. $kavling - $termin"
 
-            viewModel.insertAmbilKuitansi(ambilKuitansi,
-                onProgress = {
-                    this.isCancelable = false
-                    dialogBinding.switchSudahAmbilKuitansi.isEnabled = false
+        // Only allow modify switch sudah ambil kuitansi if sudah isi pembayaran
+        with(dialogBinding.switchSudahAmbilKuitansi) {
+            isEnabled = pembayaran.sudahIsiFotoPembayaran
+            visibility = View.VISIBLE
+            isChecked = pembayaran.sudahAmbilKuitansi
+            setOnCheckedChangeListener { _, isChecked ->
+                val ambilKuitansi = AmbilKuitansi(
+                    kavling = kavling,
+                    termin = termin,
+                    sudahAmbil = isChecked,
+                )
 
-                    dialogBinding.switchSudahAmbilKuitansi.visibility = View.GONE
-                    dialogBinding.progressAmbilKuitansi.visibility = View.VISIBLE
-                },
-                onSuccess = {
-                    this.isCancelable = true
-                    dialogBinding.switchSudahAmbilKuitansi.isEnabled = true
+                viewModel.insertAmbilKuitansi(ambilKuitansi,
+                    onProgress = {
+                        this@ActionPembayaranItemBottomSheetDialog.isCancelable = false
+                        isEnabled = false
 
-                    dialogBinding.switchSudahAmbilKuitansi.visibility = View.VISIBLE
-                    dialogBinding.progressAmbilKuitansi.visibility = View.GONE
-                },
-                onFailure = {
-                    this.dismiss()
+                        visibility = View.GONE
+                        dialogBinding.progressAmbilKuitansi.visibility = View.VISIBLE
+                    },
+                    onSuccess = {
+                        this@ActionPembayaranItemBottomSheetDialog.isCancelable = true
+                        isEnabled = true
 
-                    Toast.makeText(requireContext(), it, Toast.LENGTH_LONG).show()
-                }
-            )
+                        visibility = View.VISIBLE
+                        dialogBinding.progressAmbilKuitansi.visibility = View.GONE
+                    },
+                    onFailure = {
+                        this@ActionPembayaranItemBottomSheetDialog.dismiss()
+
+                        Toast.makeText(requireContext(), it, Toast.LENGTH_LONG).show()
+                    }
+                )
+            }
         }
     }
-
 }

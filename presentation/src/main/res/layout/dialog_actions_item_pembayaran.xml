@@ -7,10 +7,18 @@
     android:orientation="vertical"
     android:theme="@style/Theme.GriyaKampung.BlackWhite">
 
+    <com.google.android.material.textview.MaterialTextView
+        android:id="@+id/tv_kavling_termin"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Kav. D1 - ITJ 1"
+        style="@style/TextAppearance.MaterialComponents.Headline6"/>
+
     <!-- Sudah Ambil Kuitansi -->
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        android:layout_marginTop="32dp">
 
         <ImageView
             android:id="@+id/img_sudah_ambil_kuitansi"
