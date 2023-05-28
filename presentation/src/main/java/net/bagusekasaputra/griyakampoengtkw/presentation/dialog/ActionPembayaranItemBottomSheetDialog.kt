@@ -137,7 +137,7 @@ class ActionPembayaranItemBottomSheetDialog(): BottomSheetDialogFragment() {
             }
 
             dialogBinding.cardUbahDataPembayaran.setOnClickListener {
-                Toast.makeText(requireContext(), "Ubah Data", Toast.LENGTH_SHORT).show()
+                Toast.makeText(requireContext(), "Dalam perbaikan!", Toast.LENGTH_LONG).show()
             }
 
             dialogBinding.cardHapusDataPembayaran.setOnClickListener {
@@ -147,5 +147,4 @@ class ActionPembayaranItemBottomSheetDialog(): BottomSheetDialogFragment() {
             Toast.makeText(requireContext(), "Pembayaran is null!", Toast.LENGTH_LONG).show()
         }
     }
-
 }
