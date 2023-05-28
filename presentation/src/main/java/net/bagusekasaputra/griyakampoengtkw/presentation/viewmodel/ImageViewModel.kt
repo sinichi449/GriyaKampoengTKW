@@ -288,8 +288,10 @@ class ImageViewModel @Inject constructor(
         kavlingKode: String,
         termin: String,
         uri: Uri,
-        onComplete: (msg: String) -> Unit
+        onProgress: () -> Unit = {},
+        onComplete: (msg: String) -> Unit = {},
     ) {
+        onProgress()
         val request = AddFotoPembayaranAsyncUseCase.Request(kavlingKode, termin, uri)
 
         val insertingFotoPembayaranJob = asyncUseCaseHelper.doWork(
@@ -311,8 +313,11 @@ class ImageViewModel @Inject constructor(
     fun deleteFotoPembayaran(
         kavlingKode: String,
         termin: String,
-        onComplete: (msg: String) -> Unit
+        onProgress: () -> Unit = {},
+        onComplete: (msg: String) -> Unit = {},
     ) {
+        onProgress()
+
         val request = DeleteFotoPembayaranAsyncUseCase.Request(kavlingKode, termin)
 
         val deletingFotoPembayaranJob = asyncUseCaseHelper.doWork(

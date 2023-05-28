@@ -8,6 +8,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ProgressBar
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.fragment.app.activityViewModels
@@ -40,6 +41,10 @@ class ActionPembayaranItemBottomSheetDialog(): BottomSheetDialogFragment() {
     private var currentKavling = ""
     private var currentTermin = ""
 
+    // Need to define here to avoid uninitialized binding
+    private var progressBarTambahFoto: ProgressBar? = null
+
+
     private val fotoPembayaranPickerResultLauncher =
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
             val resultCode = result.resultCode
@@ -59,8 +64,15 @@ class ActionPembayaranItemBottomSheetDialog(): BottomSheetDialogFragment() {
                             kavlingKode = currentKavling,
                             termin = currentTermin,
                             uri = uri,
+                            onProgress = {
+                                progressBarTambahFoto?.visibility = View.VISIBLE
+                            },
                             onComplete = { msg ->
+                                progressBarTambahFoto?.visibility = View.GONE
+
                                 Toast.makeText(requireContext(), msg, Toast.LENGTH_SHORT).show()
+
+                                this.dismiss()
                             }
                         )
                     }
@@ -107,6 +119,7 @@ class ActionPembayaranItemBottomSheetDialog(): BottomSheetDialogFragment() {
 
         currentKavling = viewModel.currentKavlingKode!!
         currentTermin = pembayaran.termin
+        progressBarTambahFoto = dialogBinding.progressbarTambahkanFoto
 
         // Dialog title
         dialogBinding.tvKavlingTermin.text = "Kav. $currentKavling - $currentTermin"
@@ -185,10 +198,15 @@ class ActionPembayaranItemBottomSheetDialog(): BottomSheetDialogFragment() {
                             imageViewModel.deleteFotoPembayaran(
                                 kavlingKode = currentKavling,
                                 termin = currentTermin,
+                                onProgress = {
+                                    dialogBinding.progressbarHapusFoto.visibility = View.VISIBLE
+                                },
                                 onComplete = { msg ->
                                     dialog.dismiss()
 
                                     Toast.makeText(requireContext(), msg, Toast.LENGTH_SHORT).show()
+
+                                    this@ActionPembayaranItemBottomSheetDialog.dismiss()
                                 }
                             )
                         }
@@ -226,13 +244,19 @@ class ActionPembayaranItemBottomSheetDialog(): BottomSheetDialogFragment() {
                         kavling = currentKavling,
                         pembayaran = pembayaran,
                         onProgress = {
-                            // TODO
+                            dialogBinding.progressbarHapusData.visibility = View.VISIBLE
+                            dialogBinding.progressbarHapusFoto.visibility = View.VISIBLE
                         },
                         onSuccess = {
                             Toast.makeText(requireContext(), "Berhasil menghapus pembayaran!", Toast.LENGTH_SHORT).show()
+                            dialogHapus.dismiss()
+
+                            this@ActionPembayaranItemBottomSheetDialog.dismiss()
                         },
                         onFailure = {
                             Toast.makeText(requireContext(), it, Toast.LENGTH_LONG).show()
+
+                            this@ActionPembayaranItemBottomSheetDialog.dismiss()
                         }
                     )
                 }
