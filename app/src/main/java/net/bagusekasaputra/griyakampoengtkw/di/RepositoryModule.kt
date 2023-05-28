@@ -373,4 +373,12 @@ object RepositoryModule {
     fun providePromotionRepository(remotePromotionDataSource: RemotePromotionDataSource): PromotionRepository {
         return PromotionRepositoryImpl(remotePromotionDataSource)
     }
+
+    /**
+     * Ambil Kuitansi
+     */
+    @Provides
+    fun provideAmbilKuitansiRepository(): AmbilKuitansiRepository {
+        return AmbilKuitansiRepositoryImpl()
+    }
 }

@@ -1,5 +1,6 @@
 package net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.pembayaran
 
+import android.util.Log
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.channels.trySendBlocking
 import kotlinx.coroutines.flow.Flow
@@ -13,6 +14,7 @@ import net.bagusekasaputra.griyakampoengtkw.domain.PembayaranSorterUtil
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.AsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.HargaKavling
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.Pembayaran
+import net.bagusekasaputra.griyakampoengtkw.domain.repository.AmbilKuitansiRepository
 import net.bagusekasaputra.griyakampoengtkw.domain.repository.FotoPembayaranRepository
 import net.bagusekasaputra.griyakampoengtkw.domain.repository.HargaKavlingRepository
 import net.bagusekasaputra.griyakampoengtkw.domain.repository.PembayaranRepository
@@ -27,6 +29,7 @@ class GetAllPembayaranAsyncUseCase(
     // already filled with Foto Pembayaran. To know that, I will modify the
     // "sudahIsiFotoPembayaran" property in Pembayaran entity.
     private val fotoPembayaranRepository: FotoPembayaranRepository,
+    private val ambilKuitansiRepository: AmbilKuitansiRepository,
 ): AsyncUseCase<GetAllPembayaranAsyncUseCase.Request, List<Pembayaran>?>() {
 
     data class Request(
@@ -63,8 +66,15 @@ class GetAllPembayaranAsyncUseCase(
                             termin = pembayaran.termin,
                             dataMode = request.dataMode,
                         )
+                        val sudahAmbilKuitansi = checkSudahAmbilKuitansi(
+                            kavling = request.kavlingKode,
+                            termin = pembayaran.termin,
+                        )
+                        Log.d("AMBIL_KUITANSI", "Kav. ${request.kavlingKode} " +
+                                "${pembayaran.termin} is $sudahAmbilKuitansi")
 
                         pembayaran.sudahIsiFotoPembayaran = sudahIsiFormPembayaran
+                        pembayaran.sudahAmbilKuitansi = sudahAmbilKuitansi
                     }
 
                     return@zip Result.success(maskedPembayaran)
@@ -139,4 +149,9 @@ class GetAllPembayaranAsyncUseCase(
         }.first()
     }
 
+    private suspend fun checkSudahAmbilKuitansi(kavling: String, termin: String): Boolean {
+        val ambilKuitansi = ambilKuitansiRepository.get(kavling, termin).getOrThrow()
+
+        return ambilKuitansi?.sudahAmbil ?: false
+    }
 }

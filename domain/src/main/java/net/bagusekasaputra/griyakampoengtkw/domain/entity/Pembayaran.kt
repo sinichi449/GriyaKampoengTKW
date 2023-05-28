@@ -24,6 +24,7 @@ data class Pembayaran(
     // Timemillis is used as a Primary Key in the Room Database
     val timeMillis: Long,
     var sudahIsiFotoPembayaran: Boolean = false,
+    var sudahAmbilKuitansi: Boolean = false,
 ) {
     val parsedJumlahUangDibayar = NumberUtil.formatStringToLong(jumlahUangDibayar)
 
@@ -156,6 +157,30 @@ data class Pembayaran(
                 it.presentase = it.hitungPersentase(hargaKavling)
                 it.sisaBelumTerbayar = NumberUtil.formatLongToString(hargaKavling - totalUangMasuk)
                 it.sudahIsiFotoPembayaran = onCekFotoPembayaran(it.termin)
+
+                newListPembayaran.add(it)
+            }
+
+            return newListPembayaran
+        }
+
+        suspend fun maskPembayaran(
+            listPembayaran: List<Pembayaran>,
+            hargaKavling: HargaKavling,
+            onCekFotoPembayaran: suspend (termin: String) -> Boolean,
+            onCekSudahAmbilKuitansi: suspend (kavling: String, termin: String) -> Boolean,
+        ): List<Pembayaran> {
+            val sortedListPembayaran = sortPembayaran(listPembayaran)
+            val newListPembayaran = ArrayList<Pembayaran>()
+            var totalUangMasuk = 0L
+
+            sortedListPembayaran.forEach {
+                totalUangMasuk += NumberUtil.formatStringToLong(it.jumlahUangDibayar)
+                it.totalUangMasuk = NumberUtil.formatLongToString(totalUangMasuk)
+                it.presentase = it.hitungPersentase(hargaKavling)
+                it.sisaBelumTerbayar = NumberUtil.formatLongToString(hargaKavling - totalUangMasuk)
+                it.sudahIsiFotoPembayaran = onCekFotoPembayaran(it.termin)
+                it.sudahAmbilKuitansi = onCekSudahAmbilKuitansi(hargaKavling.kavlingKode, it.termin)
 
                 newListPembayaran.add(it)
             }

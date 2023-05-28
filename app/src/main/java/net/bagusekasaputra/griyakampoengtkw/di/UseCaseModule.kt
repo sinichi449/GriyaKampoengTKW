@@ -161,8 +161,9 @@ object UseCaseModule {
         pembayaranRepository: PembayaranRepository,
         hargaKavlingRepository: HargaKavlingRepository,
         fotoPembayaranRepository: FotoPembayaranRepository,
+        ambilKuitansiRepository: AmbilKuitansiRepository,
     )
-        = GetAllPembayaranAsyncUseCase(pembayaranRepository, hargaKavlingRepository, fotoPembayaranRepository)
+        = GetAllPembayaranAsyncUseCase(pembayaranRepository, hargaKavlingRepository, fotoPembayaranRepository, ambilKuitansiRepository)
 
     @Provides
     fun provideAddPembayaranUseCase(pembayaranRepository: PembayaranRepository): AddPembayaranUseCase {
@@ -197,8 +198,9 @@ object UseCaseModule {
         baselinePembayaranRepository: BaselinePembayaranRepository,
         hargaKavlingRepository: HargaKavlingRepository,
         fotoPembayaranRepository: FotoPembayaranRepository,
+        ambilKuitansiRepository: AmbilKuitansiRepository,
     ): GetListPembayaranBulananAsyncUseCase {
-        return GetListPembayaranBulananAsyncUseCase(pembayaranRepository, baselinePembayaranRepository, hargaKavlingRepository, fotoPembayaranRepository)
+        return GetListPembayaranBulananAsyncUseCase(pembayaranRepository, baselinePembayaranRepository, hargaKavlingRepository, fotoPembayaranRepository, ambilKuitansiRepository)
     }
 
 

@@ -1,5 +1,6 @@
 package net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.pembayaran
 
+import android.util.Log
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flow
@@ -8,6 +9,7 @@ import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.AsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.BaselinePembayaran
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.Pembayaran
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.pembayaran.PembayaranBulanan
+import net.bagusekasaputra.griyakampoengtkw.domain.repository.AmbilKuitansiRepository
 import net.bagusekasaputra.griyakampoengtkw.domain.repository.BaselinePembayaranRepository
 import net.bagusekasaputra.griyakampoengtkw.domain.repository.FotoPembayaranRepository
 import net.bagusekasaputra.griyakampoengtkw.domain.repository.HargaKavlingRepository
@@ -18,6 +20,7 @@ class GetListPembayaranBulananAsyncUseCase(
     private val baselinePembayaranRepository: BaselinePembayaranRepository,
     private val hargaKavlingRepository: HargaKavlingRepository,
     private val fotoPembayaranRepository: FotoPembayaranRepository,
+    private val ambilKuitansiRepository: AmbilKuitansiRepository,
 ): AsyncUseCase<GetListPembayaranBulananAsyncUseCase.Request, List<PembayaranBulanan>>() {
 
     data class Request(val kavlingKode: String, val dataMode: DataMode): AsyncUseCase.Request
@@ -41,6 +44,15 @@ class GetListPembayaranBulananAsyncUseCase(
                             .getOrThrow()
 
                         sudahIsiFotoPembayaran
+                    },
+                    onCekSudahAmbilKuitansi = { kavling, termin ->
+                        val ambilKuitansi = ambilKuitansiRepository.get(kavling, termin).getOrThrow()
+                        val sudahAmbil = ambilKuitansi?.sudahAmbil ?: false
+
+                        Log.d("AMBIL_KUITANSI", "Kav. $kavling $termin is " +
+                                sudahAmbil.toString().uppercase())
+
+                        sudahAmbil
                     }
                 )
 
