@@ -37,4 +37,8 @@ class AmbilKuitansiRepositoryImpl(
         )
     }
 
+    override suspend fun insert(ambilKuitansi: AmbilKuitansi): Result<Nothing?> {
+        return Result.success(null)
+    }
+
 }

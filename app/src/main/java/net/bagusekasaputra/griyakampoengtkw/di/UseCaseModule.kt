@@ -4,6 +4,7 @@ import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.android.components.ViewModelComponent
+import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.ambilKuitansi.InsertAmbilKuitansiAsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.backupRestore.CreateBackupAsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.backupRestore.GetListBackupAsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.baselinePembayaran.GetBaselinePembayaranByKavlingAsyncUseCase
@@ -585,5 +586,14 @@ object UseCaseModule {
     @Provides
     fun provideGetPromotionMessageUseCase(promotionRepository: PromotionRepository): GetPromotionMessageAsyncUseCase {
         return GetPromotionMessageAsyncUseCase(promotionRepository)
+    }
+
+
+    /**
+     * Ambil Kuitansi
+     */
+    @Provides
+    fun provideInsertAmbilKuitansiUseCase(ambilKuitansiRepository: AmbilKuitansiRepository): InsertAmbilKuitansiAsyncUseCase {
+        return InsertAmbilKuitansiAsyncUseCase(ambilKuitansiRepository)
     }
 }

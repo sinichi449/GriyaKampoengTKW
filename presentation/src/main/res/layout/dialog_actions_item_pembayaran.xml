@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.appcompat.widget.LinearLayoutCompat xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:padding="16dp"
+    android:orientation="vertical"
+    android:theme="@style/Theme.GriyaKampung.BlackWhite">
+
+    <!-- Sudah Ambil Kuitansi -->
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <ImageView
+            android:id="@+id/img_sudah_ambil_kuitansi"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:src="@drawable/baseline_receipt_24"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintStart_toStartOf="parent"/>
+
+        <com.google.android.material.switchmaterial.SwitchMaterial
+            android:id="@+id/switch_sudah_ambil_kuitansi"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="@id/img_sudah_ambil_kuitansi"
+            app:layout_constraintBottom_toBottomOf="@id/img_sudah_ambil_kuitansi"
+            style="@style/Widget.AppCompat.CompoundButton.Switch"
+            app:useMaterialThemeColors="true"/>
+
+        <com.google.android.material.textview.MaterialTextView
+            android:id="@+id/tvInfo_ambil_kuitansi"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            app:layout_constraintStart_toEndOf="@id/img_sudah_ambil_kuitansi"
+            app:layout_constraintEnd_toStartOf="@id/switch_sudah_ambil_kuitansi"
+            app:layout_constraintTop_toTopOf="@id/img_sudah_ambil_kuitansi"
+            app:layout_constraintBottom_toBottomOf="@id/img_sudah_ambil_kuitansi"
+            android:layout_marginHorizontal="16dp"
+            style="@style/TextAppearance.MaterialComponents.Subtitle1"
+            android:text="Ambil Kuitansi"/>
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <!-- Foto Pembayaran -->
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp">
+
+        <ImageView
+            android:id="@+id/img_lihat_foto_pembayaran"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:src="@drawable/ic_photo_black_48dp"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintStart_toStartOf="parent"/>
+
+        <com.google.android.material.textview.MaterialTextView
+            android:id="@+id/tvInfo_liat_foto_pembayaran"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            app:layout_constraintStart_toEndOf="@id/img_lihat_foto_pembayaran"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="@id/img_lihat_foto_pembayaran"
+            app:layout_constraintBottom_toBottomOf="@id/img_lihat_foto_pembayaran"
+            android:layout_marginHorizontal="16dp"
+            style="@style/TextAppearance.MaterialComponents.Subtitle1"
+            android:text="Lihat Foto Pembayaran"/>
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</androidx.appcompat.widget.LinearLayoutCompat>

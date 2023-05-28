@@ -8,11 +8,13 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.recyclerview.widget.RecyclerView
 import com.evrencoskun.tableview.listener.ITableViewListener
+import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import dagger.hilt.android.AndroidEntryPoint
 import net.bagusekasaputra.griyakampoengtkw.domain.NumberUtil
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.BaselinePembayaran
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.Pembayaran
+import net.bagusekasaputra.griyakampoengtkw.presentation.databinding.DialogActionsItemPembayaranBinding
 import net.bagusekasaputra.griyakampoengtkw.presentation.databinding.FragmentFullPembayaranBinding
 import net.bagusekasaputra.griyakampoengtkw.presentation.tableview.formPembayaran.FullPembayaranTableWrapper
 import net.bagusekasaputra.griyakampoengtkw.presentation.viewmodel.FormPembayaranViewModel
@@ -148,7 +150,8 @@ class FullPembayaranFragment : Fragment() {
             }
 
             override fun onRowHeaderClicked(rowHeaderView: RecyclerView.ViewHolder, row: Int) {
-
+                MyPembayaranBottomSheetDialog(pembayarans[row])
+                    .show(childFragmentManager, null)
             }
 
             override fun onRowHeaderDoubleClicked(
@@ -166,5 +169,29 @@ class FullPembayaranFragment : Fragment() {
         FullPembayaranTableWrapper(binding.tableFormPembayaran, pembayarans)
             .setTableListener(listener)
             .createTable()
+    }
+
+    class MyPembayaranBottomSheetDialog(
+        private val pembayaran: Pembayaran
+    ): BottomSheetDialogFragment() {
+
+        private lateinit var dialogBinding: DialogActionsItemPembayaranBinding
+
+        override fun onCreateView(
+            inflater: LayoutInflater,
+            container: ViewGroup?,
+            savedInstanceState: Bundle?
+        ): View {
+            dialogBinding = DialogActionsItemPembayaranBinding.inflate(inflater, container, false)
+
+            return dialogBinding.root
+        }
+
+        override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+            super.onViewCreated(view, savedInstanceState)
+
+            dialogBinding.switchSudahAmbilKuitansi.isChecked = pembayaran.sudahAmbilKuitansi
+        }
+
     }
 }
