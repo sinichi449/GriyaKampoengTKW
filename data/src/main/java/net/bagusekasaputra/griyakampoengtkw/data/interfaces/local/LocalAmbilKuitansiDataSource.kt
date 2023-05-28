@@ -10,5 +10,7 @@ interface LocalAmbilKuitansiDataSource {
 
     suspend fun update(model: AmbilKuitansiModel): Result<Nothing?>
 
+    suspend fun delete(kavling: String, termin: String): Result<Nothing?>
+
     suspend fun deleteAll(): Result<Nothing?>
 }

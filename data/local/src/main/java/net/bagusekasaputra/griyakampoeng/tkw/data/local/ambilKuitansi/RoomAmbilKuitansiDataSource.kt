@@ -43,6 +43,14 @@ class RoomAmbilKuitansiDataSource(
         }
     }
 
+    override suspend fun delete(kavling: String, termin: String): Result<Nothing?> {
+        return roomOperation {
+            dao.delete(kavling, termin)
+
+            null
+        }
+    }
+
     override suspend fun deleteAll(): Result<Nothing?> {
         return roomOperation {
             dao.deleteAll()

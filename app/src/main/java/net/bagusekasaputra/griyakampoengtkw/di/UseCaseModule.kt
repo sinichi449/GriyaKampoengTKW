@@ -170,9 +170,10 @@ object UseCaseModule {
     @Provides
     fun provideDeletePembayaranUseCase(
         pembayaranRepository: PembayaranRepository,
-        fotoPembayaranRepository: FotoPembayaranRepository
+        fotoPembayaranRepository: FotoPembayaranRepository,
+        ambilKuitansiRepository: AmbilKuitansiRepository,
     ): DeletePembayaranAsyncUseCase {
-        return DeletePembayaranAsyncUseCase(pembayaranRepository, fotoPembayaranRepository)
+        return DeletePembayaranAsyncUseCase(pembayaranRepository, fotoPembayaranRepository, ambilKuitansiRepository)
     }
 
     @Provides
@@ -313,8 +314,11 @@ object UseCaseModule {
         = AddFotoPembayaranAsyncUseCase(fotoPembayaranRepository)
 
     @Provides
-    fun provideDeleteFotoPembayaranAsync(fotoPembayaranRepository: FotoPembayaranRepository)
-        = DeleteFotoPembayaranAsyncUseCase(fotoPembayaranRepository)
+    fun provideDeleteFotoPembayaranAsync(
+        fotoPembayaranRepository: FotoPembayaranRepository,
+        ambilKuitansiRepository: AmbilKuitansiRepository,
+    )
+        = DeleteFotoPembayaranAsyncUseCase(fotoPembayaranRepository, ambilKuitansiRepository)
 
     @Provides
     fun provideIsFotoPembayaranExistAsync(fotoPembayaranRepository: FotoPembayaranRepository)

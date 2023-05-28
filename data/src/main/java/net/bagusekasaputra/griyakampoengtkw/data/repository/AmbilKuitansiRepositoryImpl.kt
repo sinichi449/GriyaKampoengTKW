@@ -62,4 +62,31 @@ class AmbilKuitansiRepositoryImpl(
         }.first()
     }
 
+    override suspend fun delete(kavling: String, termin: String): Result<Nothing?> {
+        return callbackFlow<Result<Nothing?>> {
+            // Delete on remote
+            remoteDataSource.delete(kavling, termin)
+                .onSuccess {
+                    // Delete on Local
+                    localDataSource.delete(kavling, termin)
+                        .onSuccess {
+                            // Update Cache
+                            cacheHelper.updateMetadata(cacheTable, cacheTable)
+                                .onSuccess {
+                                    trySendBlocking(Result.success(it))
+                                }
+                                .onFailure {
+                                    trySendBlocking(Result.failure(it))
+                                }
+                        }
+                        .onFailure {
+                            trySendBlocking(Result.failure(it))
+                        }
+                }
+                .onFailure {
+                    trySendBlocking(Result.failure(it))
+                }
+        }.first()
+    }
+
 }

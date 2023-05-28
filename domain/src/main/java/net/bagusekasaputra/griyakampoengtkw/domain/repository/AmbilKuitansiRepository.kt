@@ -8,4 +8,5 @@ interface AmbilKuitansiRepository {
 
     suspend fun insert(ambilKuitansi: AmbilKuitansi): Result<Nothing?>
 
+    suspend fun delete(kavling: String, termin: String): Result<Nothing?>
 }

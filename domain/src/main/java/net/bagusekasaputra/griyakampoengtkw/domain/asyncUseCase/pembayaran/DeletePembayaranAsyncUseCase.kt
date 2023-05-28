@@ -7,12 +7,14 @@ import kotlinx.coroutines.flow.callbackFlow
 import kotlinx.coroutines.flow.first
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.AsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.Pembayaran
+import net.bagusekasaputra.griyakampoengtkw.domain.repository.AmbilKuitansiRepository
 import net.bagusekasaputra.griyakampoengtkw.domain.repository.FotoPembayaranRepository
 import net.bagusekasaputra.griyakampoengtkw.domain.repository.PembayaranRepository
 
 class DeletePembayaranAsyncUseCase(
     private val pembayaranRepository: PembayaranRepository,
     private val fotoPembayaranRepository: FotoPembayaranRepository,
+    private val ambilKuitansiRepository: AmbilKuitansiRepository,
 ) : AsyncUseCase<DeletePembayaranAsyncUseCase.Request, Nothing?>() {
 
     data class Request(val kavling: String, val pembayaran: Pembayaran): AsyncUseCase.Request
@@ -32,7 +34,17 @@ class DeletePembayaranAsyncUseCase(
                             termin = request.pembayaran.termin,
                         ).first()
                             .onSuccess {
-                                trySendBlocking(Result.success(null))
+                                // Delete Ambil Kuitansi
+                                ambilKuitansiRepository.delete(
+                                    request.kavling,
+                                    request.pembayaran.termin
+                                )
+                                    .onSuccess {
+                                        trySendBlocking(Result.success(null))
+                                    }
+                                    .onFailure {
+                                        trySendBlocking(Result.failure(it))
+                                    }
                             }
                             .onFailure {
                                 trySendBlocking(Result.failure(it))

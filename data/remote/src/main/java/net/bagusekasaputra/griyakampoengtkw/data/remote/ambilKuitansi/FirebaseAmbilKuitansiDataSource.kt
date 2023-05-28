@@ -52,4 +52,17 @@ class FirebaseAmbilKuitansiDataSource(
                 }
         }
     }
+
+    override suspend fun delete(kavling: String, termin: String): Result<Nothing?> {
+        return suspendCoroutine { continuation ->
+            ambilKuitansiRef.child("${kavling}/${termin}")
+                .removeValue()
+                .addOnSuccessListener {
+                    continuation.resume(Result.success(null))
+                }
+                .addOnFailureListener {
+                    continuation.resume(Result.failure(it))
+                }
+        }
+    }
 }
