@@ -379,9 +379,10 @@ object RepositoryModule {
      */
     @Provides
     fun provideAmbilKuitansiRepository(
+        localDataSource: LocalAmbilKuitansiDataSource,
         remoteDataSource: RemoteAmbilKuitansiDataSource,
         cacheHelper: CacheHelper,
     ): AmbilKuitansiRepository {
-        return AmbilKuitansiRepositoryImpl(remoteDataSource, cacheHelper)
+        return AmbilKuitansiRepositoryImpl(localDataSource, remoteDataSource, cacheHelper)
     }
 }

@@ -2,6 +2,8 @@ package net.bagusekasaputra.griyakampoeng.tkw.data.local
 
 import androidx.room.Database
 import androidx.room.RoomDatabase
+import net.bagusekasaputra.griyakampoeng.tkw.data.local.ambilKuitansi.AmbilKuitansiDao
+import net.bagusekasaputra.griyakampoeng.tkw.data.local.ambilKuitansi.AmbilKuitansiRoomEntity
 import net.bagusekasaputra.griyakampoeng.tkw.data.local.baselinePembayaran.BaselinePembayaranRoomEntity
 import net.bagusekasaputra.griyakampoeng.tkw.data.local.baselinePembayaran.BaselinePembayaranRoomFixDao
 import net.bagusekasaputra.griyakampoeng.tkw.data.local.biayaLain.BiayaLainDao
@@ -49,8 +51,8 @@ import net.bagusekasaputra.griyakampoeng.tkw.data.local.pengingat.PengingatRoomE
                 BiayaMarketingV2RoomEntity::class, PengingatRoomEntity::class, MetadataEntity::class,
                BiayaLainRoomEntity::class, BaselinePembayaranRoomEntity::class,
                FotoIdentitasIndenBookingEntity::class, DataDiriIndenBookingEntity::class,
-               PembayaranIndenBookingEntity::class],
-    version = 25,
+               PembayaranIndenBookingEntity::class, AmbilKuitansiRoomEntity::class],
+    version = 26,
     exportSchema = true,
 )
 abstract class MyRoomDatabase: RoomDatabase() {
@@ -92,4 +94,6 @@ abstract class MyRoomDatabase: RoomDatabase() {
     abstract fun getDataDiriIndenBookingDao(): DataDiriIndenBookingDao
 
     abstract fun getPembayaranIndenBookingDao(): PembayaranIndenBookingDao
+
+    abstract fun getAmbilKuitansiDao(): AmbilKuitansiDao
 }

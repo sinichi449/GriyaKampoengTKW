@@ -3,21 +3,37 @@ package net.bagusekasaputra.griyakampoengtkw.data.repository
 import net.bagusekasaputra.griyakampoengtkw.data.CacheHelper
 import net.bagusekasaputra.griyakampoengtkw.data.DataUtil
 import net.bagusekasaputra.griyakampoengtkw.data.MyObjectMapper
+import net.bagusekasaputra.griyakampoengtkw.data.interfaces.local.LocalAmbilKuitansiDataSource
 import net.bagusekasaputra.griyakampoengtkw.data.interfaces.remote.RemoteAmbilKuitansiDataSource
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.AmbilKuitansi
 import net.bagusekasaputra.griyakampoengtkw.domain.repository.AmbilKuitansiRepository
 
 class AmbilKuitansiRepositoryImpl(
+    private val localDataSource: LocalAmbilKuitansiDataSource,
     private val remoteDataSource: RemoteAmbilKuitansiDataSource,
     private val cacheHelper: CacheHelper,
 ): AmbilKuitansiRepository {
 
+    private val cacheTable = "ambilKuitansi"
+
     override suspend fun get(kavling: String, termin: String): Result<AmbilKuitansi?> {
-        val remoteResult = remoteDataSource.get(kavling, termin)
+        val isInvalidCache = cacheHelper.checkAndInvalidateCache(cacheTable, cacheTable,
+            onInvalid = {
+                localDataSource.deleteAll()
+            }
+        )
+        val localModel = localDataSource.get(kavling, termin).getOrThrow()
+
+        if (localModel == null || isInvalidCache) {
+            val remoteModel = remoteDataSource.get(kavling, termin).getOrThrow()
+            remoteModel?.also {
+                localDataSource.insert(it)
+            }
+        }
 
         return DataUtil.mapSingleResult(
-            originResult = remoteResult,
-            targetMapper = MyObjectMapper::mapAmbilKuitansi
+            originResult = localDataSource.get(kavling, termin),
+            targetMapper = MyObjectMapper::mapAmbilKuitansi,
         )
     }
 
