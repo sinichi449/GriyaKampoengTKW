@@ -53,40 +53,90 @@ class ActionPembayaranItemBottomSheetDialog(): BottomSheetDialogFragment() {
             // Dialog title
             dialogBinding.tvKavlingTermin.text = "Kav. $kavling - $termin"
 
-            // Only allow modify switch sudah ambil kuitansi if sudah isi pembayaran
-            with(dialogBinding.switchSudahAmbilKuitansi) {
-                isEnabled = pembayaran.sudahIsiFotoPembayaran
-                visibility = View.VISIBLE
-                isChecked = pembayaran.sudahAmbilKuitansi
-                setOnCheckedChangeListener { _, isChecked ->
-                    val ambilKuitansi = AmbilKuitansi(
-                        kavling = kavling,
-                        termin = termin,
-                        sudahAmbil = isChecked,
-                    )
-
-                    viewModel.insertAmbilKuitansi(ambilKuitansi,
-                        onProgress = {
-                            this@ActionPembayaranItemBottomSheetDialog.isCancelable = false
-                            isEnabled = false
-
-                            visibility = View.GONE
-                            dialogBinding.progressAmbilKuitansi.visibility = View.VISIBLE
-                        },
-                        onSuccess = {
-                            this@ActionPembayaranItemBottomSheetDialog.isCancelable = true
-                            isEnabled = true
-
-                            visibility = View.VISIBLE
-                            dialogBinding.progressAmbilKuitansi.visibility = View.GONE
-                        },
-                        onFailure = {
-                            this@ActionPembayaranItemBottomSheetDialog.dismiss()
-
-                            Toast.makeText(requireContext(), it, Toast.LENGTH_LONG).show()
+            if (pembayaran.sudahIsiFotoPembayaran) {
+                dialogBinding.cardAmbilKuitansi.apply {
+                    visibility = View.VISIBLE
+                    setOnClickListener {
+                        with (dialogBinding.switchSudahAmbilKuitansi) {
+                            isChecked = !isChecked
                         }
-                    )
+                    }
                 }
+
+                dialogBinding.switchSudahAmbilKuitansi.apply {
+                    visibility = View.VISIBLE
+                    isChecked = pembayaran.sudahAmbilKuitansi
+                    setOnCheckedChangeListener { _, isChecked ->
+                        val ambilKuitansi = AmbilKuitansi(
+                            kavling = kavling,
+                            termin = termin,
+                            sudahAmbil = isChecked,
+                        )
+
+                        viewModel.insertAmbilKuitansi(ambilKuitansi,
+                            onProgress = {
+                                this@ActionPembayaranItemBottomSheetDialog.isCancelable = false
+                                isEnabled = false
+
+                                visibility = View.GONE
+                                dialogBinding.progressAmbilKuitansi.visibility = View.VISIBLE
+                            },
+                            onSuccess = {
+                                this@ActionPembayaranItemBottomSheetDialog.isCancelable = true
+                                isEnabled = true
+
+                                visibility = View.VISIBLE
+                                dialogBinding.progressAmbilKuitansi.visibility = View.GONE
+                            },
+                            onFailure = {
+                                this@ActionPembayaranItemBottomSheetDialog.dismiss()
+
+                                Toast.makeText(requireContext(), it, Toast.LENGTH_LONG).show()
+                            }
+                        )
+                    }
+                }
+
+                dialogBinding.cardTambahkanFotoPembayaran.visibility = View.GONE
+
+                dialogBinding.cardLihatFotoPembayaran.apply {
+                    visibility = View.VISIBLE
+                    setOnClickListener {
+                        Toast.makeText(requireContext(), "Lihat Foto", Toast.LENGTH_SHORT).show()
+                    }
+                }
+
+                dialogBinding.cardUbahFotoPembayaran.apply {
+                    visibility = View.VISIBLE
+                    setOnClickListener {
+                        Toast.makeText(requireContext(), "Ubah Foto", Toast.LENGTH_SHORT).show()
+                    }
+                }
+
+                dialogBinding.cardHapusFotoPembayaran.apply {
+                    visibility = View.VISIBLE
+                    setOnClickListener {
+                        Toast.makeText(requireContext(), "Hapus Foto", Toast.LENGTH_SHORT).show()
+                    }
+                }
+            } else {
+                dialogBinding.cardAmbilKuitansi.visibility = View.GONE
+
+                dialogBinding.cardTambahkanFotoPembayaran.visibility = View.VISIBLE
+
+                dialogBinding.cardLihatFotoPembayaran.visibility = View.GONE
+
+                dialogBinding.cardUbahFotoPembayaran.visibility = View.GONE
+
+                dialogBinding.cardHapusFotoPembayaran.visibility = View.GONE
+            }
+
+            dialogBinding.cardUbahDataPembayaran.setOnClickListener {
+                Toast.makeText(requireContext(), "Ubah Data", Toast.LENGTH_SHORT).show()
+            }
+
+            dialogBinding.cardHapusDataPembayaran.setOnClickListener {
+                Toast.makeText(requireContext(), "Hapus Data", Toast.LENGTH_SHORT).show()
             }
         } else {
             Toast.makeText(requireContext(), "Pembayaran is null!", Toast.LENGTH_LONG).show()
