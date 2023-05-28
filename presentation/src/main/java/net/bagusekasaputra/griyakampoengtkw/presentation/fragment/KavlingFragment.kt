@@ -139,24 +139,25 @@ class KavlingFragment : Fragment() {
             }
         }
 
-        viewModel.kavlings.observe(requireActivity()) {
-            it?.let {
-                viewModel.mapProgressKavling.observe(requireActivity()) { mapProgressKavling ->
-                    if (mapProgressKavling != null) {
-                        Log.d("STATUS_PEMBAYARAN", "Success KavlingFragment not null!")
+        viewModel.kavlingAndProgress.observe(requireActivity()) {
+            it?.also { kavlingAndProgress ->
+                val kavlings = kavlingAndProgress.first
+                val mapProgressKavling = kavlingAndProgress.second ?: emptyMap()
 
-                        mapProgressKavling.keys.forEach { kavling ->
-                            val persentase = mapProgressKavling[kavling]?.persentaseBulanIni()
+                if (mapProgressKavling.isNotEmpty()) {
+                    Log.d("STATUS_PEMBAYARAN", "Success KavlingFragment not null!")
 
-                            Log.d("STATUS_PEMBAYARAN", "${kavling}: ${persentase}%")
-                        }
+                    mapProgressKavling.keys.forEach { kavling ->
+                        val persentase = mapProgressKavling[kavling]?.persentaseBulanIni()
 
-                        setupKavlingRecyclerView(it, mapProgressKavling)
-                    } else {
-                        Log.d("STATUS_PEMBAYARAN", "KavlingFragment got NULL Progress")
-
-                        setupKavlingRecyclerView(it, emptyMap())
+                        Log.d("STATUS_PEMBAYARAN", "${kavling}: ${persentase}%")
                     }
+                } else {
+                    Log.d("STATUS_PEMBAYARAN", "KavlingFragment got NULL Progress")
+                }
+
+                if (!kavlings.isNullOrEmpty()) {
+                    setupKavlingRecyclerView(kavlings, mapProgressKavling)
                 }
             }
         }

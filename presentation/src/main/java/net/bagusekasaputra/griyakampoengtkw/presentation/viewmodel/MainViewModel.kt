@@ -28,6 +28,7 @@ import net.bagusekasaputra.griyakampoengtkw.domain.usecase.block.AddNewBlockUseC
 import net.bagusekasaputra.griyakampoengtkw.domain.usecase.kavling.AddKavlingUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.usecase.kavling.EditKavlingUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.usecase.kavling.RemoveKavlingUseCase
+import net.bagusekasaputra.griyakampoengtkw.presentation.combineWith
 import net.bagusekasaputra.griyakampoengtkw.presentation.logEvent
 import javax.inject.Inject
 
@@ -45,17 +46,24 @@ class MainViewModel @Inject constructor(
     private val getPromotionMessageAsyncUseCase: GetPromotionMessageAsyncUseCase,
 ): ViewModel() {
 
-    private val _kavlings = MutableLiveData<List<Kavling>>()
-    val kavlings: LiveData<List<Kavling>>
-        get() = _kavlings
-
     private val _blocksLive = MutableLiveData<List<Block>>()
     val blocksLive: LiveData<List<Block>>
         get() = _blocksLive
 
+    private val _kavlings = MutableLiveData<List<Kavling>>()
+    val kavlings: LiveData<List<Kavling>>
+        get() = _kavlings
+
+
     private val _mapProgressKavling = MutableLiveData<Map<String, ProgressKavling>?>(null)
     val mapProgressKavling: LiveData<Map<String, ProgressKavling>?>
         get() = _mapProgressKavling
+
+
+    // Kavling and Progress kavling combined
+    val kavlingAndProgress = _kavlings.combineWith(_mapProgressKavling) { listKavling, mapProgress ->
+        Pair(listKavling, mapProgress)
+    }
 
 
     // Promotion Message

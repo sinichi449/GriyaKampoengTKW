@@ -2,6 +2,7 @@ package net.bagusekasaputra.griyakampoengtkw.presentation.adapter.recyclerview
 
 import android.content.Context
 import android.graphics.Color
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -59,6 +60,7 @@ class KavlingRecyclerAdapter(
         holder.binding.fillProgressPersen.setProgressBackgroundColor(warna)
         holder.binding.layoutRoot.setBackgroundColor(warna)
         if (progress != null) {
+            Log.d("PROGRESS_PEMBAYARAN", "Progress Kav. ${kavling.kode} is ${progress}%")
             holder.binding.fillProgressPersen.setProgress(progress, true)
         }
 
