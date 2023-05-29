@@ -34,9 +34,7 @@ class DataDiriRepositoryImpl(
 
     private val metadataTable = "dataDiri"
     private val dataDiriIndenBookingLocalTable = "dataDiriIndenBooking"
-    private val dataDiriIndenBookingRemoteTable = { keyId: String ->
-        "indenBooking/${keyId}/dataDiri"
-    }
+    private val dataDiriIndenBookingRemoteTable = "indenBooking/dataDiri"
 
     override fun getBatchOnline(listKavling: List<String>): Flow<Result<Map<String, DataDiri?>?>> {
         return flow {
@@ -242,10 +240,13 @@ class DataDiriRepositoryImpl(
         }
     }
 
+    /**
+     * Inden Booking related
+     */
     override suspend fun getFromIndenBooking(keyId: String): Result<DataDiri?> {
         val invalidCache = checkAndInvalidateCache(
             dataDiriIndenBookingLocalTable,
-            dataDiriIndenBookingRemoteTable(keyId),
+            dataDiriIndenBookingRemoteTable,
             onInvalid = {
                 localDataDiriDataSource.deleteAllFromIndenBooking()
             },

@@ -35,9 +35,7 @@ class ImageDataDiriRepositoryImpl(
 
     private val metadataTable = "image_data_diri"
     private val imageIndenBookingLocalTable = "fotoIdentitasIndenBooking"
-    private val imageIndenBookingRemoteTable = { keyId: String ->
-        "indenBooking/${keyId}/dataDiri"
-    }
+    private val imageIndenBookingRemoteTable = "indenBooking/imageDataDiri"
     // Check server metadata only ONCE
     // for getBatch() method.
     private var hasMetadataChecked = false
@@ -222,7 +220,7 @@ class ImageDataDiriRepositoryImpl(
     override suspend fun getFromIndenBooking(keyId: String): Result<Uri?> {
         val isInvalidCache = cacheHelper.checkAndInvalidateCache(
             imageIndenBookingLocalTable,
-            imageIndenBookingRemoteTable(keyId),
+            imageIndenBookingRemoteTable,
             onInvalid = {
                 localImageDataDiri.deleteAllFromIndenBooking()
             }

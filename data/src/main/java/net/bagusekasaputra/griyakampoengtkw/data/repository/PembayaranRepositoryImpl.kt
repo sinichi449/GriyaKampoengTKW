@@ -35,9 +35,7 @@ class PembayaranRepositoryImpl(
 
     private val metadataTable = "formPembayaran"
     private val pembayaranIndenBookingLocalTable = "pembayaranIndenBooking"
-    private val pembayaranIndenBookingRemoteTable = { keyId: String ->
-        "indenBooking/${keyId}/formPembayaran"
-    }
+    private val pembayaranIndenBookingRemoteTable = "indenBooking/pembayaran"
 
     override fun getBatchOnline(listKavling: List<String>): Flow<Result<Map<String, List<Pembayaran>?>?>> {
         return flow {
@@ -387,7 +385,7 @@ class PembayaranRepositoryImpl(
     override suspend fun getAllFromIndenBooking(keyId: String): Result<List<Pembayaran>?> {
         val invalidCache = cacheHelper.checkAndInvalidateCache(
             pembayaranIndenBookingLocalTable,
-            pembayaranIndenBookingRemoteTable(keyId),
+            pembayaranIndenBookingRemoteTable,
             onInvalid = {
                 localPembayaranDataSource.deleteAllFromIndenBooking()
             }

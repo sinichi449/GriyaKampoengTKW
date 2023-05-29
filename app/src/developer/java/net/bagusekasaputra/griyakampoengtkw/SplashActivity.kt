@@ -106,21 +106,24 @@ class SplashActivity : AppCompatActivity() {
                                 .show()
                         }
                     } else {
+//                        withContext(Dispatchers.Main) {
+//                            val prefsCacheInitiation = "PREFS_HAS_CACHE_INITIATED"
+//                            val hasCacheInitiated = sharedPreferences.getBoolean(prefsCacheInitiation, false)
+//
+//                            if (!hasCacheInitiated) {
+//                                initCache(onComplete = {
+//                                    sharedPreferences.edit()
+//                                        .putBoolean(prefsCacheInitiation, true)
+//                                        .apply()
+//
+//                                    showJenisDataChoice(isOnline = true, shouldShowDataBaruOption = true)
+//                                })
+//                            } else {
+//                                showJenisDataChoice(isOnline = true, shouldShowDataBaruOption = true)
+//                            }
+//                        }
                         withContext(Dispatchers.Main) {
-                            val prefsCacheInitiation = "PREFS_HAS_CACHE_INITIATED"
-                            val hasCacheInitiated = sharedPreferences.getBoolean(prefsCacheInitiation, false)
-
-                            if (!hasCacheInitiated) {
-                                initCache(onComplete = {
-                                    sharedPreferences.edit()
-                                        .putBoolean(prefsCacheInitiation, true)
-                                        .apply()
-
-                                    showJenisDataChoice(isOnline = true, shouldShowDataBaruOption = true)
-                                })
-                            } else {
-                                showJenisDataChoice(isOnline = true, shouldShowDataBaruOption = true)
-                            }
+                            showJenisDataChoice(isOnline = true, shouldShowDataBaruOption = true)
                         }
                     }
                 }
