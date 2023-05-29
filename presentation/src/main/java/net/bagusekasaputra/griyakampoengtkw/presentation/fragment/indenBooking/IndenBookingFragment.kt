@@ -20,6 +20,7 @@ import androidx.core.app.NotificationManagerCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
+import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
@@ -29,6 +30,7 @@ import net.bagusekasaputra.griyakampoengtkw.presentation.activity.FormActivity
 import net.bagusekasaputra.griyakampoengtkw.presentation.adapter.recyclerview.IndenBookingRecyclerAdapter
 import net.bagusekasaputra.griyakampoengtkw.presentation.databinding.FragmentIndenBookingBinding
 import net.bagusekasaputra.griyakampoengtkw.presentation.util.NotificationUtil
+import net.bagusekasaputra.griyakampoengtkw.presentation.util.SwipeActionCallbackRecyclerView
 import net.bagusekasaputra.griyakampoengtkw.presentation.viewmodel.IndenBookingViewModel
 import net.bagusekasaputra.griyakampoengtkw.presentation.viewmodel.MainViewModel
 import javax.inject.Inject
@@ -138,8 +140,27 @@ class IndenBookingFragment : Fragment() {
 
                             requireActivity().startActivity(intent)
                     })
+
+                    val swipeCallback = SwipeActionCallbackRecyclerView(requireContext())
+                        { viewHolder, direction ->
+                            val indenBooking = it[viewHolder.adapterPosition]
+
+                            onSwipedRecyclerViewItem(direction, indenBooking.keyId)
+                        }
+                    ItemTouchHelper(swipeCallback).attachToRecyclerView(this)
                 }
             }
+        }
+    }
+
+    private fun onSwipedRecyclerViewItem(direction: Int, keyId: String) {
+        val editIndenBooking = direction == ItemTouchHelper.RIGHT
+        val deleteIndenBooking = direction == ItemTouchHelper.LEFT
+
+        if (editIndenBooking) {
+            Toast.makeText(requireContext(), "$keyId is on Edit!", Toast.LENGTH_SHORT).show()
+        } else if (deleteIndenBooking) {
+            Toast.makeText(requireContext(), "Right!", Toast.LENGTH_SHORT).show()
         }
     }
 
