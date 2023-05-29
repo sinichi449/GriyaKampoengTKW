@@ -47,6 +47,7 @@ data class PembayaranBulanan(
             val sortedPembayaranByDate = sortedListPembayaran.sortedBy {
                 it.tanggal.toDate().time
             }
+
             return if (sortedPembayaranByDate.isNotEmpty()) {
                 val tanggalPembayaranPertama = sortedPembayaranByDate.first().tanggal.toDate()
                 val tanggalSekarang = Calendar.getInstance().time
@@ -57,7 +58,6 @@ data class PembayaranBulanan(
                 val pembayaranBulanans = mutableListOf<PembayaranBulanan>()
 
                 listBulan.forEach {
-                    Log.d("PEMBAYARAN_BULANAN", "Tgl : ${it.toSlashedString()}")
                     val calendar = Calendar.getInstance().apply {
                         time = it
                     }
@@ -65,17 +65,22 @@ data class PembayaranBulanan(
                         calendarMonth = calendar.get(Calendar.MONTH),
                         year = calendar.get(Calendar.YEAR)
                     )
-                    val listPembayaran = sortedListPembayaran.filterPeriode(
+                    val filteredByOneMonthRangePembayarans = sortedListPembayaran.filterPeriode(
                         periode = PeriodeRekap.CUSTOM,
                         start = rangeSatuBulan[0],
                         end = rangeSatuBulan[1],
+                    )
+
+                    val bulan = DateUtil.namaBulanShort(calendar.get(Calendar.MONTH) + 1)
+                    Log.d("PEMBAYARAN_BULANAN", "${bulan}: ${rangeSatuBulan[0].toSlashedString()} - " +
+                            rangeSatuBulan[1].toSlashedString()
                     )
 
                     pembayaranBulanans.add(PembayaranBulanan(
                         kavling = kavling,
                         bulan = calendar.get(Calendar.MONTH) + 1,
                         tahun = calendar.get(Calendar.YEAR),
-                        listPembayaran = listPembayaran ?: emptyList(),
+                        listPembayaran = filteredByOneMonthRangePembayarans ?: emptyList(),
                         baselinePembayaran = baselinePembayaran,
                     ))
                 }
