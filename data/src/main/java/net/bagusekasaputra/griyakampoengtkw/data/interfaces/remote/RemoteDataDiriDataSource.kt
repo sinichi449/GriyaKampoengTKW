@@ -19,4 +19,6 @@ interface RemoteDataDiriDataSource {
      */
     suspend fun getFromIndenBooking(keyId: String): Result<DataDiriModel?>
 
+    suspend fun insertFromIndenBooking(model: DataDiriModel): Result<String?>
+
 }

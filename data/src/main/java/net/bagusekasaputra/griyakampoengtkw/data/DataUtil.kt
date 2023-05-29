@@ -1,5 +1,7 @@
 package net.bagusekasaputra.griyakampoengtkw.data
 
+import java.util.UUID
+
 object DataUtil {
 
     fun <O, T> mapSingleResult(
@@ -18,6 +20,10 @@ object DataUtil {
         return originResult.map { list ->
             list?.map(targetMapper)
         }
+    }
+
+    fun generateKeyId(): String {
+        return UUID.randomUUID().toString()
     }
 
 }

@@ -8,6 +8,7 @@ import kotlinx.coroutines.flow.callbackFlow
 import kotlinx.coroutines.flow.emitAll
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flow
+import net.bagusekasaputra.griyakampoengtkw.data.CacheHelper
 import net.bagusekasaputra.griyakampoengtkw.data.DataUtil
 import net.bagusekasaputra.griyakampoengtkw.data.MyObjectMapper
 import net.bagusekasaputra.griyakampoengtkw.data.MyObjectMapper.mapDataDiri
@@ -30,6 +31,7 @@ class DataDiriRepositoryImpl(
     private val backupDataDiriDataSource: BackupDataDiriDataSource,
     private val localMetadata: LocalMetadataDataSource,
     private val remoteMetadata: RemoteMetadataDataSource,
+    private val cacheHelper: CacheHelper,
 ): DataDiriRepository {
 
     private val metadataTable = "dataDiri"
@@ -271,6 +273,44 @@ class DataDiriRepositoryImpl(
             originResult = refreshedLocalResult,
             targetMapper = MyObjectMapper::mapDataDiri,
         )
+    }
+
+    override suspend fun insertFromIndenBooking(dataDiri: DataDiri): Result<String?> {
+        return callbackFlow<Result<String?>> {
+            val model = MyObjectMapper.mapDataDiri(dataDiri)
+            // Insert to remote
+            remoteDataDiriDataSource.insertFromIndenBooking(model)
+                .onSuccess {  keyId ->
+                    // Update metadata
+                    cacheHelper.updateMetadata(
+                        dataDiriIndenBookingLocalTable,
+                        dataDiriIndenBookingRemoteTable
+                    )
+                        .onSuccess {
+                            // Insert to local
+                            if (!keyId.isNullOrEmpty()) {
+                                localDataDiriDataSource.insertFromIndenBooking(keyId, model)
+                                    .onSuccess {
+                                        trySendBlocking(Result.success(keyId))
+                                    }
+                                    .onFailure {
+                                        trySendBlocking(Result.failure(it))
+                                    }
+                            } else {
+                                Log.d("INDEN_BOOKING", "Not inserting to local data source because KeyID is null or empty!")
+                                trySendBlocking(Result.success(null))
+                            }
+                        }
+                        .onFailure {
+                            trySendBlocking(Result.failure(it))
+                        }
+                }
+                .onFailure {
+                    trySendBlocking(Result.failure(it))
+                }
+
+            awaitClose {  }
+        }.first()
     }
 
     private suspend fun checkCache() {

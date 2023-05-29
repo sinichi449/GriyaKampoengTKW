@@ -10,6 +10,7 @@ import kotlinx.coroutines.channels.trySendBlocking
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
 import kotlinx.coroutines.flow.first
+import net.bagusekasaputra.griyakampoengtkw.data.DataUtil
 import net.bagusekasaputra.griyakampoengtkw.data.interfaces.remote.RemoteDataDiriDataSource
 import net.bagusekasaputra.griyakampoengtkw.data.model.DataDiriModel
 import net.bagusekasaputra.griyakampoengtkw.data.remote.ConnectionUtil
@@ -121,7 +122,7 @@ class FirebaseDataDiriDataSource(
     /**
      * Inden Booking related
      */
-    val indenBookingRef = databaseReference.child(FirebaseNodes.INDEN_BOOKING)
+    private val indenBookingRef = databaseReference.child(FirebaseNodes.INDEN_BOOKING)
 
     override suspend fun getFromIndenBooking(keyId: String): Result<DataDiriModel?> {
         return suspendCoroutine { continuation ->
@@ -143,4 +144,19 @@ class FirebaseDataDiriDataSource(
         }
     }
 
+    override suspend fun insertFromIndenBooking(model: DataDiriModel): Result<String?> {
+        return suspendCoroutine { continuation ->
+            val generatedId = DataUtil.generateKeyId()
+
+            indenBookingRef.child(generatedId).child(FirebaseNodes.DATA_DIRI)
+                .setValue(model)
+                .addOnSuccessListener {
+                    continuation.resume(Result.success(generatedId))
+                }
+                .addOnFailureListener {
+                    continuation.resume(Result.failure(it))
+                }
+        }
+    }
 }
+

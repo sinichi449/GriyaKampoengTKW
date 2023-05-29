@@ -56,6 +56,7 @@ object RepositoryModule {
         backupDataDiriDataSource: BackupDataDiriDataSource,
         localMetadata: LocalMetadataDataSource,
         remoteMetadata: RemoteMetadataDataSource,
+        cacheHelper: CacheHelper,
     ): DataDiriRepository {
         return DataDiriRepositoryImpl(
             localDataDiriDataSource,
@@ -63,7 +64,8 @@ object RepositoryModule {
             remoteKavlingDataSource,
             backupDataDiriDataSource,
             localMetadata,
-            remoteMetadata
+            remoteMetadata,
+            cacheHelper,
         )
     }
 
