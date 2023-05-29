@@ -35,13 +35,6 @@ class FirebaseFotoIdentitasIndenBookingDataSource(
 
             imageRef.child(FirebaseNodes.IMAGE_DATA_DIRI).child(imgFileName)
                 .getFile(downloadDestination)
-                .addOnProgressListener {
-                    val bytesDownloaded = it.bytesTransferred
-                    val totalBytes = it.totalByteCount
-
-                    Log.d("INDEN_BOOKING", "Downloading image Data Diri: " +
-                            "${bytesDownloaded}/${totalBytes} ...")
-                }
                 .addOnCompleteListener {
                     Log.d("INDEN_BOOKING", "Image $imgFileName download complete!")
 

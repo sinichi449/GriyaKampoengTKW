@@ -394,11 +394,14 @@ class PembayaranRepositoryImpl(
 
         // Fetch from remote data source if either the cache was invalid
         // or the local data source returning null (probably after invalidate() call)
-        if (invalidCache || localModel == null) {
-            Log.d("INDEN_BOOKING", "Pembayaran on Cache was invalid or Local Data Source is null! " +
+        if (invalidCache || localModel.isNullOrEmpty()) {
+            Log.d("INDEN_BOOKING", "Pembayaran on Cache was invalid or Local Data Source is null! ($keyId) " +
                     "Fetching from Remote Data Source now.")
 
             remotePembayaranSource.getAllFromIndenBooking(keyId).getOrThrow()?.also {
+                it.forEach { pembayaranModel ->
+                    Log.d("INTERNAL_INDEN_BOOKING", "Begin insertion for ${pembayaranModel.termin} !")
+                }
                 localPembayaranDataSource.insertAllFromIndenBooking(keyId, it)
             }
         } else {

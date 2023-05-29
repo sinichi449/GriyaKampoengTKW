@@ -32,7 +32,7 @@ interface PembayaranIndenBookingDao {
     fun insert(entity: PembayaranIndenBookingEntity): Long
 
     @Insert(onConflict = OnConflictStrategy.ABORT)
-    fun insertAll(entities: List<PembayaranIndenBookingEntity>): List<Long>
+    suspend fun insertAll(entities: List<PembayaranIndenBookingEntity>): List<Long>
 
     @Query("DELETE FROM pembayaran_inden_booking WHERE keyId=:keyId")
     fun deleteAllWith(keyId: String)

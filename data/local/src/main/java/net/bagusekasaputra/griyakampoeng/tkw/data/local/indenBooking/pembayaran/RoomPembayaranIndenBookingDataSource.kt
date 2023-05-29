@@ -1,5 +1,6 @@
 package net.bagusekasaputra.griyakampoeng.tkw.data.local.indenBooking.pembayaran
 
+import android.util.Log
 import net.bagusekasaputra.griyakampoeng.tkw.data.local.MyRoomDatabase
 import net.bagusekasaputra.griyakampoeng.tkw.data.local.RoomRequestHelper
 import net.bagusekasaputra.griyakampoeng.tkw.data.local.pembayaran.LocalPembayaranIndenBookingDataSource
@@ -23,7 +24,9 @@ class RoomPembayaranIndenBookingDataSource(
         return RoomRequestHelper.roomOperation {
             val entityList = models.map { it.toEntity(keyId) }
 
-            pembayaranDao.insertAll(entityList)
+            pembayaranDao.insertAll(entityList).forEach {
+                Log.d("INTERNAL_INDEN_BOOKING", "Inserting with id $it !!")
+            }
 
             null
         }
