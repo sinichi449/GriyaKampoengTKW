@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.util.Log
 import android.view.MenuItem
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.os.bundleOf
 import androidx.navigation.NavController
 import androidx.navigation.fragment.NavHostFragment
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
@@ -29,9 +30,15 @@ class FormActivity : AppCompatActivity() {
                 as NavHostFragment).navController
 
         when (val requestedFormType = intent?.extras?.getString(EXTRAS_FORM_TYPE)) {
-            FORM_DATA_DIRI_INDEN_BOOKING ->
-                navController.navigate(R.id.nav_form_data_diri_inden_booking)
+            FORM_DATA_DIRI_INDEN_BOOKING -> {
+                // Send bundle key id of data diri if not null or empty
+                val dataDiriKeyId = intent?.extras?.getString(EXTRAS_KEY_ID_DATA_DIRI_INDEN_BOOKING)
+                val bundleKeyId = if (!dataDiriKeyId.isNullOrEmpty())
+                        bundleOf(EXTRAS_KEY_ID_DATA_DIRI_INDEN_BOOKING to dataDiriKeyId)
+                    else null
 
+                navController.navigate(R.id.nav_form_data_diri_inden_booking, args = bundleKeyId)
+            }
             else -> {
                 Log.d("FORM_ACTIVITY", "Unknown form type $requestedFormType !!")
                 Snackbar.make(binding.root, "Tipe form tidak dikenali!", Snackbar.LENGTH_LONG)
@@ -74,6 +81,8 @@ class FormActivity : AppCompatActivity() {
         const val EXTRAS_SUCCESS_DATA = "EXTRAS_SUCCESS_DATA"
 
         const val FORM_DATA_DIRI_INDEN_BOOKING = "FORM_DATA_DIRI_INDEN_BOOKING"
+
+        const val EXTRAS_KEY_ID_DATA_DIRI_INDEN_BOOKING = "EXTRAS_DATA_DIRI_INDEN_BOOKING_KEY_ID"
     }
 
 }

@@ -42,7 +42,8 @@ class IndenBookingFragment : Fragment() {
     private val mainViewModel: MainViewModel by activityViewModels()
     private val viewModel: IndenBookingViewModel by activityViewModels()
 
-    private val REQUEST_CODE_INPUT_NEW_INDEN_BOOKING = 8001
+    private val REQUEST_CODE_INPUT_NEW_INDEN_BOOKING = 801
+    private val REQUEST_CODE_EDIT_INDEN_BOOKING = 802
 
     private val PROGRESS_CHANNEL = "GktProgress"
 
@@ -122,7 +123,8 @@ class IndenBookingFragment : Fragment() {
             it?.also {
                 binding.recyclerViewIndenBooking.apply {
                     layoutManager = LinearLayoutManager(requireContext())
-                    adapter = IndenBookingRecyclerAdapter(
+
+                    val indenBookingRecyclerAdapter = IndenBookingRecyclerAdapter(
                         this@IndenBookingFragment, it,
                         onClick = { position ->
                             val intent = Intent(requireContext(), DetailIndenBookingActivity::class.java)
@@ -139,29 +141,49 @@ class IndenBookingFragment : Fragment() {
                             )
 
                             requireActivity().startActivity(intent)
-                    })
+                        })
 
                     val swipeCallback = SwipeActionCallbackRecyclerView(requireContext())
-                        { viewHolder, direction ->
-                            val indenBooking = it[viewHolder.adapterPosition]
+                    { viewHolder, direction ->
+                        val position = viewHolder.adapterPosition
+                        val indenBooking = it[position]
 
-                            onSwipedRecyclerViewItem(direction, indenBooking.keyId)
-                        }
+                        onSwipedRecyclerViewItem(
+                            adapter = indenBookingRecyclerAdapter,
+                            direction = direction,
+                            position = position,
+                            keyId = indenBooking.keyId
+                        )
+                    }
+
+                    adapter = indenBookingRecyclerAdapter
                     ItemTouchHelper(swipeCallback).attachToRecyclerView(this)
                 }
             }
         }
     }
 
-    private fun onSwipedRecyclerViewItem(direction: Int, keyId: String) {
+    private fun onSwipedRecyclerViewItem(
+        adapter: IndenBookingRecyclerAdapter,
+        direction: Int,
+        position: Int,
+        keyId: String
+    ) {
         val editIndenBooking = direction == ItemTouchHelper.RIGHT
         val deleteIndenBooking = direction == ItemTouchHelper.LEFT
 
         if (editIndenBooking) {
-            Toast.makeText(requireContext(), "$keyId is on Edit!", Toast.LENGTH_SHORT).show()
+            // Open form data diri fragment
+            val intent = Intent(requireActivity(), FormActivity::class.java)
+            intent.putExtra(FormActivity.EXTRAS_FORM_TYPE, FormActivity.FORM_DATA_DIRI_INDEN_BOOKING)
+            intent.putExtra(FormActivity.EXTRAS_KEY_ID_DATA_DIRI_INDEN_BOOKING, keyId)
+
+            startActivityForResult(intent, REQUEST_CODE_EDIT_INDEN_BOOKING)
         } else if (deleteIndenBooking) {
-            Toast.makeText(requireContext(), "Right!", Toast.LENGTH_SHORT).show()
+            Toast.makeText(requireContext(), "Delete!", Toast.LENGTH_SHORT).show()
         }
+
+        adapter.notifyItemChanged(position)
     }
 
     private fun sync() {
@@ -182,10 +204,25 @@ class IndenBookingFragment : Fragment() {
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
 
+        // Input Inden Booking result
         if (requestCode == REQUEST_CODE_INPUT_NEW_INDEN_BOOKING) {
             if (resultCode == Activity.RESULT_OK) {
                 val keyId = data?.extras?.getString(FormActivity.EXTRAS_SUCCESS_DATA)
                 Snackbar.make(binding.root, "Berhasil menambahkan [$keyId]!", Snackbar.LENGTH_SHORT)
+                    .show()
+
+                sync()
+            } else {
+                data?.extras?.getString(FormActivity.EXTRAS_FAIL_MSG)?.also {
+                    Toast.makeText(requireContext(), "Gagal menambahkan: $it", Toast.LENGTH_LONG)
+                        .show()
+                }
+            }
+
+        // Edit Inden Booking result
+        } else if (requestCode == REQUEST_CODE_EDIT_INDEN_BOOKING) {
+            if (resultCode == Activity.RESULT_OK) {
+                Snackbar.make(binding.root, "Berhasil mengubah data inden booking!", Snackbar.LENGTH_SHORT)
                     .show()
 
                 sync()

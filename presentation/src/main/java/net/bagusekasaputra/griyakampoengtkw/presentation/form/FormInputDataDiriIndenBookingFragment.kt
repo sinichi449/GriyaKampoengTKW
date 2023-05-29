@@ -10,6 +10,7 @@ import android.view.ViewGroup
 import android.widget.ArrayAdapter
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
+import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.DataDiri
 import net.bagusekasaputra.griyakampoengtkw.presentation.activity.FormActivity
@@ -17,12 +18,24 @@ import net.bagusekasaputra.griyakampoengtkw.presentation.databinding.FragmentFor
 import net.bagusekasaputra.griyakampoengtkw.presentation.util.Consts
 import net.bagusekasaputra.griyakampoengtkw.presentation.util.InputUtil
 import net.bagusekasaputra.griyakampoengtkw.presentation.viewmodel.IndenBookingViewModel
+import kotlin.random.Random
 
 @AndroidEntryPoint
 class FormInputDataDiriIndenBookingFragment : Fragment() {
 
     private lateinit var binding: FragmentFormInputDataDiriIndenBookingBinding
     private val viewModel by activityViewModels<IndenBookingViewModel>()
+    private var keyId: String? = null
+    private var isEditMode = false
+
+    // Needed to setup edit mode
+    private lateinit var spinnerNegaraBekerjaAdapter: ArrayAdapter<String>
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+
+        keyId = arguments?.getString(FormActivity.EXTRAS_KEY_ID_DATA_DIRI_INDEN_BOOKING)
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -41,10 +54,11 @@ class FormInputDataDiriIndenBookingFragment : Fragment() {
         (requireActivity() as FormActivity).setFormTitle("Data Diri (Inden Booking)")
 
         // Set negara bekerja spinner
-        binding.spinnerNegaraBekerja.adapter = ArrayAdapter(requireContext(),
+        spinnerNegaraBekerjaAdapter = ArrayAdapter(requireContext(),
             android.R.layout.simple_spinner_dropdown_item,
             Consts.negaraBekerjaList,
         )
+        binding.spinnerNegaraBekerja.adapter = spinnerNegaraBekerjaAdapter
 
         // Set appropriate input type for each Jenis Identitas
         binding.rbIdKtp.setOnClickListener {
@@ -52,6 +66,12 @@ class FormInputDataDiriIndenBookingFragment : Fragment() {
         }
         binding.rbIdPassport.setOnClickListener {
             binding.edtNoIdentitas.inputType = InputType.TYPE_CLASS_TEXT or InputType.TYPE_TEXT_FLAG_CAP_CHARACTERS
+        }
+
+        // Setup edit mode
+        if (!keyId.isNullOrEmpty()) {
+            isEditMode = true
+            setupEditMode(keyId!!)
         }
 
         // On done click
@@ -83,27 +103,87 @@ class FormInputDataDiriIndenBookingFragment : Fragment() {
                     noHp = noHp,
                 )
 
-                viewModel.insertDataDiri(
-                    dataDiri,
-                    onProgress = {
-                        // TODO
-                    },
-                    onComplete = { generatedKeyId ->
-                        val dataToSend = Intent()
-                        dataToSend.putExtra(FormActivity.EXTRAS_SUCCESS_DATA, generatedKeyId)
+                if (isEditMode) {
+                    // TODO
+                    val randomSuccess = Random.nextBoolean()
+                    if (randomSuccess) {
+                        sendResultAndExit(Activity.RESULT_OK, null)
+                    } else {
+                        val failedData = Intent()
+                        failedData.putExtra(FormActivity.EXTRAS_FAIL_MSG, "Random error!")
 
-                        requireActivity().setResult(Activity.RESULT_OK, dataToSend)
-                        requireActivity().finish()
-                    },
-                    onFailure = {
-                        val dataToSend = Intent()
-                        dataToSend.putExtra(FormActivity.EXTRAS_FAIL_MSG, it)
-
-                        requireActivity().setResult(Activity.RESULT_CANCELED, dataToSend)
-                        requireActivity().finish()
+                        sendResultAndExit(Activity.RESULT_CANCELED, failedData)
                     }
-                )
+                } else {
+                    viewModel.insertDataDiri(
+                        dataDiri,
+                        onProgress = {
+                            // TODO
+                        },
+                        onComplete = { generatedKeyId ->
+                            val dataToSend = Intent()
+                            dataToSend.putExtra(FormActivity.EXTRAS_SUCCESS_DATA, generatedKeyId)
+
+                            sendResultAndExit(Activity.RESULT_OK, dataToSend)
+                        },
+                        onFailure = {
+                            val dataToSend = Intent()
+                            dataToSend.putExtra(FormActivity.EXTRAS_FAIL_MSG, it)
+
+                            sendResultAndExit(Activity.RESULT_CANCELED, dataToSend)
+                        }
+                    )
+                }
             }
+        }
+    }
+
+    private fun setupEditMode(dataDiriKeyId: String) {
+        val snackBarLoading = Snackbar.make(binding.root, "Memuat data diri ...", Snackbar.LENGTH_INDEFINITE)
+
+        viewModel.getDataDiri(
+            dataDiriKeyId,
+            onProgress = {
+                snackBarLoading.show()
+            },
+            onComplete = {
+                snackBarLoading.dismiss()
+            },
+            onFailure = {
+                val dataToSend = Intent()
+                dataToSend.putExtra(FormActivity.EXTRAS_FAIL_MSG, it)
+
+                sendResultAndExit(Activity.RESULT_CANCELED, dataToSend)
+            }
+        )
+
+        viewModel.dataDiriIndenBooking.observe(requireActivity()) {
+            it?.also { dataDiri ->
+                with(binding) {
+                    edtNamaCostumer.setText(dataDiri.nama)
+                    edtNoIdentitas.setText(dataDiri.noIdentitas)
+                    edtAlamatKerja.setText(dataDiri.alamatKerja)
+                    edtAlamatIndo.setText(dataDiri.alamatIndo)
+                    edtNoHandphone.setText(dataDiri.noHp)
+
+                    if (dataDiri.jenisIdentitas == "KTP") {
+                        rbIdKtp.isChecked = true
+                    } else {
+                        rbIdPassport.isChecked = true
+                    }
+
+                    spinnerNegaraBekerja.setSelection(
+                        spinnerNegaraBekerjaAdapter.getPosition(dataDiri.negaraBekerja), true
+                    )
+                }
+            }
+        }
+    }
+
+    private fun sendResultAndExit(resultCode: Int, dataToSend: Intent?) {
+        with(requireActivity()) {
+            setResult(resultCode, dataToSend)
+            finish()
         }
     }
 
