@@ -2,6 +2,7 @@ package net.bagusekasaputra.griyakampoengtkw.presentation.util;
 
 import android.content.Context;
 import android.graphics.Canvas;
+import android.util.TypedValue;
 
 import androidx.annotation.NonNull;
 import androidx.core.content.ContextCompat;
@@ -51,6 +52,7 @@ public class SwipeActionCallbackRecyclerView extends ItemTouchHelper.SimpleCallb
                 .addSwipeLeftActionIcon(R.drawable.baseline_delete_24)
                 .setSwipeLeftActionIconTint(tintActionColor)
 
+                .addCornerRadius(TypedValue.COMPLEX_UNIT_DIP, 8)
                 .create()
                 .decorate();
 

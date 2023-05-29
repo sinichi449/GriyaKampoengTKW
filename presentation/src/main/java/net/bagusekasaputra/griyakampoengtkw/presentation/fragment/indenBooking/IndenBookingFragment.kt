@@ -174,6 +174,8 @@ class IndenBookingFragment : Fragment() {
 
         if (editIndenBooking) {
             // Open form data diri fragment
+            adapter.notifyItemChanged(position)
+
             val intent = Intent(requireActivity(), FormActivity::class.java)
             intent.putExtra(FormActivity.EXTRAS_FORM_TYPE, FormActivity.FORM_DATA_DIRI_INDEN_BOOKING)
             intent.putExtra(FormActivity.EXTRAS_KEY_ID_DATA_DIRI_INDEN_BOOKING, keyId)
@@ -181,9 +183,8 @@ class IndenBookingFragment : Fragment() {
             startActivityForResult(intent, REQUEST_CODE_EDIT_INDEN_BOOKING)
         } else if (deleteIndenBooking) {
             Toast.makeText(requireContext(), "Delete!", Toast.LENGTH_SHORT).show()
+            adapter.notifyItemChanged(position)
         }
-
-        adapter.notifyItemChanged(position)
     }
 
     private fun sync() {
