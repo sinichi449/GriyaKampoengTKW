@@ -8,6 +8,7 @@
     android:theme="@style/Theme.GriyaKampung.BlackWhite">
 
     <androidx.core.widget.NestedScrollView
+        android:id="@+id/scrollView_pembayaran_inden_booking"
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 

@@ -5,6 +5,7 @@ import android.view.MenuItem
 import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
+import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.android.material.tabs.TabLayout
 import dagger.hilt.android.AndroidEntryPoint
 import net.bagusekasaputra.griyakampoengtkw.presentation.R
@@ -62,6 +63,10 @@ class DetailIndenBookingActivity : AppCompatActivity() {
             setupWithViewPager(binding.viewPagerDetailIndenBooking)
             tabIndicatorAnimationMode = TabLayout.INDICATOR_ANIMATION_MODE_ELASTIC
         }
+    }
+
+    fun getFab(): FloatingActionButton {
+        return binding.fabEdit
     }
 
     @Deprecated("Deprecated in Java")

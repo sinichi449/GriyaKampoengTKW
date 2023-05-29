@@ -10,7 +10,9 @@ import androidx.fragment.app.activityViewModels
 import com.bumptech.glide.Glide
 import dagger.hilt.android.AndroidEntryPoint
 import net.bagusekasaputra.griyakampoengtkw.presentation.R
+import net.bagusekasaputra.griyakampoengtkw.presentation.activity.DetailIndenBookingActivity
 import net.bagusekasaputra.griyakampoengtkw.presentation.databinding.FragmentDataDiriIndenBookingBinding
+import net.bagusekasaputra.griyakampoengtkw.presentation.util.UiUtils
 import net.bagusekasaputra.griyakampoengtkw.presentation.viewmodel.IndenBookingViewModel
 
 @AndroidEntryPoint
@@ -35,6 +37,10 @@ class DataDiriIndenBookingFragment : Fragment() {
         binding.swipeRefreshDataDiri.setOnRefreshListener {
             sync()
         }
+
+        // Hide fab on scroll
+        val fabAction = (requireActivity() as DetailIndenBookingActivity).getFab()
+        UiUtils.hideFabsOnVerticalScroll(binding.scrollViewImageviewAndCard, fabAction)
 
         setupViewModel()
 

@@ -10,8 +10,10 @@ import androidx.fragment.app.activityViewModels
 import dagger.hilt.android.AndroidEntryPoint
 import net.bagusekasaputra.griyakampoengtkw.domain.NumberUtil
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.Pembayaran
+import net.bagusekasaputra.griyakampoengtkw.presentation.activity.DetailIndenBookingActivity
 import net.bagusekasaputra.griyakampoengtkw.presentation.databinding.FragmentFormPembayaranIndenBookingBinding
 import net.bagusekasaputra.griyakampoengtkw.presentation.tableview.formPembayaran.FullPembayaranTableWrapper
+import net.bagusekasaputra.griyakampoengtkw.presentation.util.UiUtils
 import net.bagusekasaputra.griyakampoengtkw.presentation.viewmodel.IndenBookingViewModel
 
 @AndroidEntryPoint
@@ -39,6 +41,10 @@ class FormPembayaranIndenBookingFragment : Fragment() {
             // Until harga rumah ready
             binding.root.isRefreshing = false
         }
+
+        // Hide fab on scroll
+        val fabAction = (requireActivity() as DetailIndenBookingActivity).getFab()
+        UiUtils.hideFabsOnVerticalScroll(binding.scrollViewPembayaranIndenBooking, fabAction)
 
         sync()
 
