@@ -28,6 +28,7 @@ import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.indenBooking.Get
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.indenBooking.GetAllPembayaranIndenBookingAsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.indenBooking.GetFotoIdentitasIndenBookingAsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.indenBooking.GetHargaRumahIndenBookingAsyncUseCase
+import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.indenBooking.dataDiri.InsertDataDiriIndenBookingAsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.kavling.GetKavlingByBlockAsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.kavling.GetListUnmigratedKavlingsAsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.kavling.GetProgressKavlingAsyncUseCase
@@ -504,11 +505,18 @@ object UseCaseModule {
         return GetAllIndenBookingAsyncUseCase(indenBookingRepository, dataDiriRepository, pembayaranRepository, imageDataDiriRepository)
     }
 
+    // Inden Booking - Data Diri
     @Provides
     fun provideGetDataDiriIndenBookingUseCase(dataDiriRepository: DataDiriRepository): GetDataDiriIndenBookingAsyncUseCase {
         return GetDataDiriIndenBookingAsyncUseCase(dataDiriRepository)
     }
 
+    @Provides
+    fun provideInsertDataDiriIndenBookingUseCase(dataDiriRepository: DataDiriRepository): InsertDataDiriIndenBookingAsyncUseCase {
+        return InsertDataDiriIndenBookingAsyncUseCase(dataDiriRepository)
+    }
+
+    // Inden Booking - Foto Identitas / Image Data Diri
     @Provides
     fun provideGetFotoIdentitasIndenBookingAsyncUseCase(
         imageDataDiriRepository: ImageDataDiriRepository
@@ -516,6 +524,7 @@ object UseCaseModule {
         return GetFotoIdentitasIndenBookingAsyncUseCase(imageDataDiriRepository)
     }
 
+    // Inden Booking - Pembayaran
     @Provides
     fun provideGetAllPembayaranIndenBookingAsyncUseCase(
         indenBookingRepository: IndenBookingRepository,

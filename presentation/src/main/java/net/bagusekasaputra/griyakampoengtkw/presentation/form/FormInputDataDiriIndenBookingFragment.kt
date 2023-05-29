@@ -3,20 +3,26 @@ package net.bagusekasaputra.griyakampoengtkw.presentation.form
 import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
+import android.text.InputType
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ArrayAdapter
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.activityViewModels
 import dagger.hilt.android.AndroidEntryPoint
+import net.bagusekasaputra.griyakampoengtkw.domain.entity.DataDiri
 import net.bagusekasaputra.griyakampoengtkw.presentation.activity.FormActivity
 import net.bagusekasaputra.griyakampoengtkw.presentation.databinding.FragmentFormInputDataDiriIndenBookingBinding
-import java.util.UUID
-import kotlin.random.Random
+import net.bagusekasaputra.griyakampoengtkw.presentation.util.Consts
+import net.bagusekasaputra.griyakampoengtkw.presentation.util.InputUtil
+import net.bagusekasaputra.griyakampoengtkw.presentation.viewmodel.IndenBookingViewModel
 
 @AndroidEntryPoint
 class FormInputDataDiriIndenBookingFragment : Fragment() {
 
     private lateinit var binding: FragmentFormInputDataDiriIndenBookingBinding
+    private val viewModel by activityViewModels<IndenBookingViewModel>()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -31,23 +37,73 @@ class FormInputDataDiriIndenBookingFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        // Set toolbar title
         (requireActivity() as FormActivity).setFormTitle("Data Diri (Inden Booking)")
+
+        // Set negara bekerja spinner
+        binding.spinnerNegaraBekerja.adapter = ArrayAdapter(requireContext(),
+            android.R.layout.simple_spinner_dropdown_item,
+            Consts.negaraBekerjaList,
+        )
+
+        // Set appropriate input type for each Jenis Identitas
+        binding.rbIdKtp.setOnClickListener {
+            binding.edtNoIdentitas.inputType = InputType.TYPE_CLASS_NUMBER or InputType.TYPE_NUMBER_VARIATION_NORMAL
+        }
+        binding.rbIdPassport.setOnClickListener {
+            binding.edtNoIdentitas.inputType = InputType.TYPE_CLASS_TEXT or InputType.TYPE_TEXT_FLAG_CAP_CHARACTERS
+        }
+
+        // On done click
         (requireActivity() as FormActivity).getFabDone().setOnClickListener {
-            val isSuccess = Random.nextBoolean()
+            val isInvalidInput = InputUtil.isNullOrEmptyEditTexts(
+                binding.edtNamaCostumer,
+                binding.edtNoIdentitas,
+                binding.edtAlamatKerja,
+                binding.edtAlamatIndo,
+                binding.edtNoHandphone,
+            )
 
-            if (isSuccess) {
-                val dataToSend = Intent().apply {
-                    putExtra(FormActivity.EXTRAS_SUCCESS_DATA, UUID.randomUUID().toString())
-                }
-                requireActivity().setResult(Activity.RESULT_OK, dataToSend)
-            } else {
-                val dataToSend = Intent().apply {
-                    putExtra(FormActivity.EXTRAS_FAIL_MSG, "Random failure!!")
-                }
-                requireActivity().setResult(Activity.RESULT_CANCELED, dataToSend)
+            if (!isInvalidInput) {
+                val namaCostumer = binding.edtNamaCostumer.text.toString()
+                val jenisIdentitas = if (binding.rbIdKtp.isChecked) "KTP" else "Passport"
+                val noIdentitas = binding.edtNoIdentitas.text.toString()
+                val negaraBekerja = binding.spinnerNegaraBekerja.selectedItem.toString()
+                val alamatKerja = binding.edtAlamatKerja.text.toString()
+                val alamatIndo = binding.edtAlamatIndo.text.toString()
+                val noHp = binding.edtNoHandphone.text.toString()
+
+                val dataDiri = DataDiri(
+                    nama = namaCostumer,
+                    jenisIdentitas = jenisIdentitas,
+                    noIdentitas = noIdentitas,
+                    negaraBekerja = negaraBekerja,
+                    alamatKerja = alamatKerja,
+                    alamatIndo = alamatIndo,
+                    noHp = noHp,
+                )
+
+                viewModel.insertDataDiri(
+                    dataDiri,
+                    onProgress = {
+                        // TODO
+                    },
+                    onComplete = { generatedKeyId ->
+                        val dataToSend = Intent()
+                        dataToSend.putExtra(FormActivity.EXTRAS_SUCCESS_DATA, generatedKeyId)
+
+                        requireActivity().setResult(Activity.RESULT_OK, dataToSend)
+                        requireActivity().finish()
+                    },
+                    onFailure = {
+                        val dataToSend = Intent()
+                        dataToSend.putExtra(FormActivity.EXTRAS_FAIL_MSG, it)
+
+                        requireActivity().setResult(Activity.RESULT_CANCELED, dataToSend)
+                        requireActivity().finish()
+                    }
+                )
             }
-
-            requireActivity().finish()
         }
     }
 

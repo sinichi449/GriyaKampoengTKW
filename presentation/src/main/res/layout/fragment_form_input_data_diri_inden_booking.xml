@@ -38,6 +38,7 @@
             android:layout_marginTop="24dp"/>
 
         <RadioGroup
+            android:id="@+id/rg_jenis_identitas"
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
 

@@ -163,7 +163,11 @@ class IndenBookingFragment : Fragment() {
 
         if (requestCode == REQUEST_CODE_INPUT_NEW_INDEN_BOOKING) {
             if (resultCode == Activity.RESULT_OK) {
-                Snackbar.make(binding.root, "Berhasil menambahkan!", Snackbar.LENGTH_SHORT).show()
+                val keyId = data?.extras?.getString(FormActivity.EXTRAS_SUCCESS_DATA)
+                Snackbar.make(binding.root, "Berhasil menambahkan [$keyId]!", Snackbar.LENGTH_SHORT)
+                    .show()
+
+                sync()
             } else {
                 data?.extras?.getString(FormActivity.EXTRAS_FAIL_MSG)?.also {
                     Toast.makeText(requireContext(), "Gagal menambahkan: $it", Toast.LENGTH_LONG)

@@ -11,11 +11,12 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import net.bagusekasaputra.griyakampoengtkw.domain.DataMode
+import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.dataDiri.GetDataDiriIndenBookingAsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.indenBooking.GetAllIndenBookingAsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.indenBooking.GetAllPembayaranIndenBookingAsyncUseCase
-import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.dataDiri.GetDataDiriIndenBookingAsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.indenBooking.GetFotoIdentitasIndenBookingAsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.indenBooking.GetHargaRumahIndenBookingAsyncUseCase
+import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.indenBooking.dataDiri.InsertDataDiriIndenBookingAsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.DataDiri
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.Pembayaran
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.indenBooking.HargaRumahIndenBooking
@@ -25,9 +26,14 @@ import javax.inject.Inject
 @HiltViewModel
 class IndenBookingViewModel @Inject constructor(
     private val getAllIndenBookingAsyncUseCase: GetAllIndenBookingAsyncUseCase,
+    // Data Diri
     private val getDataDiriIndenBookingAsyncUseCase: GetDataDiriIndenBookingAsyncUseCase,
+    private val insertDataDiriIndenBookingAsyncUseCase: InsertDataDiriIndenBookingAsyncUseCase,
+    // Foto Identitas / Image Data Diri
     private val getFotoIdentitasIndenBookingAsyncUseCase: GetFotoIdentitasIndenBookingAsyncUseCase,
+    // Pembayaran
     private val getAllPembayaranIndenBookingAsyncUseCase: GetAllPembayaranIndenBookingAsyncUseCase,
+    // Harga Rumah
     private val getHargaRumahIndenBookingAsyncUseCase: GetHargaRumahIndenBookingAsyncUseCase,
 ): ViewModel() {
 
@@ -96,6 +102,9 @@ class IndenBookingViewModel @Inject constructor(
         }
     }
 
+    /**
+     * Data Diri
+     */
     fun getDataDiri(
         keyId: String,
         onProgress: () -> Unit,
@@ -124,6 +133,35 @@ class IndenBookingViewModel @Inject constructor(
         }
     }
 
+    fun insertDataDiri(
+        dataDiri: DataDiri,
+        onProgress: () -> Unit = {},
+        onComplete: (generatedKeyId: String?) -> Unit = {},
+        onFailure: (msg: String) -> Unit = {},
+    ) {
+        onProgress()
+
+        CoroutineScope(Dispatchers.IO).launch {
+            val request = InsertDataDiriIndenBookingAsyncUseCase.Request(dataDiri)
+            insertDataDiriIndenBookingAsyncUseCase.execute(request).collect { result ->
+                result.onSuccess {
+                    withContext(Dispatchers.Main) {
+                        onComplete(it)
+                    }
+                }
+                result.onFailure {
+                    withContext(Dispatchers.Main) {
+                        onFailure("Gagal: ${it.localizedMessage}")
+                    }
+                }
+            }
+        }
+    }
+
+
+    /**
+     * Foto Identitas / Image Data Diri
+     */
     fun getFotoIdentitas(
         keyId: String,
         onProgress: () -> Unit,
@@ -152,6 +190,10 @@ class IndenBookingViewModel @Inject constructor(
         }
     }
 
+
+    /**
+     * Harga Rumah
+     */
     fun getHargaRumah(
         keyId: String,
         onProgress: () -> Unit,
@@ -181,6 +223,10 @@ class IndenBookingViewModel @Inject constructor(
         }
     }
 
+
+    /**
+     * Pembayaran
+     */
     fun getAllPembayaran(
         keyId: String,
         onProgress: () -> Unit,
