@@ -1,5 +1,6 @@
 package net.bagusekasaputra.griyakampoengtkw.presentation.activity
 
+import android.annotation.SuppressLint
 import android.content.SharedPreferences
 import android.os.Bundle
 import android.view.Menu
@@ -19,6 +20,7 @@ import dagger.hilt.android.AndroidEntryPoint
 import net.bagusekasaputra.griyakampoengtkw.domain.DataMode
 import net.bagusekasaputra.griyakampoengtkw.presentation.R
 import net.bagusekasaputra.griyakampoengtkw.presentation.databinding.ActivityMainBinding
+import net.bagusekasaputra.griyakampoengtkw.presentation.databinding.HeaderMainNavBinding
 import net.bagusekasaputra.griyakampoengtkw.presentation.util.GriyaNodes
 import net.bagusekasaputra.griyakampoengtkw.presentation.viewmodel.MainViewModel
 import javax.inject.Inject
@@ -43,6 +45,7 @@ class MainActivity : AppCompatActivity() {
     @Inject
     lateinit var sharedPrefs: SharedPreferences
 
+    @SuppressLint("SetTextI18n")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -63,7 +66,20 @@ class MainActivity : AppCompatActivity() {
         binding.toolbarMain.setupWithNavController(navController, appBarConfiguration)
         setSupportActionBar(binding.toolbarMain)
 
-        binding.navViewMain.setupWithNavController(navController)
+        // Setup navigation view and header layout
+        with(binding.navViewMain) {
+            setupWithNavController(navController)
+
+            // Getting BuildConfig from Splash Activity
+            val appVersionName = intent.getStringExtra("versionName") ?: "NULL"
+            val appVersionCode = intent.getIntExtra("versionCode", 0)
+
+            val navHeaderLayoutBinding = HeaderMainNavBinding.inflate(layoutInflater)
+            navHeaderLayoutBinding.tvVersionName.text = "v$appVersionName"
+            navHeaderLayoutBinding.tvVersionCode.text = appVersionCode.toString()
+
+            addHeaderView(navHeaderLayoutBinding.root)
+        }
 
         // Connectivity check
         val deviceOnline = intent.getBooleanExtra(GriyaNodes.INTENT_IS_ONLINE, true)
