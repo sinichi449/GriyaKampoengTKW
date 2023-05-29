@@ -14,23 +14,12 @@ data class IndenBooking(
 ) {
 
     companion object {
-        fun getDummyModels(): List<IndenBooking> {
-            val noIdentitas = "3507043008040003"
 
-            return listOf(
-                IndenBooking("Angga Nur Fatah", noIdentitas, 7_600_000L),
-                IndenBooking("Kamila Mayasari", noIdentitas, 7_200_000L),
-                IndenBooking("Emboh Gunawan", noIdentitas, 59_000_000L),
-                IndenBooking("Supardi Warsito", noIdentitas, 1_000_000L),
-                IndenBooking("Angga Nur Fatah", noIdentitas, 7_600_000L),
-                IndenBooking("Kamila Mayasari", noIdentitas, 7_200_000L),
-                IndenBooking("Emboh Gunawan", noIdentitas, 59_000_000L),
-                IndenBooking("Supardi Warsito", noIdentitas, 1_000_000L),
-                IndenBooking("Angga Nur Fatah", noIdentitas, 7_600_000L),
-                IndenBooking("Kamila Mayasari", noIdentitas, 7_200_000L),
-                IndenBooking("Emboh Gunawan", noIdentitas, 59_000_000L),
-                IndenBooking("Supardi Warsito", noIdentitas, 1_000_000L),
-            )
+        fun sortByName(indenBookings: List<IndenBooking>): List<IndenBooking> {
+            return indenBookings.sortedBy {
+                it.namaCostumer
+            }
         }
+
     }
 }

@@ -51,7 +51,9 @@ class GetAllIndenBookingAsyncUseCase(
                 ))
             }
 
-            emit(Result.success(indenBookingList))
+            val sortedIndenBookings = IndenBooking.sortByName(indenBookingList)
+
+            emit(Result.success(sortedIndenBookings))
         }
     }
 }
