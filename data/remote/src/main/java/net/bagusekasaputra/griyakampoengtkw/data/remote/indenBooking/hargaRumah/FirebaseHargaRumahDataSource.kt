@@ -46,6 +46,25 @@ class FirebaseHargaRumahDataSource(
         }
     }
 
+    override suspend fun update(keyId: String, newModel: HargaRumahModel): Result<Nothing?> {
+        return suspendCancellableCoroutine { continuation ->
+            val firebaseModel = newModel.toFirebaseModel()
+
+            hargaRumahRef(keyId)
+                .setValue(firebaseModel)
+                .addOnSuccessListener {
+                    if (continuation.isActive) {
+                        continuation.resume(Result.success(null))
+                    }
+                }
+                .addOnFailureListener {
+                    if (continuation.isActive) {
+                        continuation.resume(Result.failure(it))
+                    }
+                }
+        }
+    }
+
     private data class HargaRumahFirebaseModel(
         val harga: Long = 0L,
         val tambahLuasan: Long = 0L,

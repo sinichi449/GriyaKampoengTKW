@@ -7,4 +7,6 @@ interface HargaRumahIndenBookingRepository {
 
     suspend fun get(keyId: String, dataMode: DataMode): Result<HargaRumahIndenBooking?>
 
+    suspend fun update(keyId: String, newHargaRumah: HargaRumahIndenBooking): Result<Nothing?>
+
 }

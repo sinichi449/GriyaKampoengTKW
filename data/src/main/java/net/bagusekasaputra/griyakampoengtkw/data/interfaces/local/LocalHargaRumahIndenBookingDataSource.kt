@@ -8,6 +8,8 @@ interface LocalHargaRumahIndenBookingDataSource {
 
     suspend fun insert(keyId: String, model: HargaRumahModel): Result<Nothing?>
 
+    suspend fun update(keyId: String, newModel: HargaRumahModel): Result<Nothing?>
+
     suspend fun deleteAll(): Result<Nothing?>
 
 }

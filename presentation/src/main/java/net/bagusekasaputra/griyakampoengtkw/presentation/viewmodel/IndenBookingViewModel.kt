@@ -13,15 +13,16 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import net.bagusekasaputra.griyakampoengtkw.domain.DataMode
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.indenBooking.GetAllIndenBookingAsyncUseCase
-import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.indenBooking.pembayaran.GetAllPembayaranIndenBookingAsyncUseCase
-import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.indenBooking.hargaRumah.GetHargaRumahIndenBookingAsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.indenBooking.dataDiri.EditDataDiriIndenBookingAsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.indenBooking.dataDiri.GetDataDiriIndenBookingAsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.indenBooking.dataDiri.InsertDataDiriIndenBookingAsyncUseCase
+import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.indenBooking.hargaRumah.GetHargaRumahIndenBookingAsyncUseCase
+import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.indenBooking.hargaRumah.UpdateHargaRumahIndenBookingAsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.indenBooking.imageDataDiri.DeleteFotoIdentitasIndenBookingAsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.indenBooking.imageDataDiri.GetFotoIdentitasIndenBookingAsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.indenBooking.imageDataDiri.InsertFotoIdentitasIndenBookingAsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.indenBooking.imageDataDiri.UpdateFotoIdentitasIndenBookingAsyncUseCase
+import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.indenBooking.pembayaran.GetAllPembayaranIndenBookingAsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.DataDiri
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.Pembayaran
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.indenBooking.HargaRumahIndenBooking
@@ -44,6 +45,7 @@ class IndenBookingViewModel @Inject constructor(
     private val getAllPembayaranIndenBookingAsyncUseCase: GetAllPembayaranIndenBookingAsyncUseCase,
     // Harga Rumah
     private val getHargaRumahIndenBookingAsyncUseCase: GetHargaRumahIndenBookingAsyncUseCase,
+    private val updateHargaRumahIndenBookingAsyncUseCase: UpdateHargaRumahIndenBookingAsyncUseCase,
 ): ViewModel() {
 
     private val _indenBookings = MutableLiveData<List<IndenBooking>>()
@@ -110,6 +112,7 @@ class IndenBookingViewModel @Inject constructor(
             }
         }
     }
+
 
     /**
      * Data Diri
@@ -330,6 +333,32 @@ class IndenBookingViewModel @Inject constructor(
                     withContext(Dispatchers.Main) {
                         onFailure("Gagal mendapatkan Harga Rumah: " +
                                 "${it.javaClass.simpleName}:${it.message}")
+                    }
+                }
+            }
+        }
+    }
+
+    fun updateHargaRumah(
+        keyId: String,
+        newHargaRumah: HargaRumahIndenBooking,
+        onProgress: () -> Unit = {},
+        onSuccess: () -> Unit = {},
+        onFailure: (msg: String) -> Unit = {},
+    ) {
+        onProgress()
+
+        viewModelScope.launch(Dispatchers.IO) {
+            val request = UpdateHargaRumahIndenBookingAsyncUseCase.Request(keyId, newHargaRumah)
+            updateHargaRumahIndenBookingAsyncUseCase.execute(request).collect { result ->
+                result.onSuccess {
+                    withContext(Dispatchers.Main) {
+                        onSuccess()
+                    }
+                }
+                result.onFailure {
+                    withContext(Dispatchers.Main) {
+                        onFailure("Gagal menubah harga rumah: ${it.localizedMessage}")
                     }
                 }
             }

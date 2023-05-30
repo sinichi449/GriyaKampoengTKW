@@ -24,15 +24,16 @@ import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.fotoPembayaran.G
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.fotoPembayaran.IsFotoPembayaranExistAsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.hargaKavling.GetHargaKavlingAsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.indenBooking.GetAllIndenBookingAsyncUseCase
-import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.indenBooking.pembayaran.GetAllPembayaranIndenBookingAsyncUseCase
-import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.indenBooking.hargaRumah.GetHargaRumahIndenBookingAsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.indenBooking.dataDiri.EditDataDiriIndenBookingAsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.indenBooking.dataDiri.GetDataDiriIndenBookingAsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.indenBooking.dataDiri.InsertDataDiriIndenBookingAsyncUseCase
+import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.indenBooking.hargaRumah.GetHargaRumahIndenBookingAsyncUseCase
+import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.indenBooking.hargaRumah.UpdateHargaRumahIndenBookingAsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.indenBooking.imageDataDiri.DeleteFotoIdentitasIndenBookingAsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.indenBooking.imageDataDiri.GetFotoIdentitasIndenBookingAsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.indenBooking.imageDataDiri.InsertFotoIdentitasIndenBookingAsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.indenBooking.imageDataDiri.UpdateFotoIdentitasIndenBookingAsyncUseCase
+import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.indenBooking.pembayaran.GetAllPembayaranIndenBookingAsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.kavling.GetKavlingByBlockAsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.kavling.GetListUnmigratedKavlingsAsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.kavling.GetProgressKavlingAsyncUseCase
@@ -561,9 +562,15 @@ object UseCaseModule {
         return GetAllPembayaranIndenBookingAsyncUseCase(indenBookingRepository, hargaRumahIndenBookingRepository, pembayaranRepository)
     }
 
+
+    // Inden Booking - Harga Rumah
     @Provides
     fun provideGetHargaRumahIndenBookingAsyncUseCase(hargaRumahIndenBookingRepository: HargaRumahIndenBookingRepository): GetHargaRumahIndenBookingAsyncUseCase {
         return GetHargaRumahIndenBookingAsyncUseCase(hargaRumahIndenBookingRepository)
+    }
+    @Provides
+    fun provideUpdateHargaRumahIndenBookingUseCase(hargaRumahIndenBookingRepository: HargaRumahIndenBookingRepository): UpdateHargaRumahIndenBookingAsyncUseCase {
+        return UpdateHargaRumahIndenBookingAsyncUseCase(hargaRumahIndenBookingRepository)
     }
 
 

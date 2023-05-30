@@ -8,15 +8,12 @@ import android.view.ViewGroup
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
-import androidx.lifecycle.lifecycleScope
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import net.bagusekasaputra.griyakampoengtkw.domain.NumberUtil
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.Pembayaran
+import net.bagusekasaputra.griyakampoengtkw.domain.entity.indenBooking.HargaRumahIndenBooking
 import net.bagusekasaputra.griyakampoengtkw.presentation.activity.DetailIndenBookingActivity
 import net.bagusekasaputra.griyakampoengtkw.presentation.custom.ThousandSeparatorTextWatcher
 import net.bagusekasaputra.griyakampoengtkw.presentation.databinding.DialogEditHargaRumahIndenBookingBinding
@@ -147,18 +144,43 @@ class FormPembayaranIndenBookingFragment : Fragment() {
             val isInvalidEdt = InputUtil.isNullOrEmptyEditTexts(dialogBinding.edtHarga)
 
             if (!isInvalidEdt) {
-                lifecycleScope.launch(Dispatchers.Default) {
-                    withContext(Dispatchers.Main) {
-                        dialogBinding.btnTambahkan.startAnimation()
-                    }
-
-                    delay(5000L)
-
-                    withContext(Dispatchers.Main) {
-                        dialogView.dismiss()
-                    }
+                val harga = dialogBinding.edtHarga.text.toString().let {
+                    NumberUtil.formatStringToLong(it)
+                }
+                val tambahLuasan = dialogBinding.edtTambahLuasan.text.toString().let {
+                    if (it.isNotEmpty()) NumberUtil.formatStringToLong(it)
+                    else 0L
                 }
 
+                val hargaRumah = HargaRumahIndenBooking(
+                    harga = harga,
+                    tambahLuasan = tambahLuasan,
+                    keyId = viewModel.currentKeyId,
+                )
+                viewModel.updateHargaRumah(
+                    keyId = viewModel.currentKeyId,
+                    newHargaRumah = hargaRumah,
+                    onProgress = {
+                        dialogBinding.btnTambahkan.startAnimation()
+                    },
+                    onSuccess = {
+                        dialogBinding.btnTambahkan.revertAnimation()
+
+                        dialogView.dismiss()
+
+                        Snackbar.make(binding.root, "Berhasil mengubah harga rumah!", Snackbar.LENGTH_SHORT)
+                            .show()
+
+                        sync()
+                    },
+                    onFailure = {
+                        dialogBinding.btnTambahkan.revertAnimation()
+
+                        dialogView.dismiss()
+
+                        Toast.makeText(requireContext(), it, Toast.LENGTH_LONG).show()
+                    }
+                )
             } else {
                 Toast.makeText(requireContext(), "Input belum benar!", Toast.LENGTH_SHORT).show()
             }

@@ -18,8 +18,7 @@ class RoomHargaRumahDataSource(
     }
 
     /**
-     * Automatically delete the data when there is found an entity with the same keyId,
-     * since using keyId as Primary Key doesn't work
+     * Automatically delete the data when there is found an entity with the same keyId.
      */
     override suspend fun insert(keyId: String, model: HargaRumahModel): Result<Nothing?> {
         return roomOperation {
@@ -34,6 +33,15 @@ class RoomHargaRumahDataSource(
 
             null
         }
+    }
+
+    /**
+     * Technically, update() method should already implemented inside insert(), since insert()
+     * method automatically delete any entities which has the same keyId.
+     * So, here it is.
+     */
+    override suspend fun update(keyId: String, newModel: HargaRumahModel): Result<Nothing?> {
+        return insert(keyId, newModel)
     }
 
     override suspend fun deleteAll(): Result<Nothing?> {

@@ -1,6 +1,10 @@
 package net.bagusekasaputra.griyakampoengtkw.data.repository
 
 import android.util.Log
+import kotlinx.coroutines.channels.awaitClose
+import kotlinx.coroutines.channels.trySendBlocking
+import kotlinx.coroutines.flow.callbackFlow
+import kotlinx.coroutines.flow.first
 import net.bagusekasaputra.griyakampoengtkw.data.CacheHelper
 import net.bagusekasaputra.griyakampoengtkw.data.DataUtil
 import net.bagusekasaputra.griyakampoengtkw.data.MyObjectMapper
@@ -50,5 +54,39 @@ class HargaRumahIndenBookingRepositoryImpl(
             originResult = refreshedLocalResult,
             targetMapper = MyObjectMapper::mapHargaRumah,
         )
+    }
+
+    override suspend fun update(
+        keyId: String,
+        newHargaRumah: HargaRumahIndenBooking
+    ): Result<Nothing?> {
+        return callbackFlow<Result<Nothing?>> {
+            val newModel = MyObjectMapper.mapHargaRumah(newHargaRumah)
+
+            // Remote Update
+            remoteDataSource.update(keyId, newModel)
+                .onSuccess {
+                    // Cache Update
+                    cacheHelper.updateMetadata(cacheLocalTable, cacheRemoteTable)
+                        .onSuccess {
+                            // Local update
+                            localDataSource.update(keyId, newModel)
+                                .onSuccess {
+                                    trySendBlocking(Result.success(null))
+                                }
+                                .onFailure {
+                                    trySendBlocking(Result.failure(it))
+                                }
+                        }
+                        .onFailure {
+                            trySendBlocking(Result.failure(it))
+                        }
+                }
+                .onFailure {
+                    trySendBlocking(Result.failure(it))
+                }
+
+            awaitClose {  }
+        }.first()
     }
 }
