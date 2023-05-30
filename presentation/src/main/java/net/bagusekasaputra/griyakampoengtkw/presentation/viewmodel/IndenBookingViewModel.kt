@@ -14,11 +14,12 @@ import kotlinx.coroutines.withContext
 import net.bagusekasaputra.griyakampoengtkw.domain.DataMode
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.indenBooking.GetAllIndenBookingAsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.indenBooking.GetAllPembayaranIndenBookingAsyncUseCase
-import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.indenBooking.imageDataDiri.GetFotoIdentitasIndenBookingAsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.indenBooking.GetHargaRumahIndenBookingAsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.indenBooking.dataDiri.EditDataDiriIndenBookingAsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.indenBooking.dataDiri.GetDataDiriIndenBookingAsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.indenBooking.dataDiri.InsertDataDiriIndenBookingAsyncUseCase
+import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.indenBooking.imageDataDiri.GetFotoIdentitasIndenBookingAsyncUseCase
+import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.indenBooking.imageDataDiri.InsertFotoIdentitasIndenBookingAsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.DataDiri
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.Pembayaran
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.indenBooking.HargaRumahIndenBooking
@@ -34,6 +35,7 @@ class IndenBookingViewModel @Inject constructor(
     private val editDataDiriIndenBookingAsyncUseCase: EditDataDiriIndenBookingAsyncUseCase,
     // Foto Identitas / Image Data Diri
     private val getFotoIdentitasIndenBookingAsyncUseCase: GetFotoIdentitasIndenBookingAsyncUseCase,
+    private val insertFotoIdentitasIndenBookingAsyncUseCase: InsertFotoIdentitasIndenBookingAsyncUseCase,
     // Pembayaran
     private val getAllPembayaranIndenBookingAsyncUseCase: GetAllPembayaranIndenBookingAsyncUseCase,
     // Harga Rumah
@@ -213,6 +215,32 @@ class IndenBookingViewModel @Inject constructor(
                     withContext(Dispatchers.Main) {
                         onFailure("Gagal mendapatkan foto identitas: " +
                                 "${it.javaClass.simpleName}:${it.message}")
+                    }
+                }
+            }
+        }
+    }
+
+    fun insertFotoIdentitas(
+        keyId: String,
+        uri: Uri,
+        onProgress: () -> Unit = {},
+        onComplete: () -> Unit = {},
+        onFailure: (msg: String) -> Unit = {},
+    ) {
+        onProgress()
+
+        viewModelScope.launch(Dispatchers.IO) {
+            val request = InsertFotoIdentitasIndenBookingAsyncUseCase.Request(keyId, uri)
+            insertFotoIdentitasIndenBookingAsyncUseCase.execute(request).collect { result ->
+                result.onSuccess {
+                    withContext(Dispatchers.Main) {
+                        onComplete()
+                    }
+                }
+                result.onFailure {
+                    withContext(Dispatchers.Main) {
+                        onFailure("Terjadi kesalahan: ${it.localizedMessage}")
                     }
                 }
             }

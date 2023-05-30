@@ -19,4 +19,6 @@ interface RemoteImageDataDiriDataSource {
      * Inden Booking related
      */
     suspend fun getFromIndenBooking(keyId: String): Result<Uri?>
+
+    suspend fun insertFromIndenBooking(keyId: String, uri: Uri): Result<Nothing?>
 }

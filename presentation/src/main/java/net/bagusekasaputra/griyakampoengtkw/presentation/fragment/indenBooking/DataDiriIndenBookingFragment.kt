@@ -41,27 +41,34 @@ class DataDiriIndenBookingFragment : Fragment() {
     lateinit var sharedPreferences: SharedPreferences
 
     private val launcherAddFoto = ImageUtil.createImagePickerLauncherResult(this) { uri ->
-        NotificationUtil.createNotification(
-            activity = requireActivity(),
-            title = "Menambahkan Foto Identitas",
-            content = "Mohon tunggu sebentar ...",
-            finished = false
-        )
+        if (uri != null) {
+            viewModel.insertFotoIdentitas(
+                keyId = viewModel.currentKeyId,
+                uri = uri,
+                onProgress = {
+                    NotificationUtil.createNotification(
+                        activity = requireActivity(),
+                        title = "Menambahkan Foto Identitas",
+                        content = "Mohon tunggu sebentar ...",
+                        finished = false
+                    )
+                },
+                onComplete = {
+                    NotificationUtil.createNotification(
+                        activity = requireActivity(),
+                        title = "Selesai menambahkan Foto Identitas!",
+                        content = "${viewModel.currentKeyId} telah ditambahkan",
+                        finished = true
+                    )
 
-        // TODO
-        lifecycleScope.launch(Dispatchers.IO) {
-            delay(5000L)
-
-            withContext(Dispatchers.Main) {
-                NotificationUtil.createNotification(
-                    activity = requireActivity(),
-                    title = "Selesai mengupload!",
-                    content = "Berhasil mengupload gambar ${uri.toString()}!",
-                    finished = true
-                )
-            }
-
-            uri?.toFile()?.delete()
+                    sync()
+                },
+                onFailure = {
+                    Toast.makeText(requireContext(), it, Toast.LENGTH_LONG).show()
+                }
+            )
+        } else {
+            Toast.makeText(requireContext(), "Uri Add Foto Launcher is NULL or Empty!", Toast.LENGTH_LONG).show()
         }
     }
 

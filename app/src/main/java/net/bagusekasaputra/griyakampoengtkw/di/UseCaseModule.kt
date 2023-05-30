@@ -30,6 +30,7 @@ import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.indenBooking.Get
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.indenBooking.dataDiri.EditDataDiriIndenBookingAsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.indenBooking.dataDiri.GetDataDiriIndenBookingAsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.indenBooking.dataDiri.InsertDataDiriIndenBookingAsyncUseCase
+import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.indenBooking.imageDataDiri.InsertFotoIdentitasIndenBookingAsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.kavling.GetKavlingByBlockAsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.kavling.GetListUnmigratedKavlingsAsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.kavling.GetProgressKavlingAsyncUseCase
@@ -528,6 +529,13 @@ object UseCaseModule {
     ): GetFotoIdentitasIndenBookingAsyncUseCase {
         return GetFotoIdentitasIndenBookingAsyncUseCase(imageDataDiriRepository)
     }
+    @Provides
+    fun provideInsertFotoIdentitasIndenBookingUseCase(
+        imageDataDiriRepository: ImageDataDiriRepository,
+    ): InsertFotoIdentitasIndenBookingAsyncUseCase {
+        return InsertFotoIdentitasIndenBookingAsyncUseCase(imageDataDiriRepository)
+    }
+
 
     // Inden Booking - Pembayaran
     @Provides

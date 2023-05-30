@@ -131,6 +131,7 @@ object RepositoryModule {
         backupImageDataDiriDataSource: BackupImageDataDiriDataSource,
         localMetadataDataSource: LocalMetadataDataSource,
         remoteMetadataDataSource: RemoteMetadataDataSource,
+        @ExternalDir externalFileDir: File?,
         contentResolver: ContentResolver,
         cacheHelper: CacheHelper,
     ): ImageDataDiriRepository {
@@ -140,6 +141,7 @@ object RepositoryModule {
             backupImageDataDiriDataSource,
             localMetadataDataSource,
             remoteMetadataDataSource,
+            externalFileDir,
             contentResolver,
             cacheHelper,
         )

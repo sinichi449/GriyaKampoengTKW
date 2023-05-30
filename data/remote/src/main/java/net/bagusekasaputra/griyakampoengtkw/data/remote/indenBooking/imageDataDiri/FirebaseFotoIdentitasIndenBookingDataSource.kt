@@ -15,7 +15,9 @@ class FirebaseFotoIdentitasIndenBookingDataSource(
     externalFileDir: File?
 ): RemoteFotoIdentitasIndenBookingDataSource {
 
-    private val imageRef = storageReference.child(FirebaseNodes.IMAGE_INDEN_BOOKING)
+    private val imageRef = storageReference.child(
+        "${FirebaseNodes.IMAGE_INDEN_BOOKING}/${FirebaseNodes.IMAGE_DATA_DIRI}"
+    )
     private val dstImgFile = File(externalFileDir, FirebaseNodes.IMAGE_INDEN_BOOKING)
 
     init {
@@ -33,7 +35,7 @@ class FirebaseFotoIdentitasIndenBookingDataSource(
             }
             downloadDestination = File(downloadDestination, imgFileName)
 
-            imageRef.child(FirebaseNodes.IMAGE_DATA_DIRI).child(imgFileName)
+            imageRef.child(imgFileName)
                 .getFile(downloadDestination)
                 .addOnCompleteListener {
                     Log.d("INDEN_BOOKING", "Image $imgFileName download complete!")
@@ -48,6 +50,25 @@ class FirebaseFotoIdentitasIndenBookingDataSource(
 
                     if (continuation.isActive) {
                         continuation.resume(Result.success(null))
+                    }
+                }
+        }
+    }
+
+    override suspend fun insert(keyId: String, uri: Uri): Result<Nothing?> {
+        return suspendCancellableCoroutine { continuation ->
+            val filename = "${keyId}.png"
+
+            imageRef.child(filename)
+                .putFile(uri)
+                .addOnCompleteListener {
+                    if (continuation.isActive) {
+                        continuation.resume(Result.success(null))
+                    }
+                }
+                .addOnFailureListener {
+                    if (continuation.isActive) {
+                        continuation.resume(Result.failure(it))
                     }
                 }
         }
