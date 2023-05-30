@@ -292,6 +292,50 @@ class ImageDataDiriRepositoryImpl(
         }.first()
     }
 
+    override suspend fun updateFromIndenBooking(keyId: String, uri: Uri): Result<Nothing?> {
+        return callbackFlow<Result<Nothing?>> {
+            Log.d("INDEN_BOOKING", "Begin update Foto Identitas for keyId $keyId ...")
+
+            // Copy to appropriate directory and delete the image leftover
+            Log.d("INDEN_BOOKING", "Copying foto identitas and deleting leftover for $keyId...")
+            val newUri = try {
+                moveIndenBookingFileAndDeleteImagePickerLeftover(keyId, uri)
+            } catch (e: Exception) {
+                trySendBlocking(Result.failure(e))
+
+                null
+            }
+
+            // Remote Update
+            Log.d("INDEN_BOOKING", "Remote update for Foto Identitas $keyId ...")
+            remoteImageDataDiri.updateFromIndenBooking(keyId, newUri!!)
+                .onSuccess {
+                    // Update cache
+                    Log.d("INDEN_BOOKING", "Updating cache for Foto Identitas update $keyId...")
+                    cacheHelper.updateMetadata(imageIndenBookingLocalTable, imageIndenBookingRemoteTable)
+                        .onSuccess {
+                            // Local Update
+                            Log.d("INDEN_BOOKING", "Local update for Foto Identitas $keyId ...")
+                            localImageDataDiri.updateFromIndenBooking(keyId, newUri)
+                                .onSuccess {
+                                    Log.d("INDEN_BOOKING", "Success updating Foto Identitas for $keyId !")
+                                    trySendBlocking(Result.success(null))
+                                }
+                                .onFailure {
+                                    trySendBlocking(Result.failure(it))
+                                }
+                        }
+                        .onFailure {
+                            trySendBlocking(Result.failure(it))
+                        }
+                }
+                .onFailure {
+                    trySendBlocking(Result.failure(it))
+                }
+            awaitClose {  }
+        }.first()
+    }
+
 
     private suspend fun updateRemoteMetadataOnWrite() {
         val currentTimemillis = System.currentTimeMillis()

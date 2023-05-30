@@ -28,4 +28,6 @@ interface ImageDataDiriRepository {
     suspend fun getFromIndenBooking(keyId: String): Result<Uri?>
 
     suspend fun insertFromIndenBooking(keyId: String, uri: Uri): Result<Nothing?>
+
+    suspend fun updateFromIndenBooking(keyId: String, uri: Uri): Result<Nothing?>
 }
