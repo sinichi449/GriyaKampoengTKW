@@ -67,7 +67,9 @@ class MainActivity : AppCompatActivity() {
         appBarConfiguration = AppBarConfiguration(
             topLevelDestinationIds = setOf(
                 R.id.nav_management_kavling,
+                R.id.nav_database_user,
                 R.id.nav_inden_booking,
+                R.id.nav_biaya_pribadi,
                 R.id.nav_pengaturan,
             ),
             drawerLayout = binding.drawerMain,
