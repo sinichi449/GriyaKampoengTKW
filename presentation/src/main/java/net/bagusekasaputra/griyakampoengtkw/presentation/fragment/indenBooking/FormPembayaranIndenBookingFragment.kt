@@ -43,8 +43,10 @@ class FormPembayaranIndenBookingFragment : Fragment() {
         }
 
         // Hide fab on scroll
-        val fabAction = (requireActivity() as DetailIndenBookingActivity).getFab()
-        UiUtils.hideFabsOnVerticalScroll(binding.scrollViewPembayaranIndenBooking, fabAction)
+        with((requireActivity() as DetailIndenBookingActivity).getFab()) {
+            // Hide on scroll
+            UiUtils.hideFabsOnVerticalScroll(binding.scrollViewPembayaranIndenBooking, this)
+        }
 
         sync()
 

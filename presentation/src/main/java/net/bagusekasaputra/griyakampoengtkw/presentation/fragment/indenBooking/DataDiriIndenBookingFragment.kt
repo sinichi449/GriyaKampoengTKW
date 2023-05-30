@@ -58,8 +58,10 @@ class DataDiriIndenBookingFragment : Fragment() {
         }
 
         // Hide fab on scroll
-        val fabAction = (requireActivity() as DetailIndenBookingActivity).getFab()
-        UiUtils.hideFabsOnVerticalScroll(binding.scrollViewImageviewAndCard, fabAction)
+        with((requireActivity() as DetailIndenBookingActivity).getFab()) {
+            // Hide on scroll
+            UiUtils.hideFabsOnVerticalScroll(binding.scrollViewImageviewAndCard, this)
+        }
 
         setupViewModel()
 
