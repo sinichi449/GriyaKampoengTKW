@@ -18,6 +18,7 @@ import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.indenBooking.Get
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.indenBooking.dataDiri.EditDataDiriIndenBookingAsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.indenBooking.dataDiri.GetDataDiriIndenBookingAsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.indenBooking.dataDiri.InsertDataDiriIndenBookingAsyncUseCase
+import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.indenBooking.imageDataDiri.DeleteFotoIdentitasIndenBookingAsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.indenBooking.imageDataDiri.GetFotoIdentitasIndenBookingAsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.indenBooking.imageDataDiri.InsertFotoIdentitasIndenBookingAsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.indenBooking.imageDataDiri.UpdateFotoIdentitasIndenBookingAsyncUseCase
@@ -38,6 +39,7 @@ class IndenBookingViewModel @Inject constructor(
     private val getFotoIdentitasIndenBookingAsyncUseCase: GetFotoIdentitasIndenBookingAsyncUseCase,
     private val insertFotoIdentitasIndenBookingAsyncUseCase: InsertFotoIdentitasIndenBookingAsyncUseCase,
     private val updateFotoIdentitasIndenBookingAsyncUseCase: UpdateFotoIdentitasIndenBookingAsyncUseCase,
+    private val deleteFotoIdentitasIndenBookingAsyncUseCase: DeleteFotoIdentitasIndenBookingAsyncUseCase,
     // Pembayaran
     private val getAllPembayaranIndenBookingAsyncUseCase: GetAllPembayaranIndenBookingAsyncUseCase,
     // Harga Rumah
@@ -261,6 +263,32 @@ class IndenBookingViewModel @Inject constructor(
         viewModelScope.launch(Dispatchers.IO) {
             val request = UpdateFotoIdentitasIndenBookingAsyncUseCase.Request(keyId, uri)
             updateFotoIdentitasIndenBookingAsyncUseCase.execute(request).collect { result ->
+                result.onSuccess {
+                    withContext(Dispatchers.Main) {
+                        onComplete()
+                    }
+                }
+                result.onFailure {
+                    withContext(Dispatchers.Main) {
+                        onFailure("Terjadi kesalahan: ${it.localizedMessage}")
+                    }
+                }
+            }
+        }
+    }
+
+    fun deleteFotoIdentitas(
+        keyId: String,
+        uri: Uri,
+        onProgress: () -> Unit = {},
+        onComplete: () -> Unit = {},
+        onFailure: (msg: String) -> Unit = {},
+    ) {
+        onProgress()
+
+        viewModelScope.launch(Dispatchers.IO) {
+            val request = DeleteFotoIdentitasIndenBookingAsyncUseCase.Request(keyId, uri)
+            deleteFotoIdentitasIndenBookingAsyncUseCase.execute(request).collect { result ->
                 result.onSuccess {
                     withContext(Dispatchers.Main) {
                         onComplete()

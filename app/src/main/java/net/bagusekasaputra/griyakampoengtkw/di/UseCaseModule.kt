@@ -29,6 +29,7 @@ import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.indenBooking.Get
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.indenBooking.dataDiri.EditDataDiriIndenBookingAsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.indenBooking.dataDiri.GetDataDiriIndenBookingAsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.indenBooking.dataDiri.InsertDataDiriIndenBookingAsyncUseCase
+import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.indenBooking.imageDataDiri.DeleteFotoIdentitasIndenBookingAsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.indenBooking.imageDataDiri.GetFotoIdentitasIndenBookingAsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.indenBooking.imageDataDiri.InsertFotoIdentitasIndenBookingAsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.indenBooking.imageDataDiri.UpdateFotoIdentitasIndenBookingAsyncUseCase
@@ -541,6 +542,12 @@ object UseCaseModule {
         imageDataDiriRepository: ImageDataDiriRepository,
     ): UpdateFotoIdentitasIndenBookingAsyncUseCase {
         return UpdateFotoIdentitasIndenBookingAsyncUseCase(imageDataDiriRepository)
+    }
+    @Provides
+    fun provideDeleteFotoIdentitasIndenBookingUseCase(
+        imageDataDiriRepository: ImageDataDiriRepository,
+    ): DeleteFotoIdentitasIndenBookingAsyncUseCase {
+        return DeleteFotoIdentitasIndenBookingAsyncUseCase(imageDataDiriRepository)
     }
 
 
