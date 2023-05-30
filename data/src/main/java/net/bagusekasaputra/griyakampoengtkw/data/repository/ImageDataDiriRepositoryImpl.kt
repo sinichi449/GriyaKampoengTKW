@@ -226,6 +226,12 @@ class ImageDataDiriRepositoryImpl(
             imageIndenBookingLocalTable,
             imageIndenBookingRemoteTable,
             onInvalid = {
+                // Delete all file cache in external storage
+                val dstFile = File(externalFileDir, "inden_booking_images/data_diri_images")
+                if (dstFile.exists()) {
+                    dstFile.deleteRecursively()
+                }
+
                 localImageDataDiri.deleteAllFromIndenBooking()
             }
         )

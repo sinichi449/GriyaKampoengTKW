@@ -54,11 +54,6 @@ class RoomFotoIdentitasDataSource(
 
     override suspend fun deleteAll(): Result<Nothing?> {
         return RoomRequestHelper.roomOperation {
-            val dstFile = File(externalFileDir, "inden_booking_images/data_diri_images")
-            if (dstFile.exists()) {
-                dstFile.deleteRecursively()
-            }
-
             fotoIdentitasDao.deleteAll()
 
             null
