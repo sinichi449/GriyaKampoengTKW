@@ -80,7 +80,6 @@ dependencies {
     implementation 'com.github.abhishekti7:UnicornFilePicker:1.0.2'
     implementation 'com.github.atwa:filepicker:1.0.7'
     implementation "moe.feng:MaterialStepperView:0.2.4.2"
-    implementation "com.github.bumptech.glide:glide:4.15.1"
     implementation "com.github.JDevZone:FillProgressLayout:v0.0.9"
     implementation "it.xabaras.android:recyclerview-swipedecorator:1.4"
 

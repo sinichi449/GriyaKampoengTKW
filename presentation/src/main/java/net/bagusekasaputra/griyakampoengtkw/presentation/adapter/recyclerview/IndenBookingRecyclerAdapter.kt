@@ -2,10 +2,9 @@ package net.bagusekasaputra.griyakampoengtkw.presentation.adapter.recyclerview
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
+import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.RecyclerView
-import com.bumptech.glide.Glide
-import com.bumptech.glide.load.engine.DiskCacheStrategy
 import net.bagusekasaputra.griyakampoengtkw.domain.NumberUtil
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.indenBooking.IndenBooking
 import net.bagusekasaputra.griyakampoengtkw.presentation.R
@@ -41,13 +40,13 @@ class IndenBookingRecyclerAdapter(
         val indenBooking = indenBookingList[position]
 
         if (indenBooking.fotoIdentitas != null) {
-            Glide.with(indenBookingFragment)
-                .load(indenBooking.fotoIdentitas)
-                // Need this for reloading same uri because of update operation
-                .diskCacheStrategy(DiskCacheStrategy.NONE)
-                .centerCrop()
-                .placeholder(R.drawable.bg_rounded_rectangle)
-                .into(holder.imgFotoIndentitas)
+            holder.imgFotoIndentitas.setImageURI(indenBooking.fotoIdentitas)
+        } else {
+            val dummyFotoDrawable = ContextCompat.getDrawable(
+                indenBookingFragment.requireContext(), R.drawable.avatar_1
+            )
+
+            holder.imgFotoIndentitas.setImageDrawable(dummyFotoDrawable)
         }
         holder.tvNamaCostumer.text = indenBooking.namaCostumer
         holder.tvNoIdentitas.text = indenBooking.noIdentitas

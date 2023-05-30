@@ -12,10 +12,9 @@ import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
-import com.bumptech.glide.Glide
-import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
@@ -169,16 +168,15 @@ class DataDiriIndenBookingFragment : Fragment() {
 
     private fun setupViewModel() {
         viewModel.fotoIdentitasUri.observe(requireActivity()) { fotoIdentitasUri ->
-            if (fotoIdentitasUri != null) {
-                Glide.with(this)
-                    .load(fotoIdentitasUri)
-                    // Need this for reloading same uri because of update operation
-                    .diskCacheStrategy(DiskCacheStrategy.NONE)
-                    .into(binding.imgProfile)
-            } else {
-                Glide.with(this)
-                    .load(R.drawable.avatar_1)
-                    .into(binding.imgProfile)
+            with(binding.imgProfile) {
+                if (fotoIdentitasUri != null) {
+                    setImageURI(fotoIdentitasUri)
+                } else {
+                    val dummyFotoDrawable = ContextCompat.getDrawable(
+                        requireContext(), R.drawable.avatar_1
+                    )
+                    setImageDrawable(dummyFotoDrawable)
+                }
             }
         }
 
