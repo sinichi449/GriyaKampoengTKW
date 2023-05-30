@@ -28,6 +28,7 @@ import net.bagusekasaputra.griyakampoeng.tkw.data.local.imageDataDiri.LocalImage
 import net.bagusekasaputra.griyakampoeng.tkw.data.local.imageSpr.LocalImageSprDataSourceImpl
 import net.bagusekasaputra.griyakampoeng.tkw.data.local.indenBooking.RoomIndenBookingDataSource
 import net.bagusekasaputra.griyakampoeng.tkw.data.local.indenBooking.dataDiri.RoomDataDiriIndenBookingDataSourceImpl
+import net.bagusekasaputra.griyakampoeng.tkw.data.local.indenBooking.hargaRumah.RoomHargaRumahDataSource
 import net.bagusekasaputra.griyakampoeng.tkw.data.local.indenBooking.imageDataDiri.RoomFotoIdentitasDataSource
 import net.bagusekasaputra.griyakampoeng.tkw.data.local.indenBooking.pembayaran.RoomPembayaranIndenBookingDataSource
 import net.bagusekasaputra.griyakampoeng.tkw.data.local.kavling.RoomKavlingDataSource
@@ -61,6 +62,7 @@ import net.bagusekasaputra.griyakampoengtkw.data.remote.imageDataDiri.RemoteFoto
 import net.bagusekasaputra.griyakampoengtkw.data.remote.imageDataDiri.StorageImageDataDiriDataSource
 import net.bagusekasaputra.griyakampoengtkw.data.remote.imageSpr.StorageImageSprDataSource
 import net.bagusekasaputra.griyakampoengtkw.data.remote.indenBooking.FirebaseIndenBookingDataSource
+import net.bagusekasaputra.griyakampoengtkw.data.remote.indenBooking.hargaRumah.FirebaseHargaRumahDataSource
 import net.bagusekasaputra.griyakampoengtkw.data.remote.indenBooking.imageDataDiri.FirebaseFotoIdentitasIndenBookingDataSource
 import net.bagusekasaputra.griyakampoengtkw.data.remote.indenBooking.pembayaran.FirebasePembayaranIndenBookingDataSource
 import net.bagusekasaputra.griyakampoengtkw.data.remote.kavling.FirebaseKavlingDataSource
@@ -503,5 +505,18 @@ object DataSourceModule {
     @Provides
     fun provideRemoteAmbilKuitansiDataSource(databaseReference: DatabaseReference): RemoteAmbilKuitansiDataSource {
         return FirebaseAmbilKuitansiDataSource(databaseReference)
+    }
+
+    /**
+     * Harga Rumah Inden Booking
+     */
+    @Provides
+    fun provideLocalHargaRumahIndenBookingDataSource(myRoomDatabase: MyRoomDatabase): LocalHargaRumahIndenBookingDataSource {
+        return RoomHargaRumahDataSource(myRoomDatabase)
+    }
+
+    @Provides
+    fun provideRemoteHargaRumahIndenBookingDataSource(databaseReference: DatabaseReference): RemoteHargaRumahIndenBookingDataSource {
+        return FirebaseHargaRumahDataSource(databaseReference)
     }
 }

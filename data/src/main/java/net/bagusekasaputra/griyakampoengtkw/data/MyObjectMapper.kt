@@ -428,6 +428,16 @@ object MyObjectMapper {
         }
     }
 
+    fun mapHargaRumah(hargaRumah: HargaRumahIndenBooking): HargaRumahModel {
+        return hargaRumah.let {
+            HargaRumahModel(
+                harga = it.harga,
+                tambahLuasan = it.tambahLuasan,
+                keyId = it.keyId,
+            )
+        }
+    }
+
 
     /**
      * Database User

@@ -389,4 +389,16 @@ object RepositoryModule {
     ): AmbilKuitansiRepository {
         return AmbilKuitansiRepositoryImpl(localDataSource, remoteDataSource, cacheHelper)
     }
+
+    /**
+     * Harga Rumah Inden Booking
+     */
+    @Provides
+    fun provideHargaRumahIndenBookingRepository(
+        localDataSource: LocalHargaRumahIndenBookingDataSource,
+        remoteDataSource: RemoteHargaRumahIndenBookingDataSource,
+        cacheHelper: CacheHelper,
+    ): HargaRumahIndenBookingRepository {
+        return HargaRumahIndenBookingRepositoryImpl(localDataSource, remoteDataSource, cacheHelper)
+    }
 }

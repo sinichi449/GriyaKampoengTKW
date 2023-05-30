@@ -5,17 +5,18 @@ import kotlinx.coroutines.flow.flow
 import net.bagusekasaputra.griyakampoengtkw.domain.DataMode
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.AsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.indenBooking.HargaRumahIndenBooking
-import net.bagusekasaputra.griyakampoengtkw.domain.repository.IndenBookingRepository
+import net.bagusekasaputra.griyakampoengtkw.domain.repository.HargaRumahIndenBookingRepository
 
 class GetHargaRumahIndenBookingAsyncUseCase(
-    private val indenBookingRepository: IndenBookingRepository
+    private val hargaRumahIndenBookingRepository: HargaRumahIndenBookingRepository,
 ): AsyncUseCase<GetHargaRumahIndenBookingAsyncUseCase.Request, HargaRumahIndenBooking>() {
 
     data class Request(val keyId: String): AsyncUseCase.Request
 
     override fun process(request: Request): Flow<Result<HargaRumahIndenBooking?>> {
         return flow {
-            val result = indenBookingRepository.getHargaRumah(request.keyId, DataMode.ONLINE)
+            val result = hargaRumahIndenBookingRepository
+                .get(request.keyId, DataMode.ONLINE)
 
             emit(result)
         }

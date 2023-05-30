@@ -5,12 +5,14 @@ import kotlinx.coroutines.flow.flow
 import net.bagusekasaputra.griyakampoengtkw.domain.DataMode
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.AsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.Pembayaran
+import net.bagusekasaputra.griyakampoengtkw.domain.repository.HargaRumahIndenBookingRepository
 import net.bagusekasaputra.griyakampoengtkw.domain.repository.IndenBookingRepository
 import net.bagusekasaputra.griyakampoengtkw.domain.repository.PembayaranRepository
 
 class GetAllPembayaranIndenBookingAsyncUseCase(
     private val indenBookingRepository: IndenBookingRepository,
-    private val pembayaranRepository: PembayaranRepository
+    private val hargaRumahIndenBookingRepository: HargaRumahIndenBookingRepository,
+    private val pembayaranRepository: PembayaranRepository,
 ): AsyncUseCase<GetAllPembayaranIndenBookingAsyncUseCase.Request, List<Pembayaran>>() {
 
     data class Request(val keyId: String): AsyncUseCase.Request
@@ -20,7 +22,7 @@ class GetAllPembayaranIndenBookingAsyncUseCase(
             val pembayaranList = pembayaranRepository
                 .getAllFromIndenBooking(request.keyId)
                 .getOrThrow()
-            val hargaRumah = indenBookingRepository.getHargaRumah(request.keyId, DataMode.ONLINE)
+            val hargaRumah = hargaRumahIndenBookingRepository.get(request.keyId, DataMode.ONLINE)
                 .getOrThrow()
 
             // Masking pembayaran: Total uang masuk, persentase, etc

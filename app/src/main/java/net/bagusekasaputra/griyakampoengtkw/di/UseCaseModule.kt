@@ -555,14 +555,15 @@ object UseCaseModule {
     @Provides
     fun provideGetAllPembayaranIndenBookingAsyncUseCase(
         indenBookingRepository: IndenBookingRepository,
+        hargaRumahIndenBookingRepository: HargaRumahIndenBookingRepository,
         pembayaranRepository: PembayaranRepository
     ): GetAllPembayaranIndenBookingAsyncUseCase {
-        return GetAllPembayaranIndenBookingAsyncUseCase(indenBookingRepository, pembayaranRepository)
+        return GetAllPembayaranIndenBookingAsyncUseCase(indenBookingRepository, hargaRumahIndenBookingRepository, pembayaranRepository)
     }
 
     @Provides
-    fun provideGetHargaRumahIndenBookingAsyncUseCase(indenBookingRepository: IndenBookingRepository): GetHargaRumahIndenBookingAsyncUseCase {
-        return GetHargaRumahIndenBookingAsyncUseCase(indenBookingRepository)
+    fun provideGetHargaRumahIndenBookingAsyncUseCase(hargaRumahIndenBookingRepository: HargaRumahIndenBookingRepository): GetHargaRumahIndenBookingAsyncUseCase {
+        return GetHargaRumahIndenBookingAsyncUseCase(hargaRumahIndenBookingRepository)
     }
 
 
