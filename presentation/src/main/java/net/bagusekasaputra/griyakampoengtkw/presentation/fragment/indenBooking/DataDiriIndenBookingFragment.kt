@@ -2,6 +2,7 @@ package net.bagusekasaputra.griyakampoengtkw.presentation.fragment.indenBooking
 
 import android.content.Intent
 import android.content.SharedPreferences
+import android.net.Uri
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -13,6 +14,7 @@ import androidx.fragment.app.activityViewModels
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
 import net.bagusekasaputra.griyakampoengtkw.presentation.ImageTransport
 import net.bagusekasaputra.griyakampoengtkw.presentation.R
@@ -134,9 +136,10 @@ class DataDiriIndenBookingFragment : Fragment() {
             }
 
             // Enable long click only when foto identitas is available
-            if (viewModel.fotoIdentitasUri.value != null) {
+            val fotoIdentitasUri = viewModel.fotoIdentitasUri.value
+            if (fotoIdentitasUri != null) {
                 setOnLongClickListener {
-                    popUpOnLongPressFotoIdentitas(this)
+                    popUpOnLongPressFotoIdentitas(this, fotoIdentitasUri)
 
                     true
                 }
@@ -224,7 +227,7 @@ class DataDiriIndenBookingFragment : Fragment() {
         }
     }
 
-    private fun popUpOnLongPressFotoIdentitas(anchorView: View) {
+    private fun popUpOnLongPressFotoIdentitas(anchorView: View, fotoIdentitasUri: Uri) {
         val popupMenu = PopupMenu(requireContext(), anchorView).apply {
             menuInflater.inflate(R.menu.popup_menu_foto_identitas_inden_booking, menu)
         }
@@ -242,12 +245,29 @@ class DataDiriIndenBookingFragment : Fragment() {
                             dialog.dismiss()
                         }
                         setPositiveButton("Ya") { dialog, _ ->
-                            Toast.makeText(requireContext(), "OK HAPUS!", Toast.LENGTH_SHORT)
-                                .show()
-
-                            sync()
-
                             dialog.dismiss()
+
+                            // Delete process
+                            val deleteProcessSnackbar = Snackbar.make(binding.root, "Menghapus foto identitas ...", Snackbar.LENGTH_INDEFINITE)
+
+                            viewModel.deleteFotoIdentitas(
+                                keyId = viewModel.currentKeyId,
+                                uri = fotoIdentitasUri,
+                                onProgress = {
+                                    deleteProcessSnackbar.show()
+                                },
+                                onComplete = {
+                                    deleteProcessSnackbar.dismiss()
+
+                                    Snackbar.make(binding.root, "Berhasil menghapus foto identitas!", Snackbar.LENGTH_SHORT)
+                                        .show()
+
+                                    sync()
+                                },
+                                onFailure = { failMsg ->
+                                    Toast.makeText(requireContext(), failMsg, Toast.LENGTH_LONG).show()
+                                }
+                            )
                         }
                     }
                         .create()
