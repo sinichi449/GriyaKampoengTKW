@@ -20,6 +20,7 @@ import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.indenBooking.dat
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.indenBooking.dataDiri.InsertDataDiriIndenBookingAsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.indenBooking.imageDataDiri.GetFotoIdentitasIndenBookingAsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.indenBooking.imageDataDiri.InsertFotoIdentitasIndenBookingAsyncUseCase
+import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.indenBooking.imageDataDiri.UpdateFotoIdentitasIndenBookingAsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.DataDiri
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.Pembayaran
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.indenBooking.HargaRumahIndenBooking
@@ -36,6 +37,7 @@ class IndenBookingViewModel @Inject constructor(
     // Foto Identitas / Image Data Diri
     private val getFotoIdentitasIndenBookingAsyncUseCase: GetFotoIdentitasIndenBookingAsyncUseCase,
     private val insertFotoIdentitasIndenBookingAsyncUseCase: InsertFotoIdentitasIndenBookingAsyncUseCase,
+    private val updateFotoIdentitasIndenBookingAsyncUseCase: UpdateFotoIdentitasIndenBookingAsyncUseCase,
     // Pembayaran
     private val getAllPembayaranIndenBookingAsyncUseCase: GetAllPembayaranIndenBookingAsyncUseCase,
     // Harga Rumah
@@ -233,6 +235,32 @@ class IndenBookingViewModel @Inject constructor(
         viewModelScope.launch(Dispatchers.IO) {
             val request = InsertFotoIdentitasIndenBookingAsyncUseCase.Request(keyId, uri)
             insertFotoIdentitasIndenBookingAsyncUseCase.execute(request).collect { result ->
+                result.onSuccess {
+                    withContext(Dispatchers.Main) {
+                        onComplete()
+                    }
+                }
+                result.onFailure {
+                    withContext(Dispatchers.Main) {
+                        onFailure("Terjadi kesalahan: ${it.localizedMessage}")
+                    }
+                }
+            }
+        }
+    }
+
+    fun updateFotoIdentitas(
+        keyId: String,
+        uri: Uri,
+        onProgress: () -> Unit = {},
+        onComplete: () -> Unit = {},
+        onFailure: (msg: String) -> Unit = {},
+    ) {
+        onProgress()
+
+        viewModelScope.launch(Dispatchers.IO) {
+            val request = UpdateFotoIdentitasIndenBookingAsyncUseCase.Request(keyId, uri)
+            updateFotoIdentitasIndenBookingAsyncUseCase.execute(request).collect { result ->
                 result.onSuccess {
                     withContext(Dispatchers.Main) {
                         onComplete()

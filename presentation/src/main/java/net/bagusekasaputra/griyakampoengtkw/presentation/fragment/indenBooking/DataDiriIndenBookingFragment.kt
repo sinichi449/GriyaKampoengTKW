@@ -8,17 +8,12 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.PopupMenu
 import android.widget.Toast
-import androidx.core.net.toFile
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
-import androidx.lifecycle.lifecycleScope
 import com.bumptech.glide.Glide
+import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import net.bagusekasaputra.griyakampoengtkw.presentation.ImageTransport
 import net.bagusekasaputra.griyakampoengtkw.presentation.R
 import net.bagusekasaputra.griyakampoengtkw.presentation.activity.DetailIndenBookingActivity
@@ -73,27 +68,34 @@ class DataDiriIndenBookingFragment : Fragment() {
     }
 
     private val launcherUpdateFoto = ImageUtil.createImagePickerLauncherResult(this) { uri ->
-        NotificationUtil.createNotification(
-            activity = requireActivity(),
-            title = "Mengupdate Foto Identitas",
-            content = "Mohon tunggu sebentar ...",
-            finished = false
-        )
+        if (uri != null) {
+            viewModel.updateFotoIdentitas(
+                keyId = viewModel.currentKeyId,
+                uri = uri,
+                onProgress = {
+                    NotificationUtil.createNotification(
+                        activity = requireActivity(),
+                        title = "Mengubah Foto Identitas",
+                        content = "Mohon tunggu sebentar ...",
+                        finished = false
+                    )
+                },
+                onComplete = {
+                    NotificationUtil.createNotification(
+                        activity = requireActivity(),
+                        title = "Selesai mengubah Foto Identitas!",
+                        content = "${viewModel.currentKeyId} telah diubah!",
+                        finished = true
+                    )
 
-        // TODO
-        lifecycleScope.launch(Dispatchers.IO) {
-            delay(3000L)
-
-            withContext(Dispatchers.Main) {
-                NotificationUtil.createNotification(
-                    activity = requireActivity(),
-                    title = "Selesai mengupload!",
-                    content = "Berhasil mengupdate gambar ${uri.toString()}!",
-                    finished = true
-                )
-            }
-
-            uri?.toFile()?.delete()
+                    sync()
+                },
+                onFailure = {
+                    Toast.makeText(requireContext(), it, Toast.LENGTH_LONG).show()
+                }
+            )
+        } else {
+            Toast.makeText(requireContext(), "Uri Update Foto Launcher is NULL or Empty!", Toast.LENGTH_LONG).show()
         }
     }
 
@@ -168,6 +170,8 @@ class DataDiriIndenBookingFragment : Fragment() {
             if (fotoIdentitasUri != null) {
                 Glide.with(this)
                     .load(fotoIdentitasUri)
+                    // Need this for reloading same uri because of update operation
+                    .diskCacheStrategy(DiskCacheStrategy.NONE)
                     .into(binding.imgProfile)
             } else {
                 Glide.with(this)
