@@ -56,17 +56,11 @@ class FormPembayaranIndenBookingFragment : Fragment() {
     private fun setupViewModel() {
         viewModel.hargaRumahIndenBooking.observe(requireActivity()) {
             it?.also { hargaRumah ->
-                binding.tvHarga.text = StringBuilder()
-                    .append("Rp. ")
-                    .append(NumberUtil.formatLongToString(hargaRumah.harga))
+                binding.tvHarga.text = NumberUtil.formatLongToString(hargaRumah.harga)
 
-                binding.tvTambahanLuas.text = StringBuilder()
-                    .append("Rp. ")
-                    .append(NumberUtil.formatLongToString(hargaRumah.tambahLuasan))
+                binding.tvTambahanLuas.text = NumberUtil.formatLongToString(hargaRumah.tambahLuasan)
 
-                binding.tvTotalHarga.text = StringBuilder()
-                    .append("Rp. ")
-                    .append(NumberUtil.formatLongToString(hargaRumah.hargaDanTambahLuasan))
+                binding.tvTotalHarga.text = NumberUtil.formatLongToString(hargaRumah.hargaDanTambahLuasan)
             }
         }
 
