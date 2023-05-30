@@ -22,6 +22,7 @@ import androidx.fragment.app.activityViewModels
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
 import net.bagusekasaputra.griyakampoengtkw.presentation.R
@@ -152,7 +153,8 @@ class IndenBookingFragment : Fragment() {
                             adapter = indenBookingRecyclerAdapter,
                             direction = direction,
                             position = position,
-                            keyId = indenBooking.keyId
+                            keyId = indenBooking.keyId,
+                            namaCustomer = indenBooking.namaCostumer,
                         )
                     }
 
@@ -167,7 +169,8 @@ class IndenBookingFragment : Fragment() {
         adapter: IndenBookingRecyclerAdapter,
         direction: Int,
         position: Int,
-        keyId: String
+        keyId: String,
+        namaCustomer: String,
     ) {
         val editIndenBooking = direction == ItemTouchHelper.RIGHT
         val deleteIndenBooking = direction == ItemTouchHelper.LEFT
@@ -182,8 +185,25 @@ class IndenBookingFragment : Fragment() {
 
             startActivityForResult(intent, REQUEST_CODE_EDIT_INDEN_BOOKING)
         } else if (deleteIndenBooking) {
-            Toast.makeText(requireContext(), "Delete!", Toast.LENGTH_SHORT).show()
-            adapter.notifyItemChanged(position)
+            // Show confirmation delete dialog
+            MaterialAlertDialogBuilder(requireContext()).apply {
+                setTitle("Hapus $namaCustomer?")
+                setMessage("Apakah Anda yakin ingin menghapus data ini? PERHATIAN: Semua data yang terkait akan ikut terhapus, seperti Foto Identitas, Harga Kavling, Catatan, Foto, dan Data Pembayaran!")
+                setNegativeButton("Tidak") { dialog, _ ->
+                    dialog.dismiss()
+                }
+                setPositiveButton("Ya") { dialog, _ ->
+                    // TODO
+                    Toast.makeText(requireContext(), "OK!", Toast.LENGTH_SHORT).show()
+
+                    dialog.dismiss()
+                }
+                setOnDismissListener {
+                    adapter.notifyItemChanged(position)
+                }
+            }
+                .create()
+                .show()
         }
     }
 
