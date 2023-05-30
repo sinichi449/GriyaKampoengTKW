@@ -31,4 +31,6 @@ interface DataDiriRepository {
 
     // This will return the the key id
     suspend fun insertFromIndenBooking(dataDiri: DataDiri): Result<String?>
+
+    suspend fun updateFromIndenBooking(keyId: String, newDataDiri: DataDiri): Result<Nothing?>
 }

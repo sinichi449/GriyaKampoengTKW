@@ -91,6 +91,14 @@ class RoomDataDiriDataSource(
         return dataDiriIndenBookingDataSource.deleteAll()
     }
 
+    override suspend fun updateFromIndenBooking(
+        keyId: String,
+        newModel: DataDiriModel
+    ): Result<Nothing?> {
+        return dataDiriIndenBookingDataSource.update(keyId, newModel)
+    }
+
+
     private fun mapDataDiri(dataDiriRoomEntity: DataDiriRoomEntity): DataDiriModel {
         return dataDiriRoomEntity.let {
             DataDiriModel(
@@ -132,6 +140,8 @@ interface RoomDataDiriIndenBookingDataSource {
     suspend fun get(keyId: String): Result<DataDiriModel?>
 
     suspend fun insert(keyId: String, model: DataDiriModel): Result<Nothing?>
+
+    suspend fun update(keyId: String, newModel: DataDiriModel): Result<Nothing?>
 
     suspend fun deleteAll(): Result<Nothing?>
 }

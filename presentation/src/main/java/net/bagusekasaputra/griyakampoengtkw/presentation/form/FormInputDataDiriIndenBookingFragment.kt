@@ -18,7 +18,6 @@ import net.bagusekasaputra.griyakampoengtkw.presentation.databinding.FragmentFor
 import net.bagusekasaputra.griyakampoengtkw.presentation.util.Consts
 import net.bagusekasaputra.griyakampoengtkw.presentation.util.InputUtil
 import net.bagusekasaputra.griyakampoengtkw.presentation.viewmodel.IndenBookingViewModel
-import kotlin.random.Random
 
 @AndroidEntryPoint
 class FormInputDataDiriIndenBookingFragment : Fragment() {
@@ -104,16 +103,20 @@ class FormInputDataDiriIndenBookingFragment : Fragment() {
                 )
 
                 if (isEditMode) {
-                    // TODO
-                    val randomSuccess = Random.nextBoolean()
-                    if (randomSuccess) {
-                        sendResultAndExit(Activity.RESULT_OK, null)
-                    } else {
-                        val failedData = Intent()
-                        failedData.putExtra(FormActivity.EXTRAS_FAIL_MSG, "Random error!")
+                    viewModel.updateDataDiri(keyId!!, dataDiri,
+                        onProgress = {
+                            // TODO
+                        },
+                        onComplete = {
+                            sendResultAndExit(Activity.RESULT_OK, null)
+                        },
+                        onFailure = {
+                            val failureData = Intent()
+                            failureData.putExtra(FormActivity.EXTRAS_FAIL_MSG, it)
 
-                        sendResultAndExit(Activity.RESULT_CANCELED, failedData)
-                    }
+                            sendResultAndExit(Activity.RESULT_CANCELED, failureData)
+                        }
+                    )
                 } else {
                     viewModel.insertDataDiri(
                         dataDiri,

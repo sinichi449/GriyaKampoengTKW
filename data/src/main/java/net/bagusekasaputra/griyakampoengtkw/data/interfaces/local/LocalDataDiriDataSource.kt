@@ -19,5 +19,7 @@ interface LocalDataDiriDataSource {
 
     suspend fun insertFromIndenBooking(keyId: String, model: DataDiriModel): Result<Nothing?>
 
+    suspend fun updateFromIndenBooking(keyId: String, newModel: DataDiriModel): Result<Nothing?>
+
     suspend fun deleteAllFromIndenBooking(): Result<Nothing?>
 }

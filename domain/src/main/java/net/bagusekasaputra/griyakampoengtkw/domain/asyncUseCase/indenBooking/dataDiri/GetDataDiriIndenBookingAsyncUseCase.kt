@@ -1,4 +1,4 @@
-package net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.dataDiri
+package net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.indenBooking.dataDiri
 
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow

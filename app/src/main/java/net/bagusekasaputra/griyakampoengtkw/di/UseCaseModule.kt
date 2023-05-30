@@ -15,7 +15,6 @@ import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.biayaPribadi.Get
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.block.GetAllBlocksAsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.catatanPembayaran.GetCatatanPembayaranAsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.dataDiri.GetDataDiriAsyncUseCase
-import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.dataDiri.GetDataDiriIndenBookingAsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.databaseUser.GetAllDatabaseUserAsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.databaseUser.InsertDatabaseUserAsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.feeMarketing.GetFeeMarketingByKavlingKodeAsyncUseCase
@@ -28,6 +27,8 @@ import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.indenBooking.Get
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.indenBooking.GetAllPembayaranIndenBookingAsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.indenBooking.GetFotoIdentitasIndenBookingAsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.indenBooking.GetHargaRumahIndenBookingAsyncUseCase
+import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.indenBooking.dataDiri.EditDataDiriIndenBookingAsyncUseCase
+import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.indenBooking.dataDiri.GetDataDiriIndenBookingAsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.indenBooking.dataDiri.InsertDataDiriIndenBookingAsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.kavling.GetKavlingByBlockAsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.kavling.GetListUnmigratedKavlingsAsyncUseCase
@@ -510,11 +511,15 @@ object UseCaseModule {
     fun provideGetDataDiriIndenBookingUseCase(dataDiriRepository: DataDiriRepository): GetDataDiriIndenBookingAsyncUseCase {
         return GetDataDiriIndenBookingAsyncUseCase(dataDiriRepository)
     }
-
     @Provides
     fun provideInsertDataDiriIndenBookingUseCase(dataDiriRepository: DataDiriRepository): InsertDataDiriIndenBookingAsyncUseCase {
         return InsertDataDiriIndenBookingAsyncUseCase(dataDiriRepository)
     }
+    @Provides
+    fun provideEditDataDiriIndenBookingUseCase(dataDiriRepository: DataDiriRepository): EditDataDiriIndenBookingAsyncUseCase {
+        return EditDataDiriIndenBookingAsyncUseCase(dataDiriRepository)
+    }
+
 
     // Inden Booking - Foto Identitas / Image Data Diri
     @Provides

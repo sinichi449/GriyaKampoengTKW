@@ -32,6 +32,18 @@ class RoomDataDiriIndenBookingDataSourceImpl(
         }
     }
 
+    override suspend fun update(keyId: String, newModel: DataDiriModel): Result<Nothing?> {
+        return RoomRequestHelper.roomOperation {
+            // delete first
+            dataDiriDao.delete(keyId)
+
+            // then insert new
+            dataDiriDao.insert(newModel.toEntity(keyId))
+
+            null
+        }
+    }
+
     override suspend fun deleteAll(): Result<Nothing?> {
         return RoomRequestHelper.roomOperation {
             dataDiriDao.deleteAll()

@@ -313,6 +313,40 @@ class DataDiriRepositoryImpl(
         }.first()
     }
 
+    override suspend fun updateFromIndenBooking(
+        keyId: String,
+        newDataDiri: DataDiri
+    ): Result<Nothing?> {
+        return callbackFlow<Result<Nothing?>> {
+            val newModel = MyObjectMapper.mapDataDiri(newDataDiri)
+
+            // Remote update
+            remoteDataDiriDataSource.updateFromIndenBooking(keyId, newModel)
+                .onSuccess {
+                    // Cache update
+                    cacheHelper.updateMetadata(dataDiriIndenBookingLocalTable, dataDiriIndenBookingRemoteTable)
+                        .onSuccess {
+                            // Local update
+                            localDataDiriDataSource.updateFromIndenBooking(keyId, newModel)
+                                .onSuccess {
+                                    trySendBlocking(Result.success(null))
+                                }
+                                .onFailure {
+                                    trySendBlocking(Result.failure(it))
+                                }
+                        }
+                        .onFailure {
+                            trySendBlocking(Result.failure(it))
+                        }
+                }
+                .onFailure {
+                    trySendBlocking(Result.failure(it))
+                }
+
+            awaitClose {  }
+        }.first()
+    }
+
     private suspend fun checkCache() {
         // Cache validation
         val localTimestamp = localMetadata.get(metadataTable)?.timestamp

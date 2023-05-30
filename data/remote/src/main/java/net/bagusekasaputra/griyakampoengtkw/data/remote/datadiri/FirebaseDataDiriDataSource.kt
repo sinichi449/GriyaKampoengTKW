@@ -10,6 +10,7 @@ import kotlinx.coroutines.channels.trySendBlocking
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.suspendCancellableCoroutine
 import net.bagusekasaputra.griyakampoengtkw.data.DataUtil
 import net.bagusekasaputra.griyakampoengtkw.data.interfaces.remote.RemoteDataDiriDataSource
 import net.bagusekasaputra.griyakampoengtkw.data.model.DataDiriModel
@@ -155,6 +156,28 @@ class FirebaseDataDiriDataSource(
                 }
                 .addOnFailureListener {
                     continuation.resume(Result.failure(it))
+                }
+        }
+    }
+
+    override suspend fun updateFromIndenBooking(
+        keyId: String,
+        newModel: DataDiriModel
+    ): Result<Nothing?> {
+        return suspendCancellableCoroutine { continuation ->
+            val dataDiriIndenBookingChildPath = "${keyId}/${FirebaseNodes.DATA_DIRI}"
+
+            indenBookingRef.child(dataDiriIndenBookingChildPath)
+                .setValue(newModel)
+                .addOnSuccessListener {
+                    if (continuation.isActive) {
+                        continuation.resume(Result.success(null))
+                    }
+                }
+                .addOnFailureListener {
+                    if (continuation.isActive) {
+                        continuation.resume(Result.failure(it))
+                    }
                 }
         }
     }

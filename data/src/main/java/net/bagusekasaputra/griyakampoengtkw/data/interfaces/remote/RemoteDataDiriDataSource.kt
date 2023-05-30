@@ -21,4 +21,5 @@ interface RemoteDataDiriDataSource {
 
     suspend fun insertFromIndenBooking(model: DataDiriModel): Result<String?>
 
+    suspend fun updateFromIndenBooking(keyId: String, newModel: DataDiriModel): Result<Nothing?>
 }
