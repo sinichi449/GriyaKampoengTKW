@@ -5,10 +5,12 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.PopupMenu
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import com.bumptech.glide.Glide
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import dagger.hilt.android.AndroidEntryPoint
 import net.bagusekasaputra.griyakampoengtkw.presentation.ImageTransport
 import net.bagusekasaputra.griyakampoengtkw.presentation.R
@@ -42,19 +44,31 @@ class DataDiriIndenBookingFragment : Fragment() {
             sync()
         }
 
-        binding.imgProfile.setOnClickListener {
-            // Open full image
-            val fullImageIntent = Intent(requireContext(), FullImageActivity::class.java)
-            val fullImageTransportData = ImageTransport(
-                sendIntention = GriyaNodes.INTENT_DATA_DIRI_INDEN_BOOKING,
-                content = mapOf(
-                    Pair("pathFoto", viewModel.fotoIdentitasUri.value?.toString() ?: "")
-                ),
-                dataMode = viewModel.dataMode,
-            )
+        // Setup onClick and onHold imgProfile
+        with(binding.imgProfile) {
+            setOnClickListener {
+                // Open full image
+                val fullImageIntent = Intent(requireContext(), FullImageActivity::class.java)
+                val fullImageTransportData = ImageTransport(
+                    sendIntention = GriyaNodes.INTENT_DATA_DIRI_INDEN_BOOKING,
+                    content = mapOf(
+                        Pair("pathFoto", viewModel.fotoIdentitasUri.value?.toString() ?: "")
+                    ),
+                    dataMode = viewModel.dataMode,
+                )
 
-            fullImageIntent.putExtra(GriyaNodes.INTENT_SOURCE_IMAGE, fullImageTransportData)
-            startActivity(fullImageIntent)
+                fullImageIntent.putExtra(GriyaNodes.INTENT_SOURCE_IMAGE, fullImageTransportData)
+                startActivity(fullImageIntent)
+            }
+
+            // Enable long click only when foto identitas is available
+            if (viewModel.fotoIdentitasUri.value != null) {
+                setOnLongClickListener {
+                    popUpOnLongPressFotoIdentitas(this)
+
+                    true
+                }
+            }
         }
 
         // Hide fab on scroll
@@ -122,6 +136,42 @@ class DataDiriIndenBookingFragment : Fragment() {
                     Toast.makeText(requireContext(), it, Toast.LENGTH_LONG).show()
                 }
             )
+        }
+    }
+
+    private fun popUpOnLongPressFotoIdentitas(anchorView: View) {
+        val popupMenu = PopupMenu(requireContext(), anchorView).apply {
+            menuInflater.inflate(R.menu.popup_menu_foto_identitas_inden_booking, menu)
+        }
+
+        popupMenu.show()
+
+        popupMenu.setOnMenuItemClickListener {
+            when (it.itemId) {
+                R.id.hapus_foto_identitas_inden_booking -> {
+                    // Show confirmation for deleting foto identitas
+                    MaterialAlertDialogBuilder(requireContext()).apply {
+                        setTitle("Hapus Foto Identitas ${viewModel.namaCostumer}?")
+                        setMessage("Apakah Anda yakin ingin menghapus foto identitas ini?")
+                        setNegativeButton("Tidak") { dialog, _ ->
+                            dialog.dismiss()
+                        }
+                        setPositiveButton("Ya") { dialog, _ ->
+                            Toast.makeText(requireContext(), "OK HAPUS!", Toast.LENGTH_SHORT)
+                                .show()
+
+                            sync()
+
+                            dialog.dismiss()
+                        }
+                    }
+                        .create()
+                        .show()
+
+                    true
+                }
+                else -> false
+            }
         }
     }
 }
