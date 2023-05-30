@@ -102,10 +102,11 @@ class FormInputDataDiriIndenBookingFragment : Fragment() {
                     noHp = noHp,
                 )
 
+                val snackBarProgress = Snackbar.make(binding.root, "Memproses data, tunggu sebentar ...", Snackbar.LENGTH_INDEFINITE)
                 if (isEditMode) {
                     viewModel.updateDataDiri(keyId!!, dataDiri,
                         onProgress = {
-                            // TODO
+                            snackBarProgress.show()
                         },
                         onComplete = {
                             sendResultAndExit(Activity.RESULT_OK, null)
@@ -121,7 +122,7 @@ class FormInputDataDiriIndenBookingFragment : Fragment() {
                     viewModel.insertDataDiri(
                         dataDiri,
                         onProgress = {
-                            // TODO
+                            snackBarProgress.show()
                         },
                         onComplete = { generatedKeyId ->
                             val dataToSend = Intent()
