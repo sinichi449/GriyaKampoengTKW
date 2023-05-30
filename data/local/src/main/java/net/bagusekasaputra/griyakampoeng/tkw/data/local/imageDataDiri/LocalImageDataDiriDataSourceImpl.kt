@@ -160,6 +160,10 @@ class LocalImageDataDiriDataSourceImpl(
         return imageIndenBooking.insert(keyId, uri)
     }
 
+    override suspend fun updateFromIndenBooking(keyId: String, newUri: Uri): Result<Nothing?> {
+        return imageIndenBooking.update(keyId, newUri)
+    }
+
     override suspend fun deleteAllFromIndenBooking(): Result<Nothing?> {
         return imageIndenBooking.deleteAll()
     }
@@ -176,6 +180,8 @@ interface LocalFotoIdentitasDataSource {
     suspend fun get(keyId: String): Result<Uri?>
 
     suspend fun insert(keyId: String, uri: Uri): Result<Nothing?>
+
+    suspend fun update(keyId: String, newUri: Uri): Result<Nothing?>
 
     suspend fun deleteAll(): Result<Nothing?>
 

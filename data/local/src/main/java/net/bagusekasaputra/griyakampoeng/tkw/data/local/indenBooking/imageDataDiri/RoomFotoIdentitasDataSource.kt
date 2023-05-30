@@ -31,6 +31,19 @@ class RoomFotoIdentitasDataSource(
         }
     }
 
+    override suspend fun update(keyId: String, newUri: Uri): Result<Nothing?> {
+        return RoomRequestHelper.roomOperation {
+            // delete first
+            fotoIdentitasDao.delete(keyId)
+
+            // then insert new
+            val entity = FotoIdentitasIndenBookingEntity(keyId, newUri.toString())
+            fotoIdentitasDao.insert(entity)
+
+            null
+        }
+    }
+
     override suspend fun deleteAll(): Result<Nothing?> {
         return RoomRequestHelper.roomOperation {
             val dstFile = File(externalFileDir, "inden_booking_images/data_diri_images")
