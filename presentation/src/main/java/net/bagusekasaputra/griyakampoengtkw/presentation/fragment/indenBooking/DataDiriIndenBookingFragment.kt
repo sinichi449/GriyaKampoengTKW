@@ -1,31 +1,94 @@
 package net.bagusekasaputra.griyakampoengtkw.presentation.fragment.indenBooking
 
 import android.content.Intent
+import android.content.SharedPreferences
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.PopupMenu
 import android.widget.Toast
+import androidx.core.net.toFile
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
+import androidx.lifecycle.lifecycleScope
 import com.bumptech.glide.Glide
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import net.bagusekasaputra.griyakampoengtkw.presentation.ImageTransport
 import net.bagusekasaputra.griyakampoengtkw.presentation.R
 import net.bagusekasaputra.griyakampoengtkw.presentation.activity.DetailIndenBookingActivity
 import net.bagusekasaputra.griyakampoengtkw.presentation.activity.FullImageActivity
 import net.bagusekasaputra.griyakampoengtkw.presentation.databinding.FragmentDataDiriIndenBookingBinding
 import net.bagusekasaputra.griyakampoengtkw.presentation.util.GriyaNodes
+import net.bagusekasaputra.griyakampoengtkw.presentation.util.ImageUtil
+import net.bagusekasaputra.griyakampoengtkw.presentation.util.NotificationUtil
 import net.bagusekasaputra.griyakampoengtkw.presentation.util.UiUtils
 import net.bagusekasaputra.griyakampoengtkw.presentation.viewmodel.IndenBookingViewModel
+import javax.inject.Inject
 
 @AndroidEntryPoint
 class DataDiriIndenBookingFragment : Fragment() {
 
     private lateinit var binding: FragmentDataDiriIndenBookingBinding
     private val viewModel by activityViewModels<IndenBookingViewModel>()
+
+    @Inject
+    lateinit var sharedPreferences: SharedPreferences
+
+    private val launcherAddFoto = ImageUtil.createImagePickerLauncherResult(this) { uri ->
+        NotificationUtil.createNotification(
+            activity = requireActivity(),
+            title = "Menambahkan Foto Identitas",
+            content = "Mohon tunggu sebentar ...",
+            finished = false
+        )
+
+        // TODO
+        lifecycleScope.launch(Dispatchers.IO) {
+            delay(5000L)
+
+            withContext(Dispatchers.Main) {
+                NotificationUtil.createNotification(
+                    activity = requireActivity(),
+                    title = "Selesai mengupload!",
+                    content = "Berhasil mengupload gambar ${uri.toString()}!",
+                    finished = true
+                )
+            }
+
+            uri?.toFile()?.delete()
+        }
+    }
+
+    private val launcherUpdateFoto = ImageUtil.createImagePickerLauncherResult(this) { uri ->
+        NotificationUtil.createNotification(
+            activity = requireActivity(),
+            title = "Mengupdate Foto Identitas",
+            content = "Mohon tunggu sebentar ...",
+            finished = false
+        )
+
+        // TODO
+        lifecycleScope.launch(Dispatchers.IO) {
+            delay(3000L)
+
+            withContext(Dispatchers.Main) {
+                NotificationUtil.createNotification(
+                    activity = requireActivity(),
+                    title = "Selesai mengupload!",
+                    content = "Berhasil mengupdate gambar ${uri.toString()}!",
+                    finished = true
+                )
+            }
+
+            uri?.toFile()?.delete()
+        }
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -75,6 +138,17 @@ class DataDiriIndenBookingFragment : Fragment() {
         with((requireActivity() as DetailIndenBookingActivity).getFab()) {
             // Hide on scroll
             UiUtils.hideFabsOnVerticalScroll(binding.scrollViewImageviewAndCard, this)
+
+            setOnClickListener {
+                val uriFotoIdentitas = viewModel.fotoIdentitasUri.value
+                val launcher = if (uriFotoIdentitas != null)
+                    launcherUpdateFoto else launcherAddFoto
+                val compressionSize = sharedPreferences.getInt("max_size_foto_data_diri", 256)
+
+                ImageUtil.showImagePicker(this@DataDiriIndenBookingFragment,
+                    launcher, compressionSize
+                )
+            }
         }
 
         setupViewModel()
