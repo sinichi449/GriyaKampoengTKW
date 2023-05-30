@@ -82,4 +82,23 @@ class FirebaseFotoIdentitasIndenBookingDataSource(
         return insert(keyId, newUri)
     }
 
+    override suspend fun delete(keyId: String): Result<Nothing?> {
+        return suspendCancellableCoroutine { continuation ->
+            val fileName = "${keyId}.png"
+
+            imageRef.child(fileName)
+                .delete()
+                .addOnSuccessListener {
+                    if (continuation.isActive) {
+                        continuation.resume(Result.success(null))
+                    }
+                }
+                .addOnFailureListener {
+                    if (continuation.isActive) {
+                        continuation.resume(Result.failure(it))
+                    }
+                }
+        }
+    }
+
 }

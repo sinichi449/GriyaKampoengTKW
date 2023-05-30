@@ -146,6 +146,12 @@ class StorageImageDataDiriDataSource(
         return imageIndenBooking.update(keyId, newUri)
     }
 
+    override suspend fun deleteFromIndenBooking(keyId: String): Result<Nothing?> {
+        return imageIndenBooking.delete(keyId)
+    }
+
+
+
 
     private fun getFileName(kavlingKode: String) = "${kavlingKode}_data_diri.png"
 
@@ -170,5 +176,7 @@ interface RemoteFotoIdentitasIndenBookingDataSource {
     suspend fun insert(keyId: String, uri: Uri): Result<Nothing?>
 
     suspend fun update(keyId: String, newUri: Uri): Result<Nothing?>
+
+    suspend fun delete(keyId: String): Result<Nothing?>
 
 }

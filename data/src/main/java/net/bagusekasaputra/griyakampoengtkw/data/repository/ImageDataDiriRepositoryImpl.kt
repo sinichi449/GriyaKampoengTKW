@@ -336,6 +336,42 @@ class ImageDataDiriRepositoryImpl(
         }.first()
     }
 
+    override suspend fun deleteFromIndenBooking(keyId: String, uri: Uri): Result<Nothing?> {
+        return callbackFlow<Result<Nothing?>> {
+            // Delete from cache external storage first
+            try {
+                uri.toFile().delete()
+            } catch (e: Exception) {
+                trySendBlocking(Result.failure(e))
+            }
+
+            // Remote Deletion
+            remoteImageDataDiri.deleteFromIndenBooking(keyId)
+                .onSuccess {
+                    // Cache update
+                    cacheHelper.updateMetadata(imageIndenBookingLocalTable, imageIndenBookingRemoteTable)
+                        .onSuccess {
+                            // Local Deletion
+                            localImageDataDiri.deleteFromIndenBooking(keyId)
+                                .onSuccess {
+                                    trySendBlocking(Result.success(null))
+                                }
+                                .onFailure {
+                                    trySendBlocking(Result.failure(it))
+                                }
+                        }
+                        .onFailure {
+                            trySendBlocking(Result.failure(it))
+                        }
+                }
+                .onFailure {
+                    trySendBlocking(Result.failure(it))
+                }
+
+            awaitClose {  }
+        }.first()
+    }
+
 
     private suspend fun updateRemoteMetadataOnWrite() {
         val currentTimemillis = System.currentTimeMillis()

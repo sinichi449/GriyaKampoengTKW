@@ -44,5 +44,7 @@ interface LocalImageDataDiriDataSource {
 
     suspend fun updateFromIndenBooking(keyId: String, newUri: Uri): Result<Nothing?>
 
+    suspend fun deleteFromIndenBooking(keyId: String): Result<Nothing?>
+
     suspend fun deleteAllFromIndenBooking(): Result<Nothing?>
 }

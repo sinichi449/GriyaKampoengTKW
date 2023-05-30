@@ -44,6 +44,14 @@ class RoomFotoIdentitasDataSource(
         }
     }
 
+    override suspend fun delete(keyId: String): Result<Nothing?> {
+        return RoomRequestHelper.roomOperation {
+            fotoIdentitasDao.delete(keyId)
+
+            null
+        }
+    }
+
     override suspend fun deleteAll(): Result<Nothing?> {
         return RoomRequestHelper.roomOperation {
             val dstFile = File(externalFileDir, "inden_booking_images/data_diri_images")
