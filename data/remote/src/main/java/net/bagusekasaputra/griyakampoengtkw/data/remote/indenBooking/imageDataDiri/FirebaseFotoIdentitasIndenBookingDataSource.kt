@@ -74,4 +74,12 @@ class FirebaseFotoIdentitasIndenBookingDataSource(
         }
     }
 
+    /**
+     * Technically this would be the same as insert() method, as Firebase Storage automatically
+     * overwrite any same filename. So, here it is.
+     */
+    override suspend fun update(keyId: String, newUri: Uri): Result<Nothing?> {
+        return insert(keyId, newUri)
+    }
+
 }
