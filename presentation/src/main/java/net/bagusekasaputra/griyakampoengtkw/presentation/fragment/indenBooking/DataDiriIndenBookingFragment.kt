@@ -1,13 +1,16 @@
+@file:Suppress("DEPRECATION")
+
 package net.bagusekasaputra.griyakampoengtkw.presentation.fragment.indenBooking
 
 import android.content.Intent
 import android.content.SharedPreferences
-import android.net.Uri
 import android.os.Bundle
 import android.view.LayoutInflater
+import android.view.Menu
+import android.view.MenuInflater
+import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
-import android.widget.PopupMenu
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
@@ -101,6 +104,12 @@ class DataDiriIndenBookingFragment : Fragment() {
         }
     }
 
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+
+        setHasOptionsMenu(true)
+    }
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -133,16 +142,6 @@ class DataDiriIndenBookingFragment : Fragment() {
 
                 fullImageIntent.putExtra(GriyaNodes.INTENT_SOURCE_IMAGE, fullImageTransportData)
                 startActivity(fullImageIntent)
-            }
-
-            // Enable long click only when foto identitas is available
-            val fotoIdentitasUri = viewModel.fotoIdentitasUri.value
-            if (fotoIdentitasUri != null) {
-                setOnLongClickListener {
-                    popUpOnLongPressFotoIdentitas(this, fotoIdentitasUri)
-
-                    true
-                }
             }
         }
 
@@ -227,16 +226,19 @@ class DataDiriIndenBookingFragment : Fragment() {
         }
     }
 
-    private fun popUpOnLongPressFotoIdentitas(anchorView: View, fotoIdentitasUri: Uri) {
-        val popupMenu = PopupMenu(requireContext(), anchorView).apply {
-            menuInflater.inflate(R.menu.popup_menu_foto_identitas_inden_booking, menu)
-        }
+    @Deprecated("Deprecated in Java")
+    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
+        super.onCreateOptionsMenu(menu, inflater)
+        inflater.inflate(R.menu.menu_foto_identitas_inden_booking, menu)
+    }
 
-        popupMenu.show()
+    @Deprecated("Deprecated in Java")
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        return when (item.itemId) {
+            R.id.hapus_foto_identitas_inden_booking -> {
+                val fotoIdentitasUri = viewModel.fotoIdentitasUri.value
 
-        popupMenu.setOnMenuItemClickListener {
-            when (it.itemId) {
-                R.id.hapus_foto_identitas_inden_booking -> {
+                if (fotoIdentitasUri != null) {
                     // Show confirmation for deleting foto identitas
                     MaterialAlertDialogBuilder(requireContext()).apply {
                         setTitle("Hapus Foto Identitas ${viewModel.namaCostumer}?")
@@ -265,18 +267,22 @@ class DataDiriIndenBookingFragment : Fragment() {
                                     sync()
                                 },
                                 onFailure = { failMsg ->
-                                    Toast.makeText(requireContext(), failMsg, Toast.LENGTH_LONG).show()
+                                    Toast.makeText(requireContext(), failMsg, Toast.LENGTH_LONG)
+                                        .show()
                                 }
                             )
                         }
                     }
                         .create()
                         .show()
-
-                    true
+                } else {
+                    Toast.makeText(requireContext(), "Foto identitas masih kosong!", Toast.LENGTH_LONG).show()
                 }
-                else -> false
+
+                true
             }
+            else -> super.onOptionsItemSelected(item)
         }
     }
+
 }
