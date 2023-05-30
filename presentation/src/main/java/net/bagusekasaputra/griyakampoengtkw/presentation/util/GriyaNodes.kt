@@ -11,6 +11,8 @@ class GriyaNodes {
         const val INTENT_FOTO_KUITANSI = "foto_kuitansi"
         const val INTENT_FOTO_SPR = "foto_spr"
         const val INTENT_FOTO_PEMBAYARAN = "foto_pembayaran"
+
+        const val INTENT_DATA_DIRI_INDEN_BOOKING = "data_diri_inden_booking"
         const val INTENT_FOTO_INDEN_BOOKING = "foto_inden_booking"
 
         const val SHARED_PREFS_NEW_FEATURE = "new_feature"

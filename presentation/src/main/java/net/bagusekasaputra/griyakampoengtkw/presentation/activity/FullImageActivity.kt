@@ -11,7 +11,6 @@ import android.widget.ImageView
 import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.net.toUri
 import com.igreenwood.loupe.Loupe
 import dagger.hilt.android.AndroidEntryPoint
 import net.bagusekasaputra.griyakampoengtkw.presentation.ImageTransport
@@ -19,7 +18,6 @@ import net.bagusekasaputra.griyakampoengtkw.presentation.R
 import net.bagusekasaputra.griyakampoengtkw.presentation.databinding.ActivityFullImageBinding
 import net.bagusekasaputra.griyakampoengtkw.presentation.util.GriyaNodes
 import net.bagusekasaputra.griyakampoengtkw.presentation.viewmodel.ImageViewModel
-import java.io.File
 
 @AndroidEntryPoint
 class FullImageActivity : AppCompatActivity() {
@@ -165,11 +163,17 @@ class FullImageActivity : AppCompatActivity() {
                     }
                 }
             }
-            GriyaNodes.INTENT_FOTO_INDEN_BOOKING -> {
-                val pathFoto = mapContent["pathFoto"]!!
-                val uri = File(pathFoto).toUri()
+            GriyaNodes.INTENT_DATA_DIRI_INDEN_BOOKING -> {
+                val pathFoto = mapContent["pathFoto"]
 
-                createLoupe(uri)
+                if (pathFoto.isNullOrEmpty()) {
+                    Toast.makeText(this, "Path foto is NULL or Empty!", Toast.LENGTH_SHORT).show()
+                } else {
+                    val uri = Uri.parse(pathFoto)
+
+                    createLoupe(uri)
+                }
+
             }
         }
     }

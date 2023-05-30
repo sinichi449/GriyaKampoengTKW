@@ -1,5 +1,6 @@
 package net.bagusekasaputra.griyakampoengtkw.presentation.fragment.indenBooking
 
+import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -9,9 +10,12 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import com.bumptech.glide.Glide
 import dagger.hilt.android.AndroidEntryPoint
+import net.bagusekasaputra.griyakampoengtkw.presentation.ImageTransport
 import net.bagusekasaputra.griyakampoengtkw.presentation.R
 import net.bagusekasaputra.griyakampoengtkw.presentation.activity.DetailIndenBookingActivity
+import net.bagusekasaputra.griyakampoengtkw.presentation.activity.FullImageActivity
 import net.bagusekasaputra.griyakampoengtkw.presentation.databinding.FragmentDataDiriIndenBookingBinding
+import net.bagusekasaputra.griyakampoengtkw.presentation.util.GriyaNodes
 import net.bagusekasaputra.griyakampoengtkw.presentation.util.UiUtils
 import net.bagusekasaputra.griyakampoengtkw.presentation.viewmodel.IndenBookingViewModel
 
@@ -36,6 +40,21 @@ class DataDiriIndenBookingFragment : Fragment() {
 
         binding.swipeRefreshDataDiri.setOnRefreshListener {
             sync()
+        }
+
+        binding.imgProfile.setOnClickListener {
+            // Open full image
+            val fullImageIntent = Intent(requireContext(), FullImageActivity::class.java)
+            val fullImageTransportData = ImageTransport(
+                sendIntention = GriyaNodes.INTENT_DATA_DIRI_INDEN_BOOKING,
+                content = mapOf(
+                    Pair("pathFoto", viewModel.fotoIdentitasUri.value?.toString() ?: "")
+                ),
+                dataMode = viewModel.dataMode,
+            )
+
+            fullImageIntent.putExtra(GriyaNodes.INTENT_SOURCE_IMAGE, fullImageTransportData)
+            startActivity(fullImageIntent)
         }
 
         // Hide fab on scroll
