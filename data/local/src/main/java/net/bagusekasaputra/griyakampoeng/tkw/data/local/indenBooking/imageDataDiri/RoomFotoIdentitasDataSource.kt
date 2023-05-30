@@ -51,6 +51,8 @@ class RoomFotoIdentitasDataSource(
                 dstFile.deleteRecursively()
             }
 
+            fotoIdentitasDao.deleteAll()
+
             null
         }
     }

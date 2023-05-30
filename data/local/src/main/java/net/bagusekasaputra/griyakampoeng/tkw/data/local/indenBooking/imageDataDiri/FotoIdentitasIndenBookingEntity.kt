@@ -30,4 +30,7 @@ interface FotoIdentitasIndenBookingDao {
     @Query("DELETE FROM foto_identitas_inden_booking WHERE keyId=:keyId")
     fun delete(keyId: String)
 
+    @Query("DELETE FROM foto_identitas_inden_booking")
+    fun deleteAll()
+
 }
