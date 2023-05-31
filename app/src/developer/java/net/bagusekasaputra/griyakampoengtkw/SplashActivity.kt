@@ -108,6 +108,9 @@ class SplashActivity : AppCompatActivity() {
                 )
 
                 // Initialize cache
+                withContext(Dispatchers.Main) {
+                    bindingLoading.layoutCekKoneksi.tvInfoPeriksaInternet.text = "Menginisialisasi Cache"
+                }
                 cacheInitializer.initialize()
                     .onSuccess {
                         Log.d("INIT_CACHE", "Success initializing cache!")
