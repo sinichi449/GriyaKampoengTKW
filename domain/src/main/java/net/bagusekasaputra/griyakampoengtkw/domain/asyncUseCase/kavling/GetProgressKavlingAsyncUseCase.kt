@@ -9,6 +9,7 @@ import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.AsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.ProgressKavling
 import net.bagusekasaputra.griyakampoengtkw.domain.repository.BaselinePembayaranRepository
 import net.bagusekasaputra.griyakampoengtkw.domain.repository.PembayaranRepository
+import java.util.Calendar
 
 class GetProgressKavlingAsyncUseCase(
     private val baselinePembayaranRepository: BaselinePembayaranRepository,
@@ -21,26 +22,30 @@ class GetProgressKavlingAsyncUseCase(
         return flow {
             val mapProgress = mutableMapOf<String, ProgressKavling>()
 
+            val tanggalSekarang = Calendar.getInstance()
+            val bulanIni = tanggalSekarang.get(Calendar.MONTH) + 1
+            val tahunIni = tanggalSekarang.get(Calendar.YEAR)
+
             request.listKavling.forEach { kavling ->
                 Log.d("STATUS_PEMBAYARAN", "====================================================================================")
                 Log.d("STATUS_PEMBAYARAN", "Memproses progress $kavling ...")
 
-                val uangMasukBulanIni = pembayaranRepository.getUangMasukBulanIni(kavling, DataMode.OFFLINE)
-                val angsuranBulanan = baselinePembayaranRepository.getAngsuran(kavling, DataMode.OFFLINE)
+                val uangMasukBulanIni = pembayaranRepository.getUangMasukBulanIni(kavling,
+                        bulanIni, tahunIni, DataMode.OFFLINE
+                    ).getOrThrow()
+                val angsuranBulanan = baselinePembayaranRepository.getAngsuran(kavling, DataMode.OFFLINE) ?: 0L
 
-                Log.d("STATUS_PEMBAYARAN", "${kavling}: Angsuran Rp. ${NumberUtil.formatLongToString(angsuranBulanan ?: 0L)}")
-                Log.d("STATUS_PEMBAYARAN", "${kavling}: Uang masuk Rp. ${NumberUtil.formatLongToString(uangMasukBulanIni ?: 0L)}")
+                Log.d("STATUS_PEMBAYARAN", "${kavling}: Angsuran Rp. ${NumberUtil.formatLongToString(
+                    angsuranBulanan
+                )}")
+                Log.d("STATUS_PEMBAYARAN", "${kavling}: Uang masuk Rp. ${NumberUtil.formatLongToString(uangMasukBulanIni)}")
 
-                if (uangMasukBulanIni != null && angsuranBulanan != null) {
-                    val progressKavling = ProgressKavling(
-                        kavling = kavling,
-                        angsuranBulanan = angsuranBulanan,
-                        uangMasukBulanIni = uangMasukBulanIni,
-                    )
-                    mapProgress[kavling] = progressKavling
-                } else {
-                    Log.d("STATUS_PEMBAYARAN", "${kavling}: No Data")
-                }
+                val progressKavling = ProgressKavling(
+                    kavling = kavling,
+                    angsuranBulanan = angsuranBulanan,
+                    uangMasukBulanIni = uangMasukBulanIni,
+                )
+                mapProgress[kavling] = progressKavling
             }
 
             emit(Result.success(mapProgress))

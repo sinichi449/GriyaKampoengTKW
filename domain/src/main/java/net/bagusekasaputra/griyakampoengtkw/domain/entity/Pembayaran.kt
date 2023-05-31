@@ -1,5 +1,6 @@
 package net.bagusekasaputra.griyakampoengtkw.domain.entity
 
+import net.bagusekasaputra.griyakampoengtkw.domain.DateUtil
 import net.bagusekasaputra.griyakampoengtkw.domain.DateUtil.getCustomRangeDate
 import net.bagusekasaputra.griyakampoengtkw.domain.DateUtil.getMonthlyRangeDate
 import net.bagusekasaputra.griyakampoengtkw.domain.DateUtil.getWeeklyRangeDate
@@ -139,6 +140,51 @@ data class Pembayaran(
                         tanggalPembayaran.isWithinRange(startDate, endDate)
                     }
                 }
+            }
+        }
+
+        fun adakahPembayaranBulanDanTahunIni(
+            pembayarans: List<Pembayaran>,
+            bulan: Int, // Not calendar type of Bulan!
+            tahun: Int,
+        ): Boolean {
+            var sudahBayar = false
+            val tanggalDibayar = Calendar.getInstance()
+
+            // For loops can use "break" whenever pembayaran bulan ini has been found,
+            // That's why I use manual for() loop instead of forEach().
+            for (pembayaran in pembayarans) {
+                tanggalDibayar.time = pembayaran.tanggal.toDate()
+
+                val bulanDibayar = tanggalDibayar.get(Calendar.MONTH) + 1
+                val tahunDibayar = tanggalDibayar.get(Calendar.YEAR)
+
+                if ((bulan == bulanDibayar) && (tahun == tahunDibayar)) {
+                    sudahBayar = true
+
+                    break // <-- I need this convenient command
+                }
+            }
+
+            return sudahBayar
+        }
+
+        fun uangMasukPadaBulanDanTahunIni(
+            pembayarans: List<Pembayaran>,
+            bulan: Int, // Not Calendar type of Bulan!
+            tahun: Int,
+        ): Long {
+            val rangeTanggal = DateUtil.getMonthlyRangeDate(bulan - 1, tahun)
+            val awalTanggal = rangeTanggal[0]
+            val akhirTanggal = rangeTanggal[1]
+
+            val pembayaranPadaBulanTsb = pembayarans.filterPeriode(
+                PeriodeRekap.CUSTOM, awalTanggal, akhirTanggal
+            )
+            return if (!pembayaranPadaBulanTsb.isNullOrEmpty()) {
+                hitungTotalUangMasuk(pembayaranPadaBulanTsb)
+            } else {
+                0L
             }
         }
 

@@ -21,16 +21,16 @@ class GetKavlingByBlockAsyncUseCase(
             // sort the kavling by number
             result.map { kavlingList ->
                 if (kavlingList != null) {
-                    val bulanIni = Calendar.getInstance().let {
-                        it.get(Calendar.MONTH).plus(1)
-                    }
+                    val calendar = Calendar.getInstance()
+                    val bulanIni = calendar.get(Calendar.MONTH) + 1
+                    val tahunIni = calendar.get(Calendar.YEAR)
 
                     kavlingList.forEach {
                         val sudahBayarAngsuranBulanIni = pembayaranRepository
-                            .sudahBayarAngsuran(it.kode, bulanIni, request.dataMode)
+                            .sudahBayarAngsuran(it.kode, bulanIni, tahunIni, request.dataMode)
                             .getOrThrow()
-                            ?: false
-                        it.sudahBayarBulanIni = sudahBayarAngsuranBulanIni
+
+                        it.sudahBayarBulanIni = sudahBayarAngsuranBulanIni ?: false
                     }
 
                     sortKavling(kavlingList)

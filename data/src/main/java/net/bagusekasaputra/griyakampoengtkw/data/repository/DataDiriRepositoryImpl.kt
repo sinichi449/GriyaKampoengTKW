@@ -21,7 +21,6 @@ import net.bagusekasaputra.griyakampoengtkw.data.interfaces.remote.RemoteMetadat
 import net.bagusekasaputra.griyakampoengtkw.data.model.MetadataModel
 import net.bagusekasaputra.griyakampoengtkw.domain.DataMode
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.DataDiri
-import net.bagusekasaputra.griyakampoengtkw.domain.entity.Kavling
 import net.bagusekasaputra.griyakampoengtkw.domain.repository.DataDiriRepository
 
 class DataDiriRepositoryImpl(
@@ -221,12 +220,11 @@ class DataDiriRepositoryImpl(
         }
     }
 
-    override suspend fun refreshCache(kavlings: List<Kavling>): Result<Nothing?> {
+    override suspend fun refreshCache(kavlings: List<String>): Result<Nothing?> {
         return try {
             localDataDiriDataSource.deleteAll().getOrThrow()
 
-            kavlings.forEach { kavling ->
-                val kavlingKode = kavling.kode
+            kavlings.forEach { kavlingKode ->
                 val dataDiriModel = remoteDataDiriDataSource.getDataDiri(kavlingKode).getOrThrow()
 
                 dataDiriModel?.also {

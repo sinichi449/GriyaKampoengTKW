@@ -19,10 +19,8 @@ import net.bagusekasaputra.griyakampoengtkw.data.interfaces.remote.RemoteMetadat
 import net.bagusekasaputra.griyakampoengtkw.data.interfaces.remote.RemotePembayaranSource
 import net.bagusekasaputra.griyakampoengtkw.data.model.MetadataModel
 import net.bagusekasaputra.griyakampoengtkw.domain.DataMode
-import net.bagusekasaputra.griyakampoengtkw.domain.DateUtil.toDate
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.Pembayaran
 import net.bagusekasaputra.griyakampoengtkw.domain.repository.PembayaranRepository
-import java.util.Calendar
 
 class PembayaranRepositoryImpl(
     private val localPembayaranDataSource: LocalPembayaranDataSource,
@@ -213,34 +211,24 @@ class PembayaranRepositoryImpl(
     override suspend fun sudahBayarAngsuran(
         kavlingKode: String,
         bulan: Int,
+        tahun: Int,
         dataMode: DataMode
     ): Result<Boolean?> {
         return try {
-            val cacheListPembayaran = if (dataMode == DataMode.DATA_LAMA)
+            val cacheModels = if (dataMode == DataMode.DATA_LAMA)
                 backupPembayaranDataSource.getAllPembayaran(kavlingKode)
                     .getOrNull()
             else
                 localPembayaranDataSource.getAllPembayaran(kavlingKode)
                     .getOrNull()
 
-            if (cacheListPembayaran.isNullOrEmpty()) {
+            if (cacheModels.isNullOrEmpty()) {
                 Result.success(false)
             } else {
-                var sudahBayar = false
-
-                for (p in cacheListPembayaran) {
-                    val bulanBayar = Calendar.getInstance().let {
-                        it.time = p.tanggal.toDate()
-
-                        it.get(Calendar.MONTH) + 1
-                    }
-                    if (bulan == bulanBayar) {
-                        sudahBayar = true
-                        break
-                    }
-                }
-
-                Result.success(sudahBayar)
+                val pembayarans = cacheModels.map { MyObjectMapper.mapPembayaran(it) }
+                Result.success(Pembayaran.adakahPembayaranBulanDanTahunIni(
+                    pembayarans, bulan, tahun,
+                ))
             }
         } catch (e: Exception) {
             e.printStackTrace()
@@ -250,45 +238,46 @@ class PembayaranRepositoryImpl(
         }
     }
 
-    override suspend fun getUangMasukBulanIni(kavlingKode: String, dataMode: DataMode): Long? {
-        return flow<Long?> {
-            val calendar = Calendar.getInstance()
-            val bulanSekarang = calendar.get(Calendar.MONTH)
-            val tahunSekarang = calendar.get(Calendar.YEAR)
+    override suspend fun getUangMasukBulanIni(
+        kavlingKode: String,
+        bulan: Int,
+        tahun: Int,
+        dataMode: DataMode
+    ): Result<Long> {
+        return callbackFlow<Result<Long>> {
+            try {
+                val models = localPembayaranDataSource.getAllPembayaran(kavlingKode)
+                    .getOrThrow()
+                val pembayarans = models?.map { MyObjectMapper.mapPembayaran(it) }
 
-            val pembayaransAll = localPembayaranDataSource.getAllPembayaran(kavlingKode)
-                .onFailure { Log.d("STATUS_PEMBAYARAN", "Gagal mendapatkan list pembayaran: ${it.message}") }
-                .getOrNull()
-            val pembayaransBulanIni = pembayaransAll?.filter {
-                val tanggalDibayar = Calendar.getInstance().apply {
-                    time = it.tanggal.toDate()
+                if (!pembayarans.isNullOrEmpty()) {
+                    trySendBlocking(Result.success(
+                        Pembayaran.uangMasukPadaBulanDanTahunIni(pembayarans, bulan, tahun)
+                    ))
+                } else {
+                    trySendBlocking(Result.success(0L))
                 }
-                val bulanBayar = tanggalDibayar.get(Calendar.MONTH)
-                val tahunBayar = tanggalDibayar.get(Calendar.YEAR)
-
-                bulanBayar == bulanSekarang && tahunBayar == tahunSekarang
+            } catch (e: Exception) {
+                trySendBlocking(Result.failure(e))
             }
 
-            Log.d("STATUS_PEMBAYARAN", "Pembayaran pada ${bulanSekarang + 1}/${tahunSekarang}: $pembayaransBulanIni")
-
-            if (pembayaransBulanIni != null) {
-                val list = pembayaransBulanIni.map { mapPembayaran(it) }
-
-                emit(Pembayaran.hitungTotalUangMasuk(list))
-            } else {
-                emit(0L)
-            }
+            awaitClose {  }
         }.first()
     }
 
     override suspend fun refreshCache(kavlings: List<String>): Result<Nothing?> {
         return try {
             localPembayaranDataSource.deleteAll().getOrThrow()
-            kavlings.forEach { kavling ->
-                val remoteResult = remotePembayaranSource.getAllPembayaran(kavling).getOrThrow()
+
+            kavlings.forEach { kavlingKode ->
+                val remoteResult = remotePembayaranSource.getAllPembayaran(kavlingKode).getOrThrow()
 
                 remoteResult?.also { pembayaranModels ->
-                    localPembayaranDataSource.addAllPembayaranModel(kavling, pembayaranModels)
+                    if (pembayaranModels.isNotEmpty()) {
+                        localPembayaranDataSource.addAllPembayaranModel(kavlingKode, pembayaranModels)
+                    } else {
+                        Log.d("INIT_CACHE", "Pembayaran can't be refreshed because Remote Data Source returning an empty list!")
+                    }
                 }
             }
 

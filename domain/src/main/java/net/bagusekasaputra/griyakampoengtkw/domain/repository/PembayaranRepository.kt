@@ -26,10 +26,20 @@ interface PembayaranRepository {
 
     fun deleteAllPembayaran(kavlingKode: String): Flow<Result<Boolean>>
 
-    suspend fun sudahBayarAngsuran(kavlingKode: String, bulan: Int, dataMode: DataMode): Result<Boolean?>
+    suspend fun sudahBayarAngsuran(
+        kavlingKode: String,
+        bulan: Int,
+        tahun: Int,
+        dataMode: DataMode
+    ): Result<Boolean?>
 
     // Currently offline only
-    suspend fun getUangMasukBulanIni(kavlingKode: String, dataMode: DataMode): Long?
+    suspend fun getUangMasukBulanIni(
+        kavlingKode: String,
+        bulan: Int,
+        tahun: Int,
+        dataMode: DataMode
+    ): Result<Long>
 
     suspend fun refreshCache(kavlings: List<String>): Result<Nothing?>
 

@@ -12,10 +12,8 @@ import net.bagusekasaputra.griyakampoengtkw.data.interfaces.local.LocalBaselineP
 import net.bagusekasaputra.griyakampoengtkw.data.interfaces.local.LocalMetadataDataSource
 import net.bagusekasaputra.griyakampoengtkw.data.interfaces.remote.RemoteBaselinePembayaranDataSource
 import net.bagusekasaputra.griyakampoengtkw.data.interfaces.remote.RemoteMetadataDataSource
-import net.bagusekasaputra.griyakampoengtkw.data.model.BaselinePembayaranModel
 import net.bagusekasaputra.griyakampoengtkw.domain.DataMode
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.BaselinePembayaran
-import net.bagusekasaputra.griyakampoengtkw.domain.entity.Kavling
 import net.bagusekasaputra.griyakampoengtkw.domain.repository.BaselinePembayaranRepository
 
 class BaselinePembayaranRepositoryImpl(
@@ -122,19 +120,17 @@ class BaselinePembayaranRepositoryImpl(
         }.first()
     }
 
-    override suspend fun refreshCache(kavlings: List<Kavling>): Result<Nothing?> {
+    override suspend fun refreshCache(kavlings: List<String>): Result<Nothing?> {
         return try {
             localDataSource.deleteAll().getOrThrow()
 
-            val baselinePembayaranModels = mutableListOf<BaselinePembayaranModel>()
-            kavlings.forEach {  kavling ->
-                val kavlingKode = kavling.kode
+            kavlings.forEach {  kavlingKode ->
                 val baselinePembayaranModel = remoteDataSource.get(kavlingKode).getOrThrow()
 
-                baselinePembayaranModel?.also { baselinePembayaranModels.add(it) }
+                baselinePembayaranModel?.also {
+                    localDataSource.insert(it).getOrThrow()
+                }
             }
-
-            localDataSource.addAll(baselinePembayaranModels).getOrThrow()
 
             Result.success(null)
         } catch (e: Exception) {

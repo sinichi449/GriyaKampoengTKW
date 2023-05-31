@@ -3,7 +3,6 @@ package net.bagusekasaputra.griyakampoengtkw.domain.repository
 import kotlinx.coroutines.flow.Flow
 import net.bagusekasaputra.griyakampoengtkw.domain.DataMode
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.BaselinePembayaran
-import net.bagusekasaputra.griyakampoengtkw.domain.entity.Kavling
 
 interface BaselinePembayaranRepository {
 
@@ -13,5 +12,5 @@ interface BaselinePembayaranRepository {
 
     suspend fun getAngsuran(kavling: String, dataMode: DataMode): Long?
 
-    suspend fun refreshCache(kavlings: List<Kavling>): Result<Nothing?>
+    suspend fun refreshCache(kavlings: List<String>): Result<Nothing?>
 }

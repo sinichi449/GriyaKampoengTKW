@@ -4,6 +4,6 @@ interface CacheInitializer {
 
     suspend fun initialize(): Result<Nothing?>
 
-    fun hasInitialized(): Boolean
+    fun isUnitialized(): Boolean
 
 }
