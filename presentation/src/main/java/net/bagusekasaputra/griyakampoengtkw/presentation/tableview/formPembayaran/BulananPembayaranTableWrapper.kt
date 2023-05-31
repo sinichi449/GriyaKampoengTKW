@@ -50,7 +50,28 @@ class BulananPembayaranTableWrapper(
         }
         setAdditionalCellActions { cellViewHolder, cellItem, column, _ ->
             when (column) {
-                UANG_MASUK, TUNGGAKAN -> cellViewHolder.tvCell.typeface = Typeface.SERIF
+                UANG_MASUK -> {
+                    cellViewHolder.tvCell.typeface = Typeface.SERIF
+
+                    // Set warna cell menjadi merah apabila tidak ada uang masuk
+                    val uangMasuk = (cellItem?.getText() ?: "0").let {
+                        NumberUtil.formatStringToLong(it)
+                    }
+                    cellViewHolder.cellBackgroundColor = if (uangMasuk == 0L)
+                        R.color.pembayaran_bulanan_belum_lunas else R.color.white
+                }
+                TUNGGAKAN -> {
+                    cellViewHolder.tvCell.typeface = Typeface.SERIF
+
+                    val tunggakan = (cellItem?.getText() ?: "0").let {
+                        NumberUtil.formatStringToLong(it)
+                    }
+                    cellViewHolder.cellBackgroundColor = if (tunggakan < 0L)
+                            android.R.color.darker_gray
+                        else if (tunggakan == 0L) R.color.white
+                        else R.color.pembayaran_bulanan_belum_lunas
+
+                }
                 ALOKASI -> {
                     cellViewHolder.tvCell.typeface = Typeface.SERIF
 
