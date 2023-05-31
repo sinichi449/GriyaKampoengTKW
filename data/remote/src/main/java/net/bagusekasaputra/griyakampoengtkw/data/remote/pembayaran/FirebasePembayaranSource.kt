@@ -14,7 +14,8 @@ import kotlin.coroutines.resumeWithException
 import kotlin.coroutines.suspendCoroutine
 
 class FirebasePembayaranSource(
-    private val databaseReference: DatabaseReference
+    private val databaseReference: DatabaseReference,
+    private val pembayaranIndenBookingDataSource: RemotePembayaranIndenBookingDataSource,
 ): RemotePembayaranSource {
 
     private val pembayaranRef = databaseReference.child(FirebaseNodes.FORM_PEMBAYARAN)
@@ -124,6 +125,22 @@ class FirebasePembayaranSource(
         )
     }
 
+
+    /**
+     * Inden Booking related
+     */
+    override suspend fun getAllFromIndenBooking(keyId: String): Result<List<PembayaranModel>?> {
+        return pembayaranIndenBookingDataSource.getAll(keyId)
+    }
+
+    override suspend fun insertFromIndenBooking(
+        keyId: String,
+        model: PembayaranModel
+    ): Result<Nothing?> {
+        return pembayaranIndenBookingDataSource.insert(keyId, model)
+    }
+
+
     private fun isTerminChildAvailable(
         kavlingKode: String,
         terminChild: String,
@@ -144,5 +161,19 @@ class FirebasePembayaranSource(
     private fun getTerminChild(termin: String, urutan: Int): String {
         return "$termin $urutan"
     }
+
+}
+
+/**
+ * This interface will prevent dependency to Inden Booking counterpart, since it is very unstable,
+ * and instead inverting that relation.
+ *
+ * (Dependency Inversion?)
+ */
+interface RemotePembayaranIndenBookingDataSource {
+
+    suspend fun getAll(keyId: String): Result<List<PembayaranModel>?>
+
+    suspend fun insert(keyId: String, model: PembayaranModel): Result<Nothing?>
 
 }

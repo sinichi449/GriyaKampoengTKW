@@ -2,6 +2,7 @@ package net.bagusekasaputra.griyakampoengtkw.data
 
 import android.content.ContentResolver
 import android.net.Uri
+import net.bagusekasaputra.griyakampoengtkw.data.model.AmbilKuitansiModel
 import net.bagusekasaputra.griyakampoengtkw.data.model.AppUpdateModel
 import net.bagusekasaputra.griyakampoengtkw.data.model.BaselinePembayaranModel
 import net.bagusekasaputra.griyakampoengtkw.data.model.BiayaLainModel
@@ -13,19 +14,20 @@ import net.bagusekasaputra.griyakampoengtkw.data.model.DatabaseUserModel
 import net.bagusekasaputra.griyakampoengtkw.data.model.FeeMarketingModel
 import net.bagusekasaputra.griyakampoengtkw.data.model.FotoPembayaranModel
 import net.bagusekasaputra.griyakampoengtkw.data.model.HargaKavlingModel
+import net.bagusekasaputra.griyakampoengtkw.data.model.HargaRumahModel
 import net.bagusekasaputra.griyakampoengtkw.data.model.ImageDataDiriModel
 import net.bagusekasaputra.griyakampoengtkw.data.model.ImageSprModel
-import net.bagusekasaputra.griyakampoengtkw.data.model.IndenBookingModel
 import net.bagusekasaputra.griyakampoengtkw.data.model.KavlingModel
 import net.bagusekasaputra.griyakampoengtkw.data.model.PembayaranModel
+import net.bagusekasaputra.griyakampoengtkw.data.model.PromotionModel
 import net.bagusekasaputra.griyakampoengtkw.data.model.StatusPembayaranModel
 import net.bagusekasaputra.griyakampoengtkw.data.model.StatusPembayaranModel.LogPengembalianModel
 import net.bagusekasaputra.griyakampoengtkw.data.model.StatusPembayaranModel.LogStatusModel
-import net.bagusekasaputra.griyakampoengtkw.data.model.PromotionModel
 import net.bagusekasaputra.griyakampoengtkw.domain.DateUtil.toDate
 import net.bagusekasaputra.griyakampoengtkw.domain.DateUtil.toSlashedString
 import net.bagusekasaputra.griyakampoengtkw.domain.ImageUtil
 import net.bagusekasaputra.griyakampoengtkw.domain.NumberUtil
+import net.bagusekasaputra.griyakampoengtkw.domain.entity.AmbilKuitansi
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.AppUpdate
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.BaselinePembayaran
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.BiayaLain
@@ -38,12 +40,12 @@ import net.bagusekasaputra.griyakampoengtkw.domain.entity.FeeMarketing
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.FotoPembayaran
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.HargaKavling
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.ImageSpr
-import net.bagusekasaputra.griyakampoengtkw.domain.entity.IndenBooking
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.Kavling
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.Pembayaran
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.Promotion
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.images.ImageDataDiriUri
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.images.ImageSprUri
+import net.bagusekasaputra.griyakampoengtkw.domain.entity.indenBooking.HargaRumahIndenBooking
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.statusPembayaran.LogPengembalian
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.statusPembayaran.StatusPembayaran
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.statusPembayaran.StatusPembayaran.LogStatus
@@ -411,30 +413,27 @@ object MyObjectMapper {
     /**
      * Inden Booking
      */
-    fun mapIndenBooking(model: IndenBookingModel): IndenBooking {
+    // TODO
+
+    /**
+     * Harga Rumah
+     */
+    fun mapHargaRumah(model: HargaRumahModel): HargaRumahIndenBooking {
         return model.let {
-            IndenBooking(
-                namaCostumer = it.namaCostumer,
-                tanggalDibayar = it.tanggalDibayar.toDate(),
-                jumlahUang = it.jumlahUang,
-                fotoPembayaranPath = it.fotoPembayaranPath,
-                noHp = it.noHp,
-                keterangan = it.keterangan,
-                timeMillis = it.timeMillis,
+            HargaRumahIndenBooking(
+                harga = it.harga,
+                tambahLuasan = it.tambahLuasan,
+                keyId = it.keyId,
             )
         }
     }
 
-    fun mapIndenBooking(indenBooking: IndenBooking): IndenBookingModel {
-        return indenBooking.let {
-            IndenBookingModel(
-                timeMillis = it.timeMillis,
-                namaCostumer = it.namaCostumer,
-                tanggalDibayar = it.tanggalDibayar.toSlashedString(),
-                jumlahUang = it.jumlahUang,
-                fotoPembayaranPath = it.fotoPembayaranPath,
-                noHp = it.noHp,
-                keterangan = it.keterangan,
+    fun mapHargaRumah(hargaRumah: HargaRumahIndenBooking): HargaRumahModel {
+        return hargaRumah.let {
+            HargaRumahModel(
+                harga = it.harga,
+                tambahLuasan = it.tambahLuasan,
+                keyId = it.keyId,
             )
         }
     }
@@ -601,6 +600,29 @@ object MyObjectMapper {
             Promotion(
                 title = it.title,
                 texts = it.texts,
+            )
+        }
+    }
+
+    /**
+     * Ambil Kuitansi
+     */
+    fun mapAmbilKuitansi(model: AmbilKuitansiModel): AmbilKuitansi {
+        return model.let {
+            AmbilKuitansi(
+                kavling = it.kavling,
+                termin = it.termin,
+                sudahAmbil = it.sudahAmbil,
+            )
+        }
+    }
+
+    fun mapAmbilKuitansi(ambilKuitansi: AmbilKuitansi): AmbilKuitansiModel {
+        return ambilKuitansi.let {
+            AmbilKuitansiModel(
+                kavling = it.kavling,
+                termin = it.termin,
+                sudahAmbil = it.sudahAmbil,
             )
         }
     }

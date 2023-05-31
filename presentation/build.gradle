@@ -80,8 +80,9 @@ dependencies {
     implementation 'com.github.abhishekti7:UnicornFilePicker:1.0.2'
     implementation 'com.github.atwa:filepicker:1.0.7'
     implementation "moe.feng:MaterialStepperView:0.2.4.2"
-
-    developerImplementation "com.github.kariot:pdf-invoice-generator:1.0.1"
     implementation "com.github.JDevZone:FillProgressLayout:v0.0.9"
+    implementation "it.xabaras.android:recyclerview-swipedecorator:1.4"
+    implementation "com.github.leandroborgesferreira:loading-button-android:2.3.0"
+
     stableImplementation "com.crowdfire.cfalertdialog:cfalertdialog:1.3.1"
 }

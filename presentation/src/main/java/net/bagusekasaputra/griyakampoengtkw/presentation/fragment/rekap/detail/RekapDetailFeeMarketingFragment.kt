@@ -11,7 +11,7 @@ import dagger.hilt.android.AndroidEntryPoint
 import net.bagusekasaputra.griyakampoengtkw.domain.NumberUtil
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.FeeMarketing
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.rekap.RekapBesarDetail
-import net.bagusekasaputra.griyakampoengtkw.presentation.activities.RekapBesarDetailActivity
+import net.bagusekasaputra.griyakampoengtkw.presentation.activity.RekapBesarDetailActivity
 import net.bagusekasaputra.griyakampoengtkw.presentation.databinding.FragmentRekapDetailFeeMarketingBinding
 import net.bagusekasaputra.griyakampoengtkw.presentation.fragment.rekap.RekapType
 import net.bagusekasaputra.griyakampoengtkw.presentation.tableview.rekapBesarDetail.RbdCell

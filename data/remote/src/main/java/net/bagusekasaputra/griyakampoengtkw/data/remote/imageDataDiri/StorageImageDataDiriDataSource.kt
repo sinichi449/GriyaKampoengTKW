@@ -1,5 +1,6 @@
 package net.bagusekasaputra.griyakampoengtkw.data.remote.imageDataDiri
 
+import android.net.Uri
 import android.util.Log
 import androidx.core.net.toUri
 import com.google.android.gms.tasks.OnCompleteListener
@@ -22,6 +23,7 @@ import java.math.RoundingMode
 class StorageImageDataDiriDataSource(
     storageReference: StorageReference,
     private val externalFilesDir: File?,
+    private val imageIndenBooking: RemoteFotoIdentitasIndenBookingDataSource,
 ): RemoteImageDataDiriDataSource {
 
     private val imageDataDiriRef = storageReference.child(FirebaseNodes.IMAGE_DATA_DIRI)
@@ -128,6 +130,29 @@ class StorageImageDataDiriDataSource(
         }.first()
     }
 
+
+    /**
+     * Inden Booking related
+     */
+    override suspend fun getFromIndenBooking(keyId: String): Result<Uri?> {
+        return imageIndenBooking.get(keyId)
+    }
+
+    override suspend fun insertFromIndenBooking(keyId: String, uri: Uri): Result<Nothing?> {
+        return imageIndenBooking.insert(keyId, uri)
+    }
+
+    override suspend fun updateFromIndenBooking(keyId: String, newUri: Uri): Result<Nothing?> {
+        return imageIndenBooking.update(keyId, newUri)
+    }
+
+    override suspend fun deleteFromIndenBooking(keyId: String): Result<Nothing?> {
+        return imageIndenBooking.delete(keyId)
+    }
+
+
+
+
     private fun getFileName(kavlingKode: String) = "${kavlingKode}_data_diri.png"
 
     private fun Long.toMegaBytes() = if (this > 0L)
@@ -136,4 +161,22 @@ class StorageImageDataDiriDataSource(
             }.toDouble()
         else
             0.0
+}
+
+/**
+ * This interface will prevent dependency to Inden Booking counterpart, since it is very unstable,
+ * and instead inverting that relation.
+ *
+ * (Dependency Inversion?)
+ */
+interface RemoteFotoIdentitasIndenBookingDataSource {
+
+    suspend fun get(keyId: String): Result<Uri?>
+
+    suspend fun insert(keyId: String, uri: Uri): Result<Nothing?>
+
+    suspend fun update(keyId: String, newUri: Uri): Result<Nothing?>
+
+    suspend fun delete(keyId: String): Result<Nothing?>
+
 }

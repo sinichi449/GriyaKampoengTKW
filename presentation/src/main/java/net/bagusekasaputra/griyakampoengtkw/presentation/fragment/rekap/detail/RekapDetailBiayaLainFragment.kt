@@ -11,7 +11,7 @@ import com.evrencoskun.tableview.TableView
 import dagger.hilt.android.AndroidEntryPoint
 import net.bagusekasaputra.griyakampoengtkw.domain.NumberUtil
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.BiayaLain
-import net.bagusekasaputra.griyakampoengtkw.presentation.activities.RekapBesarDetailActivity
+import net.bagusekasaputra.griyakampoengtkw.presentation.activity.RekapBesarDetailActivity
 import net.bagusekasaputra.griyakampoengtkw.presentation.databinding.FragmentRekapDetailBiayaLainBinding
 import net.bagusekasaputra.griyakampoengtkw.presentation.fragment.rekap.RekapType
 import net.bagusekasaputra.griyakampoengtkw.presentation.tableview.rekapBesarDetail.RbdCell

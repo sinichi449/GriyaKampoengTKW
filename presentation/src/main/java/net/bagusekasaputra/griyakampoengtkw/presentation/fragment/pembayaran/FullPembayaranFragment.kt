@@ -14,6 +14,7 @@ import net.bagusekasaputra.griyakampoengtkw.domain.NumberUtil
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.BaselinePembayaran
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.Pembayaran
 import net.bagusekasaputra.griyakampoengtkw.presentation.databinding.FragmentFullPembayaranBinding
+import net.bagusekasaputra.griyakampoengtkw.presentation.dialog.ActionPembayaranItemBottomSheetDialog
 import net.bagusekasaputra.griyakampoengtkw.presentation.tableview.formPembayaran.FullPembayaranTableWrapper
 import net.bagusekasaputra.griyakampoengtkw.presentation.viewmodel.FormPembayaranViewModel
 
@@ -39,44 +40,23 @@ class FullPembayaranFragment : Fragment() {
     }
 
     private fun setupViewModel() {
-        viewModel.baselinePembayaranLive.observe(requireActivity()) { j ->
-            j?.also { baseline ->
+        viewModel.baselineAndFullPembayaran.observe(requireActivity()) {
+            it?.also { baselineAndPembayaran ->
+                val baseline = baselineAndPembayaran.first
+                val pembayarans = baselineAndPembayaran.second
 
+                if (pembayarans != null) {
+                    setTablePembayaran(pembayarans)
 
-                viewModel.fullPembayaransLive.observe(requireActivity()) { k ->
-                    k?.also { pembayarans ->
-                        setTablePembayaran(pembayarans)
+                    if (baseline != null) {
+                        setSisaWaktuAngsuran(baseline)
+                        setupFullScreen(viewModel.isFullScreenTable, baseline, pembayarans)
+                    }
 
-                        if (viewModel.isFullScreenTable) {
-                            binding.tvInfoSisaWaktuAngsuran.visibility = View.GONE
-                            binding.tvInfoSisaBlmTerbayar.visibility = View.GONE
-                            binding.tvSisaWaktuAngsuran.visibility = View.GONE
-                            binding.tvSisaBlmTerbayar.visibility = View.GONE
-
-                            binding.tvInfoBlmDibayarBulanIni.visibility = View.VISIBLE
-                            binding.tvBlmDibayarBulanIni.visibility = View.VISIBLE
-
-                            binding.tvBlmDibayarBulanIni.text = pembayarans.run {
-                                val blmDibayarBulanIni = baseline.hitungSisaBlmBayarBulanIni(this)
-                                
-                                "Rp. ${NumberUtil.formatLongToString(blmDibayarBulanIni)}"
-                            }
-                        } else {
-                            binding.tvInfoSisaWaktuAngsuran.visibility = View.VISIBLE
-                            binding.tvInfoSisaBlmTerbayar.visibility = View.VISIBLE
-                            binding.tvSisaWaktuAngsuran.visibility = View.VISIBLE
-                            binding.tvSisaBlmTerbayar.visibility = View.VISIBLE
-
-                            binding.tvInfoBlmDibayarBulanIni.visibility = View.GONE
-                            binding.tvBlmDibayarBulanIni.visibility = View.GONE
-
-                            setSisaWaktuAngsuran(baseline)
-                            binding.tvSisaBlmTerbayar.text = StringBuilder().run {
-                                append("Rp. ")
-                                append(Pembayaran.getSisaBelumTerbayar(pembayarans))
-                                toString()
-                            }
-                        }
+                    binding.tvSisaBlmTerbayar.text = StringBuilder().run {
+                        append("Rp. ")
+                        append(Pembayaran.getSisaBelumTerbayar(pembayarans))
+                        toString()
                     }
                 }
             }
@@ -148,7 +128,14 @@ class FullPembayaranFragment : Fragment() {
             }
 
             override fun onRowHeaderClicked(rowHeaderView: RecyclerView.ViewHolder, row: Int) {
+                val actionDialog = ActionPembayaranItemBottomSheetDialog()
+                val bundleArgument = Bundle().apply {
+                    putInt(ActionPembayaranItemBottomSheetDialog.EXTRAS_INDEX_PEMBAYARAN_POSITION,
+                        row)
+                }
+                actionDialog.arguments = bundleArgument
 
+                actionDialog.show(childFragmentManager, null)
             }
 
             override fun onRowHeaderDoubleClicked(
@@ -166,5 +153,36 @@ class FullPembayaranFragment : Fragment() {
         FullPembayaranTableWrapper(binding.tableFormPembayaran, pembayarans)
             .setTableListener(listener)
             .createTable()
+    }
+
+    private fun setupFullScreen(
+        fullScreen: Boolean,
+        baseline: BaselinePembayaran,
+        pembayarans: List<Pembayaran>
+    ) {
+        if (fullScreen) {
+            binding.tvInfoSisaWaktuAngsuran.visibility = View.VISIBLE
+            binding.tvInfoSisaBlmTerbayar.visibility = View.VISIBLE
+            binding.tvSisaWaktuAngsuran.visibility = View.VISIBLE
+            binding.tvSisaBlmTerbayar.visibility = View.VISIBLE
+
+            binding.tvInfoBlmDibayarBulanIni.visibility = View.VISIBLE
+            binding.tvBlmDibayarBulanIni.visibility = View.VISIBLE
+
+
+            binding.tvBlmDibayarBulanIni.text = pembayarans.run {
+                val blmDibayarBulanIni = baseline.hitungSisaBlmBayarBulanIni(this)
+
+                "Rp. ${NumberUtil.formatLongToString(blmDibayarBulanIni)}"
+            }
+        } else {
+            binding.tvInfoSisaWaktuAngsuran.visibility = View.VISIBLE
+            binding.tvInfoSisaBlmTerbayar.visibility = View.VISIBLE
+            binding.tvSisaWaktuAngsuran.visibility = View.VISIBLE
+            binding.tvSisaBlmTerbayar.visibility = View.VISIBLE
+
+            binding.tvInfoBlmDibayarBulanIni.visibility = View.GONE
+            binding.tvBlmDibayarBulanIni.visibility = View.GONE
+        }
     }
 }

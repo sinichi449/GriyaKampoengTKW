@@ -19,7 +19,7 @@ class FullPembayaranTableWrapper(
         Pair(TANGGAL, 250),
         Pair(UANG_DIBAYAR, 350),
         Pair(TOTAL, 350),
-        Pair(PERSENTASE, 250),
+        Pair(PERSENTASE, 300),
         Pair(KETERANGAN_PROGRESS, 500),
     )
 
@@ -28,7 +28,7 @@ class FullPembayaranTableWrapper(
 
         setWidthColumnHeader(widthColumnHeaders)
 
-        setAdditionalCellActions { cellViewHolder: GktTableViewAdapter.MyCellViewHolder, _: CellItem?, column: Int, _: Int ->
+        setAdditionalCellActions { cellViewHolder, _, column, _ ->
             when (column) {
                 UANG_DIBAYAR, TOTAL -> cellViewHolder.tvCell.typeface = Typeface.SERIF
                 PERSENTASE -> cellViewHolder.tvCell.typeface = Typeface.MONOSPACE
@@ -38,14 +38,28 @@ class FullPembayaranTableWrapper(
 
         setAdditionalRowHeaderActions { rowHeaderViewHolder, rowHeaderItem, _ ->
             val parseRowHeader = rowHeaderItem?.getText()?.split(cornerSeparator)
+            val termin = parseRowHeader?.get(1) ?: "NULL"
             val sudahIsiFotoPembayaran = parseRowHeader?.get(2)?.toBoolean()
+            val sudahAmbilKuitansi = parseRowHeader?.get(3)?.toBoolean()
 
             val viewHolder = rowHeaderViewHolder as GktTableViewAdapter.MyDoubleRowHeaderViewHolder
+
+            // Set Background color if sudah isi foto
             val backgroundColor = if (sudahIsiFotoPembayaran == true) 
                 R.color.table_selected_color else R.color.white
-
             viewHolder.containerBackground = backgroundColor
             viewHolder.rowHeadersTextColor = R.color.black
+
+            // Set termin indikator (*) if sudah ambil kuitansi
+            val terminText: String = if (sudahAmbilKuitansi == true) {
+                "$termin (*)"
+            } else {
+                termin
+            }
+            viewHolder.tvData.text = terminText
+
+            // Set gravity to start
+            viewHolder.tvData.gravity = Gravity.START
         }
     }
 
@@ -61,6 +75,7 @@ class FullPembayaranTableWrapper(
         }
     }
 
+    // Row Header contains the following: No, Termin, Sudah Isi Foto, Sudah Ambil Kuitansi
     data class PbRowHeader(val cornerAndRhData: String): RowHeader {
         override fun getText(): String {
             return cornerAndRhData
@@ -73,7 +88,7 @@ class FullPembayaranTableWrapper(
             add(TANGGAL, PbColumnHeader("Tanggal"))
             add(UANG_DIBAYAR, PbColumnHeader("Uang Dibayar"))
             add(TOTAL, PbColumnHeader("Total"))
-            add(PERSENTASE, PbColumnHeader("(%)"))
+            add(PERSENTASE, PbColumnHeader("Persentase"))
             add(KETERANGAN_PROGRESS, PbColumnHeader("Keterangan Progress"))
         }
 
@@ -85,9 +100,14 @@ class FullPembayaranTableWrapper(
         pembayarans.forEachIndexed { index, pembayaran ->
             val nomor = index.plus(1).toString()
             val sudahIsiFoto = pembayaran.sudahIsiFotoPembayaran
-            val cornerAndRhData = "${nomor}${cornerSeparator}${pembayaran.termin}" +
-                    "${cornerSeparator}$sudahIsiFoto"
+            val sudahAmbilKuitansi = pembayaran.sudahAmbilKuitansi
 
+            val cornerAndRhData = StringBuilder().apply {
+                append("$nomor${cornerSeparator}")
+                append("${pembayaran.termin}${cornerSeparator}")
+                append("$sudahIsiFoto${cornerSeparator}")
+                append("$sudahAmbilKuitansi")
+            }.toString()
             rowHeaders.add(PbRowHeader(cornerAndRhData))
         }
 
@@ -102,7 +122,7 @@ class FullPembayaranTableWrapper(
                 add(TANGGAL, PbCellItem(it.tanggal))
                 add(UANG_DIBAYAR, PbCellItem(it.jumlahUangDibayar))
                 add(TOTAL, PbCellItem(it.totalUangMasuk))
-                add(PERSENTASE, PbCellItem(it.presentase.toString()))
+                add(PERSENTASE, PbCellItem("${it.presentase}%"))
                 add(KETERANGAN_PROGRESS, PbCellItem(it.keterangan))
             }
 

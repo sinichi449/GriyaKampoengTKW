@@ -1,0 +1,240 @@
+@file:Suppress("DEPRECATION")
+
+package net.bagusekasaputra.griyakampoengtkw.presentation.fragment.indenBooking
+
+import android.annotation.SuppressLint
+import android.app.Activity
+import android.content.Intent
+import android.os.Bundle
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
+import android.widget.Toast
+import androidx.fragment.app.Fragment
+import androidx.fragment.app.activityViewModels
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import com.google.android.material.snackbar.Snackbar
+import dagger.hilt.android.AndroidEntryPoint
+import net.bagusekasaputra.griyakampoengtkw.domain.NumberUtil
+import net.bagusekasaputra.griyakampoengtkw.domain.entity.Pembayaran
+import net.bagusekasaputra.griyakampoengtkw.domain.entity.indenBooking.HargaRumahIndenBooking
+import net.bagusekasaputra.griyakampoengtkw.presentation.activity.DetailIndenBookingActivity
+import net.bagusekasaputra.griyakampoengtkw.presentation.activity.FormActivity
+import net.bagusekasaputra.griyakampoengtkw.presentation.custom.ThousandSeparatorTextWatcher
+import net.bagusekasaputra.griyakampoengtkw.presentation.databinding.DialogEditHargaRumahIndenBookingBinding
+import net.bagusekasaputra.griyakampoengtkw.presentation.databinding.FragmentFormPembayaranIndenBookingBinding
+import net.bagusekasaputra.griyakampoengtkw.presentation.tableview.formPembayaran.FullPembayaranTableWrapper
+import net.bagusekasaputra.griyakampoengtkw.presentation.util.DialogUtil
+import net.bagusekasaputra.griyakampoengtkw.presentation.util.InputUtil
+import net.bagusekasaputra.griyakampoengtkw.presentation.util.UiUtils
+import net.bagusekasaputra.griyakampoengtkw.presentation.viewmodel.IndenBookingViewModel
+
+@AndroidEntryPoint
+class FormPembayaranIndenBookingFragment : Fragment() {
+
+    private lateinit var binding: FragmentFormPembayaranIndenBookingBinding
+    private val viewModel by activityViewModels<IndenBookingViewModel>()
+
+    private val REQUEST_CODE_INPUT_NEW_PEMBAYARAN = 901
+
+    override fun onCreateView(
+        inflater: LayoutInflater, container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View {
+        // Inflate the layout for this fragment
+        binding = FragmentFormPembayaranIndenBookingBinding.inflate(inflater, container, false)
+
+        return binding.root
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
+        binding.root.setOnRefreshListener {
+            sync()
+
+            // Until harga rumah ready
+            binding.root.isRefreshing = false
+        }
+
+        // Setup fab add
+        with((requireActivity() as DetailIndenBookingActivity).getFab()) {
+            // Hide on scroll
+            UiUtils.hideFabsOnVerticalScroll(binding.scrollViewPembayaranIndenBooking, this)
+
+            // Go to form input if harga rumah already set
+            setOnClickListener {
+                if (viewModel.hargaRumahIndenBooking.value != null) {
+                    val intent = Intent(requireContext(), FormActivity::class.java).apply {
+                        putExtra(
+                            FormActivity.EXTRAS_FORM_TYPE,
+                            FormActivity.FORM_PEMBAYARAN_INDEN_BOOKING
+                        )
+                        putExtra(FormActivity.EXTRAS_KEY_ID_INDEN_BOOKING, viewModel.currentKeyId)
+                    }
+
+                    startActivityForResult(intent, REQUEST_CODE_INPUT_NEW_PEMBAYARAN)
+                } else {
+                    Toast.makeText(requireContext(), "Entry pembayaran memerlukan Harga Rumah yang telah disetting!", Toast.LENGTH_LONG).show()
+                }
+            }
+        }
+
+        binding.imgEditHargaRumah.setOnClickListener {
+            dialogEditHargaRumah()
+        }
+
+        sync()
+
+        setupViewModel()
+    }
+
+    private fun setupViewModel() {
+        viewModel.hargaRumahIndenBooking.observe(requireActivity()) {
+            it?.also { hargaRumah ->
+                binding.tvHarga.text = NumberUtil.formatLongToString(hargaRumah.harga)
+
+                binding.tvTambahanLuas.text = NumberUtil.formatLongToString(hargaRumah.tambahLuasan)
+
+                binding.tvTotalHarga.text = NumberUtil.formatLongToString(hargaRumah.hargaDanTambahLuasan)
+            }
+        }
+
+        viewModel.pembayaranListIndenBooking.observe(requireActivity()) {
+            it?.also { pembayarans: List<Pembayaran> ->
+                FullPembayaranTableWrapper(binding.tableFormPembayaran, pembayarans)
+                    .createTable()
+            }
+        }
+    }
+
+    private fun sync() {
+        val currentKeyId = viewModel.currentKeyId
+        if ((currentKeyId != "NULL_ID") || (currentKeyId.isNotEmpty())) {
+            viewModel.getHargaRumah(currentKeyId,
+                onProgress = {
+                    binding.progressBarLoadingHargaRumah.visibility = View.VISIBLE
+                    binding.imgEditHargaRumah.visibility = View.GONE
+                },
+                onComplete = {
+                    binding.progressBarLoadingHargaRumah.visibility = View.GONE
+                    binding.imgEditHargaRumah.visibility = View.VISIBLE
+                },
+                onFailure = {
+                    Toast.makeText(requireContext(), it, Toast.LENGTH_LONG).show()
+                }
+            )
+
+            viewModel.getAllPembayaran(currentKeyId,
+                onProgress = {
+                    binding.layoutLoadingFormPembayaran.visibility = View.VISIBLE
+                    binding.tableFormPembayaran.visibility = View.GONE
+                },
+                onComplete = {
+                    binding.layoutLoadingFormPembayaran.visibility = View.GONE
+                    binding.tableFormPembayaran.visibility = View.VISIBLE
+                },
+                onFailure = {
+                    Toast.makeText(requireContext(), it, Toast.LENGTH_LONG).show()
+                }
+            )
+        }
+    }
+
+    @SuppressLint("SetTextI18n")
+    private fun dialogEditHargaRumah() {
+        val dialogBinding = DialogEditHargaRumahIndenBookingBinding.inflate(layoutInflater)
+        val dialogView = MaterialAlertDialogBuilder(requireContext()).apply {
+            setView(dialogBinding.root)
+        }.create()
+
+        DialogUtil.additionalDialogSetting(requireContext(), dialogView)
+        dialogView.show()
+
+        dialogBinding.edtHarga.apply {
+            val harga = binding.tvHarga.text
+            if (harga != "0")
+                this.setText(harga)
+            addTextChangedListener(ThousandSeparatorTextWatcher(this))
+        }
+        dialogBinding.edtTambahLuasan.apply {
+            val tambahanLuas = binding.tvTambahanLuas.text
+            if (tambahanLuas != "0") this.setText(tambahanLuas)
+
+            addTextChangedListener(ThousandSeparatorTextWatcher(this))
+        }
+
+        dialogBinding.btnTambahkan.setOnClickListener {
+            val isInvalidEdt = InputUtil.isNullOrEmptyEditTexts(dialogBinding.edtHarga)
+
+            if (!isInvalidEdt) {
+                val harga = dialogBinding.edtHarga.text.toString().let {
+                    NumberUtil.formatStringToLong(it)
+                }
+                val tambahLuasan = dialogBinding.edtTambahLuasan.text.toString().let {
+                    if (it.isNotEmpty()) NumberUtil.formatStringToLong(it)
+                    else 0L
+                }
+
+                val hargaRumah = HargaRumahIndenBooking(
+                    harga = harga,
+                    tambahLuasan = tambahLuasan,
+                    keyId = viewModel.currentKeyId,
+                )
+                viewModel.updateHargaRumah(
+                    keyId = viewModel.currentKeyId,
+                    newHargaRumah = hargaRumah,
+                    onProgress = {
+                        dialogBinding.btnTambahkan.startAnimation()
+                    },
+                    onSuccess = {
+                        dialogBinding.btnTambahkan.revertAnimation()
+
+                        dialogView.dismiss()
+
+                        Snackbar.make(binding.root, "Berhasil mengubah harga rumah!", Snackbar.LENGTH_SHORT)
+                            .show()
+
+                        sync()
+                    },
+                    onFailure = {
+                        dialogBinding.btnTambahkan.revertAnimation()
+
+                        dialogView.dismiss()
+
+                        Toast.makeText(requireContext(), it, Toast.LENGTH_LONG).show()
+                    }
+                )
+            } else {
+                Toast.makeText(requireContext(), "Input belum benar!", Toast.LENGTH_SHORT).show()
+            }
+        }
+
+        dialogBinding.btnBatal.setOnClickListener {
+            dialogView.dismiss()
+        }
+    }
+
+    @Deprecated("Deprecated in Java", ReplaceWith(
+            "super.onActivityResult(requestCode, resultCode, data)",
+            "androidx.fragment.app.Fragment"
+        )
+    )
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+
+        // Input Pembayaran request handling
+        if (requestCode == REQUEST_CODE_INPUT_NEW_PEMBAYARAN) {
+            if (resultCode == Activity.RESULT_OK) {
+                Snackbar.make(binding.root, "Berhasil menambahkan pembayaran!", Snackbar.LENGTH_SHORT)
+                    .show()
+
+                sync()
+            } else {
+                data?.extras?.getString(FormActivity.EXTRAS_FAIL_MSG)?.also {
+                    Toast.makeText(requireContext(), it, Toast.LENGTH_LONG).show()
+                }
+            }
+        }
+    }
+}

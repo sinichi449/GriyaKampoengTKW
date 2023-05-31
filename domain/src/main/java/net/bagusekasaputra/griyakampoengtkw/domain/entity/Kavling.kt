@@ -51,7 +51,7 @@ data class Kavling(
             val blockWithSum = mapOf(
                 Pair("A", 13),
                 Pair("B", 4),
-                Pair("C", 5),
+                Pair("C", 6),
             )
 
             val listKavling = mutableListOf<String>()

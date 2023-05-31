@@ -1,16 +1,9 @@
 package net.bagusekasaputra.griyakampoengtkw.domain.repository
 
-import kotlinx.coroutines.flow.Flow
 import net.bagusekasaputra.griyakampoengtkw.domain.DataMode
-import net.bagusekasaputra.griyakampoengtkw.domain.entity.IndenBooking
 
 interface IndenBookingRepository {
 
-    fun getAll(dataMode: DataMode): Flow<Result<List<IndenBooking>?>>
+    suspend fun getAllKeyIds(dataMode: DataMode): Result<List<String>?>
 
-    fun insert(indenBooking: IndenBooking): Flow<Result<Nothing?>>
-
-    fun delete(indenBooking: IndenBooking): Flow<Result<Nothing?>>
-
-    fun update(oldData: IndenBooking, newData: IndenBooking): Flow<Result<Nothing?>>
 }

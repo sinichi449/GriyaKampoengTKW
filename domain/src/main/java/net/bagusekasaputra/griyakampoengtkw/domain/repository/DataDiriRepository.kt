@@ -22,4 +22,15 @@ interface DataDiriRepository {
     fun deleteDataDiri(kavlingKode: String): Flow<Result<Boolean>>
 
     suspend fun refreshCache(kavlings: List<Kavling>): Result<Nothing?>
+
+
+    /**
+     * Inden Booking related
+     */
+    suspend fun getFromIndenBooking(keyId: String): Result<DataDiri?>
+
+    // This will return the the key id
+    suspend fun insertFromIndenBooking(dataDiri: DataDiri): Result<String?>
+
+    suspend fun updateFromIndenBooking(keyId: String, newDataDiri: DataDiri): Result<Nothing?>
 }

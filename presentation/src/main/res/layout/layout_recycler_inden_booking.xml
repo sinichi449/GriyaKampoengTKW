@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:clickable="true"
+    android:focusable="true"
+    app:cardUseCompatPadding="true"
+    android:layout_marginHorizontal="8dp">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="16dp">
+
+        <ImageView
+            android:id="@+id/img_foto_identitas"
+            android:layout_width="130dp"
+            android:layout_height="98dp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            android:src="@drawable/bg_rounded_rectangle"
+            android:scaleType="centerCrop"/>
+
+       <androidx.appcompat.widget.LinearLayoutCompat
+           android:layout_width="0dp"
+           android:layout_height="wrap_content"
+           app:layout_constraintStart_toEndOf="@id/img_foto_identitas"
+           app:layout_constraintEnd_toEndOf="parent"
+           app:layout_constraintTop_toTopOf="parent"
+           app:layout_constraintBottom_toBottomOf="parent"
+           android:orientation="vertical"
+           android:layout_marginStart="16dp">
+
+           <com.google.android.material.textview.MaterialTextView
+               android:id="@+id/tv_nama_costumer"
+               android:layout_width="match_parent"
+               android:layout_height="wrap_content"
+               android:text="Nama Costumer"
+               style="@style/TextAppearance.MaterialComponents.Headline5"
+               android:textSize="16sp"/>
+
+           <com.google.android.material.textview.MaterialTextView
+               android:id="@+id/tv_no_identitas"
+               android:layout_width="match_parent"
+               android:layout_height="wrap_content"
+               android:text="3507043008020003"/>
+
+           <androidx.legacy.widget.Space
+               android:layout_width="match_parent"
+               android:layout_height="16dp"/>
+
+           <com.google.android.material.textview.MaterialTextView
+               android:layout_width="match_parent"
+               android:layout_height="wrap_content"
+               android:text="Uang Masuk"
+               android:textFontWeight="600"
+               style="@style/TextAppearance.MaterialComponents.Overline"/>
+
+           <com.google.android.material.textview.MaterialTextView
+               android:id="@+id/tv_uang_masuk"
+               android:layout_width="match_parent"
+               android:layout_height="wrap_content"
+               android:text="Rp. 15,000,000"
+               style="@style/TextAppearance.MaterialComponents.Headline6"
+               android:textSize="16sp"/>
+
+       </androidx.appcompat.widget.LinearLayoutCompat>
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</com.google.android.material.card.MaterialCardView>

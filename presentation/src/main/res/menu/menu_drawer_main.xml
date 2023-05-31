@@ -6,31 +6,36 @@
         android:id="@id/nav_management_kavling"
         android:title="Management Kavling"
         android:icon="@drawable/ic_baseline_kavling_24"
-        app:showAsAction="ifRoom"/>
+        app:showAsAction="ifRoom"
+        android:checkable="true"/>
 
     <item
         android:id="@id/nav_database_user"
         android:title="Database User"
         android:icon="@drawable/baseline_calon_pembeli_24"
-        app:showAsAction="ifRoom"/>
+        app:showAsAction="ifRoom"
+        android:checkable="true"/>
 
     <item
         android:id="@id/nav_inden_booking"
         android:title="Inden Booking"
         android:icon="@drawable/outline_uang_masuk_virtual_24"
-        app:showAsAction="ifRoom"/>
+        app:showAsAction="ifRoom"
+        android:checkable="true"/>
 
     <item
         android:id="@id/nav_biaya_pribadi"
         android:title="Biaya Pribadi"
         android:icon="@drawable/baseline_biaya_pribadi_24"
-        app:showAsAction="ifRoom"/>
+        app:showAsAction="ifRoom"
+        android:checkable="true"/>
 
     <item
         android:id="@id/nav_pengaturan"
         android:title="Pengaturan"
         android:icon="@drawable/settings_24px"
         app:showAsAction="ifRoom"
-        android:iconTint="@color/black"/>
+        android:iconTint="@color/black"
+        android:checkable="true"/>
 
 </menu>

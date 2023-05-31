@@ -5,7 +5,7 @@
     android:id="@+id/linearLayoutCompat"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".activities.DetailActivity"
+    tools:context=".activity.DetailActivity"
     android:theme="@style/Theme.GriyaKampung.BlackWhite">
 
     <androidx.coordinatorlayout.widget.CoordinatorLayout

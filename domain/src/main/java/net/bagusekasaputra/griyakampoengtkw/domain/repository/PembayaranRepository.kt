@@ -32,4 +32,12 @@ interface PembayaranRepository {
     suspend fun getUangMasukBulanIni(kavlingKode: String, dataMode: DataMode): Long?
 
     suspend fun refreshCache(kavlings: List<String>): Result<Nothing?>
+
+
+    /**
+     * Inden Booking related
+     */
+    suspend fun getAllFromIndenBooking(keyId: String): Result<List<Pembayaran>?>
+
+    suspend fun insertFromIndenBooking(keyId: String, pembayaran: Pembayaran): Result<Nothing?>
 }

@@ -3,6 +3,8 @@ package net.bagusekasaputra.griyakampoengtkw.data.repository
 import android.content.ContentResolver
 import android.net.Uri
 import android.util.Log
+import androidx.core.net.toFile
+import androidx.core.net.toUri
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.channels.trySendBlocking
 import kotlinx.coroutines.flow.Flow
@@ -10,6 +12,7 @@ import kotlinx.coroutines.flow.callbackFlow
 import kotlinx.coroutines.flow.emitAll
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flow
+import net.bagusekasaputra.griyakampoengtkw.data.CacheHelper
 import net.bagusekasaputra.griyakampoengtkw.data.interfaces.backup.BackupImageDataDiriDataSource
 import net.bagusekasaputra.griyakampoengtkw.data.interfaces.local.LocalImageDataDiriDataSource
 import net.bagusekasaputra.griyakampoengtkw.data.interfaces.local.LocalMetadataDataSource
@@ -21,6 +24,7 @@ import net.bagusekasaputra.griyakampoengtkw.domain.ImageUtil
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.ImageDataDiri
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.images.ImageDataDiriUri
 import net.bagusekasaputra.griyakampoengtkw.domain.repository.ImageDataDiriRepository
+import java.io.File
 
 class ImageDataDiriRepositoryImpl(
     private val localImageDataDiri: LocalImageDataDiriDataSource,
@@ -28,10 +32,14 @@ class ImageDataDiriRepositoryImpl(
     private val backupImageDataDiri: BackupImageDataDiriDataSource,
     private val localMetadata: LocalMetadataDataSource,
     private val remoteMetadata: RemoteMetadataDataSource,
+    private val externalFileDir: File?,
     private val contentResolver: ContentResolver,
+    private val cacheHelper: CacheHelper,
 ): ImageDataDiriRepository {
 
     private val metadataTable = "image_data_diri"
+    private val imageIndenBookingLocalTable = "fotoIdentitasIndenBooking"
+    private val imageIndenBookingRemoteTable = "indenBooking/imageDataDiri"
     // Check server metadata only ONCE
     // for getBatch() method.
     private var hasMetadataChecked = false
@@ -209,6 +217,168 @@ class ImageDataDiriRepositoryImpl(
         }
     }
 
+
+    /**
+     * Inden Booking related
+     */
+    override suspend fun getFromIndenBooking(keyId: String): Result<Uri?> {
+        val isInvalidCache = cacheHelper.checkAndInvalidateCache(
+            imageIndenBookingLocalTable,
+            imageIndenBookingRemoteTable,
+            onInvalid = {
+                // Delete all file cache in external storage
+                val dstFile = File(externalFileDir, "inden_booking_images/data_diri_images")
+                if (dstFile.exists()) {
+                    dstFile.deleteRecursively()
+                }
+
+                localImageDataDiri.deleteAllFromIndenBooking()
+            }
+        )
+        val localModel = localImageDataDiri.getFromIndenBooking(keyId).getOrThrow()
+
+        // Fetch from remote data source if either the cache was invalid
+        // or the local data source returning null (probably after invalidate() call)
+        if (isInvalidCache || localModel == null) {
+            Log.d("INDEN_BOOKING", "Foto Identitas on Local Data Source either invalidated or null!" +
+                    " Fetching from Remote Data Source now.")
+
+            val remoteModel = remoteImageDataDiri.getFromIndenBooking(keyId).getOrThrow()
+            remoteModel?.also {
+                localImageDataDiri.insertFromIndenBooking(keyId, it)
+            }
+        } else {
+            Log.d("INDEN_BOOKING", "Foto Identitas returning from Local Data Source!")
+        }
+
+        return localImageDataDiri.getFromIndenBooking(keyId)
+    }
+
+    override suspend fun insertFromIndenBooking(keyId: String, uri: Uri): Result<Nothing?> {
+        return callbackFlow<Result<Nothing?>> {
+            Log.d("INDEN_BOOKING", "Begin insertion Foto Identitas for keyId $keyId ...")
+
+            // Copy to appropriate directory and delete the image leftover
+            Log.d("INDEN_BOOKING", "Copying foto identitas and deleting leftover for $keyId...")
+            val newUri = try {
+                moveIndenBookingFileAndDeleteImagePickerLeftover(keyId, uri)
+            } catch (e: Exception) {
+                trySendBlocking(Result.failure(e))
+
+                null
+            }
+
+            // Remote Insertion
+            Log.d("INDEN_BOOKING", "Remote insertion for Foto Identitas $keyId ...")
+            remoteImageDataDiri.insertFromIndenBooking(keyId, newUri!!)
+                .onSuccess {
+                    // Update cache
+                    Log.d("INDEN_BOOKING", "Updating cache for Foto Identitas insertion $keyId...")
+                    cacheHelper.updateMetadata(imageIndenBookingLocalTable, imageIndenBookingRemoteTable)
+                        .onSuccess {
+                            // Local Insertion
+                            Log.d("INDEN_BOOKING", "Local insertion for Foto Identitas $keyId ...")
+                            localImageDataDiri.insertFromIndenBooking(keyId, newUri)
+                                .onSuccess {
+                                    Log.d("INDEN_BOOKING", "Success adding Foto Identitas for $keyId !")
+                                    trySendBlocking(Result.success(null))
+                                }
+                                .onFailure {
+                                    trySendBlocking(Result.failure(it))
+                                }
+                        }
+                        .onFailure {
+                            trySendBlocking(Result.failure(it))
+                        }
+                }
+                .onFailure {
+                    trySendBlocking(Result.failure(it))
+                }
+            awaitClose {  }
+        }.first()
+    }
+
+    override suspend fun updateFromIndenBooking(keyId: String, uri: Uri): Result<Nothing?> {
+        return callbackFlow<Result<Nothing?>> {
+            Log.d("INDEN_BOOKING", "Begin update Foto Identitas for keyId $keyId ...")
+
+            // Copy to appropriate directory and delete the image leftover
+            Log.d("INDEN_BOOKING", "Copying foto identitas and deleting leftover for $keyId...")
+            val newUri = try {
+                moveIndenBookingFileAndDeleteImagePickerLeftover(keyId, uri)
+            } catch (e: Exception) {
+                trySendBlocking(Result.failure(e))
+
+                null
+            }
+
+            // Remote Update
+            Log.d("INDEN_BOOKING", "Remote update for Foto Identitas $keyId ...")
+            remoteImageDataDiri.updateFromIndenBooking(keyId, newUri!!)
+                .onSuccess {
+                    // Update cache
+                    Log.d("INDEN_BOOKING", "Updating cache for Foto Identitas update $keyId...")
+                    cacheHelper.updateMetadata(imageIndenBookingLocalTable, imageIndenBookingRemoteTable)
+                        .onSuccess {
+                            // Local Update
+                            Log.d("INDEN_BOOKING", "Local update for Foto Identitas $keyId ...")
+                            localImageDataDiri.updateFromIndenBooking(keyId, newUri)
+                                .onSuccess {
+                                    Log.d("INDEN_BOOKING", "Success updating Foto Identitas for $keyId !")
+                                    trySendBlocking(Result.success(null))
+                                }
+                                .onFailure {
+                                    trySendBlocking(Result.failure(it))
+                                }
+                        }
+                        .onFailure {
+                            trySendBlocking(Result.failure(it))
+                        }
+                }
+                .onFailure {
+                    trySendBlocking(Result.failure(it))
+                }
+            awaitClose {  }
+        }.first()
+    }
+
+    override suspend fun deleteFromIndenBooking(keyId: String, uri: Uri): Result<Nothing?> {
+        return callbackFlow<Result<Nothing?>> {
+            // Delete from cache external storage first
+            try {
+                uri.toFile().delete()
+            } catch (e: Exception) {
+                trySendBlocking(Result.failure(e))
+            }
+
+            // Remote Deletion
+            remoteImageDataDiri.deleteFromIndenBooking(keyId)
+                .onSuccess {
+                    // Cache update
+                    cacheHelper.updateMetadata(imageIndenBookingLocalTable, imageIndenBookingRemoteTable)
+                        .onSuccess {
+                            // Local Deletion
+                            localImageDataDiri.deleteFromIndenBooking(keyId)
+                                .onSuccess {
+                                    trySendBlocking(Result.success(null))
+                                }
+                                .onFailure {
+                                    trySendBlocking(Result.failure(it))
+                                }
+                        }
+                        .onFailure {
+                            trySendBlocking(Result.failure(it))
+                        }
+                }
+                .onFailure {
+                    trySendBlocking(Result.failure(it))
+                }
+
+            awaitClose {  }
+        }.first()
+    }
+
+
     private suspend fun updateRemoteMetadataOnWrite() {
         val currentTimemillis = System.currentTimeMillis()
         val oldMetadata = localMetadata.get(metadataTable)!!
@@ -234,4 +404,16 @@ class ImageDataDiriRepositoryImpl(
         )
     }
 
+    private fun moveIndenBookingFileAndDeleteImagePickerLeftover(
+        keyId: String,
+        imagePickerUri: Uri,
+    ): Uri {
+        val fileName = "${keyId}.png"
+        val dstFile = File(externalFileDir, "inden_booking_images/data_diri_images/$fileName")
+        val srcFile = imagePickerUri.toFile()
+
+        srcFile.renameTo(dstFile)
+
+        return dstFile.toUri()
+    }
 }

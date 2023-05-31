@@ -56,10 +56,6 @@ class ImageViewModel @Inject constructor(
 
     val fotoPembayaranLive = MutableLiveData<FotoPembayaran?>()
 
-    // Shamefully, I need this to be able to pass an argument of AddFotoPembayaranAsyncUseCase ...
-    // This value is updated on "showFotoPembayaranSelectionDialog()" -> FormPembayaranFragment.
-    val currentTermin  = MutableLiveData<String>()
-
     val isFinishLoadingImage = MutableLiveData<Boolean>()
 
     // Used in detail activity
@@ -290,38 +286,38 @@ class ImageViewModel @Inject constructor(
 
     fun addFotoPembayaran(
         kavlingKode: String,
+        termin: String,
         uri: Uri,
-        onComplete: (msg: String) -> Unit
+        onProgress: () -> Unit = {},
+        onComplete: (msg: String) -> Unit = {},
     ) {
-        val termin = currentTermin.value
+        onProgress()
+        val request = AddFotoPembayaranAsyncUseCase.Request(kavlingKode, termin, uri)
 
-        if (termin != null) {
-            val request = AddFotoPembayaranAsyncUseCase.Request(kavlingKode, termin, uri)
+        val insertingFotoPembayaranJob = asyncUseCaseHelper.doWork(
+            request = request,
+            asyncUseCase = addFotoPembayaranAsyncUseCase,
+            onSuccess = {
+                onComplete("Berhasil menambahkan Foto Pembayaran $termin")
+            },
+            onFailure = { throwable ->
+                onComplete("Gagal menambahkan Foto Pembayaran: ${throwable.message}")
+            },
+            successMsgOnUiThread = true,
+            failureMsgOnUiThread = true,
+        )
 
-            val insertingFotoPembayaranJob = asyncUseCaseHelper.doWork(
-                request = request,
-                asyncUseCase = addFotoPembayaranAsyncUseCase,
-                onSuccess = {
-                    onComplete("Berhasil menambahkan Foto Pembayaran $termin")
-                },
-                onFailure = { throwable ->
-                    onComplete("Gagal menambahkan Foto Pembayaran: ${throwable.message}")
-                },
-                successMsgOnUiThread = true,
-                failureMsgOnUiThread = true,
-            )
-
-            jobs.add(insertingFotoPembayaranJob)
-        } else {
-            onComplete("ERROR: Null termin argument passed on ImageViewModel.addFotoPembayaran()")
-        }
+        jobs.add(insertingFotoPembayaranJob)
     }
 
     fun deleteFotoPembayaran(
         kavlingKode: String,
         termin: String,
-        onComplete: (msg: String) -> Unit
+        onProgress: () -> Unit = {},
+        onComplete: (msg: String) -> Unit = {},
     ) {
+        onProgress()
+
         val request = DeleteFotoPembayaranAsyncUseCase.Request(kavlingKode, termin)
 
         val deletingFotoPembayaranJob = asyncUseCaseHelper.doWork(

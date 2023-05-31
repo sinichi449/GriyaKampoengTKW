@@ -1,0 +1,223 @@
+package net.bagusekasaputra.griyakampoengtkw.presentation.activity
+
+import android.annotation.SuppressLint
+import android.content.Intent
+import android.content.SharedPreferences
+import android.net.Uri
+import android.os.Bundle
+import android.view.Menu
+import android.view.MenuItem
+import android.view.View
+import android.widget.Toast
+import androidx.activity.viewModels
+import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.edit
+import androidx.core.text.HtmlCompat
+import androidx.navigation.NavController
+import androidx.navigation.fragment.NavHostFragment
+import androidx.navigation.ui.AppBarConfiguration
+import androidx.navigation.ui.navigateUp
+import androidx.navigation.ui.onNavDestinationSelected
+import androidx.navigation.ui.setupWithNavController
+import com.crowdfire.cfalertdialog.CFAlertDialog
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import com.google.android.material.snackbar.Snackbar
+import dagger.hilt.android.AndroidEntryPoint
+import net.bagusekasaputra.griyakampoengtkw.domain.DataMode
+import net.bagusekasaputra.griyakampoengtkw.domain.entity.Promotion
+import net.bagusekasaputra.griyakampoengtkw.presentation.R
+import net.bagusekasaputra.griyakampoengtkw.presentation.databinding.ActivityMainBinding
+import net.bagusekasaputra.griyakampoengtkw.presentation.databinding.DialogPromotionFooterBinding
+import net.bagusekasaputra.griyakampoengtkw.presentation.databinding.DialogPromotionHeaderBinding
+import net.bagusekasaputra.griyakampoengtkw.presentation.databinding.HeaderMainNavBinding
+import net.bagusekasaputra.griyakampoengtkw.presentation.util.GriyaNodes
+import net.bagusekasaputra.griyakampoengtkw.presentation.viewmodel.MainViewModel
+import javax.inject.Inject
+
+/**
+ * App Update and Promotion Banner
+ */
+@AndroidEntryPoint
+class MainActivity : AppCompatActivity() {
+
+    companion object {
+        const val INTENT_KAVLING_KODE = "kavling_kode"
+    }
+
+    private lateinit var binding: ActivityMainBinding
+    private val viewModel: MainViewModel by viewModels()
+//    private val biayaLainViewModel: BiayaLainViewModel by viewModels()
+
+    private lateinit var navController: NavController
+    private lateinit var appBarConfiguration: AppBarConfiguration
+
+    // SharedPreferences to load the user settings
+    @Inject
+    lateinit var sharedPrefs: SharedPreferences
+
+    @SuppressLint("SetTextI18n")
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+
+        binding = ActivityMainBinding.inflate(layoutInflater)
+        setContentView(binding.root)
+
+        navController = (supportFragmentManager.findFragmentById(R.id.navHostFragment_main)
+                as NavHostFragment).navController
+        appBarConfiguration = AppBarConfiguration(
+            topLevelDestinationIds = setOf(
+                R.id.nav_management_kavling,
+                R.id.nav_database_user,
+                R.id.nav_inden_booking,
+                R.id.nav_biaya_pribadi,
+                R.id.nav_pengaturan,
+            ),
+            drawerLayout = binding.drawerMain,
+        )
+
+        binding.toolbarMain.setupWithNavController(navController, appBarConfiguration)
+        setSupportActionBar(binding.toolbarMain)
+
+        // Setup navigation view and header layout
+        with(binding.navViewMain) {
+            setupWithNavController(navController)
+
+            // Getting BuildConfig from Splash Activity
+            val appVersionName = intent.getStringExtra("versionName") ?: "NULL"
+            val appVersionCode = intent.getIntExtra("versionCode", 0)
+
+            val navHeaderLayoutBinding = HeaderMainNavBinding.inflate(layoutInflater)
+            navHeaderLayoutBinding.tvVersionName.text = "v$appVersionName"
+            navHeaderLayoutBinding.tvVersionCode.text = appVersionCode.toString()
+
+            addHeaderView(navHeaderLayoutBinding.root)
+        }
+
+        // Connectivity check
+        val deviceOnline = intent.getBooleanExtra(GriyaNodes.INTENT_IS_ONLINE, true)
+
+        if (!deviceOnline) {
+            Toast.makeText(this, "Device terdeteksi offline, data tidak akan tersinkronisasi!", Toast.LENGTH_LONG).show()
+        }
+
+        // Data Lama / Data Baru Mode?
+        val pathDataLama = intent?.getStringExtra("dataLamaPath")
+        if (pathDataLama != null) {
+            viewModel.dataMode = DataMode.DATA_LAMA
+
+            sharedPrefs.edit(true) {
+                putString("dataLamaPath", pathDataLama)
+            }
+
+            binding.connectivityStatus.constraintConnectivity.visibility = View.VISIBLE
+            binding.connectivityStatus.tvStatus.text = "Mode Data Lama"
+        }
+
+        val offlineMode = sharedPrefs.getBoolean("offline_mode", false)
+        if (offlineMode) {
+            viewModel.offlineMode = true
+            viewModel.dataMode = DataMode.OFFLINE
+
+            binding.connectivityStatus.constraintConnectivity.visibility = View.VISIBLE
+        }
+
+        setupViewModel()
+
+        checkUpdate()
+
+        // Get Promotion Message
+        viewModel.getPromotionMessage(onFailure = {
+            Toast.makeText(this, it, Toast.LENGTH_LONG).show()
+        })
+    }
+
+    private fun setupViewModel() {
+//        viewModel.promotionMessage.observe(this) {
+//            it?.also {
+//                showPromotionMessageDialog(it)
+//            }
+//        }
+    }
+
+    private fun showPromotionMessageDialog(promotion: Promotion) {
+        val message = StringBuilder()
+        promotion.texts.forEach {
+            message.append("- ")
+                .append(it)
+                .append("\n")
+        }
+        val headerView = DialogPromotionHeaderBinding.inflate(layoutInflater)
+        val footerView = DialogPromotionFooterBinding.inflate(layoutInflater)
+
+        val footerText = "<i>Investasikan gajimu untuk Rumah Impianmu!</i>"
+        footerView.tvFooter.text = HtmlCompat.fromHtml(footerText, HtmlCompat.FROM_HTML_MODE_LEGACY)
+
+        CFAlertDialog.Builder(this).apply {
+            setDialogStyle(CFAlertDialog.CFAlertStyle.ALERT)
+            setHeaderView(headerView.root)
+            setTitle(promotion.title)
+            setMessage(message)
+            setFooterView(footerView.root)
+        }.create()
+            .show()
+    }
+
+    override fun onSupportNavigateUp(): Boolean {
+        return navController.navigateUp(appBarConfiguration)
+    }
+
+    private fun checkUpdate() {
+        // Getting BuildConfig from Splash Activity, and check available update.
+        val appVersionName = intent.getStringExtra("versionName")
+        val appVersionCode = intent.getIntExtra("versionCode", 0)
+        if (appVersionName != null) {
+            if ((appVersionName != "") and (appVersionCode != 0)) {
+                viewModel.checkUpdates(
+                    versionName = appVersionName,
+                    versionCode = appVersionCode,
+                    onAvailable = {
+                        MaterialAlertDialogBuilder(this)
+                            .setTitle("Update Tersedia!")
+                            .setMessage(
+                                it.releaseNotes.let { notes ->
+                                    val result = StringBuilder()
+
+                                    notes.forEach { text ->
+                                        result.append("- ")
+                                            .append(text)
+                                            .append("\n")
+                                    }
+
+                                    return@let result.toString()
+                                }
+                            )
+                            .setPositiveButton("Update") { _, _ ->
+                                openBrowser(Uri.parse(it.url))
+                            }
+                            .create()
+                            .show()
+                    },
+                    onFailure = {
+                        Snackbar.make(binding.root, it, Snackbar.LENGTH_SHORT).show()
+                    }
+                )
+            }
+        }
+    }
+
+    private fun openBrowser(uri: Uri) {
+        val intent = Intent(Intent.ACTION_VIEW)
+        intent.data = uri
+        startActivity(intent)
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
+        menuInflater.inflate(R.menu.menu_main, menu)
+        return super.onCreateOptionsMenu(menu)
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        return item.onNavDestinationSelected(navController) ||
+                super.onOptionsItemSelected(item)
+    }
+}

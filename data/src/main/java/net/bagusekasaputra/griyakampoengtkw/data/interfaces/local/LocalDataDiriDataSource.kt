@@ -11,4 +11,15 @@ interface LocalDataDiriDataSource {
     suspend fun deleteDataDiri(kavlingKode: String): Result<Nothing?>
 
     suspend fun deleteAll(): Result<Nothing?>
+
+    /**
+     * Inden Booking related
+     */
+    suspend fun getFromIndenBooking(keyId: String): Result<DataDiriModel?>
+
+    suspend fun insertFromIndenBooking(keyId: String, model: DataDiriModel): Result<Nothing?>
+
+    suspend fun updateFromIndenBooking(keyId: String, newModel: DataDiriModel): Result<Nothing?>
+
+    suspend fun deleteAllFromIndenBooking(): Result<Nothing?>
 }

@@ -17,7 +17,7 @@ object ExporterWrapper {
         hargaKavling: HargaKavling,
         pembayarans: List<Pembayaran>
     ) {
-        InvoicePdfDataExporter(context).exportPembayaran(kavlingKode, dataDiri, hargaKavling, pembayarans)
+        // TODO
     }
 
 }

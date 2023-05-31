@@ -17,10 +17,12 @@ object FirebaseNodes {
     const val METADATA_ROOT = "metadata"
     const val BASELINE_PEMBAYARAN = "baselinePembayaran"
     const val INDEN_BOOKING = "indenBooking"
+    const val HARGA_RUMAH = "hargaRumah"
     const val DATABASE_USER = "databaseUser"
     const val BACKUPS = "backups"
     const val STATUS_PEMBAYARAN = "statusPembayaran"
     const val PROMOTION = "promotion"
+    const val AMBIL_KUITANSI = "ambilKuitansi"
     const val MAINTENTANCE = "maintenance"
 
     const val IMAGE_DATA_DIRI = "data_diri_images"

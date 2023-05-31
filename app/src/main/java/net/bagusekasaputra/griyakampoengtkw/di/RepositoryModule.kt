@@ -5,6 +5,7 @@ import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
+import net.bagusekasaputra.griyakampoengtkw.data.CacheHelper
 import net.bagusekasaputra.griyakampoengtkw.data.interfaces.backup.*
 import net.bagusekasaputra.griyakampoengtkw.data.interfaces.local.*
 import net.bagusekasaputra.griyakampoengtkw.data.interfaces.remote.*
@@ -50,19 +51,21 @@ object RepositoryModule {
     @Provides
     fun provideDataDiriRepository(
         localDataDiriDataSource: LocalDataDiriDataSource,
-        remoteDataDiriRepository: RemoteDataDiriRepository,
+        remoteDataDiriDataSource: RemoteDataDiriDataSource,
         remoteKavlingDataSource: RemoteKavlingDataSource,
         backupDataDiriDataSource: BackupDataDiriDataSource,
         localMetadata: LocalMetadataDataSource,
         remoteMetadata: RemoteMetadataDataSource,
+        cacheHelper: CacheHelper,
     ): DataDiriRepository {
         return DataDiriRepositoryImpl(
             localDataDiriDataSource,
-            remoteDataDiriRepository,
+            remoteDataDiriDataSource,
             remoteKavlingDataSource,
             backupDataDiriDataSource,
             localMetadata,
-            remoteMetadata
+            remoteMetadata,
+            cacheHelper,
         )
     }
 
@@ -77,13 +80,15 @@ object RepositoryModule {
         backupPembayaranDataSource: BackupPembayaranDataSource,
         localMetadata: LocalMetadataDataSource,
         remoteMetadata: RemoteMetadataDataSource,
+        cacheHelper: CacheHelper,
     ): PembayaranRepository {
         return PembayaranRepositoryImpl(
             localPembayaranDataSource,
             remotePembayaranSource,
             backupPembayaranDataSource,
             localMetadata,
-            remoteMetadata
+            remoteMetadata,
+            cacheHelper,
         )
     }
 
@@ -126,7 +131,9 @@ object RepositoryModule {
         backupImageDataDiriDataSource: BackupImageDataDiriDataSource,
         localMetadataDataSource: LocalMetadataDataSource,
         remoteMetadataDataSource: RemoteMetadataDataSource,
+        @ExternalDir externalFileDir: File?,
         contentResolver: ContentResolver,
+        cacheHelper: CacheHelper,
     ): ImageDataDiriRepository {
         return ImageDataDiriRepositoryImpl(
             localImageDataDiriDataSource,
@@ -134,7 +141,9 @@ object RepositoryModule {
             backupImageDataDiriDataSource,
             localMetadataDataSource,
             remoteMetadataDataSource,
+            externalFileDir,
             contentResolver,
+            cacheHelper,
         )
     }
 
@@ -347,12 +356,7 @@ object RepositoryModule {
         localMetadata: LocalMetadataDataSource,
         remoteMetadata: RemoteMetadataDataSource,
     ): IndenBookingRepository {
-        return IndenBookingRepositoryImpl(
-            localDataSource,
-            remoteDataSource,
-            localMetadata,
-            remoteMetadata,
-        )
+        return IndenBookingRepositoryImpl(localDataSource, remoteDataSource, localMetadata, remoteMetadata)
     }
 
 
@@ -372,5 +376,29 @@ object RepositoryModule {
     @Provides
     fun providePromotionRepository(remotePromotionDataSource: RemotePromotionDataSource): PromotionRepository {
         return PromotionRepositoryImpl(remotePromotionDataSource)
+    }
+
+    /**
+     * Ambil Kuitansi
+     */
+    @Provides
+    fun provideAmbilKuitansiRepository(
+        localDataSource: LocalAmbilKuitansiDataSource,
+        remoteDataSource: RemoteAmbilKuitansiDataSource,
+        cacheHelper: CacheHelper,
+    ): AmbilKuitansiRepository {
+        return AmbilKuitansiRepositoryImpl(localDataSource, remoteDataSource, cacheHelper)
+    }
+
+    /**
+     * Harga Rumah Inden Booking
+     */
+    @Provides
+    fun provideHargaRumahIndenBookingRepository(
+        localDataSource: LocalHargaRumahIndenBookingDataSource,
+        remoteDataSource: RemoteHargaRumahIndenBookingDataSource,
+        cacheHelper: CacheHelper,
+    ): HargaRumahIndenBookingRepository {
+        return HargaRumahIndenBookingRepositoryImpl(localDataSource, remoteDataSource, cacheHelper)
     }
 }

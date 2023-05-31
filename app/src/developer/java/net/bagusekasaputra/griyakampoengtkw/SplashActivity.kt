@@ -23,7 +23,7 @@ import kotlinx.coroutines.withContext
 import net.bagusekasaputra.griyakampoengtkw.databinding.ActivitySplashPureBinding
 import net.bagusekasaputra.griyakampoengtkw.databinding.ActivitySplashWithLoadingBinding
 import net.bagusekasaputra.griyakampoengtkw.interfaces.remote.InitRemote
-import net.bagusekasaputra.griyakampoengtkw.presentation.activities.MainActivity
+import net.bagusekasaputra.griyakampoengtkw.presentation.activity.MainActivity
 import net.bagusekasaputra.griyakampoengtkw.presentation.util.GriyaNodes
 import java.io.IOException
 import java.net.InetSocketAddress
@@ -106,21 +106,24 @@ class SplashActivity : AppCompatActivity() {
                                 .show()
                         }
                     } else {
+//                        withContext(Dispatchers.Main) {
+//                            val prefsCacheInitiation = "PREFS_HAS_CACHE_INITIATED"
+//                            val hasCacheInitiated = sharedPreferences.getBoolean(prefsCacheInitiation, false)
+//
+//                            if (!hasCacheInitiated) {
+//                                initCache(onComplete = {
+//                                    sharedPreferences.edit()
+//                                        .putBoolean(prefsCacheInitiation, true)
+//                                        .apply()
+//
+//                                    showJenisDataChoice(isOnline = true, shouldShowDataBaruOption = true)
+//                                })
+//                            } else {
+//                                showJenisDataChoice(isOnline = true, shouldShowDataBaruOption = true)
+//                            }
+//                        }
                         withContext(Dispatchers.Main) {
-                            val prefsCacheInitiation = "PREFS_HAS_CACHE_INITIATED"
-                            val hasCacheInitiated = sharedPreferences.getBoolean(prefsCacheInitiation, false)
-
-                            if (!hasCacheInitiated) {
-                                initCache(onComplete = {
-                                    sharedPreferences.edit()
-                                        .putBoolean(prefsCacheInitiation, true)
-                                        .apply()
-
-                                    showJenisDataChoice(isOnline = true, shouldShowDataBaruOption = true)
-                                })
-                            } else {
-                                showJenisDataChoice(isOnline = true, shouldShowDataBaruOption = true)
-                            }
+                            showJenisDataChoice(isOnline = true, shouldShowDataBaruOption = true)
                         }
                     }
                 }

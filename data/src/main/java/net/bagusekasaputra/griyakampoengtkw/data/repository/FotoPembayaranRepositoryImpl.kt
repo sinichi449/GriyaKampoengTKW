@@ -171,16 +171,6 @@ class FotoPembayaranRepositoryImpl(
 
     override fun deleteFotoPembayaran(kavlingKode: String, termin: String): Flow<Result<Nothing?>> {
         return callbackFlow {
-//            // Deleting both in the Device and in the Room Database.
-//            val deviceResult = deviceDataSource.deleteByKavlingKodeAndTermin(kavlingKode, termin)
-//
-//            deviceResult.onFailure {
-//                emit(Result.failure(it))
-//            }
-//
-//            val localResult = localFotoPembayaran.deleteByKavlingKodeAndTermin(kavlingKode, termin)
-//
-//            emit(localResult)
             updateMetadata(kavlingKode)
 
             remoteFotoPembayaran.delete(kavlingKode, termin)

@@ -1,6 +1,19 @@
 package net.bagusekasaputra.griyakampoeng.tkw.data.local
 
+import android.util.Log
+
 object RoomRequestHelper {
+
+    inline fun <M> roomOperation(work: () -> M?): Result<M?> {
+        return try {
+            Result.success(work())
+        } catch (e: java.lang.Exception) {
+            Log.d("INDEN_BOOKING", "Exception in Room Database: " +
+                    "${e.javaClass.simpleName}:${e.message}")
+
+            Result.failure(e)
+        }
+    }
 
     fun <O> doGetOperation(producingWork: () -> O?): Result<O?> {
         return try {

@@ -24,7 +24,7 @@ import net.bagusekasaputra.griyakampoengtkw.domain.entity.rekap.RekapBesarDetail
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.rekap.RekapBesarOverview
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.rekap.RekapGlobal
 import net.bagusekasaputra.griyakampoengtkw.presentation.RekapDetailTransport
-import net.bagusekasaputra.griyakampoengtkw.presentation.activities.RekapBesarDetailActivity.FabMode
+import net.bagusekasaputra.griyakampoengtkw.presentation.activity.RekapBesarDetailActivity.FabMode
 import net.bagusekasaputra.griyakampoengtkw.presentation.fragment.rekap.RekapType
 import net.bagusekasaputra.griyakampoengtkw.presentation.tableview.rekapGlobal.RgCell
 import net.bagusekasaputra.griyakampoengtkw.presentation.tableview.rekapGlobal.RgColumnHeader

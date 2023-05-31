@@ -30,8 +30,8 @@ import net.bagusekasaputra.griyakampoengtkw.domain.entity.Block
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.Kavling
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.ProgressKavling
 import net.bagusekasaputra.griyakampoengtkw.presentation.R
-import net.bagusekasaputra.griyakampoengtkw.presentation.activities.DetailActivity
-import net.bagusekasaputra.griyakampoengtkw.presentation.activities.MainActivity
+import net.bagusekasaputra.griyakampoengtkw.presentation.activity.DetailActivity
+import net.bagusekasaputra.griyakampoengtkw.presentation.activity.MainActivity
 import net.bagusekasaputra.griyakampoengtkw.presentation.adapter.recyclerview.BlockRecyclerAdapter
 import net.bagusekasaputra.griyakampoengtkw.presentation.adapter.recyclerview.KavlingRecyclerAdapter
 import net.bagusekasaputra.griyakampoengtkw.presentation.databinding.DialogAddBlockBinding
@@ -139,24 +139,25 @@ class KavlingFragment : Fragment() {
             }
         }
 
-        viewModel.kavlings.observe(requireActivity()) {
-            it?.let {
-                viewModel.mapProgressKavling.observe(requireActivity()) { mapProgressKavling ->
-                    if (mapProgressKavling != null) {
-                        Log.d("STATUS_PEMBAYARAN", "Success KavlingFragment not null!")
+        viewModel.kavlingAndProgress.observe(requireActivity()) {
+            it?.also { kavlingAndProgress ->
+                val kavlings = kavlingAndProgress.first
+                val mapProgressKavling = kavlingAndProgress.second ?: emptyMap()
 
-                        mapProgressKavling.keys.forEach { kavling ->
-                            val persentase = mapProgressKavling[kavling]?.persentaseBulanIni()
+                if (mapProgressKavling.isNotEmpty()) {
+                    Log.d("STATUS_PEMBAYARAN", "Success KavlingFragment not null!")
 
-                            Log.d("STATUS_PEMBAYARAN", "${kavling}: ${persentase}%")
-                        }
+                    mapProgressKavling.keys.forEach { kavling ->
+                        val persentase = mapProgressKavling[kavling]?.persentaseBulanIni()
 
-                        setupKavlingRecyclerView(it, mapProgressKavling)
-                    } else {
-                        Log.d("STATUS_PEMBAYARAN", "KavlingFragment got NULL Progress")
-
-                        setupKavlingRecyclerView(it, emptyMap())
+                        Log.d("STATUS_PEMBAYARAN", "${kavling}: ${persentase}%")
                     }
+                } else {
+                    Log.d("STATUS_PEMBAYARAN", "KavlingFragment got NULL Progress")
+                }
+
+                if (!kavlings.isNullOrEmpty()) {
+                    setupKavlingRecyclerView(kavlings, mapProgressKavling)
                 }
             }
         }

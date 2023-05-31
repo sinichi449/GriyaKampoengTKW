@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.appcompat.widget.LinearLayoutCompat xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:padding="@dimen/dialog_padding"
+    android:orientation="vertical"
+    android:gravity="center">
+
+    <com.google.android.material.textview.MaterialTextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Harga Rumah"
+        style="@style/TextAppearance.MaterialComponents.Headline6"
+        android:gravity="center"/>
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Masukkan Harga"
+        android:layout_marginTop="24dp"
+        app:startIconDrawable="@drawable/ic_baseline_local_tag_24"
+        app:endIconMode="clear_text"
+        style="@style/DenseOutlinedTextInputLayout">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/edt_harga"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:inputType="number"
+            style="@style/DenseOutlineEditText"/>
+
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Harga Tambah Luasan"
+        app:startIconDrawable="@drawable/ic_baseline_attach_money_24"
+        app:endIconMode="clear_text"
+        android:layout_marginTop="8dp"
+        style="@style/DenseOutlinedTextInputLayout">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/edt_tambah_luasan"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:inputType="number"
+            style="@style/DenseOutlineEditText"/>
+
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <com.github.leandroborgesferreira.loadingbutton.customViews.CircularProgressButton
+        android:id="@+id/btn_tambahkan"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="24dp"
+        android:text="Tambahkan"
+        android:textColor="@color/white"
+        app:spinning_bar_color="@color/white"
+        style="@style/NormalDialogButton"/>
+
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/btn_batal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Batal"
+        android:layout_marginTop="8dp"
+        app:cornerRadius="8dp"
+        style="@style/TextDialogButton"/>
+
+</androidx.appcompat.widget.LinearLayoutCompat>

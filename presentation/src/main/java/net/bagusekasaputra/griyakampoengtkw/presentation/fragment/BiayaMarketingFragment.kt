@@ -29,6 +29,7 @@ import net.bagusekasaputra.griyakampoengtkw.presentation.util.DatePickerHelper
 import net.bagusekasaputra.griyakampoengtkw.presentation.util.DialogUtil
 import net.bagusekasaputra.griyakampoengtkw.presentation.util.InputUtil
 import net.bagusekasaputra.griyakampoengtkw.presentation.viewmodel.DetailViewModel
+import net.bagusekasaputra.griyakampoengtkw.presentation.viewmodel.FormPembayaranViewModel
 
 @Suppress("DEPRECATION")
 @AndroidEntryPoint
@@ -39,6 +40,7 @@ class BiayaMarketingFragment : Fragment() {
     private var areAllFabsVisible = false
 
     private val viewModel: DetailViewModel by activityViewModels()
+    private val pembayaranViewModel by activityViewModels<FormPembayaranViewModel>()
 
     private var offlineMode = false
 
@@ -157,8 +159,10 @@ class BiayaMarketingFragment : Fragment() {
         binding.tvTotalBiaya.text = NumberUtil.formatLongToString(
             viewModel.getTotalBiayaMarketing()
         )
+
+        val livePembayarans = pembayaranViewModel.fullPembayaransLive.value
         binding.tvCuan.text = NumberUtil.formatLongToString(
-            viewModel.getCuanBiayaMarketing()
+            viewModel.getCuanBiayaMarketing(livePembayarans)
         )
     }
 

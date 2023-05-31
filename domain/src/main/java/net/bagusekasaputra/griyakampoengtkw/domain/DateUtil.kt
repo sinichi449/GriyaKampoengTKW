@@ -2,7 +2,6 @@ package net.bagusekasaputra.griyakampoengtkw.domain
 
 import android.os.Build
 import androidx.annotation.RequiresApi
-import java.lang.IllegalArgumentException
 import java.time.LocalDate
 import java.time.ZoneId
 import java.util.Calendar
@@ -28,77 +27,44 @@ object DateUtil {
     }
 
     fun getMonthlyRangeDate(): List<Date> {
-        // Get first and end of day in current month
-        val tanggalPertama = Calendar.getInstance().apply {
-            // Set ke tanggal 1 bulan sekarang
-            set(Calendar.DAY_OF_MONTH, 1)
+        val calendar = Calendar.getInstance()
 
-            set(Calendar.HOUR_OF_DAY, 0)
-            set(Calendar.MINUTE, 0)
-            set(Calendar.SECOND, 0)
-            set(Calendar.MILLISECOND, 0)
-        }.time
-        val tanggalTerakhir = Calendar.getInstance().apply {
-            // Set ke tanggal terakhir bulan sekarang (otomatis mengikuti bulan)
-            set(Calendar.DAY_OF_MONTH, getActualMaximum(Calendar.DATE))
+        val startDay = calendar.getActualMinimum(Calendar.DAY_OF_MONTH)
+        calendar.set(Calendar.DAY_OF_MONTH, startDay)
+        val startDate = calendar.time
 
-            set(Calendar.HOUR_OF_DAY, 0)
-            set(Calendar.MINUTE, 0)
-            set(Calendar.SECOND, 0)
-            set(Calendar.MILLISECOND, 0)
-        }.time
+        val endDay = calendar.getActualMaximum(Calendar.DAY_OF_MONTH)
+        calendar.set(Calendar.DAY_OF_MONTH, endDay)
+        val endDate = calendar.time
 
-        return listOf(tanggalPertama, tanggalTerakhir)
+        return listOf(startDate, endDate)
     }
 
     fun getMonthlyRangeDate(calendarMonth: Int, year: Int): List<Date> {
-        // Get first and end of day in current month
-        val tanggalPertama = Calendar.getInstance().apply {
-            set(Calendar.YEAR, year)
-            set(Calendar.MONTH, calendarMonth)
-            // Set ke tanggal 1 sesuai static atribut dari Calendar
-            set(Calendar.DAY_OF_MONTH, 1)
+        val calendar = Calendar.getInstance()
+        calendar.set(Calendar.MONTH, calendarMonth)
+        calendar.set(Calendar.YEAR, year)
 
-            set(Calendar.HOUR_OF_DAY, 0)
-            set(Calendar.MINUTE, 0)
-            set(Calendar.SECOND, 0)
-            set(Calendar.MILLISECOND, 0)
-        }.time
-        val tanggalTerakhir = Calendar.getInstance().apply {
-            set(Calendar.YEAR, year)
-            set(Calendar.MONTH, calendarMonth)
-            set(Calendar.DAY_OF_MONTH, getActualMaximum(Calendar.DATE))
+        val startDay = calendar.getActualMinimum(Calendar.DAY_OF_MONTH)
+        calendar.set(Calendar.DAY_OF_MONTH, startDay)
+        val startDate = calendar.time
 
-            set(Calendar.HOUR_OF_DAY, 0)
-            set(Calendar.MINUTE, 0)
-            set(Calendar.SECOND, 0)
-            set(Calendar.MILLISECOND, 0)
-        }.time
+        val endDay = calendar.getActualMaximum(Calendar.DAY_OF_MONTH)
+        calendar.set(Calendar.DAY_OF_MONTH, endDay)
+        val endDate = calendar.time
 
-        return listOf(tanggalPertama, tanggalTerakhir)
+        return listOf(startDate, endDate)
     }
 
     fun getWeeklyRangeDate(): List<Date> {
-        val startDate = Calendar.getInstance().apply {
-            set(Calendar.DAY_OF_WEEK, firstDayOfWeek)
+        val calendar = Calendar.getInstance()
+        calendar.set(Calendar.DAY_OF_WEEK, Calendar.SUNDAY)
+        val startDate = calendar.time
 
-            set(Calendar.HOUR_OF_DAY, 0)
-            set(Calendar.MINUTE, 0)
-            set(Calendar.SECOND, 0)
-            set(Calendar.MILLISECOND, 0)
-        }
-        val endDate = Calendar.getInstance().apply {
-            time = startDate.time
+        calendar.add(Calendar.DAY_OF_WEEK, 7)
+        val endDate = calendar.time
 
-            add(Calendar.DAY_OF_WEEK, 7)
-
-            set(Calendar.HOUR_OF_DAY, 0)
-            set(Calendar.MINUTE, 0)
-            set(Calendar.SECOND, 0)
-            set(Calendar.MILLISECOND, 0)
-        }
-
-        return listOf(startDate.time, endDate.time)
+        return listOf(startDate, endDate)
     }
 
     fun getCustomRangeDate(start: Date, end: Date): List<Date> {
@@ -120,6 +86,23 @@ object DateUtil {
         }
 
         return listOf(startDate.time, endDate.time)
+    }
+
+    fun getListMonths(dateFrom: Date, dateTo: Date): List<Date> {
+        val calendar = Calendar.getInstance().apply {
+            time = dateFrom
+            // Reset tanggal
+            set(Calendar.DAY_OF_MONTH, 1)
+        }
+
+        val months = mutableListOf<Date>()
+
+        while (calendar.time.time <= dateTo.time) {
+            months.add(calendar.time)
+            calendar.add(Calendar.MONTH, 1)
+        }
+
+        return months
     }
 
     fun namaBulanShort(bulan: Int): String {

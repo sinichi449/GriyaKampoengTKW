@@ -8,7 +8,9 @@ import kotlinx.coroutines.flow.callbackFlow
 import kotlinx.coroutines.flow.emitAll
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flow
+import net.bagusekasaputra.griyakampoengtkw.data.CacheHelper
 import net.bagusekasaputra.griyakampoengtkw.data.DataUtil
+import net.bagusekasaputra.griyakampoengtkw.data.MyObjectMapper
 import net.bagusekasaputra.griyakampoengtkw.data.MyObjectMapper.mapPembayaran
 import net.bagusekasaputra.griyakampoengtkw.data.interfaces.backup.BackupPembayaranDataSource
 import net.bagusekasaputra.griyakampoengtkw.data.interfaces.local.LocalMetadataDataSource
@@ -28,9 +30,12 @@ class PembayaranRepositoryImpl(
     private val backupPembayaranDataSource: BackupPembayaranDataSource,
     private val localMetadata: LocalMetadataDataSource,
     private val remoteMetadata: RemoteMetadataDataSource,
+    private val cacheHelper: CacheHelper,
 ): PembayaranRepository {
 
     private val metadataTable = "formPembayaran"
+    private val pembayaranIndenBookingLocalTable = "pembayaranIndenBooking"
+    private val pembayaranIndenBookingRemoteTable = "indenBooking/pembayaran"
 
     override fun getBatchOnline(listKavling: List<String>): Flow<Result<Map<String, List<Pembayaran>?>?>> {
         return flow {
@@ -293,6 +298,7 @@ class PembayaranRepositoryImpl(
         }
     }
 
+
     override fun addPembayaran(
         kavlingKode: String,
         hargaKavling: Long,
@@ -371,6 +377,78 @@ class PembayaranRepositoryImpl(
                 emit(Result.failure(it))
             }
         }
+    }
+
+    /**
+     * Inden Booking related
+     */
+    override suspend fun getAllFromIndenBooking(keyId: String): Result<List<Pembayaran>?> {
+        val invalidCache = cacheHelper.checkAndInvalidateCache(
+            pembayaranIndenBookingLocalTable,
+            pembayaranIndenBookingRemoteTable,
+            onInvalid = {
+                localPembayaranDataSource.deleteAllFromIndenBooking()
+            }
+        )
+        val localModel = localPembayaranDataSource.getAllFromIndenBooking(keyId).getOrThrow()
+
+        // Fetch from remote data source if either the cache was invalid
+        // or the local data source returning null (probably after invalidate() call)
+        if (invalidCache || localModel.isNullOrEmpty()) {
+            Log.d("INDEN_BOOKING", "Pembayaran on Cache was invalid or Local Data Source is null! ($keyId) " +
+                    "Fetching from Remote Data Source now.")
+
+            remotePembayaranSource.getAllFromIndenBooking(keyId).getOrThrow()?.also {
+                it.forEach { pembayaranModel ->
+                    Log.d("INTERNAL_INDEN_BOOKING", "Begin insertion for ${pembayaranModel.termin} !")
+                }
+                localPembayaranDataSource.insertAllFromIndenBooking(keyId, it)
+            }
+        } else {
+            Log.d("INDEN_BOOKING", "Pembayaran on Local Data Source is okay, returning from it.")
+        }
+
+        val refreshedLocalResult = localPembayaranDataSource.getAllFromIndenBooking(keyId)
+        return DataUtil.mapListResult(
+            originResult = refreshedLocalResult,
+            targetMapper = MyObjectMapper::mapPembayaran,
+        )
+    }
+
+    override suspend fun insertFromIndenBooking(
+        keyId: String,
+        pembayaran: Pembayaran
+    ): Result<Nothing?> {
+        return callbackFlow<Result<Nothing?>> {
+            val model = MyObjectMapper.mapPembayaran(pembayaran)
+
+            // Remote Insertion
+            remotePembayaranSource.insertFromIndenBooking(keyId, model)
+                .onSuccess {
+                    // Update Cache
+                    cacheHelper.updateMetadata(
+                        pembayaranIndenBookingLocalTable, pembayaranIndenBookingRemoteTable
+                    )
+                        .onSuccess {
+                            // Local Insertion
+                            localPembayaranDataSource.insertFromIndenBooking(keyId, model)
+                                .onSuccess {
+                                    trySendBlocking(Result.success(null))
+                                }
+                                .onFailure {
+                                    trySendBlocking(Result.failure(it))
+                                }
+                        }
+                        .onFailure {
+                            trySendBlocking(Result.failure(it))
+                        }
+                }
+                .onFailure {
+                    trySendBlocking(Result.failure(it))
+                }
+
+            awaitClose {  }
+        }.first()
     }
 
     private suspend fun checkCache() {
