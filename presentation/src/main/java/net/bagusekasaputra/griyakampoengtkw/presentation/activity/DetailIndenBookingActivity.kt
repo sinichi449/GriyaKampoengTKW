@@ -85,11 +85,8 @@ class DetailIndenBookingActivity : AppCompatActivity() {
             addFragment(FormPembayaranIndenBookingFragment(), "Form Pembayaran")
         }
 
-        binding.viewPagerDetailIndenBooking.apply {
-            adapter = viewPagerAdapter
-            addOnPageChangeListener(viewPagerListener)
+        binding.viewPagerDetailIndenBooking.adapter = viewPagerAdapter
 
-        }
         binding.tabLayout.apply {
             setupWithViewPager(binding.viewPagerDetailIndenBooking)
             tabIndicatorAnimationMode = TabLayout.INDICATOR_ANIMATION_MODE_ELASTIC
@@ -105,6 +102,12 @@ class DetailIndenBookingActivity : AppCompatActivity() {
     override fun onBackPressed() {
         finish()
         super.onBackPressed()
+    }
+
+    override fun onResume() {
+        super.onResume()
+
+        binding.viewPagerDetailIndenBooking.addOnPageChangeListener(viewPagerListener)
     }
 
     override fun onStop() {
