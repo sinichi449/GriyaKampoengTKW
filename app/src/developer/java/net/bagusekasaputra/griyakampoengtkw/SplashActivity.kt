@@ -77,8 +77,6 @@ class SplashActivity : AppCompatActivity() {
         // Disable Dark Theme
         AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
 
-
-
         showSplashScreen(1.5f, onSplashFinished = {
             // Connectivity check and init server
             val dispatcher = Dispatchers.IO
@@ -222,6 +220,7 @@ class SplashActivity : AppCompatActivity() {
                         withContext(Dispatchers.Main) {
                             onFailureCheckMaintenance(it.localizedMessage ?: "Unknown Error")
                         }
+
                         trySendBlocking(ConnectionCheckResult(
                             isDeviceOnline = true,
                             shouldShowDataBaru = false,
@@ -283,12 +282,10 @@ class SplashActivity : AppCompatActivity() {
                         continuation.resume(Result.failure(exception), null)
                     }
                 }
-
             }
 
             val database = FirebaseDatabase.getInstance(GriyaNodes.firebaseUrl)
             val maintenanceRef = database.reference.child(FirebaseNodes.MAINTENTANCE)
-
 
             maintenanceRef.addListenerForSingleValueEvent(eventListener)
         }
