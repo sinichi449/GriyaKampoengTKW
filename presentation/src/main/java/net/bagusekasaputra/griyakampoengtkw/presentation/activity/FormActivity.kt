@@ -1,3 +1,5 @@
+@file:Suppress("DEPRECATION")
+
 package net.bagusekasaputra.griyakampoengtkw.presentation.activity
 
 import android.os.Bundle
@@ -29,15 +31,17 @@ class FormActivity : AppCompatActivity() {
         navController = (supportFragmentManager.findFragmentById(R.id.container_form)
                 as NavHostFragment).navController
 
+        // Send bundle key id of data diri if not null or empty
+        val keyId = intent?.extras?.getString(EXTRAS_KEY_ID_INDEN_BOOKING)
+        val bundleKeyId = if (!keyId.isNullOrEmpty())
+                bundleOf(EXTRAS_KEY_ID_INDEN_BOOKING to keyId)
+            else null
         when (val requestedFormType = intent?.extras?.getString(EXTRAS_FORM_TYPE)) {
             FORM_DATA_DIRI_INDEN_BOOKING -> {
-                // Send bundle key id of data diri if not null or empty
-                val dataDiriKeyId = intent?.extras?.getString(EXTRAS_KEY_ID_DATA_DIRI_INDEN_BOOKING)
-                val bundleKeyId = if (!dataDiriKeyId.isNullOrEmpty())
-                        bundleOf(EXTRAS_KEY_ID_DATA_DIRI_INDEN_BOOKING to dataDiriKeyId)
-                    else null
-
                 navController.navigate(R.id.nav_form_data_diri_inden_booking, args = bundleKeyId)
+            }
+            FORM_PEMBAYARAN_INDEN_BOOKING -> {
+                navController.navigate(R.id.nav_form_pembayaran_inden_booking, args = bundleKeyId)
             }
             else -> {
                 Log.d("FORM_ACTIVITY", "Unknown form type $requestedFormType !!")
@@ -53,6 +57,12 @@ class FormActivity : AppCompatActivity() {
 
     fun getFabDone(): FloatingActionButton {
         return binding.fabDone
+    }
+
+    @Deprecated("Deprecated in Java")
+    override fun onBackPressed() {
+        finish()
+        super.onBackPressed()
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
@@ -81,8 +91,9 @@ class FormActivity : AppCompatActivity() {
         const val EXTRAS_SUCCESS_DATA = "EXTRAS_SUCCESS_DATA"
 
         const val FORM_DATA_DIRI_INDEN_BOOKING = "FORM_DATA_DIRI_INDEN_BOOKING"
+        const val FORM_PEMBAYARAN_INDEN_BOOKING = "FORM_PEMBAYARAN_INDEN_BOOKING"
 
-        const val EXTRAS_KEY_ID_DATA_DIRI_INDEN_BOOKING = "EXTRAS_DATA_DIRI_INDEN_BOOKING_KEY_ID"
+        const val EXTRAS_KEY_ID_INDEN_BOOKING = "EXTRAS_KEY_ID_INDEN_BOOKING"
     }
 
 }

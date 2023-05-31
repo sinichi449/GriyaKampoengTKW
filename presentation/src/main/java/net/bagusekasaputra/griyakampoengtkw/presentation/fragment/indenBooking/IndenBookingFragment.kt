@@ -181,7 +181,7 @@ class IndenBookingFragment : Fragment() {
 
             val intent = Intent(requireActivity(), FormActivity::class.java)
             intent.putExtra(FormActivity.EXTRAS_FORM_TYPE, FormActivity.FORM_DATA_DIRI_INDEN_BOOKING)
-            intent.putExtra(FormActivity.EXTRAS_KEY_ID_DATA_DIRI_INDEN_BOOKING, keyId)
+            intent.putExtra(FormActivity.EXTRAS_KEY_ID_INDEN_BOOKING, keyId)
 
             startActivityForResult(intent, REQUEST_CODE_EDIT_INDEN_BOOKING)
         } else if (deleteIndenBooking) {

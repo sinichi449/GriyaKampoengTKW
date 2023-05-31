@@ -1,6 +1,10 @@
+@file:Suppress("DEPRECATION")
+
 package net.bagusekasaputra.griyakampoengtkw.presentation.fragment.indenBooking
 
 import android.annotation.SuppressLint
+import android.app.Activity
+import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -15,6 +19,7 @@ import net.bagusekasaputra.griyakampoengtkw.domain.NumberUtil
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.Pembayaran
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.indenBooking.HargaRumahIndenBooking
 import net.bagusekasaputra.griyakampoengtkw.presentation.activity.DetailIndenBookingActivity
+import net.bagusekasaputra.griyakampoengtkw.presentation.activity.FormActivity
 import net.bagusekasaputra.griyakampoengtkw.presentation.custom.ThousandSeparatorTextWatcher
 import net.bagusekasaputra.griyakampoengtkw.presentation.databinding.DialogEditHargaRumahIndenBookingBinding
 import net.bagusekasaputra.griyakampoengtkw.presentation.databinding.FragmentFormPembayaranIndenBookingBinding
@@ -29,6 +34,8 @@ class FormPembayaranIndenBookingFragment : Fragment() {
 
     private lateinit var binding: FragmentFormPembayaranIndenBookingBinding
     private val viewModel by activityViewModels<IndenBookingViewModel>()
+
+    private val REQUEST_CODE_INPUT_NEW_PEMBAYARAN = 901
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -50,10 +57,27 @@ class FormPembayaranIndenBookingFragment : Fragment() {
             binding.root.isRefreshing = false
         }
 
-        // Hide fab on scroll
+        // Setup fab add
         with((requireActivity() as DetailIndenBookingActivity).getFab()) {
             // Hide on scroll
             UiUtils.hideFabsOnVerticalScroll(binding.scrollViewPembayaranIndenBooking, this)
+
+            // Go to form input if harga rumah already set
+            setOnClickListener {
+                if (viewModel.hargaRumahIndenBooking.value != null) {
+                    val intent = Intent(requireContext(), FormActivity::class.java).apply {
+                        putExtra(
+                            FormActivity.EXTRAS_FORM_TYPE,
+                            FormActivity.FORM_PEMBAYARAN_INDEN_BOOKING
+                        )
+                        putExtra(FormActivity.EXTRAS_KEY_ID_INDEN_BOOKING, viewModel.currentKeyId)
+                    }
+
+                    startActivityForResult(intent, REQUEST_CODE_INPUT_NEW_PEMBAYARAN)
+                } else {
+                    Toast.makeText(requireContext(), "Entry pembayaran memerlukan Harga Rumah yang telah disetting!", Toast.LENGTH_LONG).show()
+                }
+            }
         }
 
         binding.imgEditHargaRumah.setOnClickListener {
@@ -191,4 +215,24 @@ class FormPembayaranIndenBookingFragment : Fragment() {
         }
     }
 
+    @Deprecated("Deprecated in Java", ReplaceWith(
+            "super.onActivityResult(requestCode, resultCode, data)",
+            "androidx.fragment.app.Fragment"
+        )
+    )
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+
+        // Input Pembayaran request handling
+        if (requestCode == REQUEST_CODE_INPUT_NEW_PEMBAYARAN) {
+            if (resultCode == Activity.RESULT_OK) {
+                Snackbar.make(binding.root, "Berhasil menambahkan pembayaran!", Snackbar.LENGTH_SHORT)
+                    .show()
+            } else {
+                data?.extras?.getString(FormActivity.EXTRAS_FAIL_MSG)?.also {
+                    Toast.makeText(requireContext(), it, Toast.LENGTH_LONG).show()
+                }
+            }
+        }
+    }
 }

@@ -8,4 +8,10 @@
         android:id="@+id/nav_form_data_diri_inden_booking"
         android:name="net.bagusekasaputra.griyakampoengtkw.presentation.form.FormInputDataDiriIndenBookingFragment"
         android:label="Data Diri (Inden Booking)" />
+
+    <fragment
+        android:id="@+id/nav_form_pembayaran_inden_booking"
+        android:name="net.bagusekasaputra.griyakampoengtkw.presentation.form.FormInputPembayaranIndenBookingFragment"
+        android:label="Pembayaran (Inden Booking)" />
+
 </navigation>

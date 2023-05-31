@@ -16,6 +16,7 @@ import net.bagusekasaputra.griyakampoengtkw.domain.entity.DataDiri
 import net.bagusekasaputra.griyakampoengtkw.presentation.activity.FormActivity
 import net.bagusekasaputra.griyakampoengtkw.presentation.databinding.FragmentFormInputDataDiriIndenBookingBinding
 import net.bagusekasaputra.griyakampoengtkw.presentation.util.Consts
+import net.bagusekasaputra.griyakampoengtkw.presentation.util.FormUtil
 import net.bagusekasaputra.griyakampoengtkw.presentation.util.InputUtil
 import net.bagusekasaputra.griyakampoengtkw.presentation.viewmodel.IndenBookingViewModel
 
@@ -33,7 +34,7 @@ class FormInputDataDiriIndenBookingFragment : Fragment() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        keyId = arguments?.getString(FormActivity.EXTRAS_KEY_ID_DATA_DIRI_INDEN_BOOKING)
+        keyId = arguments?.getString(FormActivity.EXTRAS_KEY_ID_INDEN_BOOKING)
     }
 
     override fun onCreateView(
@@ -109,13 +110,15 @@ class FormInputDataDiriIndenBookingFragment : Fragment() {
                             snackBarProgress.show()
                         },
                         onComplete = {
-                            sendResultAndExit(Activity.RESULT_OK, null)
+                            FormUtil.sendResultAndExit(requireActivity(), Activity.RESULT_OK, null)
                         },
                         onFailure = {
                             val failureData = Intent()
                             failureData.putExtra(FormActivity.EXTRAS_FAIL_MSG, it)
 
-                            sendResultAndExit(Activity.RESULT_CANCELED, failureData)
+                            FormUtil.sendResultAndExit(requireActivity(),
+                                Activity.RESULT_CANCELED, failureData
+                            )
                         }
                     )
                 } else {
@@ -128,13 +131,16 @@ class FormInputDataDiriIndenBookingFragment : Fragment() {
                             val dataToSend = Intent()
                             dataToSend.putExtra(FormActivity.EXTRAS_SUCCESS_DATA, generatedKeyId)
 
-                            sendResultAndExit(Activity.RESULT_OK, dataToSend)
+                            FormUtil.sendResultAndExit(requireActivity(),
+                                Activity.RESULT_OK, dataToSend)
                         },
                         onFailure = {
                             val dataToSend = Intent()
                             dataToSend.putExtra(FormActivity.EXTRAS_FAIL_MSG, it)
 
-                            sendResultAndExit(Activity.RESULT_CANCELED, dataToSend)
+                            FormUtil.sendResultAndExit(requireActivity(),
+                                Activity.RESULT_CANCELED, dataToSend
+                            )
                         }
                     )
                 }
@@ -157,7 +163,7 @@ class FormInputDataDiriIndenBookingFragment : Fragment() {
                 val dataToSend = Intent()
                 dataToSend.putExtra(FormActivity.EXTRAS_FAIL_MSG, it)
 
-                sendResultAndExit(Activity.RESULT_CANCELED, dataToSend)
+                FormUtil.sendResultAndExit(requireActivity(), Activity.RESULT_CANCELED, dataToSend)
             }
         )
 
@@ -181,13 +187,6 @@ class FormInputDataDiriIndenBookingFragment : Fragment() {
                     )
                 }
             }
-        }
-    }
-
-    private fun sendResultAndExit(resultCode: Int, dataToSend: Intent?) {
-        with(requireActivity()) {
-            setResult(resultCode, dataToSend)
-            finish()
         }
     }
 
