@@ -5,6 +5,7 @@ import android.content.Intent
 import android.content.SharedPreferences
 import android.os.Bundle
 import android.os.Handler
+import android.util.Log
 import android.view.View
 import android.view.WindowManager
 import android.widget.Toast
@@ -14,23 +15,30 @@ import androidx.biometric.BiometricManager
 import androidx.biometric.BiometricPrompt
 import androidx.core.content.ContextCompat
 import androidx.core.content.edit
+import androidx.lifecycle.lifecycleScope
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import com.google.firebase.database.DataSnapshot
+import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.FirebaseDatabase
+import com.google.firebase.database.ValueEventListener
 import com.google.firebase.database.ktx.getValue
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.channels.trySendBlocking
-import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
 import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.suspendCancellableCoroutine
 import kotlinx.coroutines.withContext
 import net.bagusekasaputra.griyakampoengtkw.data.remote.FirebaseNodes
 import net.bagusekasaputra.griyakampoengtkw.databinding.ActivitySplashPureBinding
 import net.bagusekasaputra.griyakampoengtkw.databinding.ActivitySplashWithLoadingBinding
+import net.bagusekasaputra.griyakampoengtkw.interfaces.CacheInitializer
+import net.bagusekasaputra.griyakampoengtkw.model.ConnectionCheckResult
 import net.bagusekasaputra.griyakampoengtkw.presentation.R
 import net.bagusekasaputra.griyakampoengtkw.presentation.activity.MainActivity
 import net.bagusekasaputra.griyakampoengtkw.presentation.util.GriyaNodes
@@ -51,10 +59,14 @@ class SplashActivity : AppCompatActivity() {
     private lateinit var biometricPrompt: BiometricPrompt
     @Inject
     lateinit var sharedPreferences: SharedPreferences
+    @Inject
+    lateinit var cacheInitializer: CacheInitializer
 
+    @SuppressLint("SetTextI18n")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
+        // Set transparent status bar for seamless view with GKT Background
         window.apply {
             addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS)
             clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS)
@@ -67,6 +79,8 @@ class SplashActivity : AppCompatActivity() {
         // Disable Dark Theme
         AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
 
+        // Init biometric authentication. If authentication is successful,
+        // then execute connectivityCheckAndInitServer() and initialize the cache.
         biometricManager = BiometricManager.from(this)
         biometricPrompt = BiometricUtil.instanceOfBiometricPrompt(this,
             onFailure = { errorCode: Int, _ ->
@@ -87,7 +101,48 @@ class SplashActivity : AppCompatActivity() {
                 }
             },
             onSuccess = {
-                connectivityCheckAndInitServer()
+                // Connectivity check and init server
+                val dispatcher = Dispatchers.IO
+
+                lifecycleScope.launch(dispatcher) {
+                    val connectivityCheckResult = connectivityCheckAndInitServer(
+                        dispatcher = dispatcher,
+                        onDeviceConnectivityCheck = { isOnline ->
+                            if (isOnline) {
+                                bindingLoading.layoutCekKoneksi.tvInfoPeriksaInternet.text = "Memeriksa status server"
+                            } else {
+                                Toast.makeText(this@SplashActivity, "Device terdeteksi offline, mohon cek koneksi Anda.", Toast.LENGTH_LONG).show()
+                            }
+                        },
+                        onServerMaintenance = {
+                            MaterialAlertDialogBuilder(this@SplashActivity)
+                                .setTitle("Server Maintenance")
+                                .setCancelable(false)
+                                .setMessage("Mohon maaf, untuk saat ini server sedang menjalani proses pemeliharaan. Anda hanya bisa membuka Data Lama. Silakan coba lagi nanti.")
+                                .setPositiveButton("Oke") { dialog, _ ->
+                                    dialog.dismiss()
+                                }
+                                .create()
+                                .show()
+                        },
+                        onFailureCheckMaintenance = { failMsg ->
+                            Toast.makeText(this@SplashActivity, "Gagal mengecek status server: $failMsg", Toast.LENGTH_LONG).show()
+                        },
+                    )
+
+                    // Initialize cache
+                    cacheInitializer.initialize()
+                        .onSuccess {
+                            Log.d("INIT_CACHE", "Success initializing cache!")
+                        }
+                        .onFailure {
+                            Log.e("INIT_CACHE", "Error on cache initialization: ${it.localizedMessage}")
+                        }
+
+                    withContext(Dispatchers.Main) {
+                        showJenisDataButton(connectivityCheckResult)
+                    }
+                }
             }
         )
 
@@ -109,101 +164,37 @@ class SplashActivity : AppCompatActivity() {
         handler.postDelayed(splashRunnable, millis)
     }
 
-    @SuppressLint("SetTextI18n")
-    private fun connectivityCheckAndInitServer() {
-        CoroutineScope(Dispatchers.IO).launch {
-            deviceOnline().collect { online ->
-                if (online) {
-                    withContext(Dispatchers.Main) {
-                        bindingLoading.layoutCekKoneksi.tvInfoPeriksaInternet.text = "Memeriksa status server"
-                    }
-                    // Check Maintenance status
-                    val isMaintenance = checkMaintenance()
+    private fun showJenisDataButton(connectionCheckResult: ConnectionCheckResult) {
+        with(bindingLoading) {
+            // Remove layout cek koneksi
+            layoutCekKoneksi.root.visibility = View.INVISIBLE
 
-                    isMaintenance.onSuccess { maintenance ->
-                        if (maintenance) {
-                            withContext(Dispatchers.Main) {
-                                MaterialAlertDialogBuilder(this@SplashActivity)
-                                    .setTitle("Server Maintenance")
-                                    .setCancelable(false)
-                                    .setMessage("Mohon maaf, untuk saat ini server sedang menjalani proses pemeliharaan. Anda hanya bisa membuka Data Lama. Silakan coba lagi nanti.")
-                                    .setPositiveButton("Oke") { dialog, _ ->
-                                        dialog.dismiss()
+            // When checking Maintenance Status or Device Connectivity fails,
+            // disable "Data Baru" button.
+            if (!connectionCheckResult.shouldShowDataBaru) {
+                layoutPilihData.btnDataBaru.visibility = View.GONE
+            }
 
-                                        showJenisDataChoice(isOnline = true, shouldShowDataBaruOption = false)
-                                    }
-                                    .create()
-                                    .show()
-                            }
-                        } else {
-                            withContext(Dispatchers.Main) {
-                                showJenisDataChoice(isOnline = true, shouldShowDataBaruOption = true)
-                            }
-                        }
-                    }
+            // Show layout pilih data
+            layoutPilihData.root.visibility = View.VISIBLE
 
-                    isMaintenance.onFailure {
-                        withContext(Dispatchers.Main) {
-                            Toast.makeText(this@SplashActivity, "Gagal mengecek status server: $it", Toast.LENGTH_LONG).show()
-                            showJenisDataChoice(isOnline = true, shouldShowDataBaruOption = false)
-                        }
-                    }
-                } else {
-                    withContext(Dispatchers.Main) {
-                        Toast.makeText(
-                            this@SplashActivity,
-                            "Device terdeteksi offline, mohon cek koneksi Anda.",
-                            Toast.LENGTH_LONG
-                        ).show()
-
-                        showJenisDataChoice(isOnline = false, shouldShowDataBaruOption = false)
-                    }
+            // Setup button Data Lama and Data Baru
+            layoutPilihData.btnDataLama.setOnClickListener {
+                goToDocumentLamaActivity()
+            }
+            layoutPilihData.btnDataBaru.setOnClickListener {
+                // Nullify the sharedPreference Data Lama to prevent MainActivity/DetailActivity
+                // to DataLama mode
+                sharedPreferences.edit(true) {
+                    putString("dataLamaPath", null)
                 }
-            }
 
-        }
-    }
-
-    private fun deviceOnline(): Flow<Boolean> {
-        return flow {
-            try {
-                val timeOutMs = 3000
-                val sock = Socket()
-                val sockAddr = InetSocketAddress("8.8.8.8", 53)
-
-                sock.connect(sockAddr, timeOutMs)
-                sock.close()
-
-                emit(true)
-            } catch (e: IOException) {
-                emit(false)
+                goToMainActivity(connectionCheckResult.isDeviceOnline, true)
             }
         }
     }
 
-    private fun showJenisDataChoice(isOnline: Boolean, shouldShowDataBaruOption: Boolean) {
-        bindingLoading.layoutCekKoneksi.root.visibility = View.INVISIBLE
-
-        // When checking Maintenance Status or Device Connectivity fails,
-        // disable "Data Baru" button.
-        if (!shouldShowDataBaruOption) {
-            bindingLoading.layoutPilihData.btnDataBaru.visibility = View.GONE
-        }
-
-        bindingLoading.layoutPilihData.root.visibility = View.VISIBLE
-        bindingLoading.layoutPilihData.btnDataLama.setOnClickListener {
-            goToDocumentLamaActivity()
-        }
-        bindingLoading.layoutPilihData.btnDataBaru.setOnClickListener {
-            // Nullify the sharedPreference Data Lama to prevent MainActivity/DetailActivity
-            // to DataLama mode
-            sharedPreferences.edit(true) {
-                putString("dataLamaPath", null)
-            }
-            goToMainActivity(isOnline, true)
-        }
-    }
-
+    @Suppress("SameParameterValue")
     private fun goToMainActivity(isOnline: Boolean, isNewDataSelected: Boolean) {
         // I also want to pass a BuildConfig for checking update.
         val intent = Intent(this, MainActivity::class.java)
@@ -221,22 +212,109 @@ class SplashActivity : AppCompatActivity() {
         startActivity(intent)
     }
 
+    private suspend fun connectivityCheckAndInitServer(
+        dispatcher: CoroutineDispatcher,
+        onDeviceConnectivityCheck: (isOnline: Boolean) -> Unit,
+        onServerMaintenance: () -> Unit,
+        onFailureCheckMaintenance: (failMsg: String) -> Unit,
+    ): ConnectionCheckResult {
+        return callbackFlow {
+            if (deviceIsOnline()) {
+                withContext(Dispatchers.Main) {
+                    onDeviceConnectivityCheck(true)
+                }
+                // Check Maintenance status
+                checkMaintenance()
+                    .onSuccess { maintenance ->
+                        if (maintenance) {
+                            withContext(Dispatchers.Main) {
+                                onServerMaintenance()
+                            }
+
+                            trySendBlocking(ConnectionCheckResult(
+                                isDeviceOnline = true,
+                                shouldShowDataBaru = false,
+                            ))
+                        } else {
+                            trySendBlocking(ConnectionCheckResult(
+                                isDeviceOnline = true,
+                                shouldShowDataBaru = true,
+                            ))
+                        }
+                    }
+                    .onFailure {
+                        withContext(Dispatchers.Main) {
+                            onFailureCheckMaintenance(it.localizedMessage ?: "Unknown Error")
+                        }
+                        trySendBlocking(ConnectionCheckResult(
+                            isDeviceOnline = true,
+                            shouldShowDataBaru = false,
+                        ))
+                    }
+            } else {
+                withContext(Dispatchers.Main) {
+                    onDeviceConnectivityCheck(false)
+                }
+
+                trySendBlocking(ConnectionCheckResult(
+                    isDeviceOnline = false, shouldShowDataBaru = false
+                ))
+            }
+
+            awaitClose {  }
+        }
+            .flowOn(dispatcher)
+            .first()
+    }
+
+    @OptIn(ExperimentalCoroutinesApi::class)
+    private suspend fun deviceIsOnline(): Boolean {
+        return suspendCancellableCoroutine { continuation ->
+            try {
+                val timeOutMs = 3000
+                val sock = Socket()
+                val sockAddr = InetSocketAddress("8.8.8.8", 53)
+
+                sock.connect(sockAddr, timeOutMs)
+                sock.close()
+
+                if (continuation.isActive) {
+                    continuation.resume(true, null)
+                }
+            } catch (e: IOException) {
+                if (continuation.isActive) {
+                    continuation.resume(false, null)
+                }
+            }
+        }
+    }
+
+    @OptIn(ExperimentalCoroutinesApi::class)
     private suspend fun checkMaintenance(): Result<Boolean> {
-        return callbackFlow<Result<Boolean>> {
+        return suspendCancellableCoroutine { continuation ->
+            val eventListener = object : ValueEventListener {
+                override fun onDataChange(snapshot: DataSnapshot) {
+                    val statusServer = snapshot.getValue<Boolean>()
+
+                    if (continuation.isActive) {
+                        continuation.resume(Result.success(statusServer ?: true), null)
+                    }
+                }
+
+                override fun onCancelled(error: DatabaseError) {
+                    if (continuation.isActive) {
+                        val exception = error.toException()
+                        continuation.resume(Result.failure(exception), null)
+                    }
+                }
+
+            }
+
             val database = FirebaseDatabase.getInstance(GriyaNodes.firebaseUrl)
             val maintenanceRef = database.reference.child(FirebaseNodes.MAINTENTANCE)
 
-            maintenanceRef
-                .get()
-                .addOnSuccessListener { snapshot ->
-                    val statusServer = snapshot.getValue<Boolean>()
-                    trySendBlocking(Result.success(statusServer ?: false))
-                }
-                .addOnFailureListener {
-                    trySendBlocking(Result.failure(it))
-                }
 
-            awaitClose {  }
-        }.first()
+            maintenanceRef.addListenerForSingleValueEvent(eventListener)
+        }
     }
 }
