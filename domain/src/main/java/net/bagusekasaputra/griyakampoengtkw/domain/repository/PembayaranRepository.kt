@@ -38,4 +38,6 @@ interface PembayaranRepository {
      * Inden Booking related
      */
     suspend fun getAllFromIndenBooking(keyId: String): Result<List<Pembayaran>?>
+
+    suspend fun insertFromIndenBooking(keyId: String, pembayaran: Pembayaran): Result<Nothing?>
 }

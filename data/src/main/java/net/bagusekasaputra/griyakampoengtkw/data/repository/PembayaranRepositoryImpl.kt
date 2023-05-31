@@ -415,6 +415,42 @@ class PembayaranRepositoryImpl(
         )
     }
 
+    override suspend fun insertFromIndenBooking(
+        keyId: String,
+        pembayaran: Pembayaran
+    ): Result<Nothing?> {
+        return callbackFlow<Result<Nothing?>> {
+            val model = MyObjectMapper.mapPembayaran(pembayaran)
+
+            // Remote Insertion
+            remotePembayaranSource.insertFromIndenBooking(keyId, model)
+                .onSuccess {
+                    // Update Cache
+                    cacheHelper.updateMetadata(
+                        pembayaranIndenBookingLocalTable, pembayaranIndenBookingRemoteTable
+                    )
+                        .onSuccess {
+                            // Local Insertion
+                            localPembayaranDataSource.insertFromIndenBooking(keyId, model)
+                                .onSuccess {
+                                    trySendBlocking(Result.success(null))
+                                }
+                                .onFailure {
+                                    trySendBlocking(Result.failure(it))
+                                }
+                        }
+                        .onFailure {
+                            trySendBlocking(Result.failure(it))
+                        }
+                }
+                .onFailure {
+                    trySendBlocking(Result.failure(it))
+                }
+
+            awaitClose {  }
+        }.first()
+    }
+
     private suspend fun checkCache() {
         // Cache validation
         val localTimestamp = localMetadata.get(metadataTable)?.timestamp

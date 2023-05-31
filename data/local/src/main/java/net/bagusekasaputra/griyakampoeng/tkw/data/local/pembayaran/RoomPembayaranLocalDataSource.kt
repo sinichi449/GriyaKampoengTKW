@@ -166,6 +166,13 @@ class RoomPembayaranLocalDataSource(
         return pembayaranIndenBookingDataSource.getAll(keyId)
     }
 
+    override suspend fun insertFromIndenBooking(
+        keyId: String,
+        model: PembayaranModel
+    ): Result<Nothing?> {
+        return pembayaranIndenBookingDataSource.insert(keyId, model)
+    }
+
     override suspend fun insertAllFromIndenBooking(
         keyId: String,
         models: List<PembayaranModel>
@@ -187,6 +194,8 @@ class RoomPembayaranLocalDataSource(
 interface LocalPembayaranIndenBookingDataSource {
 
     suspend fun getAll(keyId: String): Result<List<PembayaranModel>?>
+
+    suspend fun insert(keyId: String, model: PembayaranModel): Result<Nothing?>
 
     suspend fun insertAll(keyId: String, models: List<PembayaranModel>): Result<Nothing?>
 

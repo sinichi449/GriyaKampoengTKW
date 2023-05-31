@@ -133,6 +133,13 @@ class FirebasePembayaranSource(
         return pembayaranIndenBookingDataSource.getAll(keyId)
     }
 
+    override suspend fun insertFromIndenBooking(
+        keyId: String,
+        model: PembayaranModel
+    ): Result<Nothing?> {
+        return pembayaranIndenBookingDataSource.insert(keyId, model)
+    }
+
 
     private fun isTerminChildAvailable(
         kavlingKode: String,
@@ -166,5 +173,7 @@ class FirebasePembayaranSource(
 interface RemotePembayaranIndenBookingDataSource {
 
     suspend fun getAll(keyId: String): Result<List<PembayaranModel>?>
+
+    suspend fun insert(keyId: String, model: PembayaranModel): Result<Nothing?>
 
 }

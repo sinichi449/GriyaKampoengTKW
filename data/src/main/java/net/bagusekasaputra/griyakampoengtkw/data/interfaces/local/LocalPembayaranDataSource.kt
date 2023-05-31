@@ -24,6 +24,8 @@ interface LocalPembayaranDataSource {
      */
     suspend fun getAllFromIndenBooking(keyId: String): Result<List<PembayaranModel>?>
 
+    suspend fun insertFromIndenBooking(keyId: String, model: PembayaranModel): Result<Nothing?>
+
     suspend fun insertAllFromIndenBooking(keyId: String, models: List<PembayaranModel>)
         : Result<Nothing?>
 

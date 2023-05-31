@@ -228,6 +228,8 @@ class FormPembayaranIndenBookingFragment : Fragment() {
             if (resultCode == Activity.RESULT_OK) {
                 Snackbar.make(binding.root, "Berhasil menambahkan pembayaran!", Snackbar.LENGTH_SHORT)
                     .show()
+
+                sync()
             } else {
                 data?.extras?.getString(FormActivity.EXTRAS_FAIL_MSG)?.also {
                     Toast.makeText(requireContext(), it, Toast.LENGTH_LONG).show()

@@ -5,6 +5,7 @@ import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.ValueEventListener
 import com.google.firebase.database.ktx.getValue
+import kotlinx.coroutines.suspendCancellableCoroutine
 import net.bagusekasaputra.griyakampoengtkw.data.model.PembayaranModel
 import net.bagusekasaputra.griyakampoengtkw.data.remote.FirebaseNodes
 import net.bagusekasaputra.griyakampoengtkw.data.remote.pembayaran.RemotePembayaranIndenBookingDataSource
@@ -15,7 +16,12 @@ class FirebasePembayaranIndenBookingDataSource(
     databaseReference: DatabaseReference
 ): RemotePembayaranIndenBookingDataSource {
 
-    private val indenBookingRef = databaseReference.child(FirebaseNodes.INDEN_BOOKING)
+    private val pembayaranRef = { keyId: String ->
+        databaseReference
+            .child(FirebaseNodes.INDEN_BOOKING)
+            .child(keyId)
+            .child(FirebaseNodes.FORM_PEMBAYARAN)
+    }
 
     override suspend fun getAll(keyId: String): Result<List<PembayaranModel>?> {
         return suspendCoroutine { continuation ->
@@ -41,8 +47,24 @@ class FirebasePembayaranIndenBookingDataSource(
                 }
             }
 
-            indenBookingRef.child(keyId).child(FirebaseNodes.FORM_PEMBAYARAN)
-                .addListenerForSingleValueEvent(eventListener)
+            pembayaranRef(keyId).addListenerForSingleValueEvent(eventListener)
+        }
+    }
+
+    override suspend fun insert(keyId: String, model: PembayaranModel): Result<Nothing?> {
+        return suspendCancellableCoroutine { continuation ->
+            pembayaranRef(keyId).child(model.termin)
+                .setValue(model)
+                .addOnSuccessListener {
+                    if (continuation.isActive) {
+                        continuation.resume(Result.success(null))
+                    }
+                }
+                .addOnFailureListener {
+                    if (continuation.isActive) {
+                        continuation.resume(Result.failure(it))
+                    }
+                }
         }
     }
 }

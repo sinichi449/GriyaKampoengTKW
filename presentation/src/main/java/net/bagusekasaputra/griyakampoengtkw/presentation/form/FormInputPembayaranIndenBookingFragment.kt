@@ -6,21 +6,20 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
-import androidx.lifecycle.lifecycleScope
 import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
+import net.bagusekasaputra.griyakampoengtkw.domain.entity.Pembayaran
 import net.bagusekasaputra.griyakampoengtkw.presentation.activity.FormActivity
+import net.bagusekasaputra.griyakampoengtkw.presentation.custom.ThousandSeparatorTextWatcher
 import net.bagusekasaputra.griyakampoengtkw.presentation.databinding.FragmentFormInputPembayaranIndenBookingBinding
+import net.bagusekasaputra.griyakampoengtkw.presentation.util.DatePickerHelper
 import net.bagusekasaputra.griyakampoengtkw.presentation.util.FormUtil
+import net.bagusekasaputra.griyakampoengtkw.presentation.util.InputUtil
 import net.bagusekasaputra.griyakampoengtkw.presentation.util.UiUtils
 import net.bagusekasaputra.griyakampoengtkw.presentation.viewmodel.IndenBookingViewModel
-import kotlin.random.Random
 
 @AndroidEntryPoint
 class FormInputPembayaranIndenBookingFragment : Fragment() {
@@ -52,37 +51,87 @@ class FormInputPembayaranIndenBookingFragment : Fragment() {
         // Toolbar title
         (requireActivity() as FormActivity).setFormTitle("Pembayaran (Inden Booking)")
 
+        
+        with(binding) {
+            // TODO: Next termin sequence
+            arrayOf(rbItj, rbDp, rbTermin).forEach { terminRadioButton -> 
+                terminRadioButton.setOnClickListener {
+                    edtTermin.isEnabled = true
+                    tilTermin.isEnabled = true
+                }
+            }
+
+            // Add thousand comma separator to edtJumlahUangDibayar
+            edtJumlahUangDibayar.addTextChangedListener(
+                ThousandSeparatorTextWatcher(edtJumlahUangDibayar)
+            )
+            
+            // Date picker
+            DatePickerHelper(requireContext(), btnPilihTanggal, edtTanggal)
+                .setupDateDefaultOrPick(true)
+        }
+        
+        
         // Setup fab
         with((requireActivity() as FormActivity).getFabDone()) {
             // Hide fab on scroll
             UiUtils.hideFabsOnVerticalScroll(binding.root, this)
 
             setOnClickListener {
-                // TODO
-                val progressSnackBar = Snackbar.make(binding.root, "Memproses data pembayaran ...", Snackbar.LENGTH_INDEFINITE)
-                lifecycleScope.launch(Dispatchers.Default) {
-                    withContext(Dispatchers.Main) {
-                        progressSnackBar.show()
+                val isInvalidEdt = binding.run { 
+                    InputUtil.isNullOrEmptyEditTexts(
+                        edtTermin, edtTanggal, edtJumlahUangDibayar, 
+                    )   
+                }
+                if (!isInvalidEdt) {
+                    val termin = binding.edtTermin.text.toString().let { urutanTermin ->
+                        val jenisTermin = if (binding.rbItj.isChecked) "ITJ"
+                            else if (binding.rbDp.isChecked) "DP"
+                            else if (binding.rbTermin.isChecked) "Termin"
+                            else "NULL" // This is ridiculuously error :v
+
+                        "$jenisTermin $urutanTermin"
+                    }
+                    val tanggal = binding.edtTanggal.text.toString()
+                    val jumlahUangDibayar = binding.edtJumlahUangDibayar.text.toString()
+                    val keteranganProgress = binding.edtKeteranganProgress.text.toString().let {
+                        it.ifEmpty { "-" }
                     }
 
-                    delay(2500L)
+                    val pembayaran = Pembayaran(
+                        termin = termin,
+                        tanggal = tanggal,
+                        jumlahUangDibayar = jumlahUangDibayar,
+                        keterangan = keteranganProgress,
+                        timeMillis = System.currentTimeMillis(),
+                    )
+                    val loadingSnackbar = Snackbar.make(binding.root, "Memproses data pembayaran, tunggu sebentar ...", Snackbar.LENGTH_INDEFINITE)
+                    viewModel.insertPembayaran(
+                        keyId = currentKeyId!!,
+                        pembayaran = pembayaran,
+                        onProgress = {
+                            loadingSnackbar.show()
+                        },
+                        onSuccess = {
+                            loadingSnackbar.dismiss()
 
-                    withContext(Dispatchers.Main) {
-                        progressSnackBar.dismiss()
-
-                        val isSuccess = Random.nextBoolean()
-                        if (isSuccess) {
-                            FormUtil.sendResultAndExit(requireActivity(), Activity.RESULT_OK, null)
-                        } else {
-                            val failMsgIntent = Intent().apply {
-                                putExtra(FormActivity.EXTRAS_FAIL_MSG, "Random error!")
-                            }
                             FormUtil.sendResultAndExit(requireActivity(),
-                                Activity.RESULT_CANCELED,
-                                failMsgIntent
+                                Activity.RESULT_OK, null
+                            )
+                        },
+                        onFailure = {
+                            loadingSnackbar.dismiss()
+
+                            val failData = Intent()
+                            failData.putExtra(FormActivity.EXTRAS_FAIL_MSG, it)
+                            FormUtil.sendResultAndExit(requireActivity(),
+                                Activity.RESULT_CANCELED, failData
                             )
                         }
-                    }
+                    )
+                } else {
+                    Toast.makeText(requireContext(), "Input masih belum benar!", Toast.LENGTH_SHORT)
+                        .show()
                 }
             }
         }
