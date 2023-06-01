@@ -11,8 +11,25 @@ class MockPembayaranRepository: PembayaranRepository {
         "A11" to listOf(
             Pembayaran(termin = "ITJ 1", tanggal = "09/12/2022", jumlahUangDibayar = "5,000,000", keterangan = "ITJ", timeMillis = 1670575902439),
             Pembayaran(termin = "DP 1", tanggal = "19/12/2022", jumlahUangDibayar = "1,000,000", keterangan = "Dp1", timeMillis = 1671422391736),
-            Pembayaran(termin = "DP 2", tanggal = "19/12/2022", jumlahUangDibayar = "1,375,000", keterangan = "-", timeMillis = 1671459285668)
-        )
+            Pembayaran(termin = "DP 2", tanggal = "19/12/2022", jumlahUangDibayar = "1,375,000", keterangan = "-", timeMillis = 1671459285668),
+        ),
+    )
+
+    /**
+     * Don't change this map!
+     */
+    private val mapIndenBooking = mapOf(
+        "3053d174-4b9b-437c-96aa-68fd44fa0fef" to listOf(
+            Pembayaran(termin = "ITJ 1", tanggal = "09/12/2022", jumlahUangDibayar = "5,000,000", keterangan = "ITJ", timeMillis = 1670575902439),
+            Pembayaran(termin = "DP 1", tanggal = "19/12/2022", jumlahUangDibayar = "1,000,000", keterangan = "Dp1", timeMillis = 1671422391736),
+            Pembayaran(termin = "DP 2", tanggal = "19/12/2022", jumlahUangDibayar = "1,375,000", keterangan = "-", timeMillis = 1671459285668),
+            Pembayaran(termin = "DP 3", tanggal = "21/12/2022", jumlahUangDibayar = "5,000,000", keterangan = "-", timeMillis = System.currentTimeMillis()),
+            Pembayaran(termin = "DP 4", tanggal = "25/12/2022", jumlahUangDibayar = "13,000,000", keterangan = "-", timeMillis = System.currentTimeMillis()),
+            Pembayaran(termin = "DP 5", tanggal = "01/01/2023", jumlahUangDibayar = "4,000,000", keterangan = "-", timeMillis = System.currentTimeMillis()),
+            Pembayaran(termin = "DP 6", tanggal = "02/01/2023", jumlahUangDibayar = "7,130,000", keterangan = "-", timeMillis = System.currentTimeMillis()),
+            Pembayaran(termin = "DP 7", tanggal = "02/01/2023", jumlahUangDibayar = "500,000", keterangan = "-", timeMillis = System.currentTimeMillis()),
+            Pembayaran(termin = "DP 8", tanggal = "16/01/2023", jumlahUangDibayar = "1,000,000", keterangan = "-", timeMillis = System.currentTimeMillis()),
+        ),
     )
 
     override fun getBatchOnline(listKavling: List<String>): Flow<Result<Map<String, List<Pembayaran>?>?>> {
@@ -113,7 +130,7 @@ class MockPembayaranRepository: PembayaranRepository {
     }
 
     override suspend fun getAllFromIndenBooking(keyId: String): Result<List<Pembayaran>?> {
-        TODO("Not yet implemented")
+        return Result.success(mapIndenBooking[keyId])
     }
 
     override suspend fun insertFromIndenBooking(

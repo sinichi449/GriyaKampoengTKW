@@ -21,4 +21,16 @@ class MockFotoPembayaranIndenBookingRepository: FotoPembayaranIndenBookingReposi
         return Result.success(fotoPembayaran)
     }
 
+    override suspend fun isExist(keyId: String, termin: String): Result<Boolean> {
+        val fotoPembayaran = mapForIndenBooking[keyId]?.filter {
+            it.termin == termin
+        }?.get(0)
+
+        return if (fotoPembayaran != null) {
+            Result.success(true)
+        } else {
+            Result.success(false)
+        }
+    }
+
 }
