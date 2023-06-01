@@ -1,4 +1,4 @@
-package net.bagusekasaputra.griyakampoengtkw.domain
+package net.bagusekasaputra.griyakampoengtkw.domain.entity
 
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.images.ImageDataDiriIndenBooking
 import org.junit.Test

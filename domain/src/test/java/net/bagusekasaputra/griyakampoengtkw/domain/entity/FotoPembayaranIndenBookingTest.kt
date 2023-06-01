@@ -1,4 +1,4 @@
-package net.bagusekasaputra.griyakampoengtkw.domain
+package net.bagusekasaputra.griyakampoengtkw.domain.entity
 
 import kotlinx.coroutines.runBlocking
 import net.bagusekasaputra.griyakampoengtkw.domain.repository.MockFotoPembayaranIndenBookingRepository

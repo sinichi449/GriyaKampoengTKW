@@ -3,7 +3,7 @@ package net.bagusekasaputra.griyakampoengtkw.data
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.BaselinePembayaran
-import net.bagusekasaputra.griyakampoengtkw.domain.entity.Pembayaran
+import net.bagusekasaputra.griyakampoengtkw.domain.entity.pembayaran.Pembayaran
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.pembayaran.PembayaranBulanan
 import org.junit.Test
 
@@ -46,7 +46,8 @@ class TunggakanPembayaranTest {
         mapPembayaran.keys.forEach { termin ->
             val pembayaran = mapPembayaran[termin]
             pembayaran?.also {
-                listPembayaran.add(Pembayaran(
+                listPembayaran.add(
+                    Pembayaran(
                     termin = termin,
                     tanggal = it.tanggal,
                     jumlahUangDibayar = it.jumlahUangDibayar,
@@ -56,7 +57,8 @@ class TunggakanPembayaranTest {
                     keterangan = it.keterangan,
                     timeMillis = it.timeMillis,
                     sudahIsiFotoPembayaran = false,
-                ))
+                )
+                )
             }
         }
 

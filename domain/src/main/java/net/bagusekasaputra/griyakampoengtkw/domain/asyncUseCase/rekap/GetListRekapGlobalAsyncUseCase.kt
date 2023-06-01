@@ -1,6 +1,5 @@
 package net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.rekap
 
-import android.util.Log
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.channels.trySendBlocking
 import kotlinx.coroutines.flow.Flow
@@ -8,10 +7,9 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.callbackFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.update
-import net.bagusekasaputra.griyakampoengtkw.domain.PembayaranSorterUtil
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.AsyncUseCase
-import net.bagusekasaputra.griyakampoengtkw.domain.entity.Pembayaran
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.ProgressState
+import net.bagusekasaputra.griyakampoengtkw.domain.entity.pembayaran.Pembayaran
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.rekap.RekapGlobal
 import net.bagusekasaputra.griyakampoengtkw.domain.repository.DataDiriRepository
 import net.bagusekasaputra.griyakampoengtkw.domain.repository.HargaKavlingRepository
@@ -29,7 +27,6 @@ class GetListRekapGlobalAsyncUseCase(
 
     override fun process(request: Request): Flow<Result<List<RekapGlobal>?>> {
         return callbackFlow {
-            Log.d("DEBUG_ME", "RekapGlobalUseCase: Getting data diri ...")
             progressState.update { ProgressState(25, "Menyusun tabel Data Diri ...") }
             val dataDiriBatch = dataDiriRepository.getBatchOnline(request.listKavling)
                 .first()
@@ -38,7 +35,6 @@ class GetListRekapGlobalAsyncUseCase(
                 }
                 .getOrNull()
 
-            Log.d("DEBUG_ME", "RekapGlobalUseCase: Getting tabel pembayaran ...")
             progressState.update { ProgressState(50, "Menyusun tabel Pembayaran ...") }
             val pembayaranBatch = pembayaranRepository.getBatchOnline(request.listKavling)
                 .first()
@@ -46,9 +42,7 @@ class GetListRekapGlobalAsyncUseCase(
                     trySendBlocking(Result.failure(Exception("GetListRekapGlobalUseCase:40 onFailure -> ${it.message}")))
                 }
                 .getOrNull()
-                ?.sortMapPembayaran()
 
-            Log.d("DEBUG_ME", "RekapGlobalUseCase: Getting harga kavling ...")
             progressState.update { ProgressState(75, "Menyusun tabel Harga Kavling ...") }
             val hargaKavlingBatch = hargaKavlingRepository.getBatchOnline(request.listKavling)
                 .first()
@@ -57,13 +51,10 @@ class GetListRekapGlobalAsyncUseCase(
                 }
                 .getOrNull()
 
-            Log.d("DEBUG_ME", "RekapGlobalUseCase: Consolidating list ...")
             progressState.update { ProgressState(95, "Mengevaluasi rekap global ...") }
 
             val listRekapGlobal = mutableListOf<RekapGlobal>()
             request.listKavling.forEach { kavling ->
-                Log.d("DEBUG_ME", "RekapGlobalUseCase: Evaluating $kavling now!")
-
                 val namaCostumer = dataDiriBatch?.get(kavling)?.nama ?: "-"
                 val tanggalPembelian = pembayaranBatch?.get(kavling).let {
                     if (it.isNullOrEmpty().not()) Pembayaran.getTanggalPembelian(it!!)
@@ -92,32 +83,4 @@ class GetListRekapGlobalAsyncUseCase(
         }
     }
 
-
-
-    private fun Map<String, List<Pembayaran>?>?.sortMapPembayaran(): Map<String, List<Pembayaran>?>? {
-        return if (this != null) {
-            val newMap = mutableMapOf<String, List<Pembayaran>?>()
-
-            this.keys.forEach { kavling ->
-                val listPembayaran = this[kavling]
-                if (listPembayaran != null) {
-                    newMap[kavling] = PembayaranSorterUtil(listPembayaran).getSortedList()
-                } else {
-                    newMap[kavling] = null
-                }
-            }
-
-            newMap.toMap()
-        } else {
-            null
-        }
-    }
-
-    private fun List<Pembayaran>?.hitungTotalUangMasuk(): Long? {
-        return if (this != null) {
-            Pembayaran.hitungTotalUangMasuk(this)
-        } else {
-            null
-        }
-    }
 }

@@ -1,6 +1,7 @@
 package net.bagusekasaputra.griyakampoengtkw.domain.entity
 
 import net.bagusekasaputra.griyakampoengtkw.domain.NumberUtil
+import net.bagusekasaputra.griyakampoengtkw.domain.entity.pembayaran.Pembayaran
 
 data class ReportKavling(
     val kavling: String,

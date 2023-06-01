@@ -20,7 +20,7 @@ import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.statusPembayaran
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.AmbilKuitansi
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.BaselinePembayaran
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.HargaKavling
-import net.bagusekasaputra.griyakampoengtkw.domain.entity.Pembayaran
+import net.bagusekasaputra.griyakampoengtkw.domain.entity.pembayaran.Pembayaran
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.pembayaran.PembayaranBulanan
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.statusPembayaran.StatusPembayaran
 import net.bagusekasaputra.griyakampoengtkw.domain.usecase.pembayaran.AddPembayaranUseCase
@@ -160,9 +160,9 @@ class FormPembayaranViewModel @Inject constructor(
     }
 
     fun deletePembayaran(kavling: String, pembayaran: Pembayaran,
-         onProgress: () -> Unit = {},
-         onSuccess: () -> Unit = {},
-         onFailure: (msg: String) -> Unit = {},
+                         onProgress: () -> Unit = {},
+                         onSuccess: () -> Unit = {},
+                         onFailure: (msg: String) -> Unit = {},
     ) {
         onProgress()
 

@@ -19,7 +19,7 @@ import net.bagusekasaputra.griyakampoengtkw.data.interfaces.remote.RemoteMetadat
 import net.bagusekasaputra.griyakampoengtkw.data.interfaces.remote.RemotePembayaranSource
 import net.bagusekasaputra.griyakampoengtkw.data.model.MetadataModel
 import net.bagusekasaputra.griyakampoengtkw.domain.DataMode
-import net.bagusekasaputra.griyakampoengtkw.domain.entity.Pembayaran
+import net.bagusekasaputra.griyakampoengtkw.domain.entity.pembayaran.Pembayaran
 import net.bagusekasaputra.griyakampoengtkw.domain.repository.PembayaranRepository
 
 class PembayaranRepositoryImpl(
@@ -226,7 +226,8 @@ class PembayaranRepositoryImpl(
                 Result.success(false)
             } else {
                 val pembayarans = cacheModels.map { MyObjectMapper.mapPembayaran(it) }
-                Result.success(Pembayaran.adakahPembayaranBulanDanTahunIni(
+                Result.success(
+                    Pembayaran.adakahPembayaranBulanDanTahunIni(
                     pembayarans, bulan, tahun,
                 ))
             }

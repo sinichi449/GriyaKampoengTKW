@@ -3,7 +3,7 @@ package net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.indenBooking.pe
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.AsyncUseCase
-import net.bagusekasaputra.griyakampoengtkw.domain.entity.Pembayaran
+import net.bagusekasaputra.griyakampoengtkw.domain.entity.pembayaran.Pembayaran
 import net.bagusekasaputra.griyakampoengtkw.domain.repository.PembayaranRepository
 
 class InsertPembayaranIndenBookingAsyncUseCase(

@@ -3,7 +3,7 @@ package net.bagusekasaputra.griyakampoengtkw.domain.repository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import net.bagusekasaputra.griyakampoengtkw.domain.DataMode
-import net.bagusekasaputra.griyakampoengtkw.domain.entity.Pembayaran
+import net.bagusekasaputra.griyakampoengtkw.domain.entity.pembayaran.Pembayaran
 
 class MockPembayaranRepository: PembayaranRepository {
 
@@ -12,6 +12,12 @@ class MockPembayaranRepository: PembayaranRepository {
             Pembayaran(termin = "ITJ 1", tanggal = "09/12/2022", jumlahUangDibayar = "5,000,000", keterangan = "ITJ", timeMillis = 1670575902439),
             Pembayaran(termin = "DP 1", tanggal = "19/12/2022", jumlahUangDibayar = "1,000,000", keterangan = "Dp1", timeMillis = 1671422391736),
             Pembayaran(termin = "DP 2", tanggal = "19/12/2022", jumlahUangDibayar = "1,375,000", keterangan = "-", timeMillis = 1671459285668),
+            Pembayaran(termin = "DP 3", tanggal = "21/12/2022", jumlahUangDibayar = "5,000,000", keterangan = "-", timeMillis = System.currentTimeMillis()),
+            Pembayaran(termin = "DP 4", tanggal = "25/12/2022", jumlahUangDibayar = "13,000,000", keterangan = "-", timeMillis = System.currentTimeMillis()),
+            Pembayaran(termin = "DP 5", tanggal = "01/01/2023", jumlahUangDibayar = "4,000,000", keterangan = "-", timeMillis = System.currentTimeMillis()),
+            Pembayaran(termin = "DP 6", tanggal = "02/01/2023", jumlahUangDibayar = "7,130,000", keterangan = "-", timeMillis = System.currentTimeMillis()),
+            Pembayaran(termin = "DP 7", tanggal = "02/01/2023", jumlahUangDibayar = "500,000", keterangan = "-", timeMillis = System.currentTimeMillis()),
+            Pembayaran(termin = "DP 8", tanggal = "16/01/2023", jumlahUangDibayar = "1,000,000", keterangan = "-", timeMillis = System.currentTimeMillis()),
         ),
     )
 
@@ -34,7 +40,12 @@ class MockPembayaranRepository: PembayaranRepository {
 
     override fun getBatchOnline(listKavling: List<String>): Flow<Result<Map<String, List<Pembayaran>?>?>> {
         return flow {
-            emit(Result.success(mapPembayarans))
+            val result = mutableMapOf<String, List<Pembayaran>?>()
+            listKavling.forEach {
+                result[it] = mapPembayarans[it]
+            }
+
+            emit(Result.success(result))
         }
     }
 
@@ -100,7 +111,8 @@ class MockPembayaranRepository: PembayaranRepository {
         val pembayarans = mapPembayarans[kavlingKode]
 
         return if (!pembayarans.isNullOrEmpty()) {
-            Result.success(Pembayaran.adakahPembayaranBulanDanTahunIni(
+            Result.success(
+                Pembayaran.adakahPembayaranBulanDanTahunIni(
                 pembayarans, bulan, tahun,
             ))
         } else {
@@ -117,7 +129,8 @@ class MockPembayaranRepository: PembayaranRepository {
         val pembayarans = mapPembayarans[kavlingKode]
 
         return if (!pembayarans.isNullOrEmpty()) {
-            Result.success(Pembayaran.uangMasukPadaBulanDanTahunIni(
+            Result.success(
+                Pembayaran.uangMasukPadaBulanDanTahunIni(
                 pembayarans, bulan, tahun
             ))
         } else {

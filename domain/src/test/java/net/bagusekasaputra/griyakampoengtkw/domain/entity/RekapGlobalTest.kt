@@ -1,4 +1,4 @@
-package net.bagusekasaputra.griyakampoengtkw.domain
+package net.bagusekasaputra.griyakampoengtkw.domain.entity
 
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.rekap.RekapGlobal
 import org.junit.Assert

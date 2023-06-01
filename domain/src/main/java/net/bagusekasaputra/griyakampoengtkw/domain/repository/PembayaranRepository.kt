@@ -2,7 +2,7 @@ package net.bagusekasaputra.griyakampoengtkw.domain.repository
 
 import kotlinx.coroutines.flow.Flow
 import net.bagusekasaputra.griyakampoengtkw.domain.DataMode
-import net.bagusekasaputra.griyakampoengtkw.domain.entity.Pembayaran
+import net.bagusekasaputra.griyakampoengtkw.domain.entity.pembayaran.Pembayaran
 
 interface PembayaranRepository {
 

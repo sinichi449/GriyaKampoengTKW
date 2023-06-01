@@ -1,4 +1,4 @@
-package net.bagusekasaputra.griyakampoengtkw.domain.entity
+package net.bagusekasaputra.griyakampoengtkw.domain.entity.pembayaran
 
 import net.bagusekasaputra.griyakampoengtkw.domain.DateUtil
 import net.bagusekasaputra.griyakampoengtkw.domain.DateUtil.getCustomRangeDate
@@ -7,7 +7,7 @@ import net.bagusekasaputra.griyakampoengtkw.domain.DateUtil.getWeeklyRangeDate
 import net.bagusekasaputra.griyakampoengtkw.domain.DateUtil.isWithinRange
 import net.bagusekasaputra.griyakampoengtkw.domain.DateUtil.toDate
 import net.bagusekasaputra.griyakampoengtkw.domain.NumberUtil
-import net.bagusekasaputra.griyakampoengtkw.domain.PembayaranSorterUtil
+import net.bagusekasaputra.griyakampoengtkw.domain.entity.HargaKavling
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.indenBooking.HargaRumahIndenBooking
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.rekap.PeriodeRekap
 import java.math.BigDecimal
@@ -60,12 +60,6 @@ data class Pembayaran(
         return persentase.toDouble()
     }
 
-    enum class JenisPembayaran(val text: String) {
-        ITJ("ITJ"),
-        DP("DP"),
-        TERMIN("Termin"),
-    }
-
     companion object {
         fun hitungTotalUangMasuk(listPembayaran: List<Pembayaran>): Long {
             var mTotal = 0L
@@ -97,7 +91,10 @@ data class Pembayaran(
             return pembayarans.last().sisaBelumTerbayar
         }
 
-        fun sortPembayaran(listPembayaran: List<Pembayaran>) = PembayaranSorterUtil(listPembayaran).getSortedList()
+        fun sortPembayaran(
+            listPembayaran: List<Pembayaran>,
+            sorter: PembayaranSorter,
+        ) = sorter.sort(listPembayaran)
 
         fun getTanggalPembelian(sortedListPembayaran: List<Pembayaran>) =
             if (sortedListPembayaran.isEmpty())
@@ -212,7 +209,8 @@ data class Pembayaran(
             onCekFotoPembayaran: suspend (termin: String) -> Boolean,
             onCekSudahAmbilKuitansi: suspend (termin: String) -> Boolean
         ): List<Pembayaran> {
-            val sortedListPembayaran = sortPembayaran(listPembayaran)
+            val terminPembayaranSorter = TerminPembayaranSorter()
+            val sortedListPembayaran = sortPembayaran(listPembayaran, terminPembayaranSorter)
             val newListPembayaran = ArrayList<Pembayaran>()
             var totalUangMasuk = 0L
 
@@ -238,7 +236,8 @@ data class Pembayaran(
             onCekFotoPembayaran: suspend (termin: String) -> Boolean,
             onCekSudahAmbilKuitansi: suspend (kavling: String, termin: String) -> Boolean,
         ): List<Pembayaran> {
-            val sortedListPembayaran = sortPembayaran(listPembayaran)
+            val terminPembayaranSorter = TerminPembayaranSorter()
+            val sortedListPembayaran = sortPembayaran(listPembayaran, terminPembayaranSorter)
             val newListPembayaran = ArrayList<Pembayaran>()
             var totalUangMasuk = 0L
 
@@ -283,5 +282,91 @@ data class Pembayaran(
                 return "1"
             }
         }
+    }
+
+    enum class JenisPembayaran(val text: String) {
+        ITJ("ITJ"),
+        DP("DP"),
+        TERMIN("Termin"),
+    }
+
+    interface PembayaranSorter {
+        fun sort(pembayaranList: List<Pembayaran>): List<Pembayaran>
+    }
+}
+
+/**
+ * This class contains a full-fledged made-by-me algorithm to sort pembayaran according to ITJ, DP, and Termin order.
+ *
+ * Briefly, a "Pembayaran" object have a "Jenis" and an "Urutan" components. For example,
+ * a "Pembayaran DP 5" has a "jenis" of "DP" and "5" of urutan components. In this algorithm, we need to sort
+ * both of these components via two differents subroutines: Grouping the "Jenis" and Ordering the "Urutan".
+ *
+ * Given set of pembayaran, represented a List<Pembayaran>, we need to group them into "Jenis Pembayaran".
+ * The result are three groups of List<Pembayaran> -> ITJ Group, DP Group, and Termin Group.
+ *
+ * After we group the pembayaran, we need to further sort each group according to their numerical order.
+ */
+class TerminPembayaranSorter: Pembayaran.PembayaranSorter {
+
+    override fun sort(pembayaranList: List<Pembayaran>): List<Pembayaran> {
+        return groupPembayaranOnTerminAndSort(pembayaranList)
+    }
+
+    private fun groupPembayaranOnTerminAndSort(listPembayaran: List<Pembayaran>): List<Pembayaran> {
+        val itjGroup = createGroupPembayaran(Pembayaran.JenisPembayaran.ITJ.text, listPembayaran)
+        val dpGroup = createGroupPembayaran(Pembayaran.JenisPembayaran.DP.text, listPembayaran)
+        val terminGroup = createGroupPembayaran(Pembayaran.JenisPembayaran.TERMIN.text, listPembayaran)
+
+        val sortedPembayaran = mutableListOf<Pembayaran>()
+        with(sortedPembayaran) {
+            // This order of execution of addAll() is important!
+            addAll(itjGroup.listPembayaran)
+            addAll(dpGroup.listPembayaran)
+            addAll(terminGroup.listPembayaran)
+        }
+
+
+        return sortedPembayaran
+    }
+
+    private fun createGroupPembayaran(jenisPembayaran: String, listPembayaran: List<Pembayaran>): GroupPembayaran {
+        val filteredListPembayaran = listPembayaran.filter { pembayaran ->
+            val termin = pisahkanTerminDanUrutan(pembayaran.termin)
+
+            termin[Komponen.JENIS]!! == jenisPembayaran
+        }
+
+        return GroupPembayaran(jenisPembayaran, filteredListPembayaran)
+    }
+
+    private companion object {
+        fun pisahkanTerminDanUrutan(termin: String): Map<String, String> {
+            val terminDanUrutan = termin.split(" ")
+            return mapOf<String, String>(
+                Pair(Komponen.JENIS, terminDanUrutan[0]),
+                Pair(Komponen.URUTAN, terminDanUrutan[1]),
+            )
+        }
+    }
+
+    private object Komponen {
+        const val JENIS = "jenis"
+        const val URUTAN = "urutan"
+    }
+
+    private data class GroupPembayaran(
+        val jenisPembayaran: String,
+        var listPembayaran: List<Pembayaran>
+    ) {
+
+        init {
+            this.listPembayaran = listPembayaran.sortedBy {
+                val termin = pisahkanTerminDanUrutan(it.termin)
+
+                termin[Komponen.URUTAN]!!.toInt()
+            }
+        }
+
     }
 }

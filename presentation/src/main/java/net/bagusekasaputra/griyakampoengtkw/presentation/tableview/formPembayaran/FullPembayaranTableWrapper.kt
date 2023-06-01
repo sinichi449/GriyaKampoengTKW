@@ -3,7 +3,7 @@ package net.bagusekasaputra.griyakampoengtkw.presentation.tableview.formPembayar
 import android.graphics.Typeface
 import android.view.Gravity
 import com.evrencoskun.tableview.TableView
-import net.bagusekasaputra.griyakampoengtkw.domain.entity.Pembayaran
+import net.bagusekasaputra.griyakampoengtkw.domain.entity.pembayaran.Pembayaran
 import net.bagusekasaputra.griyakampoengtkw.presentation.R
 import net.bagusekasaputra.griyakampoengtkw.presentation.tableview.AbstractTableWrapper
 import net.bagusekasaputra.griyakampoengtkw.presentation.tableview.GktTableViewAdapter

@@ -1,9 +1,11 @@
-package net.bagusekasaputra.griyakampoengtkw.domain
+package net.bagusekasaputra.griyakampoengtkw.domain.entity
 
 import kotlinx.coroutines.runBlocking
-import net.bagusekasaputra.griyakampoengtkw.domain.entity.Pembayaran
+import net.bagusekasaputra.griyakampoengtkw.domain.DataMode
+import net.bagusekasaputra.griyakampoengtkw.domain.entity.pembayaran.Pembayaran
 import net.bagusekasaputra.griyakampoengtkw.domain.repository.MockHargaRumahIndenBookingRepository
 import net.bagusekasaputra.griyakampoengtkw.domain.repository.MockPembayaranRepository
+import org.junit.Assert
 import org.junit.Test
 import java.math.BigDecimal
 import java.math.RoundingMode
@@ -19,14 +21,13 @@ class PembayaranTest {
         val kavling = "A11"
         val bulan = 12
         val tahun = 2022
-        val totalUangMasuk = 7375000L
 
         val uangMasuk = runBlocking {
             pembayaranRepository.getUangMasukBulanIni(kavling, bulan, tahun, DataMode.ONLINE)
                 .getOrThrow()
         }
 
-        assert(uangMasuk == totalUangMasuk)
+        Assert.assertEquals(25_375_000L, uangMasuk)
     }
 
     @Test
@@ -71,7 +72,7 @@ class PembayaranTest {
     }
 
     @Test
-    fun urutan_pembayaran_inden_booking_correct() {
+    fun maskingPembayaranIndenBooking_shouldInCorrectOrder() {
         val keyId = "3053d174-4b9b-437c-96aa-68fd44fa0fef"
         val orderedListTermin = listOf("ITJ 1", "DP 1", "DP 2", "DP 3", "DP 4", "DP 5",
             "DP 6", "DP 7", "DP 8")
@@ -89,7 +90,7 @@ class PembayaranTest {
         }
         val listTermin = sortedPembayaran.map { it.termin }
 
-        assert(listTermin == orderedListTermin)
+        Assert.assertEquals(orderedListTermin, listTermin)
     }
 
     @Test

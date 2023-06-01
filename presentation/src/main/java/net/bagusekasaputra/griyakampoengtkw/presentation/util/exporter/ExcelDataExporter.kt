@@ -3,7 +3,7 @@ package net.bagusekasaputra.griyakampoengtkw.presentation.util.exporter
 import android.content.Context
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.DataDiri
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.HargaKavling
-import net.bagusekasaputra.griyakampoengtkw.domain.entity.Pembayaran
+import net.bagusekasaputra.griyakampoengtkw.domain.entity.pembayaran.Pembayaran
 import net.bagusekasaputra.griyakampoengtkw.presentation.util.ExcelExporter
 
 class ExcelDataExporter(

@@ -1,6 +1,6 @@
 package net.bagusekasaputra.griyakampoengtkw.domain.entity.rekap
 
-import net.bagusekasaputra.griyakampoengtkw.domain.entity.Pembayaran
+import net.bagusekasaputra.griyakampoengtkw.domain.entity.pembayaran.Pembayaran
 
 /**
  * Special copy entity of Pembayaran to include DataDiri's Nama Costumer.
