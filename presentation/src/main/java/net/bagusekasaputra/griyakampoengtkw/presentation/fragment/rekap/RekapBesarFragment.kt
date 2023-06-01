@@ -252,6 +252,14 @@ class RekapBesarFragment : Fragment() {
                 binding.tvIncludedKavlingDataLama?.visibility = View.GONE
             }
         }
+
+        // Enable sisa pembayaran view only on PeriodeRekap.SEMUA
+        viewModel.selectedPeriodeRekap.observe(requireActivity()) {
+            it?.also { periodeRekap ->
+                binding.cardPemasukan.layoutSisaBelumBayar.visibility =
+                    if (periodeRekap == PeriodeRekap.SEMUA) View.VISIBLE else View.GONE
+            }
+        }
     }
 
     private fun setupSpinnerPeriode() {

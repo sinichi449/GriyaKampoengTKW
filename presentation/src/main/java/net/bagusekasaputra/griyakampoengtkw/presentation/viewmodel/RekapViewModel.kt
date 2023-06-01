@@ -78,6 +78,10 @@ class RekapViewModel @Inject constructor(
     val listKavlingDataLamaRekapBesarIncluded: LiveData<List<String>>
         get() = _listKavlingDataLamaRekapBesarIncludedLive
 
+    // Selected Periode Rekap
+    private val _selectedPeriodeRekap = MutableLiveData<PeriodeRekap?>()
+    val selectedPeriodeRekap: LiveData<PeriodeRekap?>
+        get() = _selectedPeriodeRekap
 
     var fabScrollMode = FabMode.Downward
     var selectedBackupName: String? = null
@@ -117,6 +121,8 @@ class RekapViewModel @Inject constructor(
         endDate: Date? = null,
         onFailure: (msg: String) -> Unit,
     ) {
+        _selectedPeriodeRekap.value = periode
+
         val listRangeTanggal = when (periode) {
             PeriodeRekap.SEMUA -> emptyList()
             PeriodeRekap.TAHUN_INI -> DateUtil.getYearlyRangeDate()
