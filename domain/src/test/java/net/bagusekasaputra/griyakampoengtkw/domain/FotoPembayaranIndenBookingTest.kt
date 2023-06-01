@@ -18,6 +18,6 @@ class FotoPembayaranIndenBookingTest {
             fotoPembayaranIndenBookingRepository.get(keyId, termin).getOrThrow()
         }
 
-        assert(fotoPembayaranIndenBooking?.filename == namaFile)
+        assert(fotoPembayaranIndenBooking?.getFilename() == namaFile)
     }
 }

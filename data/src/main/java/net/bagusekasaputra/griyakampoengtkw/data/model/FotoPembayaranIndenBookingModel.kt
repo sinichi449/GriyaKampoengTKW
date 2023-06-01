@@ -11,11 +11,12 @@ data class FotoPembayaranIndenBookingModel(
 
     companion object {
         fun getFilename(keyId: String, termin: String): String {
-            return FotoPembayaranIndenBooking.getFilename(keyId, termin)
+            return FotoPembayaranIndenBooking(keyId, termin, "").getFilename()
         }
 
         fun getFolderPath(rootExternalFile: File?): File {
-            return FotoPembayaranIndenBooking.getFolderPath(rootExternalFile)
+            val folderPath = FotoPembayaranIndenBooking("", "", "").getFolderPath()
+            return File(rootExternalFile, folderPath)
         }
     }
 }

@@ -41,7 +41,8 @@ class FotoPembayaranIndenBookingRepositoryImpl(
                             "Fetching from Remote Data Source now.")
 
                     // Create model and download from remote
-                    val uriSavePath = FotoPembayaranIndenBooking.getUriSavePath(externalStorageFile, keyId, termin)
+                    val uriSavePath = FotoPembayaranIndenBooking(keyId, termin, "")
+                        .getUriSavePath(externalStorageFile)
                     val model = FotoPembayaranIndenBookingModel(
                         keyId, termin, uriSavePath.toString()
                     )

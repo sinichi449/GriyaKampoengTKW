@@ -637,7 +637,7 @@ object MyObjectMapper {
             FotoPembayaranIndenBooking(
                 keyId = it.keyId,
                 termin = it.termin,
-                uriStr = it.uriStr,
+                uriStrFotoPembayaran = it.uriStr
             )
         }
     }
