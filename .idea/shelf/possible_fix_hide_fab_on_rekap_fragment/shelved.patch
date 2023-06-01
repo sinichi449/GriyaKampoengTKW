@@ -1,0 +1,126 @@
+Index: presentation/src/main/java/net/bagusekasaputra/griyakampoengtkw/presentation/fragment/ManagementKavlingFragment.kt
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>package net.bagusekasaputra.griyakampoengtkw.presentation.fragment\r\n\r\nimport android.os.Bundle\r\nimport android.view.LayoutInflater\r\nimport android.view.View\r\nimport android.view.ViewGroup\r\nimport androidx.core.content.ContextCompat\r\nimport androidx.fragment.app.Fragment\r\nimport androidx.fragment.app.activityViewModels\r\nimport com.google.android.material.tabs.TabLayout\r\nimport dagger.hilt.android.AndroidEntryPoint\r\nimport net.bagusekasaputra.griyakampoengtkw.presentation.R\r\nimport net.bagusekasaputra.griyakampoengtkw.presentation.adapter.viewpager.ManagementKavlingViewPagerAdapter\r\nimport net.bagusekasaputra.griyakampoengtkw.presentation.databinding.FragmentManagementKavlingBinding\r\nimport net.bagusekasaputra.griyakampoengtkw.presentation.fragment.rekap.RekapFragment\r\nimport net.bagusekasaputra.griyakampoengtkw.presentation.logEvent\r\nimport net.bagusekasaputra.griyakampoengtkw.presentation.viewmodel.MainViewModel\r\n\r\n@AndroidEntryPoint\r\nclass ManagementKavlingFragment : Fragment() {\r\n\r\n    private lateinit var binding: FragmentManagementKavlingBinding\r\n    private val viewModel: MainViewModel by activityViewModels()\r\n\r\n    // This listener need to be removed on onDestroy()\r\n    private val tabSelectedListener = object : TabLayout.OnTabSelectedListener {\r\n        override fun onTabSelected(tab: TabLayout.Tab?) {\r\n            logEvent(\"Tab selected -> ${tab?.position}\")\r\n\r\n            viewModel.tabSelectedLive.value = tab?.position\r\n        }\r\n\r\n        override fun onTabUnselected(tab: TabLayout.Tab?) {\r\n            logEvent(\"Tab unselected -> ${tab?.position}\")\r\n        }\r\n\r\n        override fun onTabReselected(tab: TabLayout.Tab?) {\r\n            logEvent(\"Tab reselected -> ${tab?.position}\")\r\n        }\r\n    }\r\n\r\n    override fun onCreateView(\r\n        inflater: LayoutInflater, container: ViewGroup?,\r\n        savedInstanceState: Bundle?\r\n    ): View? {\r\n        // Inflate the layout for this fragment\r\n        binding = FragmentManagementKavlingBinding.inflate(inflater, container, false)\r\n\r\n        return binding.root\r\n    }\r\n\r\n    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {\r\n        super.onViewCreated(view, savedInstanceState)\r\n\r\n        setupViewPager()\r\n\r\n        // Set visibility of MainActivity's FAB\r\n        viewModel.tabSelectedLive.observe(requireActivity()) {\r\n            it?.let { tabSelected ->\r\n                val tabRekap = 1\r\n\r\n                binding.fabActions.visibility = if (tabSelected == tabRekap) View.INVISIBLE\r\n                    else View.VISIBLE\r\n            }\r\n        }\r\n\r\n        binding.fabActions.shrink()\r\n    }\r\n\r\n    private fun setupViewPager() {\r\n        val fragments = listOf(\r\n            KavlingFragment(),\r\n            RekapFragment(),\r\n            BiayaLainFragment(),\r\n        )\r\n        binding.viewPagerManagementKavling.adapter = ManagementKavlingViewPagerAdapter(\r\n            fragmentManager = childFragmentManager,\r\n            fragments = fragments,\r\n        )\r\n\r\n        // Integrate TabLayout with ViewPager, set Indicator Animation Mode\r\n        // and set Tab's Icon.\r\n        binding.tabLayoutManagementKavling.run {\r\n            setupWithViewPager(binding.viewPagerManagementKavling)\r\n            tabIndicatorAnimationMode = TabLayout.INDICATOR_ANIMATION_MODE_ELASTIC\r\n\r\n            val getIcon = { iconId: Int -> ContextCompat.getDrawable(requireContext(), iconId) }\r\n            getTabAt(0)?.icon = getIcon(R.drawable.ic_baseline_kavling_24)\r\n            getTabAt(1)?.icon = getIcon(R.drawable.ic_baseline_report_24)\r\n            getTabAt(2)?.icon = getIcon(R.drawable.ic_baseline_attach_money_24)\r\n        }\r\n\r\n        // Disable FloatingActionButton on RekapFragment\r\n        binding.tabLayoutManagementKavling.addOnTabSelectedListener(tabSelectedListener)\r\n    }\r\n\r\n    override fun onDestroy() {\r\n        super.onDestroy()\r\n\r\n        binding.tabLayoutManagementKavling.removeOnTabSelectedListener(tabSelectedListener)\r\n    }\r\n}
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/presentation/src/main/java/net/bagusekasaputra/griyakampoengtkw/presentation/fragment/ManagementKavlingFragment.kt b/presentation/src/main/java/net/bagusekasaputra/griyakampoengtkw/presentation/fragment/ManagementKavlingFragment.kt
+--- a/presentation/src/main/java/net/bagusekasaputra/griyakampoengtkw/presentation/fragment/ManagementKavlingFragment.kt	(revision 62f98e3109e72a1170f5abb779324ff5f503db1b)
++++ b/presentation/src/main/java/net/bagusekasaputra/griyakampoengtkw/presentation/fragment/ManagementKavlingFragment.kt	(date 1685548055933)
+@@ -7,13 +7,13 @@
+ import androidx.core.content.ContextCompat
+ import androidx.fragment.app.Fragment
+ import androidx.fragment.app.activityViewModels
++import androidx.viewpager.widget.ViewPager
+ import com.google.android.material.tabs.TabLayout
+ import dagger.hilt.android.AndroidEntryPoint
+ import net.bagusekasaputra.griyakampoengtkw.presentation.R
+ import net.bagusekasaputra.griyakampoengtkw.presentation.adapter.viewpager.ManagementKavlingViewPagerAdapter
+ import net.bagusekasaputra.griyakampoengtkw.presentation.databinding.FragmentManagementKavlingBinding
+ import net.bagusekasaputra.griyakampoengtkw.presentation.fragment.rekap.RekapFragment
+-import net.bagusekasaputra.griyakampoengtkw.presentation.logEvent
+ import net.bagusekasaputra.griyakampoengtkw.presentation.viewmodel.MainViewModel
+ 
+ @AndroidEntryPoint
+@@ -22,27 +22,27 @@
+     private lateinit var binding: FragmentManagementKavlingBinding
+     private val viewModel: MainViewModel by activityViewModels()
+ 
+-    // This listener need to be removed on onDestroy()
+-    private val tabSelectedListener = object : TabLayout.OnTabSelectedListener {
+-        override fun onTabSelected(tab: TabLayout.Tab?) {
+-            logEvent("Tab selected -> ${tab?.position}")
++    // This listener need to be removed on onStop()
++    // Set visibility of MainActivity's FAB
++    private val viewPagerPageChangeListener = object : ViewPager.OnPageChangeListener {
++        override fun onPageScrolled(position: Int, positionOffset: Float, positionOffsetPixels: Int) {}
+ 
+-            viewModel.tabSelectedLive.value = tab?.position
+-        }
+-
+-        override fun onTabUnselected(tab: TabLayout.Tab?) {
+-            logEvent("Tab unselected -> ${tab?.position}")
++        override fun onPageSelected(position: Int) {
++            when (position) {
++                // On Rekap Fragment
++                1 -> binding.fabActions.hide()
++                else -> binding.fabActions.show()
++            }
+         }
+ 
+-        override fun onTabReselected(tab: TabLayout.Tab?) {
+-            logEvent("Tab reselected -> ${tab?.position}")
+-        }
++        override fun onPageScrollStateChanged(state: Int) {}
++
+     }
+ 
+     override fun onCreateView(
+         inflater: LayoutInflater, container: ViewGroup?,
+         savedInstanceState: Bundle?
+-    ): View? {
++    ): View {
+         // Inflate the layout for this fragment
+         binding = FragmentManagementKavlingBinding.inflate(inflater, container, false)
+ 
+@@ -54,16 +54,6 @@
+ 
+         setupViewPager()
+ 
+-        // Set visibility of MainActivity's FAB
+-        viewModel.tabSelectedLive.observe(requireActivity()) {
+-            it?.let { tabSelected ->
+-                val tabRekap = 1
+-
+-                binding.fabActions.visibility = if (tabSelected == tabRekap) View.INVISIBLE
+-                    else View.VISIBLE
+-            }
+-        }
+-
+         binding.fabActions.shrink()
+     }
+ 
+@@ -89,14 +79,18 @@
+             getTabAt(1)?.icon = getIcon(R.drawable.ic_baseline_report_24)
+             getTabAt(2)?.icon = getIcon(R.drawable.ic_baseline_attach_money_24)
+         }
++    }
++
++    override fun onResume() {
++        super.onResume()
+ 
+         // Disable FloatingActionButton on RekapFragment
+-        binding.tabLayoutManagementKavling.addOnTabSelectedListener(tabSelectedListener)
++        binding.viewPagerManagementKavling.addOnPageChangeListener(viewPagerPageChangeListener)
+     }
+ 
+-    override fun onDestroy() {
+-        super.onDestroy()
++    override fun onStop() {
++        binding.viewPagerManagementKavling.removeOnPageChangeListener(viewPagerPageChangeListener)
+ 
+-        binding.tabLayoutManagementKavling.removeOnTabSelectedListener(tabSelectedListener)
++        super.onStop()
+     }
+ }
+\ No newline at end of file
+Index: presentation/src/main/java/net/bagusekasaputra/griyakampoengtkw/presentation/viewmodel/MainViewModel.kt
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>package net.bagusekasaputra.griyakampoengtkw.presentation.viewmodel\r\n\r\nimport android.os.Parcelable\r\nimport androidx.lifecycle.LiveData\r\nimport androidx.lifecycle.MutableLiveData\r\nimport androidx.lifecycle.ViewModel\r\nimport androidx.lifecycle.viewModelScope\r\nimport dagger.hilt.android.lifecycle.HiltViewModel\r\nimport kotlinx.coroutines.CoroutineScope\r\nimport kotlinx.coroutines.Dispatchers\r\nimport kotlinx.coroutines.Job\r\nimport kotlinx.coroutines.launch\r\nimport kotlinx.coroutines.withContext\r\nimport net.bagusekasaputra.griyakampoengtkw.domain.AsyncUseCaseHelper\r\nimport net.bagusekasaputra.griyakampoengtkw.domain.DataMode\r\nimport net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.block.GetAllBlocksAsyncUseCase\r\nimport net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.kavling.GetKavlingByBlockAsyncUseCase\r\nimport net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.promotion.GetPromotionMessageAsyncUseCase\r\nimport net.bagusekasaputra.griyakampoengtkw.domain.entity.AppUpdate\r\nimport net.bagusekasaputra.griyakampoengtkw.domain.entity.Block\r\nimport net.bagusekasaputra.griyakampoengtkw.domain.entity.Kavling\r\nimport net.bagusekasaputra.griyakampoengtkw.domain.entity.Promotion\r\nimport net.bagusekasaputra.griyakampoengtkw.domain.usecase.appupdate.GetUpdateInformationUseCase\r\nimport net.bagusekasaputra.griyakampoengtkw.domain.usecase.block.AddNewBlockUseCase\r\nimport net.bagusekasaputra.griyakampoengtkw.domain.usecase.kavling.AddKavlingUseCase\r\nimport net.bagusekasaputra.griyakampoengtkw.domain.usecase.kavling.EditKavlingUseCase\r\nimport net.bagusekasaputra.griyakampoengtkw.domain.usecase.kavling.RemoveKavlingUseCase\r\nimport net.bagusekasaputra.griyakampoengtkw.presentation.logEvent\r\nimport javax.inject.Inject\r\n\r\n@HiltViewModel\r\nclass MainViewModel @Inject constructor(\r\n    private val getAllBlocksAsyncUseCase: GetAllBlocksAsyncUseCase,\r\n    private val addNewBlockUseCase: AddNewBlockUseCase,\r\n    private val getKavlingByBlockAsyncUseCase: GetKavlingByBlockAsyncUseCase,\r\n    private val addKavlingUseCase: AddKavlingUseCase,\r\n    private val editKavlingUseCase: EditKavlingUseCase,\r\n    private val removeKavlingUseCase: RemoveKavlingUseCase,\r\n    private val getAppUpdateInformationUseCase: GetUpdateInformationUseCase,\r\n    private val getPromotionMessageAsyncUseCase: GetPromotionMessageAsyncUseCase,\r\n): ViewModel() {\r\n\r\n    private val _kavlings = MutableLiveData<List<Kavling>>()\r\n    val kavlings: LiveData<List<Kavling>>\r\n        get() = _kavlings\r\n\r\n    private val _blocksLive = MutableLiveData<List<Block>>()\r\n    val blocksLive: LiveData<List<Block>>\r\n        get() = _blocksLive\r\n\r\n    // Promotion Message\r\n    private val _promotionMessage = MutableLiveData<Promotion?>(null)\r\n    val promotionMessage: LiveData<Promotion?>\r\n        get() = _promotionMessage\r\n\r\n\r\n    val currentBlock = MutableLiveData(\"A\")\r\n\r\n    val tabSelectedLive = MutableLiveData(0)\r\n\r\n    var kavlingRecyclerState: Parcelable? = null\r\n\r\n    val isFinishOperation = MutableLiveData<Boolean>()\r\n\r\n    private val asyncHelper = AsyncUseCaseHelper(isFinishOperation)\r\n\r\n    // For use case arguments\r\n    var offlineMode = false\r\n\r\n    var dataMode: DataMode = DataMode.ONLINE\r\n\r\n    // The collection of jobs which need to be cancelled on onCleared()\r\n    private val asyncJobs = ArrayList<Job>()\r\n\r\n    /**\r\n     * To ensure just one time loading of Kavling, Blocks and (soon) Report\r\n     *\r\n     * Currently I'm prioritizing the List<?> data, which require larger amount of bandwidth\r\n     * and possibly impacting the device performance.\r\n     *\r\n     * For write operations such as edit, delete, and add, the UI need to be refreshed.\r\n     * In such operations, we need to set \"xRefreshed\" to be false.\r\n     *\r\n     * Also, when user invokes refresh command, like swipe-to-refresh,\r\n     * we also need to update these value into FALSE.\r\n     *\r\n     * Whenever the \"GET\" operation is success, we need to update these value into TRUE.\r\n     */\r\n    val blockRefreshed = MutableLiveData<Boolean>(false)\r\n    val kavlingsRefreshed = mapOf(\r\n        Pair(\"A\", MutableLiveData(false)),\r\n        Pair(\"B\", MutableLiveData(false)),\r\n        Pair(\"C\", MutableLiveData(false)),\r\n        Pair(\"D\", MutableLiveData(false)),\r\n    )\r\n    // soon\r\n    // val laporanRefreshed = MutableLiveData<Boolean>(false)\r\n\r\n\r\n    /**\r\n     * Blocks\r\n     */\r\n    fun getAllBlocks(onFailure: (msg: String) -> Unit) {\r\n        // Because Block is static, i.e, they always appears there\r\n        // compared to the kavlings which need to be clicked when they need to be appeared ,\r\n        // there's no need to pull the data locally.\r\n        if (blockRefreshed.value != true) {\r\n            logEvent(\"Blocks are already refreshed!\")\r\n            val request = GetAllBlocksAsyncUseCase.Request(dataMode)\r\n\r\n            val gettingBlocksJob = asyncHelper.doWork(\r\n                request = request,\r\n                asyncUseCase = getAllBlocksAsyncUseCase,\r\n                onSuccess = {\r\n                    _blocksLive.postValue(it)\r\n\r\n                    blockRefreshed.postValue(true)\r\n                },\r\n                onFailure = {\r\n                    onFailure(\"Gagal mendapatkan block: ${it.message}\")\r\n                },\r\n                successMsgOnUiThread = false,\r\n            )\r\n\r\n            asyncJobs.add(gettingBlocksJob)\r\n        } else {\r\n            logEvent(\"Blocks not refreshed, refreshing now ...\")\r\n        }\r\n    }\r\n\r\n    fun addNewBlock(kode: String, warna: String, onComplete: (msg: String) -> Unit) {\r\n        blockRefreshed.value = false\r\n        isFinishOperation.value = false\r\n\r\n        val block = Block(kode, warna)\r\n        val request = AddNewBlockUseCase.Request(block)\r\n\r\n        val addingBlockJob = CoroutineScope(Dispatchers.IO).launch {\r\n            addNewBlockUseCase.execute(request).collect {\r\n                val result = it.data.result\r\n\r\n                result.onSuccess {\r\n                    withContext(Dispatchers.Main) {\r\n                        onComplete(\"Blok ${block.kode} berhasil ditambahkan\")\r\n                    }\r\n                }\r\n\r\n                result.onFailure { throwable ->\r\n                    withContext(Dispatchers.Main) {\r\n                        onComplete(\"Gagal menambahkan blok: ${throwable.message}\")\r\n                    }\r\n                }\r\n\r\n                isFinishOperation.postValue(true)\r\n            }\r\n        }\r\n\r\n        asyncJobs.add(addingBlockJob)\r\n    }\r\n\r\n    /**\r\n     * Kavlings\r\n     */\r\n    fun getKavlings(blockKode: String, onFailure: (msg: String) -> Unit) {\r\n        // Kavlings entity are dynamic, to load them you need to click the corresponding blocks.\r\n        // So, when the kavlings are refreshed, I need to only pull the data from local storage\r\n        // by manipulating the \"offlineMode\" parameter of GET request.\r\n        val request = if (kavlingsRefreshed[blockKode]?.value != true) {\r\n                logEvent(\"Kavling on the block $blockKode isn't refreshed, refreshing now ...\")\r\n\r\n                // If not refreshed, then pull from whatever data mode allow\r\n                GetKavlingByBlockAsyncUseCase.Request(blockKode, dataMode)\r\n            } else {\r\n                logEvent(\"Kavling the block $blockKode already refreshed!\")\r\n\r\n                // Otherwise, pull from local storage by invoking \"offline\" parameter as TRUE\r\n                // EXCEPT when the DataMode is DATA_LAMA\r\n                if (dataMode == DataMode.DATA_LAMA)\r\n                    GetKavlingByBlockAsyncUseCase.Request(blockKode, DataMode.DATA_LAMA)\r\n                else\r\n                    GetKavlingByBlockAsyncUseCase.Request(blockKode, DataMode.OFFLINE)\r\n            }\r\n\r\n        val gettingKavlingsJob = asyncHelper.doWork(\r\n            request = request,\r\n            asyncUseCase = getKavlingByBlockAsyncUseCase,\r\n            onSuccess = {\r\n                _kavlings.postValue(it)\r\n\r\n                kavlingsRefreshed[blockKode]?.postValue(true)\r\n            },\r\n            onFailure = {\r\n                onFailure(\"Gagal mendapatkan kavling: ${it.message}\")\r\n            },\r\n            successMsgOnUiThread = false,\r\n        )\r\n\r\n        asyncJobs.add(gettingKavlingsJob)\r\n    }\r\n\r\n    fun addKavling(\r\n        blockKode: String, noKavling: String, warna: String,\r\n        type: String, panjang: String, lebar: String,\r\n        onComplete: (msg: String) -> Unit,\r\n    ) {\r\n        kavlingsRefreshed[blockKode]?.value = false\r\n        isFinishOperation.value = false\r\n\r\n        val request = AddKavlingUseCase.Request(\r\n            blockKode = blockKode,\r\n            noKavling = noKavling,\r\n            warna = warna,\r\n            type = type,\r\n            panjang = panjang,\r\n            lebar = lebar,\r\n        )\r\n\r\n        val addKavlingJob = CoroutineScope(Dispatchers.IO).launch {\r\n            addKavlingUseCase.execute(request).collect { response ->\r\n                val result = response.data.result\r\n\r\n                result.onSuccess {\r\n                    withContext(Dispatchers.Main) {\r\n                        onComplete(\"Kavling $blockKode$noKavling berhasil ditambahkan\")\r\n                    }\r\n                }\r\n\r\n                result.onFailure { throwable ->\r\n                    withContext(Dispatchers.Main) {\r\n                        onComplete(\"Gagal menambahkan kavling $blockKode$noKavling: ${throwable.message}\")\r\n                    }\r\n                }\r\n\r\n                isFinishOperation.postValue(true)\r\n            }\r\n        }\r\n\r\n        asyncJobs.add(addKavlingJob)\r\n    }\r\n\r\n    fun editKavling(\r\n        blockKode: String,\r\n        oldKavling: Kavling,\r\n        newPanjang: String,\r\n        newLebar: String,\r\n        newType: String,\r\n        onComplete: (msg: String) -> Unit,\r\n    ) {\r\n        kavlingsRefreshed[blockKode]?.value = false\r\n        isFinishOperation.value = false\r\n\r\n        val request = EditKavlingUseCase.Request(\r\n            blockKode = blockKode,\r\n            oldKavling = oldKavling,\r\n            newType = newType,\r\n            newPanjang = newPanjang,\r\n            newLebar = newLebar,\r\n        )\r\n\r\n        val editKavlingJob = CoroutineScope(Dispatchers.IO).launch {\r\n\r\n            editKavlingUseCase.execute(request).collect { response ->\r\n                val result = response.data.result\r\n\r\n                result.onSuccess {\r\n                    withContext(Dispatchers.Main) {\r\n                        onComplete(\"Berhasil mengubah data kavling ${oldKavling.kode}\")\r\n                    }\r\n                }\r\n\r\n                result.onFailure { throwable ->\r\n                    withContext(Dispatchers.Main) {\r\n                        onComplete(\"Gagal mengubah data kavling: ${throwable.message}\")\r\n                    }\r\n                }\r\n\r\n\r\n                isFinishOperation.postValue(true)\r\n            }\r\n        }\r\n\r\n        asyncJobs.add(editKavlingJob)\r\n    }\r\n\r\n    fun removeKavling(\r\n        blockKode: String,\r\n        kavlingKode: String,\r\n        onComplete: (msg: String) -> Unit\r\n    ) {\r\n        kavlingsRefreshed[blockKode]?.value = false\r\n        isFinishOperation.value = false\r\n\r\n        val request = RemoveKavlingUseCase.Request(blockKode, kavlingKode)\r\n\r\n        val removeKavlingJob = CoroutineScope(Dispatchers.IO).launch {\r\n\r\n            removeKavlingUseCase.execute(request).collect {\r\n                val result = it.data.result\r\n\r\n                result.onSuccess {\r\n                    withContext(Dispatchers.Main) {\r\n                        onComplete(\"Berhasil menghapus kavling $kavlingKode\")\r\n                    }\r\n                }\r\n\r\n                result.onFailure { throwable ->\r\n                    withContext(Dispatchers.Main) {\r\n                        onComplete(\"Gagal menghapus kavling $kavlingKode: ${throwable.message}\")\r\n                    }\r\n                }\r\n\r\n                isFinishOperation.postValue(true)\r\n            }\r\n\r\n        }\r\n\r\n        asyncJobs.add(removeKavlingJob)\r\n    }\r\n\r\n    fun checkUpdates(\r\n        versionName: String,\r\n        versionCode: Int,\r\n        onAvailable: (appUpdate: AppUpdate) -> Unit,\r\n        onFailure: (msg: String) -> Unit,\r\n    ) {\r\n        CoroutineScope(Dispatchers.IO).launch {\r\n            val currentBuildConfig = GetUpdateInformationUseCase.CurrentBuildConfig(\r\n                versionName = versionName,\r\n                versionCode = versionCode,\r\n            )\r\n            val request = GetUpdateInformationUseCase.Request(currentBuildConfig)\r\n\r\n            getAppUpdateInformationUseCase.execute(request).collect { response ->\r\n                val result = response.data.result\r\n\r\n                if (result.isSuccess) {\r\n                    result.getOrNull()?.let { appUpdate ->\r\n                        withContext(Dispatchers.Main) {\r\n                            onAvailable(appUpdate)\r\n                        }\r\n                    }\r\n                } else {\r\n                    withContext(Dispatchers.Main) {\r\n                        onFailure(\"Gagal mendapatkan update: ${result.exceptionOrNull()?.message ?: \"null\"}\")\r\n                    }\r\n                }\r\n            }\r\n        }\r\n    }\r\n\r\n\r\n    /**\r\n     * Promotion Message\r\n     */\r\n    fun getPromotionMessage(onFailure: (msg: String) -> Unit = {}) {\r\n        viewModelScope.launch {\r\n            val request = GetPromotionMessageAsyncUseCase.Request\r\n            getPromotionMessageAsyncUseCase.execute(request).collect { result ->\r\n                result.onSuccess {\r\n                    _promotionMessage.postValue(it)\r\n                }\r\n                result.onFailure {\r\n                    withContext(Dispatchers.Main) {\r\n                        onFailure(\"Gagal mendapatkan Promotion Message: ${it.message}\")\r\n                    }\r\n                }\r\n            }\r\n        }\r\n    }\r\n\r\n    override fun onCleared() {\r\n        logEvent(\"MainViewModel is about to be cleared!\")\r\n\r\n        asyncJobs.forEach { it.cancel() }\r\n        super.onCleared()\r\n    }\r\n\r\n\r\n}
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/presentation/src/main/java/net/bagusekasaputra/griyakampoengtkw/presentation/viewmodel/MainViewModel.kt b/presentation/src/main/java/net/bagusekasaputra/griyakampoengtkw/presentation/viewmodel/MainViewModel.kt
+--- a/presentation/src/main/java/net/bagusekasaputra/griyakampoengtkw/presentation/viewmodel/MainViewModel.kt	(revision 62f98e3109e72a1170f5abb779324ff5f503db1b)
++++ b/presentation/src/main/java/net/bagusekasaputra/griyakampoengtkw/presentation/viewmodel/MainViewModel.kt	(date 1685548055906)
+@@ -56,8 +56,6 @@
+ 
+     val currentBlock = MutableLiveData("A")
+ 
+-    val tabSelectedLive = MutableLiveData(0)
+-
+     var kavlingRecyclerState: Parcelable? = null
+ 
+     val isFinishOperation = MutableLiveData<Boolean>()

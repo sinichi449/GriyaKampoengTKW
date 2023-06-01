@@ -1,0 +1,153 @@
+Index: app/src/main/java/net/bagusekasaputra/griyakampoengtkw/NotifTesService.kt
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/app/src/main/java/net/bagusekasaputra/griyakampoengtkw/NotifTesService.kt b/app/src/main/java/net/bagusekasaputra/griyakampoengtkw/NotifTesService.kt
+new file mode 100644
+--- /dev/null	(date 1685375796462)
++++ b/app/src/main/java/net/bagusekasaputra/griyakampoengtkw/NotifTesService.kt	(date 1685375796462)
+@@ -0,0 +1,75 @@
++package net.bagusekasaputra.griyakampoengtkw
++
++import android.app.Service
++import android.content.Intent
++import android.os.Handler
++import android.os.IBinder
++import android.util.Log
++import net.bagusekasaputra.griyakampoengtkw.presentation.util.NotificationUtil
++import java.util.Timer
++import java.util.TimerTask
++
++class NotifTesService: Service() {
++
++    private  var timer: Timer? = null
++    private var timerTask: TimerTask? = null
++    private val TAG = "Timers"
++    private val notificationInSecond = 5L
++
++    override fun onBind(intent: Intent?): IBinder? {
++        return null
++    }
++
++    override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
++        Log.e(TAG, "onStartCommand")
++        super.onStartCommand(intent, flags, startId)
++
++        startTimer()
++
++        return START_STICKY
++    }
++
++    override fun onCreate() {
++        Log.e(TAG, "onCreate")
++    }
++
++    override fun onDestroy() {
++        Log.e(TAG, "onDestroy")
++        stopTimerTask()
++        super.onDestroy()
++    }
++
++    private val handler = Handler()
++
++    private fun startTimer() {
++        timer = Timer()
++
++        // Initialize the TimerTask's job
++        initializeTimerTask()
++
++        // Schedule the timer, after first 5000 ms the TimerTask will run
++        // every notificationInSecond * 1000 ms
++        timer?.schedule(timerTask, 5000L, notificationInSecond * 1000)
++
++    }
++
++    private fun stopTimerTask() {
++        // Stop the timer, if it's not already null
++        timer?.cancel()
++        timer = null
++    }
++
++    private fun initializeTimerTask() {
++        timerTask = object : TimerTask() {
++            override fun run() {
++                handler.post {
++                    NotificationUtil.createNotification(
++                        context = this@NotifTesService.applicationContext,
++                        title =  "This is Timer Notification!",
++                        text = "Lorem lorem ipsum amet gaeroh wayah",
++                    )
++                }
++            }
++        }
++    }
++}
+\ No newline at end of file
+Index: app/src/main/AndroidManifest.xml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+><?xml version=\"1.0\" encoding=\"utf-8\"?>\r\n<manifest xmlns:android=\"http://schemas.android.com/apk/res/android\"\r\n    xmlns:tools=\"http://schemas.android.com/tools\">\r\n\r\n    <uses-permission android:name=\"android.permission.ACCESS_NETWORK_STATE\" />\r\n    <uses-permission android:name=\"android.permission.INTERNET\" />\r\n    <uses-permission android:name=\"android.permission.READ_EXTERNAL_STORAGE\" />\r\n    <uses-permission android:name=\"android.permission.WRITE_EXTERNAL_STORAGE\" />\r\n    <uses-permission android:name=\"android.permission.MANAGE_EXTERNAL_STORAGE\" />\r\n\r\n    <application\r\n        android:name=\".GriyaApplication\"\r\n        android:requestLegacyExternalStorage=\"true\"\r\n        android:allowBackup=\"true\"\r\n        android:dataExtractionRules=\"@xml/data_extraction_rules\"\r\n        android:fullBackupContent=\"@xml/backup_rules\"\r\n        android:icon=\"@mipmap/ic_launcher_griya\"\r\n        android:label=\"@string/app_name\"\r\n        android:roundIcon=\"@mipmap/ic_launcher_griya_round\"\r\n        android:supportsRtl=\"true\"\r\n        android:theme=\"@style/Theme.GriyaKampung\"\r\n        tools:targetApi=\"31\">\r\n        <activity\r\n            android:name=\".DataLamaActivity\"\r\n            android:exported=\"false\" />\r\n        <activity\r\n            android:name=\".presentation.activity.FullImageActivity\"\r\n            android:exported=\"false\"\r\n            android:theme=\"@style/Theme.MaterialComponents.NoActionBar\">\r\n            <meta-data\r\n                android:name=\"android.app.lib_name\"\r\n                android:value=\"\" />\r\n        </activity>\r\n        <activity\r\n            android:name=\".presentation.activity.DetailActivity\"\r\n            android:exported=\"false\"\r\n            android:theme=\"@style/Theme.GriyaKampung.BlackWhite\">\r\n            <meta-data\r\n                android:name=\"android.app.lib_name\"\r\n                android:value=\"\" />\r\n        </activity>\r\n        <activity\r\n            android:name=\".SplashActivity\"\r\n            android:exported=\"true\"\r\n            android:theme=\"@style/Theme.MaterialComponents.Light.NoActionBar\">\r\n            <intent-filter>\r\n                <action android:name=\"android.intent.action.MAIN\" />\r\n\r\n                <category android:name=\"android.intent.category.LAUNCHER\" />\r\n            </intent-filter>\r\n\r\n            <meta-data\r\n                android:name=\"android.app.lib_name\"\r\n                android:value=\"\" />\r\n        </activity>\r\n        <activity\r\n            android:name=\".presentation.activity.MainActivity\"\r\n            android:exported=\"false\"\r\n            android:theme=\"@style/Theme.GriyaKampung.BlackWhite\">\r\n            <meta-data\r\n                android:name=\"android.app.lib_name\"\r\n                android:value=\"\" />\r\n        </activity>\r\n\r\n        <receiver\r\n            android:name=\".presentation.receiver.AlarmReceiver\"\r\n            android:exported=\"true\" />\r\n        <receiver\r\n            android:name=\".presentation.receiver.ProgressReceiver\"\r\n            android:exported=\"false\">\r\n            <intent-filter>\r\n                <action android:name=\"net.bagusekasaputra.griyakampoengtkw.ACTION_NOTIFY_PROGRESS\" />\r\n            </intent-filter>\r\n        </receiver>\r\n\r\n    </application>\r\n\r\n</manifest>\r\n
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/app/src/main/AndroidManifest.xml b/app/src/main/AndroidManifest.xml
+--- a/app/src/main/AndroidManifest.xml	(revision f93a321eac666b9f75a0f5658bc55c4327bb4dab)
++++ b/app/src/main/AndroidManifest.xml	(date 1685375251013)
+@@ -7,6 +7,8 @@
+     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+     <uses-permission android:name="android.permission.MANAGE_EXTERNAL_STORAGE" />
++    <uses-permission android:name="android.permission.VIBRATE" />
++    <uses-permission android:name="android.permission.ACCESS_NOTIFICATION_POLICY" />
+ 
+     <application
+         android:name=".GriyaApplication"
+@@ -62,6 +64,16 @@
+                 android:value="" />
+         </activity>
+ 
++        <service
++            android:name=".NotifTesService"
++            android:label="@string/app_name"
++            android:exported="true">
++            <intent-filter>
++                <action android:name="net.bagusekasaputra.griyakampoengtkw.NotifTesService"/>
++                <category android:name="android.intent.category.DEFAULT"/>
++            </intent-filter>
++        </service>
++
+         <receiver
+             android:name=".presentation.receiver.AlarmReceiver"
+             android:exported="true" />
+Index: app/src/developer/java/net/bagusekasaputra/griyakampoengtkw/SplashActivity.kt
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>@file:Suppress(\"DEPRECATION\")\r\n\r\npackage net.bagusekasaputra.griyakampoengtkw\r\n\r\nimport android.annotation.SuppressLint\r\nimport android.content.Intent\r\nimport android.content.SharedPreferences\r\nimport android.os.Bundle\r\nimport android.os.Handler\r\nimport android.view.View\r\nimport android.view.WindowManager\r\nimport android.widget.Toast\r\nimport androidx.appcompat.app.AppCompatActivity\r\nimport androidx.appcompat.app.AppCompatDelegate\r\nimport androidx.core.content.ContextCompat\r\nimport androidx.core.content.edit\r\nimport com.google.android.material.dialog.MaterialAlertDialogBuilder\r\nimport dagger.hilt.android.AndroidEntryPoint\r\nimport kotlinx.coroutines.CoroutineScope\r\nimport kotlinx.coroutines.Dispatchers\r\nimport kotlinx.coroutines.launch\r\nimport kotlinx.coroutines.withContext\r\nimport net.bagusekasaputra.griyakampoengtkw.databinding.ActivitySplashPureBinding\r\nimport net.bagusekasaputra.griyakampoengtkw.databinding.ActivitySplashWithLoadingBinding\r\nimport net.bagusekasaputra.griyakampoengtkw.interfaces.remote.InitRemote\r\nimport net.bagusekasaputra.griyakampoengtkw.presentation.activity.MainActivity\r\nimport net.bagusekasaputra.griyakampoengtkw.presentation.util.GriyaNodes\r\nimport java.io.IOException\r\nimport java.net.InetSocketAddress\r\nimport java.net.Socket\r\nimport javax.inject.Inject\r\nimport kotlin.coroutines.resume\r\nimport kotlin.coroutines.resumeWithException\r\nimport kotlin.coroutines.suspendCoroutine\r\n\r\n@SuppressLint(\"CustomSplashScreen\")\r\n@AndroidEntryPoint\r\nclass SplashActivity : AppCompatActivity() {\r\n\r\n    private lateinit var bindingPure: ActivitySplashPureBinding\r\n    private lateinit var bindingLoading: ActivitySplashWithLoadingBinding\r\n\r\n    @Inject\r\n    lateinit var sharedPreferences: SharedPreferences\r\n    @Inject\r\n    lateinit var initRemote: InitRemote\r\n    @Inject\r\n    lateinit var cacheAccumulator: CacheAccumulatorForProgressKavling\r\n\r\n    override fun onCreate(savedInstanceState: Bundle?) {\r\n        super.onCreate(savedInstanceState)\r\n\r\n        window.apply {\r\n            addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS)\r\n            clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS)\r\n            statusBarColor = ContextCompat.getColor(this@SplashActivity, R.color.app_theme_color)\r\n        }\r\n\r\n        bindingPure = ActivitySplashPureBinding.inflate(layoutInflater)\r\n        setContentView(bindingPure.root)\r\n\r\n        // Disable Dark Theme\r\n        AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)\r\n\r\n        showSplashScreen(1.5f)\r\n    }\r\n\r\n    @Suppress(\"SameParameterValue\")\r\n    private fun showSplashScreen(seconds: Float) {\r\n        val handler = Handler()\r\n        val splashRunnable = Runnable {\r\n            bindingLoading = ActivitySplashWithLoadingBinding.inflate(layoutInflater)\r\n            setContentView(bindingLoading.root)\r\n\r\n            connectivityCheckAndInitServer()\r\n        }\r\n        // Convert integer to long milliseconds\r\n        val millis = (seconds * 1000).toLong()\r\n\r\n        handler.postDelayed(splashRunnable, millis)\r\n    }\r\n\r\n    @SuppressLint(\"SetTextI18n\")\r\n    private fun connectivityCheckAndInitServer() {\r\n        CoroutineScope(Dispatchers.IO).launch {\r\n            if (isDeviceOnline()) {\r\n                withContext(Dispatchers.Main) {\r\n                    bindingLoading.layoutCekKoneksi.tvInfoPeriksaInternet.text = \"Memeriksa status server\"\r\n                }\r\n                // Check Maintenance status\r\n                val isMaintenance = initRemote.checkMaintenance()\r\n\r\n                isMaintenance.onSuccess { maintenance ->\r\n                    if (maintenance) {\r\n                        withContext(Dispatchers.Main) {\r\n                            MaterialAlertDialogBuilder(this@SplashActivity)\r\n                                .setTitle(\"Server Maintenance\")\r\n                                .setCancelable(false)\r\n                                .setMessage(\"Server terdekteksi dalam pemeliharaan.\")\r\n                                .setPositiveButton(\"Oke\") { dialog, _ ->\r\n                                    dialog.dismiss()\r\n\r\n                                    showJenisDataChoice(isOnline = true, shouldShowDataBaruOption = true)\r\n                                }\r\n                                .create()\r\n                                .show()\r\n                        }\r\n                    } else {\r\n                        withContext(Dispatchers.Main) {\r\n                            val prefsCacheInitiation = \"PREFS_HAS_CACHE_INITIATED\"\r\n                            val hasCacheInitiated = sharedPreferences.getBoolean(prefsCacheInitiation, false)\r\n\r\n                            if (!hasCacheInitiated) {\r\n                                initCache(onComplete = {\r\n                                    sharedPreferences.edit()\r\n                                        .putBoolean(prefsCacheInitiation, true)\r\n                                        .apply()\r\n\r\n                                    showJenisDataChoice(isOnline = true, shouldShowDataBaruOption = true)\r\n                                })\r\n                            } else {\r\n                                showJenisDataChoice(isOnline = true, shouldShowDataBaruOption = true)\r\n                            }\r\n                        }\r\n                    }\r\n                }\r\n\r\n                isMaintenance.onFailure {\r\n                    withContext(Dispatchers.Main) {\r\n                        Toast.makeText(this@SplashActivity, \"Gagal mengecek status server: $it\", Toast.LENGTH_LONG).show()\r\n                        showJenisDataChoice(isOnline = true, shouldShowDataBaruOption = false)\r\n                    }\r\n                }\r\n            } else {\r\n                withContext(Dispatchers.Main) {\r\n                    Toast.makeText(this@SplashActivity, \"Device terdeteksi offline, mohon cek koneksi Anda.\", Toast.LENGTH_LONG).show()\r\n\r\n                    showJenisDataChoice(isOnline = false, shouldShowDataBaruOption = false)\r\n                }\r\n            }\r\n        }\r\n    }\r\n\r\n    @SuppressLint(\"SetTextI18n\")\r\n    private fun initCache(onComplete: () -> Unit) {\r\n        CoroutineScope(Dispatchers.IO).launch {\r\n            // Change loading text\r\n            withContext(Dispatchers.Main) {\r\n                bindingLoading.layoutCekKoneksi.tvInfoPeriksaInternet.text = \"Menginisialisasi Cache ...\"\r\n            }\r\n            val cacheAccumulationResult = cacheAccumulator.execute()\r\n\r\n            if (cacheAccumulationResult.isSuccess) {\r\n                withContext(Dispatchers.Main) {\r\n                    onComplete()\r\n                }\r\n            } else {\r\n                withContext(Dispatchers.Main) {\r\n                    MaterialAlertDialogBuilder(this@SplashActivity).apply {\r\n                        setTitle(\"Kesalahan Inisialisasi\")\r\n                        setMessage(\"Terdapat masalah dalam mengakumulasi cache aplikasi. Anda tetap dapat menggunakan apliasi Griya Kampoeng TKW Mobile tanpa masalah yang signifikan. Hubungi developer untuk penanganan masalah ini nanti.\")\r\n                        setCancelable(false)\r\n                        setPositiveButton(\"OK\") { _, _ ->\r\n                            onComplete()\r\n                        }\r\n                    }.create()\r\n                        .show()\r\n                }\r\n            }\r\n        }\r\n    }\r\n\r\n    private fun showJenisDataChoice(isOnline: Boolean, shouldShowDataBaruOption: Boolean) {\r\n        bindingLoading.layoutCekKoneksi.root.visibility = View.INVISIBLE\r\n\r\n        // When checking Maintenance Status or Device Connectivity fails,\r\n        // disable \"Data Baru\" button.\r\n        if (!shouldShowDataBaruOption) {\r\n            bindingLoading.layoutPilihData.btnDataBaru.visibility = View.GONE\r\n        }\r\n\r\n        bindingLoading.layoutPilihData.root.visibility = View.VISIBLE\r\n        bindingLoading.layoutPilihData.btnDataLama.setOnClickListener {\r\n            goToDocumentLamaActivity()\r\n        }\r\n        bindingLoading.layoutPilihData.btnDataBaru.setOnClickListener {\r\n            // Nullify the sharedPreference Data Lama to prevent MainActivity/DetailActivity\r\n            // to DataLama mode\r\n            sharedPreferences.edit(true) {\r\n                putString(\"dataLamaPath\", null)\r\n            }\r\n            goToMainActivity(isOnline, true)\r\n        }\r\n    }\r\n\r\n    @Suppress(\"SameParameterValue\")\r\n    private fun goToMainActivity(isOnline: Boolean, isNewDataSelected: Boolean) {\r\n        // I also want to pass a BuildConfig for checking update.\r\n        val intent = Intent(this, MainActivity::class.java)\r\n\r\n        intent.putExtra(GriyaNodes.INTENT_IS_ONLINE, isOnline)\r\n        intent.putExtra(\"versionName\", BuildConfig.VERSION_NAME)\r\n        intent.putExtra(\"versionCode\", BuildConfig.VERSION_CODE)\r\n        intent.putExtra(\"isNewDataSelected\", isNewDataSelected)\r\n        startActivity(intent)\r\n        finish()\r\n    }\r\n\r\n    private fun goToDocumentLamaActivity() {\r\n        val intent = Intent(this, DataLamaActivity::class.java)\r\n        startActivity(intent)\r\n    }\r\n\r\n    private suspend fun isDeviceOnline(): Boolean {\r\n        return suspendCoroutine { continuation ->\r\n            try {\r\n                val timeOutMs = 3000\r\n                val sock = Socket()\r\n                val sockAddr = InetSocketAddress(\"8.8.8.8\", 53)\r\n\r\n                sock.connect(sockAddr, timeOutMs)\r\n                sock.close()\r\n\r\n                continuation.resume(true)\r\n            } catch (e: IOException) {\r\n                e.printStackTrace()\r\n\r\n                continuation.resumeWithException(e)\r\n            }\r\n        }\r\n    }\r\n\r\n}
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/app/src/developer/java/net/bagusekasaputra/griyakampoengtkw/SplashActivity.kt b/app/src/developer/java/net/bagusekasaputra/griyakampoengtkw/SplashActivity.kt
+--- a/app/src/developer/java/net/bagusekasaputra/griyakampoengtkw/SplashActivity.kt	(revision f93a321eac666b9f75a0f5658bc55c4327bb4dab)
++++ b/app/src/developer/java/net/bagusekasaputra/griyakampoengtkw/SplashActivity.kt	(date 1685374262732)
+@@ -7,6 +7,7 @@
+ import android.content.SharedPreferences
+ import android.os.Bundle
+ import android.os.Handler
++import android.util.Log
+ import android.view.View
+ import android.view.WindowManager
+ import android.widget.Toast
+@@ -230,4 +231,11 @@
+         }
+     }
+ 
++    override fun onStop() {
++        Log.d("Timers", "Activity Splash is onStop() !")
++
++        startService(Intent(this, NotifTesService::class.java))
++
++        super.onStop()
++    }
+ }
+\ No newline at end of file
