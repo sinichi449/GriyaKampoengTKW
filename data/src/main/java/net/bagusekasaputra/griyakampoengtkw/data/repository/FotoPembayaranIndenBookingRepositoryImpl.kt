@@ -78,6 +78,27 @@ class FotoPembayaranIndenBookingRepositoryImpl(
         }.first()
     }
 
+    override suspend fun insert(fotoPembayaran: FotoPembayaranIndenBooking): Result<Nothing?> {
+        return try {
+            // Move image to appropriate directory first
+            fotoPembayaran.moveToExternalStorage(externalStorageFile)
+            val model = MyObjectMapper.mapFotoPembayaranIndenBooking(fotoPembayaran)
+
+            // Remote insertion
+            remoteDataSource.insert(model).getOrThrow()
+
+            // Update cache
+            cacheHelper.updateMetadata(cacheLocalTable, cacheRemoteTable).getOrThrow()
+
+            // Local insertion
+            localDataSource.insert(model).getOrThrow()
+
+            Result.success(null)
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
+    }
+
     override suspend fun isExist(keyId: String, termin: String): Result<Boolean> {
         return remoteDataSource.isExist(keyId, termin)
     }

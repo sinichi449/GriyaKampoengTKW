@@ -1,6 +1,7 @@
 package net.bagusekasaputra.griyakampoengtkw.presentation.dialog
 
 import android.annotation.SuppressLint
+import android.app.Activity
 import android.content.Intent
 import android.content.SharedPreferences
 import android.os.Bundle
@@ -9,18 +10,23 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ProgressBar
 import android.widget.Toast
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.lifecycleScope
+import com.github.dhaval2404.imagepicker.ImagePicker
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import net.bagusekasaputra.griyakampoengtkw.domain.entity.images.FotoPembayaranIndenBooking
 import net.bagusekasaputra.griyakampoengtkw.presentation.activity.FullImageActivity
 import net.bagusekasaputra.griyakampoengtkw.presentation.databinding.DialogActionsItemPembayaranBinding
 import net.bagusekasaputra.griyakampoengtkw.presentation.util.GriyaNodes
+import net.bagusekasaputra.griyakampoengtkw.presentation.util.NotificationUtil
 import net.bagusekasaputra.griyakampoengtkw.presentation.viewmodel.ImageViewModel
 import net.bagusekasaputra.griyakampoengtkw.presentation.viewmodel.IndenBookingViewModel
 import javax.inject.Inject
@@ -44,6 +50,79 @@ class ActionPembayaranIndenBookingBottomSheetDialog: BottomSheetDialogFragment()
 
     // Need to define here to avoid uninitialized binding
     private var progressBarTambahFoto: ProgressBar? = null
+
+    private val fotoPembayaranPickerResultLauncher =
+        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+            val resultCode = result.resultCode
+            val intent = result.data
+
+            when (resultCode) {
+                Activity.RESULT_OK -> {
+                    val uri = intent?.data
+                    if (uri != null) {
+                        NotificationUtil.createNotification(
+                            activity = requireActivity(),
+                            title = "Upload Foto Pembayaran",
+                            content = "Mohon tunggu sebentar ...",
+                            finished = false,
+                        )
+
+                        // If the image is big enough to compress, this is causing some feedback lag,
+                        // so I put the progress to here.
+                        progressBarTambahFoto?.visibility = View.VISIBLE
+
+                        imageViewModel.insertFotoPembayaranIndenBooking(
+                            fotoPembayaran = FotoPembayaranIndenBooking(
+                                keyId = currentKeyId,
+                                termin = currentTermin,
+                                uriStrFotoPembayaran = uri.toString(),
+                            ),
+                            onProgress = {
+
+                            },
+                            onSuccess = {
+                                progressBarTambahFoto?.visibility = View.GONE
+
+                                NotificationUtil.createNotification(
+                                    activity = requireActivity(),
+                                    title = "Berhasil!",
+                                    content = "Foto pembayaran $currentKeyId - $currentTermin berhasil ditambahkan!",
+                                    finished = true
+                                )
+
+                                dismiss()
+
+                                Snackbar.make(binding.root, "Berhasil menambahkan foto pembayaran!", Snackbar.LENGTH_SHORT)
+                                    .show()
+                            },
+                            onFailure = {
+                                NotificationUtil.createNotification(
+                                    activity = requireActivity(),
+                                    title = "Gagal ...",
+                                    content = it,
+                                    finished = true
+                                )
+
+                                Toast.makeText(requireContext(), it, Toast.LENGTH_LONG).show()
+
+                                dismiss()
+                            }
+                        )
+                    }
+                }
+                ImagePicker.RESULT_ERROR -> {
+                    Toast.makeText(
+                        requireContext(),
+                        ImagePicker.getError(intent),
+                        Toast.LENGTH_SHORT
+                    ).show()
+                }
+                else -> {
+                    Toast.makeText(requireContext(), "Operasi dibatalkan", Toast.LENGTH_SHORT)
+                        .show()
+                }
+            }
+        }
 
     companion object {
         const val EXTRAS_INDEX_PEMBAYARAN_POSITION = "EXTRAS_INDEX_PEMBAYARAN_POSITION"
@@ -127,7 +206,7 @@ class ActionPembayaranIndenBookingBottomSheetDialog: BottomSheetDialogFragment()
             binding.cardTambahkanFotoPembayaran.apply {
                 visibility = View.VISIBLE
                 setOnClickListener {
-                    // TODO
+                    fotoPembayaranPickerDialog()
                 }
             }
 
@@ -167,6 +246,15 @@ class ActionPembayaranIndenBookingBottomSheetDialog: BottomSheetDialogFragment()
                 .create()
                 .show()
         }
+    }
+
+    private fun fotoPembayaranPickerDialog() {
+        ImagePicker.with(this)
+            .crop()
+            .compress(sharedPrefs.getInt("max_size_foto_pembayaran", 256))
+            .createIntent {
+                fotoPembayaranPickerResultLauncher.launch(it)
+            }
     }
 
     private fun testMock(

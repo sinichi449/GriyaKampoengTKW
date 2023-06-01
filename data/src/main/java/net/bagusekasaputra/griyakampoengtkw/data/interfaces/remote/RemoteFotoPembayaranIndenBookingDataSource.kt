@@ -7,5 +7,7 @@ interface RemoteFotoPembayaranIndenBookingDataSource {
     // Returns true if available, and false if not available
     suspend fun download(model: FotoPembayaranIndenBookingModel): Result<Boolean>
 
+    suspend fun insert(model: FotoPembayaranIndenBookingModel): Result<Nothing?>
+
     suspend fun isExist(keyId: String, termin: String): Result<Boolean>
 }

@@ -644,6 +644,16 @@ object MyObjectMapper {
         }
     }
 
+    fun mapFotoPembayaranIndenBooking(fotoPembayaran: FotoPembayaranIndenBooking): FotoPembayaranIndenBookingModel {
+        return fotoPembayaran.let {
+            FotoPembayaranIndenBookingModel(
+                keyId = it.keyId,
+                termin = it.termin,
+                uriStr = it.uriStr,
+            )
+        }
+    }
+
     /**
      * Image Data Diri Inden Booking
      */

@@ -21,6 +21,10 @@ class MockFotoPembayaranIndenBookingRepository: FotoPembayaranIndenBookingReposi
         return Result.success(fotoPembayaran)
     }
 
+    override suspend fun insert(fotoPembayaran: FotoPembayaranIndenBooking): Result<Nothing?> {
+        TODO("Not yet implemented")
+    }
+
     override suspend fun isExist(keyId: String, termin: String): Result<Boolean> {
         val fotoPembayaran = mapForIndenBooking[keyId]?.filter {
             it.termin == termin

@@ -31,6 +31,6 @@ abstract class GktImage(var uriStr: String) {
 
         srcFile.renameTo(dstFile)
 
-        uriStr = srcFile.toUri().toString()
+        uriStr = dstFile.toUri().toString()
     }
 }

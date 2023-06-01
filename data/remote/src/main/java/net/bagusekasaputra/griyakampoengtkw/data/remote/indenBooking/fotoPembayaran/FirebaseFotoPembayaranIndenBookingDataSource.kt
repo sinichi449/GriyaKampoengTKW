@@ -46,6 +46,24 @@ class FirebaseFotoPembayaranIndenBookingDataSource(
         }
     }
 
+    override suspend fun insert(model: FotoPembayaranIndenBookingModel): Result<Nothing?> {
+        return suspendCancellableCoroutine { continuation ->
+            fotoPembayaranRef(model.keyId)
+                .child(FotoPembayaranIndenBookingModel.getFilename(model.keyId, model.termin))
+                .putFile(Uri.parse(model.uriStr))
+                .addOnCompleteListener {
+                    if (continuation.isActive) {
+                        continuation.resume(Result.success(null), null)
+                    }
+                }
+                .addOnFailureListener {
+                    if (continuation.isActive) {
+                        continuation.resume(Result.failure(it), null)
+                    }
+                }
+        }
+    }
+
     override suspend fun isExist(keyId: String, termin: String): Result<Boolean> {
         return suspendCancellableCoroutine { continuation ->
             val filename = FotoPembayaranIndenBookingModel.getFilename(keyId, termin)
