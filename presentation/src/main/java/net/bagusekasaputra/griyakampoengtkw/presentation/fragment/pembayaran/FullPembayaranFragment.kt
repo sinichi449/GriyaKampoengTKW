@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.recyclerview.widget.RecyclerView
@@ -14,7 +15,7 @@ import net.bagusekasaputra.griyakampoengtkw.domain.NumberUtil
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.BaselinePembayaran
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.Pembayaran
 import net.bagusekasaputra.griyakampoengtkw.presentation.databinding.FragmentFullPembayaranBinding
-import net.bagusekasaputra.griyakampoengtkw.presentation.dialog.ActionPembayaranItemBottomSheetDialog
+import net.bagusekasaputra.griyakampoengtkw.presentation.dialog.ActionPembayaranStandardBottomSheetDialog
 import net.bagusekasaputra.griyakampoengtkw.presentation.tableview.formPembayaran.FullPembayaranTableWrapper
 import net.bagusekasaputra.griyakampoengtkw.presentation.viewmodel.FormPembayaranViewModel
 
@@ -128,12 +129,12 @@ class FullPembayaranFragment : Fragment() {
             }
 
             override fun onRowHeaderClicked(rowHeaderView: RecyclerView.ViewHolder, row: Int) {
-                val actionDialog = ActionPembayaranItemBottomSheetDialog()
-                val bundleArgument = Bundle().apply {
-                    putInt(ActionPembayaranItemBottomSheetDialog.EXTRAS_INDEX_PEMBAYARAN_POSITION,
-                        row)
-                }
-                actionDialog.arguments = bundleArgument
+                val actionDialog = ActionPembayaranStandardBottomSheetDialog()
+                val positionBundle = bundleOf(
+                    ActionPembayaranStandardBottomSheetDialog.EXTRAS_INDEX_PEMBAYARAN_POSITION
+                            to row,
+                )
+                actionDialog.arguments = positionBundle
 
                 actionDialog.show(childFragmentManager, null)
             }

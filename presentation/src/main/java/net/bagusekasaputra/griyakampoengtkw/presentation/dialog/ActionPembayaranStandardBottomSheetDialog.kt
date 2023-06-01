@@ -26,9 +26,9 @@ import net.bagusekasaputra.griyakampoengtkw.presentation.viewmodel.ImageViewMode
 import javax.inject.Inject
 
 @AndroidEntryPoint
-class ActionPembayaranItemBottomSheetDialog(): BottomSheetDialogFragment() {
+class ActionPembayaranStandardBottomSheetDialog(): BottomSheetDialogFragment() {
 
-    private lateinit var dialogBinding: DialogActionsItemPembayaranBinding
+    private lateinit var binding: DialogActionsItemPembayaranBinding
     private val viewModel by activityViewModels<FormPembayaranViewModel>()
     private val imageViewModel by activityViewModels<ImageViewModel>()
     private var indexPembayaran: Int? = null
@@ -106,9 +106,9 @@ class ActionPembayaranItemBottomSheetDialog(): BottomSheetDialogFragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        dialogBinding = DialogActionsItemPembayaranBinding.inflate(inflater, container, false)
+        binding = DialogActionsItemPembayaranBinding.inflate(inflater, container, false)
 
-        return dialogBinding.root
+        return binding.root
     }
 
     @SuppressLint("SetTextI18n")
@@ -119,22 +119,22 @@ class ActionPembayaranItemBottomSheetDialog(): BottomSheetDialogFragment() {
 
         currentKavling = viewModel.currentKavlingKode!!
         currentTermin = pembayaran.termin
-        progressBarTambahFoto = dialogBinding.progressbarTambahkanFoto
+        progressBarTambahFoto = binding.progressbarTambahkanFoto
 
         // Dialog title
-        dialogBinding.tvKavlingTermin.text = "Kav. $currentKavling - $currentTermin"
+        binding.tvKavlingTermin.text = "Kav. $currentKavling - $currentTermin"
 
         if (pembayaran.sudahIsiFotoPembayaran) {
-            dialogBinding.cardAmbilKuitansi.apply {
+            binding.cardAmbilKuitansi.apply {
                 visibility = View.VISIBLE
                 setOnClickListener {
-                    with (dialogBinding.switchSudahAmbilKuitansi) {
+                    with (binding.switchSudahAmbilKuitansi) {
                         isChecked = !isChecked
                     }
                 }
             }
 
-            dialogBinding.switchSudahAmbilKuitansi.apply {
+            binding.switchSudahAmbilKuitansi.apply {
                 visibility = View.VISIBLE
                 isChecked = pembayaran.sudahAmbilKuitansi
                 setOnCheckedChangeListener { _, isChecked ->
@@ -146,21 +146,21 @@ class ActionPembayaranItemBottomSheetDialog(): BottomSheetDialogFragment() {
 
                     viewModel.insertAmbilKuitansi(ambilKuitansi,
                         onProgress = {
-                            this@ActionPembayaranItemBottomSheetDialog.isCancelable = false
+                            this@ActionPembayaranStandardBottomSheetDialog.isCancelable = false
                             isEnabled = false
 
                             visibility = View.GONE
-                            dialogBinding.progressAmbilKuitansi.visibility = View.VISIBLE
+                            binding.progressAmbilKuitansi.visibility = View.VISIBLE
                         },
                         onSuccess = {
-                            this@ActionPembayaranItemBottomSheetDialog.isCancelable = true
+                            this@ActionPembayaranStandardBottomSheetDialog.isCancelable = true
                             isEnabled = true
 
                             visibility = View.VISIBLE
-                            dialogBinding.progressAmbilKuitansi.visibility = View.GONE
+                            binding.progressAmbilKuitansi.visibility = View.GONE
                         },
                         onFailure = {
-                            this@ActionPembayaranItemBottomSheetDialog.dismiss()
+                            this@ActionPembayaranStandardBottomSheetDialog.dismiss()
 
                             Toast.makeText(requireContext(), it, Toast.LENGTH_LONG).show()
                         }
@@ -168,9 +168,9 @@ class ActionPembayaranItemBottomSheetDialog(): BottomSheetDialogFragment() {
                 }
             }
 
-            dialogBinding.cardTambahkanFotoPembayaran.visibility = View.GONE
+            binding.cardTambahkanFotoPembayaran.visibility = View.GONE
 
-            dialogBinding.cardLihatFotoPembayaran.apply {
+            binding.cardLihatFotoPembayaran.apply {
                 visibility = View.VISIBLE
                 setOnClickListener {
                     val imageTransport = imageViewModel.createImageTransport(
@@ -187,7 +187,7 @@ class ActionPembayaranItemBottomSheetDialog(): BottomSheetDialogFragment() {
                 }
             }
 
-            dialogBinding.cardHapusFotoPembayaran.apply {
+            binding.cardHapusFotoPembayaran.apply {
                 visibility = View.VISIBLE
                 setOnClickListener {
                     // Show delete confirmation
@@ -199,14 +199,14 @@ class ActionPembayaranItemBottomSheetDialog(): BottomSheetDialogFragment() {
                                 kavlingKode = currentKavling,
                                 termin = currentTermin,
                                 onProgress = {
-                                    dialogBinding.progressbarHapusFoto.visibility = View.VISIBLE
+                                    binding.progressbarHapusFoto.visibility = View.VISIBLE
                                 },
                                 onComplete = { msg ->
                                     dialog.dismiss()
 
                                     Toast.makeText(requireContext(), msg, Toast.LENGTH_SHORT).show()
 
-                                    this@ActionPembayaranItemBottomSheetDialog.dismiss()
+                                    this@ActionPembayaranStandardBottomSheetDialog.dismiss()
                                 }
                             )
                         }
@@ -216,21 +216,21 @@ class ActionPembayaranItemBottomSheetDialog(): BottomSheetDialogFragment() {
                 }
             }
         } else {
-            dialogBinding.cardAmbilKuitansi.visibility = View.GONE
+            binding.cardAmbilKuitansi.visibility = View.GONE
 
-            dialogBinding.cardTambahkanFotoPembayaran.apply {
+            binding.cardTambahkanFotoPembayaran.apply {
                 visibility = View.VISIBLE
                 setOnClickListener {
                     fotoPembayaranPickerDialog()
                 }
             }
 
-            dialogBinding.cardLihatFotoPembayaran.visibility = View.GONE
+            binding.cardLihatFotoPembayaran.visibility = View.GONE
 
-            dialogBinding.cardHapusFotoPembayaran.visibility = View.GONE
+            binding.cardHapusFotoPembayaran.visibility = View.GONE
         }
 
-        dialogBinding.cardHapusDataPembayaran.setOnClickListener {
+        binding.cardHapusDataPembayaran.setOnClickListener {
             // Show hapus Pembayaran confirmation.
             // Foto pembayaran will also deleted!
             MaterialAlertDialogBuilder(requireContext())
@@ -244,19 +244,19 @@ class ActionPembayaranItemBottomSheetDialog(): BottomSheetDialogFragment() {
                         kavling = currentKavling,
                         pembayaran = pembayaran,
                         onProgress = {
-                            dialogBinding.progressbarHapusData.visibility = View.VISIBLE
-                            dialogBinding.progressbarHapusFoto.visibility = View.VISIBLE
+                            binding.progressbarHapusData.visibility = View.VISIBLE
+                            binding.progressbarHapusFoto.visibility = View.VISIBLE
                         },
                         onSuccess = {
                             Toast.makeText(requireContext(), "Berhasil menghapus pembayaran!", Toast.LENGTH_SHORT).show()
                             dialogHapus.dismiss()
 
-                            this@ActionPembayaranItemBottomSheetDialog.dismiss()
+                            this@ActionPembayaranStandardBottomSheetDialog.dismiss()
                         },
                         onFailure = {
                             Toast.makeText(requireContext(), it, Toast.LENGTH_LONG).show()
 
-                            this@ActionPembayaranItemBottomSheetDialog.dismiss()
+                            this@ActionPembayaranStandardBottomSheetDialog.dismiss()
                         }
                     )
                 }

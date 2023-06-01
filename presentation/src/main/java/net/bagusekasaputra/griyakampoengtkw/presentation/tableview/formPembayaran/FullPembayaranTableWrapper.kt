@@ -9,7 +9,7 @@ import net.bagusekasaputra.griyakampoengtkw.presentation.tableview.AbstractTable
 import net.bagusekasaputra.griyakampoengtkw.presentation.tableview.GktTableViewAdapter
 
 class FullPembayaranTableWrapper(
-    private val tableFullPembayaran: TableView,
+    tableFullPembayaran: TableView,
     private val pembayarans: List<Pembayaran>,
 ): AbstractTableWrapper(tableFullPembayaran) {
 

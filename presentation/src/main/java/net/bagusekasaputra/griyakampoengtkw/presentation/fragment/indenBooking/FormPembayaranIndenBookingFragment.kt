@@ -10,8 +10,11 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
+import androidx.recyclerview.widget.RecyclerView
+import com.evrencoskun.tableview.listener.ITableViewListener
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
@@ -23,6 +26,7 @@ import net.bagusekasaputra.griyakampoengtkw.presentation.activity.FormActivity
 import net.bagusekasaputra.griyakampoengtkw.presentation.custom.ThousandSeparatorTextWatcher
 import net.bagusekasaputra.griyakampoengtkw.presentation.databinding.DialogEditHargaRumahIndenBookingBinding
 import net.bagusekasaputra.griyakampoengtkw.presentation.databinding.FragmentFormPembayaranIndenBookingBinding
+import net.bagusekasaputra.griyakampoengtkw.presentation.dialog.ActionPembayaranIndenBookingBottomSheetDialog
 import net.bagusekasaputra.griyakampoengtkw.presentation.tableview.formPembayaran.FullPembayaranTableWrapper
 import net.bagusekasaputra.griyakampoengtkw.presentation.util.DialogUtil
 import net.bagusekasaputra.griyakampoengtkw.presentation.util.InputUtil
@@ -51,7 +55,7 @@ class FormPembayaranIndenBookingFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         binding.root.setOnRefreshListener {
-            sync()
+            syncPembayaranHargaRumah()
 
             // Until harga rumah ready
             binding.root.isRefreshing = false
@@ -84,7 +88,7 @@ class FormPembayaranIndenBookingFragment : Fragment() {
             dialogEditHargaRumah()
         }
 
-        sync()
+        syncPembayaranHargaRumah()
 
         setupViewModel()
     }
@@ -101,14 +105,96 @@ class FormPembayaranIndenBookingFragment : Fragment() {
         }
 
         viewModel.pembayaranListIndenBooking.observe(requireActivity()) {
-            it?.also { pembayarans: List<Pembayaran> ->
-                FullPembayaranTableWrapper(binding.tableFormPembayaran, pembayarans)
-                    .createTable()
+            if (!it.isNullOrEmpty()) {
+                tablePembayaran(it)
             }
         }
     }
 
-    private fun sync() {
+    private fun tablePembayaran(pembayarans: List<Pembayaran>) {
+        val tableListener = object : ITableViewListener {
+            override fun onCellClicked(cellView: RecyclerView.ViewHolder, column: Int, row: Int) {
+                // Show keterangan in dialog
+                if (column == FullPembayaranTableWrapper.KETERANGAN_PROGRESS) {
+                    val pembayaran = pembayarans[row]
+                    val dialog = MaterialAlertDialogBuilder(requireContext()).apply {
+                        setTitle("${viewModel.namaCostumer} - ${pembayaran.termin}")
+                        setMessage(pembayaran.keterangan)
+                    }.create()
+
+                    DialogUtil.additionalDialogSetting(requireContext(), dialog)
+
+                    dialog.show()
+                }
+            }
+
+            override fun onCellDoubleClicked(
+                cellView: RecyclerView.ViewHolder,
+                column: Int,
+                row: Int
+            ) {
+
+            }
+
+            override fun onCellLongPressed(
+                cellView: RecyclerView.ViewHolder,
+                column: Int,
+                row: Int
+            ) {
+
+            }
+
+            override fun onColumnHeaderClicked(
+                columnHeaderView: RecyclerView.ViewHolder,
+                column: Int
+            ) {
+
+            }
+
+            override fun onColumnHeaderDoubleClicked(
+                columnHeaderView: RecyclerView.ViewHolder,
+                column: Int
+            ) {
+
+            }
+
+            override fun onColumnHeaderLongPressed(
+                columnHeaderView: RecyclerView.ViewHolder,
+                column: Int
+            ) {
+
+            }
+
+            override fun onRowHeaderClicked(rowHeaderView: RecyclerView.ViewHolder, row: Int) {
+                val actionDialog = ActionPembayaranIndenBookingBottomSheetDialog()
+                val pembayaranTypeAndPositionBundle = bundleOf(
+                    ActionPembayaranIndenBookingBottomSheetDialog.EXTRAS_INDEX_PEMBAYARAN_POSITION
+                            to row,
+                )
+                actionDialog.arguments = pembayaranTypeAndPositionBundle
+
+                actionDialog.show(childFragmentManager, null)
+            }
+
+            override fun onRowHeaderDoubleClicked(
+                rowHeaderView: RecyclerView.ViewHolder,
+                row: Int
+            ) {
+
+            }
+
+            override fun onRowHeaderLongPressed(rowHeaderView: RecyclerView.ViewHolder, row: Int) {
+
+            }
+
+        }
+
+        FullPembayaranTableWrapper(binding.tableFormPembayaran, pembayarans)
+            .setTableListener(tableListener)
+            .createTable()
+    }
+
+    private fun syncPembayaranHargaRumah() {
         val currentKeyId = viewModel.currentKeyId
         if ((currentKeyId != "NULL_ID") || (currentKeyId.isNotEmpty())) {
             viewModel.getHargaRumah(currentKeyId,
@@ -195,7 +281,7 @@ class FormPembayaranIndenBookingFragment : Fragment() {
                         Snackbar.make(binding.root, "Berhasil mengubah harga rumah!", Snackbar.LENGTH_SHORT)
                             .show()
 
-                        sync()
+                        syncPembayaranHargaRumah()
                     },
                     onFailure = {
                         dialogBinding.btnTambahkan.revertAnimation()
@@ -229,7 +315,7 @@ class FormPembayaranIndenBookingFragment : Fragment() {
                 Snackbar.make(binding.root, "Berhasil menambahkan pembayaran!", Snackbar.LENGTH_SHORT)
                     .show()
 
-                sync()
+                syncPembayaranHargaRumah()
             } else {
                 data?.extras?.getString(FormActivity.EXTRAS_FAIL_MSG)?.also {
                     Toast.makeText(requireContext(), it, Toast.LENGTH_LONG).show()

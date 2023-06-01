@@ -68,12 +68,10 @@ class DetailIndenBookingActivity : AppCompatActivity() {
         } else {
             viewModel.namaCostumer = namaCostumer
         }
-        val keyId = intent?.extras?.getString(EXTRAS_KEY_ID) ?: "NULL_ID"
-
-        viewModel.currentKeyId = keyId
+        viewModel.currentKeyId = intent?.extras?.getString(EXTRAS_KEY_ID) ?: "NULL_ID"
 
         binding.toolbarDetail.title = viewModel.namaCostumer
-        binding.toolbarDetail.subtitle = keyId
+        binding.toolbarDetail.subtitle = viewModel.currentKeyId
 
         setupViewPager()
     }
