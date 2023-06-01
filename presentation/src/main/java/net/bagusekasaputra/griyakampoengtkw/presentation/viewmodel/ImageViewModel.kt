@@ -21,11 +21,12 @@ import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.fotoPembayaran.D
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.fotoPembayaran.GetFotoPembayaranAsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.fotoPembayaran.IsFotoPembayaranExistAsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.indenBooking.fotoPembayaran.GetFotoPembayaranIndenBookingAsyncUseCase
+import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.indenBooking.imageDataDiri.GetImageDataDiriIndenBookingAsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.FotoKuitansi
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.FotoPembayaran
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.ImageDataDiri
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.ImageSpr
-import net.bagusekasaputra.griyakampoengtkw.domain.entity.images.FotoPembayaranIndenBooking
+import net.bagusekasaputra.griyakampoengtkw.domain.entity.images.ImageDataDiriIndenBooking
 import net.bagusekasaputra.griyakampoengtkw.domain.usecase.fotoKuitansi.AddFotoKuitansiUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.usecase.fotoKuitansi.GetFotoKuitansiUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.usecase.imageDataDiri.AddImageDataDiriUseCase
@@ -53,6 +54,8 @@ class ImageViewModel @Inject constructor(
     private val addFotoPembayaranAsyncUseCase: AddFotoPembayaranAsyncUseCase,
     private val deleteFotoPembayaranAsyncUseCase: DeleteFotoPembayaranAsyncUseCase,
     private val isFotoPembayaranExistAsyncUseCase: IsFotoPembayaranExistAsyncUseCase,
+    // Image Data Diri Inden Booking,
+    private val getImageDataDiriIndenBookingAsyncUseCase: GetImageDataDiriIndenBookingAsyncUseCase,
     // Foto Pembayaran Inden Booking
     private val getFotoPembayaranIndenBookingAsyncUseCase: GetFotoPembayaranIndenBookingAsyncUseCase,
 ): ViewModel() {
@@ -67,10 +70,10 @@ class ImageViewModel @Inject constructor(
 
     val isFinishLoadingImage = MutableLiveData<Boolean>()
 
-    // Foto Pembayaran Inden Booking
-    private val _fotoPembayaranIndenBooking = MutableLiveData<FotoPembayaranIndenBooking?>()
-    val fotoPembayaranIndenBooking: LiveData<FotoPembayaranIndenBooking?>
-        get() = _fotoPembayaranIndenBooking
+    // Image Data Diri Inden Booking
+    private val _imageDataDiriIndenBooking = MutableLiveData<ImageDataDiriIndenBooking?>()
+    val imageDataDiriIndenBooking: LiveData<ImageDataDiriIndenBooking?>
+        get() = _imageDataDiriIndenBooking
 
     // Used in detail activity
     val allowExit: LiveData<Boolean>
@@ -384,8 +387,6 @@ class ImageViewModel @Inject constructor(
             val request = GetFotoPembayaranIndenBookingAsyncUseCase.Request(keyId, termin)
             getFotoPembayaranIndenBookingAsyncUseCase.execute(request).collect { result ->
                 result.onSuccess {
-                    _fotoPembayaranIndenBooking.postValue(it)
-
                     withContext(Dispatchers.Main) {
                         onSuccess(it?.uriStr)
                     }
@@ -393,6 +394,37 @@ class ImageViewModel @Inject constructor(
                 result.onFailure {
                     withContext(Dispatchers.Main) {
                         onFailure("Gagal mendapatkan foto : ${it.localizedMessage}")
+                    }
+                }
+            }
+        }
+    }
+
+
+    /**
+     * Image Data Diri Inden Booking
+     */
+    fun getImageDataDiriIndenBooking(
+        keyId: String,
+        onProgress: () -> Unit = {},
+        onSuccess: () -> Unit = {},
+        onFailure: (msg: String) -> Unit = {},
+    ) {
+        onProgress()
+
+        viewModelScope.launch(Dispatchers.IO) {
+            val request = GetImageDataDiriIndenBookingAsyncUseCase.Request(keyId)
+            getImageDataDiriIndenBookingAsyncUseCase.execute(request).collect { result ->
+                result.onSuccess {
+                    _imageDataDiriIndenBooking.postValue(it)
+
+                    withContext(Dispatchers.Main) {
+                        onSuccess()
+                    }
+                }
+                result.onFailure {
+                    withContext(Dispatchers.Main) {
+                        onFailure("Gagal mendapatkan foto data diri : ${it.localizedMessage}")
                     }
                 }
             }

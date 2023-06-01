@@ -7,6 +7,7 @@ import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.PrimaryKey
 import androidx.room.Query
+import net.bagusekasaputra.griyakampoengtkw.data.model.ImageDataDiriIndenBookingModel
 
 @Entity(
     tableName = "foto_identitas_inden_booking",
@@ -33,4 +34,19 @@ interface FotoIdentitasIndenBookingDao {
     @Query("DELETE FROM foto_identitas_inden_booking")
     fun deleteAll()
 
+}
+
+// Mapper
+fun FotoIdentitasIndenBookingEntity.toModel(): ImageDataDiriIndenBookingModel {
+    return ImageDataDiriIndenBookingModel(
+        keyId = this.keyId,
+        uriStr = this.uriStr,
+    )
+}
+
+fun ImageDataDiriIndenBookingModel.toEntity(): FotoIdentitasIndenBookingEntity {
+    return FotoIdentitasIndenBookingEntity(
+        keyId = this.keyId,
+        uriStr = this.uriStr,
+    )
 }

@@ -415,4 +415,18 @@ object RepositoryModule {
     ): FotoPembayaranIndenBookingRepository {
         return FotoPembayaranIndenBookingRepositoryImpl(localDataSource, remoteDataSource, externalStorageFile, cacheHelper)
     }
+
+    /**
+     * Image Data Diri Inden Booking
+     */
+    @Provides
+    fun provideImageDataDiriIndenBookingRepository(
+        localDataSource: LocalImageDataDiriIndenBookingDataSource,
+        remoteDataSource: RemoteImageDataDiriIndenBookingDataSource,
+        @ExternalDir externalFileDir: File?,
+        cacheHelper: CacheHelper
+    ): ImageDataDiriIndenBookingRepository {
+        return ImageDataDiriIndenBookingRepositoryImpl(localDataSource, remoteDataSource, externalFileDir, cacheHelper)
+    }
+
 }

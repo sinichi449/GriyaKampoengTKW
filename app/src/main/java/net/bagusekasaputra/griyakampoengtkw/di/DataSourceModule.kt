@@ -31,6 +31,7 @@ import net.bagusekasaputra.griyakampoeng.tkw.data.local.indenBooking.dataDiri.Ro
 import net.bagusekasaputra.griyakampoeng.tkw.data.local.indenBooking.fotoPembayaran.RoomFotoPembayaranIndenBookingDataSource
 import net.bagusekasaputra.griyakampoeng.tkw.data.local.indenBooking.hargaRumah.RoomHargaRumahDataSource
 import net.bagusekasaputra.griyakampoeng.tkw.data.local.indenBooking.imageDataDiri.RoomFotoIdentitasDataSource
+import net.bagusekasaputra.griyakampoeng.tkw.data.local.indenBooking.imageDataDiri.RoomImageDataDiriIndenBookingDataSource
 import net.bagusekasaputra.griyakampoeng.tkw.data.local.indenBooking.pembayaran.RoomPembayaranIndenBookingDataSource
 import net.bagusekasaputra.griyakampoeng.tkw.data.local.kavling.RoomKavlingDataSource
 import net.bagusekasaputra.griyakampoeng.tkw.data.local.metadata.RoomMetadataDataSource
@@ -66,6 +67,7 @@ import net.bagusekasaputra.griyakampoengtkw.data.remote.indenBooking.FirebaseInd
 import net.bagusekasaputra.griyakampoengtkw.data.remote.indenBooking.fotoPembayaran.FirebaseFotoPembayaranIndenBookingDataSource
 import net.bagusekasaputra.griyakampoengtkw.data.remote.indenBooking.hargaRumah.FirebaseHargaRumahDataSource
 import net.bagusekasaputra.griyakampoengtkw.data.remote.indenBooking.imageDataDiri.FirebaseFotoIdentitasIndenBookingDataSource
+import net.bagusekasaputra.griyakampoengtkw.data.remote.indenBooking.imageDataDiri.FirebaseImageDataDiriIndenBookingDataSource
 import net.bagusekasaputra.griyakampoengtkw.data.remote.indenBooking.pembayaran.FirebasePembayaranIndenBookingDataSource
 import net.bagusekasaputra.griyakampoengtkw.data.remote.kavling.FirebaseKavlingDataSource
 import net.bagusekasaputra.griyakampoengtkw.data.remote.metadata.FirebaseMetadataDataSource
@@ -537,4 +539,21 @@ object DataSourceModule {
     fun provideRemoteFotoPembayaranIndenBookingDataSource(storageReference: StorageReference): RemoteFotoPembayaranIndenBookingDataSource {
         return FirebaseFotoPembayaranIndenBookingDataSource(storageReference)
     }
+
+    /**
+     * Image Data Diri Inden Booking
+     */
+    @Provides
+    fun provideLocalImageDataDiriIndenBookingDataSource(
+        myRoomDatabase: MyRoomDatabase,
+        @ExternalDir externalFileDir: File?
+    ): LocalImageDataDiriIndenBookingDataSource {
+        return RoomImageDataDiriIndenBookingDataSource(myRoomDatabase, externalFileDir)
+    }
+
+    @Provides
+    fun provideRemoteImageDataDiriIndenBookingDataSource(storageReference: StorageReference): RemoteImageDataDiriIndenBookingDataSource {
+        return FirebaseImageDataDiriIndenBookingDataSource(storageReference)
+    }
+
 }

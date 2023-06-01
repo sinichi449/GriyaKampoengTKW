@@ -4,6 +4,7 @@ package net.bagusekasaputra.griyakampoengtkw.presentation.fragment.indenBooking
 
 import android.content.Intent
 import android.content.SharedPreferences
+import android.net.Uri
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.Menu
@@ -27,6 +28,7 @@ import net.bagusekasaputra.griyakampoengtkw.presentation.util.GriyaNodes
 import net.bagusekasaputra.griyakampoengtkw.presentation.util.ImageUtil
 import net.bagusekasaputra.griyakampoengtkw.presentation.util.NotificationUtil
 import net.bagusekasaputra.griyakampoengtkw.presentation.util.UiUtils
+import net.bagusekasaputra.griyakampoengtkw.presentation.viewmodel.ImageViewModel
 import net.bagusekasaputra.griyakampoengtkw.presentation.viewmodel.IndenBookingViewModel
 import javax.inject.Inject
 
@@ -35,6 +37,7 @@ class DataDiriIndenBookingFragment : Fragment() {
 
     private lateinit var binding: FragmentDataDiriIndenBookingBinding
     private val viewModel by activityViewModels<IndenBookingViewModel>()
+    private val imageViewModel by activityViewModels<ImageViewModel>()
 
     @Inject
     lateinit var sharedPreferences: SharedPreferences
@@ -134,7 +137,7 @@ class DataDiriIndenBookingFragment : Fragment() {
                 val fullImageTransportData = ImageTransport(
                     sendIntention = GriyaNodes.INTENT_DATA_DIRI_INDEN_BOOKING,
                     content = mapOf(
-                        Pair("pathFoto", viewModel.fotoIdentitasUri.value?.toString() ?: "")
+                        Pair("pathFoto", imageViewModel.imageDataDiriIndenBooking.value?.uriStr ?: "")
                     ),
                     dataMode = viewModel.dataMode,
                 )
@@ -150,8 +153,8 @@ class DataDiriIndenBookingFragment : Fragment() {
             UiUtils.hideFabsOnVerticalScroll(binding.scrollViewImageviewAndCard, this)
 
             setOnClickListener {
-                val uriFotoIdentitas = viewModel.fotoIdentitasUri.value
-                val launcher = if (uriFotoIdentitas != null)
+                val imageDataDiri = imageViewModel.imageDataDiriIndenBooking.value
+                val launcher = if (imageDataDiri != null)
                     launcherUpdateFoto else launcherAddFoto
                 val compressionSize = sharedPreferences.getInt("max_size_foto_data_diri", 256)
 
@@ -167,10 +170,10 @@ class DataDiriIndenBookingFragment : Fragment() {
     }
 
     private fun setupViewModel() {
-        viewModel.fotoIdentitasUri.observe(requireActivity()) { fotoIdentitasUri ->
+        imageViewModel.imageDataDiriIndenBooking.observe(requireActivity()) { imageDataDiri ->
             with(binding.imgProfile) {
-                if (fotoIdentitasUri != null) {
-                    setImageURI(fotoIdentitasUri)
+                if (imageDataDiri != null) {
+                    setImageURI(Uri.parse(imageDataDiri.uriStr))
                 } else {
                     val dummyFotoDrawable = ContextCompat.getDrawable(
                         requireContext(), R.drawable.avatar_1
@@ -208,12 +211,12 @@ class DataDiriIndenBookingFragment : Fragment() {
                 }
             )
 
-            viewModel.getFotoIdentitas(currentKeyId,
+            imageViewModel.getImageDataDiriIndenBooking(currentKeyId,
                 onProgress = {
                     binding.layoutLoadingImage.visibility = View.VISIBLE
                     binding.layoutImageProfile.visibility = View.GONE
                 },
-                onComplete = {
+                onSuccess = {
                     binding.layoutLoadingImage.visibility = View.GONE
                     binding.layoutImageProfile.visibility = View.VISIBLE
                 },
@@ -234,9 +237,9 @@ class DataDiriIndenBookingFragment : Fragment() {
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         return when (item.itemId) {
             R.id.hapus_foto_identitas_inden_booking -> {
-                val fotoIdentitasUri = viewModel.fotoIdentitasUri.value
+                val imageDataDiri = imageViewModel.imageDataDiriIndenBooking.value
 
-                if (fotoIdentitasUri != null) {
+                if (imageDataDiri != null) {
                     // Show confirmation for deleting foto identitas
                     MaterialAlertDialogBuilder(requireContext()).apply {
                         setTitle("Hapus Foto Identitas ${viewModel.namaCostumer}?")
@@ -252,7 +255,7 @@ class DataDiriIndenBookingFragment : Fragment() {
 
                             viewModel.deleteFotoIdentitas(
                                 keyId = viewModel.currentKeyId,
-                                uri = fotoIdentitasUri,
+                                uri = Uri.parse(imageDataDiri.uriStr),
                                 onProgress = {
                                     deleteProcessSnackbar.show()
                                 },

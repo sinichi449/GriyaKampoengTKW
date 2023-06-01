@@ -19,7 +19,6 @@ import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.indenBooking.dat
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.indenBooking.hargaRumah.GetHargaRumahIndenBookingAsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.indenBooking.hargaRumah.UpdateHargaRumahIndenBookingAsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.indenBooking.imageDataDiri.DeleteFotoIdentitasIndenBookingAsyncUseCase
-import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.indenBooking.imageDataDiri.GetFotoIdentitasIndenBookingAsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.indenBooking.imageDataDiri.InsertFotoIdentitasIndenBookingAsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.indenBooking.imageDataDiri.UpdateFotoIdentitasIndenBookingAsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.indenBooking.pembayaran.GetAllPembayaranIndenBookingAsyncUseCase
@@ -38,7 +37,6 @@ class IndenBookingViewModel @Inject constructor(
     private val insertDataDiriIndenBookingAsyncUseCase: InsertDataDiriIndenBookingAsyncUseCase,
     private val editDataDiriIndenBookingAsyncUseCase: EditDataDiriIndenBookingAsyncUseCase,
     // Foto Identitas / Image Data Diri
-    private val getFotoIdentitasIndenBookingAsyncUseCase: GetFotoIdentitasIndenBookingAsyncUseCase,
     private val insertFotoIdentitasIndenBookingAsyncUseCase: InsertFotoIdentitasIndenBookingAsyncUseCase,
     private val updateFotoIdentitasIndenBookingAsyncUseCase: UpdateFotoIdentitasIndenBookingAsyncUseCase,
     private val deleteFotoIdentitasIndenBookingAsyncUseCase: DeleteFotoIdentitasIndenBookingAsyncUseCase,
@@ -57,10 +55,6 @@ class IndenBookingViewModel @Inject constructor(
     private val _dataDiriIndenBooking = MutableLiveData<DataDiri>()
     val dataDiriIndenBooking: LiveData<DataDiri>
         get() = _dataDiriIndenBooking
-
-    private val _fotoIdentitasUri = MutableLiveData<Uri>()
-    val fotoIdentitasUri: LiveData<Uri>
-        get() = _fotoIdentitasUri
 
     private val _pembayaranListIndenBooking = MutableLiveData<List<Pembayaran>>()
     val pembayaranListIndenBooking: LiveData<List<Pembayaran>>
@@ -202,34 +196,6 @@ class IndenBookingViewModel @Inject constructor(
     /**
      * Foto Identitas / Image Data Diri
      */
-    fun getFotoIdentitas(
-        keyId: String,
-        onProgress: () -> Unit,
-        onComplete: () -> Unit,
-        onFailure: (msg: String) -> Unit,
-    ) {
-        onProgress()
-
-        CoroutineScope(Dispatchers.IO).launch {
-            val request = GetFotoIdentitasIndenBookingAsyncUseCase.Request(keyId)
-            getFotoIdentitasIndenBookingAsyncUseCase.execute(request).collect { result ->
-                result.onSuccess {
-                    _fotoIdentitasUri.postValue(it)
-
-                    withContext(Dispatchers.Main) {
-                        onComplete()
-                    }
-                }
-                result.onFailure {
-                    withContext(Dispatchers.Main) {
-                        onFailure("Gagal mendapatkan foto identitas: " +
-                                "${it.javaClass.simpleName}:${it.message}")
-                    }
-                }
-            }
-        }
-    }
-
     fun insertFotoIdentitas(
         keyId: String,
         uri: Uri,

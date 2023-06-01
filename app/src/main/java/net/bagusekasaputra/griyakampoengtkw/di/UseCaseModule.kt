@@ -31,7 +31,7 @@ import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.indenBooking.fot
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.indenBooking.hargaRumah.GetHargaRumahIndenBookingAsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.indenBooking.hargaRumah.UpdateHargaRumahIndenBookingAsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.indenBooking.imageDataDiri.DeleteFotoIdentitasIndenBookingAsyncUseCase
-import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.indenBooking.imageDataDiri.GetFotoIdentitasIndenBookingAsyncUseCase
+import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.indenBooking.imageDataDiri.GetImageDataDiriIndenBookingAsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.indenBooking.imageDataDiri.InsertFotoIdentitasIndenBookingAsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.indenBooking.imageDataDiri.UpdateFotoIdentitasIndenBookingAsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.indenBooking.pembayaran.GetAllPembayaranIndenBookingAsyncUseCase
@@ -530,12 +530,6 @@ object UseCaseModule {
 
     // Inden Booking - Foto Identitas / Image Data Diri
     @Provides
-    fun provideGetFotoIdentitasIndenBookingAsyncUseCase(
-        imageDataDiriRepository: ImageDataDiriRepository
-    ): GetFotoIdentitasIndenBookingAsyncUseCase {
-        return GetFotoIdentitasIndenBookingAsyncUseCase(imageDataDiriRepository)
-    }
-    @Provides
     fun provideInsertFotoIdentitasIndenBookingUseCase(
         imageDataDiriRepository: ImageDataDiriRepository,
     ): InsertFotoIdentitasIndenBookingAsyncUseCase {
@@ -649,5 +643,13 @@ object UseCaseModule {
     @Provides
     fun provideGetFotoPembayaranIndenBookingUseCase(fotoPembayaranIndenBookingRepository: FotoPembayaranIndenBookingRepository): GetFotoPembayaranIndenBookingAsyncUseCase {
         return GetFotoPembayaranIndenBookingAsyncUseCase(fotoPembayaranIndenBookingRepository)
+    }
+
+    /**
+     * Image Data Diri Inden Booking
+     */
+    @Provides
+    fun provideGetImageDataDiriIndenBookingUseCase(imageDataDiriRepository: ImageDataDiriIndenBookingRepository): GetImageDataDiriIndenBookingAsyncUseCase {
+        return GetImageDataDiriIndenBookingAsyncUseCase(imageDataDiriRepository)
     }
 }

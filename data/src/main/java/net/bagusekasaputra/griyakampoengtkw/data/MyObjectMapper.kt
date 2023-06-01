@@ -16,6 +16,7 @@ import net.bagusekasaputra.griyakampoengtkw.data.model.FotoPembayaranIndenBookin
 import net.bagusekasaputra.griyakampoengtkw.data.model.FotoPembayaranModel
 import net.bagusekasaputra.griyakampoengtkw.data.model.HargaKavlingModel
 import net.bagusekasaputra.griyakampoengtkw.data.model.HargaRumahModel
+import net.bagusekasaputra.griyakampoengtkw.data.model.ImageDataDiriIndenBookingModel
 import net.bagusekasaputra.griyakampoengtkw.data.model.ImageDataDiriModel
 import net.bagusekasaputra.griyakampoengtkw.data.model.ImageSprModel
 import net.bagusekasaputra.griyakampoengtkw.data.model.KavlingModel
@@ -45,6 +46,7 @@ import net.bagusekasaputra.griyakampoengtkw.domain.entity.Kavling
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.Pembayaran
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.Promotion
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.images.FotoPembayaranIndenBooking
+import net.bagusekasaputra.griyakampoengtkw.domain.entity.images.ImageDataDiriIndenBooking
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.images.ImageDataDiriUri
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.images.ImageSprUri
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.indenBooking.HargaRumahIndenBooking
@@ -638,6 +640,18 @@ object MyObjectMapper {
                 keyId = it.keyId,
                 termin = it.termin,
                 uriStrFotoPembayaran = it.uriStr
+            )
+        }
+    }
+
+    /**
+     * Image Data Diri Inden Booking
+     */
+    fun mapImageDataDiriIndenBooking(model: ImageDataDiriIndenBookingModel?): ImageDataDiriIndenBooking? {
+        return model?.let {
+            ImageDataDiriIndenBooking(
+                keyId = model.keyId,
+                uriStrDataDiri = model.uriStr,
             )
         }
     }
