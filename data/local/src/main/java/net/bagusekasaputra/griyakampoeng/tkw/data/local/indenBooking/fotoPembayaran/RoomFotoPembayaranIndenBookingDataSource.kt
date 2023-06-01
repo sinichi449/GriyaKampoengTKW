@@ -30,7 +30,7 @@ class RoomFotoPembayaranIndenBookingDataSource(
         return roomOperation {
             // Delete first, if already available
             val entityExist = fotoPembayaranDao.get(model.keyId, model.termin) != null
-            if (entityExist) delete(model).getOrThrow()
+            if (entityExist) delete(model.keyId, model.termin).getOrThrow()
 
             // Then insert
             fotoPembayaranDao.insert(model.toEntity())
@@ -39,13 +39,18 @@ class RoomFotoPembayaranIndenBookingDataSource(
         }
     }
 
-    override suspend fun delete(model: FotoPembayaranIndenBookingModel): Result<Nothing?> {
+    override suspend fun delete(keyId: String, termin: String): Result<Nothing?> {
         return roomOperation {
-            fotoPembayaranDao.delete(model.keyId, model.termin)
+            val entity = get(keyId, termin).getOrThrow()
 
-            // Also, delete cached file too
-            val fotoPembayaranFile = Uri.parse(model.uriStr).toFile()
-            fotoPembayaranFile.delete()
+            // Delete cached file
+            if (entity != null) {
+                val fotoPembayaranFile = Uri.parse(entity.uriStr).toFile()
+                fotoPembayaranFile.delete()
+            }
+
+            // Then delete database listing
+            fotoPembayaranDao.delete(keyId, termin)
 
             null
         }

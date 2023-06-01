@@ -197,7 +197,38 @@ class ActionPembayaranIndenBookingBottomSheetDialog: BottomSheetDialogFragment()
             binding.cardHapusFotoPembayaran.apply {
                 visibility = View.VISIBLE
                 setOnClickListener {
-                    // TODO
+                    // Show confirmation dialog
+                    MaterialAlertDialogBuilder(requireContext()).apply {
+                        setTitle("Hapus Foto Pembayaran $currentTermin")
+                        setMessage("Apakah Anda yakin ingin menghapus foto pembayaran ini? Aksi ini tidak bisa dipulihkan!")
+                        setPositiveButton("Ya") { dialog, _ ->
+                            dialog.dismiss()
+
+                            imageViewModel.deleteFotoPembayaranIndenBooking(
+                                keyId = currentKeyId,
+                                termin = currentTermin,
+                                onProgress = {
+                                    binding.progressbarHapusFoto.visibility = View.VISIBLE
+                                },
+                                onSuccess = {
+                                    this@ActionPembayaranIndenBookingBottomSheetDialog.dismiss()
+
+                                    Snackbar.make(binding.root, "Berhasil menghapus foto $currentTermin !", Snackbar.LENGTH_SHORT)
+                                        .show()
+                                },
+                                onFailure = {
+                                    this@ActionPembayaranIndenBookingBottomSheetDialog.dismiss()
+
+                                    Toast.makeText(requireContext(), it, Toast.LENGTH_LONG).show()
+                                }
+                            )
+                        }
+                        setNegativeButton("Tidak") { dialog, _ ->
+                            dialog.dismiss()
+                        }
+                    }
+                        .create()
+                        .show()
                 }
             }
         } else {

@@ -99,6 +99,23 @@ class FotoPembayaranIndenBookingRepositoryImpl(
         }
     }
 
+    override suspend fun delete(keyId: String, termin: String): Result<Nothing?> {
+        return try {
+            // Remote Deletion
+            remoteDataSource.delete(keyId, termin).getOrThrow()
+
+            // Update cache
+            cacheHelper.updateMetadata(cacheLocalTable, cacheRemoteTable).getOrThrow()
+
+            // Local Deletion
+            localDataSource.delete(keyId, termin).getOrThrow()
+
+            Result.success(null)
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
+    }
+
     override suspend fun isExist(keyId: String, termin: String): Result<Boolean> {
         return remoteDataSource.isExist(keyId, termin)
     }

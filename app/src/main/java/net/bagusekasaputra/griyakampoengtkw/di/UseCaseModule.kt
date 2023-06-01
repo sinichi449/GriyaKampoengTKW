@@ -27,6 +27,7 @@ import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.indenBooking.Get
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.indenBooking.dataDiri.EditDataDiriIndenBookingAsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.indenBooking.dataDiri.GetDataDiriIndenBookingAsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.indenBooking.dataDiri.InsertDataDiriIndenBookingAsyncUseCase
+import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.indenBooking.fotoPembayaran.DeleteFotoPembayaranIndenBookingAsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.indenBooking.fotoPembayaran.GetFotoPembayaranIndenBookingAsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.indenBooking.fotoPembayaran.InsertFotoPembayaranIndenBookingAsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.indenBooking.hargaRumah.GetHargaRumahIndenBookingAsyncUseCase
@@ -650,6 +651,12 @@ object UseCaseModule {
     fun provideInsertFotoPembayaranIndenBookingUseCase(fotoPembayaranRepository: FotoPembayaranIndenBookingRepository): InsertFotoPembayaranIndenBookingAsyncUseCase {
         return InsertFotoPembayaranIndenBookingAsyncUseCase(fotoPembayaranRepository)
     }
+
+    @Provides
+    fun provideDeleteFotoPembayaranIndenBookingUseCase(fotoPembayaranRepository: FotoPembayaranIndenBookingRepository): DeleteFotoPembayaranIndenBookingAsyncUseCase {
+        return DeleteFotoPembayaranIndenBookingAsyncUseCase(fotoPembayaranRepository)
+    }
+
 
     /**
      * Image Data Diri Inden Booking

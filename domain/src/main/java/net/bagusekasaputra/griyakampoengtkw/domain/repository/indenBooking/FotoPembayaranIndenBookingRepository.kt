@@ -8,6 +8,8 @@ interface FotoPembayaranIndenBookingRepository {
 
     suspend fun insert(fotoPembayaran: FotoPembayaranIndenBooking): Result<Nothing?>
 
+    suspend fun delete(keyId: String, termin: String): Result<Nothing?>
+
     suspend fun isExist(keyId: String, termin: String): Result<Boolean>
 
 }

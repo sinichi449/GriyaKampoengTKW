@@ -64,6 +64,24 @@ class FirebaseFotoPembayaranIndenBookingDataSource(
         }
     }
 
+    override suspend fun delete(keyId: String, termin: String): Result<Nothing?> {
+        return suspendCancellableCoroutine { continuation ->
+            fotoPembayaranRef(keyId)
+                .child(FotoPembayaranIndenBookingModel.getFilename(keyId, termin))
+                .delete()
+                .addOnCompleteListener {
+                    if (continuation.isActive) {
+                        continuation.resume(Result.success(null), null)
+                    }
+                }
+                .addOnFailureListener {
+                    if (continuation.isActive) {
+                        continuation.resume(Result.failure(it), null)
+                    }
+                }
+        }
+    }
+
     override suspend fun isExist(keyId: String, termin: String): Result<Boolean> {
         return suspendCancellableCoroutine { continuation ->
             val filename = FotoPembayaranIndenBookingModel.getFilename(keyId, termin)

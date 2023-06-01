@@ -8,7 +8,7 @@ interface LocalFotoPembayaranIndenBookingDataSource {
 
     suspend fun insert(model: FotoPembayaranIndenBookingModel): Result<Nothing?>
 
-    suspend fun delete(model: FotoPembayaranIndenBookingModel): Result<Nothing?>
+    suspend fun delete(keyId: String, termin: String): Result<Nothing?>
 
     suspend fun deleteAll(): Result<Nothing?>
 }

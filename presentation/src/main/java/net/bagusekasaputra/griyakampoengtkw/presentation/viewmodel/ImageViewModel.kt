@@ -20,6 +20,7 @@ import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.fotoPembayaran.A
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.fotoPembayaran.DeleteFotoPembayaranAsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.fotoPembayaran.GetFotoPembayaranAsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.fotoPembayaran.IsFotoPembayaranExistAsyncUseCase
+import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.indenBooking.fotoPembayaran.DeleteFotoPembayaranIndenBookingAsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.indenBooking.fotoPembayaran.GetFotoPembayaranIndenBookingAsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.indenBooking.fotoPembayaran.InsertFotoPembayaranIndenBookingAsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.indenBooking.imageDataDiri.GetImageDataDiriIndenBookingAsyncUseCase
@@ -61,6 +62,7 @@ class ImageViewModel @Inject constructor(
     // Foto Pembayaran Inden Booking
     private val getFotoPembayaranIndenBookingAsyncUseCase: GetFotoPembayaranIndenBookingAsyncUseCase,
     private val insertFotoPembayaranIndenBookingAsyncUseCase: InsertFotoPembayaranIndenBookingAsyncUseCase,
+    private val deleteFotoPembayaranIndenBookingAsyncUseCase: DeleteFotoPembayaranIndenBookingAsyncUseCase,
 ): ViewModel() {
 
     val fotoKuitansiLive = MutableLiveData<FotoKuitansi>()
@@ -422,6 +424,32 @@ class ImageViewModel @Inject constructor(
                 result.onFailure {
                     withContext(Dispatchers.Main) {
                         onFailure("Gagal menambahkan foto pembayaran : ${it.localizedMessage}")
+                    }
+                }
+            }
+        }
+    }
+
+    fun deleteFotoPembayaranIndenBooking(
+        keyId: String,
+        termin: String,
+        onProgress: () -> Unit = {},
+        onSuccess: () -> Unit = {},
+        onFailure: (msg: String) -> Unit = {},
+    ) {
+        onProgress()
+
+        viewModelScope.launch(Dispatchers.IO) {
+            val request = DeleteFotoPembayaranIndenBookingAsyncUseCase.Request(keyId, termin)
+            deleteFotoPembayaranIndenBookingAsyncUseCase.execute(request).collect { result ->
+                result.onSuccess {
+                    withContext(Dispatchers.Main) {
+                        onSuccess()
+                    }
+                }
+                result.onFailure {
+                    withContext(Dispatchers.Main) {
+                        onFailure("Gagal menghapus foto pembayaran : ${it.localizedMessage}")
                     }
                 }
             }
