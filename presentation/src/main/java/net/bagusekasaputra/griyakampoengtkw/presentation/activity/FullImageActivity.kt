@@ -175,6 +175,45 @@ class FullImageActivity : AppCompatActivity() {
                 }
 
             }
+            GriyaNodes.INTENT_FOTO_PEMBAYARAN_INDEN_BOOKING -> {
+                val keyId = mapContent["keyId"]
+                val termin = mapContent["termin"]
+
+                if (keyId.isNullOrEmpty() || termin.isNullOrEmpty()) {
+                    Toast.makeText(this, "KeyID or Termin is NULL or Empty!", Toast.LENGTH_LONG)
+                        .show()
+                } else {
+                    val progressDialog = ProgressDialog(this).apply {
+                        setTitle("Mendownload foto")
+                        setMessage("Sedang mendapatkan foto inden booking, tunggu sebentar ...")
+                        setCancelable(false)
+                    }
+
+                    imageViewModel.getFotoPembayaranIndenBooking(
+                        keyId = keyId,
+                        termin = termin,
+                        onProgress = {
+                            progressDialog.show()
+                        },
+                        onSuccess = { uriStr ->
+                            progressDialog.dismiss()
+
+                            if (!uriStr.isNullOrEmpty()) {
+                                createLoupe(Uri.parse(uriStr))
+                            } else {
+                                Toast.makeText(this, "Uri is NULL or empty!", Toast.LENGTH_LONG)
+                                    .show()
+                            }
+                        },
+                        onFailure = {
+                            progressDialog.dismiss()
+
+                            Toast.makeText(this, it, Toast.LENGTH_LONG)
+                                .show()
+                        }
+                    )
+                }
+            }
         }
     }
 }

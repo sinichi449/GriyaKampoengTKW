@@ -12,6 +12,7 @@ import net.bagusekasaputra.griyakampoengtkw.data.model.CatatanPembayaranModel
 import net.bagusekasaputra.griyakampoengtkw.data.model.DataDiriModel
 import net.bagusekasaputra.griyakampoengtkw.data.model.DatabaseUserModel
 import net.bagusekasaputra.griyakampoengtkw.data.model.FeeMarketingModel
+import net.bagusekasaputra.griyakampoengtkw.data.model.FotoPembayaranIndenBookingModel
 import net.bagusekasaputra.griyakampoengtkw.data.model.FotoPembayaranModel
 import net.bagusekasaputra.griyakampoengtkw.data.model.HargaKavlingModel
 import net.bagusekasaputra.griyakampoengtkw.data.model.HargaRumahModel
@@ -43,6 +44,7 @@ import net.bagusekasaputra.griyakampoengtkw.domain.entity.ImageSpr
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.Kavling
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.Pembayaran
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.Promotion
+import net.bagusekasaputra.griyakampoengtkw.domain.entity.images.FotoPembayaranIndenBooking
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.images.ImageDataDiriUri
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.images.ImageSprUri
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.indenBooking.HargaRumahIndenBooking
@@ -623,6 +625,19 @@ object MyObjectMapper {
                 kavling = it.kavling,
                 termin = it.termin,
                 sudahAmbil = it.sudahAmbil,
+            )
+        }
+    }
+
+    /**
+     * Foto Pembayaran Inden Booking
+     */
+    fun mapFotoPembayaranIndenBooking(model: FotoPembayaranIndenBookingModel?): FotoPembayaranIndenBooking? {
+        return model?.let {
+            FotoPembayaranIndenBooking(
+                keyId = it.keyId,
+                termin = it.termin,
+                uriStr = it.uriStr,
             )
         }
     }

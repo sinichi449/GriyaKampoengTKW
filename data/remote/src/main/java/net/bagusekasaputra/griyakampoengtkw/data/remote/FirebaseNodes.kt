@@ -30,6 +30,8 @@ object FirebaseNodes {
     const val IMAGE_SPR = "spr_images"
     const val IMAGE_INDEN_BOOKING = "inden_booking_images"
 
+    const val OBJECT_NOT_FOUND_MESSAGE = "Object does not exist at location."
+
     fun getBackupNode(databaseReference: DatabaseReference, backupName: String, node: String): DatabaseReference {
         return databaseReference.child("$BACKUPS/$backupName/$node")
     }

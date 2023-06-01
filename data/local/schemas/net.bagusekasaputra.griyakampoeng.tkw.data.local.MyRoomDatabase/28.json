@@ -1,0 +1,1056 @@
+{
+  "formatVersion": 1,
+  "database": {
+    "version": 28,
+    "identityHash": "6f19de389aba7ad005e61596c57e0b3e",
+    "entities": [
+      {
+        "tableName": "kavlings",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER, `block_kode` TEXT NOT NULL, `kode` TEXT NOT NULL, `warna` TEXT NOT NULL, `is_active` INTEGER NOT NULL, `ukuran` TEXT NOT NULL, `type` TEXT NOT NULL, PRIMARY KEY(`id`))",
+        "fields": [
+          {
+            "fieldPath": "id",
+            "columnName": "id",
+            "affinity": "INTEGER",
+            "notNull": false
+          },
+          {
+            "fieldPath": "blockKode",
+            "columnName": "block_kode",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "kode",
+            "columnName": "kode",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "warna",
+            "columnName": "warna",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "isActive",
+            "columnName": "is_active",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "ukuran",
+            "columnName": "ukuran",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "type",
+            "columnName": "type",
+            "affinity": "TEXT",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "columnNames": [
+            "id"
+          ],
+          "autoGenerate": false
+        },
+        "indices": [
+          {
+            "name": "index_kavlings_kode",
+            "unique": true,
+            "columnNames": [
+              "kode"
+            ],
+            "orders": [],
+            "createSql": "CREATE UNIQUE INDEX IF NOT EXISTS `index_kavlings_kode` ON `${TABLE_NAME}` (`kode`)"
+          }
+        ],
+        "foreignKeys": []
+      },
+      {
+        "tableName": "image_data_diri",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`kavling_kode` TEXT NOT NULL, `uri` TEXT NOT NULL, PRIMARY KEY(`kavling_kode`))",
+        "fields": [
+          {
+            "fieldPath": "kavlingKode",
+            "columnName": "kavling_kode",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "imgUri",
+            "columnName": "uri",
+            "affinity": "TEXT",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "columnNames": [
+            "kavling_kode"
+          ],
+          "autoGenerate": false
+        },
+        "indices": [],
+        "foreignKeys": []
+      },
+      {
+        "tableName": "blocks",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER, `kode` TEXT NOT NULL, `warna` TEXT NOT NULL, PRIMARY KEY(`id`))",
+        "fields": [
+          {
+            "fieldPath": "id",
+            "columnName": "id",
+            "affinity": "INTEGER",
+            "notNull": false
+          },
+          {
+            "fieldPath": "kode",
+            "columnName": "kode",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "warna",
+            "columnName": "warna",
+            "affinity": "TEXT",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "columnNames": [
+            "id"
+          ],
+          "autoGenerate": false
+        },
+        "indices": [
+          {
+            "name": "index_blocks_kode",
+            "unique": true,
+            "columnNames": [
+              "kode"
+            ],
+            "orders": [],
+            "createSql": "CREATE UNIQUE INDEX IF NOT EXISTS `index_blocks_kode` ON `${TABLE_NAME}` (`kode`)"
+          }
+        ],
+        "foreignKeys": []
+      },
+      {
+        "tableName": "data_diri",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER, `kavling_kode` TEXT NOT NULL, `nama` TEXT NOT NULL, `jenis_identitas` TEXT NOT NULL, `no_identitas` TEXT, `negara_bekerja` TEXT NOT NULL, `alamat_kerja` TEXT, `alamat_indo` TEXT, `no_hp` TEXT, PRIMARY KEY(`id`))",
+        "fields": [
+          {
+            "fieldPath": "id",
+            "columnName": "id",
+            "affinity": "INTEGER",
+            "notNull": false
+          },
+          {
+            "fieldPath": "kavlingKode",
+            "columnName": "kavling_kode",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "nama",
+            "columnName": "nama",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "jenisIdentitas",
+            "columnName": "jenis_identitas",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "noIdentitas",
+            "columnName": "no_identitas",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "negaraBekerja",
+            "columnName": "negara_bekerja",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "alamatKerja",
+            "columnName": "alamat_kerja",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "alamatIndo",
+            "columnName": "alamat_indo",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "noHp",
+            "columnName": "no_hp",
+            "affinity": "TEXT",
+            "notNull": false
+          }
+        ],
+        "primaryKey": {
+          "columnNames": [
+            "id"
+          ],
+          "autoGenerate": false
+        },
+        "indices": [
+          {
+            "name": "index_data_diri_kavling_kode",
+            "unique": true,
+            "columnNames": [
+              "kavling_kode"
+            ],
+            "orders": [],
+            "createSql": "CREATE UNIQUE INDEX IF NOT EXISTS `index_data_diri_kavling_kode` ON `${TABLE_NAME}` (`kavling_kode`)"
+          }
+        ],
+        "foreignKeys": []
+      },
+      {
+        "tableName": "foto_kuitansi",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER, `kavling_kode` TEXT NOT NULL, `foto_uri` TEXT, PRIMARY KEY(`id`))",
+        "fields": [
+          {
+            "fieldPath": "id",
+            "columnName": "id",
+            "affinity": "INTEGER",
+            "notNull": false
+          },
+          {
+            "fieldPath": "kavlingKode",
+            "columnName": "kavling_kode",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "fotoUri",
+            "columnName": "foto_uri",
+            "affinity": "TEXT",
+            "notNull": false
+          }
+        ],
+        "primaryKey": {
+          "columnNames": [
+            "id"
+          ],
+          "autoGenerate": false
+        },
+        "indices": [
+          {
+            "name": "index_foto_kuitansi_kavling_kode",
+            "unique": true,
+            "columnNames": [
+              "kavling_kode"
+            ],
+            "orders": [],
+            "createSql": "CREATE UNIQUE INDEX IF NOT EXISTS `index_foto_kuitansi_kavling_kode` ON `${TABLE_NAME}` (`kavling_kode`)"
+          }
+        ],
+        "foreignKeys": []
+      },
+      {
+        "tableName": "image_spr",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER, `kavling_kode` TEXT NOT NULL, `uri` TEXT NOT NULL, PRIMARY KEY(`id`))",
+        "fields": [
+          {
+            "fieldPath": "id",
+            "columnName": "id",
+            "affinity": "INTEGER",
+            "notNull": false
+          },
+          {
+            "fieldPath": "kavlingKode",
+            "columnName": "kavling_kode",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "imgUri",
+            "columnName": "uri",
+            "affinity": "TEXT",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "columnNames": [
+            "id"
+          ],
+          "autoGenerate": false
+        },
+        "indices": [
+          {
+            "name": "index_image_spr_kavling_kode",
+            "unique": true,
+            "columnNames": [
+              "kavling_kode"
+            ],
+            "orders": [],
+            "createSql": "CREATE UNIQUE INDEX IF NOT EXISTS `index_image_spr_kavling_kode` ON `${TABLE_NAME}` (`kavling_kode`)"
+          }
+        ],
+        "foreignKeys": []
+      },
+      {
+        "tableName": "foto_pembayaran",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER, `kavling_kode` TEXT NOT NULL, `termin` TEXT NOT NULL, `uri` TEXT NOT NULL, PRIMARY KEY(`id`))",
+        "fields": [
+          {
+            "fieldPath": "id",
+            "columnName": "id",
+            "affinity": "INTEGER",
+            "notNull": false
+          },
+          {
+            "fieldPath": "kavlingKode",
+            "columnName": "kavling_kode",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "termin",
+            "columnName": "termin",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "uriStr",
+            "columnName": "uri",
+            "affinity": "TEXT",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "columnNames": [
+            "id"
+          ],
+          "autoGenerate": false
+        },
+        "indices": [],
+        "foreignKeys": []
+      },
+      {
+        "tableName": "pembayaran",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER, `kavling_kode` TEXT NOT NULL, `termin` TEXT NOT NULL, `tanggal` TEXT NOT NULL, `jumlah_uang_dibayar` INTEGER NOT NULL, `keterangan` TEXT NOT NULL, `timeMillis` INTEGER NOT NULL, PRIMARY KEY(`id`))",
+        "fields": [
+          {
+            "fieldPath": "id",
+            "columnName": "id",
+            "affinity": "INTEGER",
+            "notNull": false
+          },
+          {
+            "fieldPath": "kavlingKode",
+            "columnName": "kavling_kode",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "termin",
+            "columnName": "termin",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "tanggal",
+            "columnName": "tanggal",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "jumlahUangDibayar",
+            "columnName": "jumlah_uang_dibayar",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "keterangan",
+            "columnName": "keterangan",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "timeMillis",
+            "columnName": "timeMillis",
+            "affinity": "INTEGER",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "columnNames": [
+            "id"
+          ],
+          "autoGenerate": false
+        },
+        "indices": [],
+        "foreignKeys": []
+      },
+      {
+        "tableName": "harga_kavling",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER, `kavling_kode` TEXT NOT NULL, `harga` INTEGER NOT NULL, `tambah_luasan` INTEGER NOT NULL, PRIMARY KEY(`id`))",
+        "fields": [
+          {
+            "fieldPath": "id",
+            "columnName": "id",
+            "affinity": "INTEGER",
+            "notNull": false
+          },
+          {
+            "fieldPath": "kavlingKode",
+            "columnName": "kavling_kode",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "harga",
+            "columnName": "harga",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "tambahLuasan",
+            "columnName": "tambah_luasan",
+            "affinity": "INTEGER",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "columnNames": [
+            "id"
+          ],
+          "autoGenerate": false
+        },
+        "indices": [
+          {
+            "name": "index_harga_kavling_kavling_kode",
+            "unique": true,
+            "columnNames": [
+              "kavling_kode"
+            ],
+            "orders": [],
+            "createSql": "CREATE UNIQUE INDEX IF NOT EXISTS `index_harga_kavling_kavling_kode` ON `${TABLE_NAME}` (`kavling_kode`)"
+          }
+        ],
+        "foreignKeys": []
+      },
+      {
+        "tableName": "catatan_pembayaran",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER, `kavling_kode` TEXT NOT NULL, `content` TEXT NOT NULL, PRIMARY KEY(`id`))",
+        "fields": [
+          {
+            "fieldPath": "id",
+            "columnName": "id",
+            "affinity": "INTEGER",
+            "notNull": false
+          },
+          {
+            "fieldPath": "kavlingKode",
+            "columnName": "kavling_kode",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "content",
+            "columnName": "content",
+            "affinity": "TEXT",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "columnNames": [
+            "id"
+          ],
+          "autoGenerate": false
+        },
+        "indices": [
+          {
+            "name": "index_catatan_pembayaran_kavling_kode",
+            "unique": true,
+            "columnNames": [
+              "kavling_kode"
+            ],
+            "orders": [],
+            "createSql": "CREATE UNIQUE INDEX IF NOT EXISTS `index_catatan_pembayaran_kavling_kode` ON `${TABLE_NAME}` (`kavling_kode`)"
+          }
+        ],
+        "foreignKeys": []
+      },
+      {
+        "tableName": "fee_marketing",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER, `timeMillis` INTEGER, `kavling_kode` TEXT NOT NULL, `nama_marketer` TEXT NOT NULL, `biaya_marketer` INTEGER NOT NULL, PRIMARY KEY(`id`))",
+        "fields": [
+          {
+            "fieldPath": "id",
+            "columnName": "id",
+            "affinity": "INTEGER",
+            "notNull": false
+          },
+          {
+            "fieldPath": "timeMillis",
+            "columnName": "timeMillis",
+            "affinity": "INTEGER",
+            "notNull": false
+          },
+          {
+            "fieldPath": "kavlingKode",
+            "columnName": "kavling_kode",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "namaMarketer",
+            "columnName": "nama_marketer",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "biayaMarketer",
+            "columnName": "biaya_marketer",
+            "affinity": "INTEGER",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "columnNames": [
+            "id"
+          ],
+          "autoGenerate": false
+        },
+        "indices": [],
+        "foreignKeys": []
+      },
+      {
+        "tableName": "biaya_marketing_v2",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER, `kavling_kode` TEXT NOT NULL, `tanggal` TEXT NOT NULL, `jenis_biaya` TEXT NOT NULL, `harga` INTEGER NOT NULL, PRIMARY KEY(`id`))",
+        "fields": [
+          {
+            "fieldPath": "id",
+            "columnName": "id",
+            "affinity": "INTEGER",
+            "notNull": false
+          },
+          {
+            "fieldPath": "kavlingKode",
+            "columnName": "kavling_kode",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "tanggal",
+            "columnName": "tanggal",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "jenisBiaya",
+            "columnName": "jenis_biaya",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "harga",
+            "columnName": "harga",
+            "affinity": "INTEGER",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "columnNames": [
+            "id"
+          ],
+          "autoGenerate": false
+        },
+        "indices": [],
+        "foreignKeys": []
+      },
+      {
+        "tableName": "pengingat",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER, `title` TEXT NOT NULL, `content` TEXT NOT NULL, `date` TEXT NOT NULL, `time` TEXT NOT NULL, `is_active` INTEGER NOT NULL, PRIMARY KEY(`id`))",
+        "fields": [
+          {
+            "fieldPath": "id",
+            "columnName": "id",
+            "affinity": "INTEGER",
+            "notNull": false
+          },
+          {
+            "fieldPath": "title",
+            "columnName": "title",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "content",
+            "columnName": "content",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "date",
+            "columnName": "date",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "time",
+            "columnName": "time",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "isActive",
+            "columnName": "is_active",
+            "affinity": "INTEGER",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "columnNames": [
+            "id"
+          ],
+          "autoGenerate": false
+        },
+        "indices": [],
+        "foreignKeys": []
+      },
+      {
+        "tableName": "tables_metadata",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT, `table_name` TEXT NOT NULL, `timestamp` INTEGER NOT NULL)",
+        "fields": [
+          {
+            "fieldPath": "id",
+            "columnName": "id",
+            "affinity": "INTEGER",
+            "notNull": false
+          },
+          {
+            "fieldPath": "tableName",
+            "columnName": "table_name",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "timestamp",
+            "columnName": "timestamp",
+            "affinity": "INTEGER",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "columnNames": [
+            "id"
+          ],
+          "autoGenerate": true
+        },
+        "indices": [
+          {
+            "name": "index_tables_metadata_table_name",
+            "unique": true,
+            "columnNames": [
+              "table_name"
+            ],
+            "orders": [],
+            "createSql": "CREATE UNIQUE INDEX IF NOT EXISTS `index_tables_metadata_table_name` ON `${TABLE_NAME}` (`table_name`)"
+          }
+        ],
+        "foreignKeys": []
+      },
+      {
+        "tableName": "biaya_lain",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT, `jenis_biaya` TEXT NOT NULL, `harga` INTEGER NOT NULL, `tanggal` TEXT NOT NULL)",
+        "fields": [
+          {
+            "fieldPath": "id",
+            "columnName": "id",
+            "affinity": "INTEGER",
+            "notNull": false
+          },
+          {
+            "fieldPath": "jenisBiaya",
+            "columnName": "jenis_biaya",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "harga",
+            "columnName": "harga",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "tanggal",
+            "columnName": "tanggal",
+            "affinity": "TEXT",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "columnNames": [
+            "id"
+          ],
+          "autoGenerate": true
+        },
+        "indices": [
+          {
+            "name": "index_biaya_lain_jenis_biaya",
+            "unique": true,
+            "columnNames": [
+              "jenis_biaya"
+            ],
+            "orders": [],
+            "createSql": "CREATE UNIQUE INDEX IF NOT EXISTS `index_biaya_lain_jenis_biaya` ON `${TABLE_NAME}` (`jenis_biaya`)"
+          }
+        ],
+        "foreignKeys": []
+      },
+      {
+        "tableName": "baselinePembayaran",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `kavling` TEXT NOT NULL, `opsiBulan` INTEGER NOT NULL, `jumlahUang` INTEGER NOT NULL, `tanggalPembayaranMaks` INTEGER NOT NULL, `timeMillis` INTEGER NOT NULL)",
+        "fields": [
+          {
+            "fieldPath": "id",
+            "columnName": "id",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "kavling",
+            "columnName": "kavling",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "opsiBulan",
+            "columnName": "opsiBulan",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "jumlahUang",
+            "columnName": "jumlahUang",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "tanggalPembayaranMaks",
+            "columnName": "tanggalPembayaranMaks",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "timeMillis",
+            "columnName": "timeMillis",
+            "affinity": "INTEGER",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "columnNames": [
+            "id"
+          ],
+          "autoGenerate": true
+        },
+        "indices": [
+          {
+            "name": "index_baselinePembayaran_kavling",
+            "unique": true,
+            "columnNames": [
+              "kavling"
+            ],
+            "orders": [],
+            "createSql": "CREATE UNIQUE INDEX IF NOT EXISTS `index_baselinePembayaran_kavling` ON `${TABLE_NAME}` (`kavling`)"
+          }
+        ],
+        "foreignKeys": []
+      },
+      {
+        "tableName": "foto_identitas_inden_booking",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`keyId` TEXT NOT NULL, `uriStr` TEXT NOT NULL, PRIMARY KEY(`keyId`))",
+        "fields": [
+          {
+            "fieldPath": "keyId",
+            "columnName": "keyId",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "uriStr",
+            "columnName": "uriStr",
+            "affinity": "TEXT",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "columnNames": [
+            "keyId"
+          ],
+          "autoGenerate": false
+        },
+        "indices": [
+          {
+            "name": "index_foto_identitas_inden_booking_keyId_uriStr",
+            "unique": true,
+            "columnNames": [
+              "keyId",
+              "uriStr"
+            ],
+            "orders": [],
+            "createSql": "CREATE UNIQUE INDEX IF NOT EXISTS `index_foto_identitas_inden_booking_keyId_uriStr` ON `${TABLE_NAME}` (`keyId`, `uriStr`)"
+          }
+        ],
+        "foreignKeys": []
+      },
+      {
+        "tableName": "data_diri_inden_booking",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`keyId` TEXT NOT NULL, `nama` TEXT NOT NULL, `jenisIdentitas` TEXT NOT NULL, `noIdentitas` TEXT NOT NULL, `negaraBekerja` TEXT NOT NULL, `alamatKerja` TEXT NOT NULL, `alamatIndo` TEXT NOT NULL, `noHp` TEXT NOT NULL, PRIMARY KEY(`keyId`))",
+        "fields": [
+          {
+            "fieldPath": "keyId",
+            "columnName": "keyId",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "nama",
+            "columnName": "nama",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "jenisIdentitas",
+            "columnName": "jenisIdentitas",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "noIdentitas",
+            "columnName": "noIdentitas",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "negaraBekerja",
+            "columnName": "negaraBekerja",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "alamatKerja",
+            "columnName": "alamatKerja",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "alamatIndo",
+            "columnName": "alamatIndo",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "noHp",
+            "columnName": "noHp",
+            "affinity": "TEXT",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "columnNames": [
+            "keyId"
+          ],
+          "autoGenerate": false
+        },
+        "indices": [
+          {
+            "name": "index_data_diri_inden_booking_keyId_nama",
+            "unique": true,
+            "columnNames": [
+              "keyId",
+              "nama"
+            ],
+            "orders": [],
+            "createSql": "CREATE UNIQUE INDEX IF NOT EXISTS `index_data_diri_inden_booking_keyId_nama` ON `${TABLE_NAME}` (`keyId`, `nama`)"
+          }
+        ],
+        "foreignKeys": []
+      },
+      {
+        "tableName": "pembayaran_inden_booking",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `keyId` TEXT NOT NULL, `termin` TEXT NOT NULL, `urutan` INTEGER NOT NULL, `tanggal` TEXT NOT NULL, `jumlahUangDibayar` INTEGER NOT NULL, `keterangan` TEXT NOT NULL, `timeMillis` INTEGER NOT NULL)",
+        "fields": [
+          {
+            "fieldPath": "id",
+            "columnName": "id",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "keyId",
+            "columnName": "keyId",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "termin",
+            "columnName": "termin",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "urutan",
+            "columnName": "urutan",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "tanggal",
+            "columnName": "tanggal",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "jumlahUangDibayar",
+            "columnName": "jumlahUangDibayar",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "keterangan",
+            "columnName": "keterangan",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "timeMillis",
+            "columnName": "timeMillis",
+            "affinity": "INTEGER",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "columnNames": [
+            "id"
+          ],
+          "autoGenerate": true
+        },
+        "indices": [],
+        "foreignKeys": []
+      },
+      {
+        "tableName": "ambil_kuitansi",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `kavling` TEXT NOT NULL, `termin` TEXT NOT NULL, `sudahAmbil` INTEGER NOT NULL)",
+        "fields": [
+          {
+            "fieldPath": "id",
+            "columnName": "id",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "kavling",
+            "columnName": "kavling",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "termin",
+            "columnName": "termin",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "sudahAmbil",
+            "columnName": "sudahAmbil",
+            "affinity": "INTEGER",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "columnNames": [
+            "id"
+          ],
+          "autoGenerate": true
+        },
+        "indices": [],
+        "foreignKeys": []
+      },
+      {
+        "tableName": "harga_rumah_inden_booking",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`keyId` TEXT NOT NULL, `harga` INTEGER NOT NULL, `tambahLuasan` INTEGER NOT NULL, PRIMARY KEY(`keyId`))",
+        "fields": [
+          {
+            "fieldPath": "keyId",
+            "columnName": "keyId",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "harga",
+            "columnName": "harga",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "tambahLuasan",
+            "columnName": "tambahLuasan",
+            "affinity": "INTEGER",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "columnNames": [
+            "keyId"
+          ],
+          "autoGenerate": false
+        },
+        "indices": [],
+        "foreignKeys": []
+      },
+      {
+        "tableName": "foto_pembayaran_inden_booking",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`keyId` TEXT NOT NULL, `termin` TEXT NOT NULL, `uriStr` TEXT NOT NULL, PRIMARY KEY(`keyId`))",
+        "fields": [
+          {
+            "fieldPath": "keyId",
+            "columnName": "keyId",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "termin",
+            "columnName": "termin",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "uriStr",
+            "columnName": "uriStr",
+            "affinity": "TEXT",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "columnNames": [
+            "keyId"
+          ],
+          "autoGenerate": false
+        },
+        "indices": [],
+        "foreignKeys": []
+      }
+    ],
+    "views": [],
+    "setupQueries": [
+      "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '6f19de389aba7ad005e61596c57e0b3e')"
+    ]
+  }
+}

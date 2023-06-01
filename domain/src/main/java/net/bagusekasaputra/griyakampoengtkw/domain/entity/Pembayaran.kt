@@ -8,6 +8,7 @@ import net.bagusekasaputra.griyakampoengtkw.domain.DateUtil.isWithinRange
 import net.bagusekasaputra.griyakampoengtkw.domain.DateUtil.toDate
 import net.bagusekasaputra.griyakampoengtkw.domain.NumberUtil
 import net.bagusekasaputra.griyakampoengtkw.domain.PembayaranSorterUtil
+import net.bagusekasaputra.griyakampoengtkw.domain.entity.indenBooking.HargaRumahIndenBooking
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.rekap.PeriodeRekap
 import java.math.BigDecimal
 import java.math.RoundingMode
@@ -44,6 +45,17 @@ data class Pembayaran(
             val bigDecimal = it.toBigDecimal().setScale(4, RoundingMode.HALF_UP)
             return@let bigDecimal.multiply(BigDecimal.valueOf(100))
         }
+
+        return persentase.toDouble()
+    }
+
+    fun hitungPersentase(hargaRumah: HargaRumahIndenBooking): Double {
+        val totalUangMasuk = BigDecimal(NumberUtil.formatStringToLong(totalUangMasuk))
+        val hargaRumahDanTambahLuasan = BigDecimal(hargaRumah.hargaDanTambahLuasan)
+
+        val persentase = totalUangMasuk
+            .divide(hargaRumahDanTambahLuasan, 4, RoundingMode.HALF_UP)
+            .multiply(BigDecimal(100))
 
         return persentase.toDouble()
     }
@@ -190,8 +202,9 @@ data class Pembayaran(
 
         suspend fun maskPembayaran(
             listPembayaran: List<Pembayaran>,
-            hargaKavling: HargaKavling,
+            hargaRumah: HargaRumahIndenBooking,
             onCekFotoPembayaran: suspend (termin: String) -> Boolean,
+            onCekSudahAmbilKuitansi: suspend (termin: String) -> Boolean
         ): List<Pembayaran> {
             val sortedListPembayaran = sortPembayaran(listPembayaran)
             val newListPembayaran = ArrayList<Pembayaran>()
@@ -200,9 +213,12 @@ data class Pembayaran(
             sortedListPembayaran.forEach {
                 totalUangMasuk += NumberUtil.formatStringToLong(it.jumlahUangDibayar)
                 it.totalUangMasuk = NumberUtil.formatLongToString(totalUangMasuk)
-                it.presentase = it.hitungPersentase(hargaKavling)
-                it.sisaBelumTerbayar = NumberUtil.formatLongToString(hargaKavling - totalUangMasuk)
+                it.presentase = it.hitungPersentase(hargaRumah)
+                it.sisaBelumTerbayar = NumberUtil.formatLongToString(
+                    hargaRumah.hargaDanTambahLuasan - totalUangMasuk
+                )
                 it.sudahIsiFotoPembayaran = onCekFotoPembayaran(it.termin)
+                it.sudahAmbilKuitansi = onCekSudahAmbilKuitansi(it.termin)
 
                 newListPembayaran.add(it)
             }

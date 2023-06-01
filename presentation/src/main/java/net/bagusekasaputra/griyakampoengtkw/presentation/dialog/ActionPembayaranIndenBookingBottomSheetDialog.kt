@@ -1,6 +1,7 @@
 package net.bagusekasaputra.griyakampoengtkw.presentation.dialog
 
 import android.annotation.SuppressLint
+import android.content.Intent
 import android.content.SharedPreferences
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -17,7 +18,10 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import net.bagusekasaputra.griyakampoengtkw.presentation.activity.FullImageActivity
 import net.bagusekasaputra.griyakampoengtkw.presentation.databinding.DialogActionsItemPembayaranBinding
+import net.bagusekasaputra.griyakampoengtkw.presentation.util.GriyaNodes
+import net.bagusekasaputra.griyakampoengtkw.presentation.viewmodel.ImageViewModel
 import net.bagusekasaputra.griyakampoengtkw.presentation.viewmodel.IndenBookingViewModel
 import javax.inject.Inject
 import kotlin.random.Random
@@ -27,6 +31,7 @@ class ActionPembayaranIndenBookingBottomSheetDialog: BottomSheetDialogFragment()
 
     private lateinit var binding: DialogActionsItemPembayaranBinding
     private val viewModel by activityViewModels<IndenBookingViewModel>()
+    private val imageViewModel by activityViewModels<ImageViewModel>()
     private var indexPembayaran: Int? = null
 
     // Need for acquiring max size foto pembayaran compression
@@ -34,6 +39,7 @@ class ActionPembayaranIndenBookingBottomSheetDialog: BottomSheetDialogFragment()
     lateinit var sharedPrefs: SharedPreferences
 
     // Need both of these to fill the register picker results
+    private var currentKeyId = ""
     private var currentTermin = ""
 
     // Need to define here to avoid uninitialized binding
@@ -65,6 +71,7 @@ class ActionPembayaranIndenBookingBottomSheetDialog: BottomSheetDialogFragment()
 
         val pembayaran = viewModel.pembayaranListIndenBooking.value?.get(indexPembayaran!!)!!
 
+        currentKeyId = viewModel.currentKeyId
         currentTermin = pembayaran.termin
         progressBarTambahFoto = binding.progressbarTambahkanFoto
 
@@ -94,7 +101,17 @@ class ActionPembayaranIndenBookingBottomSheetDialog: BottomSheetDialogFragment()
             binding.cardLihatFotoPembayaran.apply {
                 visibility = View.VISIBLE
                 setOnClickListener {
-                    // TODO
+                    val imageTransport = imageViewModel.createImageTransport(
+                        sendIntent = GriyaNodes.INTENT_FOTO_PEMBAYARAN_INDEN_BOOKING,
+                        content = mapOf(
+                            "keyId" to currentKeyId,
+                            "termin" to currentTermin,
+                        ),
+                    )
+
+                    val fullImageIntent = Intent(requireContext(), FullImageActivity::class.java)
+                    fullImageIntent.putExtra(GriyaNodes.INTENT_SOURCE_IMAGE, imageTransport)
+                    startActivity(fullImageIntent)
                 }
             }
 

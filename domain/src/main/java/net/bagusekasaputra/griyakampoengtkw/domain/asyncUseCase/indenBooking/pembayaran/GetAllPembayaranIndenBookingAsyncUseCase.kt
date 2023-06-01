@@ -6,13 +6,13 @@ import net.bagusekasaputra.griyakampoengtkw.domain.DataMode
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.AsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.Pembayaran
 import net.bagusekasaputra.griyakampoengtkw.domain.repository.HargaRumahIndenBookingRepository
-import net.bagusekasaputra.griyakampoengtkw.domain.repository.IndenBookingRepository
 import net.bagusekasaputra.griyakampoengtkw.domain.repository.PembayaranRepository
+import net.bagusekasaputra.griyakampoengtkw.domain.repository.indenBooking.FotoPembayaranIndenBookingRepository
 
 class GetAllPembayaranIndenBookingAsyncUseCase(
-    private val indenBookingRepository: IndenBookingRepository,
     private val hargaRumahIndenBookingRepository: HargaRumahIndenBookingRepository,
     private val pembayaranRepository: PembayaranRepository,
+    private val fotoPembayaranRepository: FotoPembayaranIndenBookingRepository,
 ): AsyncUseCase<GetAllPembayaranIndenBookingAsyncUseCase.Request, List<Pembayaran>>() {
 
     data class Request(val keyId: String): AsyncUseCase.Request
@@ -25,22 +25,22 @@ class GetAllPembayaranIndenBookingAsyncUseCase(
             val hargaRumah = hargaRumahIndenBookingRepository.get(request.keyId, DataMode.ONLINE)
                 .getOrThrow()
 
-            // Masking pembayaran: Total uang masuk, persentase, etc
-            val pseudoHargaKavling = hargaRumah?.toHargaKavling("D99")
-            val maskedPembayaran = pembayaranList?.let {
-                if (pseudoHargaKavling != null) {
-                    Pembayaran.maskPembayaran(it, pseudoHargaKavling,
-                        onCekFotoPembayaran = {
-                            // TODO: Cek foto pembayaran
-                            false
-                        }
-                    )
-                } else {
-                    null
-                }
-            }
 
-            emit(Result.success(maskedPembayaran))
+            if ((hargaRumah != null && !pembayaranList.isNullOrEmpty())) {
+                val maskedPembayaran = Pembayaran.maskPembayaran(pembayaranList, hargaRumah,
+                    onCekFotoPembayaran = { termin ->
+                        fotoPembayaranRepository.isExist(request.keyId, termin).getOrThrow()
+                    },
+                    onCekSudahAmbilKuitansi = { _ ->
+                        // TODO
+                        false
+                    }
+                )
+
+                emit(Result.success(maskedPembayaran))
+            } else {
+                emit(Result.success(null))
+            }
         }
     }
 }

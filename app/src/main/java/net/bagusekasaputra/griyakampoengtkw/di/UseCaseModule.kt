@@ -27,6 +27,7 @@ import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.indenBooking.Get
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.indenBooking.dataDiri.EditDataDiriIndenBookingAsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.indenBooking.dataDiri.GetDataDiriIndenBookingAsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.indenBooking.dataDiri.InsertDataDiriIndenBookingAsyncUseCase
+import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.indenBooking.fotoPembayaran.GetFotoPembayaranIndenBookingAsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.indenBooking.hargaRumah.GetHargaRumahIndenBookingAsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.indenBooking.hargaRumah.UpdateHargaRumahIndenBookingAsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.indenBooking.imageDataDiri.DeleteFotoIdentitasIndenBookingAsyncUseCase
@@ -48,6 +49,7 @@ import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.rekap.GetRekapBe
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.reportKavling.GetAllReportKavlingAsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.statusPembayaran.GetStatusPembayaranKavlingAsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.repository.*
+import net.bagusekasaputra.griyakampoengtkw.domain.repository.indenBooking.FotoPembayaranIndenBookingRepository
 import net.bagusekasaputra.griyakampoengtkw.domain.usecase.appupdate.GetUpdateInformationUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.usecase.biayaMarketing.*
 import net.bagusekasaputra.griyakampoengtkw.domain.usecase.block.AddNewBlockUseCase
@@ -556,11 +558,11 @@ object UseCaseModule {
     // Inden Booking - Pembayaran
     @Provides
     fun provideGetAllPembayaranIndenBookingAsyncUseCase(
-        indenBookingRepository: IndenBookingRepository,
         hargaRumahIndenBookingRepository: HargaRumahIndenBookingRepository,
-        pembayaranRepository: PembayaranRepository
+        pembayaranRepository: PembayaranRepository,
+        fotoPembayaranRepository: FotoPembayaranIndenBookingRepository,
     ): GetAllPembayaranIndenBookingAsyncUseCase {
-        return GetAllPembayaranIndenBookingAsyncUseCase(indenBookingRepository, hargaRumahIndenBookingRepository, pembayaranRepository)
+        return GetAllPembayaranIndenBookingAsyncUseCase(hargaRumahIndenBookingRepository, pembayaranRepository, fotoPembayaranRepository)
     }
     @Provides
     fun provideInsertPembayaranIndenBookingUseCase(pembayaranRepository: PembayaranRepository): InsertPembayaranIndenBookingAsyncUseCase {
@@ -577,7 +579,6 @@ object UseCaseModule {
     fun provideUpdateHargaRumahIndenBookingUseCase(hargaRumahIndenBookingRepository: HargaRumahIndenBookingRepository): UpdateHargaRumahIndenBookingAsyncUseCase {
         return UpdateHargaRumahIndenBookingAsyncUseCase(hargaRumahIndenBookingRepository)
     }
-
 
 
     /**
@@ -639,5 +640,14 @@ object UseCaseModule {
     @Provides
     fun provideInsertAmbilKuitansiUseCase(ambilKuitansiRepository: AmbilKuitansiRepository): InsertAmbilKuitansiAsyncUseCase {
         return InsertAmbilKuitansiAsyncUseCase(ambilKuitansiRepository)
+    }
+
+
+    /**
+     * Foto Pembayaran Inden Booking
+     */
+    @Provides
+    fun provideGetFotoPembayaranIndenBookingUseCase(fotoPembayaranIndenBookingRepository: FotoPembayaranIndenBookingRepository): GetFotoPembayaranIndenBookingAsyncUseCase {
+        return GetFotoPembayaranIndenBookingAsyncUseCase(fotoPembayaranIndenBookingRepository)
     }
 }

@@ -11,6 +11,7 @@ import net.bagusekasaputra.griyakampoengtkw.data.interfaces.local.*
 import net.bagusekasaputra.griyakampoengtkw.data.interfaces.remote.*
 import net.bagusekasaputra.griyakampoengtkw.data.repository.*
 import net.bagusekasaputra.griyakampoengtkw.domain.repository.*
+import net.bagusekasaputra.griyakampoengtkw.domain.repository.indenBooking.FotoPembayaranIndenBookingRepository
 import java.io.File
 
 @Module
@@ -230,7 +231,7 @@ object RepositoryModule {
             remoteFotoPembayaranDataSource,
             backupFotoPembayaranDataSource,
             localMetadataDataSource,
-            remoteMetadataDataSource
+            remoteMetadataDataSource,
         )
     }
 
@@ -400,5 +401,18 @@ object RepositoryModule {
         cacheHelper: CacheHelper,
     ): HargaRumahIndenBookingRepository {
         return HargaRumahIndenBookingRepositoryImpl(localDataSource, remoteDataSource, cacheHelper)
+    }
+
+    /**
+     * Foto Pembayaran Inden Booking
+     */
+    @Provides
+    fun provideFotoPembayaranIndenBookingRepository(
+        localDataSource: LocalFotoPembayaranIndenBookingDataSource,
+        remoteDataSource: RemoteFotoPembayaranIndenBookingDataSource,
+        @ExternalDir externalStorageFile: File?,
+        cacheHelper: CacheHelper,
+    ): FotoPembayaranIndenBookingRepository {
+        return FotoPembayaranIndenBookingRepositoryImpl(localDataSource, remoteDataSource, externalStorageFile, cacheHelper)
     }
 }
