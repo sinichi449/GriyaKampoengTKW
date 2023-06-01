@@ -614,12 +614,14 @@ class FormPembayaranFragment : Fragment() {
         }
     }
     private fun onRadioButtonJenisPembayaranClick(dialogBinding: DialogAddFormPembayaranBinding) {
+        val pembayaranList = pembayaranViewModel.fullPembayaransLive.value
+
         dialogBinding.rbItj.setOnClickListener {
             dialogBinding.edtTermin.isEnabled = true
             dialogBinding.tilTermin.isEnabled = true
 
             dialogBinding.edtTermin.setText(
-                pembayaranViewModel.getNextPembayaranSequence(FormPembayaranViewModel.JenisPembayaran.ITJ)
+                Pembayaran.nextPembayaranSequence(pembayaranList, Pembayaran.JenisPembayaran.ITJ)
             )
 //            dialogBinding.tilTermin.hint = "Masukkan urutan ITJ"
         }
@@ -628,7 +630,7 @@ class FormPembayaranFragment : Fragment() {
             dialogBinding.tilTermin.isEnabled = true
 
             dialogBinding.edtTermin.setText(
-                pembayaranViewModel.getNextPembayaranSequence(FormPembayaranViewModel.JenisPembayaran.DP)
+                Pembayaran.nextPembayaranSequence(pembayaranList, Pembayaran.JenisPembayaran.DP)
             )
 //            dialogBinding.tilTermin.hint = "Masukkan urutan DP"
         }
@@ -637,7 +639,7 @@ class FormPembayaranFragment : Fragment() {
             dialogBinding.tilTermin.isEnabled = true
 
             dialogBinding.edtTermin.setText(
-                pembayaranViewModel.getNextPembayaranSequence(FormPembayaranViewModel.JenisPembayaran.TERMIN)
+                Pembayaran.nextPembayaranSequence(pembayaranList, Pembayaran.JenisPembayaran.TERMIN)
             )
 
             // Set automatic Jumlah Uang Dibayar for Termin type

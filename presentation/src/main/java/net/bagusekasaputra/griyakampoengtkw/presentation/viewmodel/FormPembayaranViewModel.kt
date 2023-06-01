@@ -286,41 +286,8 @@ class FormPembayaranViewModel @Inject constructor(
     }
 
 
-
     enum class TablePembayaranType {
         FORM_PEMBAYARAN, PEMBAYARAN_BULANAN
-    }
-
-    enum class JenisPembayaran(val text: String) {
-        ITJ("ITJ"),
-        DP("DP"),
-        TERMIN("Termin"),
-    }
-
-
-    fun getNextPembayaranSequence(jenisPembayaran: JenisPembayaran): String {
-        // Check if not null listPembayaran.
-        // If null returns "1"
-        val listPembayaran = _fullPembayaransLive.value
-
-        if (listPembayaran != null) {
-            // Check if any requested jenis pembayaran Exists
-            val requestedJenisPembayaranList = listPembayaran.filter { it.termin.startsWith(jenisPembayaran.text) }
-            return if (requestedJenisPembayaranList.isNotEmpty()) {
-                // If exists, then get the last index of the requested pembayaran.
-                // I speculate that the UseCase already do the sorting, so
-                // the last of Any Pembayaran Sequence should be on the last index.
-                val lastPembayaran = requestedJenisPembayaranList.last()
-
-                // +1 on the last number of urutan
-                val urutan = lastPembayaran.getUrutan()
-                urutan.plus(1).toString()
-            } else {
-                "1"
-            }
-        } else {
-            return "1"
-        }
     }
 
     fun getTerminJumlahUangDibayar(): String? {

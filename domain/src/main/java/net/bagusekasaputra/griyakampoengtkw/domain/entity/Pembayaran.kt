@@ -60,6 +60,12 @@ data class Pembayaran(
         return persentase.toDouble()
     }
 
+    enum class JenisPembayaran(val text: String) {
+        ITJ("ITJ"),
+        DP("DP"),
+        TERMIN("Termin"),
+    }
+
     companion object {
         fun hitungTotalUangMasuk(listPembayaran: List<Pembayaran>): Long {
             var mTotal = 0L
@@ -248,6 +254,34 @@ data class Pembayaran(
             }
 
             return newListPembayaran
+        }
+
+        fun nextPembayaranSequence(
+            pembayarans: List<Pembayaran>?,
+            jenisPembayaran: JenisPembayaran
+        ): String {
+            // Check if not null listPembayaran.
+            // If null returns "1"
+            if (!pembayarans.isNullOrEmpty()) {
+                // Check if any requested jenis pembayaran Exists
+                val requestedJenisPembayaranList = pembayarans.filter {
+                    it.termin.startsWith(jenisPembayaran.text)
+                }
+                return if (requestedJenisPembayaranList.isNotEmpty()) {
+                    // If exists, then get the last index of the requested pembayaran.
+                    // I speculate that the UseCase already do the sorting, so
+                    // the last of Any Pembayaran Sequence should be on the last index.
+                    val lastPembayaran = requestedJenisPembayaranList.last()
+
+                    // +1 on the last number of urutan
+                    val urutan = lastPembayaran.getUrutan()
+                    urutan.plus(1).toString()
+                } else {
+                    "1"
+                }
+            } else {
+                return "1"
+            }
         }
     }
 }

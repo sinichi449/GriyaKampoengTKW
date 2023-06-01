@@ -25,6 +25,10 @@ class MockFotoPembayaranIndenBookingRepository: FotoPembayaranIndenBookingReposi
         TODO("Not yet implemented")
     }
 
+    override suspend fun delete(keyId: String, termin: String): Result<Nothing?> {
+        TODO("Not yet implemented")
+    }
+
     override suspend fun isExist(keyId: String, termin: String): Result<Boolean> {
         val fotoPembayaran = mapForIndenBooking[keyId]?.filter {
             it.termin == termin

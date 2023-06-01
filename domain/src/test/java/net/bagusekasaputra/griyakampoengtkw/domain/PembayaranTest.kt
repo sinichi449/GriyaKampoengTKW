@@ -44,6 +44,20 @@ class PembayaranTest {
     }
 
     @Test
+    fun next_sequence_of_pembayaran_given_jenis_pembayaran_correct() {
+        val keyId = "3053d174-4b9b-437c-96aa-68fd44fa0fef"
+        val requestedJenisPembayaran = Pembayaran.JenisPembayaran.DP
+        val correctNextSequence = "9"
+
+        val pembayarans = runBlocking {
+            pembayaranRepository.getAllFromIndenBooking(keyId).getOrThrow()!!
+        }
+        val nextSequence = Pembayaran.nextPembayaranSequence(pembayarans, requestedJenisPembayaran)
+
+        assert(correctNextSequence == nextSequence)
+    }
+
+    @Test
     fun hitung_total_uang_masuk_inden_booking_correct() {
         val keyId = "3053d174-4b9b-437c-96aa-68fd44fa0fef"
         val correctTotalUangMasuk = 38_005_000L

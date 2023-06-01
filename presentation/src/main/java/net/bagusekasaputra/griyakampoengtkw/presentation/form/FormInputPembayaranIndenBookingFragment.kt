@@ -51,16 +51,10 @@ class FormInputPembayaranIndenBookingFragment : Fragment() {
         // Toolbar title
         (requireActivity() as FormActivity).setFormTitle("Pembayaran (Inden Booking)")
 
-        
-        with(binding) {
-            // TODO: Next termin sequence
-            arrayOf(rbItj, rbDp, rbTermin).forEach { terminRadioButton -> 
-                terminRadioButton.setOnClickListener {
-                    edtTermin.isEnabled = true
-                    tilTermin.isEnabled = true
-                }
-            }
+        // Syncing pembayaran inden booking, needed for get next sequence termin
+        syncPembayaranIndenBooking()
 
+        with(binding) {
             // Add thousand comma separator to edtJumlahUangDibayar
             edtJumlahUangDibayar.addTextChangedListener(
                 ThousandSeparatorTextWatcher(edtJumlahUangDibayar)
@@ -135,5 +129,49 @@ class FormInputPembayaranIndenBookingFragment : Fragment() {
                 }
             }
         }
+
+        setupViewModel()
+    }
+
+    private fun setupViewModel() {
+        viewModel.pembayaranListIndenBooking.observe(requireActivity()) { pembayaranList ->
+            with(binding) {
+                arrayOf(rbItj, rbDp, rbTermin).forEach { terminRadioButton ->
+                    terminRadioButton.setOnClickListener {
+                        edtTermin.isEnabled = true
+                        tilTermin.isEnabled = true
+
+                        val jenisPembayaran = when(it.id) {
+                            rbItj.id -> Pembayaran.JenisPembayaran.ITJ
+                            rbDp.id -> Pembayaran.JenisPembayaran.DP
+                            else -> Pembayaran.JenisPembayaran.TERMIN
+                        }
+                        val nextSequence = Pembayaran.nextPembayaranSequence(pembayaranList, jenisPembayaran)
+                        edtTermin.setText(nextSequence)
+                    }
+                }
+            }
+        }
+    }
+
+    private fun syncPembayaranIndenBooking() {
+        val progressSnackbar = Snackbar.make(binding.root, "Mendapatkan data pembayaran ...", Snackbar.LENGTH_INDEFINITE)
+        viewModel.getAllPembayaran(
+            keyId = currentKeyId!!,
+            onProgress = {
+                progressSnackbar.show()
+                binding.root.alpha = 0.25f
+            },
+            onComplete = {
+                progressSnackbar.dismiss()
+                binding.root.alpha = 1f
+            },
+            onFailure = {
+                progressSnackbar.dismiss()
+                binding.root.alpha = 1f
+
+                Toast.makeText(requireContext(), it, Toast.LENGTH_LONG).show()
+            }
+        )
     }
 }
