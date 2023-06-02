@@ -6,4 +6,6 @@ interface RemoteIndenBookingCatatanPembayaranDataSource {
 
     suspend fun get(keyId: String): Result<IndenBookingCatatanPembayaranModel?>
 
+    suspend fun insert(model: IndenBookingCatatanPembayaranModel): Result<Nothing?>
+
 }

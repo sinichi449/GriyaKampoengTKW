@@ -47,4 +47,22 @@ class FirebaseIndenBookingCatatanPembayaranDataSource(
             catatanPembayaranRef(keyId).value.addListenerForSingleValueEvent(eventListener)
         }
     }
+
+    override suspend fun insert(model: IndenBookingCatatanPembayaranModel): Result<Nothing?> {
+        return suspendCancellableCoroutine { continuation ->
+            catatanPembayaranRef(model.keyId).value
+                .setValue(model)
+                .addOnCompleteListener {
+                    if (continuation.isActive) {
+                        continuation.resume(Result.success(null), null)
+                    }
+                }
+                .addOnFailureListener {
+                    if (continuation.isActive) {
+                        continuation.resume(Result.failure(it), null)
+                    }
+                }
+        }
+    }
+
 }

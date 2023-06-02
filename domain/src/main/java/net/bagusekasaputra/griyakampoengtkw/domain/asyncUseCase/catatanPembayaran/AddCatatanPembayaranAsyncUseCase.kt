@@ -1,13 +1,17 @@
 package net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.catatanPembayaran
 
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flow
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.AsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.catatanPembayaran.CatatanPembayaran
+import net.bagusekasaputra.griyakampoengtkw.domain.entity.catatanPembayaran.IndenBookingCatatanPembayaran
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.catatanPembayaran.KavlingCatatanPembayaran
+import net.bagusekasaputra.griyakampoengtkw.domain.repository.IndenBookingCatatanPembayaranRepository
 import net.bagusekasaputra.griyakampoengtkw.domain.repository.KavlingCatatanPembayaranRepository
 
 class AddCatatanPembayaranAsyncUseCase(
     private val kavlingCatatanPembayaranRepository: KavlingCatatanPembayaranRepository,
+    private val indenBookingCatatanPembayaranRepository: IndenBookingCatatanPembayaranRepository,
 ): AsyncUseCase<AddCatatanPembayaranAsyncUseCase.Request, Nothing?>() {
 
     data class Request(
@@ -25,7 +29,11 @@ class AddCatatanPembayaranAsyncUseCase(
                 )
             }
             CatatanPembayaran.INDEN_BOOKING -> {
-                TODO("Not implemented yet")
+                val catatanPembayaran = request.catatanPembayaran as IndenBookingCatatanPembayaran
+
+                flow {
+                    emit(indenBookingCatatanPembayaranRepository.insert(catatanPembayaran))
+                }
             }
             else -> throw UnsupportedOperationException()
         }

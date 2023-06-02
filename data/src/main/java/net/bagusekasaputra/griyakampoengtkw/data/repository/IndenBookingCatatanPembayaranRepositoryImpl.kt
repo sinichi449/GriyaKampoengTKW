@@ -47,4 +47,23 @@ class IndenBookingCatatanPembayaranRepositoryImpl(
             Result.failure(e)
         }
     }
+
+    override suspend fun insert(catatanPembayaran: IndenBookingCatatanPembayaran): Result<Nothing?> {
+        return try {
+            val model = MyObjectMapper.mapIndenBookingCatatanPembayaran(catatanPembayaran)
+
+            // Remote insertion
+            remoteDataSource.insert(model).getOrThrow()
+
+            // Update cache
+            cacheHelper.updateMetadata(cacheLocalTable, cacheRemoteTable).getOrThrow()
+
+            // Local insertion
+            localDataSource.insert(model).getOrThrow()
+
+            Result.success(null)
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
+    }
 }

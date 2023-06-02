@@ -268,8 +268,11 @@ object UseCaseModule {
         = GetCatatanPembayaranAsyncUseCase(kavlingCatatanPembayaranRepository, indenBookingCatatanPembayaranRepository)
 
     @Provides
-    fun provideAddCatatanPembayaranUseCase(kavlingCatatanPembayaranRepository: KavlingCatatanPembayaranRepository)
-        = AddCatatanPembayaranAsyncUseCase(kavlingCatatanPembayaranRepository)
+    fun provideAddCatatanPembayaranUseCase(
+        kavlingCatatanPembayaranRepository: KavlingCatatanPembayaranRepository,
+        indenBookingCatatanPembayaranRepository: IndenBookingCatatanPembayaranRepository,
+    )
+        = AddCatatanPembayaranAsyncUseCase(kavlingCatatanPembayaranRepository, indenBookingCatatanPembayaranRepository)
 
     @Provides
     fun provideDeleteCatatanPembayaranUseCase(kavlingCatatanPembayaranRepository: KavlingCatatanPembayaranRepository)

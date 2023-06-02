@@ -4,6 +4,7 @@ package net.bagusekasaputra.griyakampoengtkw.presentation.fragment.indenBooking
 
 import android.annotation.SuppressLint
 import android.app.Activity
+import android.content.DialogInterface
 import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -13,17 +14,24 @@ import android.widget.Toast
 import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
+import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.RecyclerView
 import com.evrencoskun.tableview.listener.ITableViewListener
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import net.bagusekasaputra.griyakampoengtkw.domain.NumberUtil
+import net.bagusekasaputra.griyakampoengtkw.domain.entity.catatanPembayaran.IndenBookingCatatanPembayaran
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.indenBooking.HargaRumahIndenBooking
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.pembayaran.Pembayaran
 import net.bagusekasaputra.griyakampoengtkw.presentation.activity.DetailIndenBookingActivity
 import net.bagusekasaputra.griyakampoengtkw.presentation.activity.FormActivity
 import net.bagusekasaputra.griyakampoengtkw.presentation.custom.ThousandSeparatorTextWatcher
+import net.bagusekasaputra.griyakampoengtkw.presentation.databinding.DialogActionCatatanPembayaranBinding
 import net.bagusekasaputra.griyakampoengtkw.presentation.databinding.DialogEditHargaRumahIndenBookingBinding
 import net.bagusekasaputra.griyakampoengtkw.presentation.databinding.FragmentFormPembayaranIndenBookingBinding
 import net.bagusekasaputra.griyakampoengtkw.presentation.dialog.ActionPembayaranIndenBookingBottomSheetDialog
@@ -32,6 +40,7 @@ import net.bagusekasaputra.griyakampoengtkw.presentation.util.DialogUtil
 import net.bagusekasaputra.griyakampoengtkw.presentation.util.InputUtil
 import net.bagusekasaputra.griyakampoengtkw.presentation.util.UiUtils
 import net.bagusekasaputra.griyakampoengtkw.presentation.viewmodel.IndenBookingViewModel
+import kotlin.random.Random
 
 @AndroidEntryPoint
 class FormPembayaranIndenBookingFragment : Fragment() {
@@ -51,11 +60,12 @@ class FormPembayaranIndenBookingFragment : Fragment() {
         return binding.root
     }
 
+    @SuppressLint("SetTextI18n")
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
         binding.root.setOnRefreshListener {
-            syncPembayaranHargaRumah()
+            refresh(Model.HARGA_RUMAH, Model.LIST_PEMBAYARAN, Model.CATATAN_PEMBAYARAN)
 
             // Until harga rumah ready
             binding.root.isRefreshing = false
@@ -84,11 +94,70 @@ class FormPembayaranIndenBookingFragment : Fragment() {
             }
         }
 
+        // Edit harga rumah
         binding.imgEditHargaRumah.setOnClickListener {
             dialogEditHargaRumah()
         }
 
-        syncPembayaranHargaRumah()
+        // Edit catatan pembayaran
+        binding.cardCatatanPembayaran.setOnClickListener {
+            val catatanPembayaran = viewModel.catatanPembayaran.value
+
+            catatanPembayaranDialog(catatanPembayaran,
+                onInputValidAndSubmitRequested = { dialogInterface, dialogBinding, newCatatanPembayaran ->
+                    dialogBinding.btnTambahkan.isEnabled = false
+
+                    // Update Operation
+                    if (catatanPembayaran != null) {
+                        // TODO
+                        val isSuccess = Random.nextBoolean()
+                        lifecycleScope.launch(Dispatchers.Default) {
+                            withContext(Dispatchers.Main) {
+                                dialogBinding.btnTambahkan.text = "Memproses perubahan ..."
+                            }
+
+                            delay(3000L)
+
+                            withContext(Dispatchers.Main) {
+                                dialogInterface.dismiss()
+
+                                if (isSuccess) {
+                                    Snackbar.make(binding.root, "OK", Snackbar.LENGTH_SHORT).show()
+                                } else {
+                                    Toast.makeText(requireContext(), "Random failure!", Toast.LENGTH_LONG).show()
+                                }
+                            }
+                        }
+                    // Insert operation
+                    } else {
+                        viewModel.insertCatatanPembayaran(newCatatanPembayaran,
+                            onProgress = {
+                                dialogBinding.btnTambahkan.text = "Memproses data ..."
+                            },
+                            onSuccess = {
+                                dialogInterface.dismiss()
+
+                                Snackbar.make(binding.root, "Berhasil menambahkan catatan pembayaran!", Snackbar.LENGTH_SHORT)
+                                    .show()
+                            },
+                            onFailure = {
+                                dialogInterface.dismiss()
+
+                                Toast.makeText(requireContext(), it, Toast.LENGTH_LONG).show()
+                            }
+                        )
+                    }
+                },
+                onDeleteRequested = { dialog, _ ->
+                    // TODO
+                    dialog.dismiss()
+
+                    Toast.makeText(requireContext(), "Not yet implemented!", Toast.LENGTH_SHORT).show()
+                }
+            )
+        }
+
+        refresh(Model.HARGA_RUMAH, Model.LIST_PEMBAYARAN, Model.CATATAN_PEMBAYARAN)
 
         setupViewModel()
     }
@@ -198,50 +267,56 @@ class FormPembayaranIndenBookingFragment : Fragment() {
             .createTable()
     }
 
-    private fun syncPembayaranHargaRumah() {
+    private fun refresh(vararg what: Model) {
         val currentKeyId = viewModel.currentKeyId
         if ((currentKeyId != "NULL_ID") || (currentKeyId.isNotEmpty())) {
-            viewModel.getHargaRumah(currentKeyId,
-                onProgress = {
-                    binding.progressBarLoadingHargaRumah.visibility = View.VISIBLE
-                    binding.imgEditHargaRumah.visibility = View.GONE
-                },
-                onComplete = {
-                    binding.progressBarLoadingHargaRumah.visibility = View.GONE
-                    binding.imgEditHargaRumah.visibility = View.VISIBLE
-                },
-                onFailure = {
-                    Toast.makeText(requireContext(), it, Toast.LENGTH_LONG).show()
+            what.forEach {
+                if (it == Model.HARGA_RUMAH) {
+                    viewModel.getHargaRumah(currentKeyId,
+                        onProgress = {
+                            binding.progressBarLoadingHargaRumah.visibility = View.VISIBLE
+                            binding.imgEditHargaRumah.visibility = View.GONE
+                        },
+                        onComplete = {
+                            binding.progressBarLoadingHargaRumah.visibility = View.GONE
+                            binding.imgEditHargaRumah.visibility = View.VISIBLE
+                        },
+                        onFailure = {
+                            Toast.makeText(requireContext(), it, Toast.LENGTH_LONG).show()
+                        }
+                    )
                 }
-            )
-
-            viewModel.getAllPembayaran(currentKeyId,
-                onProgress = {
-                    binding.layoutLoadingFormPembayaran.visibility = View.VISIBLE
-                    binding.tableFormPembayaran.visibility = View.GONE
-                },
-                onComplete = {
-                    binding.layoutLoadingFormPembayaran.visibility = View.GONE
-                    binding.tableFormPembayaran.visibility = View.VISIBLE
-                },
-                onFailure = {
-                    Toast.makeText(requireContext(), it, Toast.LENGTH_LONG).show()
+                if (it == Model.LIST_PEMBAYARAN) {
+                    viewModel.getAllPembayaran(currentKeyId,
+                        onProgress = {
+                            binding.layoutLoadingFormPembayaran.visibility = View.VISIBLE
+                            binding.tableFormPembayaran.visibility = View.GONE
+                        },
+                        onComplete = {
+                            binding.layoutLoadingFormPembayaran.visibility = View.GONE
+                            binding.tableFormPembayaran.visibility = View.VISIBLE
+                        },
+                        onFailure = {
+                            Toast.makeText(requireContext(), it, Toast.LENGTH_LONG).show()
+                        }
+                    )
                 }
-            )
-
-            viewModel.getCatatanPembayaran(keyId = currentKeyId,
-                onProgress = {
-                    binding.progressBarCatatanPembayaran.visibility = View.VISIBLE
-                    binding.imgEditCatatan.visibility = View.GONE
-                },
-                onSuccess = {
-                    binding.progressBarCatatanPembayaran.visibility = View.GONE
-                    binding.imgEditCatatan.visibility = View.VISIBLE
-                },
-                onFailure = {
-                    Toast.makeText(requireContext(), it, Toast.LENGTH_LONG).show()
+                if (it == Model.CATATAN_PEMBAYARAN) {
+                    viewModel.getCatatanPembayaran(currentKeyId,
+                        onProgress = {
+                            binding.progressBarCatatanPembayaran.visibility = View.VISIBLE
+                            binding.imgEditCatatan.visibility = View.GONE
+                        },
+                        onSuccess = {
+                            binding.progressBarCatatanPembayaran.visibility = View.GONE
+                            binding.imgEditCatatan.visibility = View.VISIBLE
+                        },
+                        onFailure = {
+                            Toast.makeText(requireContext(), it, Toast.LENGTH_LONG).show()
+                        }
+                    )
                 }
-            )
+            }
         }
     }
 
@@ -299,7 +374,7 @@ class FormPembayaranIndenBookingFragment : Fragment() {
                         Snackbar.make(binding.root, "Berhasil mengubah harga rumah!", Snackbar.LENGTH_SHORT)
                             .show()
 
-                        syncPembayaranHargaRumah()
+                        refresh(Model.HARGA_RUMAH)
                     },
                     onFailure = {
                         dialogBinding.btnTambahkan.revertAnimation()
@@ -312,6 +387,68 @@ class FormPembayaranIndenBookingFragment : Fragment() {
             } else {
                 Toast.makeText(requireContext(), "Input belum benar!", Toast.LENGTH_SHORT).show()
             }
+        }
+
+        dialogBinding.btnBatal.setOnClickListener {
+            dialogView.dismiss()
+        }
+    }
+
+    @SuppressLint("SetTextI18n")
+    private fun catatanPembayaranDialog(
+        catatanPembayaran: IndenBookingCatatanPembayaran?,
+        onInputValidAndSubmitRequested: (
+            dialogInterface: DialogInterface,
+            dialogView: DialogActionCatatanPembayaranBinding,
+            newCatatanPembayaran: IndenBookingCatatanPembayaran,
+        ) -> Unit,
+        onDeleteRequested: (dialogInterface: DialogInterface, dialogView: DialogActionCatatanPembayaranBinding) -> Unit,
+    ) {
+        val dialogBinding = DialogActionCatatanPembayaranBinding.inflate(layoutInflater)
+        val dialogView = MaterialAlertDialogBuilder(requireContext()).apply {
+            setView(dialogBinding.root)
+        }.create()
+
+        DialogUtil.additionalDialogSetting(requireContext(), dialogView)
+
+        // if Edit Mode, ENABLE the Delete Button, set the text as the one before,and change the Dialog Title
+        val editMode = catatanPembayaran != null
+
+        with(dialogBinding) {
+            if (editMode) {
+                tvInfoTitleTambahCatatan.text = "Ubah Catatan"
+                edtCatatan.setText(catatanPembayaran!!.content)
+                btnTambahkan.text = "Ubah"
+                btnHapusCatatan.visibility = View.VISIBLE
+
+            } else {
+                tvInfoTitleTambahCatatan.text = "Tambahkan Catatan"
+                btnTambahkan.text = "Tambahkan"
+                btnHapusCatatan.visibility = View.GONE
+            }
+        }
+
+        dialogView.show()
+
+        dialogBinding.btnTambahkan.setOnClickListener {
+            val isInvalidEdt = InputUtil.isNullOrEmptyEditTexts(dialogBinding.edtCatatan)
+
+            if (!isInvalidEdt) {
+                val content = dialogBinding.edtCatatan.text.toString()
+
+                onInputValidAndSubmitRequested(dialogView, dialogBinding,
+                    IndenBookingCatatanPembayaran(
+                        keyId = viewModel.currentKeyId,
+                        mContent = content,
+                    )
+                )
+            } else {
+                Toast.makeText(requireContext(), "Input masih belum valid!", Toast.LENGTH_LONG).show()
+            }
+        }
+
+        dialogBinding.btnHapusCatatan.setOnClickListener {
+            onDeleteRequested(dialogView, dialogBinding)
         }
 
         dialogBinding.btnBatal.setOnClickListener {
@@ -333,12 +470,16 @@ class FormPembayaranIndenBookingFragment : Fragment() {
                 Snackbar.make(binding.root, "Berhasil menambahkan pembayaran!", Snackbar.LENGTH_SHORT)
                     .show()
 
-                syncPembayaranHargaRumah()
+                refresh(Model.CATATAN_PEMBAYARAN)
             } else {
                 data?.extras?.getString(FormActivity.EXTRAS_FAIL_MSG)?.also {
                     Toast.makeText(requireContext(), it, Toast.LENGTH_LONG).show()
                 }
             }
         }
+    }
+
+    private enum class Model {
+        HARGA_RUMAH, LIST_PEMBAYARAN, CATATAN_PEMBAYARAN
     }
 }

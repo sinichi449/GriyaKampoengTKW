@@ -6,4 +6,6 @@ interface IndenBookingCatatanPembayaranRepository {
 
     suspend fun get(keyId: String): Result<IndenBookingCatatanPembayaran?>
 
+    suspend fun insert(catatanPembayaran: IndenBookingCatatanPembayaran): Result<Nothing?>
+
 }
