@@ -19,8 +19,8 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
 import net.bagusekasaputra.griyakampoengtkw.domain.NumberUtil
-import net.bagusekasaputra.griyakampoengtkw.domain.entity.pembayaran.Pembayaran
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.indenBooking.HargaRumahIndenBooking
+import net.bagusekasaputra.griyakampoengtkw.domain.entity.pembayaran.Pembayaran
 import net.bagusekasaputra.griyakampoengtkw.presentation.activity.DetailIndenBookingActivity
 import net.bagusekasaputra.griyakampoengtkw.presentation.activity.FormActivity
 import net.bagusekasaputra.griyakampoengtkw.presentation.custom.ThousandSeparatorTextWatcher
@@ -108,6 +108,10 @@ class FormPembayaranIndenBookingFragment : Fragment() {
             if (!it.isNullOrEmpty()) {
                 tablePembayaran(it)
             }
+        }
+
+        viewModel.catatanPembayaran.observe(requireActivity()) {
+            binding.tvCatatan.text = it?.content ?: "Tidak ada catatan"
         }
     }
 
@@ -219,6 +223,20 @@ class FormPembayaranIndenBookingFragment : Fragment() {
                 onComplete = {
                     binding.layoutLoadingFormPembayaran.visibility = View.GONE
                     binding.tableFormPembayaran.visibility = View.VISIBLE
+                },
+                onFailure = {
+                    Toast.makeText(requireContext(), it, Toast.LENGTH_LONG).show()
+                }
+            )
+
+            viewModel.getCatatanPembayaran(keyId = currentKeyId,
+                onProgress = {
+                    binding.progressBarCatatanPembayaran.visibility = View.VISIBLE
+                    binding.imgEditCatatan.visibility = View.GONE
+                },
+                onSuccess = {
+                    binding.progressBarCatatanPembayaran.visibility = View.GONE
+                    binding.imgEditCatatan.visibility = View.VISIBLE
                 },
                 onFailure = {
                     Toast.makeText(requireContext(), it, Toast.LENGTH_LONG).show()

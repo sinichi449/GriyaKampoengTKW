@@ -1,15 +1,17 @@
 package net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.catatanPembayaran
 
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flow
 import net.bagusekasaputra.griyakampoengtkw.domain.DataMode
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.AsyncUseCase
-import net.bagusekasaputra.griyakampoengtkw.domain.entity.pembayaran.catatanPembayaran.CatatanPembayaran
-import net.bagusekasaputra.griyakampoengtkw.domain.entity.pembayaran.catatanPembayaran.KavlingCatatanPembayaran
+import net.bagusekasaputra.griyakampoengtkw.domain.entity.catatanPembayaran.CatatanPembayaran
+import net.bagusekasaputra.griyakampoengtkw.domain.repository.IndenBookingCatatanPembayaranRepository
 import net.bagusekasaputra.griyakampoengtkw.domain.repository.KavlingCatatanPembayaranRepository
 
 class GetCatatanPembayaranAsyncUseCase(
     private val kavlingCatatanPembayaranRepository: KavlingCatatanPembayaranRepository,
-): AsyncUseCase<GetCatatanPembayaranAsyncUseCase.Request, KavlingCatatanPembayaran?>() {
+    private val indenBookingCatatanPembayaranRepository: IndenBookingCatatanPembayaranRepository,
+): AsyncUseCase<GetCatatanPembayaranAsyncUseCase.Request, CatatanPembayaran?>() {
 
     sealed class Request(
         val catatanType: Int,
@@ -17,27 +19,31 @@ class GetCatatanPembayaranAsyncUseCase(
     ): AsyncUseCase.Request
 
     data class KavlingRequest(
-        val mCatatanType: Int,
         val kavlingKode: String,
         val mDataMode: DataMode,
-    ): Request(mCatatanType, mDataMode)
+    ): Request(CatatanPembayaran.KAVLING, mDataMode)
 
     data class IndenBookingRequest(
-        val mCatatanType: Int,
+        val keyId: String,
         val mDataMode: DataMode,
-    ): Request(mCatatanType, mDataMode)
+    ): Request(CatatanPembayaran.INDEN_BOOKING, mDataMode)
 
-    override fun process(request: Request): Flow<Result<KavlingCatatanPembayaran?>> {
+    override fun process(request: Request): Flow<Result<CatatanPembayaran?>> {
         return when (request.catatanType) {
             CatatanPembayaran.KAVLING -> {
                 val kavlingRequest = request as KavlingRequest
+
                 kavlingCatatanPembayaranRepository.getCatatan(
                     kavlingRequest.kavlingKode,
                     kavlingRequest.dataMode
                 )
             }
             CatatanPembayaran.INDEN_BOOKING -> {
-                throw UnsupportedOperationException()
+                val indenBookingRequest = request as IndenBookingRequest
+
+                flow {
+                    emit(indenBookingCatatanPembayaranRepository.get(indenBookingRequest.keyId))
+                }
             }
             else -> {
                 throw UnsupportedOperationException()

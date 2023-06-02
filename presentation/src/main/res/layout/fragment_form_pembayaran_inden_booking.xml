@@ -221,6 +221,16 @@
                         app:layout_constraintBottom_toBottomOf="@+id/tv_info_catatan"
                         app:layout_constraintStart_toEndOf="@+id/tv_info_catatan"
                         app:layout_constraintTop_toTopOf="@+id/tv_info_catatan"
+                        android:layout_marginStart="8dp"
+                        android:visibility="gone"/>
+
+                    <ProgressBar
+                        android:id="@+id/progressBar_catatan_pembayaran"
+                        android:layout_width="24dp"
+                        android:layout_height="24dp"
+                        app:layout_constraintBottom_toBottomOf="@+id/tv_info_catatan"
+                        app:layout_constraintStart_toEndOf="@+id/tv_info_catatan"
+                        app:layout_constraintTop_toTopOf="@+id/tv_info_catatan"
                         android:layout_marginStart="8dp"/>
 
                     <com.google.android.material.textview.MaterialTextView
@@ -231,7 +241,7 @@
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintTop_toBottomOf="@id/img_edit_catatan"
                         app:layout_constraintBottom_toBottomOf="parent"
-                        android:text="@string/tidak_ada_catatan"
+                        android:text=""
                         android:layout_marginTop="16dp"
                         android:layout_marginBottom="8dp"
                         android:layout_marginHorizontal="16dp"

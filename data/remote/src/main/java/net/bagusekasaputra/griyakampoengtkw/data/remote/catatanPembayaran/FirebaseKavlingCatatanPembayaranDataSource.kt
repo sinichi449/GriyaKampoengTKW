@@ -7,7 +7,7 @@ import kotlinx.coroutines.channels.trySendBlocking
 import kotlinx.coroutines.flow.callbackFlow
 import kotlinx.coroutines.flow.first
 import net.bagusekasaputra.griyakampoengtkw.data.interfaces.remote.RemoteKavlingCatatanPembayaranDataSource
-import net.bagusekasaputra.griyakampoengtkw.data.model.CatatanPembayaranModel
+import net.bagusekasaputra.griyakampoengtkw.data.model.KavlingCatatanPembayaranModel
 import net.bagusekasaputra.griyakampoengtkw.data.remote.FirebaseNodes
 
 class FirebaseKavlingCatatanPembayaranDataSource(
@@ -16,13 +16,13 @@ class FirebaseKavlingCatatanPembayaranDataSource(
 
     private val catatanRef = databaseReference.child(FirebaseNodes.CATATAN_PEMBAYARAN)
 
-    override suspend fun getCatatan(kavlingKode: String): Result<CatatanPembayaranModel?> {
-        return callbackFlow<Result<CatatanPembayaranModel?>> {
+    override suspend fun getCatatan(kavlingKode: String): Result<KavlingCatatanPembayaranModel?> {
+        return callbackFlow<Result<KavlingCatatanPembayaranModel?>> {
             catatanRef
                 .child(kavlingKode)
                 .get()
                 .addOnSuccessListener { snapshot ->
-                    val catatanModel = snapshot.getValue<CatatanPembayaranModel>()
+                    val catatanModel = snapshot.getValue<KavlingCatatanPembayaranModel>()
 
                     trySendBlocking(Result.success(catatanModel))
                 }
@@ -36,12 +36,12 @@ class FirebaseKavlingCatatanPembayaranDataSource(
 
     override suspend fun addCatatan(
         kavlingKode: String,
-        catatanPembayaranModel: CatatanPembayaranModel
+        kavlingCatatanPembayaranModel: KavlingCatatanPembayaranModel
     ): Result<Nothing?> {
         return callbackFlow<Result<Nothing?>> {
             catatanRef
                 .child(kavlingKode)
-                .setValue(catatanPembayaranModel)
+                .setValue(kavlingCatatanPembayaranModel)
                 .addOnSuccessListener {
                     trySendBlocking(Result.success(null))
                 }

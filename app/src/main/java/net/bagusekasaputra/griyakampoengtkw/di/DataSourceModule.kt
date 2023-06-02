@@ -15,7 +15,8 @@ import net.bagusekasaputra.griyakampoeng.tkw.data.local.baselinePembayaran.RoomB
 import net.bagusekasaputra.griyakampoeng.tkw.data.local.biayaLain.RoomBiayaLainDataSource
 import net.bagusekasaputra.griyakampoeng.tkw.data.local.biayaMarketing.RoomBiayaMarketingDataSource
 import net.bagusekasaputra.griyakampoeng.tkw.data.local.block.RoomBlockDataSource
-import net.bagusekasaputra.griyakampoeng.tkw.data.local.catatanPembayaran.RoomKavlingCatatanPembayaranDataSource
+import net.bagusekasaputra.griyakampoeng.tkw.data.local.catatanPembayaran.indenBooking.RoomIndenBookingCatatanPembayaranDataSource
+import net.bagusekasaputra.griyakampoeng.tkw.data.local.catatanPembayaran.kavling.RoomKavlingCatatanPembayaranDataSource
 import net.bagusekasaputra.griyakampoeng.tkw.data.local.datadiri.RoomDataDiriDataSource
 import net.bagusekasaputra.griyakampoeng.tkw.data.local.datadiri.RoomDataDiriIndenBookingDataSource
 import net.bagusekasaputra.griyakampoeng.tkw.data.local.feeMarketing.RoomFeeMarketingDataSource
@@ -58,6 +59,7 @@ import net.bagusekasaputra.griyakampoengtkw.data.remote.ambilKuitansi.FirebaseAm
 import net.bagusekasaputra.griyakampoengtkw.data.remote.backupRestore.FirebaseBackupRestoreDataSource
 import net.bagusekasaputra.griyakampoengtkw.data.remote.baselinePembayaran.FirebaseBaselinePembayaranDataSource
 import net.bagusekasaputra.griyakampoengtkw.data.remote.biayaLain.FirebaseBiayaLainDataSource
+import net.bagusekasaputra.griyakampoengtkw.data.remote.catatanPembayaran.FirebaseIndenBookingCatatanPembayaranDataSource
 import net.bagusekasaputra.griyakampoengtkw.data.remote.databaseUser.FirebaseDatabaseUserDataSource
 import net.bagusekasaputra.griyakampoengtkw.data.remote.fotoPembayaran.StorageFotoPembayaranDataSource
 import net.bagusekasaputra.griyakampoengtkw.data.remote.imageDataDiri.RemoteFotoIdentitasIndenBookingDataSource
@@ -269,23 +271,36 @@ object DataSourceModule {
 
 
     /**
-     * Catatan Pembayaran
+     * Kavling Catatan Pembayaran
      */
     @Provides
-    fun provideRemoteCatatanPembayaranDataSource(databaseReference: DatabaseReference): RemoteKavlingCatatanPembayaranDataSource {
+    fun provideRemoteKavlingCatatanPembayaranDataSource(databaseReference: DatabaseReference): RemoteKavlingCatatanPembayaranDataSource {
         return net.bagusekasaputra.griyakampoengtkw.data.remote.catatanPembayaran.FirebaseKavlingCatatanPembayaranDataSource(
             databaseReference
         )
     }
 
     @Provides
-    fun provideLocalCatatanPembayaranDataSource(roomDatabase: MyRoomDatabase): LocalKavlingCatatanPembayaranDataSource {
+    fun provideLocalKavlingCatatanPembayaranDataSource(roomDatabase: MyRoomDatabase): LocalKavlingCatatanPembayaranDataSource {
         return RoomKavlingCatatanPembayaranDataSource(roomDatabase)
     }
 
     @Provides
     fun provideBackupCatatanPembayaranDataSource(sharedPreferences: SharedPreferences): BackupCatatanPembayaranDataSource {
         return BackupCatatanPembayaranDataSourceImpl(sharedPreferences)
+    }
+
+    /**
+     * Inden Booking Catatan Pembayaran
+     */
+    @Provides
+    fun provideLocalIndenBookingCatatanPembayaranDataSource(myRoomDatabase: MyRoomDatabase): LocalIndenBookingCatatanPembayaranDataSource {
+        return RoomIndenBookingCatatanPembayaranDataSource(myRoomDatabase)
+    }
+
+    @Provides
+    fun provideRemoteIndenBookingCatatanPembayaranDataSource(databaseReference: DatabaseReference): RemoteIndenBookingCatatanPembayaranDataSource {
+        return FirebaseIndenBookingCatatanPembayaranDataSource(databaseReference)
     }
 
 

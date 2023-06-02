@@ -1,4 +1,4 @@
-package net.bagusekasaputra.griyakampoeng.tkw.data.local.catatanPembayaran
+package net.bagusekasaputra.griyakampoeng.tkw.data.local.catatanPembayaran.kavling
 
 import androidx.room.*
 
@@ -8,7 +8,7 @@ import androidx.room.*
         Index(value = ["kavling_kode"], unique = true)
     ]
 )
-data class CatatanPembayaranRoomEntity(
+data class KavlingCatatanPembayaranRoomEntity(
     @PrimaryKey
     var id: Long? = null,
     @ColumnInfo(name = "kavling_kode")
@@ -21,10 +21,10 @@ data class CatatanPembayaranRoomEntity(
 interface CatatanPembayaranRoomDao {
 
     @Query("SELECT * FROM catatan_pembayaran WHERE kavling_kode=:kavlingKode")
-    fun getCatatan(kavlingKode: String): CatatanPembayaranRoomEntity?
+    fun getCatatan(kavlingKode: String): KavlingCatatanPembayaranRoomEntity?
 
     @Insert(onConflict = OnConflictStrategy.IGNORE)
-    fun addCatatan(catatanPembayaranRoomEntity: CatatanPembayaranRoomEntity): Long
+    fun addCatatan(entity: KavlingCatatanPembayaranRoomEntity): Long
 
     @Query("UPDATE catatan_pembayaran SET " +
             "content=:newContent " +

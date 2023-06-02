@@ -11,7 +11,6 @@ import net.bagusekasaputra.griyakampoengtkw.data.interfaces.local.*
 import net.bagusekasaputra.griyakampoengtkw.data.interfaces.remote.*
 import net.bagusekasaputra.griyakampoengtkw.data.repository.*
 import net.bagusekasaputra.griyakampoengtkw.domain.repository.*
-import net.bagusekasaputra.griyakampoengtkw.domain.repository.FotoPembayaranIndenBookingRepository
 import java.io.File
 
 @Module
@@ -201,16 +200,29 @@ object RepositoryModule {
 
 
     /**
-     * Catatan Pembayaran
+     * Kavling Catatan Pembayaran
      */
     @Provides
-    fun provideCatatanPembayaranRepository(
+    fun provideKavlingCatatanPembayaranRepository(
         localKavlingCatatanPembayaranDataSource: LocalKavlingCatatanPembayaranDataSource,
         remoteKavlingCatatanPembayaranDataSource: RemoteKavlingCatatanPembayaranDataSource,
         backupCatatanPembayaranDataSource: BackupCatatanPembayaranDataSource,
     ): KavlingCatatanPembayaranRepository {
         return KavlingCatatanPembayaranRepositoryImpl(localKavlingCatatanPembayaranDataSource, remoteKavlingCatatanPembayaranDataSource, backupCatatanPembayaranDataSource)
     }
+
+    /**
+     * Inden Booking Catatan Pembayaran
+     */
+    @Provides
+    fun provideIndenBookingCatatanPembayaranRepository(
+        localDataSource: LocalIndenBookingCatatanPembayaranDataSource,
+        remoteDataSource: RemoteIndenBookingCatatanPembayaranDataSource,
+        cacheHelper: CacheHelper,
+    ): IndenBookingCatatanPembayaranRepository {
+        return IndenBookingCatatanPembayaranRepositoryImpl(localDataSource, remoteDataSource, cacheHelper)
+    }
+
 
 
     /**

@@ -8,7 +8,6 @@ import net.bagusekasaputra.griyakampoengtkw.data.model.BaselinePembayaranModel
 import net.bagusekasaputra.griyakampoengtkw.data.model.BiayaLainModel
 import net.bagusekasaputra.griyakampoengtkw.data.model.BiayaMarketingModel
 import net.bagusekasaputra.griyakampoengtkw.data.model.BlockModel
-import net.bagusekasaputra.griyakampoengtkw.data.model.CatatanPembayaranModel
 import net.bagusekasaputra.griyakampoengtkw.data.model.DataDiriModel
 import net.bagusekasaputra.griyakampoengtkw.data.model.DatabaseUserModel
 import net.bagusekasaputra.griyakampoengtkw.data.model.FeeMarketingModel
@@ -19,6 +18,8 @@ import net.bagusekasaputra.griyakampoengtkw.data.model.HargaRumahModel
 import net.bagusekasaputra.griyakampoengtkw.data.model.ImageDataDiriIndenBookingModel
 import net.bagusekasaputra.griyakampoengtkw.data.model.ImageDataDiriModel
 import net.bagusekasaputra.griyakampoengtkw.data.model.ImageSprModel
+import net.bagusekasaputra.griyakampoengtkw.data.model.IndenBookingCatatanPembayaranModel
+import net.bagusekasaputra.griyakampoengtkw.data.model.KavlingCatatanPembayaranModel
 import net.bagusekasaputra.griyakampoengtkw.data.model.KavlingModel
 import net.bagusekasaputra.griyakampoengtkw.data.model.PembayaranModel
 import net.bagusekasaputra.griyakampoengtkw.data.model.PromotionModel
@@ -43,13 +44,14 @@ import net.bagusekasaputra.griyakampoengtkw.domain.entity.HargaKavling
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.ImageSpr
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.Kavling
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.Promotion
+import net.bagusekasaputra.griyakampoengtkw.domain.entity.catatanPembayaran.IndenBookingCatatanPembayaran
+import net.bagusekasaputra.griyakampoengtkw.domain.entity.catatanPembayaran.KavlingCatatanPembayaran
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.images.FotoPembayaranIndenBooking
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.images.ImageDataDiriIndenBooking
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.images.ImageDataDiriUri
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.images.ImageSprUri
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.indenBooking.HargaRumahIndenBooking
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.pembayaran.Pembayaran
-import net.bagusekasaputra.griyakampoengtkw.domain.entity.pembayaran.catatanPembayaran.KavlingCatatanPembayaran
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.statusPembayaran.LogPengembalian
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.statusPembayaran.StatusPembayaran
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.statusPembayaran.StatusPembayaran.LogStatus
@@ -151,10 +153,10 @@ object MyObjectMapper {
 
 
     /**
-     * Catatan Pembayaran
+     * Kavling Catatan Pembayaran
      */
-    fun mapCatatanPembayaran(catatanPembayaranModel: CatatanPembayaranModel): KavlingCatatanPembayaran {
-        return catatanPembayaranModel.let {
+    fun mapKavlingCatatanPembayaran(kavlingCatatanPembayaranModel: KavlingCatatanPembayaranModel): KavlingCatatanPembayaran {
+        return kavlingCatatanPembayaranModel.let {
             KavlingCatatanPembayaran(
                 kavlingKode = it.kavlingKode,
                 mContent = it.content,
@@ -162,11 +164,32 @@ object MyObjectMapper {
         }
     }
 
-    fun mapCatatanPembayaran(kavlingCatatanPembayaran: KavlingCatatanPembayaran): CatatanPembayaranModel {
+    fun mapKavlingCatatanPembayaran(kavlingCatatanPembayaran: KavlingCatatanPembayaran): KavlingCatatanPembayaranModel {
         return kavlingCatatanPembayaran.let {
-            CatatanPembayaranModel(
+            KavlingCatatanPembayaranModel(
                 kavlingKode = it.kavlingKode,
                 content = it.content,
+            )
+        }
+    }
+
+    /**
+     * Inden Booking Catatan Pembayaran
+     */
+    fun mapIndenBookingCatatanPembayaran(catatanPembayaran: IndenBookingCatatanPembayaran): IndenBookingCatatanPembayaranModel {
+        return catatanPembayaran.let {
+            IndenBookingCatatanPembayaranModel(
+                keyId = it.keyId,
+                content = it.content,
+            )
+        }
+    }
+
+    fun mapIndenBookingCatatanPembayaran(model: IndenBookingCatatanPembayaranModel): IndenBookingCatatanPembayaran {
+        return model.let {
+            IndenBookingCatatanPembayaran(
+                keyId = it.keyId,
+                mContent = it.content,
             )
         }
     }

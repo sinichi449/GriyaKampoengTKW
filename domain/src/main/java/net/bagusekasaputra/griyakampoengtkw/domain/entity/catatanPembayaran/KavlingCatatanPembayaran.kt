@@ -1,4 +1,4 @@
-package net.bagusekasaputra.griyakampoengtkw.domain.entity.pembayaran.catatanPembayaran
+package net.bagusekasaputra.griyakampoengtkw.domain.entity.catatanPembayaran
 
 data class KavlingCatatanPembayaran(
     val kavlingKode: String,

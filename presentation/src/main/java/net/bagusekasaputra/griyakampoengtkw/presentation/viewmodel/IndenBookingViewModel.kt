@@ -12,6 +12,7 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import net.bagusekasaputra.griyakampoengtkw.domain.DataMode
+import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.catatanPembayaran.GetCatatanPembayaranAsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.indenBooking.GetAllIndenBookingAsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.indenBooking.dataDiri.EditDataDiriIndenBookingAsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.indenBooking.dataDiri.GetDataDiriIndenBookingAsyncUseCase
@@ -24,9 +25,10 @@ import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.indenBooking.ima
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.indenBooking.pembayaran.GetAllPembayaranIndenBookingAsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.indenBooking.pembayaran.InsertPembayaranIndenBookingAsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.DataDiri
-import net.bagusekasaputra.griyakampoengtkw.domain.entity.pembayaran.Pembayaran
+import net.bagusekasaputra.griyakampoengtkw.domain.entity.catatanPembayaran.IndenBookingCatatanPembayaran
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.indenBooking.HargaRumahIndenBooking
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.indenBooking.IndenBooking
+import net.bagusekasaputra.griyakampoengtkw.domain.entity.pembayaran.Pembayaran
 import javax.inject.Inject
 
 @HiltViewModel
@@ -46,28 +48,39 @@ class IndenBookingViewModel @Inject constructor(
     // Harga Rumah
     private val getHargaRumahIndenBookingAsyncUseCase: GetHargaRumahIndenBookingAsyncUseCase,
     private val updateHargaRumahIndenBookingAsyncUseCase: UpdateHargaRumahIndenBookingAsyncUseCase,
+    // Catatan Pembayaran
+    private val getCatatanPembayaranAsyncUseCase: GetCatatanPembayaranAsyncUseCase,
 ): ViewModel() {
 
+    // Inden Booking
     private val _indenBookings = MutableLiveData<List<IndenBooking>>()
     val indenBookings: LiveData<List<IndenBooking>>
         get() = _indenBookings
 
+    // Data Diri
     private val _dataDiriIndenBooking = MutableLiveData<DataDiri>()
     val dataDiriIndenBooking: LiveData<DataDiri>
         get() = _dataDiriIndenBooking
 
+    // Pembayaran
     private val _pembayaranListIndenBooking = MutableLiveData<List<Pembayaran>>()
     val pembayaranListIndenBooking: LiveData<List<Pembayaran>>
         get() = _pembayaranListIndenBooking
 
+    // Harga Rumah
     private val _hargaRumahIndenBooking = MutableLiveData<HargaRumahIndenBooking>()
     val hargaRumahIndenBooking: LiveData<HargaRumahIndenBooking>
         get() = _hargaRumahIndenBooking
 
+    // Path Foto Inden Booking
     private val _pathFotoIndenBookingLive = MutableLiveData<String?>()
     val pathFotoIndenBookingLive: LiveData<String?>
         get() = _pathFotoIndenBookingLive
 
+    // Catatan Pembayaran
+    private val _catatanPembayaran = MutableLiveData<IndenBookingCatatanPembayaran?>()
+    val catatanPembayaran: LiveData<IndenBookingCatatanPembayaran?>
+        get() = _catatanPembayaran
 
     // For distribution to fragments
     var namaCostumer = "NULL"
@@ -385,6 +398,37 @@ class IndenBookingViewModel @Inject constructor(
                 result.onFailure {
                     withContext(Dispatchers.Main) {
                         onFailure("Gagal menambahkan: ${it.localizedMessage}")
+                    }
+                }
+            }
+        }
+    }
+
+
+    /**
+     * Catatan Pembayaran
+     */
+    fun getCatatanPembayaran(
+        keyId: String,
+        onProgress: () -> Unit = {},
+        onSuccess: () -> Unit = {},
+        onFailure: (msg: String) -> Unit = {},
+    ) {
+        onProgress()
+
+        viewModelScope.launch(Dispatchers.IO) {
+            val request = GetCatatanPembayaranAsyncUseCase.IndenBookingRequest(keyId, dataMode)
+            getCatatanPembayaranAsyncUseCase.execute(request).collect { result ->
+                result.onSuccess {
+                    _catatanPembayaran.postValue(it as IndenBookingCatatanPembayaran?)
+
+                    withContext(Dispatchers.Main) {
+                        onSuccess()
+                    }
+                }
+                result.onFailure {
+                    withContext(Dispatchers.Main) {
+                        onFailure("Gagal mendapatkan catatan pembayaran : ${it.localizedMessage}")
                     }
                 }
             }

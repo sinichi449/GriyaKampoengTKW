@@ -8,12 +8,12 @@ import kotlinx.coroutines.flow.emitAll
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flow
 import net.bagusekasaputra.griyakampoengtkw.data.DataUtil
-import net.bagusekasaputra.griyakampoengtkw.data.MyObjectMapper.mapCatatanPembayaran
+import net.bagusekasaputra.griyakampoengtkw.data.MyObjectMapper.mapKavlingCatatanPembayaran
 import net.bagusekasaputra.griyakampoengtkw.data.interfaces.backup.BackupCatatanPembayaranDataSource
 import net.bagusekasaputra.griyakampoengtkw.data.interfaces.local.LocalKavlingCatatanPembayaranDataSource
 import net.bagusekasaputra.griyakampoengtkw.data.interfaces.remote.RemoteKavlingCatatanPembayaranDataSource
 import net.bagusekasaputra.griyakampoengtkw.domain.DataMode
-import net.bagusekasaputra.griyakampoengtkw.domain.entity.pembayaran.catatanPembayaran.KavlingCatatanPembayaran
+import net.bagusekasaputra.griyakampoengtkw.domain.entity.catatanPembayaran.KavlingCatatanPembayaran
 import net.bagusekasaputra.griyakampoengtkw.domain.repository.KavlingCatatanPembayaranRepository
 
 class KavlingCatatanPembayaranRepositoryImpl(
@@ -31,7 +31,7 @@ class KavlingCatatanPembayaranRepositoryImpl(
                 val localResult = localKavlingCatatanPembayaranDataSource.getCatatan(kavlingKode)
 
                 emit(
-                    DataUtil.mapSingleResult(localResult, ::mapCatatanPembayaran)
+                    DataUtil.mapSingleResult(localResult, ::mapKavlingCatatanPembayaran)
                 )
             }
             val flowOnline = flow<Result<KavlingCatatanPembayaran?>> {
@@ -47,7 +47,7 @@ class KavlingCatatanPembayaranRepositoryImpl(
                     // Then, emit the result
                     val mappedResult = DataUtil.mapSingleResult(
                         originResult = remoteResult,
-                        targetMapper = ::mapCatatanPembayaran,
+                        targetMapper = ::mapKavlingCatatanPembayaran,
                     )
                     emit(mappedResult)
                 }
@@ -65,7 +65,7 @@ class KavlingCatatanPembayaranRepositoryImpl(
                     .onSuccess {
                         emit(DataUtil.mapSingleResult(
                             originResult = Result.success(it),
-                            targetMapper = ::mapCatatanPembayaran,
+                            targetMapper = ::mapKavlingCatatanPembayaran,
                         ))
                     }
             }
@@ -106,7 +106,7 @@ class KavlingCatatanPembayaranRepositoryImpl(
         return flow {
             val remoteResult = remoteKavlingCatatanPembayaranDataSource.addCatatan(
                 kavlingKode = kavlingKode,
-                catatanPembayaranModel = mapCatatanPembayaran(kavlingCatatanPembayaran),
+                kavlingCatatanPembayaranModel = mapKavlingCatatanPembayaran(kavlingCatatanPembayaran),
             )
 
             emit(remoteResult)

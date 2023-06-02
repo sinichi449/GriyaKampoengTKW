@@ -1,0 +1,15 @@
+package net.bagusekasaputra.griyakampoengtkw.data.interfaces.local
+
+import net.bagusekasaputra.griyakampoengtkw.data.model.IndenBookingCatatanPembayaranModel
+
+interface LocalIndenBookingCatatanPembayaranDataSource {
+
+    suspend fun get(keyId: String): Result<IndenBookingCatatanPembayaranModel?>
+
+    suspend fun insert(model: IndenBookingCatatanPembayaranModel): Result<Nothing?>
+
+    suspend fun delete(keyId: String): Result<Nothing?>
+
+    suspend fun deleteAll(): Result<Nothing?>
+
+}

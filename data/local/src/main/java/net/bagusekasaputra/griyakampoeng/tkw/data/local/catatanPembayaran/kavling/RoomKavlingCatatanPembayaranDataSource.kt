@@ -1,9 +1,9 @@
-package net.bagusekasaputra.griyakampoeng.tkw.data.local.catatanPembayaran
+package net.bagusekasaputra.griyakampoeng.tkw.data.local.catatanPembayaran.kavling
 
 import net.bagusekasaputra.griyakampoeng.tkw.data.local.MyRoomDatabase
 import net.bagusekasaputra.griyakampoeng.tkw.data.local.RoomRequestHelper
 import net.bagusekasaputra.griyakampoengtkw.data.interfaces.local.LocalKavlingCatatanPembayaranDataSource
-import net.bagusekasaputra.griyakampoengtkw.data.model.CatatanPembayaranModel
+import net.bagusekasaputra.griyakampoengtkw.data.model.KavlingCatatanPembayaranModel
 
 class RoomKavlingCatatanPembayaranDataSource(
     roomDatabase: MyRoomDatabase
@@ -11,11 +11,11 @@ class RoomKavlingCatatanPembayaranDataSource(
 
     private val catatanPembayaranDao = roomDatabase.getCatatanPembayaranDao()
 
-    override suspend fun getCatatan(kavlingKode: String): Result<CatatanPembayaranModel?> {
+    override suspend fun getCatatan(kavlingKode: String): Result<KavlingCatatanPembayaranModel?> {
         return RoomRequestHelper.doGetOperation {
             catatanPembayaranDao.getCatatan(kavlingKode).let {
                 if (it != null)
-                    CatatanPembayaranModel(
+                    KavlingCatatanPembayaranModel(
                         kavlingKode = it.kavlingKode,
                         content = it.content,
                     )
@@ -27,19 +27,19 @@ class RoomKavlingCatatanPembayaranDataSource(
 
     override suspend fun addCatatan(
         kavlingKode: String,
-        catatanPembayaranModel: CatatanPembayaranModel
+        kavlingCatatanPembayaranModel: KavlingCatatanPembayaranModel
     ): Result<Nothing?> {
         return RoomRequestHelper.doNonGetOperation {
             // Check if exist
             val isExist = (catatanPembayaranDao.getCatatan(kavlingKode) != null)
             if (isExist)
                 // If exist, update instead
-                catatanPembayaranDao.updateCatatan(catatanPembayaranModel.kavlingKode, catatanPembayaranModel.content)
+                catatanPembayaranDao.updateCatatan(kavlingCatatanPembayaranModel.kavlingKode, kavlingCatatanPembayaranModel.content)
             else
                 catatanPembayaranDao.addCatatan(
-                    CatatanPembayaranRoomEntity(
-                        kavlingKode = catatanPembayaranModel.kavlingKode,
-                        content = catatanPembayaranModel.content,
+                    KavlingCatatanPembayaranRoomEntity(
+                        kavlingKode = kavlingCatatanPembayaranModel.kavlingKode,
+                        content = kavlingCatatanPembayaranModel.content,
                     )
                 )
         }
@@ -53,8 +53,8 @@ class RoomKavlingCatatanPembayaranDataSource(
 
     override suspend fun updateCatatan(
         kavlingKode: String,
-        oldData: CatatanPembayaranModel,
-        newData: CatatanPembayaranModel
+        oldData: KavlingCatatanPembayaranModel,
+        newData: KavlingCatatanPembayaranModel
     ): Result<Nothing?> {
         return RoomRequestHelper.doNonGetOperation {
             catatanPembayaranDao.updateCatatan(newData.kavlingKode, newData.content)

@@ -24,10 +24,10 @@ import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.statusPembayaran
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.AmbilKuitansi
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.BaselinePembayaran
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.HargaKavling
+import net.bagusekasaputra.griyakampoengtkw.domain.entity.catatanPembayaran.CatatanPembayaran
+import net.bagusekasaputra.griyakampoengtkw.domain.entity.catatanPembayaran.KavlingCatatanPembayaran
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.pembayaran.Pembayaran
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.pembayaran.PembayaranBulanan
-import net.bagusekasaputra.griyakampoengtkw.domain.entity.pembayaran.catatanPembayaran.CatatanPembayaran
-import net.bagusekasaputra.griyakampoengtkw.domain.entity.pembayaran.catatanPembayaran.KavlingCatatanPembayaran
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.statusPembayaran.StatusPembayaran
 import net.bagusekasaputra.griyakampoengtkw.domain.usecase.pembayaran.AddPembayaranUseCase
 import net.bagusekasaputra.griyakampoengtkw.presentation.combineWith
@@ -314,19 +314,14 @@ class FormPembayaranViewModel @Inject constructor(
     /**
      * Catatan Pembayaran
      */
-    /**
-     * Catatan Pembayaran
-     */
     fun getCatatanPembayaran(kavlingKode: String, onFailure: (cause: String) -> Unit) {
-        val request = GetCatatanPembayaranAsyncUseCase.KavlingRequest(
-            CatatanPembayaran.KAVLING, kavlingKode, dataMode
-        )
+        val request = GetCatatanPembayaranAsyncUseCase.KavlingRequest(kavlingKode, dataMode)
 
         val gettingCatatanPembayaranJob = asyncHelper.doWork(
             request = request,
             asyncUseCase = getCatatanPembayaranAsyncUseCase,
             onSuccess = {
-                _catatanPembayaranLive.postValue(it)
+                _catatanPembayaranLive.postValue(it as KavlingCatatanPembayaran?)
             },
             onFailure = {
                 onFailure("Gagal mendapatkan catatan pembayaran: ${it.message}")
@@ -371,9 +366,7 @@ class FormPembayaranViewModel @Inject constructor(
     fun deleteCatatanPembayaran(kavlingKode: String, onComplete: (msg: String) -> Unit) {
         isFinishOperation.value = false
 
-        val request = DeleteCatatanPembayaranAsyncUseCase.KavlingRequest(
-            CatatanPembayaran.KAVLING, kavlingKode
-        )
+        val request = DeleteCatatanPembayaranAsyncUseCase.KavlingRequest(kavlingKode)
 
         CoroutineScope(Dispatchers.IO).launch {
             deleteCatatanPembayaranAsyncUseCase.execute(request).collect { result ->

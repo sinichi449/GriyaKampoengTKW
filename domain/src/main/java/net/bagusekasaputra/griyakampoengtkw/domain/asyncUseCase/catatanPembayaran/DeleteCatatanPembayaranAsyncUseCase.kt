@@ -2,7 +2,7 @@ package net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.catatanPembayar
 
 import kotlinx.coroutines.flow.Flow
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.AsyncUseCase
-import net.bagusekasaputra.griyakampoengtkw.domain.entity.pembayaran.catatanPembayaran.CatatanPembayaran
+import net.bagusekasaputra.griyakampoengtkw.domain.entity.catatanPembayaran.CatatanPembayaran
 import net.bagusekasaputra.griyakampoengtkw.domain.repository.KavlingCatatanPembayaranRepository
 
 class DeleteCatatanPembayaranAsyncUseCase(
@@ -14,14 +14,12 @@ class DeleteCatatanPembayaranAsyncUseCase(
     ): AsyncUseCase.Request
 
     data class KavlingRequest(
-        val mCatatanType: Int,
         val kavling: String
-    ): Request(mCatatanType)
+    ): Request(CatatanPembayaran.KAVLING)
 
     data class IndenBookingRequest(
-        val mCatatanType: Int,
         val keyId: String,
-    ): Request(mCatatanType)
+    ): Request(CatatanPembayaran.INDEN_BOOKING)
 
 
     override fun process(request: Request): Flow<Result<Nothing?>> {

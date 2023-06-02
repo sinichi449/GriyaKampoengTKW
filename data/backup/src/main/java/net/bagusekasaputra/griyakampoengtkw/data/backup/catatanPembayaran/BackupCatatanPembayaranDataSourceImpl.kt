@@ -9,14 +9,14 @@ import net.bagusekasaputra.griyakampoengtkw.data.backup.getGsonJsonString
 import net.bagusekasaputra.griyakampoengtkw.data.backup.readJson
 import net.bagusekasaputra.griyakampoengtkw.data.backup.writeFile
 import net.bagusekasaputra.griyakampoengtkw.data.interfaces.backup.BackupCatatanPembayaranDataSource
-import net.bagusekasaputra.griyakampoengtkw.data.model.CatatanPembayaranModel
+import net.bagusekasaputra.griyakampoengtkw.data.model.KavlingCatatanPembayaranModel
 import java.io.File
 
 class BackupCatatanPembayaranDataSourceImpl(
     private val sharedPreferences: SharedPreferences,
 ): BackupCatatanPembayaranDataSource {
 
-    override suspend fun getCatatanPembayaran(kavlingKode: String): Result<CatatanPembayaranModel?> {
+    override suspend fun getCatatanPembayaran(kavlingKode: String): Result<KavlingCatatanPembayaranModel?> {
         return try {
             val file = File("${sharedPreferences.getString(PREFS_PATH_DATA_LAMA, "")}/${JSON_CATATAN_PEMBAYARAN}")
             val backupModels = readJson<Array<BackupCatatanPembayaranModel>>(file).filter {
@@ -42,7 +42,7 @@ class BackupCatatanPembayaranDataSourceImpl(
 
     override suspend fun createBackup(
         backupPath: String,
-        listCatatanPembayaran: List<CatatanPembayaranModel>
+        listCatatanPembayaran: List<KavlingCatatanPembayaranModel>
     ): Result<Nothing?> {
         return try {
             val arrBackup = mutableListOf<BackupCatatanPembayaranModel>().apply {
@@ -62,7 +62,7 @@ class BackupCatatanPembayaranDataSourceImpl(
     }
 
 
-    private fun mapCatatanPembayaranModel(model: CatatanPembayaranModel): BackupCatatanPembayaranModel {
+    private fun mapCatatanPembayaranModel(model: KavlingCatatanPembayaranModel): BackupCatatanPembayaranModel {
         return model.let {
             BackupCatatanPembayaranModel(
                 kavling = it.kavlingKode,
@@ -71,9 +71,9 @@ class BackupCatatanPembayaranDataSourceImpl(
         }
     }
 
-    private fun mapCatatanPembayaranModel(model: BackupCatatanPembayaranModel): CatatanPembayaranModel {
+    private fun mapCatatanPembayaranModel(model: BackupCatatanPembayaranModel): KavlingCatatanPembayaranModel {
         return model.let {
-            CatatanPembayaranModel(
+            KavlingCatatanPembayaranModel(
                 kavlingKode = it.kavling,
                 content = it.content,
             )

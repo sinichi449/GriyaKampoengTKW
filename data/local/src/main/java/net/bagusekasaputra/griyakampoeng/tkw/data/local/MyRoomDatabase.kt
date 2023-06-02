@@ -12,8 +12,10 @@ import net.bagusekasaputra.griyakampoeng.tkw.data.local.biayaMarketing.BiayaMark
 import net.bagusekasaputra.griyakampoeng.tkw.data.local.biayaMarketing.BiayaMarketingV2RoomEntity
 import net.bagusekasaputra.griyakampoeng.tkw.data.local.block.BlockRoomDao
 import net.bagusekasaputra.griyakampoeng.tkw.data.local.block.BlockRoomEntity
-import net.bagusekasaputra.griyakampoeng.tkw.data.local.catatanPembayaran.CatatanPembayaranRoomDao
-import net.bagusekasaputra.griyakampoeng.tkw.data.local.catatanPembayaran.CatatanPembayaranRoomEntity
+import net.bagusekasaputra.griyakampoeng.tkw.data.local.catatanPembayaran.indenBooking.IndenBookingCatatanPembayaranDao
+import net.bagusekasaputra.griyakampoeng.tkw.data.local.catatanPembayaran.indenBooking.IndenBookingCatatanPembayaranEntity
+import net.bagusekasaputra.griyakampoeng.tkw.data.local.catatanPembayaran.kavling.CatatanPembayaranRoomDao
+import net.bagusekasaputra.griyakampoeng.tkw.data.local.catatanPembayaran.kavling.KavlingCatatanPembayaranRoomEntity
 import net.bagusekasaputra.griyakampoeng.tkw.data.local.datadiri.DataDiriRoomDao
 import net.bagusekasaputra.griyakampoeng.tkw.data.local.datadiri.DataDiriRoomEntity
 import net.bagusekasaputra.griyakampoeng.tkw.data.local.feeMarketing.FeeMarketingRoomDao
@@ -51,13 +53,14 @@ import net.bagusekasaputra.griyakampoeng.tkw.data.local.pengingat.PengingatRoomE
     entities = [KavlingRoomEntity::class, ImageDataDiriRoomEntity::class, BlockRoomEntity::class,
                DataDiriRoomEntity::class, FotoKuitansiRoomEntity::class, ImageSprRoomEntity::class,
                FotoPembayaranEntity::class, PembayaranRoomEntity::class, HargaKavlingRoomEntity::class,
-               CatatanPembayaranRoomEntity::class, FeeMarketingRoomEntity::class,
+               KavlingCatatanPembayaranRoomEntity::class, FeeMarketingRoomEntity::class,
                 BiayaMarketingV2RoomEntity::class, PengingatRoomEntity::class, MetadataEntity::class,
                BiayaLainRoomEntity::class, BaselinePembayaranRoomEntity::class,
                FotoIdentitasIndenBookingEntity::class, DataDiriIndenBookingEntity::class,
                PembayaranIndenBookingEntity::class, AmbilKuitansiRoomEntity::class,
-               HargaRumahEntity::class, FotoPembayaranIndenBookingEntity::class],
-    version = 28,
+               HargaRumahEntity::class, FotoPembayaranIndenBookingEntity::class,
+               IndenBookingCatatanPembayaranEntity::class],
+    version = 29,
     exportSchema = true,
 )
 abstract class MyRoomDatabase: RoomDatabase() {
@@ -105,4 +108,7 @@ abstract class MyRoomDatabase: RoomDatabase() {
     abstract fun getHargaRumahDao(): HargaRumahDao
 
     abstract fun getFotoPembayaranIndenBookingDao(): FotoPembayaranIndenBookingDao
+
+    abstract fun getIndenBookingCatatanPembayaranDao(): IndenBookingCatatanPembayaranDao
+
 }

@@ -261,8 +261,11 @@ object UseCaseModule {
      * Catatan Pembayaran
      */
     @Provides
-    fun provideGetCatatanPembayaran(kavlingCatatanPembayaranRepository: KavlingCatatanPembayaranRepository)
-        = GetCatatanPembayaranAsyncUseCase(kavlingCatatanPembayaranRepository)
+    fun provideGetCatatanPembayaran(
+        kavlingCatatanPembayaranRepository: KavlingCatatanPembayaranRepository,
+        indenBookingCatatanPembayaranRepository: IndenBookingCatatanPembayaranRepository,
+    )
+        = GetCatatanPembayaranAsyncUseCase(kavlingCatatanPembayaranRepository, indenBookingCatatanPembayaranRepository)
 
     @Provides
     fun provideAddCatatanPembayaranUseCase(kavlingCatatanPembayaranRepository: KavlingCatatanPembayaranRepository)

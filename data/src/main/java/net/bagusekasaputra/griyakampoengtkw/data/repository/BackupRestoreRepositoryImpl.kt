@@ -22,7 +22,7 @@ import net.bagusekasaputra.griyakampoengtkw.data.interfaces.backup.BackupRestore
 import net.bagusekasaputra.griyakampoengtkw.data.interfaces.remote.RemoteBackupRestoreDataSource
 import net.bagusekasaputra.griyakampoengtkw.data.model.BiayaLainModel
 import net.bagusekasaputra.griyakampoengtkw.data.model.BiayaMarketingModel
-import net.bagusekasaputra.griyakampoengtkw.data.model.CatatanPembayaranModel
+import net.bagusekasaputra.griyakampoengtkw.data.model.KavlingCatatanPembayaranModel
 import net.bagusekasaputra.griyakampoengtkw.data.model.DataDiriModel
 import net.bagusekasaputra.griyakampoengtkw.data.model.FeeMarketingModel
 import net.bagusekasaputra.griyakampoengtkw.data.model.FotoPembayaranModel
@@ -116,10 +116,10 @@ class BackupRestoreRepositoryImpl(
                     newList.toList()
                 }
                 val listCatatanPembayaran = backupRestoreEntity.listKavlingCatatanPembayaran.run {
-                    val newList = mutableListOf<CatatanPembayaranModel>()
+                    val newList = mutableListOf<KavlingCatatanPembayaranModel>()
 
                     this.forEach {
-                        val model = MyObjectMapper.mapCatatanPembayaran(it)
+                        val model = MyObjectMapper.mapKavlingCatatanPembayaran(it)
                         newList.add(model)
                     }
 
