@@ -66,4 +66,26 @@ class IndenBookingCatatanPembayaranRepositoryImpl(
             Result.failure(e)
         }
     }
+
+    override suspend fun update(
+        keyId: String,
+        newCatatanPembayaran: IndenBookingCatatanPembayaran
+    ): Result<Nothing?> {
+        return try {
+            val newModel = MyObjectMapper.mapIndenBookingCatatanPembayaran(newCatatanPembayaran)
+
+            // Remote Update
+            remoteDataSource.update(keyId, newModel).getOrThrow()
+
+            // Cache Update
+            cacheHelper.updateMetadata(cacheLocalTable, cacheRemoteTable).getOrThrow()
+
+            // Local Update
+            localDataSource.update(keyId, newModel).getOrThrow()
+
+            Result.success(null)
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
+    }
 }

@@ -65,4 +65,31 @@ class FirebaseIndenBookingCatatanPembayaranDataSource(
         }
     }
 
+    /**
+     * Technically, this is the same as insert, since Firebase will automatically overwrite the value.
+     */
+    override suspend fun update(
+        keyId: String,
+        newModel: IndenBookingCatatanPembayaranModel
+    ): Result<Nothing?> {
+        return insert(newModel)
+    }
+
+    override suspend fun delete(keyId: String): Result<Nothing?> {
+        return suspendCancellableCoroutine { continuation ->
+            catatanPembayaranRef(keyId).value
+                .removeValue()
+                .addOnCompleteListener {
+                    if (continuation.isActive) {
+                        continuation.resume(Result.success(null), null)
+                    }
+                }
+                .addOnFailureListener {
+                    if (continuation.isActive) {
+                        continuation.resume(Result.failure(it), null)
+                    }
+                }
+        }
+    }
+
 }

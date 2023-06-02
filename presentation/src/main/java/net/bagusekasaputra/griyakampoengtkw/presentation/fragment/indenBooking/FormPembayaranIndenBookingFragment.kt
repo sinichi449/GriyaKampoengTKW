@@ -14,16 +14,11 @@ import android.widget.Toast
 import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
-import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.RecyclerView
 import com.evrencoskun.tableview.listener.ITableViewListener
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import net.bagusekasaputra.griyakampoengtkw.domain.NumberUtil
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.catatanPembayaran.IndenBookingCatatanPembayaran
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.indenBooking.HargaRumahIndenBooking
@@ -40,7 +35,6 @@ import net.bagusekasaputra.griyakampoengtkw.presentation.util.DialogUtil
 import net.bagusekasaputra.griyakampoengtkw.presentation.util.InputUtil
 import net.bagusekasaputra.griyakampoengtkw.presentation.util.UiUtils
 import net.bagusekasaputra.griyakampoengtkw.presentation.viewmodel.IndenBookingViewModel
-import kotlin.random.Random
 
 @AndroidEntryPoint
 class FormPembayaranIndenBookingFragment : Fragment() {
@@ -103,31 +97,32 @@ class FormPembayaranIndenBookingFragment : Fragment() {
         binding.cardCatatanPembayaran.setOnClickListener {
             val catatanPembayaran = viewModel.catatanPembayaran.value
 
-            catatanPembayaranDialog(catatanPembayaran,
+            catatanPembayaranDialog(
+                catatanPembayaran = catatanPembayaran,
                 onInputValidAndSubmitRequested = { dialogInterface, dialogBinding, newCatatanPembayaran ->
                     dialogBinding.btnTambahkan.isEnabled = false
 
                     // Update Operation
                     if (catatanPembayaran != null) {
-                        // TODO
-                        val isSuccess = Random.nextBoolean()
-                        lifecycleScope.launch(Dispatchers.Default) {
-                            withContext(Dispatchers.Main) {
-                                dialogBinding.btnTambahkan.text = "Memproses perubahan ..."
-                            }
-
-                            delay(3000L)
-
-                            withContext(Dispatchers.Main) {
+                        viewModel.updateCatatanPembayaran(newCatatanPembayaran,
+                            onProgress = {
+                                dialogBinding.btnTambahkan.text = "Mengupdate data ..."
+                            },
+                            onSuccess = {
                                 dialogInterface.dismiss()
 
-                                if (isSuccess) {
-                                    Snackbar.make(binding.root, "OK", Snackbar.LENGTH_SHORT).show()
-                                } else {
-                                    Toast.makeText(requireContext(), "Random failure!", Toast.LENGTH_LONG).show()
-                                }
+                                Snackbar.make(binding.root, "Berhasil mengubah catatan pembayaran!", Snackbar.LENGTH_SHORT)
+                                    .show()
+
+                                refresh(Model.CATATAN_PEMBAYARAN)
+                            },
+                            onFailure = {
+                                dialogInterface.dismiss()
+
+                                Toast.makeText(requireContext(), it, Toast.LENGTH_LONG).show()
                             }
-                        }
+                        )
+
                     // Insert operation
                     } else {
                         viewModel.insertCatatanPembayaran(newCatatanPembayaran,
@@ -139,6 +134,8 @@ class FormPembayaranIndenBookingFragment : Fragment() {
 
                                 Snackbar.make(binding.root, "Berhasil menambahkan catatan pembayaran!", Snackbar.LENGTH_SHORT)
                                     .show()
+
+                                refresh(Model.CATATAN_PEMBAYARAN)
                             },
                             onFailure = {
                                 dialogInterface.dismiss()
@@ -470,7 +467,7 @@ class FormPembayaranIndenBookingFragment : Fragment() {
                 Snackbar.make(binding.root, "Berhasil menambahkan pembayaran!", Snackbar.LENGTH_SHORT)
                     .show()
 
-                refresh(Model.CATATAN_PEMBAYARAN)
+                refresh(Model.LIST_PEMBAYARAN)
             } else {
                 data?.extras?.getString(FormActivity.EXTRAS_FAIL_MSG)?.also {
                     Toast.makeText(requireContext(), it, Toast.LENGTH_LONG).show()

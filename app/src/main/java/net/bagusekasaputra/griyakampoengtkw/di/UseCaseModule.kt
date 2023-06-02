@@ -16,6 +16,7 @@ import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.block.GetAllBloc
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.catatanPembayaran.AddCatatanPembayaranAsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.catatanPembayaran.DeleteCatatanPembayaranAsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.catatanPembayaran.GetCatatanPembayaranAsyncUseCase
+import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.catatanPembayaran.UpdateCatatanPembayaranAsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.dataDiri.GetDataDiriAsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.databaseUser.GetAllDatabaseUserAsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.databaseUser.InsertDatabaseUserAsyncUseCase
@@ -273,6 +274,13 @@ object UseCaseModule {
         indenBookingCatatanPembayaranRepository: IndenBookingCatatanPembayaranRepository,
     )
         = AddCatatanPembayaranAsyncUseCase(kavlingCatatanPembayaranRepository, indenBookingCatatanPembayaranRepository)
+
+    @Provides
+    fun provideUpdateCatatanPembayaranUseCase(
+        kavlingCatatanPembayaranRepository: KavlingCatatanPembayaranRepository,
+        indenBookingCatatanPembayaranRepository: IndenBookingCatatanPembayaranRepository,
+    )
+        = UpdateCatatanPembayaranAsyncUseCase(kavlingCatatanPembayaranRepository, indenBookingCatatanPembayaranRepository)
 
     @Provides
     fun provideDeleteCatatanPembayaranUseCase(kavlingCatatanPembayaranRepository: KavlingCatatanPembayaranRepository)

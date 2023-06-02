@@ -34,6 +34,17 @@ class RoomIndenBookingCatatanPembayaranDataSource(
         }
     }
 
+    /**
+     * Technically this is the same operation as insert(), since I've set auto-deletion whenever
+     * the entity already exists.
+     */
+    override suspend fun update(
+        keyId: String,
+        newModel: IndenBookingCatatanPembayaranModel
+    ): Result<Nothing?> {
+        return insert(newModel)
+    }
+
     override suspend fun delete(keyId: String): Result<Nothing?> {
         return roomOperation {
             catatanPembayaranDao.delete(keyId)

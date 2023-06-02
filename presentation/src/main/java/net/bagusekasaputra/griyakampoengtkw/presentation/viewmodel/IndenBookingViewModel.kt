@@ -14,6 +14,7 @@ import kotlinx.coroutines.withContext
 import net.bagusekasaputra.griyakampoengtkw.domain.DataMode
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.catatanPembayaran.AddCatatanPembayaranAsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.catatanPembayaran.GetCatatanPembayaranAsyncUseCase
+import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.catatanPembayaran.UpdateCatatanPembayaranAsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.indenBooking.GetAllIndenBookingAsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.indenBooking.dataDiri.EditDataDiriIndenBookingAsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.indenBooking.dataDiri.GetDataDiriIndenBookingAsyncUseCase
@@ -35,24 +36,25 @@ import javax.inject.Inject
 
 @HiltViewModel
 class IndenBookingViewModel @Inject constructor(
-    private val getAllIndenBookingAsyncUseCase: GetAllIndenBookingAsyncUseCase,
+    private val getAllIndenBookingUseCase: GetAllIndenBookingAsyncUseCase,
     // Data Diri
-    private val getDataDiriIndenBookingAsyncUseCase: GetDataDiriIndenBookingAsyncUseCase,
-    private val insertDataDiriIndenBookingAsyncUseCase: InsertDataDiriIndenBookingAsyncUseCase,
-    private val editDataDiriIndenBookingAsyncUseCase: EditDataDiriIndenBookingAsyncUseCase,
+    private val getDataDiriIndenBookinUseCase: GetDataDiriIndenBookingAsyncUseCase,
+    private val insertDataDiriIndenBookingUseCase: InsertDataDiriIndenBookingAsyncUseCase,
+    private val editDataDiriIndenBookingUseCase: EditDataDiriIndenBookingAsyncUseCase,
     // Foto Identitas / Image Data Diri
-    private val insertFotoIdentitasIndenBookingAsyncUseCase: InsertFotoIdentitasIndenBookingAsyncUseCase,
-    private val updateFotoIdentitasIndenBookingAsyncUseCase: UpdateFotoIdentitasIndenBookingAsyncUseCase,
-    private val deleteFotoIdentitasIndenBookingAsyncUseCase: DeleteFotoIdentitasIndenBookingAsyncUseCase,
+    private val insertFotoIdentitasIndenBookingUseCase: InsertFotoIdentitasIndenBookingAsyncUseCase,
+    private val updateFotoIdentitasIndenBookingUseCase: UpdateFotoIdentitasIndenBookingAsyncUseCase,
+    private val deleteFotoIdentitasIndenBookingUseCase: DeleteFotoIdentitasIndenBookingAsyncUseCase,
     // Pembayaran
-    private val getAllPembayaranIndenBookingAsyncUseCase: GetAllPembayaranIndenBookingAsyncUseCase,
-    private val insertPembayaranIndenBookingAsyncUseCase: InsertPembayaranIndenBookingAsyncUseCase,
+    private val getAllPembayaranIndenBookingUseCase: GetAllPembayaranIndenBookingAsyncUseCase,
+    private val insertPembayaranIndenBookingUseCase: InsertPembayaranIndenBookingAsyncUseCase,
     // Harga Rumah
-    private val getHargaRumahIndenBookingAsyncUseCase: GetHargaRumahIndenBookingAsyncUseCase,
-    private val updateHargaRumahIndenBookingAsyncUseCase: UpdateHargaRumahIndenBookingAsyncUseCase,
+    private val getHargaRumahIndenBookingUseCase: GetHargaRumahIndenBookingAsyncUseCase,
+    private val updateHargaRumahIndenBookingUseCase: UpdateHargaRumahIndenBookingAsyncUseCase,
     // Catatan Pembayaran
-    private val getCatatanPembayaranAsyncUseCase: GetCatatanPembayaranAsyncUseCase,
-    private val addCatatanPembayaranAsyncUseCase: AddCatatanPembayaranAsyncUseCase,
+    private val getCatatanPembayaranUseCase: GetCatatanPembayaranAsyncUseCase,
+    private val addCatatanPembayaranUseCase: AddCatatanPembayaranAsyncUseCase,
+    private val updateCatatanPembayaranUseCase: UpdateCatatanPembayaranAsyncUseCase,
 ): ViewModel() {
 
     // Inden Booking
@@ -106,7 +108,7 @@ class IndenBookingViewModel @Inject constructor(
 
         readIndenBookingJob = CoroutineScope(Dispatchers.IO).launch {
             val request = GetAllIndenBookingAsyncUseCase.Request(dataMode)
-            getAllIndenBookingAsyncUseCase.execute(request).collect { result ->
+            getAllIndenBookingUseCase.execute(request).collect { result ->
                 result.onSuccess {
                     _indenBookings.postValue(it)
 
@@ -139,7 +141,7 @@ class IndenBookingViewModel @Inject constructor(
 
         CoroutineScope(Dispatchers.IO).launch {
             val request = GetDataDiriIndenBookingAsyncUseCase.Request(keyId)
-            getDataDiriIndenBookingAsyncUseCase.execute(request).collect { result ->
+            getDataDiriIndenBookinUseCase.execute(request).collect { result ->
                 result.onSuccess {
                     _dataDiriIndenBooking.postValue(it)
 
@@ -167,7 +169,7 @@ class IndenBookingViewModel @Inject constructor(
 
         CoroutineScope(Dispatchers.IO).launch {
             val request = InsertDataDiriIndenBookingAsyncUseCase.Request(dataDiri)
-            insertDataDiriIndenBookingAsyncUseCase.execute(request).collect { result ->
+            insertDataDiriIndenBookingUseCase.execute(request).collect { result ->
                 result.onSuccess {
                     withContext(Dispatchers.Main) {
                         onComplete(it)
@@ -193,7 +195,7 @@ class IndenBookingViewModel @Inject constructor(
 
         viewModelScope.launch(Dispatchers.IO) {
             val request = EditDataDiriIndenBookingAsyncUseCase.Request(keyId, newDataDiri)
-            editDataDiriIndenBookingAsyncUseCase.execute(request).collect { result ->
+            editDataDiriIndenBookingUseCase.execute(request).collect { result ->
                 result.onSuccess {
                     withContext(Dispatchers.Main) {
                         onComplete()
@@ -223,7 +225,7 @@ class IndenBookingViewModel @Inject constructor(
 
         viewModelScope.launch(Dispatchers.IO) {
             val request = InsertFotoIdentitasIndenBookingAsyncUseCase.Request(keyId, uri)
-            insertFotoIdentitasIndenBookingAsyncUseCase.execute(request).collect { result ->
+            insertFotoIdentitasIndenBookingUseCase.execute(request).collect { result ->
                 result.onSuccess {
                     withContext(Dispatchers.Main) {
                         onComplete()
@@ -249,7 +251,7 @@ class IndenBookingViewModel @Inject constructor(
 
         viewModelScope.launch(Dispatchers.IO) {
             val request = UpdateFotoIdentitasIndenBookingAsyncUseCase.Request(keyId, uri)
-            updateFotoIdentitasIndenBookingAsyncUseCase.execute(request).collect { result ->
+            updateFotoIdentitasIndenBookingUseCase.execute(request).collect { result ->
                 result.onSuccess {
                     withContext(Dispatchers.Main) {
                         onComplete()
@@ -275,7 +277,7 @@ class IndenBookingViewModel @Inject constructor(
 
         viewModelScope.launch(Dispatchers.IO) {
             val request = DeleteFotoIdentitasIndenBookingAsyncUseCase.Request(keyId, uri)
-            deleteFotoIdentitasIndenBookingAsyncUseCase.execute(request).collect { result ->
+            deleteFotoIdentitasIndenBookingUseCase.execute(request).collect { result ->
                 result.onSuccess {
                     withContext(Dispatchers.Main) {
                         onComplete()
@@ -304,7 +306,7 @@ class IndenBookingViewModel @Inject constructor(
 
         CoroutineScope(Dispatchers.IO).launch {
             val request = GetHargaRumahIndenBookingAsyncUseCase.Request(keyId)
-            getHargaRumahIndenBookingAsyncUseCase.execute(request).collect { result ->
+            getHargaRumahIndenBookingUseCase.execute(request).collect { result ->
                 result.onSuccess {
                     _hargaRumahIndenBooking.postValue(it)
 
@@ -334,7 +336,7 @@ class IndenBookingViewModel @Inject constructor(
 
         viewModelScope.launch(Dispatchers.IO) {
             val request = UpdateHargaRumahIndenBookingAsyncUseCase.Request(keyId, newHargaRumah)
-            updateHargaRumahIndenBookingAsyncUseCase.execute(request).collect { result ->
+            updateHargaRumahIndenBookingUseCase.execute(request).collect { result ->
                 result.onSuccess {
                     withContext(Dispatchers.Main) {
                         onSuccess()
@@ -363,7 +365,7 @@ class IndenBookingViewModel @Inject constructor(
 
         CoroutineScope(Dispatchers.IO).launch {
             val request = GetAllPembayaranIndenBookingAsyncUseCase.Request(keyId)
-            getAllPembayaranIndenBookingAsyncUseCase.execute(request).collect { result ->
+            getAllPembayaranIndenBookingUseCase.execute(request).collect { result ->
                 result.onSuccess {
                     _pembayaranListIndenBooking.postValue(it)
 
@@ -392,7 +394,7 @@ class IndenBookingViewModel @Inject constructor(
 
         viewModelScope.launch(Dispatchers.IO) {
             val request = InsertPembayaranIndenBookingAsyncUseCase.Request(keyId, pembayaran)
-            insertPembayaranIndenBookingAsyncUseCase.execute(request).collect { result ->
+            insertPembayaranIndenBookingUseCase.execute(request).collect { result ->
                 result.onSuccess {
                     withContext(Dispatchers.Main) {
                         onSuccess()
@@ -421,7 +423,7 @@ class IndenBookingViewModel @Inject constructor(
 
         viewModelScope.launch(Dispatchers.IO) {
             val request = GetCatatanPembayaranAsyncUseCase.IndenBookingRequest(keyId, dataMode)
-            getCatatanPembayaranAsyncUseCase.execute(request).collect { result ->
+            getCatatanPembayaranUseCase.execute(request).collect { result ->
                 result.onSuccess {
                     _catatanPembayaran.postValue(it as IndenBookingCatatanPembayaran?)
 
@@ -450,7 +452,7 @@ class IndenBookingViewModel @Inject constructor(
             val request = AddCatatanPembayaranAsyncUseCase.Request(
                 CatatanPembayaran.INDEN_BOOKING, catatanPembayaran
             )
-            addCatatanPembayaranAsyncUseCase.execute(request).collect { result ->
+            addCatatanPembayaranUseCase.execute(request).collect { result ->
                 result.onSuccess {
                     withContext(Dispatchers.Main) {
                         onSuccess()
@@ -459,6 +461,34 @@ class IndenBookingViewModel @Inject constructor(
                 result.onFailure {
                     withContext(Dispatchers.Main) {
                         onFailure("Gagal menambahkan catatan pembayaran : ${it.localizedMessage}")
+                    }
+                }
+            }
+        }
+    }
+
+    fun updateCatatanPembayaran(
+        newCatatanPembayaran: IndenBookingCatatanPembayaran,
+        onProgress: () -> Unit = {},
+        onSuccess: () -> Unit = {},
+        onFailure: (msg: String) -> Unit = {},
+    ) {
+        onProgress()
+
+        viewModelScope.launch(Dispatchers.IO) {
+            val request = UpdateCatatanPembayaranAsyncUseCase.IndenBookingRequest(
+                newCatatanPembayaran.keyId,
+                newCatatanPembayaran
+            )
+            updateCatatanPembayaranUseCase.execute(request).collect { result ->
+                result.onSuccess {
+                    withContext(Dispatchers.Main) {
+                        onSuccess()
+                    }
+                }
+                result.onFailure {
+                    withContext(Dispatchers.Main) {
+                        onFailure("Gagal mengubah catatan pembayaran : ${it.localizedMessage}")
                     }
                 }
             }

@@ -8,4 +8,6 @@ interface IndenBookingCatatanPembayaranRepository {
 
     suspend fun insert(catatanPembayaran: IndenBookingCatatanPembayaran): Result<Nothing?>
 
+    suspend fun update(keyId: String, newCatatanPembayaran: IndenBookingCatatanPembayaran): Result<Nothing?>
+
 }
