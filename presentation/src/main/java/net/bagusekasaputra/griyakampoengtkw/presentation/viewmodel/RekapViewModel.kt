@@ -141,7 +141,7 @@ class RekapViewModel @Inject constructor(
         // Need to be set like this to show progress dialog
         isRekapBesarOverviewLoaded.value = false
 
-        gettingRekapBesarJob = viewModelScope.launch {
+        gettingRekapBesarJob = viewModelScope.launch(Dispatchers.IO) {
             val request = CalculateRekapBesarAndGetRekapBesarOverview.Request(
                 periodeRekap = periode,
                 startDate = startDate,
