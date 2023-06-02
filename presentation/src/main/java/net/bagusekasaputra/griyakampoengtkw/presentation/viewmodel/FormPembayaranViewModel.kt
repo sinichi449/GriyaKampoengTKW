@@ -11,9 +11,13 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import net.bagusekasaputra.griyakampoengtkw.domain.AsyncUseCaseHelper
 import net.bagusekasaputra.griyakampoengtkw.domain.DataMode
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.ambilKuitansi.InsertAmbilKuitansiAsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.baselinePembayaran.SetBaselinePembayaranAsyncUseCase
+import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.catatanPembayaran.AddCatatanPembayaranAsyncUseCase
+import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.catatanPembayaran.DeleteCatatanPembayaranAsyncUseCase
+import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.catatanPembayaran.GetCatatanPembayaranAsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.pembayaran.DeletePembayaranAsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.pembayaran.GetListPembayaranBulananAsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.statusPembayaran.GetStatusPembayaranKavlingAsyncUseCase
@@ -22,6 +26,8 @@ import net.bagusekasaputra.griyakampoengtkw.domain.entity.BaselinePembayaran
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.HargaKavling
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.pembayaran.Pembayaran
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.pembayaran.PembayaranBulanan
+import net.bagusekasaputra.griyakampoengtkw.domain.entity.pembayaran.catatanPembayaran.CatatanPembayaran
+import net.bagusekasaputra.griyakampoengtkw.domain.entity.pembayaran.catatanPembayaran.KavlingCatatanPembayaran
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.statusPembayaran.StatusPembayaran
 import net.bagusekasaputra.griyakampoengtkw.domain.usecase.pembayaran.AddPembayaranUseCase
 import net.bagusekasaputra.griyakampoengtkw.presentation.combineWith
@@ -32,12 +38,20 @@ import javax.inject.Inject
  */
 @HiltViewModel
 class FormPembayaranViewModel @Inject constructor(
+    // Baseline Pembayaran
     private val setBaselinePembayaranAsyncUseCase: SetBaselinePembayaranAsyncUseCase,
+    // Pembayaran Bulanan
     private val getListPembayaranBulananAsyncUseCase: GetListPembayaranBulananAsyncUseCase,
     private val getStatusPembayaranKavlingAsyncUseCase: GetStatusPembayaranKavlingAsyncUseCase,
+    // Pembayaran
     private val addPembayaranUseCase: AddPembayaranUseCase,
     private val deletePembayaranAsyncUseCase: DeletePembayaranAsyncUseCase,
+    // Ambil Kuitansi
     private val insertAmbilKuitansiAsyncUseCase: InsertAmbilKuitansiAsyncUseCase,
+    // Kavling Catatan Pembayaran
+    private val getCatatanPembayaranAsyncUseCase: GetCatatanPembayaranAsyncUseCase,
+    private val addCatatanPembayaranAsyncUseCase: AddCatatanPembayaranAsyncUseCase,
+    private val deleteCatatanPembayaranAsyncUseCase: DeleteCatatanPembayaranAsyncUseCase,
 ): ViewModel() {
 
     // Pembayaran Bulanan
@@ -75,12 +89,19 @@ class FormPembayaranViewModel @Inject constructor(
     val statusPembayaranLive: LiveData<StatusPembayaran?>
         get() = _statusPembayaranLive
 
+    // Catatan Pembayaran
+    private val _catatanPembayaranLive = MutableLiveData<KavlingCatatanPembayaran?>()
+    val catatanPembayaranLive: LiveData<KavlingCatatanPembayaran?>
+        get() = _catatanPembayaranLive
 
-    // Combine
+    // Basline Pembayaran + Full Pembayaran
     val baselineAndFullPembayaran = _baselinePembayaranLive
         .combineWith(_fullPembayaransLive) { baselinePembayaran, pembayarans ->
             Pair(baselinePembayaran, pembayarans)
         }
+
+    // Operation Observer
+    private val isFinishOperation = MutableLiveData<Boolean>()
 
 
     var currentKavlingKode: String? = null
@@ -92,6 +113,12 @@ class FormPembayaranViewModel @Inject constructor(
 
     var readPembayaranBulananJob: Job? = null
 
+    private val asyncHelper = AsyncUseCaseHelper(isFinishOperation)
+    // The list of Coroutines/Flows job that need to be cleared on
+    // the onCleared() callback. See below.
+    private val asyncJobs = ArrayList<Job>()
+
+
     // Change the TableView on FormPembayaran fragment
     val tableTypeLive = MutableLiveData(TablePembayaranType.FORM_PEMBAYARAN)
     fun setTableType(type: TablePembayaranType) {
@@ -99,6 +126,10 @@ class FormPembayaranViewModel @Inject constructor(
     }
 
 
+
+    /**
+     * Pembayaran bulanan
+     */
     fun getListPembayaranBulanan(
         kavling: String,
         onLoading: () -> Unit,
@@ -134,6 +165,10 @@ class FormPembayaranViewModel @Inject constructor(
         }
     }
 
+
+    /**
+     * Pembayaran
+     */
     fun addPembayaran(
         kavlingKode: String,
         hargaKavling: Long,
@@ -184,6 +219,10 @@ class FormPembayaranViewModel @Inject constructor(
         }
     }
 
+
+    /**
+     * Baseline Pembayaran
+     */
     fun insertBaselinePembayaran(
         baselinePembayaran: BaselinePembayaran,
         onLoading: () -> Unit,
@@ -242,6 +281,10 @@ class FormPembayaranViewModel @Inject constructor(
         }
     }
 
+
+    /**
+     * Ambil Kuitansi
+     */
     fun insertAmbilKuitansi(ambilKuitansi: AmbilKuitansi,
         onProgress: () -> Unit = {},
         onSuccess: () -> Unit = {},
@@ -267,6 +310,91 @@ class FormPembayaranViewModel @Inject constructor(
         }
     }
 
+
+    /**
+     * Catatan Pembayaran
+     */
+    /**
+     * Catatan Pembayaran
+     */
+    fun getCatatanPembayaran(kavlingKode: String, onFailure: (cause: String) -> Unit) {
+        val request = GetCatatanPembayaranAsyncUseCase.KavlingRequest(
+            CatatanPembayaran.KAVLING, kavlingKode, dataMode
+        )
+
+        val gettingCatatanPembayaranJob = asyncHelper.doWork(
+            request = request,
+            asyncUseCase = getCatatanPembayaranAsyncUseCase,
+            onSuccess = {
+                _catatanPembayaranLive.postValue(it)
+            },
+            onFailure = {
+                onFailure("Gagal mendapatkan catatan pembayaran: ${it.message}")
+            },
+            successMsgOnUiThread = false,
+        )
+
+        asyncJobs.add(gettingCatatanPembayaranJob)
+    }
+
+    fun addCatatanPembayaran(
+        kavlingKode: String,
+        catatan: String,
+        onComplete: (msg: String) -> Unit,
+    ) {
+        isFinishOperation.value = false
+
+        val kavlingCatatanPembayaran = KavlingCatatanPembayaran(kavlingKode, catatan)
+        val request = AddCatatanPembayaranAsyncUseCase.Request(
+            CatatanPembayaran.KAVLING,
+            kavlingCatatanPembayaran
+        )
+
+        CoroutineScope(Dispatchers.IO).launch {
+            addCatatanPembayaranAsyncUseCase.execute(request).collect { result ->
+                result.onSuccess {
+                    withContext(Dispatchers.Main) {
+                        onComplete("Berhasil menambahkan catatan pembayaran")
+                    }
+                }
+                result.onFailure { throwable ->
+                    withContext(Dispatchers.Main) {
+                        onComplete("Gagal menambahkan catatan: ${throwable.message}")
+                    }
+                }
+
+                isFinishOperation.postValue(true)
+            }
+        }
+    }
+
+    fun deleteCatatanPembayaran(kavlingKode: String, onComplete: (msg: String) -> Unit) {
+        isFinishOperation.value = false
+
+        val request = DeleteCatatanPembayaranAsyncUseCase.KavlingRequest(
+            CatatanPembayaran.KAVLING, kavlingKode
+        )
+
+        CoroutineScope(Dispatchers.IO).launch {
+            deleteCatatanPembayaranAsyncUseCase.execute(request).collect { result ->
+                result.onSuccess {
+                    _catatanPembayaranLive.postValue(null)
+
+                    withContext(Dispatchers.Main) {
+                        onComplete("Berhasil menghapus catatan pembayaran")
+                    }
+                }
+
+                result.onFailure { throwable ->
+                    withContext(Dispatchers.Main) {
+                        onComplete("Gagal menghapus catatan pembayaran: ${throwable.message}")
+                    }
+                }
+
+                isFinishOperation.postValue(true)
+            }
+        }
+    }
 
 
     fun hitungAngsuranPerBulan(hargaKavling: HargaKavling, timeFrame: Int, opsiTimeframe: String): Double {

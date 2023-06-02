@@ -6,13 +6,13 @@ import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.channels.trySendBlocking
 import kotlinx.coroutines.flow.callbackFlow
 import kotlinx.coroutines.flow.first
-import net.bagusekasaputra.griyakampoengtkw.data.interfaces.remote.RemoteCatatanPembayaranDataSource
+import net.bagusekasaputra.griyakampoengtkw.data.interfaces.remote.RemoteKavlingCatatanPembayaranDataSource
 import net.bagusekasaputra.griyakampoengtkw.data.model.CatatanPembayaranModel
 import net.bagusekasaputra.griyakampoengtkw.data.remote.FirebaseNodes
 
-class FirebaseCatatanPembayaranDataSource(
+class FirebaseKavlingCatatanPembayaranDataSource(
     private val databaseReference: DatabaseReference,
-): RemoteCatatanPembayaranDataSource {
+): RemoteKavlingCatatanPembayaranDataSource {
 
     private val catatanRef = databaseReference.child(FirebaseNodes.CATATAN_PEMBAYARAN)
 

@@ -15,7 +15,7 @@ import net.bagusekasaputra.griyakampoengtkw.domain.repository.BackupRestoreRepos
 import net.bagusekasaputra.griyakampoengtkw.domain.repository.BiayaLainRepository
 import net.bagusekasaputra.griyakampoengtkw.domain.repository.BiayaMarketingRepository
 import net.bagusekasaputra.griyakampoengtkw.domain.repository.BlockRepository
-import net.bagusekasaputra.griyakampoengtkw.domain.repository.CatatanPembayaranRepository
+import net.bagusekasaputra.griyakampoengtkw.domain.repository.KavlingCatatanPembayaranRepository
 import net.bagusekasaputra.griyakampoengtkw.domain.repository.DataDiriRepository
 import net.bagusekasaputra.griyakampoengtkw.domain.repository.FeeMarketingRepository
 import net.bagusekasaputra.griyakampoengtkw.domain.repository.FotoPembayaranRepository
@@ -31,7 +31,7 @@ class CreateBackupAsyncUseCase(
     private val pembayaranRepository: PembayaranRepository,
     private val dataDiriRepository: DataDiriRepository,
     private val hargaKavlingRepository: HargaKavlingRepository,
-    private val catatanPembayaranRepository: CatatanPembayaranRepository,
+    private val kavlingCatatanPembayaranRepository: KavlingCatatanPembayaranRepository,
     private val biayaMarketingRepository: BiayaMarketingRepository,
     private val feeMarketingRepository: FeeMarketingRepository,
     private val biayaLainRepository: BiayaLainRepository,
@@ -97,7 +97,7 @@ class CreateBackupAsyncUseCase(
             }
 
             trySendBlocking(Result.success(Progress(42, "Mendownload Catatan Pembayaran")))
-            val listCatatanPembayaran = catatanPembayaranRepository.getBatch(listKavling = listKodeKavlings)
+            val listCatatanPembayaran = kavlingCatatanPembayaranRepository.getBatch(listKavling = listKodeKavlings)
                 .first().getOrThrow() ?: emptyList()
 
             trySendBlocking(Result.success(Progress(49, "Mendownload Biaya Marketing")))

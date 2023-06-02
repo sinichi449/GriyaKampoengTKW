@@ -1,4 +1,4 @@
-package net.bagusekasaputra.griyakampoengtkw.domain.repository.indenBooking
+package net.bagusekasaputra.griyakampoengtkw.domain.repository
 
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.images.FotoPembayaranIndenBooking
 

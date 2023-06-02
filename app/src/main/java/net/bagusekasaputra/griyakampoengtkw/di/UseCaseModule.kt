@@ -13,6 +13,8 @@ import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.biayaLain.*
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.biayaMarketing.GetAllBiayaMarketingByKavlingKodeAsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.biayaPribadi.GetAllBiayaPribadiAsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.block.GetAllBlocksAsyncUseCase
+import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.catatanPembayaran.AddCatatanPembayaranAsyncUseCase
+import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.catatanPembayaran.DeleteCatatanPembayaranAsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.catatanPembayaran.GetCatatanPembayaranAsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.dataDiri.GetDataDiriAsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.databaseUser.GetAllDatabaseUserAsyncUseCase
@@ -51,12 +53,9 @@ import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.rekap.GetRekapBe
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.reportKavling.GetAllReportKavlingAsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.statusPembayaran.GetStatusPembayaranKavlingAsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.repository.*
-import net.bagusekasaputra.griyakampoengtkw.domain.repository.indenBooking.FotoPembayaranIndenBookingRepository
 import net.bagusekasaputra.griyakampoengtkw.domain.usecase.appupdate.GetUpdateInformationUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.usecase.biayaMarketing.*
 import net.bagusekasaputra.griyakampoengtkw.domain.usecase.block.AddNewBlockUseCase
-import net.bagusekasaputra.griyakampoengtkw.domain.usecase.catatanPembayaran.AddCatatanPembayaranUseCase
-import net.bagusekasaputra.griyakampoengtkw.domain.usecase.catatanPembayaran.DeleteCatatanPembayaranUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.usecase.datadiri.AddDataDiriUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.usecase.datadiri.DeleteDataDiriUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.usecase.feeMarketing.AddFeeMarketingUseCase
@@ -262,16 +261,16 @@ object UseCaseModule {
      * Catatan Pembayaran
      */
     @Provides
-    fun provideGetCatatanPembayaran(catatanPembayaranRepository: CatatanPembayaranRepository)
-        = GetCatatanPembayaranAsyncUseCase(catatanPembayaranRepository)
+    fun provideGetCatatanPembayaran(kavlingCatatanPembayaranRepository: KavlingCatatanPembayaranRepository)
+        = GetCatatanPembayaranAsyncUseCase(kavlingCatatanPembayaranRepository)
 
     @Provides
-    fun provideAddCatatanPembayaran(catatanPembayaranRepository: CatatanPembayaranRepository)
-        = AddCatatanPembayaranUseCase(catatanPembayaranRepository)
+    fun provideAddCatatanPembayaranUseCase(kavlingCatatanPembayaranRepository: KavlingCatatanPembayaranRepository)
+        = AddCatatanPembayaranAsyncUseCase(kavlingCatatanPembayaranRepository)
 
     @Provides
-    fun provideDeleteCatatanPembayaran(catatanPembayaranRepository: CatatanPembayaranRepository)
-        = DeleteCatatanPembayaranUseCase(catatanPembayaranRepository)
+    fun provideDeleteCatatanPembayaranUseCase(kavlingCatatanPembayaranRepository: KavlingCatatanPembayaranRepository)
+        = DeleteCatatanPembayaranAsyncUseCase(kavlingCatatanPembayaranRepository)
 
     /**
      * Image Data Diri
@@ -431,7 +430,7 @@ object UseCaseModule {
         pembayaranRepository: PembayaranRepository,
         dataDiriRepository: DataDiriRepository,
         hargaKavlingRepository: HargaKavlingRepository,
-        catatanPembayaranRepository: CatatanPembayaranRepository,
+        kavlingCatatanPembayaranRepository: KavlingCatatanPembayaranRepository,
         biayaMarketingRepository: BiayaMarketingRepository,
         feeMarketingRepository: FeeMarketingRepository,
         biayaLainRepository: BiayaLainRepository,
@@ -446,7 +445,7 @@ object UseCaseModule {
             pembayaranRepository,
             dataDiriRepository,
             hargaKavlingRepository,
-            catatanPembayaranRepository,
+            kavlingCatatanPembayaranRepository,
             biayaMarketingRepository,
             feeMarketingRepository,
             biayaLainRepository,

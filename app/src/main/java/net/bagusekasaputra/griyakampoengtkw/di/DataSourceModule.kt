@@ -15,7 +15,7 @@ import net.bagusekasaputra.griyakampoeng.tkw.data.local.baselinePembayaran.RoomB
 import net.bagusekasaputra.griyakampoeng.tkw.data.local.biayaLain.RoomBiayaLainDataSource
 import net.bagusekasaputra.griyakampoeng.tkw.data.local.biayaMarketing.RoomBiayaMarketingDataSource
 import net.bagusekasaputra.griyakampoeng.tkw.data.local.block.RoomBlockDataSource
-import net.bagusekasaputra.griyakampoeng.tkw.data.local.catatanPembayaran.RoomCatatanPembayaranDataSource
+import net.bagusekasaputra.griyakampoeng.tkw.data.local.catatanPembayaran.RoomKavlingCatatanPembayaranDataSource
 import net.bagusekasaputra.griyakampoeng.tkw.data.local.datadiri.RoomDataDiriDataSource
 import net.bagusekasaputra.griyakampoeng.tkw.data.local.datadiri.RoomDataDiriIndenBookingDataSource
 import net.bagusekasaputra.griyakampoeng.tkw.data.local.feeMarketing.RoomFeeMarketingDataSource
@@ -272,15 +272,15 @@ object DataSourceModule {
      * Catatan Pembayaran
      */
     @Provides
-    fun provideRemoteCatatanPembayaranDataSource(databaseReference: DatabaseReference): RemoteCatatanPembayaranDataSource {
-        return net.bagusekasaputra.griyakampoengtkw.data.remote.catatanPembayaran.FirebaseCatatanPembayaranDataSource(
+    fun provideRemoteCatatanPembayaranDataSource(databaseReference: DatabaseReference): RemoteKavlingCatatanPembayaranDataSource {
+        return net.bagusekasaputra.griyakampoengtkw.data.remote.catatanPembayaran.FirebaseKavlingCatatanPembayaranDataSource(
             databaseReference
         )
     }
 
     @Provides
-    fun provideLocalCatatanPembayaranDataSource(roomDatabase: MyRoomDatabase): LocalCatatanPembayaranDataSource {
-        return RoomCatatanPembayaranDataSource(roomDatabase)
+    fun provideLocalCatatanPembayaranDataSource(roomDatabase: MyRoomDatabase): LocalKavlingCatatanPembayaranDataSource {
+        return RoomKavlingCatatanPembayaranDataSource(roomDatabase)
     }
 
     @Provides

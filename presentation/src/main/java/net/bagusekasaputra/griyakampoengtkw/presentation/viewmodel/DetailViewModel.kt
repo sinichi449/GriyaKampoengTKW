@@ -12,12 +12,10 @@ import net.bagusekasaputra.griyakampoengtkw.domain.AsyncUseCaseHelper
 import net.bagusekasaputra.griyakampoengtkw.domain.DataMode
 import net.bagusekasaputra.griyakampoengtkw.domain.NumberUtil
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.biayaMarketing.GetAllBiayaMarketingByKavlingKodeAsyncUseCase
-import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.catatanPembayaran.GetCatatanPembayaranAsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.dataDiri.GetDataDiriAsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.feeMarketing.GetFeeMarketingByKavlingKodeAsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.hargaKavling.GetHargaKavlingAsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.BiayaMarketing
-import net.bagusekasaputra.griyakampoengtkw.domain.entity.CatatanPembayaran
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.DataDiri
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.FeeMarketing
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.HargaKavling
@@ -26,8 +24,6 @@ import net.bagusekasaputra.griyakampoengtkw.domain.usecase.biayaMarketing.AddBia
 import net.bagusekasaputra.griyakampoengtkw.domain.usecase.biayaMarketing.DeleteAllBiayaMarketingUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.usecase.biayaMarketing.DeleteSingleBiayaMarketingUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.usecase.biayaMarketing.EditBiayaMarketingUseCase
-import net.bagusekasaputra.griyakampoengtkw.domain.usecase.catatanPembayaran.AddCatatanPembayaranUseCase
-import net.bagusekasaputra.griyakampoengtkw.domain.usecase.catatanPembayaran.DeleteCatatanPembayaranUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.usecase.datadiri.AddDataDiriUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.usecase.datadiri.DeleteDataDiriUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.usecase.feeMarketing.AddFeeMarketingUseCase
@@ -53,16 +49,12 @@ class DetailViewModel @Inject constructor(
     private val addFeeMarketingUseCase: AddFeeMarketingUseCase,
     private val updateFeeMarketingUseCase: UpdateFeeMarketingUseCase,
     private val deleteFeeMarketingUseCase: DeleteFeeMarketingUseCase,
-    private val getCatatanPembayaranAsyncUseCase: GetCatatanPembayaranAsyncUseCase,
-    private val addCatatanPembayaranUseCase: AddCatatanPembayaranUseCase,
-    private val deleteCatatanPembayaranUseCase: DeleteCatatanPembayaranUseCase,
 ): ViewModel() {
 
     val dataDiriLive = MutableLiveData<DataDiri?>()
     val hargaKavlingLive = MutableLiveData<HargaKavling>()
     val feeMarketingLive = MutableLiveData<FeeMarketing?>()
     val listBiayaMarketingLive = MutableLiveData<List<BiayaMarketing>?>()
-    val catatanPembayaranLive = MutableLiveData<CatatanPembayaran?>()
 
     val currentKavlingKode = MutableLiveData<String>()
 
@@ -570,86 +562,6 @@ class DetailViewModel @Inject constructor(
             }
 
             isFinishOperation.postValue(true)
-        }
-    }
-
-
-    /**
-     * Catatan Pembayaran
-     */
-    fun getCatatanPembayaran(kavlingKode: String, onFailure: (cause: String) -> Unit) {
-        val request = GetCatatanPembayaranAsyncUseCase.Request(kavlingKode, dataMode)
-
-        val gettingCatatanPembayaranJob = asyncHelper.doWork(
-            request = request,
-            asyncUseCase = getCatatanPembayaranAsyncUseCase,
-            onSuccess = {
-                catatanPembayaranLive.postValue(it)
-            },
-            onFailure = {
-                onFailure("Gagal mendapatkan catatan pembayaran: ${it.message}")
-            },
-            successMsgOnUiThread = false,
-        )
-
-        asyncJobs.add(gettingCatatanPembayaranJob)
-    }
-
-    fun addCatatanPembayaran(
-        kavlingKode: String,
-        catatan: String,
-        onComplete: (msg: String) -> Unit,
-    ) {
-        isFinishOperation.value = false
-
-        val catatanPembayaran = CatatanPembayaran(kavlingKode, catatan)
-        val request = AddCatatanPembayaranUseCase.Request(kavlingKode, catatanPembayaran)
-
-        CoroutineScope(Dispatchers.IO).launch {
-            addCatatanPembayaranUseCase.execute(request).collect { response ->
-                val result = response.data.result
-
-                result.onSuccess {
-                    withContext(Dispatchers.Main) {
-                        onComplete("Berhasil menambahkan catatan pembayaran")
-                    }
-                }
-                result.onFailure { throwable ->
-                    withContext(Dispatchers.Main) {
-                        onComplete("Gagal menambahkan catatan: ${throwable.message}")
-                    }
-                }
-
-                isFinishOperation.postValue(true)
-            }
-        }
-    }
-
-    fun deleteCatatanPembayaran(kavlingKode: String, onComplete: (msg: String) -> Unit) {
-        isFinishOperation.value = false
-
-        val request = DeleteCatatanPembayaranUseCase.Request(kavlingKode)
-
-        CoroutineScope(Dispatchers.IO).launch {
-            deleteCatatanPembayaranUseCase.execute(request).collect { response ->
-                val result = response.data.result
-
-                result.onSuccess {
-                    catatanPembayaranLive.postValue(null)
-
-                    withContext(Dispatchers.Main) {
-                        onComplete("Berhasil menghapus catatan pembayaran")
-                    }
-                }
-
-                result.onFailure { throwable ->
-                    withContext(Dispatchers.Main) {
-                        onComplete("Gagal menghapus catatan pembayaran: ${throwable.message}")
-                    }
-                }
-
-                isFinishOperation.postValue(true)
-            }
         }
     }
 

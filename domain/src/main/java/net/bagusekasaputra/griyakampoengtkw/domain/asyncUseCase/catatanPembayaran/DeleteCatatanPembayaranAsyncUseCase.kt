@@ -1,47 +1,40 @@
 package net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.catatanPembayaran
 
 import kotlinx.coroutines.flow.Flow
-import net.bagusekasaputra.griyakampoengtkw.domain.DataMode
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.AsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.pembayaran.catatanPembayaran.CatatanPembayaran
-import net.bagusekasaputra.griyakampoengtkw.domain.entity.pembayaran.catatanPembayaran.KavlingCatatanPembayaran
 import net.bagusekasaputra.griyakampoengtkw.domain.repository.KavlingCatatanPembayaranRepository
 
-class GetCatatanPembayaranAsyncUseCase(
+class DeleteCatatanPembayaranAsyncUseCase(
     private val kavlingCatatanPembayaranRepository: KavlingCatatanPembayaranRepository,
-): AsyncUseCase<GetCatatanPembayaranAsyncUseCase.Request, KavlingCatatanPembayaran?>() {
+): AsyncUseCase<DeleteCatatanPembayaranAsyncUseCase.Request, Nothing>() {
 
     sealed class Request(
         val catatanType: Int,
-        val dataMode: DataMode,
     ): AsyncUseCase.Request
 
     data class KavlingRequest(
         val mCatatanType: Int,
-        val kavlingKode: String,
-        val mDataMode: DataMode,
-    ): Request(mCatatanType, mDataMode)
+        val kavling: String
+    ): Request(mCatatanType)
 
     data class IndenBookingRequest(
         val mCatatanType: Int,
-        val mDataMode: DataMode,
-    ): Request(mCatatanType, mDataMode)
+        val keyId: String,
+    ): Request(mCatatanType)
 
-    override fun process(request: Request): Flow<Result<KavlingCatatanPembayaran?>> {
+
+    override fun process(request: Request): Flow<Result<Nothing?>> {
         return when (request.catatanType) {
             CatatanPembayaran.KAVLING -> {
                 val kavlingRequest = request as KavlingRequest
-                kavlingCatatanPembayaranRepository.getCatatan(
-                    kavlingRequest.kavlingKode,
-                    kavlingRequest.dataMode
-                )
+                kavlingCatatanPembayaranRepository.deleteCatatan(kavlingRequest.kavling)
             }
             CatatanPembayaran.INDEN_BOOKING -> {
-                throw UnsupportedOperationException()
+                TODO("Not yet implemented")
             }
-            else -> {
-                throw UnsupportedOperationException()
-            }
+            else -> throw UnsupportedOperationException()
         }
     }
+
 }

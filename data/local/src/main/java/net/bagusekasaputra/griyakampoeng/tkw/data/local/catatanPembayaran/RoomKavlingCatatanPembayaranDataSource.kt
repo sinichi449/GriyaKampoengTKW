@@ -2,12 +2,12 @@ package net.bagusekasaputra.griyakampoeng.tkw.data.local.catatanPembayaran
 
 import net.bagusekasaputra.griyakampoeng.tkw.data.local.MyRoomDatabase
 import net.bagusekasaputra.griyakampoeng.tkw.data.local.RoomRequestHelper
-import net.bagusekasaputra.griyakampoengtkw.data.interfaces.local.LocalCatatanPembayaranDataSource
+import net.bagusekasaputra.griyakampoengtkw.data.interfaces.local.LocalKavlingCatatanPembayaranDataSource
 import net.bagusekasaputra.griyakampoengtkw.data.model.CatatanPembayaranModel
 
-class RoomCatatanPembayaranDataSource(
+class RoomKavlingCatatanPembayaranDataSource(
     roomDatabase: MyRoomDatabase
-): LocalCatatanPembayaranDataSource {
+): LocalKavlingCatatanPembayaranDataSource {
 
     private val catatanPembayaranDao = roomDatabase.getCatatanPembayaranDao()
 

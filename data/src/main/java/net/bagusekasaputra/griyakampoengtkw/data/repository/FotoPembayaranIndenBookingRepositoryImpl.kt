@@ -11,7 +11,7 @@ import net.bagusekasaputra.griyakampoengtkw.data.interfaces.local.LocalFotoPemba
 import net.bagusekasaputra.griyakampoengtkw.data.interfaces.remote.RemoteFotoPembayaranIndenBookingDataSource
 import net.bagusekasaputra.griyakampoengtkw.data.model.FotoPembayaranIndenBookingModel
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.images.FotoPembayaranIndenBooking
-import net.bagusekasaputra.griyakampoengtkw.domain.repository.indenBooking.FotoPembayaranIndenBookingRepository
+import net.bagusekasaputra.griyakampoengtkw.domain.repository.FotoPembayaranIndenBookingRepository
 import java.io.File
 
 class FotoPembayaranIndenBookingRepositoryImpl(

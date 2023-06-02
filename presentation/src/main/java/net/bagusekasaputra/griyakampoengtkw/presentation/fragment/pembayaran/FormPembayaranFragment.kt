@@ -221,7 +221,7 @@ class FormPembayaranFragment : Fragment() {
         viewModel.getHargaKavling(currentKavlingKode!!) { failMsg ->
             Toast.makeText(requireContext(), failMsg, Toast.LENGTH_LONG).show()
         }
-        viewModel.getCatatanPembayaran(currentKavlingKode!!) { failMsg ->
+        pembayaranViewModel.getCatatanPembayaran(currentKavlingKode!!) { failMsg ->
             Toast.makeText(requireContext(), failMsg, Toast.LENGTH_SHORT).show()
         }
         pembayaranViewModel.getListPembayaranBulanan(currentKavlingKode!!,
@@ -275,7 +275,7 @@ class FormPembayaranFragment : Fragment() {
             }
         }
 
-        viewModel.catatanPembayaranLive.observe(requireActivity()) { catatanPembayaran ->
+        pembayaranViewModel.catatanPembayaranLive.observe(requireActivity()) { catatanPembayaran ->
             if (catatanPembayaran != null) {
                 binding.tvCatatan?.text = catatanPembayaran.content
             } else {
@@ -487,7 +487,7 @@ class FormPembayaranFragment : Fragment() {
 
                 val catatan = dialogBinding.edtCatatan.text.toString()
 
-                viewModel.addCatatanPembayaran(
+                pembayaranViewModel.addCatatanPembayaran(
                     kavlingKode = currentKavlingKode!!,
                     catatan = catatan,
                     onComplete = { msg ->
@@ -500,7 +500,7 @@ class FormPembayaranFragment : Fragment() {
         }
 
         dialogBinding.btnHapusCatatan.setOnClickListener {
-            viewModel.deleteCatatanPembayaran(
+            pembayaranViewModel.deleteCatatanPembayaran(
                 kavlingKode = currentKavlingKode!!,
                 onComplete = { msg ->
                     syncPembayaran()

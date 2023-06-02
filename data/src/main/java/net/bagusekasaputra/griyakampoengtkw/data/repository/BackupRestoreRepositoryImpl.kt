@@ -115,7 +115,7 @@ class BackupRestoreRepositoryImpl(
 
                     newList.toList()
                 }
-                val listCatatanPembayaran = backupRestoreEntity.listCatatanPembayaran.run {
+                val listCatatanPembayaran = backupRestoreEntity.listKavlingCatatanPembayaran.run {
                     val newList = mutableListOf<CatatanPembayaranModel>()
 
                     this.forEach {

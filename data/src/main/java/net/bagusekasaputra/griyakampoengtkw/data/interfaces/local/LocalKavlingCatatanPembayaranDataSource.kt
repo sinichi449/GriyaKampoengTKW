@@ -2,7 +2,7 @@ package net.bagusekasaputra.griyakampoengtkw.data.interfaces.local
 
 import net.bagusekasaputra.griyakampoengtkw.data.model.CatatanPembayaranModel
 
-interface LocalCatatanPembayaranDataSource {
+interface LocalKavlingCatatanPembayaranDataSource {
 
     suspend fun getCatatan(kavlingKode: String): Result<CatatanPembayaranModel?>
 

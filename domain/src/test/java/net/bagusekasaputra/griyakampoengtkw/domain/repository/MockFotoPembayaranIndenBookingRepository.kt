@@ -1,7 +1,6 @@
 package net.bagusekasaputra.griyakampoengtkw.domain.repository
 
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.images.FotoPembayaranIndenBooking
-import net.bagusekasaputra.griyakampoengtkw.domain.repository.indenBooking.FotoPembayaranIndenBookingRepository
 
 class MockFotoPembayaranIndenBookingRepository: FotoPembayaranIndenBookingRepository {
 

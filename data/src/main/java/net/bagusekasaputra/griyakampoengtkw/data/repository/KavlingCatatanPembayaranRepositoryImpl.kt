@@ -10,39 +10,39 @@ import kotlinx.coroutines.flow.flow
 import net.bagusekasaputra.griyakampoengtkw.data.DataUtil
 import net.bagusekasaputra.griyakampoengtkw.data.MyObjectMapper.mapCatatanPembayaran
 import net.bagusekasaputra.griyakampoengtkw.data.interfaces.backup.BackupCatatanPembayaranDataSource
-import net.bagusekasaputra.griyakampoengtkw.data.interfaces.local.LocalCatatanPembayaranDataSource
-import net.bagusekasaputra.griyakampoengtkw.data.interfaces.remote.RemoteCatatanPembayaranDataSource
+import net.bagusekasaputra.griyakampoengtkw.data.interfaces.local.LocalKavlingCatatanPembayaranDataSource
+import net.bagusekasaputra.griyakampoengtkw.data.interfaces.remote.RemoteKavlingCatatanPembayaranDataSource
 import net.bagusekasaputra.griyakampoengtkw.domain.DataMode
-import net.bagusekasaputra.griyakampoengtkw.domain.entity.CatatanPembayaran
-import net.bagusekasaputra.griyakampoengtkw.domain.repository.CatatanPembayaranRepository
+import net.bagusekasaputra.griyakampoengtkw.domain.entity.pembayaran.catatanPembayaran.KavlingCatatanPembayaran
+import net.bagusekasaputra.griyakampoengtkw.domain.repository.KavlingCatatanPembayaranRepository
 
-class CatatanPembayaranRepositoryImpl(
-    private val localCatatanPembayaranDataSource: LocalCatatanPembayaranDataSource,
-    private val remoteCatatanPembayaranDataSource: RemoteCatatanPembayaranDataSource,
+class KavlingCatatanPembayaranRepositoryImpl(
+    private val localKavlingCatatanPembayaranDataSource: LocalKavlingCatatanPembayaranDataSource,
+    private val remoteKavlingCatatanPembayaranDataSource: RemoteKavlingCatatanPembayaranDataSource,
     private val backupCatatanPembayaranDataSource: BackupCatatanPembayaranDataSource,
-): CatatanPembayaranRepository {
+): KavlingCatatanPembayaranRepository {
 
     override fun getCatatan(
         kavlingKode: String,
         dataMode: DataMode,
-    ): Flow<Result<CatatanPembayaran?>> {
+    ): Flow<Result<KavlingCatatanPembayaran?>> {
         return flow {
-            val flowOffline = flow<Result<CatatanPembayaran?>> {
-                val localResult = localCatatanPembayaranDataSource.getCatatan(kavlingKode)
+            val flowOffline = flow<Result<KavlingCatatanPembayaran?>> {
+                val localResult = localKavlingCatatanPembayaranDataSource.getCatatan(kavlingKode)
 
                 emit(
                     DataUtil.mapSingleResult(localResult, ::mapCatatanPembayaran)
                 )
             }
-            val flowOnline = flow<Result<CatatanPembayaran?>> {
+            val flowOnline = flow<Result<KavlingCatatanPembayaran?>> {
                 // First, get from the remote
-                val remoteResult = remoteCatatanPembayaranDataSource.getCatatan(kavlingKode)
+                val remoteResult = remoteKavlingCatatanPembayaranDataSource.getCatatan(kavlingKode)
 
                 remoteResult.onSuccess {
                     // If success, the write to local data sources
                     val catatanModel = remoteResult.getOrNull()
                     if (catatanModel != null)
-                        localCatatanPembayaranDataSource.addCatatan(kavlingKode, catatanModel)
+                        localKavlingCatatanPembayaranDataSource.addCatatan(kavlingKode, catatanModel)
 
                     // Then, emit the result
                     val mappedResult = DataUtil.mapSingleResult(
@@ -60,7 +60,7 @@ class CatatanPembayaranRepositoryImpl(
                     emitAll(flowOffline)
                 }
             }
-            val flowDataLama = flow<Result<CatatanPembayaran?>> {
+            val flowDataLama = flow<Result<KavlingCatatanPembayaran?>> {
                 backupCatatanPembayaranDataSource.getCatatanPembayaran(kavlingKode)
                     .onSuccess {
                         emit(DataUtil.mapSingleResult(
@@ -78,10 +78,10 @@ class CatatanPembayaranRepositoryImpl(
         }
     }
 
-    override fun getBatch(listKavling: List<String>): Flow<Result<List<CatatanPembayaran>?>> {
+    override fun getBatch(listKavling: List<String>): Flow<Result<List<KavlingCatatanPembayaran>?>> {
         return callbackFlow {
             try {
-                val listModels = mutableListOf<CatatanPembayaran>()
+                val listModels = mutableListOf<KavlingCatatanPembayaran>()
 
                 listKavling.forEach { kavling ->
                     val model = getCatatan(kavling, DataMode.ONLINE)
@@ -101,12 +101,12 @@ class CatatanPembayaranRepositoryImpl(
 
     override fun addCatatan(
         kavlingKode: String,
-        catatanPembayaran: CatatanPembayaran
+        kavlingCatatanPembayaran: KavlingCatatanPembayaran
     ): Flow<Result<Nothing?>> {
         return flow {
-            val remoteResult = remoteCatatanPembayaranDataSource.addCatatan(
+            val remoteResult = remoteKavlingCatatanPembayaranDataSource.addCatatan(
                 kavlingKode = kavlingKode,
-                catatanPembayaranModel = mapCatatanPembayaran(catatanPembayaran),
+                catatanPembayaranModel = mapCatatanPembayaran(kavlingCatatanPembayaran),
             )
 
             emit(remoteResult)
@@ -116,12 +116,12 @@ class CatatanPembayaranRepositoryImpl(
     override fun deleteCatatan(kavlingKode: String): Flow<Result<Nothing?>> {
         return flow {
             // We should delete the local catatan too
-            val localDelete = localCatatanPembayaranDataSource.deleteCatatan(kavlingKode)
+            val localDelete = localKavlingCatatanPembayaranDataSource.deleteCatatan(kavlingKode)
             localDelete.onFailure {
                 emit(Result.failure(it))
             }
 
-            val remoteDelete = remoteCatatanPembayaranDataSource.deleteCatatan(kavlingKode)
+            val remoteDelete = remoteKavlingCatatanPembayaranDataSource.deleteCatatan(kavlingKode)
 
             emit(remoteDelete)
         }
