@@ -392,16 +392,22 @@ object RepositoryModule {
     }
 
     /**
-     * Ambil Kuitansi
+     * Standard Ambil Kuitansi
      */
     @Provides
-    fun provideAmbilKuitansiRepository(
-        localDataSource: LocalAmbilKuitansiDataSource,
-        remoteDataSource: RemoteAmbilKuitansiDataSource,
+    fun provideStandardAmbilKuitansiRepository(
+        localDataSource: LocalStandardAmbilKuitansiDataSource,
+        remoteDataSource: RemoteStandardAmbilKuitansiDataSource,
         cacheHelper: CacheHelper,
-    ): AmbilKuitansiRepository {
-        return AmbilKuitansiRepositoryImpl(localDataSource, remoteDataSource, cacheHelper)
+    ): StandardAmbilKuitansiRepository {
+        return StandardAmbilKuitansiRepositoryImpl(localDataSource, remoteDataSource, cacheHelper)
     }
+
+    @Provides
+    fun provideIndenBookingAmbilKuitansiRepository(): IndenBookingAmbilKuitansiRepository {
+        return IndenBookingAmbilKuitansiRepositoryImpl()
+    }
+
 
     /**
      * Harga Rumah Inden Booking

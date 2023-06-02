@@ -1,6 +1,6 @@
 package net.bagusekasaputra.griyakampoengtkw.domain.repository
 
-import net.bagusekasaputra.griyakampoengtkw.domain.entity.catatanPembayaran.IndenBookingCatatanPembayaran
+import net.bagusekasaputra.griyakampoengtkw.domain.entity.IndenBookingCatatanPembayaran
 
 interface IndenBookingCatatanPembayaranRepository {
 

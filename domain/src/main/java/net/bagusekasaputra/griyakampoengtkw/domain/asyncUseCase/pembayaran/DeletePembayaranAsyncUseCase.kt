@@ -7,14 +7,14 @@ import kotlinx.coroutines.flow.callbackFlow
 import kotlinx.coroutines.flow.first
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.AsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.pembayaran.Pembayaran
-import net.bagusekasaputra.griyakampoengtkw.domain.repository.AmbilKuitansiRepository
+import net.bagusekasaputra.griyakampoengtkw.domain.repository.StandardAmbilKuitansiRepository
 import net.bagusekasaputra.griyakampoengtkw.domain.repository.FotoPembayaranRepository
 import net.bagusekasaputra.griyakampoengtkw.domain.repository.PembayaranRepository
 
 class DeletePembayaranAsyncUseCase(
     private val pembayaranRepository: PembayaranRepository,
     private val fotoPembayaranRepository: FotoPembayaranRepository,
-    private val ambilKuitansiRepository: AmbilKuitansiRepository,
+    private val standardAmbilKuitansiRepository: StandardAmbilKuitansiRepository,
 ) : AsyncUseCase<DeletePembayaranAsyncUseCase.Request, Nothing?>() {
 
     data class Request(val kavling: String, val pembayaran: Pembayaran): AsyncUseCase.Request
@@ -35,7 +35,7 @@ class DeletePembayaranAsyncUseCase(
                         ).first()
                             .onSuccess {
                                 // Delete Ambil Kuitansi
-                                ambilKuitansiRepository.delete(
+                                standardAmbilKuitansiRepository.delete(
                                     request.kavling,
                                     request.pembayaran.termin
                                 )
@@ -51,7 +51,7 @@ class DeletePembayaranAsyncUseCase(
                             }
                     } else {
                         // Delete Ambil Kuitansi
-                        ambilKuitansiRepository.delete(
+                        standardAmbilKuitansiRepository.delete(
                             request.kavling,
                             request.pembayaran.termin
                         )

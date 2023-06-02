@@ -6,10 +6,10 @@ import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.PrimaryKey
 import androidx.room.Query
-import net.bagusekasaputra.griyakampoengtkw.data.model.AmbilKuitansiModel
+import net.bagusekasaputra.griyakampoengtkw.data.model.StandardAmbilKuitansiModel
 
 @Entity(tableName = "ambil_kuitansi")
-data class AmbilKuitansiRoomEntity(
+data class StandardAmbilKuitansiRoomEntity(
     @PrimaryKey(autoGenerate = true)
     val id: Long = 0L,
     val kavling: String,
@@ -19,13 +19,13 @@ data class AmbilKuitansiRoomEntity(
 
 
 @Dao
-interface AmbilKuitansiDao {
+interface StandardAmbilKuitansiDao {
 
     @Query("SELECT * FROM ambil_kuitansi WHERE kavling=:kavling AND termin=:termin")
-    fun get(kavling: String, termin: String): AmbilKuitansiRoomEntity?
+    fun get(kavling: String, termin: String): StandardAmbilKuitansiRoomEntity?
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    fun insert(entity: AmbilKuitansiRoomEntity): Long
+    fun insert(entity: StandardAmbilKuitansiRoomEntity): Long
 
     @Query("DELETE FROM ambil_kuitansi WHERE kavling=:kavling AND termin=:termin")
     fun delete(kavling: String, termin: String)
@@ -36,9 +36,9 @@ interface AmbilKuitansiDao {
 }
 
 // Mapper
-fun AmbilKuitansiRoomEntity.toModel(): AmbilKuitansiModel {
+fun StandardAmbilKuitansiRoomEntity.toModel(): StandardAmbilKuitansiModel {
     return this.let {
-        AmbilKuitansiModel(
+        StandardAmbilKuitansiModel(
             kavling = it.kavling,
             termin = it.termin,
             sudahAmbil = it.sudahAmbil,
@@ -46,9 +46,9 @@ fun AmbilKuitansiRoomEntity.toModel(): AmbilKuitansiModel {
     }
 }
 
-fun AmbilKuitansiModel.toEntity(): AmbilKuitansiRoomEntity {
+fun StandardAmbilKuitansiModel.toEntity(): StandardAmbilKuitansiRoomEntity {
     return this.let {
-        AmbilKuitansiRoomEntity(
+        StandardAmbilKuitansiRoomEntity(
             kavling = it.kavling,
             termin = it.termin,
             sudahAmbil = it.sudahAmbil,

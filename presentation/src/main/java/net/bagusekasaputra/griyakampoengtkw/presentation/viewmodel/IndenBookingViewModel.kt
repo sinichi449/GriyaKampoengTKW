@@ -28,8 +28,8 @@ import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.indenBooking.ima
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.indenBooking.pembayaran.GetAllPembayaranIndenBookingAsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.indenBooking.pembayaran.InsertPembayaranIndenBookingAsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.DataDiri
-import net.bagusekasaputra.griyakampoengtkw.domain.entity.catatanPembayaran.CatatanPembayaran
-import net.bagusekasaputra.griyakampoengtkw.domain.entity.catatanPembayaran.IndenBookingCatatanPembayaran
+import net.bagusekasaputra.griyakampoengtkw.domain.entity.CatatanPembayaran
+import net.bagusekasaputra.griyakampoengtkw.domain.entity.IndenBookingCatatanPembayaran
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.indenBooking.HargaRumahIndenBooking
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.indenBooking.IndenBooking
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.pembayaran.Pembayaran

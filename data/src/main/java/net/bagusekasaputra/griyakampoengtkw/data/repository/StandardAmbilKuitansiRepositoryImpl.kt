@@ -7,20 +7,20 @@ import kotlinx.coroutines.flow.first
 import net.bagusekasaputra.griyakampoengtkw.data.CacheHelper
 import net.bagusekasaputra.griyakampoengtkw.data.DataUtil
 import net.bagusekasaputra.griyakampoengtkw.data.MyObjectMapper
-import net.bagusekasaputra.griyakampoengtkw.data.interfaces.local.LocalAmbilKuitansiDataSource
-import net.bagusekasaputra.griyakampoengtkw.data.interfaces.remote.RemoteAmbilKuitansiDataSource
-import net.bagusekasaputra.griyakampoengtkw.domain.entity.AmbilKuitansi
-import net.bagusekasaputra.griyakampoengtkw.domain.repository.AmbilKuitansiRepository
+import net.bagusekasaputra.griyakampoengtkw.data.interfaces.local.LocalStandardAmbilKuitansiDataSource
+import net.bagusekasaputra.griyakampoengtkw.data.interfaces.remote.RemoteStandardAmbilKuitansiDataSource
+import net.bagusekasaputra.griyakampoengtkw.domain.entity.StandardAmbilKuitansi
+import net.bagusekasaputra.griyakampoengtkw.domain.repository.StandardAmbilKuitansiRepository
 
-class AmbilKuitansiRepositoryImpl(
-    private val localDataSource: LocalAmbilKuitansiDataSource,
-    private val remoteDataSource: RemoteAmbilKuitansiDataSource,
+class StandardAmbilKuitansiRepositoryImpl(
+    private val localDataSource: LocalStandardAmbilKuitansiDataSource,
+    private val remoteDataSource: RemoteStandardAmbilKuitansiDataSource,
     private val cacheHelper: CacheHelper,
-): AmbilKuitansiRepository {
+): StandardAmbilKuitansiRepository {
 
     private val cacheTable = "ambilKuitansi"
 
-    override suspend fun get(kavling: String, termin: String): Result<AmbilKuitansi?> {
+    override suspend fun get(kavling: String, termin: String): Result<StandardAmbilKuitansi?> {
         val isInvalidCache = cacheHelper.checkAndInvalidateCache(cacheTable, cacheTable,
             onInvalid = {
                 localDataSource.deleteAll()
@@ -37,13 +37,13 @@ class AmbilKuitansiRepositoryImpl(
 
         return DataUtil.mapSingleResult(
             originResult = localDataSource.get(kavling, termin),
-            targetMapper = MyObjectMapper::mapAmbilKuitansi,
+            targetMapper = MyObjectMapper::mapStandardAmbilKuitansi,
         )
     }
 
-    override suspend fun insert(ambilKuitansi: AmbilKuitansi): Result<Nothing?> {
+    override suspend fun insert(standardAmbilKuitansi: StandardAmbilKuitansi): Result<Nothing?> {
         return callbackFlow<Result<Nothing?>> {
-            val model = MyObjectMapper.mapAmbilKuitansi(ambilKuitansi)
+            val model = MyObjectMapper.mapStandardAmbilKuitansi(standardAmbilKuitansi)
             val remoteResult = remoteDataSource.update(model)
 
             remoteResult

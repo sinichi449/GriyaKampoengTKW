@@ -4,7 +4,7 @@ import net.bagusekasaputra.griyakampoengtkw.data.CacheHelper
 import net.bagusekasaputra.griyakampoengtkw.data.MyObjectMapper
 import net.bagusekasaputra.griyakampoengtkw.data.interfaces.local.LocalIndenBookingCatatanPembayaranDataSource
 import net.bagusekasaputra.griyakampoengtkw.data.interfaces.remote.RemoteIndenBookingCatatanPembayaranDataSource
-import net.bagusekasaputra.griyakampoengtkw.domain.entity.catatanPembayaran.IndenBookingCatatanPembayaran
+import net.bagusekasaputra.griyakampoengtkw.domain.entity.IndenBookingCatatanPembayaran
 import net.bagusekasaputra.griyakampoengtkw.domain.repository.IndenBookingCatatanPembayaranRepository
 
 class IndenBookingCatatanPembayaranRepositoryImpl(

@@ -13,7 +13,7 @@ import net.bagusekasaputra.griyakampoengtkw.data.interfaces.backup.BackupCatatan
 import net.bagusekasaputra.griyakampoengtkw.data.interfaces.local.LocalKavlingCatatanPembayaranDataSource
 import net.bagusekasaputra.griyakampoengtkw.data.interfaces.remote.RemoteKavlingCatatanPembayaranDataSource
 import net.bagusekasaputra.griyakampoengtkw.domain.DataMode
-import net.bagusekasaputra.griyakampoengtkw.domain.entity.catatanPembayaran.KavlingCatatanPembayaran
+import net.bagusekasaputra.griyakampoengtkw.domain.entity.KavlingCatatanPembayaran
 import net.bagusekasaputra.griyakampoengtkw.domain.repository.KavlingCatatanPembayaranRepository
 
 class KavlingCatatanPembayaranRepositoryImpl(

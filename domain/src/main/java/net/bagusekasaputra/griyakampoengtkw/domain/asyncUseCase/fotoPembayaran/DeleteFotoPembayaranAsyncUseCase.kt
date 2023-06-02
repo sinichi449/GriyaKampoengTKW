@@ -6,13 +6,13 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
 import kotlinx.coroutines.flow.first
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.AsyncUseCase
-import net.bagusekasaputra.griyakampoengtkw.domain.entity.AmbilKuitansi
-import net.bagusekasaputra.griyakampoengtkw.domain.repository.AmbilKuitansiRepository
+import net.bagusekasaputra.griyakampoengtkw.domain.entity.StandardAmbilKuitansi
+import net.bagusekasaputra.griyakampoengtkw.domain.repository.StandardAmbilKuitansiRepository
 import net.bagusekasaputra.griyakampoengtkw.domain.repository.FotoPembayaranRepository
 
 class DeleteFotoPembayaranAsyncUseCase(
     private val fotoPembayaranRepository: FotoPembayaranRepository,
-    private val ambilKuitansiRepository: AmbilKuitansiRepository,
+    private val standardAmbilKuitansiRepository: StandardAmbilKuitansiRepository,
 ): AsyncUseCase<DeleteFotoPembayaranAsyncUseCase.Request, Nothing?>() {
 
     data class Request(val kavlingKode: String, val termin: String): AsyncUseCase.Request
@@ -23,8 +23,8 @@ class DeleteFotoPembayaranAsyncUseCase(
                 .first()
                 .onSuccess {
                     // Set ambil kuitansi to false
-                    ambilKuitansiRepository.insert(
-                        AmbilKuitansi(request.kavlingKode, request.termin, false)
+                    standardAmbilKuitansiRepository.insert(
+                        StandardAmbilKuitansi(request.kavlingKode, request.termin, false)
                     )
                         .onSuccess {
                             trySendBlocking(Result.success(null))

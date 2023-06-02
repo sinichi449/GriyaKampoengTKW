@@ -21,11 +21,11 @@ import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.catatanPembayara
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.pembayaran.DeletePembayaranAsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.pembayaran.GetListPembayaranBulananAsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.statusPembayaran.GetStatusPembayaranKavlingAsyncUseCase
-import net.bagusekasaputra.griyakampoengtkw.domain.entity.AmbilKuitansi
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.BaselinePembayaran
+import net.bagusekasaputra.griyakampoengtkw.domain.entity.CatatanPembayaran
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.HargaKavling
-import net.bagusekasaputra.griyakampoengtkw.domain.entity.catatanPembayaran.CatatanPembayaran
-import net.bagusekasaputra.griyakampoengtkw.domain.entity.catatanPembayaran.KavlingCatatanPembayaran
+import net.bagusekasaputra.griyakampoengtkw.domain.entity.KavlingCatatanPembayaran
+import net.bagusekasaputra.griyakampoengtkw.domain.entity.StandardAmbilKuitansi
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.pembayaran.Pembayaran
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.pembayaran.PembayaranBulanan
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.statusPembayaran.StatusPembayaran
@@ -285,15 +285,15 @@ class FormPembayaranViewModel @Inject constructor(
     /**
      * Ambil Kuitansi
      */
-    fun insertAmbilKuitansi(ambilKuitansi: AmbilKuitansi,
-        onProgress: () -> Unit = {},
-        onSuccess: () -> Unit = {},
-        onFailure: (msg: String) -> Unit = {},
+    fun insertAmbilKuitansi(standardAmbilKuitansi: StandardAmbilKuitansi,
+                            onProgress: () -> Unit = {},
+                            onSuccess: () -> Unit = {},
+                            onFailure: (msg: String) -> Unit = {},
     ) {
         onProgress()
 
-        CoroutineScope(Dispatchers.IO).launch {
-            val request = InsertAmbilKuitansiAsyncUseCase.Request(ambilKuitansi)
+        viewModelScope.launch(Dispatchers.IO) {
+            val request = InsertAmbilKuitansiAsyncUseCase.StandardRequest(standardAmbilKuitansi)
             insertAmbilKuitansiAsyncUseCase.execute(request).collect { result ->
                 result.onSuccess {
                     withContext(Dispatchers.Main) {

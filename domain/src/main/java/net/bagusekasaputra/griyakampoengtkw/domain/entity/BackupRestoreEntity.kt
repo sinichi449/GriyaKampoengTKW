@@ -2,7 +2,6 @@ package net.bagusekasaputra.griyakampoengtkw.domain.entity
 
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.images.ImageDataDiriUri
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.images.ImageSprUri
-import net.bagusekasaputra.griyakampoengtkw.domain.entity.catatanPembayaran.KavlingCatatanPembayaran
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.pembayaran.Pembayaran
 
 

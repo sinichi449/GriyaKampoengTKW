@@ -5,25 +5,25 @@ import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.ValueEventListener
 import com.google.firebase.database.ktx.getValue
-import net.bagusekasaputra.griyakampoengtkw.data.interfaces.remote.RemoteAmbilKuitansiDataSource
-import net.bagusekasaputra.griyakampoengtkw.data.model.AmbilKuitansiModel
+import net.bagusekasaputra.griyakampoengtkw.data.interfaces.remote.RemoteStandardAmbilKuitansiDataSource
+import net.bagusekasaputra.griyakampoengtkw.data.model.StandardAmbilKuitansiModel
 import net.bagusekasaputra.griyakampoengtkw.data.remote.FirebaseNodes
 import kotlin.coroutines.resume
 import kotlin.coroutines.suspendCoroutine
 
-class FirebaseAmbilKuitansiDataSource(
+class FirebaseStandardAmbilKuitansiDataSource(
     databaseReference: DatabaseReference,
-): RemoteAmbilKuitansiDataSource {
+): RemoteStandardAmbilKuitansiDataSource {
 
     private val ambilKuitansiRef = databaseReference.child(FirebaseNodes.AMBIL_KUITANSI)
 
-    override suspend fun get(kavling: String, termin: String): Result<AmbilKuitansiModel?> {
+    override suspend fun get(kavling: String, termin: String): Result<StandardAmbilKuitansiModel?> {
         return suspendCoroutine { continuation ->
             val eventListener = object : ValueEventListener {
                 override fun onDataChange(snapshot: DataSnapshot) {
                     val sudahAmbil = snapshot.getValue<Boolean>() ?: false
 
-                    val model = AmbilKuitansiModel(kavling, termin, sudahAmbil)
+                    val model = StandardAmbilKuitansiModel(kavling, termin, sudahAmbil)
                     continuation.resume(Result.success(model))
                 }
 
@@ -38,7 +38,7 @@ class FirebaseAmbilKuitansiDataSource(
         }
     }
 
-    override suspend fun update(model: AmbilKuitansiModel): Result<Nothing?> {
+    override suspend fun update(model: StandardAmbilKuitansiModel): Result<Nothing?> {
         return suspendCoroutine { continuation ->
             val childPath = "${model.kavling}/${model.termin}"
 

@@ -2,16 +2,16 @@ package net.bagusekasaputra.griyakampoeng.tkw.data.local.ambilKuitansi
 
 import net.bagusekasaputra.griyakampoeng.tkw.data.local.MyRoomDatabase
 import net.bagusekasaputra.griyakampoeng.tkw.data.local.RoomRequestHelper.roomOperation
-import net.bagusekasaputra.griyakampoengtkw.data.interfaces.local.LocalAmbilKuitansiDataSource
-import net.bagusekasaputra.griyakampoengtkw.data.model.AmbilKuitansiModel
+import net.bagusekasaputra.griyakampoengtkw.data.interfaces.local.LocalStandardAmbilKuitansiDataSource
+import net.bagusekasaputra.griyakampoengtkw.data.model.StandardAmbilKuitansiModel
 
-class RoomAmbilKuitansiDataSource(
+class RoomStandardAmbilKuitansiDataSource(
     myRoomDatabase: MyRoomDatabase
-): LocalAmbilKuitansiDataSource {
+): LocalStandardAmbilKuitansiDataSource {
 
-    private val dao = myRoomDatabase.getAmbilKuitansiDao()
+    private val dao = myRoomDatabase.getStandardAmbilKuitansiDao()
 
-    override suspend fun get(kavling: String, termin: String): Result<AmbilKuitansiModel?> {
+    override suspend fun get(kavling: String, termin: String): Result<StandardAmbilKuitansiModel?> {
         return roomOperation {
             val entity = dao.get(kavling, termin)
 
@@ -19,7 +19,7 @@ class RoomAmbilKuitansiDataSource(
         }
     }
 
-    override suspend fun insert(model: AmbilKuitansiModel): Result<Nothing?> {
+    override suspend fun insert(model: StandardAmbilKuitansiModel): Result<Nothing?> {
         return roomOperation {
             val entity = model.toEntity()
 
@@ -29,7 +29,7 @@ class RoomAmbilKuitansiDataSource(
         }
     }
 
-    override suspend fun update(model: AmbilKuitansiModel): Result<Nothing?> {
+    override suspend fun update(model: StandardAmbilKuitansiModel): Result<Nothing?> {
         return roomOperation {
             // Delete then insert
             val oldEntity = dao.get(model.kavling, model.termin)

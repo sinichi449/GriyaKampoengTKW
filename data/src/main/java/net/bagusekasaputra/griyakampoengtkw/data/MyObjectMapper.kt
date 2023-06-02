@@ -2,7 +2,6 @@ package net.bagusekasaputra.griyakampoengtkw.data
 
 import android.content.ContentResolver
 import android.net.Uri
-import net.bagusekasaputra.griyakampoengtkw.data.model.AmbilKuitansiModel
 import net.bagusekasaputra.griyakampoengtkw.data.model.AppUpdateModel
 import net.bagusekasaputra.griyakampoengtkw.data.model.BaselinePembayaranModel
 import net.bagusekasaputra.griyakampoengtkw.data.model.BiayaLainModel
@@ -18,11 +17,13 @@ import net.bagusekasaputra.griyakampoengtkw.data.model.HargaRumahModel
 import net.bagusekasaputra.griyakampoengtkw.data.model.ImageDataDiriIndenBookingModel
 import net.bagusekasaputra.griyakampoengtkw.data.model.ImageDataDiriModel
 import net.bagusekasaputra.griyakampoengtkw.data.model.ImageSprModel
+import net.bagusekasaputra.griyakampoengtkw.data.model.IndenBookingAmbilKuitansiModel
 import net.bagusekasaputra.griyakampoengtkw.data.model.IndenBookingCatatanPembayaranModel
 import net.bagusekasaputra.griyakampoengtkw.data.model.KavlingCatatanPembayaranModel
 import net.bagusekasaputra.griyakampoengtkw.data.model.KavlingModel
 import net.bagusekasaputra.griyakampoengtkw.data.model.PembayaranModel
 import net.bagusekasaputra.griyakampoengtkw.data.model.PromotionModel
+import net.bagusekasaputra.griyakampoengtkw.data.model.StandardAmbilKuitansiModel
 import net.bagusekasaputra.griyakampoengtkw.data.model.StatusPembayaranModel
 import net.bagusekasaputra.griyakampoengtkw.data.model.StatusPembayaranModel.LogPengembalianModel
 import net.bagusekasaputra.griyakampoengtkw.data.model.StatusPembayaranModel.LogStatusModel
@@ -30,7 +31,6 @@ import net.bagusekasaputra.griyakampoengtkw.domain.DateUtil.toDate
 import net.bagusekasaputra.griyakampoengtkw.domain.DateUtil.toSlashedString
 import net.bagusekasaputra.griyakampoengtkw.domain.ImageUtil
 import net.bagusekasaputra.griyakampoengtkw.domain.NumberUtil
-import net.bagusekasaputra.griyakampoengtkw.domain.entity.AmbilKuitansi
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.AppUpdate
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.BaselinePembayaran
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.BiayaLain
@@ -42,10 +42,12 @@ import net.bagusekasaputra.griyakampoengtkw.domain.entity.FeeMarketing
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.FotoPembayaran
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.HargaKavling
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.ImageSpr
+import net.bagusekasaputra.griyakampoengtkw.domain.entity.IndenBookingAmbilKuitansi
+import net.bagusekasaputra.griyakampoengtkw.domain.entity.IndenBookingCatatanPembayaran
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.Kavling
+import net.bagusekasaputra.griyakampoengtkw.domain.entity.KavlingCatatanPembayaran
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.Promotion
-import net.bagusekasaputra.griyakampoengtkw.domain.entity.catatanPembayaran.IndenBookingCatatanPembayaran
-import net.bagusekasaputra.griyakampoengtkw.domain.entity.catatanPembayaran.KavlingCatatanPembayaran
+import net.bagusekasaputra.griyakampoengtkw.domain.entity.StandardAmbilKuitansi
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.images.FotoPembayaranIndenBooking
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.images.ImageDataDiriIndenBooking
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.images.ImageDataDiriUri
@@ -632,11 +634,21 @@ object MyObjectMapper {
     }
 
     /**
-     * Ambil Kuitansi
+     * Standard Ambil Kuitansi
      */
-    fun mapAmbilKuitansi(model: AmbilKuitansiModel): AmbilKuitansi {
+    fun mapStandardAmbilKuitansi(model: StandardAmbilKuitansiModel): StandardAmbilKuitansi {
         return model.let {
-            AmbilKuitansi(
+            StandardAmbilKuitansi(
+                kavling = it.kavling,
+                mTermin = it.termin,
+                mSudahAmbil = it.sudahAmbil
+            )
+        }
+    }
+
+    fun mapStandardAmbilKuitansi(ambilKuitansi: StandardAmbilKuitansi): StandardAmbilKuitansiModel {
+        return ambilKuitansi.let {
+            StandardAmbilKuitansiModel(
                 kavling = it.kavling,
                 termin = it.termin,
                 sudahAmbil = it.sudahAmbil,
@@ -644,15 +656,29 @@ object MyObjectMapper {
         }
     }
 
-    fun mapAmbilKuitansi(ambilKuitansi: AmbilKuitansi): AmbilKuitansiModel {
+    /**
+     *  Inden Booking Ambil Kuitansi
+     */
+    fun mapIndenBookingAmbilKuitansi(model: IndenBookingAmbilKuitansiModel): IndenBookingAmbilKuitansi {
+        return model.let {
+            IndenBookingAmbilKuitansi(
+                keyId = it.keyId,
+                mTermin = it.termin,
+                mSudahAmbil = it.sudahAmbil,
+            )
+        }
+    }
+
+    fun mapIndenBookingAmbilKuitansi(ambilKuitansi: IndenBookingAmbilKuitansi): IndenBookingAmbilKuitansiModel {
         return ambilKuitansi.let {
-            AmbilKuitansiModel(
-                kavling = it.kavling,
+            IndenBookingAmbilKuitansiModel(
+                keyId = it.keyId,
                 termin = it.termin,
                 sudahAmbil = it.sudahAmbil,
             )
         }
     }
+
 
     /**
      * Foto Pembayaran Inden Booking

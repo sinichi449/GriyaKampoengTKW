@@ -182,9 +182,9 @@ object UseCaseModule {
     fun provideDeletePembayaranUseCase(
         pembayaranRepository: PembayaranRepository,
         fotoPembayaranRepository: FotoPembayaranRepository,
-        ambilKuitansiRepository: AmbilKuitansiRepository,
+        standardAmbilKuitansiRepository: StandardAmbilKuitansiRepository,
     ): DeletePembayaranAsyncUseCase {
-        return DeletePembayaranAsyncUseCase(pembayaranRepository, fotoPembayaranRepository, ambilKuitansiRepository)
+        return DeletePembayaranAsyncUseCase(pembayaranRepository, fotoPembayaranRepository, standardAmbilKuitansiRepository)
     }
 
     @Provides
@@ -202,9 +202,9 @@ object UseCaseModule {
         baselinePembayaranRepository: BaselinePembayaranRepository,
         hargaKavlingRepository: HargaKavlingRepository,
         fotoPembayaranRepository: FotoPembayaranRepository,
-        ambilKuitansiRepository: AmbilKuitansiRepository,
+        standardAmbilKuitansiRepository: StandardAmbilKuitansiRepository,
     ): GetListPembayaranBulananAsyncUseCase {
-        return GetListPembayaranBulananAsyncUseCase(pembayaranRepository, baselinePembayaranRepository, hargaKavlingRepository, fotoPembayaranRepository, ambilKuitansiRepository)
+        return GetListPembayaranBulananAsyncUseCase(pembayaranRepository, baselinePembayaranRepository, hargaKavlingRepository, fotoPembayaranRepository, standardAmbilKuitansiRepository)
     }
 
 
@@ -343,9 +343,9 @@ object UseCaseModule {
     @Provides
     fun provideDeleteFotoPembayaranAsync(
         fotoPembayaranRepository: FotoPembayaranRepository,
-        ambilKuitansiRepository: AmbilKuitansiRepository,
+        standardAmbilKuitansiRepository: StandardAmbilKuitansiRepository,
     )
-        = DeleteFotoPembayaranAsyncUseCase(fotoPembayaranRepository, ambilKuitansiRepository)
+        = DeleteFotoPembayaranAsyncUseCase(fotoPembayaranRepository, standardAmbilKuitansiRepository)
 
     @Provides
     fun provideIsFotoPembayaranExistAsync(fotoPembayaranRepository: FotoPembayaranRepository)
@@ -650,8 +650,11 @@ object UseCaseModule {
      * Ambil Kuitansi
      */
     @Provides
-    fun provideInsertAmbilKuitansiUseCase(ambilKuitansiRepository: AmbilKuitansiRepository): InsertAmbilKuitansiAsyncUseCase {
-        return InsertAmbilKuitansiAsyncUseCase(ambilKuitansiRepository)
+    fun provideInsertAmbilKuitansiUseCase(
+        standardAmbilKuitansiRepository: StandardAmbilKuitansiRepository,
+        indenBookingAmbilKuitansiRepository: IndenBookingAmbilKuitansiRepository,
+    ): InsertAmbilKuitansiAsyncUseCase {
+        return InsertAmbilKuitansiAsyncUseCase(standardAmbilKuitansiRepository, indenBookingAmbilKuitansiRepository)
     }
 
 

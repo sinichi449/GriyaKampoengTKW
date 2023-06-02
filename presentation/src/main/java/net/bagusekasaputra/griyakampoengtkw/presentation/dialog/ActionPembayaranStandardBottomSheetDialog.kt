@@ -16,7 +16,7 @@ import com.github.dhaval2404.imagepicker.ImagePicker
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import dagger.hilt.android.AndroidEntryPoint
-import net.bagusekasaputra.griyakampoengtkw.domain.entity.AmbilKuitansi
+import net.bagusekasaputra.griyakampoengtkw.domain.entity.StandardAmbilKuitansi
 import net.bagusekasaputra.griyakampoengtkw.presentation.activity.FullImageActivity
 import net.bagusekasaputra.griyakampoengtkw.presentation.databinding.DialogActionsItemPembayaranBinding
 import net.bagusekasaputra.griyakampoengtkw.presentation.util.GriyaNodes
@@ -138,13 +138,13 @@ class ActionPembayaranStandardBottomSheetDialog(): BottomSheetDialogFragment() {
                 visibility = View.VISIBLE
                 isChecked = pembayaran.sudahAmbilKuitansi
                 setOnCheckedChangeListener { _, isChecked ->
-                    val ambilKuitansi = AmbilKuitansi(
+                    val standardAmbilKuitansi = StandardAmbilKuitansi(
                         kavling = currentKavling,
-                        termin = currentTermin,
-                        sudahAmbil = isChecked,
+                        mTermin = currentTermin,
+                        mSudahAmbil = isChecked,
                     )
 
-                    viewModel.insertAmbilKuitansi(ambilKuitansi,
+                    viewModel.insertAmbilKuitansi(standardAmbilKuitansi,
                         onProgress = {
                             this@ActionPembayaranStandardBottomSheetDialog.isCancelable = false
                             isEnabled = false
