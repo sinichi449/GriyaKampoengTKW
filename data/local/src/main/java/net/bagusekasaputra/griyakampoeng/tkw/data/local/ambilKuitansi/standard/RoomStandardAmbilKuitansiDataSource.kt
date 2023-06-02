@@ -1,4 +1,4 @@
-package net.bagusekasaputra.griyakampoeng.tkw.data.local.ambilKuitansi
+package net.bagusekasaputra.griyakampoeng.tkw.data.local.ambilKuitansi.standard
 
 import net.bagusekasaputra.griyakampoeng.tkw.data.local.MyRoomDatabase
 import net.bagusekasaputra.griyakampoeng.tkw.data.local.RoomRequestHelper.roomOperation

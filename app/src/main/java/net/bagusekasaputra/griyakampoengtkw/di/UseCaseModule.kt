@@ -573,8 +573,9 @@ object UseCaseModule {
         hargaRumahIndenBookingRepository: HargaRumahIndenBookingRepository,
         pembayaranRepository: PembayaranRepository,
         fotoPembayaranRepository: FotoPembayaranIndenBookingRepository,
+        ambilKuitansiRepository: IndenBookingAmbilKuitansiRepository,
     ): GetAllPembayaranIndenBookingAsyncUseCase {
-        return GetAllPembayaranIndenBookingAsyncUseCase(hargaRumahIndenBookingRepository, pembayaranRepository, fotoPembayaranRepository)
+        return GetAllPembayaranIndenBookingAsyncUseCase(hargaRumahIndenBookingRepository, pembayaranRepository, fotoPembayaranRepository, ambilKuitansiRepository)
     }
     @Provides
     fun provideInsertPembayaranIndenBookingUseCase(pembayaranRepository: PembayaranRepository): InsertPembayaranIndenBookingAsyncUseCase {

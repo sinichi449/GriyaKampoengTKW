@@ -10,7 +10,8 @@ import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
 import net.bagusekasaputra.griyakampoeng.tkw.data.local.MyRoomDatabase
-import net.bagusekasaputra.griyakampoeng.tkw.data.local.ambilKuitansi.RoomStandardAmbilKuitansiDataSource
+import net.bagusekasaputra.griyakampoeng.tkw.data.local.ambilKuitansi.indenBooking.RoomIndenBookingAmbilKuitansiDataSource
+import net.bagusekasaputra.griyakampoeng.tkw.data.local.ambilKuitansi.standard.RoomStandardAmbilKuitansiDataSource
 import net.bagusekasaputra.griyakampoeng.tkw.data.local.baselinePembayaran.RoomBaselinePembayaranLocalDataSource
 import net.bagusekasaputra.griyakampoeng.tkw.data.local.biayaLain.RoomBiayaLainDataSource
 import net.bagusekasaputra.griyakampoeng.tkw.data.local.biayaMarketing.RoomBiayaMarketingDataSource
@@ -55,6 +56,7 @@ import net.bagusekasaputra.griyakampoengtkw.data.backup.pembayaran.BackupPembaya
 import net.bagusekasaputra.griyakampoengtkw.data.interfaces.backup.*
 import net.bagusekasaputra.griyakampoengtkw.data.interfaces.local.*
 import net.bagusekasaputra.griyakampoengtkw.data.interfaces.remote.*
+import net.bagusekasaputra.griyakampoengtkw.data.remote.ambilKuitansi.FirebaseIndenBookingAmbilKuitansiDataSource
 import net.bagusekasaputra.griyakampoengtkw.data.remote.ambilKuitansi.FirebaseStandardAmbilKuitansiDataSource
 import net.bagusekasaputra.griyakampoengtkw.data.remote.backupRestore.FirebaseBackupRestoreDataSource
 import net.bagusekasaputra.griyakampoengtkw.data.remote.baselinePembayaran.FirebaseBaselinePembayaranDataSource
@@ -514,17 +516,31 @@ object DataSourceModule {
     }
 
     /**
-     * Ambil Kuitansi
+     * Standard Ambil Kuitansi
      */
     @Provides
-    fun provideLocalAmbilKuitansiDataSource(myRoomDatabase: MyRoomDatabase): LocalStandardAmbilKuitansiDataSource {
+    fun provideLocalStandardAmbilKuitansiDataSource(myRoomDatabase: MyRoomDatabase): LocalStandardAmbilKuitansiDataSource {
         return RoomStandardAmbilKuitansiDataSource(myRoomDatabase)
     }
 
     @Provides
-    fun provideRemoteAmbilKuitansiDataSource(databaseReference: DatabaseReference): RemoteStandardAmbilKuitansiDataSource {
+    fun provideRemoteStandardAmbilKuitansiDataSource(databaseReference: DatabaseReference): RemoteStandardAmbilKuitansiDataSource {
         return FirebaseStandardAmbilKuitansiDataSource(databaseReference)
     }
+
+    /**
+     * Inden Booking Ambil Kuitansi
+     */
+    @Provides
+    fun provideLocalIndenBookinAmbilKuitansiDataSource(myRoomDatabase: MyRoomDatabase): LocalIndenBookingAmbilKuitansiDataSource {
+        return RoomIndenBookingAmbilKuitansiDataSource(myRoomDatabase)
+    }
+
+    @Provides
+    fun provideRemoteIndenBookingAmbilKuitansiDataSource(databaseReference: DatabaseReference): RemoteIndenBookingAmbilKuitansiDataSource {
+        return FirebaseIndenBookingAmbilKuitansiDataSource(databaseReference)
+    }
+
 
     /**
      * Harga Rumah Inden Booking

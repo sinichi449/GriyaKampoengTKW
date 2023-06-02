@@ -1,4 +1,4 @@
-package net.bagusekasaputra.griyakampoeng.tkw.data.local.ambilKuitansi
+package net.bagusekasaputra.griyakampoeng.tkw.data.local.ambilKuitansi.standard
 
 import androidx.room.Dao
 import androidx.room.Entity
@@ -9,7 +9,7 @@ import androidx.room.Query
 import net.bagusekasaputra.griyakampoengtkw.data.model.StandardAmbilKuitansiModel
 
 @Entity(tableName = "ambil_kuitansi")
-data class StandardAmbilKuitansiRoomEntity(
+data class StandardAmbilKuitansiEntity(
     @PrimaryKey(autoGenerate = true)
     val id: Long = 0L,
     val kavling: String,
@@ -22,10 +22,10 @@ data class StandardAmbilKuitansiRoomEntity(
 interface StandardAmbilKuitansiDao {
 
     @Query("SELECT * FROM ambil_kuitansi WHERE kavling=:kavling AND termin=:termin")
-    fun get(kavling: String, termin: String): StandardAmbilKuitansiRoomEntity?
+    fun get(kavling: String, termin: String): StandardAmbilKuitansiEntity?
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    fun insert(entity: StandardAmbilKuitansiRoomEntity): Long
+    fun insert(entity: StandardAmbilKuitansiEntity): Long
 
     @Query("DELETE FROM ambil_kuitansi WHERE kavling=:kavling AND termin=:termin")
     fun delete(kavling: String, termin: String)
@@ -36,7 +36,7 @@ interface StandardAmbilKuitansiDao {
 }
 
 // Mapper
-fun StandardAmbilKuitansiRoomEntity.toModel(): StandardAmbilKuitansiModel {
+fun StandardAmbilKuitansiEntity.toModel(): StandardAmbilKuitansiModel {
     return this.let {
         StandardAmbilKuitansiModel(
             kavling = it.kavling,
@@ -46,9 +46,9 @@ fun StandardAmbilKuitansiRoomEntity.toModel(): StandardAmbilKuitansiModel {
     }
 }
 
-fun StandardAmbilKuitansiModel.toEntity(): StandardAmbilKuitansiRoomEntity {
+fun StandardAmbilKuitansiModel.toEntity(): StandardAmbilKuitansiEntity {
     return this.let {
-        StandardAmbilKuitansiRoomEntity(
+        StandardAmbilKuitansiEntity(
             kavling = it.kavling,
             termin = it.termin,
             sudahAmbil = it.sudahAmbil,

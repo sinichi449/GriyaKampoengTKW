@@ -2,8 +2,10 @@ package net.bagusekasaputra.griyakampoeng.tkw.data.local
 
 import androidx.room.Database
 import androidx.room.RoomDatabase
-import net.bagusekasaputra.griyakampoeng.tkw.data.local.ambilKuitansi.StandardAmbilKuitansiDao
-import net.bagusekasaputra.griyakampoeng.tkw.data.local.ambilKuitansi.StandardAmbilKuitansiRoomEntity
+import net.bagusekasaputra.griyakampoeng.tkw.data.local.ambilKuitansi.indenBooking.IndenBookingAmbilKuitansiDao
+import net.bagusekasaputra.griyakampoeng.tkw.data.local.ambilKuitansi.indenBooking.IndenBookingAmbilKuitansiEntity
+import net.bagusekasaputra.griyakampoeng.tkw.data.local.ambilKuitansi.standard.StandardAmbilKuitansiDao
+import net.bagusekasaputra.griyakampoeng.tkw.data.local.ambilKuitansi.standard.StandardAmbilKuitansiEntity
 import net.bagusekasaputra.griyakampoeng.tkw.data.local.baselinePembayaran.BaselinePembayaranRoomEntity
 import net.bagusekasaputra.griyakampoeng.tkw.data.local.baselinePembayaran.BaselinePembayaranRoomFixDao
 import net.bagusekasaputra.griyakampoeng.tkw.data.local.biayaLain.BiayaLainDao
@@ -57,10 +59,10 @@ import net.bagusekasaputra.griyakampoeng.tkw.data.local.pengingat.PengingatRoomE
                 BiayaMarketingV2RoomEntity::class, PengingatRoomEntity::class, MetadataEntity::class,
                BiayaLainRoomEntity::class, BaselinePembayaranRoomEntity::class,
                FotoIdentitasIndenBookingEntity::class, DataDiriIndenBookingEntity::class,
-               PembayaranIndenBookingEntity::class, StandardAmbilKuitansiRoomEntity::class,
+               PembayaranIndenBookingEntity::class, StandardAmbilKuitansiEntity::class,
                HargaRumahEntity::class, FotoPembayaranIndenBookingEntity::class,
-               IndenBookingCatatanPembayaranEntity::class],
-    version = 29,
+               IndenBookingCatatanPembayaranEntity::class, IndenBookingAmbilKuitansiEntity::class],
+    version = 30,
     exportSchema = true,
 )
 abstract class MyRoomDatabase: RoomDatabase() {
@@ -111,4 +113,5 @@ abstract class MyRoomDatabase: RoomDatabase() {
 
     abstract fun getIndenBookingCatatanPembayaranDao(): IndenBookingCatatanPembayaranDao
 
+    abstract fun getIndenBookingAmbilKuitansiDao(): IndenBookingAmbilKuitansiDao
 }

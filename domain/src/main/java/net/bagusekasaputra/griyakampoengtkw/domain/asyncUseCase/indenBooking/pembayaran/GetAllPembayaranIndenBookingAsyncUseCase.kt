@@ -5,14 +5,16 @@ import kotlinx.coroutines.flow.flow
 import net.bagusekasaputra.griyakampoengtkw.domain.DataMode
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.AsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.pembayaran.Pembayaran
-import net.bagusekasaputra.griyakampoengtkw.domain.repository.HargaRumahIndenBookingRepository
-import net.bagusekasaputra.griyakampoengtkw.domain.repository.PembayaranRepository
 import net.bagusekasaputra.griyakampoengtkw.domain.repository.FotoPembayaranIndenBookingRepository
+import net.bagusekasaputra.griyakampoengtkw.domain.repository.HargaRumahIndenBookingRepository
+import net.bagusekasaputra.griyakampoengtkw.domain.repository.IndenBookingAmbilKuitansiRepository
+import net.bagusekasaputra.griyakampoengtkw.domain.repository.PembayaranRepository
 
 class GetAllPembayaranIndenBookingAsyncUseCase(
     private val hargaRumahIndenBookingRepository: HargaRumahIndenBookingRepository,
     private val pembayaranRepository: PembayaranRepository,
     private val fotoPembayaranRepository: FotoPembayaranIndenBookingRepository,
+    private val ambilKuitansiRepository: IndenBookingAmbilKuitansiRepository,
 ): AsyncUseCase<GetAllPembayaranIndenBookingAsyncUseCase.Request, List<Pembayaran>>() {
 
     data class Request(val keyId: String): AsyncUseCase.Request
@@ -31,9 +33,11 @@ class GetAllPembayaranIndenBookingAsyncUseCase(
                     onCekFotoPembayaran = { termin ->
                         fotoPembayaranRepository.isExist(request.keyId, termin).getOrThrow()
                     },
-                    onCekSudahAmbilKuitansi = { _ ->
-                        // TODO
-                        false
+                    onCekSudahAmbilKuitansi = { termin ->
+                        val ambilKuitansi = ambilKuitansiRepository.get(request.keyId, termin)
+                            .getOrThrow()
+
+                        ambilKuitansi?.sudahAmbil ?: false
                     }
                 )
 

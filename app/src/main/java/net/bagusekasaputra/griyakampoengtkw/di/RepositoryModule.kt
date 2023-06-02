@@ -404,8 +404,12 @@ object RepositoryModule {
     }
 
     @Provides
-    fun provideIndenBookingAmbilKuitansiRepository(): IndenBookingAmbilKuitansiRepository {
-        return IndenBookingAmbilKuitansiRepositoryImpl()
+    fun provideIndenBookingAmbilKuitansiRepository(
+        localDataSource: LocalIndenBookingAmbilKuitansiDataSource,
+        remoteDataSource: RemoteIndenBookingAmbilKuitansiDataSource,
+        cacheHelper: CacheHelper,
+    ): IndenBookingAmbilKuitansiRepository {
+        return IndenBookingAmbilKuitansiRepositoryImpl(localDataSource, remoteDataSource, cacheHelper)
     }
 
 
