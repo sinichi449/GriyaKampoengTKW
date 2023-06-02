@@ -13,6 +13,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import net.bagusekasaputra.griyakampoengtkw.domain.DataMode
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.catatanPembayaran.AddCatatanPembayaranAsyncUseCase
+import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.catatanPembayaran.DeleteCatatanPembayaranAsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.catatanPembayaran.GetCatatanPembayaranAsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.catatanPembayaran.UpdateCatatanPembayaranAsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.indenBooking.GetAllIndenBookingAsyncUseCase
@@ -55,6 +56,7 @@ class IndenBookingViewModel @Inject constructor(
     private val getCatatanPembayaranUseCase: GetCatatanPembayaranAsyncUseCase,
     private val addCatatanPembayaranUseCase: AddCatatanPembayaranAsyncUseCase,
     private val updateCatatanPembayaranUseCase: UpdateCatatanPembayaranAsyncUseCase,
+    private val deleteCatatanPembayaranUseCase: DeleteCatatanPembayaranAsyncUseCase,
 ): ViewModel() {
 
     // Inden Booking
@@ -489,6 +491,31 @@ class IndenBookingViewModel @Inject constructor(
                 result.onFailure {
                     withContext(Dispatchers.Main) {
                         onFailure("Gagal mengubah catatan pembayaran : ${it.localizedMessage}")
+                    }
+                }
+            }
+        }
+    }
+
+    fun deleteCatatanPembayaran(
+        keyId: String,
+        onProgress: () -> Unit = {},
+        onSuccess: () -> Unit = {},
+        onFailure: (msg: String) -> Unit = {},
+    ) {
+        onProgress()
+
+        viewModelScope.launch(Dispatchers.IO) {
+            val request = DeleteCatatanPembayaranAsyncUseCase.IndenBookingRequest(keyId)
+            deleteCatatanPembayaranUseCase.execute(request).collect { result ->
+                result.onSuccess {
+                    withContext(Dispatchers.Main) {
+                        onSuccess()
+                    }
+                }
+                result.onFailure {
+                    withContext(Dispatchers.Main) {
+                        onFailure("Gagal menghapus catatan pembayaran : ${it.localizedMessage}")
                     }
                 }
             }

@@ -283,8 +283,11 @@ object UseCaseModule {
         = UpdateCatatanPembayaranAsyncUseCase(kavlingCatatanPembayaranRepository, indenBookingCatatanPembayaranRepository)
 
     @Provides
-    fun provideDeleteCatatanPembayaranUseCase(kavlingCatatanPembayaranRepository: KavlingCatatanPembayaranRepository)
-        = DeleteCatatanPembayaranAsyncUseCase(kavlingCatatanPembayaranRepository)
+    fun provideDeleteCatatanPembayaranUseCase(
+        kavlingCatatanPembayaranRepository: KavlingCatatanPembayaranRepository,
+        indenBookingCatatanPembayaranRepository: IndenBookingCatatanPembayaranRepository,
+    )
+        = DeleteCatatanPembayaranAsyncUseCase(kavlingCatatanPembayaranRepository, indenBookingCatatanPembayaranRepository)
 
     /**
      * Image Data Diri

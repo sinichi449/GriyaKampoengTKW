@@ -10,4 +10,5 @@ interface IndenBookingCatatanPembayaranRepository {
 
     suspend fun update(keyId: String, newCatatanPembayaran: IndenBookingCatatanPembayaran): Result<Nothing?>
 
+    suspend fun delete(keyId: String): Result<Nothing?>
 }

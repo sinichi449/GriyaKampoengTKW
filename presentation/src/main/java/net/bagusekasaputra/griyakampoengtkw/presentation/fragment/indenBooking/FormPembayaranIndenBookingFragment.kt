@@ -59,7 +59,7 @@ class FormPembayaranIndenBookingFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         binding.root.setOnRefreshListener {
-            refresh(Model.HARGA_RUMAH, Model.LIST_PEMBAYARAN, Model.CATATAN_PEMBAYARAN)
+            sync(Model.HARGA_RUMAH, Model.LIST_PEMBAYARAN, Model.CATATAN_PEMBAYARAN)
 
             // Until harga rumah ready
             binding.root.isRefreshing = false
@@ -101,6 +101,7 @@ class FormPembayaranIndenBookingFragment : Fragment() {
                 catatanPembayaran = catatanPembayaran,
                 onInputValidAndSubmitRequested = { dialogInterface, dialogBinding, newCatatanPembayaran ->
                     dialogBinding.btnTambahkan.isEnabled = false
+                    dialogBinding.btnHapusCatatan.isEnabled = false
 
                     // Update Operation
                     if (catatanPembayaran != null) {
@@ -114,7 +115,7 @@ class FormPembayaranIndenBookingFragment : Fragment() {
                                 Snackbar.make(binding.root, "Berhasil mengubah catatan pembayaran!", Snackbar.LENGTH_SHORT)
                                     .show()
 
-                                refresh(Model.CATATAN_PEMBAYARAN)
+                                sync(Model.CATATAN_PEMBAYARAN)
                             },
                             onFailure = {
                                 dialogInterface.dismiss()
@@ -135,7 +136,7 @@ class FormPembayaranIndenBookingFragment : Fragment() {
                                 Snackbar.make(binding.root, "Berhasil menambahkan catatan pembayaran!", Snackbar.LENGTH_SHORT)
                                     .show()
 
-                                refresh(Model.CATATAN_PEMBAYARAN)
+                                sync(Model.CATATAN_PEMBAYARAN)
                             },
                             onFailure = {
                                 dialogInterface.dismiss()
@@ -145,16 +146,41 @@ class FormPembayaranIndenBookingFragment : Fragment() {
                         )
                     }
                 },
-                onDeleteRequested = { dialog, _ ->
-                    // TODO
-                    dialog.dismiss()
+                onDeleteRequested = { dialogInterface, dialogBinding ->
+                    // show confirmation dialog before deletion
+                    DialogUtil.createConfirmationDialog(
+                        context = requireContext(),
+                        title = "Hapus Catatan Pembayaran?",
+                        message = "Apakah Anda yakin ingin menghapus catatan pembayaran ini? Aksi ini tidak bisa dipulihkan!",
+                        onConfirm = {
+                            dialogBinding.btnTambahkan.isEnabled = false
+                            dialogBinding.btnHapusCatatan.isEnabled = false
 
-                    Toast.makeText(requireContext(), "Not yet implemented!", Toast.LENGTH_SHORT).show()
+                            viewModel.deleteCatatanPembayaran(viewModel.currentKeyId,
+                                onProgress = {
+                                    dialogBinding.btnTambahkan.text = "Menghapus data ..."
+                                },
+                                onSuccess = {
+                                    dialogInterface.dismiss()
+
+                                    Snackbar.make(binding.root, "Berhasil menghapus catatan pembayaran!", Snackbar.LENGTH_SHORT)
+                                        .show()
+
+                                    sync(Model.CATATAN_PEMBAYARAN)
+                                },
+                                onFailure = {
+                                    dialogInterface.dismiss()
+
+                                    Toast.makeText(requireContext(), it, Toast.LENGTH_LONG).show()
+                                }
+                            )
+                        }
+                    )
                 }
             )
         }
 
-        refresh(Model.HARGA_RUMAH, Model.LIST_PEMBAYARAN, Model.CATATAN_PEMBAYARAN)
+        sync(Model.HARGA_RUMAH, Model.LIST_PEMBAYARAN, Model.CATATAN_PEMBAYARAN)
 
         setupViewModel()
     }
@@ -264,7 +290,7 @@ class FormPembayaranIndenBookingFragment : Fragment() {
             .createTable()
     }
 
-    private fun refresh(vararg what: Model) {
+    private fun sync(vararg what: Model) {
         val currentKeyId = viewModel.currentKeyId
         if ((currentKeyId != "NULL_ID") || (currentKeyId.isNotEmpty())) {
             what.forEach {
@@ -371,7 +397,7 @@ class FormPembayaranIndenBookingFragment : Fragment() {
                         Snackbar.make(binding.root, "Berhasil mengubah harga rumah!", Snackbar.LENGTH_SHORT)
                             .show()
 
-                        refresh(Model.HARGA_RUMAH)
+                        sync(Model.HARGA_RUMAH)
                     },
                     onFailure = {
                         dialogBinding.btnTambahkan.revertAnimation()
@@ -467,7 +493,7 @@ class FormPembayaranIndenBookingFragment : Fragment() {
                 Snackbar.make(binding.root, "Berhasil menambahkan pembayaran!", Snackbar.LENGTH_SHORT)
                     .show()
 
-                refresh(Model.LIST_PEMBAYARAN)
+                sync(Model.LIST_PEMBAYARAN)
             } else {
                 data?.extras?.getString(FormActivity.EXTRAS_FAIL_MSG)?.also {
                     Toast.makeText(requireContext(), it, Toast.LENGTH_LONG).show()

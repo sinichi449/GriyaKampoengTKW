@@ -88,4 +88,21 @@ class IndenBookingCatatanPembayaranRepositoryImpl(
             Result.failure(e)
         }
     }
+
+    override suspend fun delete(keyId: String): Result<Nothing?> {
+        return try {
+            // Remote Deletion
+            remoteDataSource.delete(keyId).getOrThrow()
+
+            // Cache Update
+            cacheHelper.updateMetadata(cacheLocalTable, cacheRemoteTable).getOrThrow()
+
+            // Local Deletion
+            localDataSource.delete(keyId).getOrThrow()
+
+            Result.success(null)
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
+    }
 }
