@@ -53,7 +53,7 @@ class FirebasePembayaranIndenBookingDataSource(
 
     override suspend fun insert(keyId: String, model: PembayaranModel): Result<Nothing?> {
         return suspendCancellableCoroutine { continuation ->
-            pembayaranRef(keyId).child(model.termin)
+            pembayaranRef(keyId).child(model.getFullTermin())
                 .setValue(model)
                 .addOnSuccessListener {
                     if (continuation.isActive) {
