@@ -32,6 +32,52 @@ class DateTest {
     }
 
     @Test
+    fun currentMonthlyRange_shouldCorrect() {
+        val calendar = Calendar.getInstance()
+        val awalTanggalBulanSekarang = calendar.run {
+            set(Calendar.DAY_OF_MONTH, getActualMinimum(Calendar.DAY_OF_MONTH))
+
+            time
+        }
+        val akhirTanggalBulanSekarang = calendar.run {
+            set(Calendar.DAY_OF_MONTH, getActualMaximum(Calendar.DAY_OF_MONTH))
+
+            time
+        }
+
+        val monthlyRange = DateUtil.getMonthlyRangeDate()
+
+        val awalResultRange = monthlyRange.first().toSlashedString()
+        val akhirResultRange = monthlyRange.last().toSlashedString()
+
+        Assert.assertEquals(awalTanggalBulanSekarang.toSlashedString(), awalResultRange)
+        Assert.assertEquals(akhirTanggalBulanSekarang.toSlashedString(), akhirResultRange)
+    }
+
+    @Test
+    fun currentWeeklyRange_shouldCorrect() {
+        val calendar = Calendar.getInstance()
+        val awalTanggalMingguIni = calendar.run {
+            set(Calendar.DAY_OF_WEEK, Calendar.SUNDAY)
+
+            time
+        }
+        val akhirTanggalMingguIni = calendar.run {
+            add(Calendar.DAY_OF_WEEK, 7)
+
+            time
+        }
+
+        val weeklyRange = DateUtil.getWeeklyRangeDate()
+
+        val awalResultRange = weeklyRange.first().toSlashedString()
+        val akhirResultRange = weeklyRange.last().toSlashedString()
+
+        Assert.assertEquals(awalTanggalMingguIni.toSlashedString(), awalResultRange)
+        Assert.assertEquals(akhirTanggalMingguIni.toSlashedString(), akhirResultRange)
+    }
+
+    @Test
     fun convertDateToStringLongBulan_shouldCorrect() {
         val startDate = "1/1/2020".toDate()
         val endDate = "3/6/2023".toDate()
