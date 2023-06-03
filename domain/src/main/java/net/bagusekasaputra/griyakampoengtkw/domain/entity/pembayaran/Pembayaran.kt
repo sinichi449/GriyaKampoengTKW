@@ -119,11 +119,7 @@ data class Pembayaran(
                     }
                 }
                 PeriodeRekap.BULAN_INI -> {
-                    val calendar = Calendar.getInstance()
-                    val bulanSekarang = calendar.get(Calendar.MONTH) // Calendar Type!!
-                    val tahunSekarang = calendar.get(Calendar.YEAR)
-
-                    val rangeTanggal = DateUtil.getMonthlyRangeDate(bulanSekarang, tahunSekarang)
+                    val rangeTanggal = DateUtil.getMonthlyRangeDate()
                     val tanggalPertama = rangeTanggal[0]
                     val tanggalTerakhir = rangeTanggal[1]
 

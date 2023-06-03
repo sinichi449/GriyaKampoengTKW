@@ -27,7 +27,7 @@ object DateUtil {
     }
 
     fun getMonthlyRangeDate(): List<Date> {
-        val calendar = Calendar.getInstance()
+        val calendar = Calendar.getInstance().normalize()
 
         val startDay = calendar.getActualMinimum(Calendar.DAY_OF_MONTH)
         calendar.set(Calendar.DAY_OF_MONTH, startDay)
@@ -161,7 +161,7 @@ object DateUtil {
     fun Date.isWithinRange(startDate: Date, endDate: Date)
             = !(this.before(startDate) || this.after(endDate))
 
-    private fun Calendar.normalize(): Calendar {
+    fun Calendar.normalize(): Calendar {
         set(Calendar.HOUR_OF_DAY, 0)
         set(Calendar.MINUTE, 0)
         set(Calendar.SECOND, 0)

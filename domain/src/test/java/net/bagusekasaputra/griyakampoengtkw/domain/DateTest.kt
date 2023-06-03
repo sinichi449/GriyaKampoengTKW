@@ -51,4 +51,13 @@ class DateTest {
             Assert.assertEquals(correctTanggal, result)
         }
     }
+
+    @Test
+    fun isWithinRange_edgeTest_shouldCorrect() {
+        val tanggal = "1/6/2023".toDate()
+        val startTanggal = "1/6/2023".toDate()
+        val endTanggal = "3/6/2023".toDate()
+
+        Assert.assertEquals(true, tanggal.isWithinRange(startTanggal, endTanggal))
+    }
 }
