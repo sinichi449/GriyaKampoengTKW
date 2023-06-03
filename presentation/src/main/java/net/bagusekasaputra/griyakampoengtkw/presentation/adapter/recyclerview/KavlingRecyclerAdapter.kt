@@ -46,10 +46,14 @@ class KavlingRecyclerAdapter(
         else
             View.GONE
 
-        // Special case for all Kavlings in Blok C
+        // Special case for Kavling C1 and C6
         val kavling = kavlings[position]
-        holder.binding.tvUkuran.text = if (kavling.kode == "C1")
-            "93 m2" else kavling.ukuran
+        holder.binding.tvUkuran.text =
+            when (kavling.kode) {
+                "C1" -> "67,12 m2"
+                "C6" -> "63,63 m2"
+                else -> kavling.ukuran
+            }
 
 
         // Fill Layout progress settings
