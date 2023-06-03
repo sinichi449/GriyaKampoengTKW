@@ -1,4 +1,4 @@
-package net.bagusekasaputra.griyakampoengtkw.presentation.fragment
+package net.bagusekasaputra.griyakampoengtkw.presentation.fragment.management
 
 import android.annotation.SuppressLint
 import android.app.DatePickerDialog
@@ -31,6 +31,7 @@ import net.bagusekasaputra.griyakampoengtkw.presentation.util.DialogUtil
 import net.bagusekasaputra.griyakampoengtkw.presentation.util.FabHelper
 import net.bagusekasaputra.griyakampoengtkw.presentation.util.InputUtil
 import net.bagusekasaputra.griyakampoengtkw.presentation.viewmodel.BiayaLainViewModel
+import net.bagusekasaputra.griyakampoengtkw.presentation.viewmodel.MainViewModel
 import java.util.Calendar
 import javax.inject.Inject
 
@@ -41,6 +42,7 @@ class BiayaLainFragment: Fragment() {
     private lateinit var binding: FragmentBiayaLainBinding
 
     private val viewModel: BiayaLainViewModel by viewModels()
+    private val mainViewModel by viewModels<MainViewModel>()
     private lateinit var fabActions: ExtendedFloatingActionButton
     private lateinit var fabAddBiayaLain: FloatingActionButton
     private lateinit var fabEditBiayaLain: FloatingActionButton
@@ -150,7 +152,6 @@ class BiayaLainFragment: Fragment() {
         BiayaLainTableWrapper(binding.tableviewBiayaLain, listBiayaLain)
             .createTable()
     }
-
 
     private fun showActionBiayaLainDialog(biayaLain: BiayaLain?) {
         val dialogBinding = DialogActionBiayaLainBinding.inflate(layoutInflater)

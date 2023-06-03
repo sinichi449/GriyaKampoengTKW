@@ -6,7 +6,7 @@
     app:startDestination="@id/nav_management_kavling">
     <fragment
         android:id="@+id/nav_management_kavling"
-        android:name="net.bagusekasaputra.griyakampoengtkw.presentation.fragment.ManagementKavlingFragment"
+        android:name="net.bagusekasaputra.griyakampoengtkw.presentation.fragment.management.ManagementKavlingFragment"
         android:label="Management Kavling"
         tools:layout="@layout/fragment_management_kavling" />
     <fragment

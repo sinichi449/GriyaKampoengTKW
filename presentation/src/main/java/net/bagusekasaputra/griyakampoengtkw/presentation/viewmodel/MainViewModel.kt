@@ -29,6 +29,7 @@ import net.bagusekasaputra.griyakampoengtkw.domain.usecase.kavling.AddKavlingUse
 import net.bagusekasaputra.griyakampoengtkw.domain.usecase.kavling.EditKavlingUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.usecase.kavling.RemoveKavlingUseCase
 import net.bagusekasaputra.griyakampoengtkw.presentation.combineWith
+import net.bagusekasaputra.griyakampoengtkw.presentation.fragment.management.ManagementKavlingFragment
 import net.bagusekasaputra.griyakampoengtkw.presentation.logEvent
 import javax.inject.Inject
 
@@ -71,6 +72,8 @@ class MainViewModel @Inject constructor(
     val promotionMessage: LiveData<Promotion?>
         get() = _promotionMessage
 
+    val managementKavlingFragment = MutableLiveData<ManagementKavlingFragment?>(null)
+    val shouldNavigateToKavlingFragment = MutableLiveData(false)
 
     val currentBlock = MutableLiveData("A")
 
@@ -407,6 +410,4 @@ class MainViewModel @Inject constructor(
         asyncJobs.forEach { it.cancel() }
         super.onCleared()
     }
-
-
 }

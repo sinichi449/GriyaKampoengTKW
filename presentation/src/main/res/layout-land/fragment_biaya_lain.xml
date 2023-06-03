@@ -5,7 +5,7 @@
     android:id="@+id/swipe_refresh_biaya_lain"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".fragment.BiayaLainFragment">
+    tools:context=".fragment.management.BiayaLainFragment">
 
     <androidx.core.widget.NestedScrollView
         android:layout_width="match_parent"

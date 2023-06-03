@@ -112,6 +112,19 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+    @Deprecated("Deprecated in Java")
+    override fun onBackPressed() {
+        with(viewModel.managementKavlingFragment.value) {
+            val shouldNavigatetoKavlingFragment = viewModel.shouldNavigateToKavlingFragment.value
+
+            if ((this != null) && (shouldNavigatetoKavlingFragment == true)) {
+                navigateToKavlingFragment()
+            } else {
+                super.onBackPressed()
+            }
+        }
+    }
+
     override fun onSupportNavigateUp(): Boolean {
         return navController.navigateUp(appBarConfiguration)
     }

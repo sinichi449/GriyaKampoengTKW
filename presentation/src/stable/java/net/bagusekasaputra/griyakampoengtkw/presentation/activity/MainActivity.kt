@@ -37,6 +37,7 @@ import javax.inject.Inject
 /**
  * App Update and Promotion Banner
  */
+@Suppress("DEPRECATION")
 @AndroidEntryPoint
 class MainActivity : AppCompatActivity() {
 
@@ -137,6 +138,19 @@ class MainActivity : AppCompatActivity() {
 //                showPromotionMessageDialog(it)
 //            }
 //        }
+    }
+
+    @Deprecated("Deprecated in Java")
+    override fun onBackPressed() {
+        with(viewModel.managementKavlingFragment.value) {
+            val shouldNavigatetoKavlingFragment = viewModel.shouldNavigateToKavlingFragment.value
+
+            if ((this != null) && (shouldNavigatetoKavlingFragment == true)) {
+                navigateToKavlingFragment()
+            } else {
+                super.onBackPressed()
+            }
+        }
     }
 
     private fun showPromotionMessageDialog(promotion: Promotion) {
