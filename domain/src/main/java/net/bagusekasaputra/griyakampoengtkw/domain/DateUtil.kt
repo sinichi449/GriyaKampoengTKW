@@ -41,7 +41,7 @@ object DateUtil {
     }
 
     fun getMonthlyRangeDate(calendarMonth: Int, year: Int): List<Date> {
-        val calendar = Calendar.getInstance()
+        val calendar = Calendar.getInstance().normalize()
         calendar.set(Calendar.MONTH, calendarMonth)
         calendar.set(Calendar.YEAR, year)
 
@@ -57,7 +57,7 @@ object DateUtil {
     }
 
     fun getWeeklyRangeDate(): List<Date> {
-        val calendar = Calendar.getInstance()
+        val calendar = Calendar.getInstance().normalize()
         calendar.set(Calendar.DAY_OF_WEEK, Calendar.SUNDAY)
         val startDate = calendar.time
 
@@ -103,6 +103,21 @@ object DateUtil {
         }
 
         return months
+    }
+
+    fun getListDate(dateFrom: Date, dateTo: Date): List<Date> {
+        val calendar = Calendar.getInstance().apply {
+            time = dateFrom
+        }
+
+        val days = mutableListOf<Date>()
+
+        while (calendar.time.time <= dateTo.time) {
+            days.add(calendar.time)
+            calendar.add(Calendar.DAY_OF_MONTH, 1)
+        }
+
+        return days
     }
 
     fun namaBulanShort(bulan: Int): String {
@@ -152,6 +167,15 @@ object DateUtil {
 
     fun Date.isWithinRange(startDate: Date, endDate: Date)
             = !(this.before(startDate) || this.after(endDate))
+
+    private fun Calendar.normalize(): Calendar {
+        set(Calendar.HOUR_OF_DAY, 0)
+        set(Calendar.MINUTE, 0)
+        set(Calendar.SECOND, 0)
+        set(Calendar.MILLISECOND, 0)
+
+        return this
+    }
 
     @RequiresApi(Build.VERSION_CODES.O)
     fun Date.toLocalDate(): LocalDate {

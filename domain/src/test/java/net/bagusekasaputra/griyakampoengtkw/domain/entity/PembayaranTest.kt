@@ -2,13 +2,21 @@ package net.bagusekasaputra.griyakampoengtkw.domain.entity
 
 import kotlinx.coroutines.runBlocking
 import net.bagusekasaputra.griyakampoengtkw.domain.DataMode
+import net.bagusekasaputra.griyakampoengtkw.domain.DateUtil
+import net.bagusekasaputra.griyakampoengtkw.domain.DateUtil.toDate
+import net.bagusekasaputra.griyakampoengtkw.domain.DateUtil.toSlashedString
+import net.bagusekasaputra.griyakampoengtkw.domain.NumberUtil
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.pembayaran.Pembayaran
+import net.bagusekasaputra.griyakampoengtkw.domain.entity.pembayaran.Pembayaran.Companion.filterPeriode
+import net.bagusekasaputra.griyakampoengtkw.domain.entity.rekap.PeriodeRekap
 import net.bagusekasaputra.griyakampoengtkw.domain.repository.MockHargaRumahIndenBookingRepository
 import net.bagusekasaputra.griyakampoengtkw.domain.repository.MockPembayaranRepository
 import org.junit.Assert
 import org.junit.Test
+import org.mockito.ArgumentMatchers
 import java.math.BigDecimal
 import java.math.RoundingMode
+import java.util.Calendar
 
 
 class PembayaranTest {
@@ -114,4 +122,64 @@ class PembayaranTest {
 
         assert(lastPembayaran.presentase == persentasePembayaranTerakhir)
     }
+
+    @Test
+    fun filterPeriodeBulanIni_shouldCorrect() {
+        val calendar = Calendar.getInstance()
+        val bulanSekarang = calendar.get(Calendar.MONTH) + 1
+        val tahunSekarang = calendar.get(Calendar.YEAR)
+        val totalPembayaran = calendar.getActualMaximum(Calendar.DAY_OF_MONTH)
+
+        val pembayaranList = mutableListOf<Pembayaran>().apply {
+            val startDate = "1/1/2020".toDate()
+            val endDate = "${totalPembayaran}/$bulanSekarang/$tahunSekarang".toDate()
+
+            val rangeTanggal = DateUtil.getListDate(startDate, endDate)
+            rangeTanggal.forEach {
+                add(Pembayaran(
+                    termin = ArgumentMatchers.anyString(),
+                    tanggal = it.toSlashedString(),
+                    jumlahUangDibayar = NumberUtil.formatLongToString(ArgumentMatchers.anyLong()),
+                    keterangan = ArgumentMatchers.anyString(),
+                    timeMillis = System.currentTimeMillis(),
+                ))
+            }
+        }
+        val bulanIniPembayaranList = pembayaranList.filterPeriode(PeriodeRekap.BULAN_INI, null, null)!!
+
+        Assert.assertEquals(totalPembayaran, bulanIniPembayaranList.size)
+    }
+
+    @Test
+    fun filterPeriodeMingguIni_shouldCorrect() {
+        val calendar = Calendar.getInstance()
+        val startDate = calendar.run {
+            set(Calendar.DAY_OF_WEEK, Calendar.SUNDAY)
+
+            time
+        }
+        val endDate = calendar.run {
+            add(Calendar.DAY_OF_WEEK, 7)
+
+            time
+        }
+        val rangeDate = DateUtil.getListDate(startDate, endDate)
+
+        val pembayaranList = mutableListOf<Pembayaran>().apply {
+            rangeDate.forEach {
+                add(Pembayaran(
+                    termin = ArgumentMatchers.anyString(),
+                    tanggal = it.toSlashedString(),
+                    jumlahUangDibayar = NumberUtil.formatLongToString(ArgumentMatchers.anyLong()),
+                    keterangan = ArgumentMatchers.anyString(),
+                    timeMillis = System.currentTimeMillis(),
+                ))
+            }
+        }
+        val mingguIniPembayaran = pembayaranList.filterPeriode(PeriodeRekap.MINGGU_INI, null, null)!!
+
+        Assert.assertEquals(rangeDate.size, mingguIniPembayaran.size)
+    }
+
+
 }

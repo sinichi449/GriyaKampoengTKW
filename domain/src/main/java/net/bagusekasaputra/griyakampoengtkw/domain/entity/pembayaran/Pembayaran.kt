@@ -2,7 +2,6 @@ package net.bagusekasaputra.griyakampoengtkw.domain.entity.pembayaran
 
 import net.bagusekasaputra.griyakampoengtkw.domain.DateUtil
 import net.bagusekasaputra.griyakampoengtkw.domain.DateUtil.getCustomRangeDate
-import net.bagusekasaputra.griyakampoengtkw.domain.DateUtil.getMonthlyRangeDate
 import net.bagusekasaputra.griyakampoengtkw.domain.DateUtil.getWeeklyRangeDate
 import net.bagusekasaputra.griyakampoengtkw.domain.DateUtil.isWithinRange
 import net.bagusekasaputra.griyakampoengtkw.domain.DateUtil.toDate
@@ -120,7 +119,11 @@ data class Pembayaran(
                     }
                 }
                 PeriodeRekap.BULAN_INI -> {
-                    val rangeTanggal = getMonthlyRangeDate()
+                    val calendar = Calendar.getInstance()
+                    val bulanSekarang = calendar.get(Calendar.MONTH) // Calendar Type!!
+                    val tahunSekarang = calendar.get(Calendar.YEAR)
+
+                    val rangeTanggal = DateUtil.getMonthlyRangeDate(bulanSekarang, tahunSekarang)
                     val tanggalPertama = rangeTanggal[0]
                     val tanggalTerakhir = rangeTanggal[1]
 
