@@ -3,6 +3,7 @@ package net.bagusekasaputra.griyakampoengtkw.domain
 import net.bagusekasaputra.griyakampoengtkw.domain.DateUtil.isWithinRange
 import net.bagusekasaputra.griyakampoengtkw.domain.DateUtil.toDate
 import net.bagusekasaputra.griyakampoengtkw.domain.DateUtil.toSlashedString
+import net.bagusekasaputra.griyakampoengtkw.domain.DateUtil.toStringAndLongBulan
 import org.junit.Assert
 import org.junit.Test
 import java.util.Calendar
@@ -28,5 +29,26 @@ class DateTest {
         Assert.assertEquals(dateList.first(), startDate)
         Assert.assertEquals(dateList.last(), endDate)
         Assert.assertEquals(1250, dateList.size)
+    }
+
+    @Test
+    fun convertDateToStringLongBulan_shouldCorrect() {
+        val startDate = "1/1/2020".toDate()
+        val endDate = "3/6/2023".toDate()
+        val generatedTanggalList = DateUtil.getListDate(startDate, endDate)
+
+        val calendar = Calendar.getInstance()
+        generatedTanggalList.forEach {
+            calendar.time = it
+
+            val tanggal = calendar.get(Calendar.DAY_OF_MONTH)
+            val bulan = DateUtil.namaBulanLong(calendar.get(Calendar.MONTH) + 1)
+            val tahun = calendar.get(Calendar.YEAR)
+            val correctTanggal = "$tanggal $bulan $tahun"
+
+            val result = it.toStringAndLongBulan()
+
+            Assert.assertEquals(correctTanggal, result)
+        }
     }
 }

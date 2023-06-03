@@ -144,8 +144,14 @@ class FormPembayaranFragment : Fragment() {
 
             if (hargaKavling != null) {
                 val baselinePembayaran = pembayaranViewModel.baselinePembayaranLive.value
-                FormBaselinePembayaranDialog(currentKavlingKode!!, hargaKavling, baselinePembayaran)
-                    .show(childFragmentManager, null)
+                val tanggalPembelian = pembayaranViewModel.fullPembayaransLive.value?.let {
+                    Pembayaran.getTanggalPembelian(it)
+                }
+
+                FormBaselinePembayaranDialog(
+                    currentKavlingKode!!, hargaKavling,
+                    baselinePembayaran, tanggalPembelian,
+                ).show(childFragmentManager, null)
             } else {
                 Snackbar.make(binding.root, "Harga Kavling masih kosong!", Snackbar.LENGTH_SHORT).show()
             }

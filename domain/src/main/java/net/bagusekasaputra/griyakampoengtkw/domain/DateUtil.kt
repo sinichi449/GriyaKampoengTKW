@@ -120,24 +120,6 @@ object DateUtil {
         return days
     }
 
-    fun namaBulanShort(bulan: Int): String {
-        return when (bulan) {
-            1 -> "Jan"
-            2 -> "Feb"
-            3 -> "Mar"
-            4 -> "Apr"
-            5 -> "Mei"
-            6 -> "Jun"
-            7 -> "Jul"
-            8 -> "Aug"
-            9 -> "Sep"
-            10 -> "Okt"
-            11 -> "Nov"
-            12 -> "Des"
-            else -> throw IllegalArgumentException("Tidak ada nama bulan yang sesuai untuk Bulan $bulan")
-        }
-    }
-
     fun String.toDate(): Date {
         return this.split("/").let {
             val tanggal = it[0].toInt()
@@ -163,6 +145,17 @@ object DateUtil {
         val tahun = calendar.get(Calendar.YEAR)
 
         return "${tanggal}/${bulan}/${tahun}"
+    }
+
+    fun Date.toStringAndLongBulan(): String {
+        val calendar = Calendar.getInstance().apply {
+            time = this@toStringAndLongBulan
+        }
+        val tanggal = calendar.get(Calendar.DAY_OF_MONTH)
+        val bulan = calendar.get(Calendar.MONTH) + 1
+        val tahun = calendar.get(Calendar.YEAR)
+
+        return "$tanggal ${namaBulanLong(bulan)} $tahun"
     }
 
     fun Date.isWithinRange(startDate: Date, endDate: Date)
@@ -191,5 +184,41 @@ object DateUtil {
             .atZone(ZoneId.systemDefault())
             .toInstant()
         )
+    }
+
+    fun namaBulanShort(bulan: Int): String {
+        return when (bulan) {
+            1 -> "Jan"
+            2 -> "Feb"
+            3 -> "Mar"
+            4 -> "Apr"
+            5 -> "Mei"
+            6 -> "Jun"
+            7 -> "Jul"
+            8 -> "Aug"
+            9 -> "Sep"
+            10 -> "Okt"
+            11 -> "Nov"
+            12 -> "Des"
+            else -> throw IllegalArgumentException("Tidak ada nama bulan yang sesuai untuk Bulan $bulan")
+        }
+    }
+
+    fun namaBulanLong(bulan: Int): String {
+        return when (bulan) {
+            1 -> "Januari"
+            2 -> "Februari"
+            3 -> "Maret"
+            4 -> "April"
+            5 -> "Mei"
+            6 -> "Juni"
+            7 -> "Juli"
+            8 -> "Agustus"
+            9 -> "September"
+            10 -> "Oktober"
+            11 -> "November"
+            12 -> "Desember"
+            else -> throw IllegalArgumentException("Tidak ada nama bulan yang sesuai untuk Bulan $bulan")
+        }
     }
 }

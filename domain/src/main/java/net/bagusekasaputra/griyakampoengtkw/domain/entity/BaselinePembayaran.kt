@@ -6,6 +6,7 @@ import net.bagusekasaputra.griyakampoengtkw.domain.NumberUtil
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.pembayaran.Pembayaran
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.pembayaran.Pembayaran.Companion.filterPeriode
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.rekap.PeriodeRekap
+import java.lang.IllegalArgumentException
 import java.math.BigDecimal
 import java.math.RoundingMode
 import java.time.Period
@@ -57,14 +58,37 @@ data class BaselinePembayaran(
     }
 
     companion object {
-        fun hitungAngsuranPerBulan(hargaKavling: HargaKavling, timeframeBulan: Int): Double {
+        const val OPSI_TIMEFRAME_BULAN = 0
+        const val OPSI_TIMEFRAME_TAHUN = 1
+
+        fun hitungAngsuranPerBulan(hargaKavling: HargaKavling, opsiTimeFrame: Int, timeFrame: Int): Double {
             // Tambah Luasan doesn't included
             val mHargaKavling = BigDecimal(hargaKavling.hargaLong)
-            val mTimeFrameBulan = BigDecimal(timeframeBulan)
+            val mTimeFrameBulan = when (opsiTimeFrame) {
+                OPSI_TIMEFRAME_BULAN -> BigDecimal(timeFrame)
+                OPSI_TIMEFRAME_TAHUN -> BigDecimal(timeFrame * 12)
+                else -> throw IllegalArgumentException("Opsi timeframe dengan code $opsiTimeFrame tidak dikenali!")
+            }
 
             val mAngsuranPerBulan = mHargaKavling.divide(mTimeFrameBulan, 2, RoundingMode.HALF_UP)
 
             return mAngsuranPerBulan.toDouble()
         }
+
+        fun hitungTanggalAngsuranSelesai(tanggalPembelian: Date, opsiTimeFrame: Int, timeFrame: Int): Date {
+            val calendar = Calendar.getInstance().apply {
+                time = tanggalPembelian
+            }
+            val timeFrameBulan = when (opsiTimeFrame) {
+                OPSI_TIMEFRAME_BULAN -> timeFrame
+                OPSI_TIMEFRAME_TAHUN -> timeFrame * 12
+                else -> throw IllegalArgumentException("Opsi timeframe dengan code $opsiTimeFrame tidak dikenali!")
+            }
+
+            calendar.add(Calendar.MONTH, timeFrameBulan)
+
+            return calendar.time
+        }
+
     }
 }

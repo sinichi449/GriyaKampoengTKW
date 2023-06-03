@@ -74,6 +74,46 @@
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp">
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/til_tanggal_pembelian"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toStartOf="@id/btn_pilih_tanggal_pembelian"
+            android:layout_marginEnd="8dp"
+            app:startIconDrawable="@drawable/ic_baseline_calendar_month_24"
+            android:hint="Tanggal Pembelian"
+            style="@style/DenseOutlinedTextInputLayout">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/edt_tanggal_pembelian"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                style="@style/DenseOutlineEditText"
+                android:inputType="date"
+                android:lines="1"/>
+
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btn_pilih_tanggal_pembelian"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Pilih"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="@id/til_tanggal_pembelian"
+            app:layout_constraintBottom_toBottomOf="@id/til_tanggal_pembelian"
+            style="@style/TextDialogButton"
+            android:textColor="@color/secondaryColor"/>
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
     <com.google.android.material.button.MaterialButton
         android:id="@+id/btn_hitung"
         android:layout_width="match_parent"
@@ -95,6 +135,7 @@
         android:text="0 / 0 = 0"
         style="@style/TextAppearance.MaterialComponents.Body1"
         android:layout_marginHorizontal="8dp"
+        android:textSize="14sp"
         android:layout_marginTop="16dp"/>
 
     <com.google.android.material.textfield.TextInputLayout
@@ -142,6 +183,38 @@
             android:inputType="number"/>
 
     </com.google.android.material.textfield.TextInputLayout>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp">
+
+        <com.google.android.material.textview.MaterialTextView
+            android:id="@+id/tvInfo_tanggal_angsuran_selesai"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Tgl. Angsuran Selesai: "
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="@id/tv_tanggal_angsuran_selesai"
+            app:layout_constraintBottom_toBottomOf="@id/tv_tanggal_angsuran_selesai"
+            style="@style/TextAppearance.MaterialComponents.Body1"
+            android:textSize="14sp"/>
+
+        <com.google.android.material.textview.MaterialTextView
+            android:id="@+id/tv_tanggal_angsuran_selesai"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            app:layout_constraintStart_toEndOf="@id/tvInfo_tanggal_angsuran_selesai"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            android:layout_marginStart="8dp"
+            android:gravity="end"
+            android:text="3 April 2026"
+            android:textSize="15sp"
+            style="@style/TextAppearance.MaterialComponents.Headline6"/>
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
     <com.google.android.material.button.MaterialButton
         android:id="@+id/btn_tambahkan"
