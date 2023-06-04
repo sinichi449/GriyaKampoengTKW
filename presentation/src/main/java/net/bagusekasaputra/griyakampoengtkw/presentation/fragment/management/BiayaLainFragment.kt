@@ -12,6 +12,7 @@ import android.widget.ArrayAdapter
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
+import androidx.lifecycle.lifecycleScope
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
 import com.google.android.material.floatingactionbutton.FloatingActionButton
@@ -134,11 +135,9 @@ class BiayaLainFragment: Fragment() {
                         binding.swipeRefreshBiayaLain.isRefreshing = true
                     }
                     is UiState.Success -> {
-                        binding.swipeRefreshBiayaLain.isRefreshing = false
-
                         uiState.data?.also { biayaLainList ->
                             setupTableBiayaLain(biayaLainList) {
-
+                                binding.swipeRefreshBiayaLain.isRefreshing = false
                             }
 
                             binding.tvTotalBiayaLain.text = NumberUtil.formatLongToString(
@@ -156,7 +155,7 @@ class BiayaLainFragment: Fragment() {
 
     private fun setupTableBiayaLain(listBiayaLain: List<BiayaLain>, onFinished: () -> Unit) {
         BiayaLainTableWrapper(binding.tableviewBiayaLain, listBiayaLain)
-            .createTable()
+            .createTable(lifecycleScope, onFinished)
     }
 
     private fun showActionBiayaLainDialog(biayaLain: BiayaLain?) {

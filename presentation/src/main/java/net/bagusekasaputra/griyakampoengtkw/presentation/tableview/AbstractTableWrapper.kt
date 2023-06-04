@@ -5,6 +5,10 @@ import android.widget.TextView
 import com.evrencoskun.tableview.TableView
 import com.evrencoskun.tableview.adapter.recyclerview.holder.AbstractViewHolder
 import com.evrencoskun.tableview.listener.ITableViewListener
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import net.bagusekasaputra.griyakampoengtkw.presentation.tableview.GktTableViewAdapter.DoubleRowHeaderConfiguration
 
 abstract class AbstractTableWrapper(
@@ -18,9 +22,9 @@ abstract class AbstractTableWrapper(
     private var additionalColumnHeaderActions: (columnHeaderViewHolder: GktTableViewAdapter.MyColumnHeaderViewHolder, columnHeaderItem: ColumnHeader?, columnPosition: Int) -> Unit = { _, _, _ -> }
     private var additionalCornerViewAction: (view: View, text: TextView) -> Unit = { _, _ -> }
 
-    abstract fun getColumnHeaderItems(): List<ColumnHeader>
-    abstract fun getRowHeaderItems(): List<RowHeader>
-    abstract fun getCellItems(): List<List<CellItem>>
+    abstract suspend fun getColumnHeaderItems(): List<ColumnHeader>
+    abstract suspend fun getRowHeaderItems(): List<RowHeader>
+    abstract suspend fun getCellItems(): List<List<CellItem>>
 
     protected fun useDoubleCorner(cornerTitle: String, cornerSeparator: String): AbstractTableWrapper {
         doubleRowHeaderConfig = DoubleRowHeaderConfiguration(cornerTitle, cornerSeparator)
@@ -64,28 +68,41 @@ abstract class AbstractTableWrapper(
         return this
     }
 
-    fun createTable() {
-        val adapter = GktTableViewAdapter(
-            doubleRowHeaderConfig,
-            additionalCellActions,
-            additionalRowHeaderActions,
-            additionalColumnHeaderActions,
-            additionalCornerViewAction,
-        )
-        tableView.setAdapter(adapter)
+    fun createTable(
+        coroutineScope: CoroutineScope = CoroutineScope(Dispatchers.Default),
+        onFinished: () -> Unit = {}
+    ) {
+        coroutineScope.launch(Dispatchers.Default) {
+            val adapter = withContext(Dispatchers.Main) {
+                val adapter = GktTableViewAdapter(
+                    doubleRowHeaderConfig,
+                    additionalCellActions,
+                    additionalRowHeaderActions,
+                    additionalColumnHeaderActions,
+                    additionalCornerViewAction,
+                )
+                tableView.setAdapter(adapter)
 
-        adapter.setAllItems(
-            getColumnHeaderItems(),
-            getRowHeaderItems(),
-            getCellItems()
-        )
+                adapter
+            }
 
-        defaultTableListener?.also {
-            tableView.tableViewListener = it
-        }
+            val columnHeaders = withContext(Dispatchers.Default) { getColumnHeaderItems() }
+            val rowHeaders = withContext(Dispatchers.Default) { getRowHeaderItems() }
+            val cellItems = withContext(Dispatchers.Default) { getCellItems() }
 
-        columnHeaderWidths?.forEach {
-            tableView.setColumnWidth(it.first, it.second)
+            withContext(Dispatchers.Main) {
+                adapter.setAllItems(columnHeaders, rowHeaders, cellItems)
+
+                defaultTableListener?.also {
+                    tableView.tableViewListener = it
+                }
+
+                columnHeaderWidths?.forEach {
+                    tableView.setColumnWidth(it.first, it.second)
+                }
+
+                onFinished()
+            }
         }
     }
 

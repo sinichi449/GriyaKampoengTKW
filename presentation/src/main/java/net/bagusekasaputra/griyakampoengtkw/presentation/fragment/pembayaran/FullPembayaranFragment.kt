@@ -7,6 +7,7 @@ import android.view.ViewGroup
 import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
+import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.RecyclerView
 import com.evrencoskun.tableview.listener.ITableViewListener
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
@@ -153,7 +154,7 @@ class FullPembayaranFragment : Fragment() {
 
         FullPembayaranTableWrapper(binding.tableFormPembayaran, pembayarans)
             .setTableListener(listener)
-            .createTable()
+            .createTable(lifecycleScope)
     }
 
     private fun setupFullScreen(

@@ -103,7 +103,7 @@ class BulananPembayaranTableWrapper(
         const val KELUNASAN = 4
     }
 
-    override fun getColumnHeaderItems(): List<ColumnHeader> {
+    override suspend fun getColumnHeaderItems(): List<ColumnHeader> {
         val columnHeaders = mutableListOf<PbColumnHeader>()
         columnHeaders.apply {
             add(BULAN, PbColumnHeader("Bulan"))
@@ -116,7 +116,7 @@ class BulananPembayaranTableWrapper(
         return columnHeaders
     }
 
-    override fun getRowHeaderItems(): List<RowHeader> {
+    override suspend fun getRowHeaderItems(): List<RowHeader> {
         val pbRowHeaders = mutableListOf<PbRowHeader>()
         pembayaranBulanans.forEachIndexed { index, pembayaranBulanan ->
             val nomorAndKelunasan = "${index.plus(1)}${separatorKelunasan}${pembayaranBulanan.kelunasan.name}"
@@ -127,7 +127,7 @@ class BulananPembayaranTableWrapper(
         return pbRowHeaders
     }
 
-    override fun getCellItems(): List<List<CellItem>> {
+    override suspend fun getCellItems(): List<List<CellItem>> {
         val cellItems = mutableListOf<List<CellItem>>()
         pembayaranBulanans.forEach {
             val item = mutableListOf<CellItem>().apply {

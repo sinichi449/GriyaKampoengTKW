@@ -7,6 +7,7 @@ import android.view.ViewGroup
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.RecyclerView
 import com.evrencoskun.tableview.listener.ITableViewListener
 import dagger.hilt.android.AndroidEntryPoint
@@ -122,7 +123,7 @@ class DatabaseUserFragment : Fragment() {
 
         DatabaseUserTableWrapper(binding.tableViewCalonPembeli, listDatabaseUser)
             .setTableListener(tableListener)
-            .createTable()
+            .createTable(lifecycleScope)
     }
 
     private fun sync() {

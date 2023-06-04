@@ -42,7 +42,7 @@ class DatabaseUserTableWrapper(
         }
     }
 
-    override fun getColumnHeaderItems(): List<ColumnHeader> {
+    override suspend fun getColumnHeaderItems(): List<ColumnHeader> {
         val columnHeaders = mutableListOf<DuColumnHeader>()
         columnHeaders.apply {
             add(NAMA, DuColumnHeader("Nama"))
@@ -57,7 +57,7 @@ class DatabaseUserTableWrapper(
         return columnHeaders
     }
 
-    override fun getRowHeaderItems(): List<RowHeader> {
+    override suspend fun getRowHeaderItems(): List<RowHeader> {
         val rowHeaders = mutableListOf<DuRowHeader>()
         repeat(users.size) {
             rowHeaders.add(DuRowHeader(it.plus(1)))
@@ -66,7 +66,7 @@ class DatabaseUserTableWrapper(
         return rowHeaders
     }
 
-    override fun getCellItems(): List<List<CellItem>> {
+    override suspend fun getCellItems(): List<List<CellItem>> {
         val cellItems = mutableListOf<List<DuCellItem>>()
         users.forEach {
             val cell = mutableListOf<DuCellItem>()

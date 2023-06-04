@@ -6,6 +6,7 @@ import android.view.View
 import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.lifecycleScope
 import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.BaselinePembayaran
@@ -70,7 +71,7 @@ class PembayaranTabelFullActivity : AppCompatActivity() {
                             val emptyPembayaran = Pembayaran("ITJ 1", "01/01/1979", "0", "0", 0.0, "0", "", 0L)
 
                             FullPembayaranTableWrapper(this, listOf(emptyPembayaran))
-                                .createTable()
+                                .createTable(lifecycleScope)
 
                             visibility = View.VISIBLE
                         }
@@ -87,7 +88,7 @@ class PembayaranTabelFullActivity : AppCompatActivity() {
                             )
 
                             BulananPembayaranTableWrapper(this, emptyPembayaranBulanans)
-                                .createTable()
+                                .createTable(lifecycleScope)
 
                             visibility = View.VISIBLE
                         }

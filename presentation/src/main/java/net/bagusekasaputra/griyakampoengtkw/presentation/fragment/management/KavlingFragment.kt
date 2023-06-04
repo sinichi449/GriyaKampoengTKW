@@ -24,7 +24,6 @@ import com.google.android.material.floatingactionbutton.ExtendedFloatingActionBu
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
-import jp.wasabeef.recyclerview.adapters.ScaleInAnimationAdapter
 import net.bagusekasaputra.griyakampoengtkw.domain.DataMode
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.Block
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.Kavling
@@ -241,9 +240,11 @@ class KavlingFragment : Fragment() {
             }
         )
 
-        val customAdapter = ScaleInAnimationAdapter(adapter)
+//        val customAdapter = ScaleInAnimationAdapter(adapter)
 
-        kavlingRecyclerView.adapter = customAdapter
+//        kavlingRecyclerView.adapter = customAdapter
+
+        kavlingRecyclerView.adapter = adapter
 
         // If screen is in Landscape mode, I want to show more spans number in the kavling
         val screenOrientation = resources.configuration.orientation

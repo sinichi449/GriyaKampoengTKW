@@ -35,7 +35,7 @@ class BiayaLainTableWrapper(
         }
     }
 
-    override fun getColumnHeaderItems(): List<ColumnHeader> {
+    override suspend fun getColumnHeaderItems(): List<ColumnHeader> {
         val columnHeaders = mutableListOf<BlColumnHeader>()
         columnHeaders.apply {
             add(JENIS_BIAYA, BlColumnHeader("Jenis Biaya"))
@@ -46,7 +46,7 @@ class BiayaLainTableWrapper(
         return columnHeaders
     }
 
-    override fun getRowHeaderItems(): List<RowHeader> {
+    override suspend fun getRowHeaderItems(): List<RowHeader> {
         val rowHeaders = mutableListOf<BlRowHeader>()
         repeat(biayaLains.size) {
             rowHeaders.add(BlRowHeader(it.plus(1)))
@@ -55,7 +55,7 @@ class BiayaLainTableWrapper(
         return rowHeaders
     }
 
-    override fun getCellItems(): List<List<CellItem>> {
+    override suspend fun getCellItems(): List<List<CellItem>> {
         val cellItems = mutableListOf<List<BlCell>>()
         biayaLains.forEach {
             val cell = mutableListOf<BlCell>()

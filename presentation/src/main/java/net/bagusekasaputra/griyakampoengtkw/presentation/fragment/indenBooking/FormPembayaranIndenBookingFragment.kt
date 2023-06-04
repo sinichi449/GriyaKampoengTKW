@@ -14,6 +14,7 @@ import android.widget.Toast
 import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
+import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.RecyclerView
 import com.evrencoskun.tableview.listener.ITableViewListener
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
@@ -287,7 +288,7 @@ class FormPembayaranIndenBookingFragment : Fragment() {
 
         FullPembayaranTableWrapper(binding.tableFormPembayaran, pembayarans)
             .setTableListener(tableListener)
-            .createTable()
+            .createTable(lifecycleScope)
     }
 
     private fun sync(vararg what: Model) {

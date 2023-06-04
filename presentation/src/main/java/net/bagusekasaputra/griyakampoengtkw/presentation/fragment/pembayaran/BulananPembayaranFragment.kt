@@ -10,6 +10,7 @@ import android.view.ViewGroup
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
+import androidx.lifecycle.lifecycleScope
 import dagger.hilt.android.AndroidEntryPoint
 import net.bagusekasaputra.griyakampoengtkw.domain.NumberUtil
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.pembayaran.PembayaranBulanan
@@ -52,7 +53,7 @@ class BulananPembayaranFragment : Fragment() {
 
     private fun setTablePembayaranBulanan(pembayaranBulanans: List<PembayaranBulanan>) {
         BulananPembayaranTableWrapper(binding.tablePembayaranBulanan, pembayaranBulanans)
-            .createTable()
+            .createTable(lifecycleScope)
     }
 
     private fun setTotalTunggakan(pembayaranBulanans: List<PembayaranBulanan>) {
