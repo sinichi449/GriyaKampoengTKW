@@ -3,7 +3,7 @@ package net.bagusekasaputra.griyakampoengtkw.cache
 import android.content.SharedPreferences
 import androidx.core.content.edit
 import net.bagusekasaputra.griyakampoengtkw.ConstsSharedPrefs
-import net.bagusekasaputra.griyakampoengtkw.model.Tahapan
+import net.bagusekasaputra.griyakampoengtkw.domain.entity.Tahapan
 
 class DefaultCacheInitializer(
     private val sharedPrefs: SharedPreferences,

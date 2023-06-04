@@ -15,8 +15,16 @@ import java.io.File
 
 @Module
 @InstallIn(SingletonComponent::class)
-
 object RepositoryModule {
+
+    /**
+     * Tahapan
+     */
+    @Provides
+    fun provideTahapanRepository(remoteTahapanDataSource: RemoteTahapanDataSource): TahapanRepository {
+        return TahapanRepositoryImpl(remoteTahapanDataSource)
+    }
+
 
     /**
      * Block

@@ -1,6 +1,5 @@
-package net.bagusekasaputra.griyakampoengtkw
+package net.bagusekasaputra.griyakampoengtkw.domain.entity
 
-import net.bagusekasaputra.griyakampoengtkw.model.Tahapan
 import org.junit.Assert
 import org.junit.Test
 

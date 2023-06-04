@@ -11,9 +11,9 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import net.bagusekasaputra.griyakampoengtkw.cache.CacheInitializer
-import net.bagusekasaputra.griyakampoengtkw.model.Tahapan
+import net.bagusekasaputra.griyakampoengtkw.domain.entity.Tahapan
+import net.bagusekasaputra.griyakampoengtkw.domain.repository.TahapanRepository
 import net.bagusekasaputra.griyakampoengtkw.presentation.combineWith
-import net.bagusekasaputra.griyakampoengtkw.repository.TahapanRepository
 import javax.inject.Inject
 
 @HiltViewModel
@@ -21,7 +21,7 @@ class AppViewModel @Inject constructor(
     private val tahapanRepository: TahapanRepository,
     private val cacheInitializer: CacheInitializer,
 
-): ViewModel() {
+    ): ViewModel() {
 
     private val _tahapanList = MutableLiveData<List<Tahapan>?>(null)
     val tahapanList: LiveData<List<Tahapan>?>

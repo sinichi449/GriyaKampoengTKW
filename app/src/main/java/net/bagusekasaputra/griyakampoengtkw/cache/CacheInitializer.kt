@@ -1,6 +1,6 @@
 package net.bagusekasaputra.griyakampoengtkw.cache
 
-import net.bagusekasaputra.griyakampoengtkw.model.Tahapan
+import net.bagusekasaputra.griyakampoengtkw.domain.entity.Tahapan
 
 interface CacheInitializer {
 

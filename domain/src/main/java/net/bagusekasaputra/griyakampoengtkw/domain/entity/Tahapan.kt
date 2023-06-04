@@ -1,4 +1,4 @@
-package net.bagusekasaputra.griyakampoengtkw.model
+package net.bagusekasaputra.griyakampoengtkw.domain.entity
 
 import java.util.Locale
 

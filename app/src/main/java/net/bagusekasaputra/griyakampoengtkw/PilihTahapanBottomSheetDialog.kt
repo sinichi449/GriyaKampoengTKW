@@ -14,7 +14,7 @@ import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import dagger.hilt.android.AndroidEntryPoint
 import net.bagusekasaputra.griyakampoengtkw.databinding.DialogPilihTahapanBinding
 import net.bagusekasaputra.griyakampoengtkw.databinding.RecyclerItemTahapanBinding
-import net.bagusekasaputra.griyakampoengtkw.model.Tahapan
+import net.bagusekasaputra.griyakampoengtkw.domain.entity.Tahapan
 
 @AndroidEntryPoint
 class PilihTahapanBottomSheetDialog(

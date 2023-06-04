@@ -79,12 +79,21 @@ import net.bagusekasaputra.griyakampoengtkw.data.remote.pembayaran.FirebasePemba
 import net.bagusekasaputra.griyakampoengtkw.data.remote.pembayaran.RemotePembayaranIndenBookingDataSource
 import net.bagusekasaputra.griyakampoengtkw.data.remote.promotion.FirebasePromotionDataSource
 import net.bagusekasaputra.griyakampoengtkw.data.remote.statusPembayaran.FirebaseStatusPembayaranDataSource
+import net.bagusekasaputra.griyakampoengtkw.data.remote.tahapan.FirebaseTahapanDataSource
 import java.io.File
 import javax.inject.Qualifier
 
 @Module
 @InstallIn(SingletonComponent::class)
 object DataSourceModule {
+
+    /**
+     * Tahapan
+     */
+    @Provides
+    fun provideRemoteTahapanDataSource(@RootReference rootDatabaseReference: DatabaseReference): RemoteTahapanDataSource {
+        return FirebaseTahapanDataSource(rootDatabaseReference)
+    }
 
     /**
      * Metadata

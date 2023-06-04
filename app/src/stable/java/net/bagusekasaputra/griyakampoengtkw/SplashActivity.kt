@@ -40,7 +40,7 @@ import net.bagusekasaputra.griyakampoengtkw.dataLama.ui.DataLamaActivity
 import net.bagusekasaputra.griyakampoengtkw.databinding.ActivitySplashPureBinding
 import net.bagusekasaputra.griyakampoengtkw.databinding.ActivitySplashWithLoadingBinding
 import net.bagusekasaputra.griyakampoengtkw.model.ConnectionCheckResult
-import net.bagusekasaputra.griyakampoengtkw.model.Tahapan
+import net.bagusekasaputra.griyakampoengtkw.domain.entity.Tahapan
 import net.bagusekasaputra.griyakampoengtkw.presentation.R
 import net.bagusekasaputra.griyakampoengtkw.presentation.activity.MainActivity
 import net.bagusekasaputra.griyakampoengtkw.presentation.util.GriyaNodes
