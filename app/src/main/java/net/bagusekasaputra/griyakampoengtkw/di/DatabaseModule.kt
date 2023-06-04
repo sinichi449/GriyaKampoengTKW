@@ -42,8 +42,10 @@ object DatabaseModule {
             }
         }
 
+        val tahapanReference = getTahapanReference(sharedPrefs)
         return Room.databaseBuilder(
-            appContext, MyRoomDatabase::class.java, "griya_kampoeng_tkw.db"
+            appContext, MyRoomDatabase::class.java,
+            "griya_kampoeng_tkw_$tahapanReference.db"
         )
             .fallbackToDestructiveMigration()
             .addCallback(onDestructiveMigrationCallback)
@@ -60,8 +62,7 @@ object DatabaseModule {
     fun provideTahapanFirebaseDatabaseReference(sharedPrefs: SharedPreferences): DatabaseReference {
         val rootReference = FirebaseDatabase.getInstance(firebaseUrl).reference
 
-        val selectedTahapan = sharedPrefs.getString(ConstsSharedPrefs.SELECTED_TAHAPAN, "TAHAP_1")!!
-        return rootReference.child(selectedTahapan)
+        return rootReference.child(getTahapanReference(sharedPrefs))
     }
 
 
@@ -74,8 +75,7 @@ object DatabaseModule {
     fun provideTahapanStorageReference(sharedPrefs: SharedPreferences): StorageReference {
         val rootReference = FirebaseStorage.getInstance().reference
 
-        val selectedTahapan = sharedPrefs.getString(ConstsSharedPrefs.SELECTED_TAHAPAN, "TAHAP_1")!!
-        return rootReference.child(selectedTahapan)
+        return rootReference.child(getTahapanReference(sharedPrefs))
     }
 
     @Singleton
@@ -87,6 +87,9 @@ object DatabaseModule {
         return CacheHelper(localMetadataDataSource, remoteMetadataDataSource)
     }
 
+    private fun getTahapanReference(sharedPrefs: SharedPreferences): String {
+        return sharedPrefs.getString(ConstsSharedPrefs.SELECTED_TAHAPAN, "TAHAP_1")!!
+    }
 }
 
 @Qualifier

@@ -15,7 +15,7 @@ class DefaultCacheInitializer(
     override suspend fun initialize(tahapan: Tahapan): Result<Nothing?> {
         // TODO
         delay(5000L)
-
+        setCacheHasBeenInitialized(true)
         return Result.success(null)
     }
 
