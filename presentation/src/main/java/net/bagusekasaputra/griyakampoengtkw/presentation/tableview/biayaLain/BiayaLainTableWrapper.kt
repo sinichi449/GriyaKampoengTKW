@@ -9,7 +9,7 @@ import net.bagusekasaputra.griyakampoengtkw.presentation.R
 import net.bagusekasaputra.griyakampoengtkw.presentation.tableview.AbstractTableWrapper
 
 class BiayaLainTableWrapper(
-    private val tableViewBiayaLain: TableView,
+    tableViewBiayaLain: TableView,
     private val biayaLains: List<BiayaLain>,
 ): AbstractTableWrapper(tableViewBiayaLain) {
 

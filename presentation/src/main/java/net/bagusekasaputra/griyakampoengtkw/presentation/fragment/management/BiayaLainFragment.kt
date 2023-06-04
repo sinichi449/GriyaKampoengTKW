@@ -11,7 +11,7 @@ import android.widget.AdapterView
 import android.widget.ArrayAdapter
 import android.widget.Toast
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.viewModels
+import androidx.fragment.app.activityViewModels
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
 import com.google.android.material.floatingactionbutton.FloatingActionButton
@@ -25,13 +25,13 @@ import net.bagusekasaputra.griyakampoengtkw.presentation.R
 import net.bagusekasaputra.griyakampoengtkw.presentation.custom.ThousandSeparatorTextWatcher
 import net.bagusekasaputra.griyakampoengtkw.presentation.databinding.DialogActionBiayaLainBinding
 import net.bagusekasaputra.griyakampoengtkw.presentation.databinding.FragmentBiayaLainBinding
+import net.bagusekasaputra.griyakampoengtkw.presentation.model.UiState
 import net.bagusekasaputra.griyakampoengtkw.presentation.tableview.biayaLain.BiayaLainTableWrapper
 import net.bagusekasaputra.griyakampoengtkw.presentation.toCalendar
 import net.bagusekasaputra.griyakampoengtkw.presentation.util.DialogUtil
 import net.bagusekasaputra.griyakampoengtkw.presentation.util.FabHelper
 import net.bagusekasaputra.griyakampoengtkw.presentation.util.InputUtil
 import net.bagusekasaputra.griyakampoengtkw.presentation.viewmodel.BiayaLainViewModel
-import net.bagusekasaputra.griyakampoengtkw.presentation.viewmodel.MainViewModel
 import java.util.Calendar
 import javax.inject.Inject
 
@@ -41,8 +41,7 @@ class BiayaLainFragment: Fragment() {
 
     private lateinit var binding: FragmentBiayaLainBinding
 
-    private val viewModel: BiayaLainViewModel by viewModels()
-    private val mainViewModel by viewModels<MainViewModel>()
+    private val viewModel by activityViewModels<BiayaLainViewModel>()
     private lateinit var fabActions: ExtendedFloatingActionButton
     private lateinit var fabAddBiayaLain: FloatingActionButton
     private lateinit var fabEditBiayaLain: FloatingActionButton
@@ -108,7 +107,10 @@ class BiayaLainFragment: Fragment() {
         fabEditBiayaLain.setOnClickListener {
             fabHelper.hideFabs()
 
-            val listBiayaLain = viewModel.listBiayaLainLive.value
+            val listBiayaLain = with(viewModel.biayaLainList.value) {
+                if (this is UiState.Success) data
+                else null
+            }
 
             if (listBiayaLain != null) {
                 showBiayaLainSelectionDialog(listBiayaLain)
@@ -117,38 +119,42 @@ class BiayaLainFragment: Fragment() {
             }
         }
 
-
-    }
-
-    override fun onResume() {
-        super.onResume()
-
         sync()
     }
 
     private fun sync() {
-        viewModel.getAllBiayaLain(dataMode) {
-            Toast.makeText(requireContext(), it, Toast.LENGTH_SHORT).show()
-        }
+        viewModel.getAllBiayaLain(dataMode)
     }
 
     private fun setupViewModel() {
-        viewModel.isFinishOperation.observe(requireActivity()) {
-            if (it != null) {
-                binding.swipeRefreshBiayaLain.isRefreshing = it.not()
-            }
-        }
+        viewModel.biayaLainList.observe(requireActivity()) {
+            it?.also { uiState ->
+                when (uiState) {
+                    is UiState.Loading -> {
+                        binding.swipeRefreshBiayaLain.isRefreshing = true
+                    }
+                    is UiState.Success -> {
+                        binding.swipeRefreshBiayaLain.isRefreshing = false
 
-        viewModel.listBiayaLainLive.observe(requireActivity()) {
-            if (it != null) {
-                setupTableBiayaLain(it)
+                        uiState.data?.also { biayaLainList ->
+                            setupTableBiayaLain(biayaLainList) {
 
-                binding.tvTotalBiayaLain.text = NumberUtil.formatLongToString(viewModel.getTotalBiayaLain())
+                            }
+
+                            binding.tvTotalBiayaLain.text = NumberUtil.formatLongToString(
+                                BiayaLain.hitungTotalBiayaLain(biayaLainList)
+                            )
+                        }
+                    }
+                    is UiState.Failure -> {
+                        Toast.makeText(requireContext(), uiState.failMsg, Toast.LENGTH_LONG).show()
+                    }
+                }
             }
         }
     }
 
-    private fun setupTableBiayaLain(listBiayaLain: List<BiayaLain>) {
+    private fun setupTableBiayaLain(listBiayaLain: List<BiayaLain>, onFinished: () -> Unit) {
         BiayaLainTableWrapper(binding.tableviewBiayaLain, listBiayaLain)
             .createTable()
     }

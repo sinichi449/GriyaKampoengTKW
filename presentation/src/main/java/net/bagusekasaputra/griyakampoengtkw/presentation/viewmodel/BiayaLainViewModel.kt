@@ -4,8 +4,11 @@ import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.launch
 import net.bagusekasaputra.griyakampoengtkw.domain.AsyncUseCaseHelper
 import net.bagusekasaputra.griyakampoengtkw.domain.DataMode
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.biayaLain.AddBiayaLainAsyncUseCase
@@ -14,7 +17,7 @@ import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.biayaLain.GetAll
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.biayaLain.UpdateBiayaLainAsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.BiayaLain
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.BiayaLain.Companion.sort
-import net.bagusekasaputra.griyakampoengtkw.presentation.toDate
+import net.bagusekasaputra.griyakampoengtkw.presentation.model.UiState
 import javax.inject.Inject
 
 @HiltViewModel
@@ -30,52 +33,45 @@ class BiayaLainViewModel @Inject constructor(
         get() = _isFinishOperation
 
 
-    private val _listBiayaLainLive = MutableLiveData<List<BiayaLain>>()
-    val listBiayaLainLive: LiveData<List<BiayaLain>>
-        get() = _listBiayaLainLive
+    private val _biayaLainList = MutableLiveData<UiState<List<BiayaLain>?>>()
+    val biayaLainList: LiveData<UiState<List<BiayaLain>?>>
+        get() = _biayaLainList
 
 
     val asyncHelper = AsyncUseCaseHelper(_isFinishOperation)
 
+    private var fetchBiayaLainJob: Job? = null
+
     private val asyncJobs = mutableListOf<Job>()
 
 
-    fun getAllBiayaLain(dataMode: DataMode, onFailure: (msg: String) -> Unit) {
+    fun getAllBiayaLain(dataMode: DataMode) {
+        fetchBiayaLainJob?.cancel()
+
         Log.d("DEBUG_ME", "BiayaLainViewModel: DataMode is set to ${dataMode.name}")
-        val request = GetAllBiayaLainAsyncUseCase.Request(dataMode)
 
-        val getAllJobs = asyncHelper.doWork(
-            request = request,
-            asyncUseCase = getAllBiayaLainAsyncUseCase,
-            onSuccess = {
-                if (it != null) {
-                    if (it.isNotEmpty()) {
-                        _listBiayaLainLive.postValue(
-                            it.sortedWith { p0, p1 ->
-                                val tanggal1 = p0.tanggal.toDate()
-                                val tanggal2 = p1.tanggal.toDate()
+        _biayaLainList.value = UiState.Loading()
 
-                                tanggal1.compareTo(tanggal2)
-                            }
-                        )
-                        Log.d("DEBUG_ME", "getAllBiayaLain: not null")
+        fetchBiayaLainJob = viewModelScope.launch(Dispatchers.IO) {
+            val request = GetAllBiayaLainAsyncUseCase.Request(dataMode)
+            getAllBiayaLainAsyncUseCase.execute(request).collect { result ->
+                result.onSuccess {
+                    if (!it.isNullOrEmpty()) {
+                        val sortedBiayaLain = it.sort(BiayaLain.SortMethod.TANGGAL)
+                        _biayaLainList.postValue(UiState.Success(sortedBiayaLain))
                     } else {
-                        val emptyBiayaLain = listOf(
-                            BiayaLain(jenisBiaya = "-", harga = 0L, tanggal = "-")
-                        )
-                        _listBiayaLainLive.postValue(emptyBiayaLain)
+                        val emptyBiayaLain = listOf(BiayaLain(jenisBiaya = "-", harga = 0L, tanggal = "-"))
 
-                        Log.d("DEBUG_ME", "getAllBiayaLain: is empty detected")
+                        _biayaLainList.postValue(UiState.Success(emptyBiayaLain))
+
+                        Log.d("DEBUG_ME", "Biaya Lain is EMPTY or NULL !")
                     }
                 }
-            },
-            onFailure = {
-                onFailure("Gagal mendapatkan biaya lain: ${it.message}")
-            },
-            successMsgOnUiThread = false,
-        )
-
-        asyncJobs.add(getAllJobs)
+                result.onFailure {
+                    _biayaLainList.postValue(UiState.Failure("Gagal mendapatkan biaya lain: ${it.localizedMessage}"))
+                }
+            }
+        }
     }
 
     fun addBiayaLain(
@@ -151,19 +147,14 @@ class BiayaLainViewModel @Inject constructor(
     }
 
 
-    fun getTotalBiayaLain(): Long {
-        val listBiayaLain = listBiayaLainLive.value
-
-        return if (listBiayaLain != null) {
-            BiayaLain.hitungTotalBiayaLain(listBiayaLain)
-        } else {
-            0L
-        }
-    }
-
     fun sortListBiayaLain(sortMethod: BiayaLain.SortMethod) {
-        _listBiayaLainLive.value = _listBiayaLainLive.value
-            ?.sort(sortMethod)
+        with(_biayaLainList.value) {
+            if (this is UiState.Success) {
+                val sortedBiayaLain = data?.sort(sortMethod)
+
+                _biayaLainList.value = UiState.Success(sortedBiayaLain)
+            }
+        }
     }
 
 

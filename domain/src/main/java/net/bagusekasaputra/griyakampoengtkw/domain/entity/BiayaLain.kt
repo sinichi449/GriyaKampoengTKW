@@ -80,9 +80,7 @@ data class BiayaLain(
             return when (sortMethod) {
                 SortMethod.TANGGAL -> {
                     this?.sortedBy {
-                        Calendar.getInstance().apply {
-                            time = it.tanggal.toDate()
-                        }.timeInMillis
+                        it.tanggal.toDate().time
                     }
                 }
                 SortMethod.HARGA -> {

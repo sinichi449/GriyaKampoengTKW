@@ -1,4 +1,4 @@
-package net.bagusekasaputra.griyakampoengtkw.presentation
+package net.bagusekasaputra.griyakampoengtkw.presentation.model
 
 import net.bagusekasaputra.griyakampoengtkw.domain.DateUtil
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.rekap.PeriodeRekap

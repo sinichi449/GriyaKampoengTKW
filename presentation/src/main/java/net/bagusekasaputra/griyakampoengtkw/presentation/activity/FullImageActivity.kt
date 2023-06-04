@@ -13,7 +13,7 @@ import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import com.igreenwood.loupe.Loupe
 import dagger.hilt.android.AndroidEntryPoint
-import net.bagusekasaputra.griyakampoengtkw.presentation.ImageTransport
+import net.bagusekasaputra.griyakampoengtkw.presentation.model.ImageTransport
 import net.bagusekasaputra.griyakampoengtkw.presentation.R
 import net.bagusekasaputra.griyakampoengtkw.presentation.databinding.ActivityFullImageBinding
 import net.bagusekasaputra.griyakampoengtkw.presentation.util.GriyaNodes

@@ -37,7 +37,7 @@ import net.bagusekasaputra.griyakampoengtkw.domain.usecase.imageDataDiri.DeleteI
 import net.bagusekasaputra.griyakampoengtkw.domain.usecase.imageDataDiri.GetImageDataDiriByKavlingKodeUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.usecase.imageSpr.AddImageSprUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.usecase.imageSpr.GetImageSprByKavlingKodeUseCase
-import net.bagusekasaputra.griyakampoengtkw.presentation.ImageTransport
+import net.bagusekasaputra.griyakampoengtkw.presentation.model.ImageTransport
 import javax.inject.Inject
 
 @HiltViewModel

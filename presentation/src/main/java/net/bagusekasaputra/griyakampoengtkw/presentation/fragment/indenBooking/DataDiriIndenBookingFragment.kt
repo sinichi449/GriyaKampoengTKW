@@ -19,7 +19,7 @@ import androidx.fragment.app.activityViewModels
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
-import net.bagusekasaputra.griyakampoengtkw.presentation.ImageTransport
+import net.bagusekasaputra.griyakampoengtkw.presentation.model.ImageTransport
 import net.bagusekasaputra.griyakampoengtkw.presentation.R
 import net.bagusekasaputra.griyakampoengtkw.presentation.activity.DetailIndenBookingActivity
 import net.bagusekasaputra.griyakampoengtkw.presentation.activity.FullImageActivity
