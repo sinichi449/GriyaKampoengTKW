@@ -95,7 +95,7 @@ object DataSourceModule {
     }
 
     @Provides
-    fun provideRemoteMetadataDataSource(databaseReference: DatabaseReference): RemoteMetadataDataSource {
+    fun provideRemoteMetadataDataSource(@TahapanReference databaseReference: DatabaseReference): RemoteMetadataDataSource {
         return FirebaseMetadataDataSource(databaseReference)
     }
 
@@ -103,7 +103,9 @@ object DataSourceModule {
      * App Update
      */
     @Provides
-    fun provideRemoteAppUpdateSource(databaseReference: DatabaseReference): RemoteAppUpdateSource {
+    fun provideRemoteAppUpdateSource(
+        @RootReference databaseReference: DatabaseReference
+    ): RemoteAppUpdateSource {
         return net.bagusekasaputra.griyakampoengtkw.data.remote.appupdate.FirebaseAppUpdateSource(
             databaseReference
         )
@@ -119,7 +121,7 @@ object DataSourceModule {
     }
 
     @Provides
-    fun provideRemoteBlockDataSource(databaseReference: DatabaseReference): RemoteBlockDataSource {
+    fun provideRemoteBlockDataSource(@TahapanReference databaseReference: DatabaseReference): RemoteBlockDataSource {
         return net.bagusekasaputra.griyakampoengtkw.data.remote.block.FirebaseBlockDataSource(
             databaseReference
         )
@@ -140,7 +142,7 @@ object DataSourceModule {
     }
 
     @Provides
-    fun provideRemoteKavlingDataSource(databaseReference: DatabaseReference): RemoteKavlingDataSource {
+    fun provideRemoteKavlingDataSource(@TahapanReference databaseReference: DatabaseReference): RemoteKavlingDataSource {
         return FirebaseKavlingDataSource(
             databaseReference
         )
@@ -164,7 +166,7 @@ object DataSourceModule {
     }
 
     @Provides
-    fun provideRemoteDataDiriRepository(databaseReference: DatabaseReference): RemoteDataDiriDataSource {
+    fun provideRemoteDataDiriRepository(@TahapanReference databaseReference: DatabaseReference): RemoteDataDiriDataSource {
         return net.bagusekasaputra.griyakampoengtkw.data.remote.datadiri.FirebaseDataDiriDataSource(
             databaseReference
         )
@@ -234,7 +236,7 @@ object DataSourceModule {
      * Fee Marketing
      */
     @Provides
-    fun provideRemoteFeeMarketingDataSource(databaseReference: DatabaseReference): RemoteFeeMarketingDataSource {
+    fun provideRemoteFeeMarketingDataSource(@TahapanReference databaseReference: DatabaseReference): RemoteFeeMarketingDataSource {
         return net.bagusekasaputra.griyakampoengtkw.data.remote.feeMarketing.FirebaseFeeMarketingDataSource(
             databaseReference
         )
@@ -255,7 +257,7 @@ object DataSourceModule {
      * Biaya Marketing
      */
     @Provides
-    fun provideRemoteBiayaMarketingDataSource(databaseReference: DatabaseReference): RemoteBiayaMarketingDataSource {
+    fun provideRemoteBiayaMarketingDataSource(@TahapanReference databaseReference: DatabaseReference): RemoteBiayaMarketingDataSource {
         return net.bagusekasaputra.griyakampoengtkw.data.remote.biayaMarketing.FirebaseBiayaMarketingDataSource(
             databaseReference
         )
@@ -276,7 +278,7 @@ object DataSourceModule {
      * Kavling Catatan Pembayaran
      */
     @Provides
-    fun provideRemoteKavlingCatatanPembayaranDataSource(databaseReference: DatabaseReference): RemoteKavlingCatatanPembayaranDataSource {
+    fun provideRemoteKavlingCatatanPembayaranDataSource(@TahapanReference databaseReference: DatabaseReference): RemoteKavlingCatatanPembayaranDataSource {
         return net.bagusekasaputra.griyakampoengtkw.data.remote.catatanPembayaran.FirebaseKavlingCatatanPembayaranDataSource(
             databaseReference
         )
@@ -301,7 +303,7 @@ object DataSourceModule {
     }
 
     @Provides
-    fun provideRemoteIndenBookingCatatanPembayaranDataSource(databaseReference: DatabaseReference): RemoteIndenBookingCatatanPembayaranDataSource {
+    fun provideRemoteIndenBookingCatatanPembayaranDataSource(@TahapanReference databaseReference: DatabaseReference): RemoteIndenBookingCatatanPembayaranDataSource {
         return FirebaseIndenBookingCatatanPembayaranDataSource(databaseReference)
     }
 
@@ -311,7 +313,7 @@ object DataSourceModule {
      */
     @Provides
     fun provideRemotePembayaranSource(
-        databaseReference: DatabaseReference,
+        @TahapanReference databaseReference: DatabaseReference,
         pembayaranIndenBookingDataSource: RemotePembayaranIndenBookingDataSource
     ): RemotePembayaranSource {
         return FirebasePembayaranSource(databaseReference, pembayaranIndenBookingDataSource)
@@ -335,7 +337,7 @@ object DataSourceModule {
      * Harga Kavling
      */
     @Provides
-    fun provideRemoteHargaKavlingSource(databaseReference: DatabaseReference): RemoteHargaKavlingSource {
+    fun provideRemoteHargaKavlingSource(@TahapanReference databaseReference: DatabaseReference): RemoteHargaKavlingSource {
         return net.bagusekasaputra.griyakampoengtkw.data.remote.hargakavling.FirebaseHargaKavlingSource(
             databaseReference
         )
@@ -402,7 +404,7 @@ object DataSourceModule {
     }
 
     @Provides
-    fun provideRemoteBiayaLainDataSource(databaseReference: DatabaseReference): RemoteBiayaLainDataSource {
+    fun provideRemoteBiayaLainDataSource(@TahapanReference databaseReference: DatabaseReference): RemoteBiayaLainDataSource {
         return FirebaseBiayaLainDataSource(databaseReference)
     }
 
@@ -421,7 +423,7 @@ object DataSourceModule {
     }
 
     @Provides
-    fun provideRemoteBackupRestoreDataSource(databaseReference: DatabaseReference): RemoteBackupRestoreDataSource {
+    fun provideRemoteBackupRestoreDataSource(@TahapanReference databaseReference: DatabaseReference): RemoteBackupRestoreDataSource {
         return FirebaseBackupRestoreDataSource(databaseReference)
     }
 
@@ -435,7 +437,7 @@ object DataSourceModule {
     }
 
     @Provides
-    fun provideRemoteBaselinePembayaranDataSource(databaseReference: DatabaseReference): RemoteBaselinePembayaranDataSource {
+    fun provideRemoteBaselinePembayaranDataSource(@TahapanReference databaseReference: DatabaseReference): RemoteBaselinePembayaranDataSource {
         return FirebaseBaselinePembayaranDataSource(databaseReference)
     }
 
@@ -444,7 +446,7 @@ object DataSourceModule {
      * Inden Booking
      */
     @Provides
-    fun provideRemoteIndenBookingDataSource(databaseReference: DatabaseReference): RemoteIndenBookingDataSource {
+    fun provideRemoteIndenBookingDataSource(@TahapanReference databaseReference: DatabaseReference): RemoteIndenBookingDataSource {
         return FirebaseIndenBookingDataSource(databaseReference)
     }
 
@@ -469,7 +471,7 @@ object DataSourceModule {
     }
 
     @Provides
-    fun provideRemotePembayaranIndenBookingDataSource(databaseReference: DatabaseReference): RemotePembayaranIndenBookingDataSource {
+    fun provideRemotePembayaranIndenBookingDataSource(@TahapanReference databaseReference: DatabaseReference): RemotePembayaranIndenBookingDataSource {
         return FirebasePembayaranIndenBookingDataSource(databaseReference)
     }
 
@@ -495,7 +497,7 @@ object DataSourceModule {
      * Database User
      */
     @Provides
-    fun provideRemoteDatabaseUserDataSource(databaseReference: DatabaseReference): RemoteDatabaseUserDataSource {
+    fun provideRemoteDatabaseUserDataSource(@TahapanReference databaseReference: DatabaseReference): RemoteDatabaseUserDataSource {
         return FirebaseDatabaseUserDataSource(databaseReference)
     }
 
@@ -504,14 +506,16 @@ object DataSourceModule {
      * Status Pembayaran
      */
     @Provides
-    fun provideRemoteStatusPembayaranDataSource(databaseReference: DatabaseReference): RemoteStatusPembayaranDataSource {
+    fun provideRemoteStatusPembayaranDataSource(@TahapanReference databaseReference: DatabaseReference): RemoteStatusPembayaranDataSource {
         return FirebaseStatusPembayaranDataSource(databaseReference)
     }
     /**
      * Promotion
      */
     @Provides
-    fun provideRemotePromotionDataSource(databaseReference: DatabaseReference): RemotePromotionDataSource {
+    fun provideRemotePromotionDataSource(
+        @RootReference databaseReference: DatabaseReference
+    ): RemotePromotionDataSource {
         return FirebasePromotionDataSource(databaseReference)
     }
 
@@ -524,7 +528,7 @@ object DataSourceModule {
     }
 
     @Provides
-    fun provideRemoteStandardAmbilKuitansiDataSource(databaseReference: DatabaseReference): RemoteStandardAmbilKuitansiDataSource {
+    fun provideRemoteStandardAmbilKuitansiDataSource(@TahapanReference databaseReference: DatabaseReference): RemoteStandardAmbilKuitansiDataSource {
         return FirebaseStandardAmbilKuitansiDataSource(databaseReference)
     }
 
@@ -537,7 +541,7 @@ object DataSourceModule {
     }
 
     @Provides
-    fun provideRemoteIndenBookingAmbilKuitansiDataSource(databaseReference: DatabaseReference): RemoteIndenBookingAmbilKuitansiDataSource {
+    fun provideRemoteIndenBookingAmbilKuitansiDataSource(@TahapanReference databaseReference: DatabaseReference): RemoteIndenBookingAmbilKuitansiDataSource {
         return FirebaseIndenBookingAmbilKuitansiDataSource(databaseReference)
     }
 
@@ -551,7 +555,7 @@ object DataSourceModule {
     }
 
     @Provides
-    fun provideRemoteHargaRumahIndenBookingDataSource(databaseReference: DatabaseReference): RemoteHargaRumahIndenBookingDataSource {
+    fun provideRemoteHargaRumahIndenBookingDataSource(@TahapanReference databaseReference: DatabaseReference): RemoteHargaRumahIndenBookingDataSource {
         return FirebaseHargaRumahDataSource(databaseReference)
     }
 

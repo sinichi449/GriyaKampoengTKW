@@ -1,5 +1,6 @@
 package net.bagusekasaputra.griyakampoengtkw
 
+import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -9,6 +10,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import net.bagusekasaputra.griyakampoengtkw.cache.CacheInitializer
 import net.bagusekasaputra.griyakampoengtkw.model.Tahapan
 import net.bagusekasaputra.griyakampoengtkw.presentation.combineWith
 import net.bagusekasaputra.griyakampoengtkw.repository.TahapanRepository
@@ -17,6 +19,8 @@ import javax.inject.Inject
 @HiltViewModel
 class AppViewModel @Inject constructor(
     private val tahapanRepository: TahapanRepository,
+    private val cacheInitializer: CacheInitializer,
+
 ): ViewModel() {
 
     private val _tahapanList = MutableLiveData<List<Tahapan>?>(null)
@@ -51,6 +55,33 @@ class AppViewModel @Inject constructor(
                 .onFailure {
                     withContext(Dispatchers.Main) {
                         onFailure("Gagal mendapatkan Tahapan Pembangunan : ${it.localizedMessage}")
+                    }
+                }
+        }
+    }
+
+    fun initializeCache(
+        tahapan: Tahapan,
+        onProgress: () -> Unit = {},
+        onSuccess: () -> Unit = {},
+        onFailure: (failMsg: String) -> Unit = {}
+    )  {
+        onProgress()
+
+        viewModelScope.launch(Dispatchers.IO) {
+            cacheInitializer.initialize(tahapan)
+                .onSuccess {
+                    Log.d("INIT_CACHE", "Success initializing cache!")
+
+                    withContext(Dispatchers.Main) {
+                        onSuccess()
+                    }
+                }
+                .onFailure {
+                    Log.e("INIT_CACHE", "Error on cache initialization: ${it.localizedMessage}")
+
+                    withContext(Dispatchers.Main) {
+                        onFailure(it.localizedMessage ?: "Unknown error on Initializing Cache!")
                     }
                 }
         }

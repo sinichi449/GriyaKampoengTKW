@@ -5,7 +5,6 @@ import android.content.Intent
 import android.content.SharedPreferences
 import android.os.Bundle
 import android.os.Handler
-import android.util.Log
 import android.view.View
 import android.view.WindowManager
 import android.widget.Toast
@@ -37,9 +36,9 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.suspendCancellableCoroutine
 import kotlinx.coroutines.withContext
 import net.bagusekasaputra.griyakampoengtkw.data.remote.FirebaseNodes
+import net.bagusekasaputra.griyakampoengtkw.dataLama.ui.DataLamaActivity
 import net.bagusekasaputra.griyakampoengtkw.databinding.ActivitySplashPureBinding
 import net.bagusekasaputra.griyakampoengtkw.databinding.ActivitySplashWithLoadingBinding
-import net.bagusekasaputra.griyakampoengtkw.interfaces.CacheInitializer
 import net.bagusekasaputra.griyakampoengtkw.model.ConnectionCheckResult
 import net.bagusekasaputra.griyakampoengtkw.model.Tahapan
 import net.bagusekasaputra.griyakampoengtkw.presentation.R
@@ -64,8 +63,6 @@ class SplashActivity : AppCompatActivity() {
     private lateinit var biometricPrompt: BiometricPrompt
     @Inject
     lateinit var sharedPreferences: SharedPreferences
-    @Inject
-    lateinit var cacheInitializer: CacheInitializer
 
     @SuppressLint("SetTextI18n")
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -144,18 +141,6 @@ class SplashActivity : AppCompatActivity() {
                         }
                     }
 
-                    // Initialize cache
-                    withContext(Dispatchers.Main) {
-                        bindingLoading.layoutCekKoneksi.tvInfoPeriksaInternet.text = "Menginisialisasi Cache"
-                    }
-                    cacheInitializer.initialize()
-                        .onSuccess {
-                            Log.d("INIT_CACHE", "Success initializing cache!")
-                        }
-                        .onFailure {
-                            Log.e("INIT_CACHE", "Error on cache initialization: ${it.localizedMessage}")
-                        }
-
                     // Show jenis data
                     withContext(Dispatchers.Main) {
                         showJenisDataButton(connectivityCheckResult) {
@@ -163,17 +148,46 @@ class SplashActivity : AppCompatActivity() {
                         }
                     }
 
-                    // Handle Tahapan and Jenis Data
+                    // Handle Tahapan and Jenis Data And initialize cache
                     withContext(Dispatchers.Main) {
                         viewModel.tahapanAndJenisData.observe(this@SplashActivity) {
                             it?.also { tahapanAndJenisData ->
                                 val selectedTahapan = tahapanAndJenisData.first
                                 val selectedJenisData = tahapanAndJenisData.second
 
-                                handleTahapanAndJenisData(
-                                    connectivityCheckResult.isDeviceOnline,
-                                    selectedJenisData, selectedTahapan
-                                )
+                                if ((selectedTahapan != null) && (selectedJenisData != null)) {
+                                    handleTahapanAndJenisData(selectedJenisData, selectedTahapan)
+
+                                    // Skip cache initialization on DATA_LAMA
+                                    if (selectedJenisData == DATA_LAMA) {
+                                        goToDocumentLamaActivity()
+                                    } else {
+                                        // Initialize cache
+                                        viewModel.initializeCache(
+                                            tahapan = selectedTahapan,
+                                            onProgress = {
+                                                bindingLoading.apply {
+                                                    layoutPilihData.root.visibility = View.GONE
+                                                    layoutCekKoneksi.root.visibility = View.VISIBLE
+                                                    layoutCekKoneksi.tvInfoPeriksaInternet.text = "Menginisialisasi Cache"
+                                                }
+                                            },
+                                            onSuccess = {
+                                                goToMainActivity(connectivityCheckResult.isDeviceOnline)
+                                            },
+                                            onFailure = {
+                                                MaterialAlertDialogBuilder(this@SplashActivity).apply {
+                                                    setTitle("Gagal Menginisialisasi Cache")
+                                                    setMessage(it)
+                                                    setCancelable(false)
+                                                    setPositiveButton("Keluar") { _, _ ->
+                                                        this@SplashActivity.finish()
+                                                    }
+                                                }.show()
+                                            }
+                                        )
+                                    }
+                                }
                             }
                         }
                     }
@@ -199,6 +213,23 @@ class SplashActivity : AppCompatActivity() {
         handler.postDelayed(splashRunnable, millis)
     }
 
+    private fun handleTahapanAndJenisData(
+        jenisData: Int,
+        tahapan: Tahapan
+    ) {
+        sharedPreferences.edit(true) {
+            putString(ConstsSharedPrefs.SELECTED_TAHAPAN, tahapan.reference)
+        }
+
+        if (jenisData == DATA_BARU) {
+            // Nullify the sharedPreference Data Lama to prevent MainActivity/DetailActivity
+            // to DataLama mode
+            sharedPreferences.edit(true) {
+                putString("dataLamaPath", null)
+            }
+        }
+    }
+
     private fun showJenisDataButton(
         connectionCheckResult: ConnectionCheckResult,
         onSelectedJenisData: (jenisData: Int) -> Unit,
@@ -219,34 +250,9 @@ class SplashActivity : AppCompatActivity() {
             // Setup button Data Lama and Data Baru
             layoutPilihData.btnDataLama.setOnClickListener {
                 onSelectedJenisData(DATA_LAMA)
-//                goToDocumentLamaActivity()
             }
             layoutPilihData.btnDataBaru.setOnClickListener {
-                // Nullify the sharedPreference Data Lama to prevent MainActivity/DetailActivity
-                // to DataLama mode
                 onSelectedJenisData(DATA_BARU)
-//                sharedPreferences.edit(true) {
-//                    putString("dataLamaPath", null)
-//                }
-//
-//                goToMainActivity(connectionCheckResult.isDeviceOnline, true)
-            }
-        }
-    }
-
-    private fun handleTahapanAndJenisData(
-        isDeviceOnline: Boolean,
-        jenisData: Int?,
-        tahapan: Tahapan?
-    ) {
-        if ((jenisData != null) && (tahapan != null)) {
-            sharedPreferences.edit(true) {
-                putString("SELECTED_TAHAPAN", tahapan.nama)
-            }
-
-            when (jenisData) {
-                DATA_LAMA -> goToDocumentLamaActivity()
-                DATA_BARU -> goToMainActivity(isDeviceOnline)
             }
         }
     }

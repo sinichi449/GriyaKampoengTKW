@@ -112,7 +112,7 @@ class TahapanRecyclerAdapter(
 
         fun bind(tahapan: Tahapan, onBtnItemClickListener: () -> Unit) {
             tahapan.also {
-                itemBinding.btnItemTahapan.text = tahapan.parsedNama
+                itemBinding.btnItemTahapan.text = tahapan.nama
                 itemBinding.btnItemTahapan.setOnClickListener { onBtnItemClickListener() }
             }
         }

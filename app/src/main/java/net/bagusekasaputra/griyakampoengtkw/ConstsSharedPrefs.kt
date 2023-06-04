@@ -7,4 +7,6 @@ object ConstsSharedPrefs {
     // first time).
     const val CACHE_UNINITIALIZED_OR_DESTROYED = "CACHE_UNINITIALIZED_OR_DESTROYED"
 
+    const val SELECTED_TAHAPAN = "SELECTED_TAHAPAN"
+
 }

@@ -1,4 +1,4 @@
-package net.bagusekasaputra.griyakampoengtkw
+package net.bagusekasaputra.griyakampoengtkw.dataLama.ui
 
 import android.content.Intent
 import android.content.pm.PackageManager

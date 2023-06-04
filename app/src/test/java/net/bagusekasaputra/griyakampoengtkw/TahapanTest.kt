@@ -17,7 +17,7 @@ class TahapanTest {
         }
 
         tahapanList.forEachIndexed { index, tahapan ->
-            Assert.assertEquals(correctParsedTahapan[index], tahapan.parsedNama)
+            Assert.assertEquals(correctParsedTahapan[index], tahapan.nama)
         }
     }
 

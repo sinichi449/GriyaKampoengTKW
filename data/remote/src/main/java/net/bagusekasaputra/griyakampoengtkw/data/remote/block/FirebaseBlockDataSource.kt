@@ -1,5 +1,6 @@
 package net.bagusekasaputra.griyakampoengtkw.data.remote.block
 
+import android.util.Log
 import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.ktx.getValue
 import kotlinx.coroutines.channels.awaitClose
@@ -12,12 +13,14 @@ import net.bagusekasaputra.griyakampoengtkw.data.remote.FirebaseNodes
 import net.bagusekasaputra.griyakampoengtkw.data.remote.FirebaseRequestHelper
 
 class FirebaseBlockDataSource(
-    private val databaseReference: DatabaseReference
+    databaseReference: DatabaseReference
 ): RemoteBlockDataSource {
 
     private val blockRef = databaseReference.child(FirebaseNodes.BLOCKS)
 
     override suspend fun getAllBlocks(): Result<List<BlockModel>?> {
+        Log.d("INIT_CACHE", "Using ${blockRef.parent?.toString()} as root reference!")
+
         return FirebaseRequestHelper.getOperation(
             pathToChild = blockRef,
             onGetSnapshot = { snapshot ->

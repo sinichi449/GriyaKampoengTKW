@@ -2,10 +2,10 @@ package net.bagusekasaputra.griyakampoengtkw.model
 
 import java.util.Locale
 
-data class Tahapan(val nama: String) {
+data class Tahapan(val reference: String) {
 
     private val tahapanAndNumber: Pair<String, Int> get() {
-        val separateTahapanAndNumber = nama.split("_")
+        val separateTahapanAndNumber = reference.split("_")
 
         return separateTahapanAndNumber[0] to separateTahapanAndNumber[1].toInt()
     }
@@ -19,5 +19,5 @@ data class Tahapan(val nama: String) {
 
     private val urutan = tahapanAndNumber.second
 
-    val parsedNama = "$capitalizeNama $urutan"
+    val nama = "$capitalizeNama $urutan"
 }

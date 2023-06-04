@@ -20,6 +20,7 @@ import net.bagusekasaputra.griyakampoengtkw.data.CacheHelper
 import net.bagusekasaputra.griyakampoengtkw.data.interfaces.local.LocalMetadataDataSource
 import net.bagusekasaputra.griyakampoengtkw.data.interfaces.remote.RemoteMetadataDataSource
 import net.bagusekasaputra.griyakampoengtkw.presentation.util.GriyaNodes.Companion.firebaseUrl
+import javax.inject.Qualifier
 import javax.inject.Singleton
 
 @Module
@@ -49,10 +50,20 @@ object DatabaseModule {
             .build()
     }
 
+    @RootReference
     @Provides
-    fun providesFirebaseDatabaseReference(): DatabaseReference {
-        return FirebaseDatabase.getInstance(firebaseUrl).reference
+    fun providesRootFirebaseDatabaseReference()
+        = FirebaseDatabase.getInstance(firebaseUrl).reference
+
+    @TahapanReference
+    @Provides
+    fun provideTahapanFirebaseDatabaseReference(sharedPrefs: SharedPreferences): DatabaseReference {
+        val rootReference = FirebaseDatabase.getInstance(firebaseUrl).reference
+
+        val selectedTahapan = sharedPrefs.getString(ConstsSharedPrefs.SELECTED_TAHAPAN, "TAHAP_1")!!
+        return rootReference.child(selectedTahapan)
     }
+
 
     @Provides
     fun provideStorageReference(): StorageReference {
@@ -69,3 +80,9 @@ object DatabaseModule {
     }
 
 }
+
+@Qualifier
+annotation class RootReference
+
+@Qualifier
+annotation class TahapanReference
