@@ -18,7 +18,6 @@ import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.kavling.GetListU
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.rekap.CalculateRekapBesarAndGetRekapBesarOverview
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.rekap.GetListRekapGlobalAsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.rekap.GetRekapBesarDetailAsyncUseCase
-import net.bagusekasaputra.griyakampoengtkw.domain.entity.Kavling
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.rekap.PeriodeRekap
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.rekap.RekapBesarDetail
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.rekap.RekapBesarOverview
@@ -72,7 +71,7 @@ class RekapViewModel @Inject constructor(
     val rekapGlobalProgress = getListRekapGlobalAsyncUseCase.progressState.asLiveData(Dispatchers.Default)
     val rekapBesarProgress = calculateRekapBesarAndGetRekapBesarOverview.messageProgress
 
-    private val kavlingList = Kavling.getGriyaKavlingList()
+    private val _kavlingList = MutableLiveData<String>()
 
     private val _listKavlingDataLamaRekapBesarIncludedLive = MutableLiveData(emptyList<String>())
     val listKavlingDataLamaRekapBesarIncluded: LiveData<List<String>>
@@ -91,7 +90,8 @@ class RekapViewModel @Inject constructor(
 
 
     fun getListRekapGlobal(onFailure: (msg: String) -> Unit) {
-        val request = GetListRekapGlobalAsyncUseCase.Request(kavlingList)
+        // Create request for all available Kavlings
+        val request = GetListRekapGlobalAsyncUseCase.Request(null)
         isRekapGlobalLoaded.update { false }
 
         CoroutineScope(Dispatchers.IO).launch {
@@ -221,7 +221,10 @@ class RekapViewModel @Inject constructor(
     fun getRowHeaderRekapTable(): List<RgRowHeader> {
         val listRowHeaders = mutableListOf<RgRowHeader>()
 
-        kavlingList.forEachIndexed { index, kavlingKode ->
+        val kavlingList = _listRekapGlobalLive.value?.map {
+            it.noKavling
+        }
+        kavlingList?.forEachIndexed { index, kavlingKode ->
             listRowHeaders.add(
                 RgRowHeader(
                     nomor = index.plus(1).toString(),

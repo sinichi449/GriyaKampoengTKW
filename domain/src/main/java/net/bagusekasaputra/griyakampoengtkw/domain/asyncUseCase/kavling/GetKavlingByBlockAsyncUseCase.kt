@@ -5,6 +5,7 @@ import kotlinx.coroutines.flow.map
 import net.bagusekasaputra.griyakampoengtkw.domain.DataMode
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.AsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.Kavling
+import net.bagusekasaputra.griyakampoengtkw.domain.entity.SingleBlockKavlingSorter
 import net.bagusekasaputra.griyakampoengtkw.domain.repository.KavlingRepository
 import net.bagusekasaputra.griyakampoengtkw.domain.repository.PembayaranRepository
 import java.util.Calendar
@@ -33,7 +34,7 @@ class GetKavlingByBlockAsyncUseCase(
                         it.sudahBayarBulanIni = sudahBayarAngsuranBulanIni ?: false
                     }
 
-                    sortKavling(kavlingList)
+                    Kavling.sortKavling(kavlingList, SingleBlockKavlingSorter())
                 } else {
                     // If kavlingList is null, just return the null value.
                     null
@@ -42,20 +43,5 @@ class GetKavlingByBlockAsyncUseCase(
 
             }
         }
-    }
-
-    private fun sortKavling(kavlings: List<Kavling>): List<Kavling> {
-        // We need a mutable list first for sorting the kavlings
-        val mutableKavling = mutableListOf<Kavling>()
-
-        kavlings.forEach {
-            mutableKavling.add(it)
-        }
-
-        mutableKavling.sortBy {
-            it.kode.substring(1).toInt()
-        }
-
-        return mutableKavling
     }
 }

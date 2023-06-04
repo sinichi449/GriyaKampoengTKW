@@ -74,8 +74,15 @@ class CalculateRekapBesarAndGetRekapBesarOverview(
                 rekapBesarDetailRepository.delete()
 
                 _messageProgress.postValue("Mendapatkan Blok dan Kavling ...")
-                val kavlingKodeList = if (request.backupName.isNullOrEmpty())
-                    fetchKavlingKodes(DataMode.ONLINE) else fetchKavlingKodes(DataMode.DATA_LAMA)
+                val kavlingKodeList =
+                    if (!request.listKavling.isNullOrEmpty()) {
+                        request.listKavling
+                    } else {
+                        val dataMode = if (request.backupName.isNullOrEmpty())
+                            DataMode.ONLINE else DataMode.DATA_LAMA
+
+                        Kavling.fetchKavlingKodesNoDetail(dataMode, blockRepository, kavlingRepository)
+                    }
 
                 // Data Baru
                 _messageProgress.postValue("Mendapatkan metadata Pembayaran ...")
@@ -225,20 +232,5 @@ class CalculateRekapBesarAndGetRekapBesarOverview(
 
             awaitClose {  }
         }
-    }
-
-    private suspend fun fetchKavlingKodes(dataMode: DataMode): List<String> {
-        val kavlingKodeList = mutableListOf<String>()
-
-        val blocks = blockRepository.getAllBlocks(dataMode).first().getOrThrow()
-        blocks?.forEach { block ->
-            val kavlingList = kavlingRepository.getKavlingByBlock(block.kode, dataMode).first().getOrThrow()
-
-            kavlingList?.also {
-                kavlingKodeList.addAll(Kavling.getKavlingKodes(it))
-            }
-        }
-
-        return kavlingKodeList
     }
 }

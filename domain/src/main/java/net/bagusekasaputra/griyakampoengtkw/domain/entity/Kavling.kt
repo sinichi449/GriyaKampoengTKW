@@ -1,5 +1,10 @@
 package net.bagusekasaputra.griyakampoengtkw.domain.entity
 
+import kotlinx.coroutines.flow.first
+import net.bagusekasaputra.griyakampoengtkw.domain.DataMode
+import net.bagusekasaputra.griyakampoengtkw.domain.repository.BlockRepository
+import net.bagusekasaputra.griyakampoengtkw.domain.repository.KavlingRepository
+
 data class Kavling(
     val kode: String,
     val belumIsi: Boolean = true,
@@ -9,6 +14,7 @@ data class Kavling(
     var sudahBayarBulanIni: Boolean = false,
 ) {
     val blockKode = kode.substring(0, 1)
+    val numKode = kode.substring(1).toInt()
 
     fun getPanjang(): String {
         return ukuran.split("x")[0]
@@ -23,6 +29,15 @@ data class Kavling(
     }
 
     companion object {
+
+        fun sortKavling(kavlingList: List<Kavling>, sorter: KavlingSorter): List<Kavling> {
+            return sorter.sortKavling(kavlingList)
+        }
+
+        fun sortKavling(kavlingKodeList: List<String>, sorter: SingleBlockKavlingSorter): List<String> {
+            return sorter.sortKodeOnly(kavlingKodeList)
+        }
+
         fun getKavlingKodes(kavlings: List<Kavling>): List<String> {
             val kavlingStrs = mutableListOf<String>()
             kavlings.forEach { kavling ->
@@ -65,6 +80,58 @@ data class Kavling(
 
             return listKavling
         }
+
+        suspend fun fetchKavlingKodesNoDetail(
+            dataMode: DataMode,
+            blockRepository: BlockRepository,
+            kavlingRepository: KavlingRepository,
+        ): List<String> {
+            val kavlingKodeList = mutableListOf<String>()
+
+            val blocks = blockRepository.getAllBlocks(dataMode).first().getOrThrow()
+            blocks?.forEach { block ->
+                val kavlingList = kavlingRepository.getKavlingByBlock(block.kode, dataMode).first().getOrThrow()
+
+                kavlingList?.also {
+                    val sortedKavling = sortKavling(it, SingleBlockKavlingSorter())
+                    val sortedKodeKavlingList = getKavlingKodes(sortedKavling)
+
+                    kavlingKodeList.addAll(sortedKodeKavlingList)
+                }
+            }
+
+            return kavlingKodeList
+        }
     }
+}
+
+interface KavlingSorter {
+    fun sortKavling(kavlingList: List<Kavling>): List<Kavling>
+
+    fun sortKodeOnly(kavlingKodeList: List<String>): List<String>
+
+}
+
+class SingleBlockKavlingSorter: KavlingSorter {
+    override fun sortKavling(kavlingList: List<Kavling>): List<Kavling> {
+        val copyKavlingList = kavlingList.toMutableList()
+
+        return copyKavlingList.sortedBy {
+            it.numKode
+        }
+    }
+
+    override fun sortKodeOnly(kavlingKodeList: List<String>): List<String> {
+        val kavlingList = mutableListOf<Kavling>().apply {
+            kavlingKodeList.forEach { kode ->
+                add(Kavling(kode = kode, warna = "", ukuran = "", type = ""))
+            }
+        }
+
+        val sortedKavlingList = sortKavling(kavlingList)
+
+        return Kavling.getKavlingKodes(sortedKavlingList)
+    }
+
 }
 

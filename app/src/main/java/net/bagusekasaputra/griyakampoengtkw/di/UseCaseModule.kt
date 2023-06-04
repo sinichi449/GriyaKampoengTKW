@@ -420,15 +420,13 @@ object UseCaseModule {
      */
     @Provides
     fun provideGetListRekapGlobalUseCase(
+        blockRepository: BlockRepository,
+        kavlingRepository: KavlingRepository,
         dataDiriRepository: DataDiriRepository,
         pembayaranRepository: PembayaranRepository,
         hargaKavlingRepository: HargaKavlingRepository,
     ): GetListRekapGlobalAsyncUseCase {
-        return GetListRekapGlobalAsyncUseCase(
-            dataDiriRepository,
-            pembayaranRepository,
-            hargaKavlingRepository
-        )
+        return GetListRekapGlobalAsyncUseCase(blockRepository, kavlingRepository, dataDiriRepository, pembayaranRepository, hargaKavlingRepository)
     }
 
 
