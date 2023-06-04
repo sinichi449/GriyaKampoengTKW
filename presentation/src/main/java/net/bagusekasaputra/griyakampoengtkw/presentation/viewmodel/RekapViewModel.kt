@@ -14,6 +14,7 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import net.bagusekasaputra.griyakampoengtkw.domain.DateUtil
+import net.bagusekasaputra.griyakampoengtkw.domain.DateUtil.toSlashedString
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.kavling.GetListUnmigratedKavlingsAsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.rekap.CalculateRekapBesarAndGetRekapBesarOverview
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.rekap.GetListRekapGlobalAsyncUseCase
@@ -28,7 +29,6 @@ import net.bagusekasaputra.griyakampoengtkw.presentation.fragment.rekap.RekapTyp
 import net.bagusekasaputra.griyakampoengtkw.presentation.tableview.rekapGlobal.RgCell
 import net.bagusekasaputra.griyakampoengtkw.presentation.tableview.rekapGlobal.RgColumnHeader
 import net.bagusekasaputra.griyakampoengtkw.presentation.tableview.rekapGlobal.RgRowHeader
-import net.bagusekasaputra.griyakampoengtkw.presentation.toSlashedDate
 import java.util.Date
 import javax.inject.Inject
 
@@ -282,6 +282,6 @@ class RekapViewModel @Inject constructor(
     }
 
     private fun List<Date>.toRangeString(): String {
-        return "${this[0].toSlashedDate()} - ${this[1].toSlashedDate()}"
+        return "${this[0].toSlashedString()} - ${this[1].toSlashedString()}"
     }
 }

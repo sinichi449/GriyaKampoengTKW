@@ -1,8 +1,8 @@
 package net.bagusekasaputra.griyakampoengtkw.presentation.tableview.databaseUser
 
+import net.bagusekasaputra.griyakampoengtkw.domain.DateUtil.toSlashedString
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.DatabaseUser
 import net.bagusekasaputra.griyakampoengtkw.presentation.tableview.ITableView
-import net.bagusekasaputra.griyakampoengtkw.presentation.toSlashedDate
 
 class TableDatabaseUser(
     private val listDatabaseUser: List<DatabaseUser>,
@@ -60,7 +60,7 @@ class TableDatabaseUser(
             val cell = mutableListOf<CalonPembeliCell>()
 
             cell.add(CalonPembeliCell(calonPembeli.nama))
-            cell.add(CalonPembeliCell(calonPembeli.tanggal.toSlashedDate()))
+            cell.add(CalonPembeliCell(calonPembeli.tanggal.toSlashedString()))
             cell.add(CalonPembeliCell(calonPembeli.noHp))
             cell.add(CalonPembeliCell(calonPembeli.usernameTiktok))
             cell.add(CalonPembeliCell(calonPembeli.lokasiIndo))

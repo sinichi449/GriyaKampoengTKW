@@ -8,10 +8,10 @@ import android.widget.Toast
 import moe.feng.common.stepperview.IStepperAdapter
 import moe.feng.common.stepperview.VerticalStepperItemView
 import moe.feng.common.stepperview.VerticalStepperView
+import net.bagusekasaputra.griyakampoengtkw.domain.DateUtil.toSlashedString
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.statusPembayaran.StatusPembayaran
 import net.bagusekasaputra.griyakampoengtkw.presentation.custom.StatusPembayaranLayoutHelper
 import net.bagusekasaputra.griyakampoengtkw.presentation.databinding.LayoutStepperLogStatusPembayaranBinding
-import net.bagusekasaputra.griyakampoengtkw.presentation.toSlashedDate
 
 
 class LogStatusPembayaranStepperAdapter(
@@ -23,7 +23,7 @@ class LogStatusPembayaranStepperAdapter(
     }
 
     override fun getSummary(position: Int): CharSequence {
-        return logStatuses[position].tanggal.toSlashedDate()
+        return logStatuses[position].tanggal.toSlashedString()
     }
 
     override fun size(): Int {
@@ -56,7 +56,7 @@ class LogStatusPembayaranStepperAdapter(
                 append("INI TABEL!")
                 append("\n\n")
             }
-            append("Perubahan terakhir pada ${status.tanggal.toSlashedDate()}")
+            append("Perubahan terakhir pada ${status.tanggal.toSlashedString()}")
         }.toString()
 
         if (status is StatusPembayaran.Batal) {

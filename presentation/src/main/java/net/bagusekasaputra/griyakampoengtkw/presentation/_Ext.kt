@@ -5,10 +5,8 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MediatorLiveData
 import net.bagusekasaputra.griyakampoengtkw.presentation.util.GriyaNodes
 import java.math.BigDecimal
-import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Date
-import java.util.Locale
 import kotlin.math.pow
 
 fun logEvent(msg: String) {
@@ -64,12 +62,6 @@ fun String.toCalendar(): Calendar {
     return Calendar.getInstance().apply {
         set(tahun, bulan, tanggal)
     }.resetHours()
-}
-
-fun Date.toSlashedDate(): String {
-    val formatter = SimpleDateFormat("dd/MM/yyyy", Locale.US)
-
-    return formatter.format(this)
 }
 
 fun String.toHour(): Calendar {

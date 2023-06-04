@@ -18,6 +18,7 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
 import net.bagusekasaputra.griyakampoengtkw.domain.DataMode
+import net.bagusekasaputra.griyakampoengtkw.domain.DateUtil.toSlashedString
 import net.bagusekasaputra.griyakampoengtkw.domain.NumberUtil
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.BiayaLain
 import net.bagusekasaputra.griyakampoengtkw.presentation.R
@@ -26,7 +27,6 @@ import net.bagusekasaputra.griyakampoengtkw.presentation.databinding.DialogActio
 import net.bagusekasaputra.griyakampoengtkw.presentation.databinding.FragmentBiayaLainBinding
 import net.bagusekasaputra.griyakampoengtkw.presentation.tableview.biayaLain.BiayaLainTableWrapper
 import net.bagusekasaputra.griyakampoengtkw.presentation.toCalendar
-import net.bagusekasaputra.griyakampoengtkw.presentation.toSlashedDate
 import net.bagusekasaputra.griyakampoengtkw.presentation.util.DialogUtil
 import net.bagusekasaputra.griyakampoengtkw.presentation.util.FabHelper
 import net.bagusekasaputra.griyakampoengtkw.presentation.util.InputUtil
@@ -177,8 +177,7 @@ class BiayaLainFragment: Fragment() {
             dialogBinding.btnHapus.visibility = View.VISIBLE
         } else {
             // Add tanggal hari ini on edtTanggal in Non-Edit Mode
-            val tanggalHariIni = Calendar.getInstance().time
-                .toSlashedDate()
+            val tanggalHariIni = Calendar.getInstance().time.toSlashedString()
             dialogBinding.edtTanggal.setText(tanggalHariIni)
         }
 

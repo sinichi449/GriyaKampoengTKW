@@ -1,9 +1,9 @@
 package net.bagusekasaputra.griyakampoengtkw.presentation.tableview.biayaPribadi
 
+import net.bagusekasaputra.griyakampoengtkw.domain.DateUtil.toSlashedString
 import net.bagusekasaputra.griyakampoengtkw.domain.NumberUtil
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.BiayaPribadi
 import net.bagusekasaputra.griyakampoengtkw.presentation.tableview.ITableView
-import net.bagusekasaputra.griyakampoengtkw.presentation.toSlashedDate
 
 class TableBiayaPribadi(
     private val listBiayaPribadi: List<BiayaPribadi>
@@ -45,7 +45,7 @@ class TableBiayaPribadi(
             val cell = mutableListOf<BpCell>()
 
             cell.add(BpCell(biayaPribadi.jenisBiaya))
-            cell.add(BpCell(biayaPribadi.tanggal.toSlashedDate()))
+            cell.add(BpCell(biayaPribadi.tanggal.toSlashedString()))
             cell.add(BpCell(NumberUtil.formatLongToString(biayaPribadi.harga)))
 
             cellItems.add(cell)

@@ -8,6 +8,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 import net.bagusekasaputra.griyakampoengtkw.domain.AsyncUseCaseHelper
+import net.bagusekasaputra.griyakampoengtkw.domain.DateUtil.toSlashedString
 import net.bagusekasaputra.griyakampoengtkw.domain.NumberUtil
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.reportKavling.GetAllReportKavlingAsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.ProgressState
@@ -18,7 +19,6 @@ import net.bagusekasaputra.griyakampoengtkw.presentation.tableview.report.TumCel
 import net.bagusekasaputra.griyakampoengtkw.presentation.tableview.report.TumColumnHeaders
 import net.bagusekasaputra.griyakampoengtkw.presentation.tableview.report.TumRowHeaders
 import net.bagusekasaputra.griyakampoengtkw.presentation.toDate
-import net.bagusekasaputra.griyakampoengtkw.presentation.toSlashedDate
 import net.bagusekasaputra.griyakampoengtkw.presentation.util.DateUtil
 import java.util.Date
 import javax.inject.Inject
@@ -210,7 +210,7 @@ class ReportViewModel @Inject constructor(
             val earliestDate = sortedTanggal.first()
             val latestDate = sortedTanggal.last()
 
-            "${earliestDate.toSlashedDate()} - ${latestDate.toSlashedDate()}"
+            "${earliestDate.toSlashedString()} - ${latestDate.toSlashedString()}"
         } else {
             "null"
         }

@@ -4,8 +4,8 @@ import android.text.SpannableString
 import android.text.style.UnderlineSpan
 import android.view.Gravity
 import com.evrencoskun.tableview.TableView
+import net.bagusekasaputra.griyakampoengtkw.domain.DateUtil.toSlashedString
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.DatabaseUser
-import net.bagusekasaputra.griyakampoengtkw.presentation.toSlashedDate
 
 class DatabaseUserTableWrapper(
     tableDatabaseUser: TableView,
@@ -72,7 +72,7 @@ class DatabaseUserTableWrapper(
             val cell = mutableListOf<DuCellItem>()
             cell.apply {
                 add(NAMA, DuCellItem(it.nama))
-                add(TANGGAL, DuCellItem(it.tanggal.toSlashedDate()))
+                add(TANGGAL, DuCellItem(it.tanggal.toSlashedString()))
                 add(NO_HP, DuCellItem(it.noHp))
                 add(TIKTOK, DuCellItem(it.usernameTiktok))
                 add(LOKASI_INDO, DuCellItem(it.lokasiIndo))
