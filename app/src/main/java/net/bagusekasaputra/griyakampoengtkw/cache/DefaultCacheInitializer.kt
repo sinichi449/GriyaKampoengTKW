@@ -4,8 +4,11 @@ import android.content.SharedPreferences
 import androidx.core.content.edit
 import net.bagusekasaputra.griyakampoengtkw.ConstsSharedPrefs
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.Tahapan
+import javax.inject.Inject
+import javax.inject.Singleton
 
-class DefaultCacheInitializer(
+@Singleton
+class DefaultCacheInitializer @Inject constructor(
     private val sharedPrefs: SharedPreferences,
 ): CacheInitializer {
 
