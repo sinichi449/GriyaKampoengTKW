@@ -25,6 +25,7 @@ import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
 import net.bagusekasaputra.griyakampoengtkw.domain.DataMode
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.Promotion
+import net.bagusekasaputra.griyakampoengtkw.domain.entity.Tahapan
 import net.bagusekasaputra.griyakampoengtkw.presentation.R
 import net.bagusekasaputra.griyakampoengtkw.presentation.databinding.ActivityMainBinding
 import net.bagusekasaputra.griyakampoengtkw.presentation.databinding.DialogPromotionFooterBinding
@@ -78,6 +79,11 @@ class MainActivity : AppCompatActivity() {
 
         binding.toolbarMain.setupWithNavController(navController, appBarConfiguration)
         setSupportActionBar(binding.toolbarMain)
+
+        // Toolbar subtitle -> Tahapan
+        sharedPrefs.getString("SELECTED_TAHAPAN", null)?.also {
+            binding.toolbarMain.subtitle = Tahapan.getSimpleInstance(it).nama.uppercase()
+        }
 
         // Setup navigation view and header layout
         with(binding.navViewMain) {

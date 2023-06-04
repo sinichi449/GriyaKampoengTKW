@@ -20,4 +20,11 @@ data class Tahapan(val reference: String) {
     private val urutan = tahapanAndNumber.second
 
     val nama = "$capitalizeNama $urutan"
+
+    companion object {
+        fun getSimpleInstance(reference: String): Tahapan {
+            return Tahapan(reference)
+        }
+
+    }
 }

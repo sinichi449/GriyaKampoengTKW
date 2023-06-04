@@ -27,7 +27,6 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 app:title="Site Plan"
-                app:titleCentered="true"
                 app:titleTextColor="@color/primaryTextColor"
                 app:navigationIcon="@drawable/baseline_menu_24"
                 app:navigationIconTint="@color/black"
