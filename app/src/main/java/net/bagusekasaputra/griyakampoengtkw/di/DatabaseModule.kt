@@ -65,9 +65,17 @@ object DatabaseModule {
     }
 
 
+    @RootReference
     @Provides
-    fun provideStorageReference(): StorageReference {
-        return FirebaseStorage.getInstance().reference
+    fun provideRootStorageReference() = FirebaseStorage.getInstance().reference
+
+    @TahapanReference
+    @Provides
+    fun provideTahapanStorageReference(sharedPrefs: SharedPreferences): StorageReference {
+        val rootReference = FirebaseStorage.getInstance().reference
+
+        val selectedTahapan = sharedPrefs.getString(ConstsSharedPrefs.SELECTED_TAHAPAN, "TAHAP_1")!!
+        return rootReference.child(selectedTahapan)
     }
 
     @Singleton

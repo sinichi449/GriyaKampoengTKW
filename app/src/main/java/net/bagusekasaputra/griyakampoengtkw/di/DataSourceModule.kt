@@ -191,7 +191,7 @@ object DataSourceModule {
 
     @Provides
     fun provideRemoteImageDataDiriSource(
-        storageReference: StorageReference,
+        @TahapanReference storageReference: StorageReference,
         @ExternalDir externalFilesDir: File?,
         imageIndenBooking: RemoteFotoIdentitasIndenBookingDataSource,
     ): RemoteImageDataDiriDataSource {
@@ -222,7 +222,7 @@ object DataSourceModule {
     }
 
     @Provides
-    fun provideRemoteImageSprDataSource(storageReference: StorageReference, @ExternalDir externalFilesDir: File?): RemoteImageSprDataSource {
+    fun provideRemoteImageSprDataSource(@TahapanReference storageReference: StorageReference, @ExternalDir externalFilesDir: File?): RemoteImageSprDataSource {
         return StorageImageSprDataSource(storageReference, externalFilesDir)
     }
 
@@ -377,7 +377,7 @@ object DataSourceModule {
     }
 
     @Provides
-    fun provideRemoteFotoPembayaranDataSource(storageReference: StorageReference, @ExternalDir externalFilesDir: File?): RemoteFotoPembayaranDataSource {
+    fun provideRemoteFotoPembayaranDataSource(@TahapanReference storageReference: StorageReference, @ExternalDir externalFilesDir: File?): RemoteFotoPembayaranDataSource {
         return StorageFotoPembayaranDataSource(storageReference, externalFilesDir)
     }
 
@@ -486,7 +486,7 @@ object DataSourceModule {
 
     @Provides
     fun providesRemoteFotoIdentitasIndenBookingDataSource(
-        storageReference: StorageReference,
+        @TahapanReference storageReference: StorageReference,
         @ExternalDir externalFilesDir: File?,
     ): RemoteFotoIdentitasIndenBookingDataSource {
         return FirebaseFotoIdentitasIndenBookingDataSource(storageReference, externalFilesDir)
@@ -571,7 +571,7 @@ object DataSourceModule {
     }
 
     @Provides
-    fun provideRemoteFotoPembayaranIndenBookingDataSource(storageReference: StorageReference): RemoteFotoPembayaranIndenBookingDataSource {
+    fun provideRemoteFotoPembayaranIndenBookingDataSource(@TahapanReference storageReference: StorageReference): RemoteFotoPembayaranIndenBookingDataSource {
         return FirebaseFotoPembayaranIndenBookingDataSource(storageReference)
     }
 
@@ -587,7 +587,7 @@ object DataSourceModule {
     }
 
     @Provides
-    fun provideRemoteImageDataDiriIndenBookingDataSource(storageReference: StorageReference): RemoteImageDataDiriIndenBookingDataSource {
+    fun provideRemoteImageDataDiriIndenBookingDataSource(@TahapanReference storageReference: StorageReference): RemoteImageDataDiriIndenBookingDataSource {
         return FirebaseImageDataDiriIndenBookingDataSource(storageReference)
     }
 
