@@ -148,11 +148,15 @@ class BiayaLainViewModel @Inject constructor(
 
 
     fun sortListBiayaLain(sortMethod: BiayaLain.SortMethod) {
-        with(_biayaLainList.value) {
-            if (this is UiState.Success) {
-                val sortedBiayaLain = data?.sort(sortMethod)
+        viewModelScope.launch(Dispatchers.Default) {
+            _biayaLainList.postValue(UiState.Loading())
+            
+            with(_biayaLainList.value) {
+                if (this is UiState.Success) {
+                    val sortedBiayaLain = data?.sort(sortMethod)
 
-                _biayaLainList.value = UiState.Success(sortedBiayaLain)
+                    _biayaLainList.postValue(UiState.Success(sortedBiayaLain))
+                }
             }
         }
     }
