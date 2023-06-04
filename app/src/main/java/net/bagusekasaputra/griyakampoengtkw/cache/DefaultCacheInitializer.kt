@@ -2,7 +2,6 @@ package net.bagusekasaputra.griyakampoengtkw.cache
 
 import android.content.SharedPreferences
 import androidx.core.content.edit
-import kotlinx.coroutines.delay
 import net.bagusekasaputra.griyakampoengtkw.ConstsSharedPrefs
 import net.bagusekasaputra.griyakampoengtkw.model.Tahapan
 
@@ -14,8 +13,6 @@ class DefaultCacheInitializer(
 
     override suspend fun initialize(tahapan: Tahapan): Result<Nothing?> {
         // TODO
-        delay(5000L)
-        setCacheHasBeenInitialized(true)
         return Result.success(null)
     }
 
