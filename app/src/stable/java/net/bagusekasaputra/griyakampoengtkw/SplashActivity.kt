@@ -9,12 +9,14 @@ import android.util.Log
 import android.view.View
 import android.view.WindowManager
 import android.widget.Toast
+import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.biometric.BiometricManager
 import androidx.biometric.BiometricPrompt
 import androidx.core.content.ContextCompat
 import androidx.core.content.edit
+import androidx.fragment.app.DialogFragment
 import androidx.lifecycle.lifecycleScope
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.firebase.database.DataSnapshot
@@ -39,6 +41,7 @@ import net.bagusekasaputra.griyakampoengtkw.databinding.ActivitySplashPureBindin
 import net.bagusekasaputra.griyakampoengtkw.databinding.ActivitySplashWithLoadingBinding
 import net.bagusekasaputra.griyakampoengtkw.interfaces.CacheInitializer
 import net.bagusekasaputra.griyakampoengtkw.model.ConnectionCheckResult
+import net.bagusekasaputra.griyakampoengtkw.model.Tahapan
 import net.bagusekasaputra.griyakampoengtkw.presentation.R
 import net.bagusekasaputra.griyakampoengtkw.presentation.activity.MainActivity
 import net.bagusekasaputra.griyakampoengtkw.presentation.util.GriyaNodes
@@ -54,6 +57,8 @@ class SplashActivity : AppCompatActivity() {
 
     private lateinit var bindingPure: ActivitySplashPureBinding
     private lateinit var bindingLoading: ActivitySplashWithLoadingBinding
+    private val viewModel by viewModels<AppViewModel>()
+
     // Need to be initialized at onCreate()
     private lateinit var biometricManager: BiometricManager
     private lateinit var biometricPrompt: BiometricPrompt
@@ -130,6 +135,15 @@ class SplashActivity : AppCompatActivity() {
                         },
                     )
 
+                    // Pilih Tahapan and save Tahapan to ViewModel
+                    withContext(Dispatchers.Main) {
+                        dialogPilihTahapan { dialog, tahapan ->
+                            viewModel.selectedTahapan.value = tahapan
+
+                            dialog.dismiss()
+                        }
+                    }
+
                     // Initialize cache
                     withContext(Dispatchers.Main) {
                         bindingLoading.layoutCekKoneksi.tvInfoPeriksaInternet.text = "Menginisialisasi Cache"
@@ -142,8 +156,26 @@ class SplashActivity : AppCompatActivity() {
                             Log.e("INIT_CACHE", "Error on cache initialization: ${it.localizedMessage}")
                         }
 
+                    // Show jenis data
                     withContext(Dispatchers.Main) {
-                        showJenisDataButton(connectivityCheckResult)
+                        showJenisDataButton(connectivityCheckResult) {
+                            viewModel.selectedJenisData.value = it
+                        }
+                    }
+
+                    // Handle Tahapan and Jenis Data
+                    withContext(Dispatchers.Main) {
+                        viewModel.tahapanAndJenisData.observe(this@SplashActivity) {
+                            it?.also { tahapanAndJenisData ->
+                                val selectedTahapan = tahapanAndJenisData.first
+                                val selectedJenisData = tahapanAndJenisData.second
+
+                                handleTahapanAndJenisData(
+                                    connectivityCheckResult.isDeviceOnline,
+                                    selectedJenisData, selectedTahapan
+                                )
+                            }
+                        }
                     }
                 }
             }
@@ -167,7 +199,10 @@ class SplashActivity : AppCompatActivity() {
         handler.postDelayed(splashRunnable, millis)
     }
 
-    private fun showJenisDataButton(connectionCheckResult: ConnectionCheckResult) {
+    private fun showJenisDataButton(
+        connectionCheckResult: ConnectionCheckResult,
+        onSelectedJenisData: (jenisData: Int) -> Unit,
+    ) {
         with(bindingLoading) {
             // Remove layout cek koneksi
             layoutCekKoneksi.root.visibility = View.INVISIBLE
@@ -183,29 +218,50 @@ class SplashActivity : AppCompatActivity() {
 
             // Setup button Data Lama and Data Baru
             layoutPilihData.btnDataLama.setOnClickListener {
-                goToDocumentLamaActivity()
+                onSelectedJenisData(DATA_LAMA)
+//                goToDocumentLamaActivity()
             }
             layoutPilihData.btnDataBaru.setOnClickListener {
                 // Nullify the sharedPreference Data Lama to prevent MainActivity/DetailActivity
                 // to DataLama mode
-                sharedPreferences.edit(true) {
-                    putString("dataLamaPath", null)
-                }
-
-                goToMainActivity(connectionCheckResult.isDeviceOnline, true)
+                onSelectedJenisData(DATA_BARU)
+//                sharedPreferences.edit(true) {
+//                    putString("dataLamaPath", null)
+//                }
+//
+//                goToMainActivity(connectionCheckResult.isDeviceOnline, true)
             }
         }
     }
 
-    @Suppress("SameParameterValue")
-    private fun goToMainActivity(isOnline: Boolean, isNewDataSelected: Boolean) {
-        // I also want to pass a BuildConfig for checking update.
+    private fun handleTahapanAndJenisData(
+        isDeviceOnline: Boolean,
+        jenisData: Int?,
+        tahapan: Tahapan?
+    ) {
+        if ((jenisData != null) && (tahapan != null)) {
+            sharedPreferences.edit(true) {
+                putString("SELECTED_TAHAPAN", tahapan.nama)
+            }
+
+            when (jenisData) {
+                DATA_LAMA -> goToDocumentLamaActivity()
+                DATA_BARU -> goToMainActivity(isDeviceOnline)
+            }
+        }
+    }
+
+    private fun goToMainActivity(isOnline: Boolean) {
         val intent = Intent(this, MainActivity::class.java)
 
         intent.putExtra(GriyaNodes.INTENT_IS_ONLINE, isOnline)
+
+        // Passing BuildConfig for update check to MainActivity
         intent.putExtra("versionName", BuildConfig.VERSION_NAME)
         intent.putExtra("versionCode", BuildConfig.VERSION_CODE)
-        intent.putExtra("isNewDataSelected", isNewDataSelected)
+
+        intent.putExtra("isNewDataSelected", true)
+
         startActivity(intent)
         finish()
     }
@@ -319,5 +375,18 @@ class SplashActivity : AppCompatActivity() {
 
             maintenanceRef.addListenerForSingleValueEvent(eventListener)
         }
+    }
+
+    private fun dialogPilihTahapan(onSelectedTahapan: (dialog: DialogFragment, tahapan: Tahapan) -> Unit) {
+        PilihTahapanBottomSheetDialog(
+            onItemSelected = onSelectedTahapan,
+            onFailure = { finish() }
+        )
+            .show(supportFragmentManager, null)
+    }
+
+    companion object {
+        const val DATA_LAMA = 0
+        const val DATA_BARU = 1
     }
 }
