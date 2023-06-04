@@ -51,16 +51,12 @@ class KavlingFragment : Fragment() {
     private lateinit var fabAddKavling: FloatingActionButton
     private lateinit var fabAddBlock: FloatingActionButton
 
-    private lateinit var kavlingRecyclerView: RecyclerView
-
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
         // Inflate the layout for this fragment
         binding = FragmentKavlingBinding.inflate(inflater, container, false)
-
-        kavlingRecyclerView = binding.recyclerKavlings
 
         return binding.root
     }
@@ -124,8 +120,6 @@ class KavlingFragment : Fragment() {
 
     override fun onStop() {
         super.onStop()
-
-        viewModel.kavlingRecyclerState = kavlingRecyclerView.layoutManager?.onSaveInstanceState()
 
         Log.d("DEBUG_ME", "KavlingFragment: Saving KavlingRecyclerView's State onStop() ...")
     }
@@ -244,20 +238,19 @@ class KavlingFragment : Fragment() {
 
 //        kavlingRecyclerView.adapter = customAdapter
 
-        kavlingRecyclerView.adapter = adapter
+        binding.recyclerKavlings.adapter = adapter
 
         // If screen is in Landscape mode, I want to show more spans number in the kavling
         val screenOrientation = resources.configuration.orientation
         val spansCount = if (screenOrientation == Configuration.ORIENTATION_LANDSCAPE) 5 else 3
-        kavlingRecyclerView.layoutManager = GridLayoutManager(requireContext(), spansCount)
+        binding.recyclerKavlings.layoutManager = GridLayoutManager(requireContext(), spansCount)
 
 
-        val kavlingRecyclerState = viewModel.kavlingRecyclerState
-        if (kavlingRecyclerState != null) {
-            kavlingRecyclerView.layoutManager?.onRestoreInstanceState(kavlingRecyclerState)
-        }
-
-        Log.d("DEBUG_ME", "KavlingFragment: RecyclerViewKavling's State is $kavlingRecyclerState")
+//        val kavlingRecyclerState = viewModel.kavlingRecyclerState
+//        if (kavlingRecyclerState != null) {
+//            kavlingRecyclerView.layoutManager?.onRestoreInstanceState(kavlingRecyclerState)
+//        }
+        binding.recyclerKavlings.setHasFixedSize(true)
     }
 
     @SuppressLint("SetTextI18n")

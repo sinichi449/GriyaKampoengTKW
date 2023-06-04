@@ -65,7 +65,7 @@ class KavlingRecyclerAdapter(
         holder.binding.layoutRoot.setBackgroundColor(warna)
         if (progress != null) {
             Log.d("PROGRESS_PEMBAYARAN", "Progress Kav. ${kavling.kode} is ${progress}%")
-            holder.binding.fillProgressPersen.setProgress(progress, true)
+            holder.binding.fillProgressPersen.setProgress(progress, false)
         }
 
 

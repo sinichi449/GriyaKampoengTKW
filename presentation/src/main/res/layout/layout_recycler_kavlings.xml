@@ -42,7 +42,7 @@
             app:fpl_backgroundColor="@color/abang"
             app:fpl_progressColor="#FFDB41"
             app:fpl_isRounded="false"
-            app:fpl_progress="50"
+            app:fpl_progress="0"
             app:fpl_progressDuration="1"
             app:fpl_progressDirection="bottom_to_top"
             app:fpl_shouldRestart="false"/>
