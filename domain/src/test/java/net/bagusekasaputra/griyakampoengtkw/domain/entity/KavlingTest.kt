@@ -24,4 +24,24 @@ class KavlingTest {
     }
 
 
+    @Test
+    fun exclusionForRekap_shouldCorrect() {
+        val blockKode = "A"
+        val kavlingSize = 100
+        val sortedKavlingList = mutableListOf<String>().apply {
+            repeat(kavlingSize) { numKode ->
+                add("${blockKode}${numKode + 1}")
+            }
+        }
+
+        val exclusionList = mutableListOf<String>().apply {
+            val randomExclusionSize = Random.nextInt(from = 1, until = kavlingSize)
+            repeat(randomExclusionSize) {
+                add("${blockKode}${it + 1}")
+            }
+        }
+        val filteredKavling = Kavling.excludeKavlingKode(sortedKavlingList, exclusionList)
+
+        Assert.assertEquals(false, filteredKavling.containsAll(exclusionList))
+    }
 }

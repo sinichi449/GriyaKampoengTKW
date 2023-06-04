@@ -38,6 +38,12 @@ data class Kavling(
             return sorter.sortKodeOnly(kavlingKodeList)
         }
 
+        fun excludeKavlingKode(kavlingKodeList: List<String>, exclusionList: List<String>): List<String> {
+            return kavlingKodeList.filter {
+                !exclusionList.contains(it)
+            }
+        }
+
         fun getKavlingKodes(kavlings: List<Kavling>): List<String> {
             val kavlingStrs = mutableListOf<String>()
             kavlings.forEach { kavling ->
@@ -85,6 +91,7 @@ data class Kavling(
             dataMode: DataMode,
             blockRepository: BlockRepository,
             kavlingRepository: KavlingRepository,
+            rekapExclusion: Boolean
         ): List<String> {
             val kavlingKodeList = mutableListOf<String>()
 
@@ -100,7 +107,17 @@ data class Kavling(
                 }
             }
 
-            return kavlingKodeList
+            return if (rekapExclusion) {
+                val exclusionList = kavlingRepository.getRekapExclusionList().getOrThrow()
+
+                if (exclusionList.isNullOrEmpty()) {
+                    kavlingKodeList
+                } else {
+                    excludeKavlingKode(kavlingKodeList, exclusionList)
+                }
+            } else {
+                kavlingKodeList
+            }
         }
     }
 }

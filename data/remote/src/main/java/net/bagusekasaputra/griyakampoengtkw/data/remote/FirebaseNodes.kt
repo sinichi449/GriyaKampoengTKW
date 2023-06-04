@@ -23,6 +23,7 @@ object FirebaseNodes {
     const val STATUS_PEMBAYARAN = "statusPembayaran"
     const val PROMOTION = "promotion"
     const val AMBIL_KUITANSI = "ambilKuitansi"
+    const val KAVLING_EXCLUSION_LIST = "excludeForRekap"
     const val MAINTENTANCE = "maintenance"
 
     const val IMAGE_DATA_DIRI = "data_diri_images"

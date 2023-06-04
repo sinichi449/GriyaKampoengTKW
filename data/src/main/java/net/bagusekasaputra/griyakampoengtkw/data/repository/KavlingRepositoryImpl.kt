@@ -151,6 +151,10 @@ class KavlingRepositoryImpl(
         }
     }
 
+    override suspend fun getRekapExclusionList(): Result<List<String>?> {
+        return remoteKavlingDataSource.getRekapExclusionList()
+    }
+
     override suspend fun refreshCache(blocks: List<Block>): Result<Nothing?> {
         return try {
             localKavlingDataSource.deleteAll().getOrThrow()

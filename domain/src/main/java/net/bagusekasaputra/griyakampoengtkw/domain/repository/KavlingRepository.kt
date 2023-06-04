@@ -18,6 +18,8 @@ interface KavlingRepository {
 
     fun getUnmigratedKavlings(backupName: String): Flow<Result<List<String>?>>
 
+    suspend fun getRekapExclusionList(): Result<List<String>?>
+
     // If List<Block> parameter left empty, then it will get List<Block> from cache
     suspend fun refreshCache(blocks: List<Block> = emptyList()): Result<Nothing?>
 }

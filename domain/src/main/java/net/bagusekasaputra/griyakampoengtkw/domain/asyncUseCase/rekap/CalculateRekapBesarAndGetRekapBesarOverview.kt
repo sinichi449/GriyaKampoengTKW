@@ -81,7 +81,9 @@ class CalculateRekapBesarAndGetRekapBesarOverview(
                         val dataMode = if (request.backupName.isNullOrEmpty())
                             DataMode.ONLINE else DataMode.DATA_LAMA
 
-                        Kavling.fetchKavlingKodesNoDetail(dataMode, blockRepository, kavlingRepository)
+                        Kavling.fetchKavlingKodesNoDetail(
+                            dataMode, blockRepository, kavlingRepository, true
+                        )
                     }
 
                 // Data Baru

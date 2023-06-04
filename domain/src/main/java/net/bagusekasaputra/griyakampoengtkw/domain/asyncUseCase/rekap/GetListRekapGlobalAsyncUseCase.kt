@@ -39,7 +39,7 @@ class GetListRekapGlobalAsyncUseCase(
             progressState.update { ProgressState(1, "Menyusun tabel Blok dan Kavling ...") }
             val kavlingKodeList =
                 if (!request.listKavling.isNullOrEmpty()) request.listKavling
-                else Kavling.fetchKavlingKodesNoDetail(DataMode.ONLINE, blockRepository, kavlingRepository)
+                else Kavling.fetchKavlingKodesNoDetail(DataMode.ONLINE, blockRepository, kavlingRepository, true)
 
             progressState.update { ProgressState(25, "Menyusun tabel Data Diri ...") }
             val dataDiriBatch = dataDiriRepository.getBatchOnline(kavlingKodeList)
