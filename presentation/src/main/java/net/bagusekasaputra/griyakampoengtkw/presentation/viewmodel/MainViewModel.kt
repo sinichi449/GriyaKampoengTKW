@@ -10,6 +10,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import net.bagusekasaputra.griyakampoengtkw.domain.AsyncUseCaseHelper
@@ -338,11 +339,17 @@ class MainViewModel @Inject constructor(
 
     fun getProgressAllKavling(blockKode: String) {
         CoroutineScope(Dispatchers.IO).launch {
-            val listKavling = Kavling.getGriyaKavlingList().filter {
-                it.substring(0, 1) == blockKode
-            }
-            val request = GetProgressKavlingAsyncUseCase.Request(listKavling)
+            // Get all kavling's in block
+            val kavlingByBlockRequest = GetKavlingByBlockAsyncUseCase.Request(blockKode, dataMode)
+            val kavlingList = getKavlingByBlockAsyncUseCase.execute(kavlingByBlockRequest).first()
+                .getOrThrow()
+                ?.let {
+                    Kavling.getKavlingKodes(it)
+                }
+                ?: emptyList()
 
+            // Progress Kavling
+            val request = GetProgressKavlingAsyncUseCase.Request(kavlingList)
             getProgressKavlingAsyncUseCase.execute(request).collect { result ->
                 result.onSuccess {
                     _mapProgressKavling.postValue(it)
