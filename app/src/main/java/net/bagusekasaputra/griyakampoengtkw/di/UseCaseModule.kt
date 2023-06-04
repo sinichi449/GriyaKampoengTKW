@@ -479,6 +479,8 @@ object UseCaseModule {
      */
     @Provides
     fun provideCalculateRekapBesarAndGetRekapBesarOverview(
+        blockRepository: BlockRepository,
+        kavlingRepository: KavlingRepository,
         pembayaranRepository: PembayaranRepository,
         dataDiriRepository: DataDiriRepository,
         hargaKavlingRepository: HargaKavlingRepository,
@@ -487,15 +489,7 @@ object UseCaseModule {
         biayaLainRepository: BiayaLainRepository,
         rekapBesarDetailRepository: RekapBesarDetailRepository,
     ): CalculateRekapBesarAndGetRekapBesarOverview {
-        return CalculateRekapBesarAndGetRekapBesarOverview(
-            pembayaranRepository,
-            dataDiriRepository,
-            hargaKavlingRepository,
-            feeMarketingRepository,
-            biayaMarketingRepository,
-            biayaLainRepository,
-            rekapBesarDetailRepository,
-        )
+        return CalculateRekapBesarAndGetRekapBesarOverview(blockRepository, kavlingRepository, pembayaranRepository, dataDiriRepository, hargaKavlingRepository, feeMarketingRepository, biayaMarketingRepository, biayaLainRepository, rekapBesarDetailRepository)
     }
 
     @Provides

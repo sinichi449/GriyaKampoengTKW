@@ -148,6 +148,8 @@ class RekapViewModel @Inject constructor(
                 endDate = endDate,
                 backupName = selectedBackupName,
                 listIncludedKavlingDataLama = _listKavlingDataLamaRekapBesarIncludedLive.value!!,
+                // All kavling
+                listKavling = null,
             )
             calculateRekapBesarAndGetRekapBesarOverview.execute(request).collect { result ->
                 result.onSuccess {
