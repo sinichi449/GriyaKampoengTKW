@@ -41,7 +41,7 @@ class PembayaranRepositoryImpl(
     ): Result<Pembayaran?> {
         return try {
             val isInvalidCache = cacheHelper.checkAndInvalidateCache(
-                pembayaranIndenBookingLocalTable, pembayaranIndenBookingRemoteTable,
+                metadataTable, metadataTable,
                 onInvalid = {
                     localPembayaranDataSource.deleteAll()
                 }
@@ -348,36 +348,12 @@ class PembayaranRepositoryImpl(
         }
     }
 
-    override fun updatePembayaran(
+    override suspend fun updatePembayaran(
         kavlingKode: String,
-        oldPembayaran: Pembayaran,
-        newPembayaran: Pembayaran,
-    ): Flow<Result<Boolean>> {
-        return flow {
-            updateMetadata()
-
-            // We need to update the local too!
-            val localResult = localPembayaranDataSource.updatePembayaranModel(
-                kavlingKode, mapPembayaran(oldPembayaran), mapPembayaran(newPembayaran)
-            )
-            localResult.onFailure {
-                emit(Result.failure(it))
-            }
-
-
-            val remoteResult = remotePembayaranSource.updatePembayaranModel(
-                kavlingKode,
-                oldPembayaranModel = mapPembayaran(oldPembayaran),
-                newPembayaranModel = mapPembayaran(newPembayaran)
-            )
-            remoteResult.onSuccess {
-                emit(Result.success(true))
-            }
-
-            remoteResult.onFailure {
-                emit(Result.failure(it))
-            }
-        }
+        termin: String,
+        newPembayaran: Pembayaran
+    ): Result<Nothing?> {
+        TODO("Not yet implemented")
     }
 
     override fun deletePembayaranByTermin(

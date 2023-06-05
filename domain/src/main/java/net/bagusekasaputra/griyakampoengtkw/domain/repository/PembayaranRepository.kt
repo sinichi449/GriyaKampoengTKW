@@ -22,7 +22,7 @@ interface PembayaranRepository {
 
     fun addPembayaran(kavlingKode: String, hargaKavling: Long, pembayaran: Pembayaran): Flow<Result<Boolean>>
 
-    fun updatePembayaran(kavlingKode: String, oldPembayaran: Pembayaran, newPembayaran: Pembayaran): Flow<Result<Boolean>>
+    suspend fun updatePembayaran(kavlingKode: String, termin: String, newPembayaran: Pembayaran): Result<Nothing?>
 
     fun deletePembayaranByTermin(kavlingKode: String, termin: String): Flow<Result<Boolean>>
 
