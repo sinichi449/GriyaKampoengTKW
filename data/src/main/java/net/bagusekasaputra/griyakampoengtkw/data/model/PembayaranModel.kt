@@ -12,11 +12,14 @@ data class PembayaranModel(
         = "$termin $urutan"
 
     companion object {
+        const val KEY_JENIS_TERMIN = "jenis"
+        const val KEY_URUTAN_TERMIN = "urutan"
+
         fun pisahkanTerminDanUrutan(termin: String): Map<String, String> {
             val terminDanUrutan = termin.split(" ")
-            return mapOf<String, String>(
-                Pair("jenis", terminDanUrutan[0]),
-                Pair("urutan", terminDanUrutan[1]),
+            return mapOf(
+                Pair(KEY_JENIS_TERMIN, terminDanUrutan[0]),
+                Pair(KEY_URUTAN_TERMIN, terminDanUrutan[1]),
             )
         }
     }

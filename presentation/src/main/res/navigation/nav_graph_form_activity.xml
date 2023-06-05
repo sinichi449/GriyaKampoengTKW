@@ -14,4 +14,9 @@
         android:name="net.bagusekasaputra.griyakampoengtkw.presentation.form.FormInputPembayaranIndenBookingFragment"
         android:label="Pembayaran (Inden Booking)" />
 
+    <fragment
+        android:id="@+id/nav_form_pembayaran_kavling"
+        android:name="net.bagusekasaputra.griyakampoengtkw.presentation.form.FormInputPembayaranKavlingFragment"
+        android:label="Pembayaran"/>
+
 </navigation>

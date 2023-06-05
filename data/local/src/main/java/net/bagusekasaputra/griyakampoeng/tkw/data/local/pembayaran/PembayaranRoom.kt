@@ -1,6 +1,7 @@
 package net.bagusekasaputra.griyakampoeng.tkw.data.local.pembayaran
 
 import androidx.room.*
+import net.bagusekasaputra.griyakampoengtkw.data.model.PembayaranModel
 
 @Entity(
     tableName = "pembayaran",
@@ -59,4 +60,19 @@ interface PembayaranRoomDao {
     @Query("DELETE FROM pembayaran")
     fun deleteAll()
 
+}
+
+/**
+ * Mapper
+ */
+fun PembayaranRoomEntity.toModel(): PembayaranModel {
+    val separateTerminAndUrutan = PembayaranModel.pisahkanTerminDanUrutan(this.termin)
+    return PembayaranModel(
+        termin = separateTerminAndUrutan[PembayaranModel.KEY_JENIS_TERMIN]!!,
+        urutan = separateTerminAndUrutan[PembayaranModel.KEY_URUTAN_TERMIN]!!.toInt(),
+        jumlahUangDibayar = this.jumlahUangDibayar,
+        tanggal = this.tanggal,
+        keterangan = this.keterangan,
+        timeMillis = this.timeMillis,
+    )
 }

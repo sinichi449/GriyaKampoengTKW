@@ -38,6 +38,13 @@ class MockPembayaranRepository: PembayaranRepository {
         ),
     )
 
+    override suspend fun getByKavlingAndTermin(
+        kavlingKode: String,
+        termin: String
+    ): Result<Pembayaran?> {
+        TODO("Not yet implemented")
+    }
+
     override fun getBatchOnline(listKavling: List<String>): Flow<Result<Map<String, List<Pembayaran>?>?>> {
         return flow {
             val result = mutableMapOf<String, List<Pembayaran>?>()

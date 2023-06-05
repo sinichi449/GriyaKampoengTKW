@@ -6,6 +6,8 @@ import net.bagusekasaputra.griyakampoengtkw.domain.entity.pembayaran.Pembayaran
 
 interface PembayaranRepository {
 
+    suspend fun getByKavlingAndTermin(kavlingKode: String, termin: String): Result<Pembayaran?>
+
     fun getBatchOnline(listKavling: List<String>): Flow<Result<Map<String, List<Pembayaran>?>?>>
 
     fun getBatchBackup(listKavling: List<String>): Flow<Result<Map<String, List<Pembayaran>?>?>>

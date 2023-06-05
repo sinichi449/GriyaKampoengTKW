@@ -60,6 +60,9 @@ data class Pembayaran(
     }
 
     companion object {
+        const val PEMBAYARAN_KAVLING = 0
+        const val PEMBAYARAN_INDEN_BOOKING = 1
+
         fun hitungTotalUangMasuk(listPembayaran: List<Pembayaran>): Long {
             var mTotal = 0L
 

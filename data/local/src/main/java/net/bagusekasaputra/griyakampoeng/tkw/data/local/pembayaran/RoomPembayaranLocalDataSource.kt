@@ -2,6 +2,7 @@ package net.bagusekasaputra.griyakampoeng.tkw.data.local.pembayaran
 
 import net.bagusekasaputra.griyakampoeng.tkw.data.local.MyRoomDatabase
 import net.bagusekasaputra.griyakampoeng.tkw.data.local.RoomRequestHelper
+import net.bagusekasaputra.griyakampoeng.tkw.data.local.RoomRequestHelper.roomOperation
 import net.bagusekasaputra.griyakampoengtkw.data.interfaces.local.LocalPembayaranDataSource
 import net.bagusekasaputra.griyakampoengtkw.data.model.PembayaranModel
 
@@ -54,6 +55,16 @@ class RoomPembayaranLocalDataSource(
         )
     }
 
+    override suspend fun getByKavlingAndTermin(
+        kavlingKode: String,
+        termin: String
+    ): Result<PembayaranModel?> {
+        return roomOperation {
+            val entity = pembayaranDao.getSinglePembayaran(kavlingKode, termin)
+
+            entity?.toModel()
+        }
+    }
 
 
     override suspend fun getAllPembayaran(kavlingKode: String): Result<List<PembayaranModel>?> {
@@ -64,11 +75,7 @@ class RoomPembayaranLocalDataSource(
         }
     }
 
-    override suspend fun addPembayaranModel(
-        kavlingKode: String,
-        hargaKavling: Long,
-        pembayaranModel: PembayaranModel
-    ): Result<Nothing?> {
+    override suspend fun addPembayaranModel(kavlingKode: String, pembayaranModel: PembayaranModel): Result<Nothing?> {
         return RoomRequestHelper.doNonGetOperation {
             // Check if data already exist
             val isExist = (pembayaranDao

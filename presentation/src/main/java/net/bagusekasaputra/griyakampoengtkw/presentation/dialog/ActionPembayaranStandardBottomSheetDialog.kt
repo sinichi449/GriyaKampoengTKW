@@ -1,3 +1,5 @@
+@file:Suppress("DEPRECATION")
+
 package net.bagusekasaputra.griyakampoengtkw.presentation.dialog
 
 import android.annotation.SuppressLint
@@ -5,6 +7,7 @@ import android.app.Activity
 import android.content.Intent
 import android.content.SharedPreferences
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -15,8 +18,10 @@ import androidx.fragment.app.activityViewModels
 import com.github.dhaval2404.imagepicker.ImagePicker
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.StandardAmbilKuitansi
+import net.bagusekasaputra.griyakampoengtkw.presentation.activity.FormActivity
 import net.bagusekasaputra.griyakampoengtkw.presentation.activity.FullImageActivity
 import net.bagusekasaputra.griyakampoengtkw.presentation.databinding.DialogActionsItemPembayaranBinding
 import net.bagusekasaputra.griyakampoengtkw.presentation.util.GriyaNodes
@@ -43,6 +48,8 @@ class ActionPembayaranStandardBottomSheetDialog(): BottomSheetDialogFragment() {
 
     // Need to define here to avoid uninitialized binding
     private var progressBarTambahFoto: ProgressBar? = null
+
+    private val ubahPembayaranRequestCode = 1001
 
 
     private val fotoPembayaranPickerResultLauncher =
@@ -230,6 +237,19 @@ class ActionPembayaranStandardBottomSheetDialog(): BottomSheetDialogFragment() {
             binding.cardHapusFotoPembayaran.visibility = View.GONE
         }
 
+        // Go to FormActivity when cardEditDataPembayaran clicked
+        binding.cardEditDataPembayaran.setOnClickListener {
+            val intent = Intent(requireContext(), FormActivity::class.java)
+
+            intent.putExtra(FormActivity.EXTRAS_FORM_TYPE, FormActivity.FORM_PEMBAYARAN_KAVLING)
+            intent.putExtra(FormActivity.EXTRAS_KAVLING, currentKavling)
+            intent.putExtra(FormActivity.EXTRAS_TERMIN, currentTermin)
+
+            Log.d("FORM_INPUT_PEMBAYARAN", "ActionPembayaranBottomSheetDialog: Request to navigate to FormActivity with extras Kavling: $currentKavling and Termin : $currentTermin")
+
+            startActivityForResult(intent, ubahPembayaranRequestCode)
+        }
+
         binding.cardHapusDataPembayaran.setOnClickListener {
             // Show hapus Pembayaran confirmation.
             // Foto pembayaran will also deleted!
@@ -275,5 +295,24 @@ class ActionPembayaranStandardBottomSheetDialog(): BottomSheetDialogFragment() {
             .createIntent {
                 fotoPembayaranPickerResultLauncher.launch(it)
             }
+    }
+
+    @Deprecated("Deprecated in Java")
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+
+        if (requestCode == ubahPembayaranRequestCode) {
+            if (resultCode == Activity.RESULT_OK) {
+                data?.extras?.getString(FormActivity.EXTRAS_SUCCESS_DATA)?.also {
+                    dismiss()
+
+                    Snackbar.make(binding.root, it, Snackbar.LENGTH_SHORT).show()
+                }
+            } else {
+                data?.extras?.getString(FormActivity.EXTRAS_FAIL_MSG)?.also {
+                    Toast.makeText(requireContext(), it, Toast.LENGTH_LONG).show()
+                }
+            }
+        }
     }
 }

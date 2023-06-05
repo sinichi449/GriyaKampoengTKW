@@ -9,6 +9,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import net.bagusekasaputra.griyakampoengtkw.domain.AsyncUseCaseHelper
@@ -20,10 +21,10 @@ import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.catatanPembayara
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.catatanPembayaran.GetCatatanPembayaranAsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.pembayaran.DeletePembayaranAsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.pembayaran.GetListPembayaranBulananAsyncUseCase
+import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.pembayaran.GetSinglePembayaranByKavlingAndTerminAsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.statusPembayaran.GetStatusPembayaranKavlingAsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.BaselinePembayaran
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.CatatanPembayaran
-import net.bagusekasaputra.griyakampoengtkw.domain.entity.HargaKavling
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.KavlingCatatanPembayaran
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.StandardAmbilKuitansi
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.pembayaran.Pembayaran
@@ -31,7 +32,9 @@ import net.bagusekasaputra.griyakampoengtkw.domain.entity.pembayaran.PembayaranB
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.statusPembayaran.StatusPembayaran
 import net.bagusekasaputra.griyakampoengtkw.domain.usecase.pembayaran.AddPembayaranUseCase
 import net.bagusekasaputra.griyakampoengtkw.presentation.combineWith
+import net.bagusekasaputra.griyakampoengtkw.presentation.model.UiState
 import javax.inject.Inject
+import kotlin.random.Random
 
 /**
  * Soon, all "Pembayaran" related data will be moved here.
@@ -44,6 +47,7 @@ class FormPembayaranViewModel @Inject constructor(
     private val getListPembayaranBulananAsyncUseCase: GetListPembayaranBulananAsyncUseCase,
     private val getStatusPembayaranKavlingAsyncUseCase: GetStatusPembayaranKavlingAsyncUseCase,
     // Pembayaran
+    private val getSinglePembayaranUseCase: GetSinglePembayaranByKavlingAndTerminAsyncUseCase,
     private val addPembayaranUseCase: AddPembayaranUseCase,
     private val deletePembayaranAsyncUseCase: DeletePembayaranAsyncUseCase,
     // Ambil Kuitansi
@@ -100,11 +104,24 @@ class FormPembayaranViewModel @Inject constructor(
             Pair(baselinePembayaran, pembayarans)
         }
 
-    // Operation Observer
+    // Pembayaran (for edit mode)
+    private val _pembayaran = MutableLiveData<UiState<Pembayaran?>>()
+    val pembayaran: LiveData<UiState<Pembayaran?>>
+        get() = _pembayaran
+
+    /**
+     * Operation observers
+     */
     private val isFinishOperation = MutableLiveData<Boolean>()
+    // Ubah Pembayaran
+    private val _ubahPembayaranOperation = MutableLiveData<UiState<Nothing?>>()
+    val ubahPembayaranOperation: LiveData<UiState<Nothing?>>
+        get() = _ubahPembayaranOperation
 
 
     var currentKavlingKode: String? = null
+    var currentTermin: String? = null
+
     var dataMode = DataMode.ONLINE
     var isFullScreenTable = false
 
@@ -169,6 +186,22 @@ class FormPembayaranViewModel @Inject constructor(
     /**
      * Pembayaran
      */
+    fun getSinglePembayaran(kavling: String, termin: String) {
+        _pembayaran.value = UiState.Loading()
+
+        viewModelScope.launch(Dispatchers.IO) {
+            val request = GetSinglePembayaranByKavlingAndTerminAsyncUseCase.KavlingRequest(kavling, termin)
+            getSinglePembayaranUseCase.execute(request).collect { result ->
+                result.onSuccess {
+                    _pembayaran.postValue(UiState.Success(it))
+                }
+                result.onFailure {
+                    _pembayaran.postValue(UiState.Failure("Gagal mendapatkan pembayaran $termin : ${it.localizedMessage}"))
+                }
+            }
+        }
+    }
+
     fun addPembayaran(
         kavlingKode: String,
         hargaKavling: Long,
@@ -191,6 +224,21 @@ class FormPembayaranViewModel @Inject constructor(
                     }
                 }
             }
+        }
+    }
+
+    fun updatePembayaran(kavlingKode: String, termin: String, newPembayaran: Pembayaran) {
+        _ubahPembayaranOperation.value = UiState.Loading()
+
+        // TODO
+        viewModelScope.launch(Dispatchers.Default) {
+            delay(3000L)
+
+            val isSuccess = Random.nextBoolean()
+            val uiState: UiState<Nothing?> = if (isSuccess) UiState.Success()
+                else UiState.Failure("Random error!")
+
+            _ubahPembayaranOperation.postValue(uiState)
         }
     }
 

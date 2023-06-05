@@ -35,6 +35,41 @@ class PembayaranRepositoryImpl(
     private val pembayaranIndenBookingLocalTable = "pembayaranIndenBooking"
     private val pembayaranIndenBookingRemoteTable = "indenBooking/pembayaran"
 
+    override suspend fun getByKavlingAndTermin(
+        kavlingKode: String,
+        termin: String
+    ): Result<Pembayaran?> {
+        return try {
+            val isInvalidCache = cacheHelper.checkAndInvalidateCache(
+                pembayaranIndenBookingLocalTable, pembayaranIndenBookingRemoteTable,
+                onInvalid = {
+                    localPembayaranDataSource.deleteAll()
+                }
+            )
+            val localModel = localPembayaranDataSource.getByKavlingAndTermin(kavlingKode, termin).getOrThrow()
+
+            val pembayaran = if (isInvalidCache || localModel == null) {
+                val remoteModel = remotePembayaranSource.getByKavlingAndTermin(kavlingKode, termin).getOrThrow()
+
+                if (remoteModel != null) {
+                    localPembayaranDataSource.addPembayaranModel(kavlingKode, remoteModel).getOrThrow()
+
+                    val refreshedLocalModel = localPembayaranDataSource.getByKavlingAndTermin(kavlingKode, termin).getOrThrow()
+
+                    MyObjectMapper.mapPembayaran(refreshedLocalModel!!)
+                } else {
+                    null
+                }
+            } else {
+                MyObjectMapper.mapPembayaran(localModel)
+            }
+
+            Result.success(pembayaran)
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
+    }
+
     override fun getBatchOnline(listKavling: List<String>): Flow<Result<Map<String, List<Pembayaran>?>?>> {
         return flow {
             checkCache()
@@ -55,8 +90,7 @@ class PembayaranRepositoryImpl(
                             listPembayaran?.forEach {
                                 localPembayaranDataSource.addPembayaranModel(
                                     kavlingKode = kavling,
-                                    hargaKavling = 0L, // TODO: What is this for??
-                                    pembayaranModel = it
+                                    pembayaranModel = it,
                                 ).onFailure {
                                     Log.d("DEBUG_ME", "PembayaranRepoImpl:53 onFailure -> ${it.message}")
                                 }
@@ -165,7 +199,7 @@ class PembayaranRepositoryImpl(
                 if (remoteResult.isSuccess) {
                     // If success, then we write to the local data
                     remoteResult.getOrNull()?.forEach {
-                        localPembayaranDataSource.addPembayaranModel(kavlingKode, 0L, it)
+                        localPembayaranDataSource.addPembayaranModel(kavlingKode, it)
                     }
 
                     // Then emit the result

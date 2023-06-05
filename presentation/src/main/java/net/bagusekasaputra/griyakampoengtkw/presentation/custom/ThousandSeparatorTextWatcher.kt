@@ -37,3 +37,7 @@ class ThousandSeparatorTextWatcher(private val editText: TextInputEditText): Tex
         editText.addTextChangedListener(this)
     }
 }
+
+fun TextInputEditText.addThousandTextListener() {
+    addTextChangedListener(ThousandSeparatorTextWatcher(this))
+}

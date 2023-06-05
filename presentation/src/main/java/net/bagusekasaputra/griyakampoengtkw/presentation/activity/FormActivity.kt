@@ -9,6 +9,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.os.bundleOf
 import androidx.navigation.NavController
 import androidx.navigation.fragment.NavHostFragment
+import com.google.android.material.appbar.MaterialToolbar
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.android.material.snackbar.Snackbar
@@ -33,15 +34,31 @@ class FormActivity : AppCompatActivity() {
 
         // Send bundle key id of data diri if not null or empty
         val keyId = intent?.extras?.getString(EXTRAS_KEY_ID_INDEN_BOOKING)
-        val bundleKeyId = if (!keyId.isNullOrEmpty())
+        val keyIdBundle = if (!keyId.isNullOrEmpty())
                 bundleOf(EXTRAS_KEY_ID_INDEN_BOOKING to keyId)
             else null
+
+        // Send bundle termin of pembayaran kavling if not null or empty
+        val kavling = intent?.extras?.getString(EXTRAS_KAVLING)
+        val termin = intent?.extras?.getString(EXTRAS_TERMIN)
+        val terminBundle = if (!kavling.isNullOrEmpty() && !termin.isNullOrEmpty())
+                bundleOf(
+                    EXTRAS_KAVLING to kavling,
+                    EXTRAS_TERMIN to termin,
+                )
+            else null
+
+
         when (val requestedFormType = intent?.extras?.getString(EXTRAS_FORM_TYPE)) {
+            FORM_PEMBAYARAN_KAVLING -> {
+                Log.d("FORM_INPUT_PEMBAYARAN", "FormActivity: Accepted request for FORM_PEMBAYARAN_KAVLING with Kavling: $kavling and Termin: $termin")
+                navController.navigate(R.id.nav_form_pembayaran_kavling, args = terminBundle)
+            }
             FORM_DATA_DIRI_INDEN_BOOKING -> {
-                navController.navigate(R.id.nav_form_data_diri_inden_booking, args = bundleKeyId)
+                navController.navigate(R.id.nav_form_data_diri_inden_booking, args = keyIdBundle)
             }
             FORM_PEMBAYARAN_INDEN_BOOKING -> {
-                navController.navigate(R.id.nav_form_pembayaran_inden_booking, args = bundleKeyId)
+                navController.navigate(R.id.nav_form_pembayaran_inden_booking, args = keyIdBundle)
             }
             else -> {
                 Log.d("FORM_ACTIVITY", "Unknown form type $requestedFormType !!")
@@ -53,6 +70,14 @@ class FormActivity : AppCompatActivity() {
 
     fun setFormTitle(title: String) {
         binding.toolbarForm.title = title
+    }
+
+    fun setFormSubtitle(subtitle: String) {
+        binding.toolbarForm.subtitle = subtitle
+    }
+
+    fun getToolbar(): MaterialToolbar {
+        return binding.toolbarForm
     }
 
     fun getFabDone(): FloatingActionButton {
@@ -90,9 +115,15 @@ class FormActivity : AppCompatActivity() {
         const val EXTRAS_FAIL_MSG = "EXTRAS_FAIL_MSG"
         const val EXTRAS_SUCCESS_DATA = "EXTRAS_SUCCESS_DATA"
 
+        // Standard
+        const val FORM_PEMBAYARAN_KAVLING = "FORM_PEMBAYARAN_KAVLING"
+
+        // Inden Booking
         const val FORM_DATA_DIRI_INDEN_BOOKING = "FORM_DATA_DIRI_INDEN_BOOKING"
         const val FORM_PEMBAYARAN_INDEN_BOOKING = "FORM_PEMBAYARAN_INDEN_BOOKING"
 
+        const val EXTRAS_TERMIN = "EXTRAS_TERMIN"
+        const val EXTRAS_KAVLING = "EXTRAS_KAVLING"
         const val EXTRAS_KEY_ID_INDEN_BOOKING = "EXTRAS_KEY_ID_INDEN_BOOKING"
     }
 

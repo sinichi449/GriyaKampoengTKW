@@ -46,6 +46,7 @@ import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.kavling.GetListU
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.kavling.GetProgressKavlingAsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.pembayaran.DeletePembayaranAsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.pembayaran.GetListPembayaranBulananAsyncUseCase
+import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.pembayaran.GetSinglePembayaranByKavlingAndTerminAsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.pengingat.*
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.promotion.GetPromotionMessageAsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.rekap.CalculateRekapBesarAndGetRekapBesarOverview
@@ -169,13 +170,13 @@ object UseCaseModule {
      * Pembayaran
      */
     @Provides
-    fun provideAddPembayaranUseCase(pembayaranRepository: PembayaranRepository): AddPembayaranUseCase {
-        return AddPembayaranUseCase(pembayaranRepository)
+    fun provideGetSinglePembayaranUseCase(pembayaranRepository: PembayaranRepository): GetSinglePembayaranByKavlingAndTerminAsyncUseCase {
+        return GetSinglePembayaranByKavlingAndTerminAsyncUseCase(pembayaranRepository)
     }
 
     @Provides
-    fun provideUpdatePembayaranUseCase(pembayaranRepository: PembayaranRepository): UpdatePembayaranUseCase {
-        return UpdatePembayaranUseCase(pembayaranRepository)
+    fun provideAddPembayaranUseCase(pembayaranRepository: PembayaranRepository): AddPembayaranUseCase {
+        return AddPembayaranUseCase(pembayaranRepository)
     }
 
     @Provides

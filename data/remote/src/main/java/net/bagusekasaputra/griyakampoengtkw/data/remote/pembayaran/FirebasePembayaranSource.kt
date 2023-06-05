@@ -5,6 +5,8 @@ import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.ValueEventListener
 import com.google.firebase.database.ktx.getValue
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.suspendCancellableCoroutine
 import net.bagusekasaputra.griyakampoengtkw.data.interfaces.remote.RemotePembayaranSource
 import net.bagusekasaputra.griyakampoengtkw.data.model.PembayaranModel
 import net.bagusekasaputra.griyakampoengtkw.data.remote.FirebaseNodes
@@ -13,12 +15,38 @@ import kotlin.coroutines.resume
 import kotlin.coroutines.resumeWithException
 import kotlin.coroutines.suspendCoroutine
 
+@OptIn(ExperimentalCoroutinesApi::class)
 class FirebasePembayaranSource(
     private val databaseReference: DatabaseReference,
     private val pembayaranIndenBookingDataSource: RemotePembayaranIndenBookingDataSource,
 ): RemotePembayaranSource {
 
     private val pembayaranRef = databaseReference.child(FirebaseNodes.FORM_PEMBAYARAN)
+    override suspend fun getByKavlingAndTermin(
+        kavlingKode: String,
+        termin: String
+    ): Result<PembayaranModel?> {
+        return suspendCancellableCoroutine { continuation ->
+            val eventListener = object : ValueEventListener {
+                override fun onDataChange(snapshot: DataSnapshot) {
+                    if (continuation.isActive) {
+                        val pembayaran = snapshot.getValue<PembayaranModel>()
+
+                        continuation.resume(Result.success(pembayaran))
+                    }
+                }
+
+                override fun onCancelled(error: DatabaseError) {
+                    if (continuation.isActive) {
+                        continuation.resume(Result.failure(error.toException()), null)
+                    }
+                }
+            }
+
+            pembayaranRef.child(kavlingKode).child(termin)
+                .addListenerForSingleValueEvent(eventListener)
+        }
+    }
 
     override suspend fun getAllPembayaran(kavlingKode: String): Result<List<PembayaranModel>?> {
         return FirebaseRequestHelper.getOperation(

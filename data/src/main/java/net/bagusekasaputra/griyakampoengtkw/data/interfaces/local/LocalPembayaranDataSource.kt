@@ -4,9 +4,11 @@ import net.bagusekasaputra.griyakampoengtkw.data.model.PembayaranModel
 
 interface LocalPembayaranDataSource {
 
+    suspend fun getByKavlingAndTermin(kavlingKode: String, termin: String): Result<PembayaranModel?>
+
     suspend fun getAllPembayaran(kavlingKode: String): Result<List<PembayaranModel>?>
 
-    suspend fun addPembayaranModel(kavlingKode: String, hargaKavling: Long, pembayaranModel: PembayaranModel): Result<Nothing?>
+    suspend fun addPembayaranModel(kavlingKode: String, pembayaranModel: PembayaranModel): Result<Nothing?>
 
     suspend fun addAllPembayaranModel(kavlingKode: String, models: List<PembayaranModel>): Result<Nothing?>
 

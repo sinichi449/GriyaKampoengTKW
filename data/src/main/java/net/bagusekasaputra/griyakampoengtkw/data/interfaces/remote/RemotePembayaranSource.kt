@@ -4,6 +4,8 @@ import net.bagusekasaputra.griyakampoengtkw.data.model.PembayaranModel
 
 interface RemotePembayaranSource {
 
+    suspend fun getByKavlingAndTermin(kavlingKode: String, termin: String): Result<PembayaranModel?>
+
     suspend fun getAllPembayaran(kavlingKode: String): Result<List<PembayaranModel>?>
 
     suspend fun getAllFromBackup(backupName: String, kavlingKode: String): Result<List<PembayaranModel>?>
