@@ -69,7 +69,7 @@ class RekapViewModel @Inject constructor(
         get() = _isRekapBesarDetailLoaded
 
     val rekapGlobalProgress = getListRekapGlobalAsyncUseCase.progressState.asLiveData(Dispatchers.Default)
-    val rekapBesarProgress = getRekapBesarOverviewAsyncUseCase.messageProgress
+//    val rekapBesarProgress = getRekapBesarOverviewAsyncUseCase.messageProgress
 
     private val _kavlingList = MutableLiveData<String>()
 

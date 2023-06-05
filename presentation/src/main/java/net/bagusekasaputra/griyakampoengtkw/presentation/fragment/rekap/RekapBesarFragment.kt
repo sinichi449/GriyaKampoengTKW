@@ -187,11 +187,11 @@ class RekapBesarFragment : Fragment() {
     private fun setupViewModel() {
         val progressDialog = createProgressDialog()
 
-        viewModel.rekapBesarProgress.observe(requireActivity()) {
-            it?.also { progressMessage ->
-                progressDialog.setMessage(progressMessage)
-            }
-        }
+//        viewModel.rekapBesarProgress.observe(requireActivity()) {
+//            it?.also { progressMessage ->
+//                progressDialog.setMessage(progressMessage)
+//            }
+//        }
         viewModel.isRekapBesarOverviewLoaded.observe(requireActivity()) {
             if (it != null) {
                 if (it) {
