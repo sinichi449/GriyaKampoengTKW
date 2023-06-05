@@ -15,6 +15,7 @@ import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
+import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.textfield.TextInputEditText
 import dagger.hilt.android.AndroidEntryPoint
@@ -84,7 +85,7 @@ class FormInputPembayaranKavlingFragment : Fragment() {
         with(formActivity.getToolbar()) {
             if (pembayaranViewModel.formIsEditMode) {
                 title = "Ubah Pembayaran"
-                subtitle = "${pembayaranViewModel.currentKavlingKode} - ${pembayaranViewModel.currentTermin}"
+                subtitle = "Kav. ${pembayaranViewModel.currentKavlingKode} - ${pembayaranViewModel.currentTermin}"
             } else {
                 title = "Tambahkan Pembayaran"
                 subtitle = "Kav. ${pembayaranViewModel.currentKavlingKode}"
@@ -150,6 +151,8 @@ class FormInputPembayaranKavlingFragment : Fragment() {
                             pembayaran = pembayaran
                         )
                     }
+
+                    disableForms(formActivity.getFabDone())
                 } else {
                     Toast.makeText(requireContext(), "Input masih belum benar!", Toast.LENGTH_LONG).show()
                 }
@@ -342,8 +345,23 @@ class FormInputPembayaranKavlingFragment : Fragment() {
         }
     }
 
-    private fun FragmentFormInputPembayaranKavlingBinding.onLoading(isLoading: Boolean) {
+    private fun FragmentFormInputPembayaranKavlingBinding.onLoading(
+        isLoading: Boolean,
+        loadingText: String? = null
+    ) {
         layoutLoading.visibility = if (isLoading) View.VISIBLE else View.GONE
         layoutContent.visibility = if (isLoading) View.GONE else View.VISIBLE
+
+        tvLoadingMessage.text = if (!loadingText.isNullOrEmpty())
+            loadingText else "Memverifikasi data pembayaran ..."
+    }
+
+    /**
+     * Prevent user from changing data from either radio button or edittext
+     */
+    private fun FragmentFormInputPembayaranKavlingBinding.disableForms(fabAction: FloatingActionButton) {
+        onLoading(true, "Memproses data ...")
+
+        fabAction.hide()
     }
 }
