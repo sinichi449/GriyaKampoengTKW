@@ -113,10 +113,20 @@ class FormPembayaranViewModel @Inject constructor(
      * Operation observers
      */
     private val isFinishOperation = MutableLiveData<Boolean>()
+
     // Ubah Pembayaran
     private val _ubahPembayaranOperation = MutableLiveData<UiState<Nothing?>>()
     val ubahPembayaranOperation: LiveData<UiState<Nothing?>>
         get() = _ubahPembayaranOperation
+
+    // Sync Request
+    private val _syncRequests = MutableLiveData<Array<Int>?>(null)
+    val syncRequests: LiveData<Array<Int>?>
+        get() = _syncRequests
+
+    fun requestSync(vararg requestCode: Int) {
+        _syncRequests.value = requestCode.toTypedArray()
+    }
 
 
     var currentKavlingKode: String? = null
@@ -453,4 +463,15 @@ class FormPembayaranViewModel @Inject constructor(
             null
         }
     }
+}
+
+object PembayaranSyncRequest {
+    const val HARGA_KAVLING = 0
+    const val BASELINE_PEMBAYARAN = 1
+    const val TABEL_PEMBAYARAN = 2
+    const val CATATAN_PEMBAYARAN = 3
+    const val STATUS_PEMBAYARAN = 4
+
+    val ALL = intArrayOf(HARGA_KAVLING, BASELINE_PEMBAYARAN,
+        TABEL_PEMBAYARAN, CATATAN_PEMBAYARAN, STATUS_PEMBAYARAN)
 }

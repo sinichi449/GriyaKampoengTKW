@@ -34,7 +34,7 @@ import net.bagusekasaputra.griyakampoengtkw.presentation.util.exporter.ExporterW
 import net.bagusekasaputra.griyakampoengtkw.presentation.viewmodel.DetailViewModel
 import net.bagusekasaputra.griyakampoengtkw.presentation.viewmodel.FormPembayaranViewModel
 import net.bagusekasaputra.griyakampoengtkw.presentation.viewmodel.FormPembayaranViewModel.TablePembayaranType
-import net.bagusekasaputra.griyakampoengtkw.presentation.viewmodel.ImageViewModel
+import net.bagusekasaputra.griyakampoengtkw.presentation.viewmodel.PembayaranSyncRequest
 import java.io.File
 import java.util.*
 import javax.inject.Inject
@@ -51,7 +51,6 @@ class FormPembayaranFragment : Fragment() {
     private lateinit var binding: FragmentFormPembayaranBinding
 
     private val viewModel: DetailViewModel by activityViewModels()
-    private val imageViewModel: ImageViewModel by activityViewModels()
     private val pembayaranViewModel: FormPembayaranViewModel by activityViewModels()
 
     private var currentKavlingKode: String? = null
@@ -102,7 +101,7 @@ class FormPembayaranFragment : Fragment() {
 
         setupViewModel()
 
-        syncPembayaran()
+        pembayaranViewModel.requestSync(*PembayaranSyncRequest.ALL)
 
         // Disable write operation interfaces on offline mode such as
         // edit HargaKavling and CatatanPembayaran, and disable Fabs.
@@ -123,7 +122,8 @@ class FormPembayaranFragment : Fragment() {
             // When user invokes refresh, we need to update the "xRefreshed" value in viewModel
             // to be FALSE.
             viewModel.formPembayaranRefreshed.value = false
-            syncPembayaran()
+
+            pembayaranViewModel.requestSync(*PembayaranSyncRequest.ALL)
         }
 
         binding.cardCatatanPembayaran?.setOnClickListener {
@@ -212,48 +212,53 @@ class FormPembayaranFragment : Fragment() {
         }
     }
 
-    private fun syncPembayaran() {
-        pembayaranViewModel.getStatusPembayaran(
-            currentKavlingKode!!,
-            onLoading = {
-                layoutStatusPembayaran?.onLoading()
-            },
-            onFailure = {
-                layoutStatusPembayaran?.onFailure()
-
-                Toast.makeText(requireContext(), it, Toast.LENGTH_LONG).show()
-            },
-        )
-        viewModel.getHargaKavling(currentKavlingKode!!) { failMsg ->
-            Toast.makeText(requireContext(), failMsg, Toast.LENGTH_LONG).show()
-        }
-        pembayaranViewModel.getCatatanPembayaran(currentKavlingKode!!) { failMsg ->
-            Toast.makeText(requireContext(), failMsg, Toast.LENGTH_SHORT).show()
-        }
-        pembayaranViewModel.getListPembayaranBulanan(currentKavlingKode!!,
-            onLoading = {
-                onLoadingFormPembayaran(false)
-            },
-            onSuccess = {
-                onLoadingFormPembayaran(true)
-            },
-            onFailure = {
-                Toast.makeText(requireContext(), it, Toast.LENGTH_LONG).show()
-            }
-        )
-    }
-
-    private fun onLoadingFormPembayaran(finished: Boolean) {
-        binding.layoutLoadingFormPembayaran.visibility = if (finished) View.GONE else View.VISIBLE
-        binding.navHostFragmentPembayaran.visibility = if (finished) View.VISIBLE else View.GONE
-
-        binding.btnLihatPembayaranBulanan?.visibility = if (finished) View.VISIBLE else View.GONE
-        binding.fabLihatPembayaranBulanan?.visibility = if (finished) View.VISIBLE else View.GONE
-
-        binding.btnFullscreen?.visibility = if (finished) View.VISIBLE else View.GONE
-    }
-
     private fun setupViewModel() {
+        pembayaranViewModel.syncRequests.observe(requireActivity()) {
+            it?.onEach { requestCode ->
+                when (requestCode) {
+                    PembayaranSyncRequest.HARGA_KAVLING -> {
+                        viewModel.getHargaKavling(currentKavlingKode!!) { failMsg ->
+                            Toast.makeText(requireContext(), failMsg, Toast.LENGTH_LONG).show()
+                        }
+                    }
+
+                    PembayaranSyncRequest.BASELINE_PEMBAYARAN, PembayaranSyncRequest.TABEL_PEMBAYARAN -> {
+                        pembayaranViewModel.getListPembayaranBulanan(currentKavlingKode!!,
+                            onLoading = {
+                                onLoadingFormPembayaran(false)
+                            },
+                            onSuccess = {
+                                onLoadingFormPembayaran(true)
+                            },
+                            onFailure = {
+                                Toast.makeText(requireContext(), it, Toast.LENGTH_LONG).show()
+                            }
+                        )
+                    }
+
+                    PembayaranSyncRequest.CATATAN_PEMBAYARAN -> {
+                        pembayaranViewModel.getCatatanPembayaran(currentKavlingKode!!) { failMsg ->
+                            Toast.makeText(requireContext(), failMsg, Toast.LENGTH_SHORT).show()
+                        }
+                    }
+
+                    PembayaranSyncRequest.STATUS_PEMBAYARAN -> {
+                        pembayaranViewModel.getStatusPembayaran(
+                            currentKavlingKode!!,
+                            onLoading = {
+                                layoutStatusPembayaran?.onLoading()
+                            },
+                            onFailure = {
+                                layoutStatusPembayaran?.onFailure()
+
+                                Toast.makeText(requireContext(), it, Toast.LENGTH_LONG).show()
+                            },
+                        )
+                    }
+                }
+            }
+        }
+
         viewModel.isFinishOperation.observe(requireActivity()) { finish ->
             finish?.let {
                 binding.swipeRefreshFormPembayaran.isRefreshing = !it
@@ -298,6 +303,16 @@ class FormPembayaranFragment : Fragment() {
                 }
             }
         }
+    }
+
+    private fun onLoadingFormPembayaran(finished: Boolean) {
+        binding.layoutLoadingFormPembayaran.visibility = if (finished) View.GONE else View.VISIBLE
+        binding.navHostFragmentPembayaran.visibility = if (finished) View.VISIBLE else View.GONE
+
+        binding.btnLihatPembayaranBulanan?.visibility = if (finished) View.VISIBLE else View.GONE
+        binding.fabLihatPembayaranBulanan?.visibility = if (finished) View.VISIBLE else View.GONE
+
+        binding.btnFullscreen?.visibility = if (finished) View.VISIBLE else View.GONE
     }
 
     private fun setAngsuranBulananDetail(listPembayaran: List<Pembayaran>, baselinePembayaran: BaselinePembayaran) {
@@ -403,7 +418,8 @@ class FormPembayaranFragment : Fragment() {
                     pembayaranViewModel.addPembayaran(currentKavlingKode!!, hargaKavling, pembayaran) { msg ->
                         Toast.makeText(requireContext(), msg, Toast.LENGTH_SHORT).show()
                         dialogView.dismiss()
-                        syncPembayaran()
+
+                        pembayaranViewModel.requestSync(PembayaranSyncRequest.TABEL_PEMBAYARAN)
                     }
 
                 }
@@ -455,7 +471,12 @@ class FormPembayaranFragment : Fragment() {
 
                 viewModel.addHargaKavling(hargaKavling) { msg ->
                     Toast.makeText(requireContext(), msg, Toast.LENGTH_SHORT).show()
-                    syncPembayaran()
+
+                    pembayaranViewModel.requestSync(
+                        PembayaranSyncRequest.HARGA_KAVLING,
+                        PembayaranSyncRequest.TABEL_PEMBAYARAN,
+                    )
+
                     dialogView.dismiss()
                 }
 
@@ -497,7 +518,8 @@ class FormPembayaranFragment : Fragment() {
                     kavlingKode = currentKavlingKode!!,
                     catatan = catatan,
                     onComplete = { msg ->
-                        syncPembayaran()
+                        pembayaranViewModel.requestSync(PembayaranSyncRequest.CATATAN_PEMBAYARAN)
+
                         dialogView.dismiss()
                         Snackbar.make(binding.root, msg, Snackbar.LENGTH_SHORT).show()
                     }
@@ -509,7 +531,8 @@ class FormPembayaranFragment : Fragment() {
             pembayaranViewModel.deleteCatatanPembayaran(
                 kavlingKode = currentKavlingKode!!,
                 onComplete = { msg ->
-                    syncPembayaran()
+                    pembayaranViewModel.requestSync(PembayaranSyncRequest.CATATAN_PEMBAYARAN)
+
                     dialogView.dismiss()
                     Snackbar.make(binding.root, msg, Snackbar.LENGTH_SHORT).show()
                 }
