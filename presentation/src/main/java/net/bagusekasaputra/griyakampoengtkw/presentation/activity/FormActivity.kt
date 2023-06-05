@@ -1,11 +1,12 @@
-@file:Suppress("DEPRECATION")
-
 package net.bagusekasaputra.griyakampoengtkw.presentation.activity
 
 import android.os.Bundle
+import android.os.Parcelable
 import android.util.Log
 import android.view.MenuItem
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.IntentCompat
 import androidx.core.os.bundleOf
 import androidx.navigation.NavController
 import androidx.navigation.fragment.NavHostFragment
@@ -14,6 +15,7 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.parcelize.Parcelize
 import net.bagusekasaputra.griyakampoengtkw.presentation.R
 import net.bagusekasaputra.griyakampoengtkw.presentation.databinding.ActivityFormBinding
 
@@ -38,22 +40,8 @@ class FormActivity : AppCompatActivity() {
                 bundleOf(EXTRAS_KEY_ID_INDEN_BOOKING to keyId)
             else null
 
-        // Send bundle termin of pembayaran kavling if not null or empty
-        val kavling = intent?.extras?.getString(EXTRAS_KAVLING)
-        val termin = intent?.extras?.getString(EXTRAS_TERMIN)
-        val terminBundle = if (!kavling.isNullOrEmpty() && !termin.isNullOrEmpty())
-                bundleOf(
-                    EXTRAS_KAVLING to kavling,
-                    EXTRAS_TERMIN to termin,
-                )
-            else null
-
 
         when (val requestedFormType = intent?.extras?.getString(EXTRAS_FORM_TYPE)) {
-            FORM_PEMBAYARAN_KAVLING -> {
-                Log.d("FORM_INPUT_PEMBAYARAN", "FormActivity: Accepted request for FORM_PEMBAYARAN_KAVLING with Kavling: $kavling and Termin: $termin")
-                navController.navigate(R.id.nav_form_pembayaran_kavling, args = terminBundle)
-            }
             FORM_DATA_DIRI_INDEN_BOOKING -> {
                 navController.navigate(R.id.nav_form_data_diri_inden_booking, args = keyIdBundle)
             }
@@ -66,14 +54,32 @@ class FormActivity : AppCompatActivity() {
                     .show()
             }
         }
+
+        /**
+         * New method!
+         */
+        intent?.also {
+            val parcelable: Parcelable? = IntentCompat.getParcelableExtra(
+                it, EXTRAS_PARCEL, Parcelable::class.java
+            )
+            val bundle = bundleOf(EXTRAS_PARCEL to parcelable)
+            val destination = when (parcelable) {
+                is InsertFormPembayaranParcel, is UpdateFormPembayaranParcel -> R.id.nav_form_pembayaran_kavling
+                else -> null
+            }
+
+            if (destination != null) {
+                navController.navigate(destination, args = bundle)
+            } else {
+                finish()
+
+                Toast.makeText(this, "Unknown parcelable data type!", Toast.LENGTH_LONG).show()
+            }
+        }
     }
 
     fun setFormTitle(title: String) {
         binding.toolbarForm.title = title
-    }
-
-    fun setFormSubtitle(subtitle: String) {
-        binding.toolbarForm.subtitle = subtitle
     }
 
     fun getToolbar(): MaterialToolbar {
@@ -84,6 +90,7 @@ class FormActivity : AppCompatActivity() {
         return binding.fabDone
     }
 
+    @Suppress("DEPRECATION")
     @Deprecated("Deprecated in Java")
     override fun onBackPressed() {
         finish()
@@ -111,20 +118,41 @@ class FormActivity : AppCompatActivity() {
     }
 
     companion object {
+        @Deprecated("Will be removed! Migrate to use Parcelable!")
         const val EXTRAS_FORM_TYPE = "EXTRAS_FORM_TYPE"
+
+        const val EXTRAS_PARCEL = "EXTRAS_PARCEL"
+
         const val EXTRAS_FAIL_MSG = "EXTRAS_FAIL_MSG"
         const val EXTRAS_SUCCESS_DATA = "EXTRAS_SUCCESS_DATA"
 
         // Standard
+        @Deprecated("Will be removed! Migrate to [TambahFormPembayaranParcel] or [UbahFormPembayaranParcel]!")
         const val FORM_PEMBAYARAN_KAVLING = "FORM_PEMBAYARAN_KAVLING"
 
         // Inden Booking
         const val FORM_DATA_DIRI_INDEN_BOOKING = "FORM_DATA_DIRI_INDEN_BOOKING"
+        @Deprecated("Use either pembayaran type from Pembayaran companion object.")
         const val FORM_PEMBAYARAN_INDEN_BOOKING = "FORM_PEMBAYARAN_INDEN_BOOKING"
 
+        @Deprecated("Will be removed! Migrate to [TambahFormPembayaranParcel] or [UbahFormPembayaranParcel]!")
         const val EXTRAS_TERMIN = "EXTRAS_TERMIN"
+        @Deprecated("Will be removed! Migrate to [TambahFormPembayaranParcel] or [UbahFormPembayaranParcel]!")
         const val EXTRAS_KAVLING = "EXTRAS_KAVLING"
+        @Deprecated("Will be removed! Migrate to [TambahFormPembayaranParcel] or [UbahFormPembayaranParcel]!")
         const val EXTRAS_KEY_ID_INDEN_BOOKING = "EXTRAS_KEY_ID_INDEN_BOOKING"
     }
-
 }
+
+@Parcelize
+data class InsertFormPembayaranParcel(
+    val tipePembayaran: Int,
+    val kavling: String,
+): Parcelable
+
+@Parcelize
+data class UpdateFormPembayaranParcel(
+    val tipePembayaran: Int,
+    val kavling: String,
+    val termin: String,
+): Parcelable

@@ -92,6 +92,15 @@ data class PembayaranBulanan(
             }
         }
 
+        fun getPembayaranList(pembayaranBulanans: List<PembayaranBulanan>): List<Pembayaran> {
+            val pembayaranList = mutableListOf<Pembayaran>()
+            pembayaranBulanans.forEach {
+                pembayaranList.addAll(it.listPembayaran)
+            }
+
+            return pembayaranList
+        }
+
         private fun sort(listPembayaranBulanan: List<PembayaranBulanan>): List<PembayaranBulanan> {
             return listPembayaranBulanan.sortedBy {
                 // Convert bulan dan tahun ke objek Date, lalu diurut pakai "time" (timeMillis)

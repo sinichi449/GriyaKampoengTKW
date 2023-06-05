@@ -3,18 +3,22 @@ package net.bagusekasaputra.griyakampoengtkw.presentation.form
 import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
+import android.os.Parcelable
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.RadioGroup
 import android.widget.Toast
+import androidx.core.os.BundleCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.pembayaran.Pembayaran
 import net.bagusekasaputra.griyakampoengtkw.presentation.activity.FormActivity
+import net.bagusekasaputra.griyakampoengtkw.presentation.activity.InsertFormPembayaranParcel
+import net.bagusekasaputra.griyakampoengtkw.presentation.activity.UpdateFormPembayaranParcel
 import net.bagusekasaputra.griyakampoengtkw.presentation.custom.addThousandTextListener
 import net.bagusekasaputra.griyakampoengtkw.presentation.databinding.FragmentFormInputPembayaranKavlingBinding
 import net.bagusekasaputra.griyakampoengtkw.presentation.model.UiState
@@ -29,14 +33,33 @@ class FormInputPembayaranKavlingFragment : Fragment() {
     private lateinit var binding: FragmentFormInputPembayaranKavlingBinding
     private val viewModel by activityViewModels<FormPembayaranViewModel>()
 
-    private var isEditMode = false
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
         with(viewModel) {
+
             currentKavlingKode = arguments?.getString(FormActivity.EXTRAS_KAVLING)
             currentTermin = arguments?.getString(FormActivity.EXTRAS_TERMIN)
+        }
+
+        arguments?.also { bundle ->
+            val parcelable: Parcelable? = BundleCompat.getParcelable(
+                bundle, FormActivity.EXTRAS_PARCEL, Parcelable::class.java
+            )
+            when (parcelable) {
+                is InsertFormPembayaranParcel -> {
+                    viewModel.currentKavlingKode = parcelable.kavling
+                    viewModel.currentTermin = null
+
+                    viewModel.formIsEditMode = false
+                }
+                is UpdateFormPembayaranParcel -> {
+                    viewModel.currentKavlingKode = parcelable.kavling
+                    viewModel.currentTermin = parcelable.termin
+
+                    viewModel.formIsEditMode = true
+                }
+            }
         }
     }
 
@@ -54,16 +77,15 @@ class FormInputPembayaranKavlingFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         val formActivity = (requireActivity() as FormActivity)
-        isEditMode = (!viewModel.currentKavlingKode.isNullOrEmpty()
-                    && !viewModel.currentTermin.isNullOrEmpty())
 
         // Setup toolbar title and subtitle
         with(formActivity.getToolbar()) {
-            title = if (isEditMode) "Ubah Pembayaran"
-                else "Tambahkan Pembayaran"
-
-            if (isEditMode) {
+            if (viewModel.formIsEditMode) {
+                title = "Ubah Pembayaran"
                 subtitle = "${viewModel.currentKavlingKode} - ${viewModel.currentTermin}"
+            } else {
+                title = "Pembayaran"
+                subtitle = viewModel.currentKavlingKode
             }
         }
 
@@ -71,7 +93,7 @@ class FormInputPembayaranKavlingFragment : Fragment() {
         with(binding) {
             edtJumlahUangDibayar.addThousandTextListener()
 
-            if (isEditMode) {
+            if (viewModel.formIsEditMode) {
                 viewModel.getSinglePembayaran(
                     kavling = viewModel.currentKavlingKode!!,
                     termin = viewModel.currentTermin!!,
@@ -80,7 +102,9 @@ class FormInputPembayaranKavlingFragment : Fragment() {
                 setupViewModelForEditMode()
             } else {
                 // Sync pembayaran, needed to get next sequence termin if not EditMode
-                syncPembayaran()
+                viewModel.fetchPembayaranData(viewModel.currentKavlingKode!!)
+
+                setupViewModel()
             }
 
             formActivity.getFabDone().setOnClickListener {
@@ -102,7 +126,7 @@ class FormInputPembayaranKavlingFragment : Fragment() {
                         keterangan = keteranganProgress,
                         timeMillis = System.currentTimeMillis(),
                     )
-                    if (isEditMode) {
+                    if (viewModel.formIsEditMode) {
                         val oldPembayaran = viewModel.pembayaran.value.run {
                             (this as UiState.Success).data
                         }!!
@@ -122,8 +146,8 @@ class FormInputPembayaranKavlingFragment : Fragment() {
         }
     }
 
-    private fun syncPembayaran() {
-        TODO()
+    private fun setupViewModel() {
+        TODO("Not yet implemented")
     }
 
     private fun setupViewModelForEditMode() {

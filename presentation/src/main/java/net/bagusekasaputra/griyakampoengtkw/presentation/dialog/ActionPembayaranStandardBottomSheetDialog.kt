@@ -1,5 +1,3 @@
-@file:Suppress("DEPRECATION")
-
 package net.bagusekasaputra.griyakampoengtkw.presentation.dialog
 
 import android.annotation.SuppressLint
@@ -7,7 +5,6 @@ import android.app.Activity
 import android.content.Intent
 import android.content.SharedPreferences
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -20,8 +17,10 @@ import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import dagger.hilt.android.AndroidEntryPoint
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.StandardAmbilKuitansi
+import net.bagusekasaputra.griyakampoengtkw.domain.entity.pembayaran.Pembayaran
 import net.bagusekasaputra.griyakampoengtkw.presentation.activity.FormActivity
 import net.bagusekasaputra.griyakampoengtkw.presentation.activity.FullImageActivity
+import net.bagusekasaputra.griyakampoengtkw.presentation.activity.UpdateFormPembayaranParcel
 import net.bagusekasaputra.griyakampoengtkw.presentation.databinding.DialogActionsItemPembayaranBinding
 import net.bagusekasaputra.griyakampoengtkw.presentation.util.GriyaNodes
 import net.bagusekasaputra.griyakampoengtkw.presentation.util.NotificationUtil
@@ -31,7 +30,7 @@ import net.bagusekasaputra.griyakampoengtkw.presentation.viewmodel.PembayaranSyn
 import javax.inject.Inject
 
 @AndroidEntryPoint
-class ActionPembayaranStandardBottomSheetDialog(): BottomSheetDialogFragment() {
+class ActionPembayaranStandardBottomSheetDialog: BottomSheetDialogFragment() {
 
     private lateinit var binding: DialogActionsItemPembayaranBinding
     private val viewModel by activityViewModels<FormPembayaranViewModel>()
@@ -49,7 +48,7 @@ class ActionPembayaranStandardBottomSheetDialog(): BottomSheetDialogFragment() {
     // Need to define here to avoid uninitialized binding
     private var progressBarTambahFoto: ProgressBar? = null
 
-    private val ubahPembayaranRequestCode = 1001
+    private val ubahPembayaranRequestCode = 902
 
 
     private val fotoPembayaranPickerResultLauncher =
@@ -244,13 +243,15 @@ class ActionPembayaranStandardBottomSheetDialog(): BottomSheetDialogFragment() {
         // Go to FormActivity when cardEditDataPembayaran clicked
         binding.cardEditDataPembayaran.setOnClickListener {
             val intent = Intent(requireContext(), FormActivity::class.java)
+            val ubahPembayaranParcel = UpdateFormPembayaranParcel(
+                tipePembayaran = Pembayaran.PEMBAYARAN_KAVLING,
+                kavling = currentKavling,
+                termin = currentTermin,
+            )
 
-            intent.putExtra(FormActivity.EXTRAS_FORM_TYPE, FormActivity.FORM_PEMBAYARAN_KAVLING)
-            intent.putExtra(FormActivity.EXTRAS_KAVLING, currentKavling)
-            intent.putExtra(FormActivity.EXTRAS_TERMIN, currentTermin)
+            intent.putExtra(FormActivity.EXTRAS_PARCEL, ubahPembayaranParcel)
 
-            Log.d("FORM_INPUT_PEMBAYARAN", "ActionPembayaranBottomSheetDialog: Request to navigate to FormActivity with extras Kavling: $currentKavling and Termin : $currentTermin")
-
+            @Suppress("DEPRECATION")
             startActivityForResult(intent, ubahPembayaranRequestCode)
         }
 
@@ -303,6 +304,7 @@ class ActionPembayaranStandardBottomSheetDialog(): BottomSheetDialogFragment() {
             }
     }
 
+    @Suppress("DEPRECATION")
     @Deprecated("Deprecated in Java")
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)

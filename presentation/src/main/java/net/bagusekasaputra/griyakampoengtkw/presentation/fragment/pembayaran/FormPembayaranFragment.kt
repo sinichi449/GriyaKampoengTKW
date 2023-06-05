@@ -22,6 +22,8 @@ import net.bagusekasaputra.griyakampoengtkw.domain.entity.DataDiri
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.HargaKavling
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.pembayaran.Pembayaran
 import net.bagusekasaputra.griyakampoengtkw.presentation.R
+import net.bagusekasaputra.griyakampoengtkw.presentation.activity.FormActivity
+import net.bagusekasaputra.griyakampoengtkw.presentation.activity.InsertFormPembayaranParcel
 import net.bagusekasaputra.griyakampoengtkw.presentation.activity.PembayaranTabelFullActivity
 import net.bagusekasaputra.griyakampoengtkw.presentation.custom.StatusPembayaranLayoutHelper
 import net.bagusekasaputra.griyakampoengtkw.presentation.custom.TabelPembayaranNavHelper
@@ -39,7 +41,6 @@ import java.io.File
 import java.util.*
 import javax.inject.Inject
 
-@Suppress("DEPRECATION")
 @SuppressLint("SetTextI18n")
 @AndroidEntryPoint
 class FormPembayaranFragment : Fragment() {
@@ -53,6 +54,7 @@ class FormPembayaranFragment : Fragment() {
     private val viewModel: DetailViewModel by activityViewModels()
     private val pembayaranViewModel: FormPembayaranViewModel by activityViewModels()
 
+    private val requestTambahFormPembayaran = 901
     private var currentKavlingKode: String? = null
     private var layoutStatusPembayaran: StatusPembayaranLayoutHelper? = null
 
@@ -65,6 +67,7 @@ class FormPembayaranFragment : Fragment() {
         registerForActivityResult(ActivityResultContracts.RequestMultiplePermissions()) {}
 
 
+    @Suppress("DEPRECATION")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -208,7 +211,24 @@ class FormPembayaranFragment : Fragment() {
 
 
         binding.fabActions?.setOnClickListener {
-            showAddFormPembayaranDialog()
+            val totalHargaKavling = viewModel.hargaKavlingLive.value?.hargaDanTambahLuasan ?: 0L
+            val isEmptyHargaKavling =  totalHargaKavling <= 0L
+
+            if (isEmptyHargaKavling) {
+                Toast.makeText(requireContext(), "Harga kavling masih kosong", Toast.LENGTH_SHORT)
+                    .show()
+            } else {
+                // Go to FormActivity
+                val intent = Intent(requireContext(), FormActivity::class.java)
+                val insertFormPembayaranParcel = InsertFormPembayaranParcel(
+                    tipePembayaran = Pembayaran.PEMBAYARAN_KAVLING,
+                    kavling = pembayaranViewModel.currentKavlingKode!!,
+                )
+
+                intent.putExtra(FormActivity.EXTRAS_PARCEL, insertFormPembayaranParcel)
+                @Suppress("DEPRECATION")
+                startActivityForResult(intent, requestTambahFormPembayaran)
+            }
         }
     }
 
@@ -230,8 +250,8 @@ class FormPembayaranFragment : Fragment() {
                             onSuccess = {
                                 onLoadingFormPembayaran(true)
                             },
-                            onFailure = {
-                                Toast.makeText(requireContext(), it, Toast.LENGTH_LONG).show()
+                            onFailure = { failMsg ->
+                                Toast.makeText(requireContext(), failMsg, Toast.LENGTH_LONG).show()
                             }
                         )
                     }
@@ -248,10 +268,10 @@ class FormPembayaranFragment : Fragment() {
                             onLoading = {
                                 layoutStatusPembayaran?.onLoading()
                             },
-                            onFailure = {
+                            onFailure = { failMsg ->
                                 layoutStatusPembayaran?.onFailure()
 
-                                Toast.makeText(requireContext(), it, Toast.LENGTH_LONG).show()
+                                Toast.makeText(requireContext(), failMsg, Toast.LENGTH_LONG).show()
                             },
                         )
                     }
@@ -544,12 +564,22 @@ class FormPembayaranFragment : Fragment() {
         }
     }
 
+    @Deprecated("Deprecated in Java", ReplaceWith("@Suppress(\"DEPRECATION\") super.onActivityResult(requestCode, resultCode, data)", "androidx.fragment.app.Fragment"))
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        @Suppress("DEPRECATION")
+        super.onActivityResult(requestCode, resultCode, data)
+
+        TODO("Not yet implemented")
+    }
+
+    @Suppress("DEPRECATION")
     @Deprecated("Deprecated in Java")
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
         inflater.inflate(R.menu.menu_pembayaran, menu)
         super.onCreateOptionsMenu(menu, inflater)
     }
 
+    @Suppress("DEPRECATION")
     @Deprecated("Deprecated in Java")
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         return when (item.itemId) {

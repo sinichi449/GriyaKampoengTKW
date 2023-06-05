@@ -73,6 +73,7 @@ class FormPembayaranViewModel @Inject constructor(
 
     // Full Pembayaran
     private val _fullPembayaransLive = MutableLiveData<List<Pembayaran>?>(null)
+    @Deprecated("Migrate to pembayaranList instead!")
     val fullPembayaransLive: LiveData<List<Pembayaran>?>
         get() = _fullPembayaransLive
     private fun setFullPembayaran(pembayaranBulanans: List<PembayaranBulanan>?) {
@@ -87,6 +88,11 @@ class FormPembayaranViewModel @Inject constructor(
             _fullPembayaransLive.postValue(pembayarans)
         }
     }
+
+    // Pembayaran List
+    private val _pembayaranList = MutableLiveData<UiState<List<Pembayaran>?>>()
+    val pembayaranList: LiveData<UiState<List<Pembayaran>?>>
+        get() = _pembayaranList
 
     // Status Pembayaran
     private val _statusPembayaranLive = MutableLiveData<StatusPembayaran?>(null)
@@ -131,7 +137,7 @@ class FormPembayaranViewModel @Inject constructor(
 
     var currentKavlingKode: String? = null
     var currentTermin: String? = null
-
+    var formIsEditMode = false
     var dataMode = DataMode.ONLINE
     var isFullScreenTable = false
 
@@ -157,6 +163,7 @@ class FormPembayaranViewModel @Inject constructor(
     /**
      * Pembayaran bulanan
      */
+    @Deprecated("Will soon removed! Migrate to fetchPembayaranData() as soon as possible.")
     fun getListPembayaranBulanan(
         kavling: String,
         onLoading: () -> Unit,
@@ -187,6 +194,34 @@ class FormPembayaranViewModel @Inject constructor(
                     withContext(Dispatchers.Main) {
                         onFailure("Gagal mendapatkan List Pembayaran Bulanan : ${it.message}")
                     }
+                }
+            }
+        }
+    }
+
+    /**
+     * Fetch [_pembayaranBulanansLive], [_baselinePembayaranLive], and [_pembayaranList].
+      */
+    fun fetchPembayaranData(kavling: String) {
+        _pembayaranList.value = UiState.Loading()
+
+        readPembayaranBulananJob?.cancel()
+
+        readPembayaranBulananJob = viewModelScope.launch(Dispatchers.IO) {
+            val request = GetListPembayaranBulananAsyncUseCase.Request(kavling, dataMode)
+            getListPembayaranBulananAsyncUseCase.execute(request).collect { result ->
+                result.onSuccess {
+                    _pembayaranBulanansLive.postValue(it)
+
+                    setBaselinePembayaran(it?.get(0)?.baselinePembayaran)
+
+                    val list = it?.let { pembayaranBulanans ->
+                        PembayaranBulanan.getPembayaranList(it)
+                    }
+                    _pembayaranList.postValue(UiState.Success(list))
+                }
+                result.onFailure {
+                    _pembayaranList.postValue(UiState.Failure("Gagal mendapatkan List Pembayaran Bulanan : ${it.localizedMessage}"))
                 }
             }
         }
