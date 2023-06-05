@@ -80,6 +80,8 @@ class ActionPembayaranStandardBottomSheetDialog(): BottomSheetDialogFragment() {
                                 Toast.makeText(requireContext(), msg, Toast.LENGTH_SHORT).show()
 
                                 this.dismiss()
+
+                                viewModel.requestSync(PembayaranSyncRequest.TABEL_PEMBAYARAN)
                             }
                         )
                     }
@@ -214,6 +216,8 @@ class ActionPembayaranStandardBottomSheetDialog(): BottomSheetDialogFragment() {
                                     Toast.makeText(requireContext(), msg, Toast.LENGTH_SHORT).show()
 
                                     this@ActionPembayaranStandardBottomSheetDialog.dismiss()
+
+                                    viewModel.requestSync(PembayaranSyncRequest.TABEL_PEMBAYARAN)
                                 }
                             )
                         }
@@ -272,6 +276,8 @@ class ActionPembayaranStandardBottomSheetDialog(): BottomSheetDialogFragment() {
                             dialogHapus.dismiss()
 
                             this@ActionPembayaranStandardBottomSheetDialog.dismiss()
+
+                            viewModel.requestSync(PembayaranSyncRequest.TABEL_PEMBAYARAN)
                         },
                         onFailure = {
                             Toast.makeText(requireContext(), it, Toast.LENGTH_LONG).show()
