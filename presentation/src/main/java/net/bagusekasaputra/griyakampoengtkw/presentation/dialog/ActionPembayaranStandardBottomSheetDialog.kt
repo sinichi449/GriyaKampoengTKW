@@ -18,7 +18,6 @@ import androidx.fragment.app.activityViewModels
 import com.github.dhaval2404.imagepicker.ImagePicker
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
-import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.StandardAmbilKuitansi
 import net.bagusekasaputra.griyakampoengtkw.presentation.activity.FormActivity
@@ -28,6 +27,7 @@ import net.bagusekasaputra.griyakampoengtkw.presentation.util.GriyaNodes
 import net.bagusekasaputra.griyakampoengtkw.presentation.util.NotificationUtil
 import net.bagusekasaputra.griyakampoengtkw.presentation.viewmodel.FormPembayaranViewModel
 import net.bagusekasaputra.griyakampoengtkw.presentation.viewmodel.ImageViewModel
+import net.bagusekasaputra.griyakampoengtkw.presentation.viewmodel.PembayaranSyncRequest
 import javax.inject.Inject
 
 @AndroidEntryPoint
@@ -306,7 +306,7 @@ class ActionPembayaranStandardBottomSheetDialog(): BottomSheetDialogFragment() {
                 data?.extras?.getString(FormActivity.EXTRAS_SUCCESS_DATA)?.also {
                     dismiss()
 
-                    Snackbar.make(binding.root, it, Snackbar.LENGTH_SHORT).show()
+                    viewModel.requestSync(PembayaranSyncRequest.TABEL_PEMBAYARAN)
                 }
             } else {
                 data?.extras?.getString(FormActivity.EXTRAS_FAIL_MSG)?.also {

@@ -34,7 +34,6 @@ import net.bagusekasaputra.griyakampoengtkw.domain.usecase.pembayaran.AddPembaya
 import net.bagusekasaputra.griyakampoengtkw.presentation.combineWith
 import net.bagusekasaputra.griyakampoengtkw.presentation.model.UiState
 import javax.inject.Inject
-import kotlin.random.Random
 
 /**
  * Soon, all "Pembayaran" related data will be moved here.
@@ -244,11 +243,7 @@ class FormPembayaranViewModel @Inject constructor(
         viewModelScope.launch(Dispatchers.Default) {
             delay(3000L)
 
-            val isSuccess = Random.nextBoolean()
-            val uiState: UiState<Nothing?> = if (isSuccess) UiState.Success()
-                else UiState.Failure("Random error!")
-
-            _ubahPembayaranOperation.postValue(uiState)
+            _ubahPembayaranOperation.postValue(UiState.Success(null))
         }
     }
 
