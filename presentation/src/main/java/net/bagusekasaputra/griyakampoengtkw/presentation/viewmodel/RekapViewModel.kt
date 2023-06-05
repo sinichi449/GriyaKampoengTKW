@@ -16,16 +16,16 @@ import kotlinx.coroutines.withContext
 import net.bagusekasaputra.griyakampoengtkw.domain.DateUtil
 import net.bagusekasaputra.griyakampoengtkw.domain.DateUtil.toSlashedString
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.kavling.GetListUnmigratedKavlingsAsyncUseCase
-import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.rekap.CalculateRekapBesarAndGetRekapBesarOverview
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.rekap.GetListRekapGlobalAsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.rekap.GetRekapBesarDetailAsyncUseCase
+import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.rekap.GetRekapBesarOverviewAsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.rekap.PeriodeRekap
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.rekap.RekapBesarDetail
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.rekap.RekapBesarOverview
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.rekap.RekapGlobal
-import net.bagusekasaputra.griyakampoengtkw.presentation.model.RekapDetailTransport
 import net.bagusekasaputra.griyakampoengtkw.presentation.activity.RekapBesarDetailActivity.FabMode
 import net.bagusekasaputra.griyakampoengtkw.presentation.fragment.rekap.RekapType
+import net.bagusekasaputra.griyakampoengtkw.presentation.model.RekapDetailTransport
 import net.bagusekasaputra.griyakampoengtkw.presentation.tableview.rekapGlobal.RgCell
 import net.bagusekasaputra.griyakampoengtkw.presentation.tableview.rekapGlobal.RgColumnHeader
 import net.bagusekasaputra.griyakampoengtkw.presentation.tableview.rekapGlobal.RgRowHeader
@@ -35,7 +35,7 @@ import javax.inject.Inject
 @HiltViewModel
 class RekapViewModel @Inject constructor(
     private val getListRekapGlobalAsyncUseCase: GetListRekapGlobalAsyncUseCase,
-    private val calculateRekapBesarAndGetRekapBesarOverview: CalculateRekapBesarAndGetRekapBesarOverview,
+    private val getRekapBesarOverviewAsyncUseCase: GetRekapBesarOverviewAsyncUseCase,
     private val getRekapBesarDetailAsyncUseCase: GetRekapBesarDetailAsyncUseCase,
     private val getListUnmigratedKavlingsAsyncUseCase: GetListUnmigratedKavlingsAsyncUseCase,
 ): ViewModel() {
@@ -69,7 +69,7 @@ class RekapViewModel @Inject constructor(
         get() = _isRekapBesarDetailLoaded
 
     val rekapGlobalProgress = getListRekapGlobalAsyncUseCase.progressState.asLiveData(Dispatchers.Default)
-    val rekapBesarProgress = calculateRekapBesarAndGetRekapBesarOverview.messageProgress
+    val rekapBesarProgress = getRekapBesarOverviewAsyncUseCase.messageProgress
 
     private val _kavlingList = MutableLiveData<String>()
 
@@ -142,7 +142,7 @@ class RekapViewModel @Inject constructor(
         isRekapBesarOverviewLoaded.value = false
 
         gettingRekapBesarJob = viewModelScope.launch(Dispatchers.IO) {
-            val request = CalculateRekapBesarAndGetRekapBesarOverview.Request(
+            val request = GetRekapBesarOverviewAsyncUseCase.Request(
                 periodeRekap = periode,
                 startDate = startDate,
                 endDate = endDate,
@@ -151,7 +151,7 @@ class RekapViewModel @Inject constructor(
                 // All kavling
                 listKavling = null,
             )
-            calculateRekapBesarAndGetRekapBesarOverview.execute(request).collect { result ->
+            getRekapBesarOverviewAsyncUseCase.execute(request).collect { result ->
                 result.onSuccess {
                     _rekapBesarOverviewLive.postValue(it)
 

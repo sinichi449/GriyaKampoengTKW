@@ -3,6 +3,7 @@ package net.bagusekasaputra.griyakampoengtkw.domain.entity
 import kotlinx.coroutines.runBlocking
 import net.bagusekasaputra.griyakampoengtkw.domain.DataMode
 import net.bagusekasaputra.griyakampoengtkw.domain.DateUtil
+import net.bagusekasaputra.griyakampoengtkw.domain.DateUtil.normalize
 import net.bagusekasaputra.griyakampoengtkw.domain.DateUtil.toDate
 import net.bagusekasaputra.griyakampoengtkw.domain.DateUtil.toSlashedString
 import net.bagusekasaputra.griyakampoengtkw.domain.NumberUtil
@@ -179,6 +180,29 @@ class PembayaranTest {
         val mingguIniPembayaran = pembayaranList.filterPeriode(PeriodeRekap.MINGGU_INI, null, null)!!
 
         Assert.assertEquals(rangeDate.size, mingguIniPembayaran.size)
+    }
+
+    @Test
+    fun whenCreatingBulanAngsuran_tanggalShouldSetToFirstDayInMonthAndNormalized() {
+        val calendar = Calendar.getInstance()
+        val tanggalSekarang = calendar.time.toSlashedString()
+        val pembayaran = Pembayaran(
+            termin = "Termin 5",
+            tanggal = tanggalSekarang,
+            jumlahUangDibayar = "0",
+            keterangan = "-",
+            timeMillis = System.currentTimeMillis(),
+        )
+
+        val firstDayInMonth = with(calendar) {
+            set(Calendar.DAY_OF_MONTH, getActualMinimum(Calendar.DAY_OF_MONTH))
+            normalize()
+
+            time
+        }
+        val tanggalBulanAngsuran = pembayaran.bulanAngsuran.date
+
+        Assert.assertEquals(firstDayInMonth, tanggalBulanAngsuran)
     }
 
 

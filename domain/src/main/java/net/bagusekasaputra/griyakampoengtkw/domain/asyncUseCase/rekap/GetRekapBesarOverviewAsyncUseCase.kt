@@ -1,7 +1,5 @@
 package net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.rekap
 
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.channels.trySendBlocking
 import kotlinx.coroutines.flow.Flow
@@ -37,7 +35,7 @@ import net.bagusekasaputra.griyakampoengtkw.domain.repository.PembayaranReposito
 import net.bagusekasaputra.griyakampoengtkw.domain.repository.RekapBesarDetailRepository
 import java.util.Date
 
-class CalculateRekapBesarAndGetRekapBesarOverview(
+class GetRekapBesarOverviewAsyncUseCase(
     private val blockRepository: BlockRepository,
     private val kavlingRepository: KavlingRepository,
     private val pembayaranRepository: PembayaranRepository,
@@ -47,7 +45,12 @@ class CalculateRekapBesarAndGetRekapBesarOverview(
     private val biayaMarketingRepository: BiayaMarketingRepository,
     private val biayaLainRepository: BiayaLainRepository,
     private val rekapBesarDetailRepository: RekapBesarDetailRepository,
-): AsyncUseCase<CalculateRekapBesarAndGetRekapBesarOverview.Request, RekapBesarOverview>() {
+): AsyncUseCase<GetRekapBesarOverviewAsyncUseCase.Request, RekapBesarOverview>() {
+
+    companion object {
+        const val MODE_PEMBAYARAN_TANGGAL_REAL = 0
+        const val MODE_PEMBAYARAN_TANGGAL_ANGSURAN = 1
+    }
 
     data class Request(
         val periodeRekap: PeriodeRekap,
@@ -57,11 +60,12 @@ class CalculateRekapBesarAndGetRekapBesarOverview(
         val listKavling: List<String>?,
         val backupName: String? = null,
         val listIncludedKavlingDataLama: List<String> = emptyList(),
+        val modePembayaran: Int = MODE_PEMBAYARAN_TANGGAL_REAL,
     ): AsyncUseCase.Request
 
-    private val _messageProgress = MutableLiveData("Menginisialisasi ...")
-    val messageProgress: LiveData<String>
-        get() = _messageProgress
+//    private val _messageProgress = MutableLiveData("Menginisialisasi ...")
+//    val messageProgress: LiveData<String>
+//        get() = _messageProgress
 
 
     /**
@@ -73,7 +77,7 @@ class CalculateRekapBesarAndGetRekapBesarOverview(
             try {
                 rekapBesarDetailRepository.delete()
 
-                _messageProgress.postValue("Mendapatkan Blok dan Kavling ...")
+//                _messageProgress.postValue("Mendapatkan Blok dan Kavling ...")
                 val kavlingKodeList =
                     if (!request.listKavling.isNullOrEmpty()) {
                         request.listKavling
@@ -87,15 +91,15 @@ class CalculateRekapBesarAndGetRekapBesarOverview(
                     }
 
                 // Data Baru
-                _messageProgress.postValue("Mendapatkan metadata Pembayaran ...")
+//                _messageProgress.postValue("Mendapatkan metadata Pembayaran ...")
                 val mapListPembayaranBaru = pembayaranRepository.getBatchOnline(kavlingKodeList).first().getOrThrow()
-                _messageProgress.postValue("Mendapatkan metadata Data Diri ...")
+//                _messageProgress.postValue("Mendapatkan metadata Data Diri ...")
                 val mapListDataDiriBaru = dataDiriRepository.getBatchOnline(kavlingKodeList).first().getOrThrow()
-                _messageProgress.postValue("Mendapatkan metadata Harga Kavling ...")
+//                _messageProgress.postValue("Mendapatkan metadata Harga Kavling ...")
                 val mapHargaKavlingBaru = hargaKavlingRepository.getBatchOnline(kavlingKodeList).first().getOrThrow()?.toMutableMap()
-                _messageProgress.postValue("Mendapatkan metadata Fee Marketing ...")
+//                _messageProgress.postValue("Mendapatkan metadata Fee Marketing ...")
                 val mapFeeMarketingBaru = feeMarketingRepository.getBatchOnline(kavlingKodeList).first().getOrThrow()?.toMutableMap()
-                _messageProgress.postValue("Mendapatkan metadata Biaya Marketing ...")
+//                _messageProgress.postValue("Mendapatkan metadata Biaya Marketing ...")
                 val mapListBiayaMarketingBaru = biayaMarketingRepository.getBatchOnline(kavlingKodeList).first().getOrThrow()?.toMutableMap()
 
                 // Data Lama
@@ -120,7 +124,7 @@ class CalculateRekapBesarAndGetRekapBesarOverview(
 
 
                 // No matter what kavling (old/new), Biaya Lain always lonely :V
-                _messageProgress.postValue("Mendapatkan metadata Biaya Lain-lain ...")
+//                _messageProgress.postValue("Mendapatkan metadata Biaya Lain-lain ...")
                 val listBiayaLain = biayaLainRepository.getAllOnline(DataMode.ONLINE).first().getOrThrow()
                     ?.filterPeriode(request.periodeRekap, request.startDate, request.endDate)
 
@@ -135,7 +139,7 @@ class CalculateRekapBesarAndGetRekapBesarOverview(
                 val mMapPembayaranWithNamaCostumerBaru = mutableMapOf<String, List<PembayaranWithNamaCostumer>?>()
                 val listSisaPembayaran = mutableListOf<SisaPembayaran>()
                 kavlingKodeList.forEach { kavling ->
-                    _messageProgress.postValue("Memproses kavling $kavling ...")
+//                    _messageProgress.postValue("Memproses kavling $kavling ...")
                     val listPembayaranBaru = mapListPembayaranBaru?.get(kavling)?.filterPeriode(request.periodeRekap, request.startDate, request.endDate)
                     val hargaKavlingBaru = mapHargaKavlingBaru?.get(kavling)
                     val feeMarketingBaru = mapFeeMarketingBaru?.get(kavling)?.filterPeriode(request.periodeRekap, request.startDate, request.endDate)
@@ -172,7 +176,7 @@ class CalculateRekapBesarAndGetRekapBesarOverview(
 
 
                 // DATA LAMA: Calculate for each Kavling and requested Periode
-                _messageProgress.postValue("Mengkonsolidasi data ...")
+//                _messageProgress.postValue("Mengkonsolidasi data ...")
                 val mMapPembayaranWithNamaCostumerLama = mutableMapOf<String, List<PembayaranWithNamaCostumer>?>()
                 request.listIncludedKavlingDataLama.forEach { kavlingLama ->
                     val listPembayaranRekapLama = mapListPembayaranLama?.get(kavlingLama)?.filterPeriode(request.periodeRekap, request.startDate, request.endDate)

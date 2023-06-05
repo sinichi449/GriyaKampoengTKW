@@ -4,6 +4,7 @@ import net.bagusekasaputra.griyakampoengtkw.domain.DateUtil
 import net.bagusekasaputra.griyakampoengtkw.domain.DateUtil.getCustomRangeDate
 import net.bagusekasaputra.griyakampoengtkw.domain.DateUtil.getWeeklyRangeDate
 import net.bagusekasaputra.griyakampoengtkw.domain.DateUtil.isWithinRange
+import net.bagusekasaputra.griyakampoengtkw.domain.DateUtil.normalize
 import net.bagusekasaputra.griyakampoengtkw.domain.DateUtil.toDate
 import net.bagusekasaputra.griyakampoengtkw.domain.NumberUtil
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.HargaKavling
@@ -26,6 +27,7 @@ data class Pembayaran(
     val timeMillis: Long,
     var sudahIsiFotoPembayaran: Boolean = false,
     var sudahAmbilKuitansi: Boolean = false,
+    val bulanAngsuran: BulanAngsuran = BulanAngsuran.defaultToTanggalPembayaran(tanggal),
 ) {
     val parsedJumlahUangDibayar = NumberUtil.formatStringToLong(jumlahUangDibayar)
 
@@ -302,6 +304,48 @@ data class Pembayaran(
     interface PembayaranSorter {
         fun sort(pembayaranList: List<Pembayaran>): List<Pembayaran>
     }
+}
+
+/**
+ * Tanggal is set to Calendar.getActualMinimum(DAY_OF_MONTH)
+ */
+data class BulanAngsuran(
+    // Not calendar type!!
+    val bulan: Int,
+    val tahun: Int,
+) {
+    val date: Date get() {
+        val calendar = Calendar.getInstance()
+        calendar.set(Calendar.YEAR, tahun)
+        calendar.set(Calendar.MONTH, bulan - 1)
+        calendar.set(Calendar.DAY_OF_MONTH, calendar.getActualMinimum(Calendar.DAY_OF_MONTH))
+        calendar.normalize()
+
+        return calendar.time
+    }
+
+    val bulanAndTahun: String get() {
+        val bulanPadded = bulan.toString().padStart(2, '0')
+
+        return "$bulanPadded/${tahun}"
+    }
+
+
+    companion object {
+
+        // Parse tanggal pembayaran into Bulan Angsuran
+        fun defaultToTanggalPembayaran(tanggalPembayaran: String): BulanAngsuran {
+            val calendar = Calendar.getInstance().apply {
+                time = tanggalPembayaran.toDate()
+            }
+            val bulan = calendar.get(Calendar.MONTH) + 1
+            val tahun = calendar.get(Calendar.YEAR)
+
+            return BulanAngsuran(bulan, tahun)
+        }
+
+    }
+
 }
 
 /**

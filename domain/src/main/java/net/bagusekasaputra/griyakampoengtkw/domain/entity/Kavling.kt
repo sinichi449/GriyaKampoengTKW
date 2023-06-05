@@ -34,7 +34,7 @@ data class Kavling(
             return sorter.sortKavling(kavlingList)
         }
 
-        fun sortKavling(kavlingKodeList: List<String>, sorter: SingleBlockKavlingSorter): List<String> {
+        fun sortKodeKavling(kavlingKodeList: List<String>, sorter: KavlingSorter): List<String> {
             return sorter.sortKodeOnly(kavlingKodeList)
         }
 
