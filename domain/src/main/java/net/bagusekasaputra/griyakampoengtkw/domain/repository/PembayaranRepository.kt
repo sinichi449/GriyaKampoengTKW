@@ -20,7 +20,7 @@ interface PembayaranRepository {
     // will return the data from local if an error occurred.
     fun getAllOnline(kavlingKode: String): Flow<Result<List<Pembayaran>?>>
 
-    fun addPembayaran(kavlingKode: String, hargaKavling: Long, pembayaran: Pembayaran): Flow<Result<Boolean>>
+    fun addPembayaran(kavlingKode: String, pembayaran: Pembayaran): Flow<Result<Boolean>>
 
     suspend fun updatePembayaran(kavlingKode: String, newPembayaran: Pembayaran): Result<Nothing?>
 

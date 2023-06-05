@@ -106,7 +106,6 @@ class FirebasePembayaranSource(
 
     override suspend fun addPembayaranModel(
         kavlingKode: String,
-        hargaKavling: Long,
         pembayaranModel: PembayaranModel
     ): Result<Nothing?> {
         val terminChild = pembayaranModel.getFullTermin()

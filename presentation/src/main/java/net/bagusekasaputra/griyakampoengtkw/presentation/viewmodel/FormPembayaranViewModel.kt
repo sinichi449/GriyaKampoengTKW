@@ -9,6 +9,10 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import net.bagusekasaputra.griyakampoengtkw.domain.AsyncUseCaseHelper
@@ -34,6 +38,7 @@ import net.bagusekasaputra.griyakampoengtkw.domain.usecase.pembayaran.AddPembaya
 import net.bagusekasaputra.griyakampoengtkw.presentation.combineWith
 import net.bagusekasaputra.griyakampoengtkw.presentation.model.UiState
 import javax.inject.Inject
+import kotlin.random.Random
 
 /**
  * Soon, all "Pembayaran" related data will be moved here.
@@ -115,15 +120,6 @@ class FormPembayaranViewModel @Inject constructor(
     val pembayaran: LiveData<UiState<Pembayaran?>>
         get() = _pembayaran
 
-    /**
-     * Operation observers
-     */
-    private val isFinishOperation = MutableLiveData<Boolean>()
-
-    // Ubah Pembayaran
-    private val _ubahPembayaranOperation = MutableLiveData<UiState<Nothing?>>()
-    val ubahPembayaranOperation: LiveData<UiState<Nothing?>>
-        get() = _ubahPembayaranOperation
 
     // Sync Request
     private val _syncRequests = MutableLiveData<Array<Int>?>(null)
@@ -146,6 +142,7 @@ class FormPembayaranViewModel @Inject constructor(
 
     var readPembayaranBulananJob: Job? = null
 
+    private val isFinishOperation = MutableLiveData<Boolean>()
     private val asyncHelper = AsyncUseCaseHelper(isFinishOperation)
     // The list of Coroutines/Flows job that need to be cleared on
     // the onCleared() callback. See below.
@@ -247,14 +244,14 @@ class FormPembayaranViewModel @Inject constructor(
         }
     }
 
+    @Deprecated("Migrated to insertPembayaran().")
     fun addPembayaran(
         kavlingKode: String,
-        hargaKavling: Long,
         pembayaran: Pembayaran,
         onComplete: (msg: String) -> Unit,
     ) {
         CoroutineScope(Dispatchers.IO).launch {
-            val request = AddPembayaranUseCase.Request(kavlingKode, hargaKavling, pembayaran)
+            val request = AddPembayaranUseCase.Request(kavlingKode, pembayaran)
 
             addPembayaranUseCase.execute(request).collect { response ->
                 val result = response.data.result
@@ -268,6 +265,20 @@ class FormPembayaranViewModel @Inject constructor(
                         onComplete("Gagal menambahkan pembayaran: ${result.exceptionOrNull()?.message?: "null"}")
                     }
                 }
+            }
+        }
+    }
+
+    fun insertPembayaran(kavlingKode: String, pembayaran: Pembayaran) {
+        viewModelScope.launch(Dispatchers.IO) {
+            _insertPembayaranOperation.update { UiState.Loading() }
+
+            delay(3000L)
+
+            if (Random.nextBoolean()) {
+                _insertPembayaranOperation.update { UiState.Success() }
+            } else {
+                _insertPembayaranOperation.update { UiState.Failure("Random error!") }
             }
         }
     }
@@ -505,6 +516,21 @@ class FormPembayaranViewModel @Inject constructor(
             null
         }
     }
+
+
+
+    /**
+     * Operation observers
+     */
+    /**
+     * Pembayaran Kavling
+     */
+    private val _ubahPembayaranOperation = MutableLiveData<UiState<Nothing?>>()
+    val ubahPembayaranOperation: LiveData<UiState<Nothing?>>
+        get() = _ubahPembayaranOperation
+
+    private val _insertPembayaranOperation = MutableStateFlow<UiState<Nothing?>?>(null)
+    val insertPembayaranOperation = _insertPembayaranOperation.asStateFlow()
 }
 
 object PembayaranSyncRequest {

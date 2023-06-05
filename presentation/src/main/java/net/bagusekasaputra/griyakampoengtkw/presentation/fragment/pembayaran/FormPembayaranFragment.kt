@@ -2,6 +2,7 @@ package net.bagusekasaputra.griyakampoengtkw.presentation.fragment.pembayaran
 
 import android.Manifest
 import android.annotation.SuppressLint
+import android.app.Activity
 import android.content.Intent
 import android.content.SharedPreferences
 import android.os.Bundle
@@ -435,7 +436,7 @@ class FormPembayaranFragment : Fragment() {
                     )
 
                     // call view model
-                    pembayaranViewModel.addPembayaran(currentKavlingKode!!, hargaKavling, pembayaran) { msg ->
+                    pembayaranViewModel.addPembayaran(currentKavlingKode!!, pembayaran) { msg ->
                         Toast.makeText(requireContext(), msg, Toast.LENGTH_SHORT).show()
                         dialogView.dismiss()
 
@@ -569,7 +570,18 @@ class FormPembayaranFragment : Fragment() {
         @Suppress("DEPRECATION")
         super.onActivityResult(requestCode, resultCode, data)
 
-        TODO("Not yet implemented")
+        if (requestCode == requestTambahFormPembayaran) {
+            if (resultCode == Activity.RESULT_OK) {
+                Snackbar.make(binding.root, "Berhasil menambahkan pembayaran !", Snackbar.LENGTH_SHORT)
+                    .show()
+
+                pembayaranViewModel.requestSync(PembayaranSyncRequest.TABEL_PEMBAYARAN)
+            } else {
+                data?.extras?.getString(FormActivity.EXTRAS_FAIL_MSG)?.also {
+                    Toast.makeText(requireContext(), it, Toast.LENGTH_LONG).show()
+                }
+            }
+        }
     }
 
     @Suppress("DEPRECATION")

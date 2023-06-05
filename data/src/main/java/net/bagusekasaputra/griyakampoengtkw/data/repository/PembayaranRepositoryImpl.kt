@@ -325,7 +325,6 @@ class PembayaranRepositoryImpl(
 
     override fun addPembayaran(
         kavlingKode: String,
-        hargaKavling: Long,
         pembayaran: Pembayaran,
     ): Flow<Result<Boolean>> {
         return flow {
@@ -333,7 +332,6 @@ class PembayaranRepositoryImpl(
 
             val remoteResult = remotePembayaranSource.addPembayaranModel(
                 kavlingKode,
-                hargaKavling,
                 pembayaranModel = mapPembayaran(pembayaran)
             )
             Log.d("DEBUG_ME", "Inserting pembayaran blblbl")

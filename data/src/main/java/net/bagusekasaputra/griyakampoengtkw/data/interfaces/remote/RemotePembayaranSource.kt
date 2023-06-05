@@ -10,7 +10,7 @@ interface RemotePembayaranSource {
 
     suspend fun getAllFromBackup(backupName: String, kavlingKode: String): Result<List<PembayaranModel>?>
 
-    suspend fun addPembayaranModel(kavlingKode: String, hargaKavling: Long, pembayaranModel: PembayaranModel): Result<Nothing?>
+    suspend fun addPembayaranModel(kavlingKode: String, pembayaranModel: PembayaranModel): Result<Nothing?>
 
     suspend fun update(
         kavlingKode: String,

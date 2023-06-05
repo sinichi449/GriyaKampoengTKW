@@ -84,7 +84,6 @@ class MockPembayaranRepository: PembayaranRepository {
 
     override fun addPembayaran(
         kavlingKode: String,
-        hargaKavling: Long,
         pembayaran: Pembayaran
     ): Flow<Result<Boolean>> {
         TODO("Not yet implemented")

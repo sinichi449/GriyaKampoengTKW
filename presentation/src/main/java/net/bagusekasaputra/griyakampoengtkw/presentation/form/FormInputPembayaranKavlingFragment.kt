@@ -4,7 +4,6 @@ import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
 import android.os.Parcelable
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -13,8 +12,15 @@ import android.widget.Toast
 import androidx.core.os.BundleCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
 import com.google.android.material.snackbar.Snackbar
+import com.google.android.material.textfield.TextInputEditText
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.pembayaran.Pembayaran
 import net.bagusekasaputra.griyakampoengtkw.presentation.activity.FormActivity
 import net.bagusekasaputra.griyakampoengtkw.presentation.activity.InsertFormPembayaranParcel
@@ -25,22 +31,18 @@ import net.bagusekasaputra.griyakampoengtkw.presentation.model.UiState
 import net.bagusekasaputra.griyakampoengtkw.presentation.util.DatePickerHelper
 import net.bagusekasaputra.griyakampoengtkw.presentation.util.FormUtil
 import net.bagusekasaputra.griyakampoengtkw.presentation.util.InputUtil
+import net.bagusekasaputra.griyakampoengtkw.presentation.viewmodel.FormInputViewModel
 import net.bagusekasaputra.griyakampoengtkw.presentation.viewmodel.FormPembayaranViewModel
 
 @AndroidEntryPoint
 class FormInputPembayaranKavlingFragment : Fragment() {
 
     private lateinit var binding: FragmentFormInputPembayaranKavlingBinding
-    private val viewModel by activityViewModels<FormPembayaranViewModel>()
+    private val pembayaranViewModel by activityViewModels<FormPembayaranViewModel>()
+    private val formViewModel by activityViewModels<FormInputViewModel>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
-        with(viewModel) {
-
-            currentKavlingKode = arguments?.getString(FormActivity.EXTRAS_KAVLING)
-            currentTermin = arguments?.getString(FormActivity.EXTRAS_TERMIN)
-        }
 
         arguments?.also { bundle ->
             val parcelable: Parcelable? = BundleCompat.getParcelable(
@@ -48,16 +50,16 @@ class FormInputPembayaranKavlingFragment : Fragment() {
             )
             when (parcelable) {
                 is InsertFormPembayaranParcel -> {
-                    viewModel.currentKavlingKode = parcelable.kavling
-                    viewModel.currentTermin = null
+                    pembayaranViewModel.currentKavlingKode = parcelable.kavling
+                    pembayaranViewModel.currentTermin = null
 
-                    viewModel.formIsEditMode = false
+                    pembayaranViewModel.formIsEditMode = false
                 }
                 is UpdateFormPembayaranParcel -> {
-                    viewModel.currentKavlingKode = parcelable.kavling
-                    viewModel.currentTermin = parcelable.termin
+                    pembayaranViewModel.currentKavlingKode = parcelable.kavling
+                    pembayaranViewModel.currentTermin = parcelable.termin
 
-                    viewModel.formIsEditMode = true
+                    pembayaranViewModel.formIsEditMode = true
                 }
             }
         }
@@ -80,12 +82,12 @@ class FormInputPembayaranKavlingFragment : Fragment() {
 
         // Setup toolbar title and subtitle
         with(formActivity.getToolbar()) {
-            if (viewModel.formIsEditMode) {
+            if (pembayaranViewModel.formIsEditMode) {
                 title = "Ubah Pembayaran"
-                subtitle = "${viewModel.currentKavlingKode} - ${viewModel.currentTermin}"
+                subtitle = "${pembayaranViewModel.currentKavlingKode} - ${pembayaranViewModel.currentTermin}"
             } else {
-                title = "Pembayaran"
-                subtitle = viewModel.currentKavlingKode
+                title = "Tambahkan Pembayaran"
+                subtitle = "Kav. ${pembayaranViewModel.currentKavlingKode}"
             }
         }
 
@@ -93,16 +95,22 @@ class FormInputPembayaranKavlingFragment : Fragment() {
         with(binding) {
             edtJumlahUangDibayar.addThousandTextListener()
 
-            if (viewModel.formIsEditMode) {
-                viewModel.getSinglePembayaran(
-                    kavling = viewModel.currentKavlingKode!!,
-                    termin = viewModel.currentTermin!!,
+            val datePickerHelper = DatePickerHelper(requireContext(), btnPilihTanggal, edtTanggal)
+
+            if (pembayaranViewModel.formIsEditMode) {
+                datePickerHelper.setupDateDefaultOrPick(false)
+
+                pembayaranViewModel.getSinglePembayaran(
+                    kavling = pembayaranViewModel.currentKavlingKode!!,
+                    termin = pembayaranViewModel.currentTermin!!,
                 )
 
                 setupViewModelForEditMode()
             } else {
+                datePickerHelper.setupDateDefaultOrPick(true)
+
                 // Sync pembayaran, needed to get next sequence termin if not EditMode
-                viewModel.fetchPembayaranData(viewModel.currentKavlingKode!!)
+                pembayaranViewModel.fetchPembayaranData(pembayaranViewModel.currentKavlingKode!!)
 
                 setupViewModel()
             }
@@ -126,18 +134,21 @@ class FormInputPembayaranKavlingFragment : Fragment() {
                         keterangan = keteranganProgress,
                         timeMillis = System.currentTimeMillis(),
                     )
-                    if (viewModel.formIsEditMode) {
-                        val oldPembayaran = viewModel.pembayaran.value.run {
+                    if (pembayaranViewModel.formIsEditMode) {
+                        val oldPembayaran = pembayaranViewModel.pembayaran.value.run {
                             (this as UiState.Success).data
                         }!!
 
-                        viewModel.updatePembayaran(
-                            kavlingKode = viewModel.currentKavlingKode!!,
+                        pembayaranViewModel.updatePembayaran(
+                            kavlingKode = pembayaranViewModel.currentKavlingKode!!,
                             oldPembayaran = oldPembayaran,
                             newPembayaran = pembayaran,
                         )
                     } else {
-                        TODO("Not yet implemented")
+                        pembayaranViewModel.insertPembayaran(
+                            kavlingKode = pembayaranViewModel.currentKavlingKode!!,
+                            pembayaran = pembayaran
+                        )
                     }
                 } else {
                     Toast.makeText(requireContext(), "Input masih belum benar!", Toast.LENGTH_LONG).show()
@@ -147,25 +158,73 @@ class FormInputPembayaranKavlingFragment : Fragment() {
     }
 
     private fun setupViewModel() {
-        TODO("Not yet implemented")
+        with(binding) {
+            pembayaranViewModel.pembayaranList.observe(requireActivity()) {
+                it?.also { uiState ->
+                    when (uiState) {
+                        is UiState.Loading -> {
+                            onLoading(true)
+                        }
+                        is UiState.Success -> {
+                            val pembayaranList = uiState.data
+                            if (pembayaranList.isNullOrEmpty()) {
+                                Toast.makeText(requireContext(), "Data tidak valid!", Toast.LENGTH_LONG).show()
+                            } else {
+                                onLoading(false)
+
+                                rgJenisPembayaran.listenForJenisPembayaran(pembayaranList, edtTermin)
+                            }
+                        }
+                        is UiState.Failure -> {
+                            Toast.makeText(requireContext(), uiState.failMsg, Toast.LENGTH_LONG).show()
+                        }
+                    }
+                }
+            }
+
+            lifecycleScope.launch {
+                repeatOnLifecycle(Lifecycle.State.STARTED) {
+                    pembayaranViewModel.insertPembayaranOperation.collect {
+                        it?.also { uiState ->
+                            when (uiState) {
+                                is UiState.Loading -> {
+                                    Snackbar.make(root, "Memproses data pembayaran ...", Snackbar.LENGTH_INDEFINITE)
+                                        .show()
+                                }
+                                is UiState.Success -> {
+                                    FormUtil.sendResultAndExit(
+                                        requireActivity(), Activity.RESULT_OK, null
+                                    )
+                                }
+                                is UiState.Failure -> {
+                                    val resultIntent = Intent()
+                                    resultIntent.putExtra(FormActivity.EXTRAS_FAIL_MSG, uiState.failMsg)
+
+                                    FormUtil.sendResultAndExit(
+                                        requireActivity(), Activity.RESULT_CANCELED, resultIntent,
+                                    )
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
     }
 
     private fun setupViewModelForEditMode() {
         with(binding) {
-            viewModel.pembayaran.observe(requireActivity()) {
+            pembayaranViewModel.pembayaran.observe(requireActivity()) {
                 it?.also { uiState ->
-                    Log.d("FORM_INPUT_PEMBAYARAN", "FormInputPembayaranFragment: Params -> Kavling: ${viewModel.currentKavlingKode}, Termin: ${viewModel.currentTermin}")
-
                     when (uiState) {
                         is UiState.Loading -> {
-                            root.alpha = 0.1f
+                            onLoading(true)
                         }
                         is UiState.Success -> {
-                            root.alpha = 1f
-
                             val pembayaran = uiState.data
+
                             if (pembayaran != null) {
-                                Log.d("FORM_INPUT_PEMBAYARAN", "Got pembayaran $pembayaran !")
+                                onLoading(false)
 
                                 rgJenisPembayaran.setCheckedJenisTermin(pembayaran.getJenisTermin())
                                 disableAllJenisPembayaranRadioButtons()
@@ -174,8 +233,6 @@ class FormInputPembayaranKavlingFragment : Fragment() {
                                 edtTermin.isEnabled = false
 
                                 edtTanggal.setText(pembayaran.tanggal)
-                                DatePickerHelper(requireContext(), btnPilihTanggal, edtTanggal)
-                                    .setupDateDefaultOrPick(false)
 
                                 edtJumlahUangDibayar.setText(pembayaran.jumlahUangDibayar)
 
@@ -191,7 +248,7 @@ class FormInputPembayaranKavlingFragment : Fragment() {
                 }
             }
 
-            viewModel.ubahPembayaranOperation.observe(requireActivity()) {
+            pembayaranViewModel.ubahPembayaranOperation.observe(requireActivity()) {
                 it?.also { uiState ->
                     val progressSnackbar = Snackbar.make(root, "Memproses perubahan data ..", Snackbar.LENGTH_INDEFINITE)
                     val formActivity = (requireActivity() as FormActivity)
@@ -202,7 +259,7 @@ class FormInputPembayaranKavlingFragment : Fragment() {
                             progressSnackbar.show()
                         }
                         is UiState.Success -> {
-                            dataToSend.putExtra(FormActivity.EXTRAS_SUCCESS_DATA, "Berhasil mengubah pembayaran ${viewModel.currentTermin}!")
+                            dataToSend.putExtra(FormActivity.EXTRAS_SUCCESS_DATA, "Berhasil mengubah pembayaran ${pembayaranViewModel.currentTermin}!")
 
                             FormUtil.sendResultAndExit(formActivity, Activity.RESULT_OK, dataToSend)
                         }
@@ -246,5 +303,47 @@ class FormInputPembayaranKavlingFragment : Fragment() {
                 else -> Pembayaran.JenisPembayaran.TERMIN.text
             }
         }
+    }
+
+    private fun RadioGroup.listenForJenisPembayaran(
+        pembayaranList: List<Pembayaran>,
+        edtTermin: TextInputEditText,
+    ) {
+        with(binding) {
+            rbItj.setOnClickListener {
+                formViewModel.setSelectedJenisTermin(Pembayaran.JenisPembayaran.ITJ)
+            }
+            rbDp.setOnClickListener {
+                formViewModel.setSelectedJenisTermin(Pembayaran.JenisPembayaran.DP)
+            }
+            rbTermin.setOnClickListener {
+                formViewModel.setSelectedJenisTermin(Pembayaran.JenisPembayaran.TERMIN)
+            }
+        }
+
+        // Listen for radio button jenis termin changes
+        lifecycleScope.launch {
+            repeatOnLifecycle(Lifecycle.State.STARTED) {
+                formViewModel.pembayaranSelectedJenisTermin.collect {
+                    withContext(Dispatchers.Main) {
+                        if (it != null) {
+                            val nextSequencePembayaran = Pembayaran.nextPembayaranSequence(
+                                pembayaranList, it
+                            )
+
+                            edtTermin.isEnabled = true
+                            edtTermin.setText(nextSequencePembayaran)
+                        } else {
+                            edtTermin.isEnabled = false
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    private fun FragmentFormInputPembayaranKavlingBinding.onLoading(isLoading: Boolean) {
+        layoutLoading.visibility = if (isLoading) View.VISIBLE else View.GONE
+        layoutContent.visibility = if (isLoading) View.GONE else View.VISIBLE
     }
 }
