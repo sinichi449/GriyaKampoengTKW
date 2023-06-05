@@ -59,6 +59,13 @@ data class Pembayaran(
         return persentase.toDouble()
     }
 
+    fun isEqualTo(other: Pembayaran): Boolean {
+        return (termin == other.termin)
+                && (tanggal == other.tanggal)
+                && (jumlahUangDibayar == other.jumlahUangDibayar)
+                && (keterangan == other.keterangan)
+    }
+
     companion object {
         const val PEMBAYARAN_KAVLING = 0
         const val PEMBAYARAN_INDEN_BOOKING = 1

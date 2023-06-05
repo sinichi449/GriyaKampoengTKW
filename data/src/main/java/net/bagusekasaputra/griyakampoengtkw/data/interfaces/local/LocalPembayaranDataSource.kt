@@ -12,7 +12,11 @@ interface LocalPembayaranDataSource {
 
     suspend fun addAllPembayaranModel(kavlingKode: String, models: List<PembayaranModel>): Result<Nothing?>
 
-    suspend fun updatePembayaranModel(kavlingKode: String, oldPembayaranModel: PembayaranModel, newPembayaranModel: PembayaranModel): Result<Nothing?>
+    suspend fun update(
+        kavlingKode: String,
+        termin: String,
+        newModel: PembayaranModel
+    ): Result<Nothing?>
 
     suspend fun deletePembayaranModelByTermin(kavlingKode: String, termin: String): Result<Nothing?>
 

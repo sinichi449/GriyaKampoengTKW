@@ -9,7 +9,6 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import net.bagusekasaputra.griyakampoengtkw.domain.AsyncUseCaseHelper
@@ -22,6 +21,7 @@ import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.catatanPembayara
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.pembayaran.DeletePembayaranAsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.pembayaran.GetListPembayaranBulananAsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.pembayaran.GetSinglePembayaranByKavlingAndTerminAsyncUseCase
+import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.pembayaran.UpdatePembayaranAsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.statusPembayaran.GetStatusPembayaranKavlingAsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.BaselinePembayaran
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.CatatanPembayaran
@@ -47,6 +47,7 @@ class FormPembayaranViewModel @Inject constructor(
     private val getStatusPembayaranKavlingAsyncUseCase: GetStatusPembayaranKavlingAsyncUseCase,
     // Pembayaran
     private val getSinglePembayaranUseCase: GetSinglePembayaranByKavlingAndTerminAsyncUseCase,
+    private val updatePembayaranUseCase: UpdatePembayaranAsyncUseCase,
     private val addPembayaranUseCase: AddPembayaranUseCase,
     private val deletePembayaranAsyncUseCase: DeletePembayaranAsyncUseCase,
     // Ambil Kuitansi
@@ -236,14 +237,25 @@ class FormPembayaranViewModel @Inject constructor(
         }
     }
 
-    fun updatePembayaran(kavlingKode: String, termin: String, newPembayaran: Pembayaran) {
+    fun updatePembayaran(
+        kavlingKode: String,
+        oldPembayaran: Pembayaran,
+        newPembayaran: Pembayaran
+    ) {
         _ubahPembayaranOperation.value = UiState.Loading()
 
-        // TODO
-        viewModelScope.launch(Dispatchers.Default) {
-            delay(3000L)
-
-            _ubahPembayaranOperation.postValue(UiState.Success(null))
+        viewModelScope.launch(Dispatchers.IO) {
+            val kavlingRequest = UpdatePembayaranAsyncUseCase.KavlingRequest(
+                kavlingKode, oldPembayaran, newPembayaran
+            )
+            updatePembayaranUseCase.execute(kavlingRequest).collect { result ->
+                result.onSuccess {
+                    _ubahPembayaranOperation.postValue(UiState.Success())
+                }
+                result.onFailure {
+                    _ubahPembayaranOperation.postValue(UiState.Failure(it.message))
+                }
+            }
         }
     }
 

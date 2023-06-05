@@ -103,9 +103,13 @@ class FormInputPembayaranKavlingFragment : Fragment() {
                         timeMillis = System.currentTimeMillis(),
                     )
                     if (isEditMode) {
+                        val oldPembayaran = viewModel.pembayaran.value.run {
+                            (this as UiState.Success).data
+                        }!!
+
                         viewModel.updatePembayaran(
                             kavlingKode = viewModel.currentKavlingKode!!,
-                            termin = viewModel.currentTermin!!,
+                            oldPembayaran = oldPembayaran,
                             newPembayaran = pembayaran,
                         )
                     } else {

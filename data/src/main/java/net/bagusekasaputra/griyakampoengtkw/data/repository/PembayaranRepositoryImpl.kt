@@ -350,10 +350,23 @@ class PembayaranRepositoryImpl(
 
     override suspend fun updatePembayaran(
         kavlingKode: String,
-        termin: String,
         newPembayaran: Pembayaran
     ): Result<Nothing?> {
-        TODO("Not yet implemented")
+        return try {
+            val termin = newPembayaran.termin
+            val newModel = MyObjectMapper.mapPembayaran(newPembayaran)
+
+            // Remote Update
+            remotePembayaranSource.update(kavlingKode, termin, newModel).getOrThrow()
+
+            // Cache Update
+            cacheHelper.updateMetadata(metadataTable, metadataTable).getOrThrow()
+
+            // Local Update
+            localPembayaranDataSource.update(kavlingKode, termin, newModel)
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
     }
 
     override fun deletePembayaranByTermin(

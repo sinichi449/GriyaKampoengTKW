@@ -76,3 +76,14 @@ fun PembayaranRoomEntity.toModel(): PembayaranModel {
         timeMillis = this.timeMillis,
     )
 }
+
+fun PembayaranModel.toEntity(kavlingKode: String): PembayaranRoomEntity {
+    return PembayaranRoomEntity(
+        kavlingKode = kavlingKode,
+        termin = getFullTermin(),
+        tanggal = tanggal,
+        jumlahUangDibayar = jumlahUangDibayar,
+        keterangan = keterangan,
+        timeMillis = timeMillis,
+    )
+}

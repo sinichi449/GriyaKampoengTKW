@@ -116,23 +116,22 @@ class RoomPembayaranLocalDataSource(
         }
     }
 
-    override suspend fun updatePembayaranModel(
+    override suspend fun update(
         kavlingKode: String,
-        oldPembayaranModel: PembayaranModel,
-        newPembayaranModel: PembayaranModel
+        termin: String,
+        newModel: PembayaranModel
     ): Result<Nothing?> {
-        return RoomRequestHelper.doNonGetOperation {
-            pembayaranDao.updatePembayaran(
-                kavlingKode = kavlingKode,
-                termin = oldPembayaranModel.getFullTermin(),
-                newTermin = newPembayaranModel.getFullTermin(),
-                tanggal = newPembayaranModel.tanggal,
-                jumlahUangDibayar = newPembayaranModel.jumlahUangDibayar,
-                keterangan = newPembayaranModel.keterangan,
-                timeMillis = newPembayaranModel.timeMillis,
-            )
+        return roomOperation {
+            // Delete first
+            pembayaranDao.deleteByKavlingKodeAndTermin(kavlingKode, termin)
+
+            // Then insert
+            pembayaranDao.insertPembayaran(newModel.toEntity(kavlingKode))
+
+            null
         }
     }
+
 
     override suspend fun deletePembayaranModelByTermin(
         kavlingKode: String,

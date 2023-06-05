@@ -122,20 +122,25 @@ class FirebasePembayaranSource(
         )
     }
 
-    override suspend fun updatePembayaranModel(
+    override suspend fun update(
         kavlingKode: String,
-        oldPembayaranModel: PembayaranModel,
-        newPembayaranModel: PembayaranModel
+        termin: String,
+        newModel: PembayaranModel
     ): Result<Nothing?> {
-        val terminChild = getTerminChild(oldPembayaranModel.termin, oldPembayaranModel.urutan)
-
-        // This helper automatically remove the existing data before adding the new one.
-        return FirebaseRequestHelper.updateOperation(
-            targetChild = pembayaranRef
-                .child(kavlingKode)
-                .child(terminChild),
-            newValue = newPembayaranModel,
-        )
+        return suspendCancellableCoroutine { continuation ->
+            pembayaranRef.child(kavlingKode).child(termin)
+                .setValue(newModel)
+                .addOnCompleteListener {
+                    if (continuation.isActive) {
+                        continuation.resume(Result.success(null), null)
+                    }
+                }
+                .addOnFailureListener {
+                    if (continuation.isActive) {
+                        continuation.resume(Result.failure(it), null)
+                    }
+                }
+        }
     }
 
     override suspend fun deletePembayaranModelByTermin(
