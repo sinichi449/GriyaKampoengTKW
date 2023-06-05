@@ -6,6 +6,7 @@ import net.bagusekasaputra.griyakampoengtkw.domain.entity.pembayaran.Pembayaran
 import net.bagusekasaputra.griyakampoengtkw.domain.repository.PembayaranRepository
 import net.bagusekasaputra.griyakampoengtkw.domain.usecase.UseCase
 
+@Deprecated("Migrated to InsertPembayaranAsyncUseCase")
 class AddPembayaranUseCase(
     private val pembayaranRepository: PembayaranRepository
 ): UseCase<AddPembayaranUseCase.Request, AddPembayaranUseCase.Response>() {

@@ -68,6 +68,10 @@ data class Pembayaran(
                 && (keterangan == other.keterangan)
     }
 
+    fun validate(): Boolean {
+        return parsedJumlahUangDibayar > 0
+    }
+
     companion object {
         const val PEMBAYARAN_KAVLING = 0
         const val PEMBAYARAN_INDEN_BOOKING = 1

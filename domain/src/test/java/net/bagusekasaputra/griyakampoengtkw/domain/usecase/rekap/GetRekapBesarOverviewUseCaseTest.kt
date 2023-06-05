@@ -1,4 +1,4 @@
-package net.bagusekasaputra.griyakampoengtkw.domain.usecase
+package net.bagusekasaputra.griyakampoengtkw.domain.usecase.rekap
 
 import com.google.gson.Gson
 import com.google.gson.JsonObject

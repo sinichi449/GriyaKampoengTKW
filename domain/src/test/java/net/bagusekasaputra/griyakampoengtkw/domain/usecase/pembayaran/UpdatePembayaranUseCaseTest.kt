@@ -1,4 +1,4 @@
-package net.bagusekasaputra.griyakampoengtkw.domain.usecase
+package net.bagusekasaputra.griyakampoengtkw.domain.usecase.pembayaran
 
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.runBlocking

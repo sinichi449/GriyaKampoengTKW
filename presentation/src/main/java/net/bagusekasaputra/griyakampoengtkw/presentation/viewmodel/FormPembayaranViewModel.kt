@@ -9,7 +9,6 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
@@ -25,6 +24,7 @@ import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.catatanPembayara
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.pembayaran.DeletePembayaranAsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.pembayaran.GetListPembayaranBulananAsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.pembayaran.GetSinglePembayaranByKavlingAndTerminAsyncUseCase
+import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.pembayaran.InsertPembayaranAsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.pembayaran.UpdatePembayaranAsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.statusPembayaran.GetStatusPembayaranKavlingAsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.BaselinePembayaran
@@ -38,7 +38,6 @@ import net.bagusekasaputra.griyakampoengtkw.domain.usecase.pembayaran.AddPembaya
 import net.bagusekasaputra.griyakampoengtkw.presentation.combineWith
 import net.bagusekasaputra.griyakampoengtkw.presentation.model.UiState
 import javax.inject.Inject
-import kotlin.random.Random
 
 /**
  * Soon, all "Pembayaran" related data will be moved here.
@@ -53,6 +52,7 @@ class FormPembayaranViewModel @Inject constructor(
     // Pembayaran
     private val getSinglePembayaranUseCase: GetSinglePembayaranByKavlingAndTerminAsyncUseCase,
     private val updatePembayaranUseCase: UpdatePembayaranAsyncUseCase,
+    private val insertPembayaranUseCase: InsertPembayaranAsyncUseCase,
     private val addPembayaranUseCase: AddPembayaranUseCase,
     private val deletePembayaranAsyncUseCase: DeletePembayaranAsyncUseCase,
     // Ambil Kuitansi
@@ -269,16 +269,18 @@ class FormPembayaranViewModel @Inject constructor(
         }
     }
 
-    fun insertPembayaran(kavlingKode: String, pembayaran: Pembayaran) {
+    fun addPembayaran(kavlingKode: String, pembayaran: Pembayaran) {
         viewModelScope.launch(Dispatchers.IO) {
             _insertPembayaranOperation.update { UiState.Loading() }
 
-            delay(3000L)
-
-            if (Random.nextBoolean()) {
-                _insertPembayaranOperation.update { UiState.Success() }
-            } else {
-                _insertPembayaranOperation.update { UiState.Failure("Random error!") }
+            val request = InsertPembayaranAsyncUseCase.KavlingRequest(kavlingKode, pembayaran)
+            insertPembayaranUseCase.execute(request).collect { result ->
+                result.onSuccess {
+                    _insertPembayaranOperation.update { UiState.Success() }
+                }
+                result.onFailure {  throwable ->
+                    _insertPembayaranOperation.update { UiState.Failure("Gagal menambahkan pembayaran : ${throwable.localizedMessage}") }
+                }
             }
         }
     }

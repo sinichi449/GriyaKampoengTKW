@@ -146,7 +146,7 @@ class FormInputPembayaranKavlingFragment : Fragment() {
                             newPembayaran = pembayaran,
                         )
                     } else {
-                        pembayaranViewModel.insertPembayaran(
+                        pembayaranViewModel.addPembayaran(
                             kavlingKode = pembayaranViewModel.currentKavlingKode!!,
                             pembayaran = pembayaran
                         )
