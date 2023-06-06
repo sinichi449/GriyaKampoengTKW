@@ -129,9 +129,13 @@ data class Pembayaran(
                 PeriodeRekap.SEMUA -> this
                 PeriodeRekap.TAHUN_INI ->  {
                     this?.filter { pembayaran ->
-                        val tahunPembayaran = Calendar.getInstance().let {
-                            it.time = pembayaran.tanggal.toDate()
-                            it.get(Calendar.YEAR)
+                        val tahunPembayaran = when (filterMode) {
+                            FILTER_USING_TANGGAL -> Calendar.getInstance().let {
+                                it.time = pembayaran.tanggal.toDate()
+                                it.get(Calendar.YEAR)
+                            }
+                            FILTER_USING_BULAN_ANGSURAN -> pembayaran.bulanAngsuran.tahun
+                            else -> throw IllegalArgumentException("Filter pembayaran mode $filterMode tidak diketahui!")
                         }
 
                         tahunPembayaran == Calendar.getInstance().get(Calendar.YEAR)
@@ -143,7 +147,11 @@ data class Pembayaran(
                     val tanggalTerakhir = rangeTanggal[1]
 
                     this?.filter { pembayaran ->
-                        val tanggalPembayaran = pembayaran.tanggal.toDate()
+                        val tanggalPembayaran = when (filterMode) {
+                            FILTER_USING_TANGGAL -> pembayaran.tanggal.toDate()
+                            FILTER_USING_BULAN_ANGSURAN -> pembayaran.bulanAngsuran.date
+                            else -> throw IllegalArgumentException("Filter pembayaran mode $filterMode tidak diketahui!")
+                        }
 
                         tanggalPembayaran.isWithinRange(tanggalPertama, tanggalTerakhir)
                     }
@@ -156,7 +164,10 @@ data class Pembayaran(
                     val endDate = rangeTanggal[1]
 
                     this?.filter { pembayaran ->
-                        val tanggalPembayaran = pembayaran.tanggal.toDate()
+                        val tanggalPembayaran = when (filterMode) {
+                            FILTER_USING_TANGGAL -> pembayaran.tanggal.toDate()
+                            else -> throw IllegalArgumentException("Periode filter MINGGU_INI tidak boleh menggunakan mode filter selain FILTER_USING_TANGGAL !")
+                        }
 
                         tanggalPembayaran.isWithinRange(startDate, endDate)
                     }
@@ -168,7 +179,11 @@ data class Pembayaran(
                     val endDate = rangeTanggal[1]
 
                     this?.filter {
-                        val tanggalPembayaran = it.tanggal.toDate()
+                        val tanggalPembayaran = when (filterMode) {
+                            FILTER_USING_TANGGAL -> it.tanggal.toDate()
+                            FILTER_USING_BULAN_ANGSURAN -> it.bulanAngsuran.date
+                            else -> throw IllegalArgumentException("Filter pembayaran mode $filterMode tidak diketahui!")
+                        }
 
                         tanggalPembayaran.isWithinRange(startDate, endDate)
                     }

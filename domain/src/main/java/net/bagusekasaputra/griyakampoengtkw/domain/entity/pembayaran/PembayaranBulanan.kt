@@ -1,9 +1,7 @@
 package net.bagusekasaputra.griyakampoengtkw.domain.entity.pembayaran
 
-import android.util.Log
 import net.bagusekasaputra.griyakampoengtkw.domain.DateUtil
 import net.bagusekasaputra.griyakampoengtkw.domain.DateUtil.toDate
-import net.bagusekasaputra.griyakampoengtkw.domain.DateUtil.toSlashedString
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.BaselinePembayaran
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.pembayaran.Pembayaran.Companion.filterPeriode
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.rekap.PeriodeRekap
@@ -68,11 +66,6 @@ data class PembayaranBulanan(
                         periode = PeriodeRekap.CUSTOM,
                         start = rangeSatuBulan[0],
                         end = rangeSatuBulan[1],
-                    )
-
-                    val bulan = DateUtil.namaBulanShort(calendar.get(Calendar.MONTH) + 1)
-                    Log.d("PEMBAYARAN_BULANAN", "${bulan}: ${rangeSatuBulan[0].toSlashedString()} - " +
-                            rangeSatuBulan[1].toSlashedString()
                     )
 
                     pembayaranBulanans.add(PembayaranBulanan(

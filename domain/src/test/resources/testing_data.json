@@ -1342,7 +1342,8 @@
         "tanggal": "30/01/2023",
         "termin": "DP",
         "timeMillis": 1675082135719,
-        "urutan": 1
+        "urutan": 1,
+        "invoiceDateStr": "01/2023"
       },
       "DP 2": {
         "fullTermin": "DP 2",
@@ -1351,7 +1352,8 @@
         "tanggal": "05/02/2023",
         "termin": "DP",
         "timeMillis": 1675661757873,
-        "urutan": 2
+        "urutan": 2,
+        "invoiceDateStr": "02/2023"
       },
       "DP 3": {
         "fullTermin": "DP 3",
@@ -1360,7 +1362,8 @@
         "tanggal": "02/03/2023",
         "termin": "DP",
         "timeMillis": 1677727097661,
-        "urutan": 3
+        "urutan": 3,
+        "invoiceDateStr": "02/2023"
       },
       "DP 4": {
         "fullTermin": "DP 4",
@@ -1369,7 +1372,8 @@
         "tanggal": "01/04/2023",
         "termin": "DP",
         "timeMillis": 1680322761479,
-        "urutan": 4
+        "urutan": 4,
+        "invoiceDateStr": "03/2023"
       },
       "DP 5": {
         "fullTermin": "DP 5",
@@ -1378,7 +1382,8 @@
         "tanggal": "30/04/2023",
         "termin": "DP",
         "timeMillis": 1682846004870,
-        "urutan": 5
+        "urutan": 5,
+        "invoiceDateStr": "04/2023"
       },
       "DP 6": {
         "fullTermin": "DP 6",
@@ -1387,7 +1392,8 @@
         "tanggal": "01/06/2023",
         "termin": "DP",
         "timeMillis": 1685589258226,
-        "urutan": 6
+        "urutan": 6,
+        "invoiceDateStr": "05/2023"
       },
       "ITJ 1": {
         "fullTermin": "ITJ 1",
@@ -1396,7 +1402,8 @@
         "tanggal": "01/01/2023",
         "termin": "ITJ",
         "timeMillis": 1672566322153,
-        "urutan": 1
+        "urutan": 1,
+        "invoiceDateStr": "01/2023"
       }
     },
     "A5": {

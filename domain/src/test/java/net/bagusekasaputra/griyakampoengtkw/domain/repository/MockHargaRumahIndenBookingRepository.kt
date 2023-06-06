@@ -3,6 +3,7 @@ package net.bagusekasaputra.griyakampoengtkw.domain.repository
 import net.bagusekasaputra.griyakampoengtkw.domain.DataMode
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.indenBooking.HargaRumahIndenBooking
 
+@Deprecated("Migrated to \"testing_data.json\" with Mockito Library.")
 class MockHargaRumahIndenBookingRepository: HargaRumahIndenBookingRepository {
 
     private val mapHargaRumah = mapOf(

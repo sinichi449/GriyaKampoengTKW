@@ -5,6 +5,7 @@ import kotlinx.coroutines.flow.flow
 import net.bagusekasaputra.griyakampoengtkw.domain.DataMode
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.pembayaran.Pembayaran
 
+@Deprecated("Migrated to \"testing_data.json\" with Mockito Library.")
 class MockPembayaranRepository: PembayaranRepository {
 
     private val mapPembayarans = mapOf(

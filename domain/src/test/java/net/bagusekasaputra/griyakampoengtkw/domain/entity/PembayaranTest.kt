@@ -1,5 +1,7 @@
 package net.bagusekasaputra.griyakampoengtkw.domain.entity
 
+import com.google.gson.Gson
+import com.google.gson.JsonParser
 import kotlinx.coroutines.runBlocking
 import net.bagusekasaputra.griyakampoengtkw.domain.DataMode
 import net.bagusekasaputra.griyakampoengtkw.domain.DateUtil
@@ -8,13 +10,17 @@ import net.bagusekasaputra.griyakampoengtkw.domain.DateUtil.toDate
 import net.bagusekasaputra.griyakampoengtkw.domain.DateUtil.toSlashedString
 import net.bagusekasaputra.griyakampoengtkw.domain.NumberUtil
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.pembayaran.Pembayaran
+import net.bagusekasaputra.griyakampoengtkw.domain.entity.pembayaran.Pembayaran.Companion.FILTER_USING_BULAN_ANGSURAN
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.pembayaran.Pembayaran.Companion.filterPeriode
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.rekap.PeriodeRekap
+import net.bagusekasaputra.griyakampoengtkw.domain.model.PembayaranJson
 import net.bagusekasaputra.griyakampoengtkw.domain.repository.MockHargaRumahIndenBookingRepository
 import net.bagusekasaputra.griyakampoengtkw.domain.repository.MockPembayaranRepository
+import net.bagusekasaputra.griyakampoengtkw.domain.repository.PembayaranRepository
 import org.junit.Assert
 import org.junit.Test
 import org.mockito.ArgumentMatchers
+import org.mockito.kotlin.mock
 import java.math.BigDecimal
 import java.math.RoundingMode
 import java.util.Calendar
@@ -24,6 +30,8 @@ class PembayaranTest {
 
     private val pembayaranRepository = MockPembayaranRepository()
     private val hargaRumahRepository = MockHargaRumahIndenBookingRepository()
+
+    private val mockPembayaranRepository = mock<PembayaranRepository>()
 
     @Test
     fun total_uang_masuk_on_specified_bulan_and_tahun() {
@@ -203,5 +211,40 @@ class PembayaranTest {
         val tanggalBulanAngsuran = pembayaran.bulanAngsuran.date
 
         Assert.assertEquals(firstDayInMonth, tanggalBulanAngsuran)
+    }
+
+    @Test
+    fun filterPeriodeCustom_filterUsingBulanAngsuran_shouldCorrect() {
+        val jsonPembayaran = "{\"DP 1\":{\"fullTermin\":\"DP 1\",\"jumlahUangDibayar\":5000000,\"keterangan\":\"Dp 1 Januari \",\"tanggal\":\"30/01/2023\",\"termin\":\"DP\",\"timeMillis\":1675082135719,\"urutan\":1,\"invoiceDateStr\":\"01/2023\"},\"DP 2\":{\"fullTermin\":\"DP 2\",\"jumlahUangDibayar\":400000,\"keterangan\":\"Dp 2 = TF 500 - biaya pengiriman 100 RB \",\"tanggal\":\"05/02/2023\",\"termin\":\"DP\",\"timeMillis\":1675661757873,\"urutan\":2,\"invoiceDateStr\":\"02/2023\"},\"DP 3\":{\"fullTermin\":\"DP 3\",\"jumlahUangDibayar\":5000000,\"keterangan\":\"Dp 3 February \",\"tanggal\":\"02/03/2023\",\"termin\":\"DP\",\"timeMillis\":1677727097661,\"urutan\":3,\"invoiceDateStr\":\"02/2023\"},\"DP 4\":{\"fullTermin\":\"DP 4\",\"jumlahUangDibayar\":5000000,\"keterangan\":\"Dp 4 Maret\",\"tanggal\":\"01/04/2023\",\"termin\":\"DP\",\"timeMillis\":1680322761479,\"urutan\":4,\"invoiceDateStr\":\"03/2023\"},\"DP 5\":{\"fullTermin\":\"DP 5\",\"jumlahUangDibayar\":5000000,\"keterangan\":\"Pemindahan dari B19 - A3\",\"tanggal\":\"30/04/2023\",\"termin\":\"DP\",\"timeMillis\":1682846004870,\"urutan\":5,\"invoiceDateStr\":\"04/2023\"},\"DP 6\":{\"fullTermin\":\"DP 6\",\"jumlahUangDibayar\":5000000,\"keterangan\":\"Dp 6 Bulan Mei\",\"tanggal\":\"01/06/2023\",\"termin\":\"DP\",\"timeMillis\":1685589258226,\"urutan\":6,\"invoiceDateStr\":\"05/2023\"},\"ITJ 1\":{\"fullTermin\":\"ITJ 1\",\"jumlahUangDibayar\":1000000,\"keterangan\":\"ITJ 1 \",\"tanggal\":\"01/01/2023\",\"termin\":\"ITJ\",\"timeMillis\":1672566322153,\"urutan\":1,\n\"invoiceDateStr\": \"01/2023\"}}"
+        val terminNodes = JsonParser.parseString(jsonPembayaran)
+            .asJsonObject
+
+        val pembayaranList = buildList {
+            terminNodes?.keySet()?.forEach { termin ->
+                val pembayaranNode = terminNodes.get(termin)
+                pembayaranNode?.also {
+                    val pembayaranJson = Gson().fromJson(it, PembayaranJson::class.java)
+                    pembayaranJson?.toDomain()?.also { pembayaran ->
+                        add(pembayaran)
+                    }
+                }
+            }
+        }
+
+        val filterJuni = pembayaranList.filterPeriode(
+            periode = PeriodeRekap.CUSTOM,
+            start = "30/06/2023".toDate(),
+            end = "01/06/2023".toDate(),
+            filterMode = FILTER_USING_BULAN_ANGSURAN,
+        )!!
+        Assert.assertEquals(true, filterJuni.isEmpty())
+
+        val filterMei = pembayaranList.filterPeriode(
+            periode = PeriodeRekap.CUSTOM,
+            start = "01/05/2023".toDate(),
+            end = "31/05/2023".toDate(),
+            filterMode = FILTER_USING_BULAN_ANGSURAN,
+        )!!
+        Assert.assertEquals(false, filterMei.isEmpty())
     }
 }

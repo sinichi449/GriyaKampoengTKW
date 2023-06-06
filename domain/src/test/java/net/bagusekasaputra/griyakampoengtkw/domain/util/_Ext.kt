@@ -8,8 +8,8 @@ import java.util.Scanner
 
 private const val TESTING_DATA_FILENAME = "testing_data.json"
 
-fun getTestingFile(any: Any): File {
-    val uri = any.javaClass.classLoader?.getResource(TESTING_DATA_FILENAME)?.toURI()!!
+fun getTestingFile(testClass: Any, filename: String = TESTING_DATA_FILENAME): File {
+    val uri = testClass.javaClass.classLoader?.getResource(filename)?.toURI()!!
 
     return File(uri)
 }

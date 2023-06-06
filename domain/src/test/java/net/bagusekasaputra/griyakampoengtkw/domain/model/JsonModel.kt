@@ -6,6 +6,7 @@ import net.bagusekasaputra.griyakampoengtkw.domain.entity.BiayaMarketing
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.DataDiri
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.FeeMarketing
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.HargaKavling
+import net.bagusekasaputra.griyakampoengtkw.domain.entity.pembayaran.BulanAngsuran
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.pembayaran.Pembayaran
 
 interface JsonModel<T> {
@@ -46,15 +47,25 @@ data class PembayaranJson(
     val termin: String,
     val timeMillis: Long,
     val urutan: Int,
+    val invoiceDateStr: String?,
 ): JsonModel<Pembayaran> {
 
-    override fun toDomain(args: Any?): Pembayaran = Pembayaran(
-        termin = "$termin $urutan",
-        tanggal = tanggal,
-        jumlahUangDibayar = NumberUtil.formatLongToString(jumlahUangDibayar),
-        keterangan = keterangan,
-        timeMillis = timeMillis
-    )
+    override fun toDomain(args: Any?): Pembayaran {
+        val bulanAngsuran = if (invoiceDateStr.isNullOrEmpty()) {
+            BulanAngsuran.defaultToTanggalPembayaran(tanggal)
+        } else {
+            BulanAngsuran.fromString(invoiceDateStr, "/")
+        }
+
+        return Pembayaran(
+            termin = "$termin $urutan",
+            tanggal = tanggal,
+            jumlahUangDibayar = NumberUtil.formatLongToString(jumlahUangDibayar),
+            keterangan = keterangan,
+            timeMillis = timeMillis,
+            bulanAngsuran = bulanAngsuran,
+        )
+    }
 
 }
 

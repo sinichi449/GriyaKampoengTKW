@@ -1,8 +1,6 @@
 package net.bagusekasaputra.griyakampoengtkw.domain.usecase.rekap
 
 import com.google.gson.Gson
-import com.google.gson.JsonObject
-import com.google.gson.JsonParser
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flow
@@ -17,6 +15,7 @@ import net.bagusekasaputra.griyakampoengtkw.domain.entity.Kavling
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.SingleBlockKavlingSorter
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.pembayaran.Pembayaran
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.rekap.PeriodeRekap
+import net.bagusekasaputra.griyakampoengtkw.domain.entity.rekap.RekapBesarOverview
 import net.bagusekasaputra.griyakampoengtkw.domain.model.BiayaLainJson
 import net.bagusekasaputra.griyakampoengtkw.domain.model.BiayaMarketingJson
 import net.bagusekasaputra.griyakampoengtkw.domain.model.DataDiriJson
@@ -35,6 +34,7 @@ import net.bagusekasaputra.griyakampoengtkw.domain.repository.PembayaranReposito
 import net.bagusekasaputra.griyakampoengtkw.domain.repository.RekapBesarDetailRepository
 import net.bagusekasaputra.griyakampoengtkw.domain.util.getTestingFile
 import net.bagusekasaputra.griyakampoengtkw.domain.util.nodeReference
+import org.junit.Assert
 import org.junit.Before
 import org.junit.Test
 import org.mockito.ArgumentMatchers
@@ -201,7 +201,7 @@ class GetRekapBesarOverviewUseCaseTest {
     }
 
     @Test
-    fun balbalbalbal() {
+    fun rekapBesarOverview_shouldCorrect() {
         runTest {
             val request = GetRekapBesarOverviewAsyncUseCase.Request(
                 periodeRekap = PeriodeRekap.SEMUA,
@@ -210,15 +210,19 @@ class GetRekapBesarOverviewUseCaseTest {
 
             val result = useCase.execute(request).first()
             result.onSuccess {
-                println(it)
+                val correctRekap = RekapBesarOverview(
+                    totalUangMasuk = 601_572_000L,
+                    totalSisaBelumBayar = 5_623_428_000L,
+                    totalFeeMarketing = 4_000_000L,
+                    totalBiayaMarketing = 820_000L,
+                    totalBiayaLain = 15_866_500L,
+                )
+
+                Assert.assertEquals(correctRekap, it)
             }
             result.onFailure {
                 throw it
             }
         }
     }
-}
-
-fun String.toJsonObject(): JsonObject {
-    return JsonParser.parseString(this).asJsonObject
 }
