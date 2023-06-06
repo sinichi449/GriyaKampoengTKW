@@ -65,6 +65,7 @@ data class Pembayaran(
                 && (tanggal == other.tanggal)
                 && (jumlahUangDibayar == other.jumlahUangDibayar)
                 && (keterangan == other.keterangan)
+                && (bulanAngsuran == other.bulanAngsuran)
     }
 
     fun validate(): Boolean {
