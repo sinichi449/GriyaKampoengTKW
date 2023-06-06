@@ -31,7 +31,7 @@ class BiayaMarketingRepositoryImpl(
 
     private val metadataTable = "biayaMarketing"
 
-    override fun getBatchOnline(listKavling: List<String>): Flow<Result<Map<String, List<BiayaMarketing>?>?>> {
+    override fun onlineBatch(listKavling: List<String>): Flow<Result<Map<String, List<BiayaMarketing>?>?>> {
         return flow {
             checkCache()
 
@@ -125,7 +125,7 @@ class BiayaMarketingRepositoryImpl(
         }
     }
 
-    override fun getBatchFromRemoteBackup(
+    override fun backupBatch(
         backupName: String,
         listKavling: List<String>
     ): Flow<Result<Map<String, List<BiayaMarketing>?>?>> {

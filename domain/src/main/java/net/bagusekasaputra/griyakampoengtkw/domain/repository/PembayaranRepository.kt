@@ -3,16 +3,11 @@ package net.bagusekasaputra.griyakampoengtkw.domain.repository
 import kotlinx.coroutines.flow.Flow
 import net.bagusekasaputra.griyakampoengtkw.domain.DataMode
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.pembayaran.Pembayaran
+import net.bagusekasaputra.griyakampoengtkw.domain.interfaces.BatchableWithKavling
 
-interface PembayaranRepository {
+interface PembayaranRepository: BatchableWithKavling<List<Pembayaran>?> {
 
     suspend fun getByKavlingAndTermin(kavlingKode: String, termin: String): Result<Pembayaran?>
-
-    fun getBatchOnline(listKavling: List<String>): Flow<Result<Map<String, List<Pembayaran>?>?>>
-
-    fun getBatchBackup(listKavling: List<String>): Flow<Result<Map<String, List<Pembayaran>?>?>>
-
-    fun getBatchFromRemoteBackup(backupName: String, listKavling: List<String>): Flow<Result<Map<String, List<Pembayaran>?>?>>
 
     fun getAllPembayaran(kavlingKode: String, dataMode: DataMode): Flow<Result<List<Pembayaran>?>>
 
@@ -44,6 +39,15 @@ interface PembayaranRepository {
     ): Result<Long>
 
     suspend fun refreshCache(kavlings: List<String>): Result<Nothing?>
+
+    /**
+     * Batch Operation
+     */
+    override fun onlineBatch(listKavling: List<String>): Flow<Result<Map<String, List<Pembayaran>?>?>>
+
+    override fun backupBatch(backupName: String, listKavling: List<String>): Flow<Result<Map<String, List<Pembayaran>?>?>>
+
+    fun getBatchBackup(listKavling: List<String>): Flow<Result<Map<String, List<Pembayaran>?>?>>
 
 
     /**

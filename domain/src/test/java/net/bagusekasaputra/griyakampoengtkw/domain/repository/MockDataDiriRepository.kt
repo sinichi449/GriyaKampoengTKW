@@ -11,7 +11,7 @@ class MockDataDiriRepository: DataDiriRepository {
         "A11" to DataDiri("Laela Nurkumalasari", jenisIdentitas = "KTP", noIdentitas = "", negaraBekerja = "", alamatKerja = "", alamatIndo = "", noHp = "")
     )
 
-    override fun getBatchOnline(listKavling: List<String>): Flow<Result<Map<String, DataDiri?>?>> {
+    override fun onlineBatch(listKavling: List<String>): Flow<Result<Map<String, DataDiri?>?>> {
         return flow {
             val result = mutableMapOf<String, DataDiri?>()
             listKavling.forEach {
@@ -26,7 +26,7 @@ class MockDataDiriRepository: DataDiriRepository {
         TODO("Not yet implemented")
     }
 
-    override fun getBatchFromRemoteBackup(
+    override fun backupBatch(
         backupName: String,
         listKavling: List<String>
     ): Flow<Result<Map<String, DataDiri?>?>> {

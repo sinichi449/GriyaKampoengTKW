@@ -31,7 +31,7 @@ class FeeMarketingRepositoryImpl(
 
     private val metadataTable = "feeMarketing"
 
-    override fun getBatchOnline(listKavling: List<String>): Flow<Result<Map<String, FeeMarketing?>?>> {
+    override fun onlineBatch(listKavling: List<String>): Flow<Result<Map<String, FeeMarketing?>?>> {
         return flow {
             checkCache()
 
@@ -115,14 +115,14 @@ class FeeMarketingRepositoryImpl(
         }
     }
 
-    override fun getBatchFromRemoteBackup(
+    override fun backupBatch(
         backupName: String,
-        kavlingList: List<String>
+        listKavling: List<String>
     ): Flow<Result<Map<String, FeeMarketing?>?>> {
         return flow {
             val mapFeeMarketing = mutableMapOf<String, FeeMarketing?>()
 
-            kavlingList.forEach { kavling ->
+            listKavling.forEach { kavling ->
                 val remoteResult = remoteFeeMarketingDataSource.getFromBackup(backupName, kavling)
                 if (remoteResult.isSuccess) {
                     val model = remoteResult.getOrNull()

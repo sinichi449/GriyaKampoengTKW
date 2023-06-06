@@ -3,14 +3,9 @@ package net.bagusekasaputra.griyakampoengtkw.domain.repository
 import kotlinx.coroutines.flow.Flow
 import net.bagusekasaputra.griyakampoengtkw.domain.DataMode
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.DataDiri
+import net.bagusekasaputra.griyakampoengtkw.domain.interfaces.BatchableWithKavling
 
-interface DataDiriRepository {
-
-    fun getBatchOnline(listKavling: List<String>): Flow<Result<Map<String, DataDiri?>?>>
-
-    fun getBatchBackup(listKavling: List<String>): Flow<Result<Map<String, DataDiri?>?>>
-
-    fun getBatchFromRemoteBackup(backupName: String, listKavling: List<String>): Flow<Result<Map<String, DataDiri?>?>>
+interface DataDiriRepository: BatchableWithKavling<DataDiri?> {
 
     fun getDataDiri(kavlingKode: String, dataMode: DataMode): Flow<Result<DataDiri?>>
 
@@ -22,6 +17,14 @@ interface DataDiriRepository {
 
     suspend fun refreshCache(kavlings: List<String>): Result<Nothing?>
 
+    /**
+     * Batch Operations
+     */
+    override fun onlineBatch(listKavling: List<String>): Flow<Result<Map<String, DataDiri?>?>>
+
+    override fun backupBatch(backupName: String, listKavling: List<String>): Flow<Result<Map<String, DataDiri?>?>>
+
+    fun getBatchBackup(listKavling: List<String>): Flow<Result<Map<String, DataDiri?>?>>
 
     /**
      * Inden Booking related

@@ -87,15 +87,15 @@ class GetRekapBesarOverviewAsyncUseCase(
 
                 // Data Baru
 //                _messageProgress.postValue("Mendapatkan metadata Pembayaran ...")
-                val mapListPembayaranBaru = pembayaranRepository.getBatchOnline(kavlingKodeList).first().getOrThrow()
+                val mapListPembayaranBaru = pembayaranRepository.onlineBatch(kavlingKodeList).first().getOrThrow()
 //                _messageProgress.postValue("Mendapatkan metadata Data Diri ...")
-                val mapListDataDiriBaru = dataDiriRepository.getBatchOnline(kavlingKodeList).first().getOrThrow()
+                val mapListDataDiriBaru = dataDiriRepository.onlineBatch(kavlingKodeList).first().getOrThrow()
 //                _messageProgress.postValue("Mendapatkan metadata Harga Kavling ...")
-                val mapHargaKavlingBaru = hargaKavlingRepository.getBatchOnline(kavlingKodeList).first().getOrThrow()?.toMutableMap()
+                val mapHargaKavlingBaru = hargaKavlingRepository.onlineBatch(kavlingKodeList).first().getOrThrow()?.toMutableMap()
 //                _messageProgress.postValue("Mendapatkan metadata Fee Marketing ...")
-                val mapFeeMarketingBaru = feeMarketingRepository.getBatchOnline(kavlingKodeList).first().getOrThrow()?.toMutableMap()
+                val mapFeeMarketingBaru = feeMarketingRepository.onlineBatch(kavlingKodeList).first().getOrThrow()?.toMutableMap()
 //                _messageProgress.postValue("Mendapatkan metadata Biaya Marketing ...")
-                val mapListBiayaMarketingBaru = biayaMarketingRepository.getBatchOnline(kavlingKodeList).first().getOrThrow()?.toMutableMap()
+                val mapListBiayaMarketingBaru = biayaMarketingRepository.onlineBatch(kavlingKodeList).first().getOrThrow()?.toMutableMap()
 
                 // Data Lama
                 val mapListPembayaranLama: Map<String, List<Pembayaran>?>?
@@ -104,11 +104,11 @@ class GetRekapBesarOverviewAsyncUseCase(
                 val mapFeeMarketingLama: MutableMap<String, FeeMarketing?>?
                 val mapListBiayaMarketingLama: MutableMap<String, List<BiayaMarketing>?>?
                 if (request.backupName != null) {
-                    mapListPembayaranLama = pembayaranRepository.getBatchFromRemoteBackup(request.backupName, request.listIncludedKavlingDataLama).first().getOrThrow()
-                    mapListDataDiriLama = dataDiriRepository.getBatchFromRemoteBackup(request.backupName, request.listIncludedKavlingDataLama).first().getOrThrow()
-//                    mapHargaKavlingLama = hargaKavlingRepository.getBatchFromRemoteBackup(request.backupName, request.listIncludedKavlingDataLama).first().getOrThrow()?.toMutableMap()
-                    mapFeeMarketingLama = feeMarketingRepository.getBatchFromRemoteBackup(request.backupName, request.listIncludedKavlingDataLama).first().getOrThrow()?.toMutableMap()
-                    mapListBiayaMarketingLama = biayaMarketingRepository.getBatchFromRemoteBackup(request.backupName, request.listIncludedKavlingDataLama).first().getOrThrow()?.toMutableMap()
+                    mapListPembayaranLama = pembayaranRepository.backupBatch(request.backupName, request.listIncludedKavlingDataLama).first().getOrThrow()
+                    mapListDataDiriLama = dataDiriRepository.backupBatch(request.backupName, request.listIncludedKavlingDataLama).first().getOrThrow()
+//                    mapHargaKavlingLama = hargaKavlingRepository.backupBatch(request.backupName, request.listIncludedKavlingDataLama).first().getOrThrow()?.toMutableMap()
+                    mapFeeMarketingLama = feeMarketingRepository.backupBatch(request.backupName, request.listIncludedKavlingDataLama).first().getOrThrow()?.toMutableMap()
+                    mapListBiayaMarketingLama = biayaMarketingRepository.backupBatch(request.backupName, request.listIncludedKavlingDataLama).first().getOrThrow()?.toMutableMap()
                 } else {
                     mapListPembayaranLama = null
                     mapListDataDiriLama = null

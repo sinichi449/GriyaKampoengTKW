@@ -3,16 +3,9 @@ package net.bagusekasaputra.griyakampoengtkw.domain.repository
 import kotlinx.coroutines.flow.Flow
 import net.bagusekasaputra.griyakampoengtkw.domain.DataMode
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.FeeMarketing
+import net.bagusekasaputra.griyakampoengtkw.domain.interfaces.BatchableWithKavling
 
-interface FeeMarketingRepository {
-
-    fun getBatchOnline(listKavling: List<String>): Flow<Result<Map<String, FeeMarketing?>?>>
-
-    fun getBatchOffline(kavlingList: List<String>): Flow<Result<List<FeeMarketing>?>>
-
-    fun getBatchBackup(kavlingList: List<String>): Flow<Result<Map<String, FeeMarketing?>?>>
-
-    fun getBatchFromRemoteBackup(backupName: String, kavlingList: List<String>): Flow<Result<Map<String, FeeMarketing?>?>>
+interface FeeMarketingRepository: BatchableWithKavling<FeeMarketing?> {
 
     fun getByKavlingKode(kavlingKode: String, dataMode: DataMode): Flow<Result<FeeMarketing?>>
 
@@ -25,4 +18,15 @@ interface FeeMarketingRepository {
     fun updateFeeMarketing(oldFeeMarketing: FeeMarketing, newFeeMarketing: FeeMarketing): Flow<Result<Nothing?>>
 
     fun deleteFeeMarketing(kavlingKode: String): Flow<Result<Nothing?>>
+
+    /**
+     * Batch Operations
+     */
+    override fun onlineBatch(listKavling: List<String>): Flow<Result<Map<String, FeeMarketing?>?>>
+
+    override fun backupBatch(backupName: String, listKavling: List<String>): Flow<Result<Map<String, FeeMarketing?>?>>
+
+    fun getBatchOffline(kavlingList: List<String>): Flow<Result<List<FeeMarketing>?>>
+
+    fun getBatchBackup(kavlingList: List<String>): Flow<Result<Map<String, FeeMarketing?>?>>
 }

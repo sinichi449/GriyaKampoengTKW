@@ -42,7 +42,7 @@ class GetListRekapGlobalAsyncUseCase(
                 else Kavling.fetchKavlingKodesNoDetail(DataMode.ONLINE, blockRepository, kavlingRepository, true)
 
             progressState.update { ProgressState(25, "Menyusun tabel Data Diri ...") }
-            val dataDiriBatch = dataDiriRepository.getBatchOnline(kavlingKodeList)
+            val dataDiriBatch = dataDiriRepository.onlineBatch(kavlingKodeList)
                 .first()
                 .onFailure {
                     trySendBlocking(Result.failure(Exception("GetListRekapGlobalUseCase:32 onFailure -> ${it.message}")))
@@ -50,7 +50,7 @@ class GetListRekapGlobalAsyncUseCase(
                 .getOrNull()
 
             progressState.update { ProgressState(50, "Menyusun tabel Pembayaran ...") }
-            val pembayaranBatch = pembayaranRepository.getBatchOnline(kavlingKodeList)
+            val pembayaranBatch = pembayaranRepository.onlineBatch(kavlingKodeList)
                 .first()
                 .onFailure {
                     trySendBlocking(Result.failure(Exception("GetListRekapGlobalUseCase:40 onFailure -> ${it.message}")))
@@ -58,7 +58,7 @@ class GetListRekapGlobalAsyncUseCase(
                 .getOrNull()
 
             progressState.update { ProgressState(75, "Menyusun tabel Harga Kavling ...") }
-            val hargaKavlingBatch = hargaKavlingRepository.getBatchOnline(kavlingKodeList)
+            val hargaKavlingBatch = hargaKavlingRepository.onlineBatch(kavlingKodeList)
                 .first()
                 .onFailure {
                     trySendBlocking(Result.failure(Exception("GetListRekapGlobalUseCase:49 onFailure -> ${it.message}")))

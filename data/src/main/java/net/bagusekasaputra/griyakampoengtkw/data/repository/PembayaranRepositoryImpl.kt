@@ -70,7 +70,7 @@ class PembayaranRepositoryImpl(
         }
     }
 
-    override fun getBatchOnline(listKavling: List<String>): Flow<Result<Map<String, List<Pembayaran>?>?>> {
+    override fun onlineBatch(listKavling: List<String>): Flow<Result<Map<String, List<Pembayaran>?>?>> {
         return flow {
             checkCache()
 
@@ -149,7 +149,7 @@ class PembayaranRepositoryImpl(
         }
     }
 
-    override fun getBatchFromRemoteBackup(
+    override fun backupBatch(
         backupName: String,
         listKavling: List<String>
     ): Flow<Result<Map<String, List<Pembayaran>?>?>> {

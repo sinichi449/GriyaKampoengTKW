@@ -37,7 +37,7 @@ class DataDiriRepositoryImpl(
     private val dataDiriIndenBookingLocalTable = "dataDiriIndenBooking"
     private val dataDiriIndenBookingRemoteTable = "indenBooking/dataDiri"
 
-    override fun getBatchOnline(listKavling: List<String>): Flow<Result<Map<String, DataDiri?>?>> {
+    override fun onlineBatch(listKavling: List<String>): Flow<Result<Map<String, DataDiri?>?>> {
         return flow {
             checkCache()
 
@@ -98,7 +98,7 @@ class DataDiriRepositoryImpl(
         }
     }
 
-    override fun getBatchFromRemoteBackup(
+    override fun backupBatch(
         backupName: String,
         listKavling: List<String>
     ): Flow<Result<Map<String, DataDiri?>?>> {

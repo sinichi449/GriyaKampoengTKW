@@ -3,16 +3,9 @@ package net.bagusekasaputra.griyakampoengtkw.domain.repository
 import kotlinx.coroutines.flow.Flow
 import net.bagusekasaputra.griyakampoengtkw.domain.DataMode
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.BiayaMarketing
+import net.bagusekasaputra.griyakampoengtkw.domain.interfaces.BatchableWithKavling
 
-interface BiayaMarketingRepository {
-
-    fun getBatchOnline(listKavling: List<String>): Flow<Result<Map<String, List<BiayaMarketing>?>?>>
-
-    fun getBatchOffline(listKavling: List<String>): Flow<Result<Map<String, List<BiayaMarketing>>?>>
-
-    fun getBatchBackup(listKavling: List<String>): Flow<Result<Map<String, List<BiayaMarketing>?>>>
-
-    fun getBatchFromRemoteBackup(backupName: String, listKavling: List<String>): Flow<Result<Map<String, List<BiayaMarketing>?>?>>
+interface BiayaMarketingRepository: BatchableWithKavling<List<BiayaMarketing>?> {
 
     fun getAllByKavlingKode(kavlingKode: String, dataMode: DataMode): Flow<Result<List<BiayaMarketing>?>>
 
@@ -27,4 +20,16 @@ interface BiayaMarketingRepository {
     fun deleteSingle(kavlingKode: String, biayaMarketing: BiayaMarketing): Flow<Result<Nothing?>>
 
     fun deleteAll(kavlingKode: String): Flow<Result<Nothing?>>
+
+    /**
+     * Batch Operations
+     */
+    override fun onlineBatch(listKavling: List<String>): Flow<Result<Map<String, List<BiayaMarketing>?>?>>
+
+    override fun backupBatch(backupName: String, listKavling: List<String>): Flow<Result<Map<String, List<BiayaMarketing>?>?>>
+
+    fun getBatchOffline(listKavling: List<String>): Flow<Result<Map<String, List<BiayaMarketing>>?>>
+
+    fun getBatchBackup(listKavling: List<String>): Flow<Result<Map<String, List<BiayaMarketing>?>>>
+
 }

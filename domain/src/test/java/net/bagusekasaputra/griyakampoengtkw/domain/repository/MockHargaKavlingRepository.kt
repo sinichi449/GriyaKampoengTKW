@@ -11,7 +11,7 @@ class MockHargaKavlingRepository: HargaKavlingRepository {
         "A11" to HargaKavling(kavlingKode = "A11", harga = "230,000,000", tambahanLuas = "50,000,000")
     )
 
-    override fun getBatchOnline(listKavling: List<String>): Flow<Result<Map<String, HargaKavling?>?>> {
+    override fun onlineBatch(listKavling: List<String>): Flow<Result<Map<String, HargaKavling?>?>> {
         return flow {
             val result = mutableMapOf<String, HargaKavling?>()
             listKavling.forEach {
@@ -26,7 +26,7 @@ class MockHargaKavlingRepository: HargaKavlingRepository {
         TODO("Not yet implemented")
     }
 
-    override fun getBatchFromRemoteBackup(
+    override fun backupBatch(
         backupName: String,
         listKavling: List<String>
     ): Flow<Result<Map<String, HargaKavling?>?>> {

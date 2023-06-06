@@ -2,6 +2,7 @@ package net.bagusekasaputra.griyakampoengtkw.domain.usecase.rekap
 
 import com.google.gson.Gson
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.test.runTest
@@ -41,6 +42,7 @@ import org.mockito.ArgumentMatchers
 import org.mockito.Mockito
 import org.mockito.kotlin.any
 import org.mockito.kotlin.whenever
+import java.util.Date
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class GetRekapBesarOverviewUseCaseTest {
@@ -84,7 +86,7 @@ class GetRekapBesarOverviewUseCaseTest {
 
             whenever(rekapBesarDetailRepository.delete()).thenReturn(Result.success(null))
             whenever(rekapBesarDetailRepository.insert(any())).thenReturn(Result.success(null))
-            whenever(pembayaranRepository.getBatchOnline(ArgumentMatchers.anyList()))
+            whenever(pembayaranRepository.onlineBatch(ArgumentMatchers.anyList()))
                 .then {
                     flow<Result<Map<String, List<Pembayaran>?>?>> {
                         val pembayaranNode = testingFile.nodeReference()
@@ -107,7 +109,7 @@ class GetRekapBesarOverviewUseCaseTest {
                         emit(Result.success(result))
                     }
                 }
-            whenever(dataDiriRepository.getBatchOnline(ArgumentMatchers.anyList()))
+            whenever(dataDiriRepository.onlineBatch(ArgumentMatchers.anyList()))
                 .then {
                     flow {
                         val rootNode = testingFile.nodeReference()
@@ -124,7 +126,7 @@ class GetRekapBesarOverviewUseCaseTest {
                         emit(Result.success(mapDataDiri))
                     }
                 }
-            whenever(hargaKavlingRepository.getBatchOnline(ArgumentMatchers.anyList()))
+            whenever(hargaKavlingRepository.onlineBatch(ArgumentMatchers.anyList()))
                 .then {
                     flow {
                         val rootNodes = testingFile.nodeReference()
@@ -141,7 +143,7 @@ class GetRekapBesarOverviewUseCaseTest {
                         emit(Result.success(mapHargaKavling))
                     }
                 }
-            whenever(feeMarketingRepository.getBatchOnline(ArgumentMatchers.anyList()))
+            whenever(feeMarketingRepository.onlineBatch(ArgumentMatchers.anyList()))
                 .then {
                     flow {
                         val rootNode = testingFile.nodeReference()
@@ -157,7 +159,7 @@ class GetRekapBesarOverviewUseCaseTest {
                         emit(Result.success(mapFeeMarketing))
                     }
                 }
-            whenever(biayaMarketingRepository.getBatchOnline(ArgumentMatchers.anyList()))
+            whenever(biayaMarketingRepository.onlineBatch(ArgumentMatchers.anyList()))
                 .then {
                     flow {
                         val rootNode = testingFile.nodeReference()
@@ -208,21 +210,68 @@ class GetRekapBesarOverviewUseCaseTest {
                 listKavling = kavlingKodeList,
             )
 
-            val result = useCase.execute(request).first()
-            result.onSuccess {
-                val correctRekap = RekapBesarOverview(
-                    totalUangMasuk = 601_572_000L,
-                    totalSisaBelumBayar = 5_623_428_000L,
-                    totalFeeMarketing = 4_000_000L,
-                    totalBiayaMarketing = 820_000L,
-                    totalBiayaLain = 15_866_500L,
-                )
+            val semuaResult = useCase.execute(request).singleResult()
+            val semuaCorrectResult = RekapBesarOverview(
+                totalUangMasuk = 601_572_000L,
+                totalSisaBelumBayar = 5_623_428_000L,
+                totalFeeMarketing = 4_000_000L,
+                totalBiayaMarketing = 820_000L,
+                totalBiayaLain = 15_866_500L,
+            )
 
-                Assert.assertEquals(correctRekap, it)
-            }
-            result.onFailure {
-                throw it
-            }
+            Assert.assertEquals(semuaCorrectResult, semuaResult!!)
         }
+    }
+
+    @Test
+    fun rekapBesarOverview_legacyAndNewMode_shouldEqual() {
+        runTest {
+//            val request = GetRekapBesarOverviewAsyncUseCase.Request(
+//                periodeRekap = PeriodeRekap.SEMUA,
+//                listKavling = kavlingKodeList,
+//            )
+//
+//            val semuaLegacyResult = useCase.processLegacy(request).singleResult()
+//            val semuaNewResult = useCase.processNew(request).singleResult()
+//            Assert.assertEquals(semuaLegacyResult, semuaNewResult)
+//
+//            val meiRequest = createCustomRequest(
+//                startDate = "01/05/2023".toDate(),
+//                endDate = "31/05/2023".toDate(),
+//                pembayaranFilterMode = Pembayaran.FILTER_USING_TANGGAL,
+//            )
+//            val meiLegacyResult = useCase.processLegacy(meiRequest).singleResult()
+//            val meiNewResult = useCase.processNew(meiRequest).singleResult()
+//            Assert.assertEquals(meiLegacyResult, meiNewResult)
+//
+//
+//            val juniRequest = createCustomRequest(
+//                startDate = "01/06/2023".toDate(),
+//                endDate = "30/06/2023".toDate(),
+//                pembayaranFilterMode = Pembayaran.FILTER_USING_TANGGAL,
+//            )
+//            val juniLegacyResult = useCase.processLegacy(juniRequest).singleResult()
+//            val juniNewResult = useCase.processNew(juniRequest).singleResult()
+//            Assert.assertEquals(juniLegacyResult, juniNewResult)
+        }
+    }
+
+    private suspend fun Flow<Result<RekapBesarOverview?>>.singleResult(): RekapBesarOverview? {
+        return first().getOrThrow()
+    }
+
+    @Suppress("SameParameterValue")
+    private fun createCustomRequest(
+        startDate: Date,
+        endDate: Date,
+        pembayaranFilterMode: Int,
+    ): GetRekapBesarOverviewAsyncUseCase.Request {
+        return GetRekapBesarOverviewAsyncUseCase.Request(
+            periodeRekap = PeriodeRekap.CUSTOM,
+            startDate = startDate,
+            endDate = endDate,
+            listKavling = kavlingKodeList,
+            pembayaranFilterMode = pembayaranFilterMode,
+        )
     }
 }

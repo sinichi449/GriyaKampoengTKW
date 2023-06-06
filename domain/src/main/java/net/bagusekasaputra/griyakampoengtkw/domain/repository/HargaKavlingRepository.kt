@@ -3,14 +3,9 @@ package net.bagusekasaputra.griyakampoengtkw.domain.repository
 import kotlinx.coroutines.flow.Flow
 import net.bagusekasaputra.griyakampoengtkw.domain.DataMode
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.HargaKavling
+import net.bagusekasaputra.griyakampoengtkw.domain.interfaces.BatchableWithKavling
 
-interface HargaKavlingRepository {
-
-    fun getBatchOnline(listKavling: List<String>): Flow<Result<Map<String, HargaKavling?>?>>
-
-    fun getBatchBackup(listKavling: List<String>): Flow<Result<Map<String, HargaKavling?>?>>
-
-    fun getBatchFromRemoteBackup(backupName: String, listKavling: List<String>): Flow<Result<Map<String, HargaKavling?>?>>
+interface HargaKavlingRepository: BatchableWithKavling<HargaKavling?> {
 
     fun getHargaKavling(kavlingKode: String, dataMode: DataMode): Flow<Result<HargaKavling?>>
 
@@ -19,4 +14,13 @@ interface HargaKavlingRepository {
     fun addHargaKavling(hargaKavling: HargaKavling): Flow<Result<Boolean>>
 
     fun deleteHargaKavling(kavlingKode: String): Flow<Result<Nothing?>>
+
+    /**
+     * Batch Operations
+     */
+    override fun onlineBatch(listKavling: List<String>): Flow<Result<Map<String, HargaKavling?>?>>
+
+    override fun backupBatch(backupName: String, listKavling: List<String>): Flow<Result<Map<String, HargaKavling?>?>>
+
+    fun getBatchBackup(listKavling: List<String>): Flow<Result<Map<String, HargaKavling?>?>>
 }

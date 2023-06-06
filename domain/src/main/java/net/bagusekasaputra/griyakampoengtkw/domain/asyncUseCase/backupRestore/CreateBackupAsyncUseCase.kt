@@ -73,15 +73,15 @@ class CreateBackupAsyncUseCase(
             }
 
             trySendBlocking(Result.success(Progress(21, "Mendownload Pembayaran ...")))
-            val listPembayaran = pembayaranRepository.getBatchOnline(listKavling = listKodeKavlings)
+            val listPembayaran = pembayaranRepository.onlineBatch(listKavling = listKodeKavlings)
                 .first().getOrThrow() ?: HashMap()
 
             trySendBlocking(Result.success(Progress(28, "Mendownload Data Diri")))
-            val listDataDiri = dataDiriRepository.getBatchOnline(listKavling = listKodeKavlings)
+            val listDataDiri = dataDiriRepository.onlineBatch(listKavling = listKodeKavlings)
                 .first().getOrThrow() ?: HashMap()
 
             trySendBlocking(Result.success(Progress(35, "Mendownload Harga Kavling")))
-            val listHargaKavling = (hargaKavlingRepository.getBatchOnline(listKavling = listKodeKavlings)
+            val listHargaKavling = (hargaKavlingRepository.onlineBatch(listKavling = listKodeKavlings)
                 .first().getOrThrow() ?: HashMap()).run {
                 // Convert this into List<HargaKavling> first
                 val newList = mutableListOf<HargaKavling>()
@@ -101,7 +101,7 @@ class CreateBackupAsyncUseCase(
                 .first().getOrThrow() ?: emptyList()
 
             trySendBlocking(Result.success(Progress(49, "Mendownload Biaya Marketing")))
-            val listBiayaMarketing = (biayaMarketingRepository.getBatchOnline(listKavling = listKodeKavlings)
+            val listBiayaMarketing = (biayaMarketingRepository.onlineBatch(listKavling = listKodeKavlings)
                 .first().getOrThrow() ?: HashMap()).run {
                 val newList = mutableListOf<BiayaMarketing>()
 
@@ -115,7 +115,7 @@ class CreateBackupAsyncUseCase(
             }
 
             trySendBlocking(Result.success(Progress(56, "Mendownload Fee Marketing")))
-            val listFeeMarketing = (feeMarketingRepository.getBatchOnline(listKavling = listKodeKavlings)
+            val listFeeMarketing = (feeMarketingRepository.onlineBatch(listKavling = listKodeKavlings)
                 .first().getOrThrow() ?: HashMap()).run {
                 val newList = mutableListOf<FeeMarketing>()
 
