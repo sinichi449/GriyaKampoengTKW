@@ -125,7 +125,7 @@ class PembayaranTest {
     }
 
     @Test
-    fun filterPeriodeBulanIni_shouldCorrect() {
+    fun filterPeriodeBulanIni_filterUsingTanggal_shouldCorrect() {
         val calendar = Calendar.getInstance()
         val bulanSekarang = calendar.get(Calendar.MONTH) + 1
         val tahunSekarang = calendar.get(Calendar.YEAR)
@@ -152,7 +152,7 @@ class PembayaranTest {
     }
 
     @Test
-    fun filterPeriodeMingguIni_shouldCorrect() {
+    fun filterPeriodeMingguIni_filterUsingTanggal_shouldCorrect() {
         val calendar = Calendar.getInstance()
         val startDate = calendar.run {
             set(Calendar.DAY_OF_WEEK, Calendar.SUNDAY)
@@ -204,6 +204,4 @@ class PembayaranTest {
 
         Assert.assertEquals(firstDayInMonth, tanggalBulanAngsuran)
     }
-
-
 }

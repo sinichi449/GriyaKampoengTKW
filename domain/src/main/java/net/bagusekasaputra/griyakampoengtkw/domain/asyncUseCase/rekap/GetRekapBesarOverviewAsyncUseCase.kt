@@ -47,11 +47,6 @@ class GetRekapBesarOverviewAsyncUseCase(
     private val rekapBesarDetailRepository: RekapBesarDetailRepository,
 ): AsyncUseCase<GetRekapBesarOverviewAsyncUseCase.Request, RekapBesarOverview>() {
 
-    companion object {
-        const val MODE_PEMBAYARAN_TANGGAL_REAL = 0
-        const val MODE_PEMBAYARAN_TANGGAL_ANGSURAN = 1
-    }
-
     data class Request(
         val periodeRekap: PeriodeRekap,
         val startDate: Date? = null,
@@ -60,7 +55,7 @@ class GetRekapBesarOverviewAsyncUseCase(
         val listKavling: List<String>?,
         val backupName: String? = null,
         val listIncludedKavlingDataLama: List<String> = emptyList(),
-        val modePembayaran: Int = MODE_PEMBAYARAN_TANGGAL_REAL,
+        val pembayaranFilterMode: Int = Pembayaran.FILTER_USING_TANGGAL,
     ): AsyncUseCase.Request
 
 //    private val _messageProgress = MutableLiveData("Menginisialisasi ...")

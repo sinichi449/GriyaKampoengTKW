@@ -23,7 +23,6 @@ data class Pembayaran(
     var presentase: Double = 0.0,
     var sisaBelumTerbayar: String = "",
     val keterangan: String,
-    // Timemillis is used as a Primary Key in the Room Database
     val timeMillis: Long,
     var sudahIsiFotoPembayaran: Boolean = false,
     var sudahAmbilKuitansi: Boolean = false,
@@ -76,6 +75,9 @@ data class Pembayaran(
         const val PEMBAYARAN_KAVLING = 0
         const val PEMBAYARAN_INDEN_BOOKING = 1
 
+        const val FILTER_USING_TANGGAL = 0
+        const val FILTER_USING_BULAN_ANGSURAN = 1
+
         fun hitungTotalUangMasuk(listPembayaran: List<Pembayaran>): Long {
             var mTotal = 0L
 
@@ -121,6 +123,7 @@ data class Pembayaran(
             periode: PeriodeRekap,
             start: Date?,
             end: Date?,
+            filterMode: Int = FILTER_USING_TANGGAL,
         ): List<Pembayaran>? {
             return when(periode) {
                 PeriodeRekap.SEMUA -> this
