@@ -1,0 +1,74 @@
+Index: app/src/main/java/net/bagusekasaputra/griyakampoengtkw/cache/DefaultCacheInitializer.kt
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>package net.bagusekasaputra.griyakampoengtkw.cache\r\n\r\nimport android.content.SharedPreferences\r\nimport androidx.core.content.edit\r\nimport net.bagusekasaputra.griyakampoengtkw.ConstsSharedPrefs\r\nimport net.bagusekasaputra.griyakampoengtkw.domain.entity.Tahapan\r\n\r\nclass DefaultCacheInitializer(\r\n    private val sharedPrefs: SharedPreferences,\r\n): CacheInitializer {\r\n\r\n    private val TAG = \"INIT_CACHE\"\r\n\r\n    override suspend fun initialize(tahapan: Tahapan): Result<Nothing?> {\r\n        // TODO\r\n        return Result.success(null)\r\n    }\r\n\r\n    override fun isUnitialized(): Boolean {\r\n        return sharedPrefs.getBoolean(\r\n            ConstsSharedPrefs.CACHE_UNINITIALIZED_OR_DESTROYED,\r\n            true\r\n        )\r\n    }\r\n\r\n    private fun setCacheHasBeenInitialized(initialized: Boolean) {\r\n        sharedPrefs.edit(true) {\r\n            putBoolean(ConstsSharedPrefs.CACHE_UNINITIALIZED_OR_DESTROYED, !initialized)\r\n        }\r\n    }\r\n}
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/app/src/main/java/net/bagusekasaputra/griyakampoengtkw/cache/DefaultCacheInitializer.kt b/app/src/main/java/net/bagusekasaputra/griyakampoengtkw/cache/DefaultCacheInitializer.kt
+--- a/app/src/main/java/net/bagusekasaputra/griyakampoengtkw/cache/DefaultCacheInitializer.kt	(revision 25e6eecfc121c5c4a3ce98aaea0b1fb79f680030)
++++ b/app/src/main/java/net/bagusekasaputra/griyakampoengtkw/cache/DefaultCacheInitializer.kt	(date 1685855618278)
+@@ -2,10 +2,14 @@
+ 
+ import android.content.SharedPreferences
+ import androidx.core.content.edit
++import com.google.firebase.database.DatabaseReference
+ import net.bagusekasaputra.griyakampoengtkw.ConstsSharedPrefs
+ import net.bagusekasaputra.griyakampoengtkw.domain.entity.Tahapan
++import javax.inject.Inject
++import javax.inject.Singleton
+ 
+-class DefaultCacheInitializer(
++@Singleton
++class DefaultCacheInitializer @Inject constructor(
+     private val sharedPrefs: SharedPreferences,
+ ): CacheInitializer {
+ 
+@@ -28,4 +32,8 @@
+             putBoolean(ConstsSharedPrefs.CACHE_UNINITIALIZED_OR_DESTROYED, !initialized)
+         }
+     }
++
++    private fun getDatabaseReference(tahapan: Tahapan): DatabaseReference {
++
++    }
+ }
+\ No newline at end of file
+Index: app/src/main/java/net/bagusekasaputra/griyakampoengtkw/di/StartupModule.kt
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>package net.bagusekasaputra.griyakampoengtkw.di\r\n\r\nimport android.content.SharedPreferences\r\nimport dagger.Module\r\nimport dagger.Provides\r\nimport dagger.hilt.InstallIn\r\nimport dagger.hilt.android.components.ViewModelComponent\r\nimport net.bagusekasaputra.griyakampoengtkw.cache.CacheInitializer\r\nimport net.bagusekasaputra.griyakampoengtkw.cache.DefaultCacheInitializer\r\n\r\n@Module\r\n@InstallIn(ViewModelComponent::class)\r\nobject StartupModule {\r\n\r\n    @Provides\r\n    fun provideCacheInitializer(\r\n        sharedPreferences: SharedPreferences,\r\n    ): CacheInitializer {\r\n        return DefaultCacheInitializer(sharedPreferences)\r\n    }\r\n\r\n}
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/app/src/main/java/net/bagusekasaputra/griyakampoengtkw/di/StartupModule.kt b/app/src/main/java/net/bagusekasaputra/griyakampoengtkw/di/StartupModule.kt
+--- a/app/src/main/java/net/bagusekasaputra/griyakampoengtkw/di/StartupModule.kt	(revision 25e6eecfc121c5c4a3ce98aaea0b1fb79f680030)
++++ b/app/src/main/java/net/bagusekasaputra/griyakampoengtkw/di/StartupModule.kt	(date 1685855372911)
+@@ -1,8 +1,7 @@
+ package net.bagusekasaputra.griyakampoengtkw.di
+ 
+-import android.content.SharedPreferences
++import dagger.Binds
+ import dagger.Module
+-import dagger.Provides
+ import dagger.hilt.InstallIn
+ import dagger.hilt.android.components.ViewModelComponent
+ import net.bagusekasaputra.griyakampoengtkw.cache.CacheInitializer
+@@ -10,13 +9,9 @@
+ 
+ @Module
+ @InstallIn(ViewModelComponent::class)
+-object StartupModule {
++interface StartupModule {
+ 
+-    @Provides
+-    fun provideCacheInitializer(
+-        sharedPreferences: SharedPreferences,
+-    ): CacheInitializer {
+-        return DefaultCacheInitializer(sharedPreferences)
+-    }
++    @Binds
++    fun bindsCacheInitializer(defaultCacheInitializer: DefaultCacheInitializer): CacheInitializer
+ 
+ }
+\ No newline at end of file
