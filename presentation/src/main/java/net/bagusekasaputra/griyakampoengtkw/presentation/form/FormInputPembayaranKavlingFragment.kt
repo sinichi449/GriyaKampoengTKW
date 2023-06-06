@@ -178,16 +178,13 @@ class FormInputPembayaranKavlingFragment : Fragment() {
                             onLoading(true)
                         }
                         is UiState.Success -> {
-                            val pembayaranList = uiState.data
-                            if (pembayaranList.isNullOrEmpty()) {
-                                Toast.makeText(requireContext(), "Data tidak valid!", Toast.LENGTH_LONG).show()
-                            } else {
-                                onLoading(false)
+                            val pembayaranList = uiState.data ?: emptyList()
 
-                                listenForJenisPembayaran(pembayaranList, edtTermin)
+                            onLoading(false)
 
-                                setupPembayaranOverdueInvoice(null)
-                            }
+                            listenForJenisPembayaran(pembayaranList, edtTermin)
+
+                            setupPembayaranOverdueInvoice(null)
                         }
                         is UiState.Failure -> {
                             Toast.makeText(requireContext(), uiState.failMsg, Toast.LENGTH_LONG).show()
