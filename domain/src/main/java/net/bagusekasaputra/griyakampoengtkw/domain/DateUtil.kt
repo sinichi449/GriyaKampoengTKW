@@ -221,4 +221,25 @@ object DateUtil {
             else -> throw IllegalArgumentException("Tidak ada nama bulan yang sesuai untuk Bulan $bulan")
         }
     }
+
+    fun bulanListBahasaIndo(): List<String> {
+        val totalAvailableBulan = 12
+        return buildList(totalAvailableBulan) {
+            repeat(totalAvailableBulan) { index ->
+                add(index, namaBulanLong(index + 1))
+            }
+        }.toList()
+    }
+
+    fun tahunListOf(last: Int = 5): List<String> {
+        val tahunSekarang = Calendar.getInstance().get(Calendar.YEAR)
+
+        return buildList(last) {
+            repeat(last) { index ->
+                val tahun = tahunSekarang - index
+
+                add(tahun.toString())
+            }
+        }
+    }
 }

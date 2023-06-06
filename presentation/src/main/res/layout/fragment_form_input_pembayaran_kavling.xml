@@ -9,7 +9,7 @@
         android:id="@+id/layout_content"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:visibility="gone">
+        android:visibility="visible">
 
         <androidx.appcompat.widget.LinearLayoutCompat
             android:layout_width="match_parent"
@@ -51,8 +51,6 @@
 
             </RadioGroup>
 
-
-
             <com.google.android.material.textfield.TextInputLayout
                 android:id="@+id/til_termin"
                 android:layout_width="match_parent"
@@ -73,7 +71,6 @@
                     style="@style/DenseOutlineEditText"/>
 
             </com.google.android.material.textfield.TextInputLayout>
-
 
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:layout_width="match_parent"
@@ -119,7 +116,6 @@
 
             </androidx.constraintlayout.widget.ConstraintLayout>
 
-
             <com.google.android.material.textfield.TextInputLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -137,7 +133,6 @@
                     style="@style/DenseOutlineEditText"/>
 
             </com.google.android.material.textfield.TextInputLayout>
-
 
             <com.google.android.material.textfield.TextInputLayout
                 android:layout_width="match_parent"
@@ -157,6 +152,90 @@
 
             </com.google.android.material.textfield.TextInputLayout>
 
+
+            <!-- Overdue Invoice -->
+            <androidx.appcompat.widget.LinearLayoutCompat
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:layout_marginTop="24dp">
+
+                <com.google.android.material.textview.MaterialTextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Invoice"
+                    style="@style/TextAppearance.MaterialComponents.Headline6"/>
+
+                <com.google.android.material.card.MaterialCardView
+                    android:id="@+id/card_pembayaranOverdueInvoice"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    app:strokeColor="@color/grey_300"
+                    app:strokeWidth="1dp"
+                    app:cardCornerRadius="8dp"
+                    android:focusable="true"
+                    android:clickable="true">
+
+                    <androidx.constraintlayout.widget.ConstraintLayout
+                        android:id="@+id/layout_pembayaranUntukBulanSekarang"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:visibility="gone">
+
+                        <com.google.android.material.checkbox.MaterialCheckBox
+                            android:id="@+id/checkBox_pembayaranUntukBulanSekarang"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintTop_toTopOf="parent"/>
+
+                        <com.google.android.material.textview.MaterialTextView
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            app:layout_constraintStart_toEndOf="@id/checkBox_pembayaranUntukBulanSekarang"
+                            app:layout_constraintTop_toTopOf="@id/checkBox_pembayaranUntukBulanSekarang"
+                            app:layout_constraintBottom_toBottomOf="@id/checkBox_pembayaranUntukBulanSekarang"
+                            app:layout_constraintEnd_toEndOf="parent"
+                            android:layout_marginHorizontal="16dp"
+                            android:text="Pembayaran untuk bulan ini"
+                            style="@style/TextAppearance.MaterialComponents.Subtitle2"/>
+
+                    </androidx.constraintlayout.widget.ConstraintLayout>
+
+                    <androidx.constraintlayout.widget.ConstraintLayout
+                        android:id="@+id/layout_pembayaranUntukCustom"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:visibility="visible"
+                        android:layout_margin="16dp">
+
+                        <Spinner
+                            android:id="@+id/spinner_bulanAngsuran"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            app:layout_constraintTop_toTopOf="parent"
+                            app:layout_constraintStart_toStartOf="parent"/>
+
+                        <Spinner
+                            android:id="@+id/spinner_tahunAngsuran"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            app:layout_constraintTop_toTopOf="@id/spinner_bulanAngsuran"
+                            app:layout_constraintBottom_toBottomOf="@id/spinner_bulanAngsuran"
+                            app:layout_constraintStart_toEndOf="@id/spinner_bulanAngsuran"
+                            android:layout_marginStart="8dp"/>
+
+                    </androidx.constraintlayout.widget.ConstraintLayout>
+
+                </com.google.android.material.card.MaterialCardView>
+
+            </androidx.appcompat.widget.LinearLayoutCompat>
+
+            <Space
+                android:layout_width="match_parent"
+                android:layout_height="32dp"/>
+
         </androidx.appcompat.widget.LinearLayoutCompat>
 
     </androidx.core.widget.NestedScrollView>
@@ -167,7 +246,8 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical"
-        android:gravity="center">
+        android:gravity="center"
+        android:visibility="gone">
 
         <ProgressBar
             android:layout_width="wrap_content"

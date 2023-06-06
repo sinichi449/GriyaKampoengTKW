@@ -7,7 +7,9 @@ import android.os.Parcelable
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ArrayAdapter
 import android.widget.RadioGroup
+import android.widget.Spinner
 import android.widget.Toast
 import androidx.core.os.BundleCompat
 import androidx.fragment.app.Fragment
@@ -22,23 +24,27 @@ import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import net.bagusekasaputra.griyakampoengtkw.domain.DateUtil
+import net.bagusekasaputra.griyakampoengtkw.domain.DateUtil.bulanListBahasaIndo
+import net.bagusekasaputra.griyakampoengtkw.domain.entity.pembayaran.BulanAngsuran
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.pembayaran.Pembayaran
 import net.bagusekasaputra.griyakampoengtkw.presentation.activity.FormActivity
 import net.bagusekasaputra.griyakampoengtkw.presentation.activity.InsertFormPembayaranParcel
 import net.bagusekasaputra.griyakampoengtkw.presentation.activity.UpdateFormPembayaranParcel
 import net.bagusekasaputra.griyakampoengtkw.presentation.custom.addThousandTextListener
-import net.bagusekasaputra.griyakampoengtkw.presentation.databinding.FragmentFormInputPembayaranKavlingBinding
 import net.bagusekasaputra.griyakampoengtkw.presentation.model.UiState
 import net.bagusekasaputra.griyakampoengtkw.presentation.util.DatePickerHelper
 import net.bagusekasaputra.griyakampoengtkw.presentation.util.FormUtil
 import net.bagusekasaputra.griyakampoengtkw.presentation.util.InputUtil
 import net.bagusekasaputra.griyakampoengtkw.presentation.viewmodel.FormInputViewModel
 import net.bagusekasaputra.griyakampoengtkw.presentation.viewmodel.FormPembayaranViewModel
+import java.util.Calendar
+import net.bagusekasaputra.griyakampoengtkw.presentation.databinding.FragmentFormInputPembayaranKavlingBinding as FormBinding
 
 @AndroidEntryPoint
 class FormInputPembayaranKavlingFragment : Fragment() {
 
-    private lateinit var binding: FragmentFormInputPembayaranKavlingBinding
+    private lateinit var binding: FormBinding
     private val pembayaranViewModel by activityViewModels<FormPembayaranViewModel>()
     private val formViewModel by activityViewModels<FormInputViewModel>()
 
@@ -71,7 +77,7 @@ class FormInputPembayaranKavlingFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View {
         // Inflate the layout for this fragment
-        binding = FragmentFormInputPembayaranKavlingBinding.inflate(inflater, container, false)
+        binding = FormBinding.inflate(inflater, container, false)
 
         return binding.root
     }
@@ -175,7 +181,9 @@ class FormInputPembayaranKavlingFragment : Fragment() {
                             } else {
                                 onLoading(false)
 
-                                rgJenisPembayaran.listenForJenisPembayaran(pembayaranList, edtTermin)
+                                listenForJenisPembayaran(pembayaranList, edtTermin)
+
+                                setupPembayaranOverdueInvoice(null)
                             }
                         }
                         is UiState.Failure -> {
@@ -240,6 +248,8 @@ class FormInputPembayaranKavlingFragment : Fragment() {
                                 edtJumlahUangDibayar.setText(pembayaran.jumlahUangDibayar)
 
                                 edtKeteranganProgress.setText(pembayaran.keterangan)
+
+                                setupPembayaranOverdueInvoice(pembayaran.bulanAngsuran)
                             } else {
                                 Toast.makeText(requireContext(), "Pembayaran tidak ditemukan!", Toast.LENGTH_LONG).show()
                             }
@@ -308,7 +318,7 @@ class FormInputPembayaranKavlingFragment : Fragment() {
         }
     }
 
-    private fun RadioGroup.listenForJenisPembayaran(
+    private fun listenForJenisPembayaran(
         pembayaranList: List<Pembayaran>,
         edtTermin: TextInputEditText,
     ) {
@@ -345,7 +355,7 @@ class FormInputPembayaranKavlingFragment : Fragment() {
         }
     }
 
-    private fun FragmentFormInputPembayaranKavlingBinding.onLoading(
+    private fun FormBinding.onLoading(
         isLoading: Boolean,
         loadingText: String? = null
     ) {
@@ -359,9 +369,93 @@ class FormInputPembayaranKavlingFragment : Fragment() {
     /**
      * Prevent user from changing data from either radio button or edittext
      */
-    private fun FragmentFormInputPembayaranKavlingBinding.disableForms(fabAction: FloatingActionButton) {
+    private fun FormBinding.disableForms(fabAction: FloatingActionButton) {
         onLoading(true, "Memproses data ...")
 
         fabAction.hide()
+    }
+
+    private fun FormBinding.setupPembayaranOverdueInvoice(bulanAngsuran: BulanAngsuran?) {
+        cardPembayaranOverdueInvoice.setOnClickListener {
+            val pembayaranUntukBulanSekarang = formViewModel.pembayaranUntukBulanSekarang.value
+
+            formViewModel.setPembayaranUntukBulanSekarang(!pembayaranUntukBulanSekarang)
+        }
+
+        checkBoxPembayaranUntukBulanSekarang.setOnCheckedChangeListener { _, isChecked ->
+            formViewModel.setPembayaranUntukBulanSekarang(isChecked)
+        }
+
+        if (bulanAngsuran != null) {
+            formViewModel.setPembayaranUntukBulanSekarang(false)
+
+            spinnerBulanAngsuran.setupBulanAngsuran(bulanAngsuran.bulan)
+            spinnerTahunAngsuran.setupTahunAngsuran(bulanAngsuran.tahun)
+        } else {
+            // if bulan angsuran not given,
+            // set default checkBoxPembayaranUntukBulanSekarang to true
+            formViewModel.setPembayaranUntukBulanSekarang(true)
+
+            spinnerBulanAngsuran.setupBulanAngsuran()
+            spinnerTahunAngsuran.setupTahunAngsuran()
+        }
+
+
+        lifecycleScope.launch {
+            repeatOnLifecycle(Lifecycle.State.STARTED) {
+                formViewModel.pembayaranUntukBulanSekarang.collect { untukBulanSekarang ->
+                    if (untukBulanSekarang) {
+                        layoutPembayaranUntukBulanSekarang.visibility = View.VISIBLE
+                        layoutPembayaranUntukCustom.visibility = View.GONE
+                    } else {
+                        layoutPembayaranUntukBulanSekarang.visibility = View.GONE
+                        layoutPembayaranUntukCustom.visibility = View.VISIBLE
+                    }
+
+                    checkBoxPembayaranUntukBulanSekarang.isChecked = untukBulanSekarang
+                }
+            }
+        }
+    }
+
+    private fun Spinner.setupBulanAngsuran(selectedBulan: Int? = null) {
+        val bulanList = bulanListBahasaIndo()
+        adapter = ArrayAdapter(requireContext(),
+            android.R.layout.simple_spinner_dropdown_item,
+            bulanList
+        )
+
+        if (selectedBulan != null) {
+            // Lists are starting from zero, while selectedBulan corresponds to actual month number.
+            setSelection(selectedBulan - 1)
+        } else {
+            // Default to bulan sekarang
+            val bulanSekarang = Calendar.getInstance()
+                .get(Calendar.MONTH)
+
+            setSelection(bulanSekarang)
+        }
+    }
+
+    private fun Spinner.setupTahunAngsuran(selectedTahun: Int?  = null) {
+        val tahunList = DateUtil.tahunListOf()
+        adapter = ArrayAdapter(requireContext(),
+            android.R.layout.simple_spinner_dropdown_item,
+            tahunList,
+        )
+
+        val spinnerPosition: Int
+        if (selectedTahun != null) {
+            spinnerPosition = tahunList.indexOf(selectedTahun.toString())
+
+            setSelection(spinnerPosition)
+        } else {
+            // Default to tahun sekarang
+            val tahunSekarang = Calendar.getInstance()
+                .get(Calendar.YEAR)
+            spinnerPosition = tahunList.indexOf(tahunSekarang.toString())
+
+            setSelection(spinnerPosition)
+        }
     }
 }

@@ -20,4 +20,11 @@ class FormInputViewModel @Inject constructor(
         _pembayaranSelectedJenisTermin.update { jenisTermin }
     }
 
+
+    private val _pembayaranUntukBulanSekarang = MutableStateFlow(true)
+    val pembayaranUntukBulanSekarang = _pembayaranUntukBulanSekarang.asStateFlow()
+
+    fun setPembayaranUntukBulanSekarang(untukBulanSekarang: Boolean) {
+        _pembayaranUntukBulanSekarang.update { untukBulanSekarang }
+    }
 }
