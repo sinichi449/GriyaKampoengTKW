@@ -119,6 +119,7 @@ class RekapViewModel @Inject constructor(
         periode: PeriodeRekap,
         startDate: Date? = null,
         endDate: Date? = null,
+        pembayaranFilterMode: Int,
         onFailure: (msg: String) -> Unit,
     ) {
         _selectedPeriodeRekap.value = periode
@@ -150,6 +151,7 @@ class RekapViewModel @Inject constructor(
                 listIncludedKavlingDataLama = _listKavlingDataLamaRekapBesarIncludedLive.value!!,
                 // All kavling
                 listKavling = null,
+                pembayaranFilterMode = pembayaranFilterMode,
             )
             getRekapBesarOverviewAsyncUseCase.execute(request).collect { result ->
                 result.onSuccess {

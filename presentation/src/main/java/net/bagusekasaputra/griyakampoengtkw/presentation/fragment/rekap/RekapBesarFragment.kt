@@ -19,6 +19,7 @@ import androidx.fragment.app.activityViewModels
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import dagger.hilt.android.AndroidEntryPoint
 import net.bagusekasaputra.griyakampoengtkw.domain.NumberUtil
+import net.bagusekasaputra.griyakampoengtkw.domain.entity.pembayaran.Pembayaran
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.rekap.PeriodeRekap
 import net.bagusekasaputra.griyakampoengtkw.presentation.activity.RekapBesarDetailActivity
 import net.bagusekasaputra.griyakampoengtkw.presentation.databinding.CardRekapPengeluaranBinding
@@ -30,6 +31,7 @@ import net.bagusekasaputra.griyakampoengtkw.presentation.toDate
 import net.bagusekasaputra.griyakampoengtkw.presentation.util.DatePickerHelper
 import net.bagusekasaputra.griyakampoengtkw.presentation.util.InputUtil
 import net.bagusekasaputra.griyakampoengtkw.presentation.viewmodel.RekapViewModel
+import java.util.Date
 import javax.inject.Inject
 
 @AndroidEntryPoint
@@ -38,16 +40,37 @@ class RekapBesarFragment : Fragment() {
     private lateinit var binding: FragmentRekapBesarBinding
     private val viewModel: RekapViewModel by activityViewModels()
 
-    private val periodeRekapList = listOf(
-        "Pilih Periode",
-        "Semua",
-        "Minggu ini",
-        "Bulan ini",
-        "Tahun ini",
-        "Custom"
-    )
     @Inject
     lateinit var sharedPrefs: SharedPreferences
+
+    private companion object {
+        const val INDEX_PERIODE_NULL = 0
+        const val INDEX_PERIODE_SEMUA = 1
+        const val INDEX_PERIODE_MINGGU_INI = 2
+        const val INDEX_PERIODE_BULAN_INI = 3
+        const val INDEX_PERIODE_TAHUN_INI = 4
+        const val INDEX_PERIODE_CUSTOM = 5
+
+        val periodeRekapList = buildList {
+            add(INDEX_PERIODE_NULL, "Pilih Periode")
+            add(INDEX_PERIODE_SEMUA, "Semua")
+            add(INDEX_PERIODE_MINGGU_INI, "Minggu ini")
+            add(INDEX_PERIODE_BULAN_INI, "Bulan ini")
+            add(INDEX_PERIODE_TAHUN_INI, "Tahun ini")
+            add(INDEX_PERIODE_CUSTOM, "Custom")
+        }
+
+        fun getPeriodeRekap(index: Int): PeriodeRekap? {
+            return when (index) {
+                INDEX_PERIODE_SEMUA -> PeriodeRekap.SEMUA
+                INDEX_PERIODE_MINGGU_INI -> PeriodeRekap.MINGGU_INI
+                INDEX_PERIODE_BULAN_INI -> PeriodeRekap.BULAN_INI
+                INDEX_PERIODE_TAHUN_INI -> PeriodeRekap.TAHUN_INI
+                INDEX_PERIODE_CUSTOM -> PeriodeRekap.CUSTOM
+                else -> null
+            }
+        }
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -82,12 +105,39 @@ class RekapBesarFragment : Fragment() {
                 }
 
                 when (position) {
-                    0 -> {}
-                    1 -> viewModel.getRekapBesarOverview(periode = PeriodeRekap.SEMUA, onFailure = onFailure)
-                    2 -> viewModel.getRekapBesarOverview(periode = PeriodeRekap.MINGGU_INI, onFailure = onFailure)
-                    3 -> viewModel.getRekapBesarOverview(periode = PeriodeRekap.BULAN_INI, onFailure = onFailure)
-                    4 -> viewModel.getRekapBesarOverview(periode = PeriodeRekap.TAHUN_INI, onFailure = onFailure)
-                    5 -> showCustomPeriodePickerDialog()
+                    INDEX_PERIODE_NULL -> {}
+                    INDEX_PERIODE_SEMUA, INDEX_PERIODE_TAHUN_INI, INDEX_PERIODE_BULAN_INI,
+                    INDEX_PERIODE_CUSTOM -> {
+                        dialogPembayaranFilterMode(
+                            periodeRekap = getPeriodeRekap(position)!!,
+                            onSelectedFilterPembayaran = { filterMode ->
+                                if (position == INDEX_PERIODE_CUSTOM) {
+                                    showCustomPeriodePickerDialog { startDate, endDate ->
+                                        viewModel.getRekapBesarOverview(
+                                            periode = PeriodeRekap.CUSTOM,
+                                            startDate = startDate,
+                                            endDate = endDate,
+                                            pembayaranFilterMode = filterMode,
+                                            onFailure = onFailure,
+                                        )
+                                    }
+                                } else {
+                                    viewModel.getRekapBesarOverview(
+                                        periode = getPeriodeRekap(position)!!,
+                                        pembayaranFilterMode = filterMode,
+                                        onFailure = onFailure,
+                                    )
+                                }
+                            }
+                        )
+                    }
+                    INDEX_PERIODE_MINGGU_INI -> {
+                        viewModel.getRekapBesarOverview(
+                            getPeriodeRekap(position)!!,
+                            pembayaranFilterMode = Pembayaran.FILTER_USING_TANGGAL,
+                            onFailure = onFailure,
+                        )
+                    }
                     else -> Toast.makeText(requireContext().applicationContext, "Spinner Position unreconizable!!", Toast.LENGTH_LONG).show()
                 }
             }
@@ -129,7 +179,9 @@ class RekapBesarFragment : Fragment() {
         requireActivity().startActivity(intent)
     }
 
-    private fun showCustomPeriodePickerDialog() {
+    private fun showCustomPeriodePickerDialog(
+        onSelectedCustomDate: (startDate: Date, endDate: Date) -> Unit,
+    ) {
         val dialogBinding = DialogPickCustomPeriodeBinding.inflate(layoutInflater)
 
         val dialogView = MaterialAlertDialogBuilder(
@@ -165,15 +217,7 @@ class RekapBesarFragment : Fragment() {
                 val endDate = dialogBinding.edtEndTanggal.text.toString()
                     .toDate()
 
-                viewModel.getRekapBesarOverview(
-                    periode = PeriodeRekap.CUSTOM,
-                    startDate = startDate,
-                    endDate = endDate,
-                    onFailure = {
-                        Toast.makeText(requireContext().applicationContext, it, Toast.LENGTH_LONG)
-                            .show()
-                    }
-                )
+                onSelectedCustomDate(startDate, endDate)
 
                 dialogView.dismiss()
             }
@@ -308,5 +352,26 @@ class RekapBesarFragment : Fragment() {
         }
 
         return progressDialog
+    }
+
+    private fun dialogPembayaranFilterMode(
+        periodeRekap: PeriodeRekap,
+        onSelectedFilterPembayaran: (filterMode: Int) -> Unit,
+    ) {
+        assert(periodeRekap != PeriodeRekap.MINGGU_INI)
+
+        val modeFilters = buildList {
+            add(Pembayaran.FILTER_USING_TANGGAL, "Tanggal")
+            add(Pembayaran.FILTER_USING_BULAN_ANGSURAN, "Invoice")
+        }
+
+        MaterialAlertDialogBuilder(requireContext()).apply {
+            setTitle("Pilih Mode Filter Pembayaran")
+            setSingleChoiceItems(modeFilters.toTypedArray(), Pembayaran.FILTER_USING_TANGGAL) { dialog, checkedPosition ->
+                dialog.dismiss()
+
+                onSelectedFilterPembayaran(checkedPosition)
+            }
+        }.show()
     }
 }
