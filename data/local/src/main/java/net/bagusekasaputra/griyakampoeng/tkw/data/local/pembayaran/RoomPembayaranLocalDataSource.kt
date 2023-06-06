@@ -13,48 +13,6 @@ class RoomPembayaranLocalDataSource(
 
     private val pembayaranDao = roomDatabase.getPembayaranDao()
 
-
-    private fun mapPembayaranModel(pembayaranRoomEntity: PembayaranRoomEntity): PembayaranModel {
-        return pembayaranRoomEntity.let {
-            val terminDanUrutan = pisahkanTerminDanUrutan(it.termin)
-
-            PembayaranModel(
-                termin =  terminDanUrutan.termin,
-                urutan = terminDanUrutan.urutan,
-                tanggal = it.tanggal,
-                jumlahUangDibayar = it.jumlahUangDibayar,
-                keterangan = it.keterangan,
-                timeMillis = it.timeMillis,
-            )
-        }
-    }
-
-    private fun mapPembayaranModel(pembayaranModel: PembayaranModel, kavlingKode: String): PembayaranRoomEntity {
-        return pembayaranModel.let {
-            PembayaranRoomEntity(
-                kavlingKode = kavlingKode,
-                termin = it.getFullTermin(),
-                tanggal = it.tanggal,
-                jumlahUangDibayar = it.jumlahUangDibayar,
-                keterangan = it.keterangan,
-                timeMillis = it.timeMillis,
-            )
-        }
-    }
-
-    private data class TerminDanUrutan(
-        val termin: String,
-        val urutan: Int,
-    )
-
-    private fun pisahkanTerminDanUrutan(termin: String): TerminDanUrutan {
-        val pisah = termin.split(" ")
-        return TerminDanUrutan(
-            termin = pisah[0],
-            urutan = pisah[1].toInt(),
-        )
-    }
-
     override suspend fun getByKavlingAndTermin(
         kavlingKode: String,
         termin: String
@@ -66,11 +24,10 @@ class RoomPembayaranLocalDataSource(
         }
     }
 
-
     override suspend fun getAllPembayaran(kavlingKode: String): Result<List<PembayaranModel>?> {
         return RoomRequestHelper.doGetOperation {
             pembayaranDao.getAllPembayaran(kavlingKode)?.map {
-                mapPembayaranModel(it)
+                it.toModel()
             }
         }
     }
@@ -78,22 +35,24 @@ class RoomPembayaranLocalDataSource(
     override suspend fun addPembayaranModel(kavlingKode: String, pembayaranModel: PembayaranModel): Result<Nothing?> {
         return RoomRequestHelper.doNonGetOperation {
             // Check if data already exist
-            val isExist = (pembayaranDao
-                .getSinglePembayaran(kavlingKode, pembayaranModel.getFullTermin())
-            ) != null
+            val entity = pembayaranDao.getSinglePembayaran(
+                kavlingKode, pembayaranModel.getFullTermin()
+            )
 
-            if (isExist)
+            if (entity != null) {
                 pembayaranDao.updatePembayaran(
                     kavlingKode = kavlingKode,
                     termin = pembayaranModel.getFullTermin(),
                     newTermin = pembayaranModel.getFullTermin(),
                     tanggal = pembayaranModel.tanggal,
                     jumlahUangDibayar = pembayaranModel.jumlahUangDibayar,
+                    invoiceDate = pembayaranModel.invoiceDateStr,
                     keterangan = pembayaranModel.keterangan,
                     timeMillis = pembayaranModel.timeMillis,
                 )
-            else
-                pembayaranDao.insertPembayaran(mapPembayaranModel(pembayaranModel, kavlingKode))
+            } else {
+                pembayaranDao.insertPembayaran(pembayaranModel.toEntity(kavlingKode))
+            }
         }
     }
 
@@ -103,7 +62,7 @@ class RoomPembayaranLocalDataSource(
     ): Result<Nothing?> {
         return try {
             models.forEach { pembayaranModel ->
-                val pembayaranEntity = mapPembayaranModel(pembayaranModel, kavlingKode)
+                val pembayaranEntity = pembayaranModel.toEntity(kavlingKode)
 
                 pembayaranDao.insertPembayaran(pembayaranEntity)
             }

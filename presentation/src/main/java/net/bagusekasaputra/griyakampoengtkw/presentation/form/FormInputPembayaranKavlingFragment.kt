@@ -133,6 +133,8 @@ class FormInputPembayaranKavlingFragment : Fragment() {
                     val tanggalPembayaran = edtTanggal.text.toString()
                     val jumlahUangDibayar = edtJumlahUangDibayar.text.toString()
                     val keteranganProgress = edtKeteranganProgress.text.toString().ifBlank { "-" }
+                    val bulanInvoice = spinnerBulanAngsuran.selectedItemPosition + 1
+                    val tahunInvoice = spinnerTahunAngsuran.selectedItem.toString().toInt()
 
                     val pembayaran = Pembayaran(
                         termin = "$jenisTermin $urutanTermin",
@@ -140,6 +142,7 @@ class FormInputPembayaranKavlingFragment : Fragment() {
                         jumlahUangDibayar = jumlahUangDibayar,
                         keterangan = keteranganProgress,
                         timeMillis = System.currentTimeMillis(),
+                        bulanAngsuran = BulanAngsuran(bulanInvoice, tahunInvoice)
                     )
                     if (pembayaranViewModel.formIsEditMode) {
                         val oldPembayaran = pembayaranViewModel.pembayaran.value.run {

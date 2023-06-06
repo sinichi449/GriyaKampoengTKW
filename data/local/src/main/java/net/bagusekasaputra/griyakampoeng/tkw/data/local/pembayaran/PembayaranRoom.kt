@@ -20,6 +20,8 @@ data class PembayaranRoomEntity(
     var tanggal: String,
     @ColumnInfo(name = "jumlah_uang_dibayar")
     var jumlahUangDibayar: Long,
+    @ColumnInfo(name = "invoice_date")
+    var invoiceDate: String,
     @ColumnInfo(name = "keterangan")
     var keterangan: String,
     @ColumnInfo(name = "timeMillis")
@@ -39,7 +41,8 @@ interface PembayaranRoomDao {
     fun insertPembayaran(entity: PembayaranRoomEntity): Long
 
     @Query("UPDATE pembayaran SET " +
-            "termin=:newTermin, tanggal=:tanggal, jumlah_uang_dibayar=:jumlahUangDibayar, keterangan=:keterangan, timeMillis=:timeMillis " +
+            "termin=:newTermin, tanggal=:tanggal, jumlah_uang_dibayar=:jumlahUangDibayar, " +
+            "keterangan=:keterangan, timeMillis=:timeMillis, invoice_date=:invoiceDate " +
             "WHERE kavling_kode=:kavlingKode AND termin=:termin")
     fun updatePembayaran(
         kavlingKode: String,
@@ -47,8 +50,9 @@ interface PembayaranRoomDao {
         newTermin: String,
         tanggal: String,
         jumlahUangDibayar: Long,
+        invoiceDate: String,
         keterangan: String,
-        timeMillis: Long
+        timeMillis: Long,
     )
 
     @Query("DELETE FROM pembayaran WHERE kavling_kode=:kavlingKode AND termin=:termin")
@@ -67,6 +71,7 @@ interface PembayaranRoomDao {
  */
 fun PembayaranRoomEntity.toModel(): PembayaranModel {
     val separateTerminAndUrutan = PembayaranModel.pisahkanTerminDanUrutan(this.termin)
+
     return PembayaranModel(
         termin = separateTerminAndUrutan[PembayaranModel.KEY_JENIS_TERMIN]!!,
         urutan = separateTerminAndUrutan[PembayaranModel.KEY_URUTAN_TERMIN]!!.toInt(),
@@ -74,6 +79,7 @@ fun PembayaranRoomEntity.toModel(): PembayaranModel {
         tanggal = this.tanggal,
         keterangan = this.keterangan,
         timeMillis = this.timeMillis,
+        invoiceDateStr = this.invoiceDate,
     )
 }
 
@@ -83,6 +89,7 @@ fun PembayaranModel.toEntity(kavlingKode: String): PembayaranRoomEntity {
         termin = getFullTermin(),
         tanggal = tanggal,
         jumlahUangDibayar = jumlahUangDibayar,
+        invoiceDate = invoiceDateStr,
         keterangan = keterangan,
         timeMillis = timeMillis,
     )

@@ -62,7 +62,7 @@ import net.bagusekasaputra.griyakampoeng.tkw.data.local.pengingat.PengingatRoomE
                PembayaranIndenBookingEntity::class, StandardAmbilKuitansiEntity::class,
                HargaRumahEntity::class, FotoPembayaranIndenBookingEntity::class,
                IndenBookingCatatanPembayaranEntity::class, IndenBookingAmbilKuitansiEntity::class],
-    version = 30,
+    version = 31,
     exportSchema = true,
 )
 abstract class MyRoomDatabase: RoomDatabase() {

@@ -22,6 +22,7 @@ import net.bagusekasaputra.griyakampoengtkw.data.model.IndenBookingCatatanPembay
 import net.bagusekasaputra.griyakampoengtkw.data.model.KavlingCatatanPembayaranModel
 import net.bagusekasaputra.griyakampoengtkw.data.model.KavlingModel
 import net.bagusekasaputra.griyakampoengtkw.data.model.PembayaranModel
+import net.bagusekasaputra.griyakampoengtkw.data.model.PembayaranModel.Companion.toInvoiceDateStr
 import net.bagusekasaputra.griyakampoengtkw.data.model.PromotionModel
 import net.bagusekasaputra.griyakampoengtkw.data.model.StandardAmbilKuitansiModel
 import net.bagusekasaputra.griyakampoengtkw.data.model.StatusPembayaranModel
@@ -55,6 +56,7 @@ import net.bagusekasaputra.griyakampoengtkw.domain.entity.images.ImageDataDiriIn
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.images.ImageDataDiriUri
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.images.ImageSprUri
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.indenBooking.HargaRumahIndenBooking
+import net.bagusekasaputra.griyakampoengtkw.domain.entity.pembayaran.BulanAngsuran
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.pembayaran.Pembayaran
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.statusPembayaran.LogPengembalian
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.statusPembayaran.StatusPembayaran
@@ -327,18 +329,26 @@ object MyObjectMapper {
                 jumlahUangDibayar = NumberUtil.formatStringToLong(it.jumlahUangDibayar),
                 keterangan = it.keterangan,
                 timeMillis = it.timeMillis,
+                invoiceDateStr = it.bulanAngsuran.toInvoiceDateStr(),
             )
         }
     }
 
     fun mapPembayaran(pembayaranModel: PembayaranModel): Pembayaran {
         return pembayaranModel.let {
+            val bulanAngsuran = if (it.invoiceDateStr.isEmpty()) {
+                    BulanAngsuran.defaultToTanggalPembayaran(it.tanggal)
+                } else {
+                    BulanAngsuran.fromString(it.invoiceDateStr, PembayaranModel.INVOICE_SEPARATOR)
+                }
+
             Pembayaran(
                 termin = "${it.termin} ${it.urutan}",
                 tanggal = it.tanggal,
                 jumlahUangDibayar = NumberUtil.formatLongToString(it.jumlahUangDibayar),
                 keterangan = it.keterangan,
                 timeMillis = it.timeMillis,
+                bulanAngsuran = bulanAngsuran,
             )
         }
     }

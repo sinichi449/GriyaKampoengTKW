@@ -331,12 +331,12 @@ data class BulanAngsuran(
     val bulanAndTahun: String get() {
         val bulanPadded = bulan.toString().padStart(2, '0')
 
-        return "$bulanPadded/${tahun}"
+        return "${bulanPadded}${DEFAULT_SEPARATOR}${tahun}"
     }
 
 
     companion object {
-
+        const val DEFAULT_SEPARATOR = "/"
         // Parse tanggal pembayaran into Bulan Angsuran
         fun defaultToTanggalPembayaran(tanggalPembayaran: String): BulanAngsuran {
             val calendar = Calendar.getInstance().apply {
@@ -348,6 +348,14 @@ data class BulanAngsuran(
             return BulanAngsuran(bulan, tahun)
         }
 
+        fun fromString(invoiceUntuk: String, separator: String): BulanAngsuran {
+            val separateBulanAndTahun = invoiceUntuk.split(separator)
+
+            return BulanAngsuran(
+                bulan = separateBulanAndTahun[0].toInt(),
+                tahun = separateBulanAndTahun[1].toInt(),
+            )
+        }
     }
 
 }
