@@ -22,7 +22,7 @@ interface DataDiriRepository: BatchableWithKavling<DataDiri?> {
      */
     override fun onlineBatch(listKavling: List<String>): Flow<Result<Map<String, DataDiri?>?>>
 
-    override fun backupBatch(backupName: String, listKavling: List<String>): Flow<Result<Map<String, DataDiri?>?>>
+    override fun fromBackupBatch(backupName: String, listKavling: List<String>): Flow<Result<Map<String, DataDiri?>?>>
 
     fun getBatchBackup(listKavling: List<String>): Flow<Result<Map<String, DataDiri?>?>>
 

@@ -24,7 +24,7 @@ interface FeeMarketingRepository: BatchableWithKavling<FeeMarketing?> {
      */
     override fun onlineBatch(listKavling: List<String>): Flow<Result<Map<String, FeeMarketing?>?>>
 
-    override fun backupBatch(backupName: String, listKavling: List<String>): Flow<Result<Map<String, FeeMarketing?>?>>
+    override fun fromBackupBatch(backupName: String, listKavling: List<String>): Flow<Result<Map<String, FeeMarketing?>?>>
 
     fun getBatchOffline(kavlingList: List<String>): Flow<Result<List<FeeMarketing>?>>
 

@@ -8,4 +8,19 @@ data class DataDiri(
     val alamatKerja: String,
     val alamatIndo: String,
     val noHp: String
-)
+) {
+
+    companion object {
+        fun EMPTY(): DataDiri {
+            return DataDiri(
+                nama = "N/A",
+                jenisIdentitas = "KTP",
+                noIdentitas = "0000",
+                negaraBekerja = "N/A",
+                alamatKerja = "N/A",
+                alamatIndo = "N/A",
+                noHp = "0000",
+            )
+        }
+    }
+}

@@ -98,7 +98,7 @@ class DataDiriRepositoryImpl(
         }
     }
 
-    override fun backupBatch(
+    override fun fromBackupBatch(
         backupName: String,
         listKavling: List<String>
     ): Flow<Result<Map<String, DataDiri?>?>> {

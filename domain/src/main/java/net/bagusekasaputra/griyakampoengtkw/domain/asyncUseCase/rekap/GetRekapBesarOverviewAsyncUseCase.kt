@@ -4,7 +4,9 @@ import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.channels.trySendBlocking
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
+import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.flow
 import net.bagusekasaputra.griyakampoengtkw.domain.DataMode
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.AsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.BiayaLain
@@ -24,6 +26,12 @@ import net.bagusekasaputra.griyakampoengtkw.domain.entity.rekap.PeriodeRekap
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.rekap.RekapBesarDetail
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.rekap.RekapBesarOverview
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.rekap.SisaPembayaran
+import net.bagusekasaputra.griyakampoengtkw.domain.firstOrThrow
+import net.bagusekasaputra.griyakampoengtkw.domain.interfaces.BatchableWithKavling.Companion.INDEX_BATCHABLE_BIAYA_MARKETING
+import net.bagusekasaputra.griyakampoengtkw.domain.interfaces.BatchableWithKavling.Companion.INDEX_BATCHABLE_DATA_DIRI
+import net.bagusekasaputra.griyakampoengtkw.domain.interfaces.BatchableWithKavling.Companion.INDEX_BATCHABLE_FEE_MARKETING
+import net.bagusekasaputra.griyakampoengtkw.domain.interfaces.BatchableWithKavling.Companion.INDEX_BATCHABLE_HARGA_KAVLING
+import net.bagusekasaputra.griyakampoengtkw.domain.interfaces.BatchableWithKavling.Companion.INDEX_BATCHABLE_PEMBAYARAN
 import net.bagusekasaputra.griyakampoengtkw.domain.repository.BiayaLainRepository
 import net.bagusekasaputra.griyakampoengtkw.domain.repository.BiayaMarketingRepository
 import net.bagusekasaputra.griyakampoengtkw.domain.repository.BlockRepository
@@ -35,6 +43,10 @@ import net.bagusekasaputra.griyakampoengtkw.domain.repository.PembayaranReposito
 import net.bagusekasaputra.griyakampoengtkw.domain.repository.RekapBesarDetailRepository
 import java.util.Date
 
+/**
+ * Temporarily disable HargaKavling Data Lama query. And that means so too Total Sisa Belum Bayar
+ * for Data Lama, because it affects the Rekap Besar's "Sisa Belum Bayar" display.
+ */
 class GetRekapBesarOverviewAsyncUseCase(
     private val blockRepository: BlockRepository,
     private val kavlingRepository: KavlingRepository,
@@ -62,12 +74,22 @@ class GetRekapBesarOverviewAsyncUseCase(
 //    val messageProgress: LiveData<String>
 //        get() = _messageProgress
 
+    private val batchableWithKavlingList by lazy {
+        buildList {
+            add(INDEX_BATCHABLE_DATA_DIRI, dataDiriRepository)
+            add(INDEX_BATCHABLE_HARGA_KAVLING, hargaKavlingRepository)
+            add(INDEX_BATCHABLE_PEMBAYARAN, pembayaranRepository)
+            add(INDEX_BATCHABLE_FEE_MARKETING, feeMarketingRepository)
+            add(INDEX_BATCHABLE_BIAYA_MARKETING, biayaMarketingRepository)
+        }
+    }
 
-    /**
-     * Temporarily disable HargaKavling Data Lama query. And that means so too Total Sisa Belum Bayar
-     * for Data Lama, because it affects the Rekap Besar's "Sisa Belum Bayar" display.
-     */
     override fun process(request: Request): Flow<Result<RekapBesarOverview?>> {
+        return processNew(request)
+    }
+
+    @Deprecated("Migrated to processNew.")
+    fun processLegacy(request: Request): Flow<Result<RekapBesarOverview?>> {
         return callbackFlow {
             try {
                 rekapBesarDetailRepository.delete()
@@ -104,11 +126,11 @@ class GetRekapBesarOverviewAsyncUseCase(
                 val mapFeeMarketingLama: MutableMap<String, FeeMarketing?>?
                 val mapListBiayaMarketingLama: MutableMap<String, List<BiayaMarketing>?>?
                 if (request.backupName != null) {
-                    mapListPembayaranLama = pembayaranRepository.backupBatch(request.backupName, request.listIncludedKavlingDataLama).first().getOrThrow()
-                    mapListDataDiriLama = dataDiriRepository.backupBatch(request.backupName, request.listIncludedKavlingDataLama).first().getOrThrow()
+                    mapListPembayaranLama = pembayaranRepository.fromBackupBatch(request.backupName, request.listIncludedKavlingDataLama).first().getOrThrow()
+                    mapListDataDiriLama = dataDiriRepository.fromBackupBatch(request.backupName, request.listIncludedKavlingDataLama).first().getOrThrow()
 //                    mapHargaKavlingLama = hargaKavlingRepository.backupBatch(request.backupName, request.listIncludedKavlingDataLama).first().getOrThrow()?.toMutableMap()
-                    mapFeeMarketingLama = feeMarketingRepository.backupBatch(request.backupName, request.listIncludedKavlingDataLama).first().getOrThrow()?.toMutableMap()
-                    mapListBiayaMarketingLama = biayaMarketingRepository.backupBatch(request.backupName, request.listIncludedKavlingDataLama).first().getOrThrow()?.toMutableMap()
+                    mapFeeMarketingLama = feeMarketingRepository.fromBackupBatch(request.backupName, request.listIncludedKavlingDataLama).first().getOrThrow()?.toMutableMap()
+                    mapListBiayaMarketingLama = biayaMarketingRepository.fromBackupBatch(request.backupName, request.listIncludedKavlingDataLama).first().getOrThrow()?.toMutableMap()
                 } else {
                     mapListPembayaranLama = null
                     mapListDataDiriLama = null
@@ -234,4 +256,284 @@ class GetRekapBesarOverviewAsyncUseCase(
             awaitClose {  }
         }
     }
+
+    fun processNew(request: Request): Flow<Result<RekapBesarOverview?>> {
+        return flow {
+            rekapBesarDetailRepository.delete().getOrThrow()
+
+            val kavlingKodeList =
+                if (!request.listKavling.isNullOrEmpty()) {
+                    request.listKavling
+                } else {
+                    val dataMode = if (request.backupName.isNullOrEmpty())
+                        DataMode.ONLINE else DataMode.DATA_LAMA
+
+                    Kavling.fetchKavlingKodesNoDetail(
+                        dataMode, blockRepository, kavlingRepository, true
+                    )
+                }
+            val filter = RekapKavling.Filter(
+                periodeRekap = request.periodeRekap,
+                startDate = request.startDate,
+                endDate = request.endDate,
+                pembayaranFilterMode = request.pembayaranFilterMode,
+            )
+
+            val baruRekapKavling = fetchDataBaru(kavlingKodeList)
+                .filterRekap(filter)
+            val lamaRekapKavling = (if (request.backupName.isNullOrEmpty()) {
+                    RekapKavling.EMPTY()
+                } else {
+                    fetchDataLama(request.backupName, request.listIncludedKavlingDataLama)
+                })
+                .filterRekap(filter)
+
+            val biayaLainList = (biayaLainRepository.getAllOnline(DataMode.ONLINE)
+                .firstOrThrow() ?: emptyList())
+                .filterPeriode(
+                    periode = request.periodeRekap,
+                    start = request.startDate,
+                    end = request.endDate,
+                )
+
+
+            val rekapBesarDetail = RekapBesarDetail(
+                mapListPembayaranRekapBaru = baruRekapKavling.pembayaranWithNamaCostumer,
+                mapFeeMarketingRekapBaru = baruRekapKavling.feeMarketingMap,
+                mapListBiayaMarketingRekapBaru = baruRekapKavling.biayaMarketingMap,
+                mapListPembayaranRekapLama = lamaRekapKavling.pembayaranWithNamaCostumer,
+                mapFeeMarketingRekapLama = lamaRekapKavling.feeMarketingMap,
+                mapListBiayaMarketingRekapLama = lamaRekapKavling.biayaMarketingMap,
+                listBiayaLain = biayaLainList,
+                listSisaPembayaran = baruRekapKavling.sisaPembayaran,
+            )
+
+            rekapBesarDetailRepository.insert(rekapBesarDetail).getOrThrow()
+
+            val totalDataBaruDanLama = baruRekapKavling.kalkulasi() + lamaRekapKavling.kalkulasi()
+            val totalBiayaLain = BiayaLain.hitungTotalBiayaLain(biayaLainList)
+            val rekapBesarOverview = RekapBesarOverview(
+                totalUangMasuk = totalDataBaruDanLama.uangMasuk,
+                totalSisaBelumBayar = totalDataBaruDanLama.sisaBelumBayar,
+                totalFeeMarketing = totalDataBaruDanLama.feeMarketing,
+                totalBiayaMarketing = totalDataBaruDanLama.biayaMarketing,
+                totalBiayaLain = totalBiayaLain
+            )
+
+            emit(Result.success(rekapBesarOverview))
+        }.catch {
+            emit(Result.failure(it))
+        }
+    }
+
+    @Suppress("UNCHECKED_CAST")
+    private suspend fun fetchDataBaru(
+        kavlingList: List<String>,
+    ): RekapKavling {
+        val result = buildList {
+            batchableWithKavlingList.forEachIndexed { index, repository ->
+                val batchMap = repository.onlineBatch(kavlingList).firstOrThrow()
+                    ?: emptyMap()
+
+                add(index, batchMap)
+            }
+        }
+
+        return RekapKavling(
+            kavlingList = kavlingList,
+            dataDiriMap = result[INDEX_BATCHABLE_DATA_DIRI] as Map<String, DataDiri?>,
+            hargaKavlingMap = result[INDEX_BATCHABLE_HARGA_KAVLING] as Map<String, HargaKavling?>,
+            pembayaranMap = result[INDEX_BATCHABLE_PEMBAYARAN] as Map<String, List<Pembayaran>?>,
+            feeMarketingMap = result[INDEX_BATCHABLE_FEE_MARKETING] as Map<String, FeeMarketing?>,
+            biayaMarketingMap = result[INDEX_BATCHABLE_BIAYA_MARKETING] as Map<String, List<BiayaMarketing>?>,
+        )
+    }
+
+    @Suppress("UNCHECKED_CAST")
+    private suspend fun fetchDataLama(
+        backupName: String,
+        includedKavlingList: List<String>
+    ): RekapKavling {
+        val result = buildList {
+            batchableWithKavlingList.forEachIndexed { index, repository ->
+                val batchMap = repository
+                    .fromBackupBatch(backupName, includedKavlingList)
+                    .firstOrThrow()
+                    ?: emptyMap()
+
+                add(index, batchMap)
+            }
+        }
+
+        return RekapKavling(
+            kavlingList = includedKavlingList,
+            dataDiriMap = result[INDEX_BATCHABLE_DATA_DIRI] as Map<String, DataDiri?>,
+            hargaKavlingMap = result[INDEX_BATCHABLE_HARGA_KAVLING] as Map<String, HargaKavling?>,
+            pembayaranMap = result[INDEX_BATCHABLE_PEMBAYARAN] as Map<String, List<Pembayaran>?>,
+            feeMarketingMap = result[INDEX_BATCHABLE_FEE_MARKETING] as Map<String, FeeMarketing?>,
+            biayaMarketingMap = result[INDEX_BATCHABLE_BIAYA_MARKETING] as Map<String, List<BiayaMarketing>?>,
+        )
+    }
+
+
+    private data class RekapKavling(
+        val kavlingList: List<String>,
+        val dataDiriMap: Map<String, DataDiri?>,
+        val hargaKavlingMap: Map<String, HargaKavling?>,
+        val pembayaranMap: Map<String, List<Pembayaran>?>,
+        val feeMarketingMap: Map<String, FeeMarketing?>,
+        val biayaMarketingMap: Map<String, List<BiayaMarketing>?>,
+    ) {
+        val pembayaranWithNamaCostumer: Map<String, List<PembayaranWithNamaCostumer>?> get() {
+            return buildMapOnKavlingIteration { kavling ->
+                val pembayaranList = pembayaranMap[kavling] ?: emptyList()
+                val dataDiri = dataDiriMap[kavling] ?: DataDiri.EMPTY()
+
+                pembayaranList.toListPembayaranWithNamaCostumer(
+                    kavling = kavling,
+                    namaCostumer = dataDiri.nama,
+                )
+            }
+        }
+        val sisaPembayaran: List<SisaPembayaran> get() {
+            return buildListOnKavlingIteration { kavling ->
+                val namaCustomer = (dataDiriMap[kavling] ?: DataDiri.EMPTY()).nama
+                val hargaKavling = hargaKavlingMap[kavling] ?: HargaKavling.EMPTY(kavling)
+
+                val pembayaranList = pembayaranMap[kavling] ?: emptyList()
+                val totalUangMasuk = Pembayaran.hitungTotalUangMasuk(pembayaranList)
+
+                SisaPembayaran(
+                    kavling = kavling,
+                    namaCostumer = namaCustomer,
+                    hargaKavling = hargaKavling,
+                    totalUangMasuk = totalUangMasuk,
+                )
+            }
+        }
+
+        data class Filter(
+            val periodeRekap: PeriodeRekap,
+            val startDate: Date?,
+            val endDate: Date?,
+            val pembayaranFilterMode: Int,
+        )
+
+        data class Kalkulasi(
+            val uangMasuk: Long,
+            val sisaBelumBayar: Long,
+            val feeMarketing: Long,
+            val biayaMarketing: Long,
+        ) {
+            operator fun plus(other: Kalkulasi): Kalkulasi {
+                return Kalkulasi(
+                    uangMasuk = uangMasuk + other.uangMasuk,
+                    sisaBelumBayar = sisaBelumBayar + other.sisaBelumBayar,
+                    feeMarketing = feeMarketing + other.feeMarketing,
+                    biayaMarketing = biayaMarketing + other.biayaMarketing,
+                )
+            }
+        }
+
+        fun filterRekap(filter: Filter): RekapKavling {
+            val pembayaranFiltered = buildMapOnKavlingIteration { kavling ->
+                val pembayaranList = pembayaranMap[kavling] ?: emptyList()
+
+                pembayaranList.filterPeriode(
+                    periode = filter.periodeRekap,
+                    start = filter.startDate,
+                    end = filter.endDate,
+                    filterMode = filter.pembayaranFilterMode,
+                ) ?: emptyList()
+            }
+
+            val feeMarketingFiltered = buildMapOnKavlingIteration { kavling ->
+                val feeMarketing = feeMarketingMap[kavling] ?: FeeMarketing.EMPTY(kavling)
+
+                feeMarketing.filterPeriode(
+                    periode = filter.periodeRekap,
+                    start = filter.startDate,
+                    end = filter.endDate,
+                )
+            }
+
+            val biayaMarketingFiltered = buildMapOnKavlingIteration { kavling ->
+                val biayaMarketingList = biayaMarketingMap[kavling] ?: emptyList()
+
+                biayaMarketingList.filterPeriode(
+                    periode = filter.periodeRekap,
+                    start = filter.startDate,
+                    end = filter.endDate,
+                )
+            }
+
+            return copy(
+                pembayaranMap = pembayaranFiltered,
+                feeMarketingMap = feeMarketingFiltered,
+                biayaMarketingMap = biayaMarketingFiltered,
+            )
+        }
+
+        fun kalkulasi(): Kalkulasi {
+            var totalUangMasuk = 0L
+            var totalSisaBelumBayar = 0L
+            var totalFeeMarketing = 0L
+            var totalBiayaMarketing = 0L
+
+            kavlingList.forEach { kavling ->
+                val hargaKavling = hargaKavlingMap[kavling] ?: HargaKavling.EMPTY(kavling)
+                val pembayaranList = pembayaranMap[kavling] ?: emptyList()
+                val feeMarketing = feeMarketingMap[kavling] ?: FeeMarketing.EMPTY(kavling)
+                val biayaMarketingList = biayaMarketingMap[kavling] ?: emptyList()
+                val uangMasukKavling = Pembayaran.hitungTotalUangMasuk(pembayaranList)
+
+                totalUangMasuk += uangMasukKavling
+                totalSisaBelumBayar += Pembayaran.hitungTotalSisaBelumBayar(hargaKavling, uangMasukKavling)
+                totalFeeMarketing += feeMarketing.parsedBiayaMarketer
+                totalBiayaMarketing += BiayaMarketing.hitungTotalBiayaMarketing(biayaMarketingList)
+            }
+
+            return Kalkulasi(
+                uangMasuk = totalUangMasuk,
+                sisaBelumBayar = totalSisaBelumBayar,
+                feeMarketing = totalFeeMarketing,
+                biayaMarketing = totalBiayaMarketing
+            )
+        }
+
+        private inline fun <V> buildMapOnKavlingIteration(
+            builderAction: (kavling: String) -> V,
+        ): Map<String, V> {
+            return buildMap {
+                kavlingList.forEach { kavling ->
+                    put(kavling, builderAction(kavling))
+                }
+            }
+        }
+
+        private inline fun <V> buildListOnKavlingIteration(
+            builderAction: (kavling: String) -> V,
+        ): List<V> {
+            return buildList {
+                kavlingList.forEach { kavling ->
+                    add(builderAction(kavling))
+                }
+            }
+        }
+
+        companion object {
+            fun EMPTY(): RekapKavling {
+                return RekapKavling(
+                    kavlingList = emptyList(),
+                    dataDiriMap = emptyMap(),
+                    hargaKavlingMap = emptyMap(),
+                    pembayaranMap = emptyMap(),
+                    feeMarketingMap = emptyMap(),
+                    biayaMarketingMap = emptyMap(),
+                )
+            }
+        }
+
+    }
+
 }

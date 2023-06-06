@@ -26,7 +26,7 @@ class MockHargaKavlingRepository: HargaKavlingRepository {
         TODO("Not yet implemented")
     }
 
-    override fun backupBatch(
+    override fun fromBackupBatch(
         backupName: String,
         listKavling: List<String>
     ): Flow<Result<Map<String, HargaKavling?>?>> {

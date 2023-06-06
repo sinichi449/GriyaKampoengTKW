@@ -20,7 +20,7 @@ interface HargaKavlingRepository: BatchableWithKavling<HargaKavling?> {
      */
     override fun onlineBatch(listKavling: List<String>): Flow<Result<Map<String, HargaKavling?>?>>
 
-    override fun backupBatch(backupName: String, listKavling: List<String>): Flow<Result<Map<String, HargaKavling?>?>>
+    override fun fromBackupBatch(backupName: String, listKavling: List<String>): Flow<Result<Map<String, HargaKavling?>?>>
 
     fun getBatchBackup(listKavling: List<String>): Flow<Result<Map<String, HargaKavling?>?>>
 }

@@ -18,4 +18,14 @@ data class HargaKavling(
     fun toFloat(): Float {
         return hargaDanTambahLuasan.toFloat()
     }
+
+    companion object {
+        fun EMPTY(kavling: String): HargaKavling {
+            return HargaKavling(
+                kavlingKode = kavling,
+                harga = "0",
+                tambahanLuas = "0",
+            )
+        }
+    }
 }

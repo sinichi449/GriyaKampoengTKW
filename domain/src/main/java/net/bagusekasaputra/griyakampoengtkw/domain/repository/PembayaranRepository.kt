@@ -45,7 +45,7 @@ interface PembayaranRepository: BatchableWithKavling<List<Pembayaran>?> {
      */
     override fun onlineBatch(listKavling: List<String>): Flow<Result<Map<String, List<Pembayaran>?>?>>
 
-    override fun backupBatch(backupName: String, listKavling: List<String>): Flow<Result<Map<String, List<Pembayaran>?>?>>
+    override fun fromBackupBatch(backupName: String, listKavling: List<String>): Flow<Result<Map<String, List<Pembayaran>?>?>>
 
     fun getBatchBackup(listKavling: List<String>): Flow<Result<Map<String, List<Pembayaran>?>?>>
 

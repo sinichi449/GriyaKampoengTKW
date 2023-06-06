@@ -36,6 +36,15 @@ data class FeeMarketing(
     }
 
     companion object {
+        fun EMPTY(kavling: String): FeeMarketing {
+            return FeeMarketing(
+                kavlingKode = kavling,
+                namaMarketer = "N/A",
+                biayaMarketer = "0",
+                tanggalPenerimaan = "01/01/1990",
+            )
+        }
+
         fun FeeMarketing?.filterPeriode(
             periode: PeriodeRekap,
             start: Date?,

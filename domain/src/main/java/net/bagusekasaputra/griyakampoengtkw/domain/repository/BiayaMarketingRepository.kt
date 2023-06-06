@@ -26,7 +26,7 @@ interface BiayaMarketingRepository: BatchableWithKavling<List<BiayaMarketing>?> 
      */
     override fun onlineBatch(listKavling: List<String>): Flow<Result<Map<String, List<BiayaMarketing>?>?>>
 
-    override fun backupBatch(backupName: String, listKavling: List<String>): Flow<Result<Map<String, List<BiayaMarketing>?>?>>
+    override fun fromBackupBatch(backupName: String, listKavling: List<String>): Flow<Result<Map<String, List<BiayaMarketing>?>?>>
 
     fun getBatchOffline(listKavling: List<String>): Flow<Result<Map<String, List<BiayaMarketing>>?>>
 
