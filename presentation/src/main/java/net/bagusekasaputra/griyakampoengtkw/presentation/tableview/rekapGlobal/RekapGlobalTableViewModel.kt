@@ -9,7 +9,16 @@ data class RgColumnHeader(
 data class RgRowHeader(
     val nomor: String,
     val kavling: String,
-)
+): ISortableModel {
+    override fun getId(): String {
+        return nomor
+    }
+
+    override fun getContent(): Any {
+        return kavling
+    }
+
+}
 
 data class RgCell(
     val kavling: String,

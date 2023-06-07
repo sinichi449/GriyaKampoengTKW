@@ -29,7 +29,9 @@ object RekapGlobalColumnPosition {
     const val PERSENTASE = 5
 }
 
-class RekapGlobalTableViewAdapter: AbstractTableAdapter<RgColumnHeader, RgRowHeader, RgCell>() {
+class RekapGlobalTableViewAdapter(
+    private val onSortingStateReset: () -> Unit,
+): AbstractTableAdapter<RgColumnHeader, RgRowHeader, RgCell>() {
 
     /**
      * Cell
@@ -126,32 +128,36 @@ class RekapGlobalTableViewAdapter: AbstractTableAdapter<RgColumnHeader, RgRowHea
         override fun onSortingStatusChanged(sortState: SortState) {
             super.onSortingStatusChanged(sortState)
 
-            with(imgSortingState) {
-                val sortingIconRes = when (sortState) {
-                    SortState.ASCENDING -> {
-                        visibility = View.VISIBLE
-
-                        R.drawable.baseline_arrow_drop_up_24
-                    }
-                    SortState.DESCENDING -> {
-                        visibility = View.VISIBLE
-
-                        R.drawable.baseline_arrow_drop_down_24
-                    }
-                    SortState.UNSORTED -> {
-                        visibility = View.GONE
-
-                        null
-                    }
+            val containerBackgroundColor: Int
+            val iconSortingVisibility: Int
+            val iconSortingDrawable: Int?
+            when (sortState) {
+                SortState.ASCENDING -> {
+                    iconSortingVisibility = View.VISIBLE
+                    containerBackgroundColor = R.color.secondaryColor
+                    iconSortingDrawable = R.drawable.baseline_arrow_drop_up_24
                 }
-
-                sortingIconRes?.also {
-                    val sortingIconDrawable = ContextCompat.getDrawable(
-                        container.context, it
-                    )
-                    setImageDrawable(sortingIconDrawable)
+                SortState.DESCENDING -> {
+                    iconSortingVisibility = View.VISIBLE
+                    containerBackgroundColor = R.color.secondaryColor
+                    iconSortingDrawable = R.drawable.baseline_arrow_drop_down_24
+                }
+                SortState.UNSORTED -> {
+                    iconSortingVisibility = View.GONE
+                    containerBackgroundColor = R.color.abang
+                    iconSortingDrawable = null
                 }
             }
+
+            imgSortingState.visibility = iconSortingVisibility
+            iconSortingDrawable?.also {
+                imgSortingState.setImageDrawable(ContextCompat.getDrawable(
+                    container.context, it
+                ))
+            }
+            container.setBackgroundColor(ContextCompat.getColor(
+                container.context, containerBackgroundColor
+            ))
         }
     }
 
@@ -215,6 +221,10 @@ class RekapGlobalTableViewAdapter: AbstractTableAdapter<RgColumnHeader, RgRowHea
     override fun onCreateCornerView(parent: ViewGroup): View {
         return LayoutInflater.from(parent.context).let { inflater ->
             TableRekapCornerViewBinding.inflate(inflater, parent, false).let { binding ->
+                binding.root.setOnClickListener {
+                    onSortingStateReset()
+                }
+
                 binding.root
             }
         }

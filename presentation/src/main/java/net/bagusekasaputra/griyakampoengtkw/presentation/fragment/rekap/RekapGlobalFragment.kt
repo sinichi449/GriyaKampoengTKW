@@ -11,6 +11,7 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.recyclerview.widget.RecyclerView
 import com.evrencoskun.tableview.listener.ITableViewListener
+import com.evrencoskun.tableview.sort.SortState
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -94,11 +95,25 @@ class RekapGlobalFragment : Fragment() {
         rowHeaders: List<RgRowHeader>,
         cellItems: List<List<RgCell>>,
     ) {
-        val adapter = RekapGlobalTableViewAdapter()
+        val adapter = RekapGlobalTableViewAdapter {
+            with(binding.tableRekapGlobal) {
+                repeat(columnHeaders.size) {
+                    sortColumn(it, SortState.UNSORTED)
+                }
+
+                setupRekapTableView(columnHeaders, rowHeaders, cellItems)
+
+                selectionHandler.selectedColumnPosition = -1
+                selectionHandler.selectedRowPosition = -1
+
+                scrollToRowPosition(0)
+            }
+        }
 
         binding.tableRekapGlobal.setAdapter(adapter)
 
         adapter.setAllItems(columnHeaders, rowHeaders, cellItems)
+        adapter.notifyDataSetChanged()
 
         binding.tableRekapGlobal.setColumnWidth(RekapGlobalColumnPosition.NAMA, 400)
         binding.tableRekapGlobal.setColumnWidth(RekapGlobalColumnPosition.TANGGAL_PEMBELIAN, 300)
@@ -106,6 +121,57 @@ class RekapGlobalFragment : Fragment() {
         binding.tableRekapGlobal.setColumnWidth(RekapGlobalColumnPosition.JUMLAH_UANG_MASUK, 350)
         binding.tableRekapGlobal.setColumnWidth(RekapGlobalColumnPosition.SISA_PEMBAYARAN, 350)
         binding.tableRekapGlobal.setColumnWidth(RekapGlobalColumnPosition.PERSENTASE, 350)
+
+        with(binding.tableRekapGlobal) {
+            tableViewListener = object : ITableViewListener {
+                override fun onCellClicked(cellView: RecyclerView.ViewHolder, column: Int, row: Int) {
+
+                }
+
+                override fun onCellDoubleClicked(cellView: RecyclerView.ViewHolder, column: Int, row: Int) {
+
+                }
+
+                override fun onCellLongPressed(cellView: RecyclerView.ViewHolder, column: Int, row: Int) {
+
+                }
+
+                override fun onColumnHeaderClicked(columnHeaderView: RecyclerView.ViewHolder, column: Int) {
+                    val previousSelectedColumn = selectionHandler.selectedColumnPosition
+                    // reset previous selected column
+                    sortColumn(previousSelectedColumn, SortState.UNSORTED)
+
+                    val nextSortState = when (getSortingStatus(column)) {
+                        SortState.UNSORTED -> SortState.ASCENDING
+                        SortState.ASCENDING -> SortState.DESCENDING
+                        SortState.DESCENDING -> SortState.UNSORTED
+                    }
+                    sortColumn(column, nextSortState)
+                }
+
+                override fun onColumnHeaderDoubleClicked(
+                    columnHeaderView: RecyclerView.ViewHolder,
+                    column: Int
+                ) {
+
+                }
+
+                override fun onColumnHeaderLongPressed(
+                    columnHeaderView: RecyclerView.ViewHolder,
+                    column: Int
+                ) {
+
+                }
+
+                override fun onRowHeaderClicked(rowHeaderView: RecyclerView.ViewHolder, row: Int) {}
+
+                override fun onRowHeaderDoubleClicked(rowHeaderView: RecyclerView.ViewHolder, row: Int) {
+
+                }
+
+                override fun onRowHeaderLongPressed(rowHeaderView: RecyclerView.ViewHolder, row: Int) {}
+            }
+        }
     }
 
     private fun LayoutWarningAndLoadingRekapBinding.setProgress(progressState: ProgressState) {
@@ -113,48 +179,4 @@ class RekapGlobalFragment : Fragment() {
         tvLoadingReport.text = progressState.message
     }
 
-    class TableRekapListener: ITableViewListener {
-        override fun onCellClicked(cellView: RecyclerView.ViewHolder, column: Int, row: Int) {
-
-        }
-
-        override fun onCellDoubleClicked(cellView: RecyclerView.ViewHolder, column: Int, row: Int) {
-
-        }
-
-        override fun onCellLongPressed(cellView: RecyclerView.ViewHolder, column: Int, row: Int) {
-
-        }
-
-        override fun onColumnHeaderClicked(columnHeaderView: RecyclerView.ViewHolder, column: Int) {
-
-        }
-
-        override fun onColumnHeaderDoubleClicked(
-            columnHeaderView: RecyclerView.ViewHolder,
-            column: Int
-        ) {
-
-        }
-
-        override fun onColumnHeaderLongPressed(
-            columnHeaderView: RecyclerView.ViewHolder,
-            column: Int
-        ) {
-
-        }
-
-        override fun onRowHeaderClicked(rowHeaderView: RecyclerView.ViewHolder, row: Int) {
-
-        }
-
-        override fun onRowHeaderDoubleClicked(rowHeaderView: RecyclerView.ViewHolder, row: Int) {
-
-        }
-
-        override fun onRowHeaderLongPressed(rowHeaderView: RecyclerView.ViewHolder, row: Int) {
-
-        }
-
-    }
 }

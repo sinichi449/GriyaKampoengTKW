@@ -263,14 +263,14 @@ class RekapViewModel @Inject constructor(
         return if (listRekapGlobal != null) {
             val listCells = mutableListOf<List<RgCell>>()
 
-            listRekapGlobal.forEach {
+            listRekapGlobal.forEachIndexed { index, it ->
                 val listValues = mutableListOf<RgCell>().apply {
-                    add(RgCell(it.noKavling, it.namaCostumer))
-                    add(RgCell(it.noKavling, it.tanggalPembelian))
-                    add(RgCell(it.noKavling, it.harga))
-                    add(RgCell(it.noKavling, it.jumlahUangMasuk))
-                    add(RgCell(it.noKavling, it.sisaPembayaran))
-                    add(RgCell(it.noKavling, it.persentase))
+                    add(RgCell(index.toString(), it.namaCostumer))
+                    add(RgCell(index.toString(), it.tanggalPembelian))
+                    add(RgCell(index.toString(), it.harga))
+                    add(RgCell(index.toString(), it.jumlahUangMasuk))
+                    add(RgCell(index.toString(), it.sisaPembayaran))
+                    add(RgCell(index.toString(), it.persentase))
                 }
 
                 listCells.add(listValues)
