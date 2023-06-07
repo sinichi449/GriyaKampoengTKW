@@ -82,6 +82,9 @@ class RekapViewModel @Inject constructor(
     val selectedPeriodeRekap: LiveData<PeriodeRekap?>
         get() = _selectedPeriodeRekap
 
+    // Progress RekapBesarOverview
+    val rekapBesarOverviewMessage = getRekapBesarOverviewAsyncUseCase.messageProgress
+
     var fabScrollMode = FabMode.Downward
     var selectedBackupName: String? = null
 

@@ -16,8 +16,12 @@ import android.widget.ArrayAdapter
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.launch
 import net.bagusekasaputra.griyakampoengtkw.domain.NumberUtil
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.pembayaran.Pembayaran
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.rekap.PeriodeRekap
@@ -229,13 +233,16 @@ class RekapBesarFragment : Fragment() {
     }
 
     private fun setupViewModel() {
+        // Progress RekapBesarOverview
         val progressDialog = createProgressDialog()
+        lifecycleScope.launch {
+            repeatOnLifecycle(Lifecycle.State.STARTED) {
+                viewModel.rekapBesarOverviewMessage.collect {
+                    progressDialog.setMessage(it)
+                }
+            }
+        }
 
-//        viewModel.rekapBesarProgress.observe(requireActivity()) {
-//            it?.also { progressMessage ->
-//                progressDialog.setMessage(progressMessage)
-//            }
-//        }
         viewModel.isRekapBesarOverviewLoaded.observe(requireActivity()) {
             if (it != null) {
                 if (it) {

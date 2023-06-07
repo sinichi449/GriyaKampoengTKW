@@ -3,10 +3,13 @@ package net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.rekap
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.channels.trySendBlocking
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.callbackFlow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.update
 import net.bagusekasaputra.griyakampoengtkw.domain.DataMode
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.AsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.BiayaLain
@@ -70,10 +73,6 @@ class GetRekapBesarOverviewAsyncUseCase(
         val pembayaranFilterMode: Int = Pembayaran.FILTER_USING_TANGGAL,
     ): AsyncUseCase.Request
 
-//    private val _messageProgress = MutableLiveData("Menginisialisasi ...")
-//    val messageProgress: LiveData<String>
-//        get() = _messageProgress
-
     private val batchableWithKavlingList by lazy {
         buildList {
             add(INDEX_BATCHABLE_DATA_DIRI, dataDiriRepository)
@@ -83,6 +82,9 @@ class GetRekapBesarOverviewAsyncUseCase(
             add(INDEX_BATCHABLE_BIAYA_MARKETING, biayaMarketingRepository)
         }
     }
+
+    private val _messageProgress = MutableStateFlow("Menginisialisasi ...")
+    val messageProgress = _messageProgress.asStateFlow()
 
     override fun process(request: Request): Flow<Result<RekapBesarOverview?>> {
         return processNew(request)
@@ -276,15 +278,20 @@ class GetRekapBesarOverviewAsyncUseCase(
                 pembayaranFilterMode = request.pembayaranFilterMode,
             )
 
-            val baruRekapKavling = fetchDataBaru(kavlingKodeList)
+            val baruRekapKavling = fetchDataBaru(kavlingKodeList) { index ->
+                    _messageProgress.update { "Mendapatkan metadata ${getBatchableName(index)} ..." }
+                }
                 .filterRekap(filter)
             val lamaRekapKavling = (if (request.backupName.isNullOrEmpty()) {
                     RekapKavling.EMPTY()
                 } else {
-                    fetchDataLama(request.backupName, request.listIncludedKavlingDataLama)
+                    fetchDataLama(request.backupName, request.listIncludedKavlingDataLama) { index ->
+                        _messageProgress.update { "Recovery metadata ${getBatchableName(index)} ..." }
+                    }
                 })
                 .filterRekap(filter)
 
+            _messageProgress.update { "Mendapatkan metadata Biaya Lain-lain ..." }
             val biayaLainList = (biayaLainRepository.getAllOnline(DataMode.ONLINE)
                 .firstOrThrow() ?: emptyList())
                 .filterPeriode(
@@ -294,6 +301,7 @@ class GetRekapBesarOverviewAsyncUseCase(
                 )
 
 
+            _messageProgress.update { "Sedang menghitung rekap ..." }
             val rekapBesarDetail = RekapBesarDetail(
                 mapListPembayaranRekapBaru = baruRekapKavling.pembayaranWithNamaCostumer,
                 mapFeeMarketingRekapBaru = baruRekapKavling.feeMarketingMap,
@@ -326,9 +334,12 @@ class GetRekapBesarOverviewAsyncUseCase(
     @Suppress("UNCHECKED_CAST")
     private suspend fun fetchDataBaru(
         kavlingList: List<String>,
+        onBatchListener: (batchIndex: Int) -> Unit,
     ): RekapKavling {
         val result = buildList {
             batchableWithKavlingList.forEachIndexed { index, repository ->
+                onBatchListener(index)
+
                 val batchMap = repository.onlineBatch(kavlingList).firstOrThrow()
                     ?: emptyMap()
 
@@ -352,10 +363,13 @@ class GetRekapBesarOverviewAsyncUseCase(
     @Suppress("UNCHECKED_CAST")
     private suspend fun fetchDataLama(
         backupName: String,
-        includedKavlingList: List<String>
+        includedKavlingList: List<String>,
+        onBatchListener: (batchIndex: Int) -> Unit,
     ): RekapKavling {
         val result = buildList {
             batchableWithKavlingList.forEachIndexed { index, repository ->
+                onBatchListener(index)
+
                 val batchMap = if (index != INDEX_BATCHABLE_HARGA_KAVLING) {
                         repository
                             .fromBackupBatch(backupName, includedKavlingList)
@@ -379,6 +393,17 @@ class GetRekapBesarOverviewAsyncUseCase(
         )
     }
 
+
+    private fun getBatchableName(index: Int): String {
+        return when (index) {
+            INDEX_BATCHABLE_PEMBAYARAN -> "Pembayaran"
+            INDEX_BATCHABLE_FEE_MARKETING -> "Fee Marketing"
+            INDEX_BATCHABLE_DATA_DIRI -> "Data Diri"
+            INDEX_BATCHABLE_BIAYA_MARKETING -> "Biaya Marketing"
+            INDEX_BATCHABLE_HARGA_KAVLING -> "Harga Kavling"
+            else -> "NULL"
+        }
+    }
 
     private data class RekapKavling(
         val kavlingList: List<String>,
