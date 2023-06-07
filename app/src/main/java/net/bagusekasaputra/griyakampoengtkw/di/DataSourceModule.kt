@@ -75,7 +75,7 @@ import net.bagusekasaputra.griyakampoengtkw.data.remote.indenBooking.imageDataDi
 import net.bagusekasaputra.griyakampoengtkw.data.remote.indenBooking.pembayaran.FirebasePembayaranIndenBookingDataSource
 import net.bagusekasaputra.griyakampoengtkw.data.remote.kavling.FirebaseKavlingDataSource
 import net.bagusekasaputra.griyakampoengtkw.data.remote.metadata.FirebaseMetadataDataSource
-import net.bagusekasaputra.griyakampoengtkw.data.remote.pembayaran.FirebasePembayaranSource
+import net.bagusekasaputra.griyakampoengtkw.data.remote.pembayaran.FirebasePembayaranDataSource
 import net.bagusekasaputra.griyakampoengtkw.data.remote.pembayaran.RemotePembayaranIndenBookingDataSource
 import net.bagusekasaputra.griyakampoengtkw.data.remote.promotion.FirebasePromotionDataSource
 import net.bagusekasaputra.griyakampoengtkw.data.remote.statusPembayaran.FirebaseStatusPembayaranDataSource
@@ -324,8 +324,8 @@ object DataSourceModule {
     fun provideRemotePembayaranSource(
         @TahapanReference databaseReference: DatabaseReference,
         pembayaranIndenBookingDataSource: RemotePembayaranIndenBookingDataSource
-    ): RemotePembayaranSource {
-        return FirebasePembayaranSource(databaseReference, pembayaranIndenBookingDataSource)
+    ): RemotePembayaranDataSource {
+        return FirebasePembayaranDataSource(databaseReference, pembayaranIndenBookingDataSource)
     }
 
     @Provides

@@ -2,7 +2,7 @@ package net.bagusekasaputra.griyakampoengtkw.data.interfaces.remote
 
 import net.bagusekasaputra.griyakampoengtkw.data.model.PembayaranModel
 
-interface RemotePembayaranSource {
+interface RemotePembayaranDataSource {
 
     suspend fun getByKavlingAndTermin(kavlingKode: String, termin: String): Result<PembayaranModel?>
 

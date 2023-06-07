@@ -7,14 +7,14 @@ import kotlinx.coroutines.flow.callbackFlow
 import net.bagusekasaputra.griyakampoengtkw.data.CacheHelper
 import net.bagusekasaputra.griyakampoengtkw.data.MyObjectMapper
 import net.bagusekasaputra.griyakampoengtkw.data.interfaces.local.LocalPembayaranDataSource
-import net.bagusekasaputra.griyakampoengtkw.data.interfaces.remote.RemotePembayaranSource
+import net.bagusekasaputra.griyakampoengtkw.data.interfaces.remote.RemotePembayaranDataSource
 import net.bagusekasaputra.griyakampoengtkw.domain.DataMode
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.pembayaran.Pembayaran
 import net.bagusekasaputra.griyakampoengtkw.domain.repository.PembayaranRepository
 
 class DefaultPembayaranRepository(
     private val localDataSource: LocalPembayaranDataSource,
-    private val remoteDataSource: RemotePembayaranSource,
+    private val remoteDataSource: RemotePembayaranDataSource,
     private val cacheHelper: CacheHelper,
 ): PembayaranRepository {
 

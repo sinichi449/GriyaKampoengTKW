@@ -7,7 +7,7 @@ import com.google.firebase.database.ValueEventListener
 import com.google.firebase.database.ktx.getValue
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.suspendCancellableCoroutine
-import net.bagusekasaputra.griyakampoengtkw.data.interfaces.remote.RemotePembayaranSource
+import net.bagusekasaputra.griyakampoengtkw.data.interfaces.remote.RemotePembayaranDataSource
 import net.bagusekasaputra.griyakampoengtkw.data.model.PembayaranModel
 import net.bagusekasaputra.griyakampoengtkw.data.remote.FirebaseNodes
 import net.bagusekasaputra.griyakampoengtkw.data.remote.FirebaseRequestHelper
@@ -16,10 +16,10 @@ import kotlin.coroutines.resumeWithException
 import kotlin.coroutines.suspendCoroutine
 
 @OptIn(ExperimentalCoroutinesApi::class)
-class FirebasePembayaranSource(
+class FirebasePembayaranDataSource(
     private val databaseReference: DatabaseReference,
     private val pembayaranIndenBookingDataSource: RemotePembayaranIndenBookingDataSource,
-): RemotePembayaranSource {
+): RemotePembayaranDataSource {
 
     private val pembayaranRef = databaseReference.child(FirebaseNodes.FORM_PEMBAYARAN)
     override suspend fun getByKavlingAndTermin(

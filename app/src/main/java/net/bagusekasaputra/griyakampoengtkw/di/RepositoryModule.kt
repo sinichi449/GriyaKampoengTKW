@@ -89,7 +89,7 @@ object RepositoryModule {
     @Provides
     fun provideLegacyPembayaranRepository(
         localPembayaranDataSource: LocalPembayaranDataSource,
-        remotePembayaranSource: RemotePembayaranSource,
+        remotePembayaranDataSource: RemotePembayaranDataSource,
         backupPembayaranDataSource: BackupPembayaranDataSource,
         localMetadata: LocalMetadataDataSource,
         remoteMetadata: RemoteMetadataDataSource,
@@ -97,7 +97,7 @@ object RepositoryModule {
     ): PembayaranRepository {
         return LegacyPembayaranRepository(
             localPembayaranDataSource,
-            remotePembayaranSource,
+            remotePembayaranDataSource,
             backupPembayaranDataSource,
             localMetadata,
             remoteMetadata,
@@ -110,7 +110,7 @@ object RepositoryModule {
     @Provides
     fun provideDefaultPembayaranRepository(
         localDataSource: LocalPembayaranDataSource,
-        remoteDataSource: RemotePembayaranSource,
+        remoteDataSource: RemotePembayaranDataSource,
         cacheHelper: CacheHelper,
     ): PembayaranRepository {
         return DefaultPembayaranRepository(localDataSource, remoteDataSource, cacheHelper)

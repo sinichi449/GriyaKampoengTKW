@@ -16,7 +16,7 @@ import net.bagusekasaputra.griyakampoengtkw.data.interfaces.backup.BackupPembaya
 import net.bagusekasaputra.griyakampoengtkw.data.interfaces.local.LocalMetadataDataSource
 import net.bagusekasaputra.griyakampoengtkw.data.interfaces.local.LocalPembayaranDataSource
 import net.bagusekasaputra.griyakampoengtkw.data.interfaces.remote.RemoteMetadataDataSource
-import net.bagusekasaputra.griyakampoengtkw.data.interfaces.remote.RemotePembayaranSource
+import net.bagusekasaputra.griyakampoengtkw.data.interfaces.remote.RemotePembayaranDataSource
 import net.bagusekasaputra.griyakampoengtkw.data.model.MetadataModel
 import net.bagusekasaputra.griyakampoengtkw.domain.DataMode
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.pembayaran.Pembayaran
@@ -25,7 +25,7 @@ import net.bagusekasaputra.griyakampoengtkw.domain.repository.PembayaranReposito
 @Deprecated("Migrated to DefaultPembayaranRepository")
 class LegacyPembayaranRepository(
     private val localPembayaranDataSource: LocalPembayaranDataSource,
-    private val remotePembayaranSource: RemotePembayaranSource,
+    private val remotePembayaranDataSource: RemotePembayaranDataSource,
     private val backupPembayaranDataSource: BackupPembayaranDataSource,
     private val localMetadata: LocalMetadataDataSource,
     private val remoteMetadata: RemoteMetadataDataSource,
@@ -50,7 +50,7 @@ class LegacyPembayaranRepository(
             val localModel = localPembayaranDataSource.getByKavlingAndTermin(kavlingKode, termin).getOrThrow()
 
             val pembayaran = if (isInvalidCache || localModel == null) {
-                val remoteModel = remotePembayaranSource.getByKavlingAndTermin(kavlingKode, termin).getOrThrow()
+                val remoteModel = remotePembayaranDataSource.getByKavlingAndTermin(kavlingKode, termin).getOrThrow()
 
                 if (remoteModel != null) {
                     localPembayaranDataSource.addPembayaranModel(kavlingKode, remoteModel).getOrThrow()
@@ -86,7 +86,7 @@ class LegacyPembayaranRepository(
                     .getOrNull()
 
                 if (localModel.isNullOrEmpty()) {
-                    remotePembayaranSource.getAllPembayaran(kavling)
+                    remotePembayaranDataSource.getAllPembayaran(kavling)
                         .onSuccess { listPembayaran ->
                             listPembayaran?.forEach {
                                 localPembayaranDataSource.addPembayaranModel(
@@ -158,7 +158,7 @@ class LegacyPembayaranRepository(
             val mapPembayaran = mutableMapOf<String, List<Pembayaran>?>()
 
             listKavling.forEach { kavling ->
-                val remoteResult = remotePembayaranSource.getAllFromBackup(backupName, kavling)
+                val remoteResult = remotePembayaranDataSource.getAllFromBackup(backupName, kavling)
                 if (remoteResult.isSuccess) {
                     val listModel = remoteResult.getOrNull()
                     val listPembayaran = listModel?.map { mapPembayaran(it) }
@@ -195,7 +195,7 @@ class LegacyPembayaranRepository(
             }
             val flowOnline = flow {
                 // First, we request to the remote
-                val remoteResult = remotePembayaranSource.getAllPembayaran(kavlingKode)
+                val remoteResult = remotePembayaranDataSource.getAllPembayaran(kavlingKode)
 
                 if (remoteResult.isSuccess) {
                     // If success, then we write to the local data
@@ -233,7 +233,7 @@ class LegacyPembayaranRepository(
     override fun getAllOnline(kavlingKode: String): Flow<Result<List<Pembayaran>?>> {
         return flow {
             // First, we request to the remote
-            val remoteResult = remotePembayaranSource.getAllPembayaran(kavlingKode)
+            val remoteResult = remotePembayaranDataSource.getAllPembayaran(kavlingKode)
 
             val mapResult = DataUtil.mapListResult(
                 originResult = remoteResult,
@@ -248,7 +248,7 @@ class LegacyPembayaranRepository(
             localPembayaranDataSource.deleteAll().getOrThrow()
 
             kavlings.forEach { kavlingKode ->
-                val remoteResult = remotePembayaranSource.getAllPembayaran(kavlingKode).getOrThrow()
+                val remoteResult = remotePembayaranDataSource.getAllPembayaran(kavlingKode).getOrThrow()
 
                 remoteResult?.also { pembayaranModels ->
                     if (pembayaranModels.isNotEmpty()) {
@@ -273,7 +273,7 @@ class LegacyPembayaranRepository(
         return flow {
             updateMetadata()
 
-            val remoteResult = remotePembayaranSource.addPembayaranModel(
+            val remoteResult = remotePembayaranDataSource.addPembayaranModel(
                 kavlingKode,
                 pembayaranModel = mapPembayaran(pembayaran)
             )
@@ -298,7 +298,7 @@ class LegacyPembayaranRepository(
             val newModel = MyObjectMapper.mapPembayaran(newPembayaran)
 
             // Remote Update
-            remotePembayaranSource.update(kavlingKode, termin, newModel).getOrThrow()
+            remotePembayaranDataSource.update(kavlingKode, termin, newModel).getOrThrow()
 
             // Cache Update
             cacheHelper.updateMetadata(metadataTable, metadataTable).getOrThrow()
@@ -323,7 +323,7 @@ class LegacyPembayaranRepository(
                 emit(Result.failure(it))
             }
 
-            val remoteResult = remotePembayaranSource.deletePembayaranModelByTermin(kavlingKode, termin)
+            val remoteResult = remotePembayaranDataSource.deletePembayaranModelByTermin(kavlingKode, termin)
             remoteResult.onSuccess {
                 emit(Result.success(true))
             }
@@ -352,7 +352,7 @@ class LegacyPembayaranRepository(
             Log.d("INDEN_BOOKING", "Pembayaran on Cache was invalid or Local Data Source is null! ($keyId) " +
                     "Fetching from Remote Data Source now.")
 
-            remotePembayaranSource.getAllFromIndenBooking(keyId).getOrThrow()?.also {
+            remotePembayaranDataSource.getAllFromIndenBooking(keyId).getOrThrow()?.also {
                 it.forEach { pembayaranModel ->
                     Log.d("INTERNAL_INDEN_BOOKING", "Begin insertion for ${pembayaranModel.termin} !")
                 }
@@ -377,7 +377,7 @@ class LegacyPembayaranRepository(
             val model = MyObjectMapper.mapPembayaran(pembayaran)
 
             // Remote Insertion
-            remotePembayaranSource.insertFromIndenBooking(keyId, model)
+            remotePembayaranDataSource.insertFromIndenBooking(keyId, model)
                 .onSuccess {
                     // Update Cache
                     cacheHelper.updateMetadata(
@@ -438,7 +438,7 @@ class LegacyPembayaranRepository(
                 emit(Result.failure(it))
             }
 
-            val remoteResult = remotePembayaranSource.deleteAllPembayaranModel(kavlingKode)
+            val remoteResult = remotePembayaranDataSource.deleteAllPembayaranModel(kavlingKode)
             remoteResult.onSuccess {
                 emit(Result.success(true))
             }
