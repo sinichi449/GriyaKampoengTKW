@@ -9,10 +9,12 @@ import net.bagusekasaputra.griyakampoengtkw.domain.DateUtil.normalize
 import net.bagusekasaputra.griyakampoengtkw.domain.DateUtil.toDate
 import net.bagusekasaputra.griyakampoengtkw.domain.DateUtil.toSlashedString
 import net.bagusekasaputra.griyakampoengtkw.domain.NumberUtil
+import net.bagusekasaputra.griyakampoengtkw.domain.entity.pembayaran.BulanAngsuran
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.pembayaran.Pembayaran
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.pembayaran.Pembayaran.Companion.FILTER_USING_BULAN_ANGSURAN
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.pembayaran.Pembayaran.Companion.filterPeriode
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.rekap.PeriodeRekap
+import net.bagusekasaputra.griyakampoengtkw.domain.juta
 import net.bagusekasaputra.griyakampoengtkw.domain.model.PembayaranJson
 import net.bagusekasaputra.griyakampoengtkw.domain.repository.MockHargaRumahIndenBookingRepository
 import net.bagusekasaputra.griyakampoengtkw.domain.repository.MockPembayaranRepository
@@ -28,36 +30,9 @@ class PembayaranTest {
     private val pembayaranRepository = MockPembayaranRepository()
     private val hargaRumahRepository = MockHargaRumahIndenBookingRepository()
 
-    @Test
-    fun total_uang_masuk_on_specified_bulan_and_tahun() {
-//        val kavling = "A11"
-//        val bulan = 12
-//        val tahun = 2022
-//
-//        val uangMasuk = runBlocking {
-//            pembayaranRepository.getUangMasukBulanIni(kavling, bulan, tahun, DataMode.ONLINE)
-//                .getOrThrow()
-//        }
-//
-//        Assert.assertEquals(25_375_000L, uangMasuk)
-    }
 
     @Test
-    fun sudah_bayar_pembayaran_on_specified_bulan_and_tahun() {
-//        val kavling = "A11"
-//        val bulan = 12
-//        val tahun = 2022
-//
-//        val adaPembayaran = runBlocking {
-//            pembayaranRepository.sudahBayarAngsuran(kavling, bulan, tahun, DataMode.ONLINE)
-//                .getOrThrow()
-//        }
-//
-//        assert(adaPembayaran == true)
-    }
-
-    @Test
-    fun next_sequence_of_pembayaran_given_jenis_pembayaran_correct() {
+    fun givenJenisPembayaran_shouldReturnNextUrutanTermin() {
         val keyId = "3053d174-4b9b-437c-96aa-68fd44fa0fef"
         val requestedJenisPembayaran = Pembayaran.JenisPembayaran.DP
         val correctNextSequence = "9"
@@ -241,5 +216,62 @@ class PembayaranTest {
             filterMode = FILTER_USING_BULAN_ANGSURAN,
         )!!
         Assert.assertEquals(false, filterMei.isEmpty())
+    }
+
+    @Test
+    fun whenGetUangMasukBulanIni_shouldReturnTanggalBulanAngsuran() {
+        val pembayaranList = buildList {
+            add(Pembayaran(
+                termin = "ITJ 1",
+                tanggal = "04/01/2023",
+                jumlahUangDibayar = NumberUtil.formatLongToString(5.0.juta()),
+                keterangan = "-",
+                timeMillis = System.currentTimeMillis(),
+            ))
+            add(Pembayaran(
+                termin = "DP 1",
+                tanggal = "04/02/2023",
+                jumlahUangDibayar = NumberUtil.formatLongToString(5.0.juta()),
+                keterangan = "-",
+                timeMillis = System.currentTimeMillis(),
+            ))
+            add(Pembayaran(
+                termin = "DP 2",
+                tanggal = "04/04/2023",
+                jumlahUangDibayar = NumberUtil.formatLongToString(5.0.juta()),
+                keterangan = "DP 2 bulan Maret",
+                timeMillis = System.currentTimeMillis(),
+                bulanAngsuran = BulanAngsuran(3, 2023),
+            ))
+            add(Pembayaran(
+                termin = "DP 3",
+                tanggal = "04/05/2023",
+                jumlahUangDibayar = NumberUtil.formatLongToString(5.0.juta()),
+                keterangan = "DP 3 April",
+                timeMillis = System.currentTimeMillis(),
+                bulanAngsuran = BulanAngsuran(4, 2023),
+            ))
+            add(Pembayaran(
+                termin = "DP 4",
+                tanggal = "04/05/2023",
+                jumlahUangDibayar = NumberUtil.formatLongToString(5.0.juta()),
+                keterangan = "-",
+                timeMillis = System.currentTimeMillis(),
+            ))
+        }
+
+        val uangMasukMaret = Pembayaran.uangMasukPadaBulanDanTahunIni(
+            pembayaranList, 3, 2023, FILTER_USING_BULAN_ANGSURAN
+        )
+        val uangMasukApril = Pembayaran.uangMasukPadaBulanDanTahunIni(
+            pembayaranList, 4, 2023, FILTER_USING_BULAN_ANGSURAN
+        )
+        val uangMasukMei = Pembayaran.uangMasukPadaBulanDanTahunIni(
+            pembayaranList, 5, 2023, FILTER_USING_BULAN_ANGSURAN
+        )
+
+        Assert.assertEquals(5_000_000L, uangMasukMaret)
+        Assert.assertEquals(5_000_000L, uangMasukApril)
+        Assert.assertEquals(5_000_000L, uangMasukMei)
     }
 }
