@@ -1,6 +1,7 @@
 package net.bagusekasaputra.griyakampoengtkw.domain.model
 
 import net.bagusekasaputra.griyakampoengtkw.domain.NumberUtil
+import net.bagusekasaputra.griyakampoengtkw.domain.entity.BaselinePembayaran
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.BiayaLain
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.BiayaMarketing
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.DataDiri
@@ -144,6 +145,21 @@ data class BiayaLainJson(
             jenisBiaya = jenisBiaya,
             harga = harga,
             tanggal = tanggal,
+        )
+    }
+}
+
+data class BaselinePembayaranJson(
+    val jumlahUang: Long,
+    val kavling: String,
+    val opsiBulan: Int,
+    val tanggalPembayaranMaks: Int,
+    val timeMillis: Long,
+): JsonModel<BaselinePembayaran> {
+    override fun toDomain(args: Any?): BaselinePembayaran {
+        return BaselinePembayaran(
+            kavling, opsiBulan,
+            jumlahUang, tanggalPembayaranMaks
         )
     }
 }

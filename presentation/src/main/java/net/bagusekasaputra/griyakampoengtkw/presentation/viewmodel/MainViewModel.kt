@@ -58,9 +58,6 @@ class MainViewModel @Inject constructor(
 
 
     private val _mapProgressKavling = MutableLiveData<Map<String, ProgressKavling>?>(null)
-    val mapProgressKavling: LiveData<Map<String, ProgressKavling>?>
-        get() = _mapProgressKavling
-
 
     // Kavling and Progress kavling combined
     val kavlingAndProgress = _kavlings.combineWith(_mapProgressKavling) { listKavling, mapProgress ->
