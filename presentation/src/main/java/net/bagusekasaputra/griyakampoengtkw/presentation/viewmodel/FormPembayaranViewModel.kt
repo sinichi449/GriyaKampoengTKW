@@ -137,9 +137,7 @@ class FormPembayaranViewModel @Inject constructor(
     var dataMode = DataMode.ONLINE
     var isFullScreenTable = false
 
-    private var readBaselinePembayaranJob: Job? = null
     var writeBaselinePembayaranJob: Job? = null
-
     var readPembayaranBulananJob: Job? = null
 
     private val isFinishOperation = MutableLiveData<Boolean>()
@@ -212,7 +210,7 @@ class FormPembayaranViewModel @Inject constructor(
 
                     setBaselinePembayaran(it?.get(0)?.baselinePembayaran)
 
-                    val list = it?.let { pembayaranBulanans ->
+                    val list = it?.let { _ ->
                         PembayaranBulanan.getPembayaranList(it)
                     }
                     _pembayaranList.postValue(UiState.Success(list))

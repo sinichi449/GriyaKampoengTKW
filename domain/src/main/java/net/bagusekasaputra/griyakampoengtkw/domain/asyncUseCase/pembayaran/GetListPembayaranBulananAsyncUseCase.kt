@@ -1,6 +1,5 @@
 package net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.pembayaran
 
-import android.util.Log
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flow
@@ -9,11 +8,11 @@ import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.AsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.BaselinePembayaran
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.pembayaran.Pembayaran
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.pembayaran.PembayaranBulanan
-import net.bagusekasaputra.griyakampoengtkw.domain.repository.StandardAmbilKuitansiRepository
 import net.bagusekasaputra.griyakampoengtkw.domain.repository.BaselinePembayaranRepository
 import net.bagusekasaputra.griyakampoengtkw.domain.repository.FotoPembayaranRepository
 import net.bagusekasaputra.griyakampoengtkw.domain.repository.HargaKavlingRepository
 import net.bagusekasaputra.griyakampoengtkw.domain.repository.PembayaranRepository
+import net.bagusekasaputra.griyakampoengtkw.domain.repository.StandardAmbilKuitansiRepository
 
 class GetListPembayaranBulananAsyncUseCase(
     private val pembayaranRepository: PembayaranRepository,
@@ -48,9 +47,6 @@ class GetListPembayaranBulananAsyncUseCase(
                     onCekSudahAmbilKuitansi = { kavling, termin ->
                         val ambilKuitansi = standardAmbilKuitansiRepository.get(kavling, termin).getOrThrow()
                         val sudahAmbil = ambilKuitansi?.sudahAmbil ?: false
-
-                        Log.d("AMBIL_KUITANSI", "Kav. $kavling $termin is " +
-                                sudahAmbil.toString().uppercase())
 
                         sudahAmbil
                     }
