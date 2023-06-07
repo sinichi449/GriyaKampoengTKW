@@ -3,6 +3,9 @@ package net.bagusekasaputra.griyakampoengtkw.domain.entity
 import java.math.BigDecimal
 import java.math.RoundingMode
 
+/**
+ * Progress kavling is based on Pembayaran.BulanAngsuran as opposed to Pembayaran.tanggal.
+ */
 data class ProgressKavling(
     val kavling: String,
     val angsuranBulanan: Long,

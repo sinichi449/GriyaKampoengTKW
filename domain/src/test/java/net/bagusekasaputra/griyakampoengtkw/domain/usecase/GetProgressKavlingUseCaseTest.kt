@@ -1,11 +1,13 @@
 package net.bagusekasaputra.griyakampoengtkw.domain.usecase
 
 import com.google.gson.Gson
+import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runTest
 import net.bagusekasaputra.griyakampoengtkw.domain.DataMode
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.kavling.GetProgressKavlingAsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.Kavling
+import net.bagusekasaputra.griyakampoengtkw.domain.entity.ProgressKavling
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.SingleBlockKavlingSorter
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.pembayaran.Pembayaran
 import net.bagusekasaputra.griyakampoengtkw.domain.model.BaselinePembayaranJson
@@ -15,6 +17,7 @@ import net.bagusekasaputra.griyakampoengtkw.domain.repository.BaselinePembayaran
 import net.bagusekasaputra.griyakampoengtkw.domain.repository.PembayaranRepository
 import net.bagusekasaputra.griyakampoengtkw.domain.util.getTestingFile
 import net.bagusekasaputra.griyakampoengtkw.domain.util.nodeReference
+import org.junit.Assert
 import org.junit.Before
 import org.junit.Test
 import org.mockito.ArgumentMatchers
@@ -112,22 +115,29 @@ class GetProgressKavlingUseCaseTest {
     }
 
     @Test
-    fun whenGetProgressKavling_shouldReturnPembayaranPerTanggalInvoice() {
+    fun whenGetProgressKavling_shouldReturnBulanAngsuranInsteadOfTanggalPembayaran() {
         runTest {
-            val request = GetProgressKavlingAsyncUseCase.Request(kavlingKodeList)
+            val a4 = progressKavlingOf("A4")
 
-            useCase.execute(request).collect {
-                it.onSuccess {  progressKavlingMap ->
-                    progressKavlingMap?.keys?.forEach { kavling ->
-                        val progressKavling = progressKavlingMap[kavling]
+            Assert.assertEquals(0, a4?.persentaseBulanIni())
+        }
+    }
 
-                        println("${kavling}\t${progressKavling?.persentaseBulanIni()}%\t\t${progressKavling}")
-                    }
-                }
-                it.onFailure { throwable ->
-                    throw throwable
-                }
+    private suspend fun progressKavlingOf(kavling: String): ProgressKavling? {
+        val request = GetProgressKavlingAsyncUseCase.Request(kavlingKodeList)
+        val progressKavlingDeferred = CompletableDeferred<Map<String, ProgressKavling?>>()
+
+        useCase.execute(request).collect {
+            it.onSuccess {  progressKavlingMap ->
+                progressKavlingDeferred.complete(progressKavlingMap!!)
+            }
+            it.onFailure { throwable ->
+                progressKavlingDeferred.completeExceptionally(throwable)
             }
         }
+
+        val progressKavlingMap = progressKavlingDeferred.await()
+
+        return progressKavlingMap[kavling]
     }
 }

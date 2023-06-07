@@ -3020,7 +3020,8 @@
         "tanggal": "09/04/2023",
         "termin": "DP",
         "timeMillis": 1681686074996,
-        "urutan": 2
+        "urutan": 2,
+        "invoiceDateStr": "03/2023"
       },
       "DP 3": {
         "fullTermin": "DP 3",
