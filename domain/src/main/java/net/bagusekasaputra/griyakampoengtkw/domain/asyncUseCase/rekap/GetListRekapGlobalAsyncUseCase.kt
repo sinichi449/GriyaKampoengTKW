@@ -8,6 +8,7 @@ import kotlinx.coroutines.flow.callbackFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.update
 import net.bagusekasaputra.griyakampoengtkw.domain.DataMode
+import net.bagusekasaputra.griyakampoengtkw.domain.DateUtil.toDate
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.AsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.Kavling
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.ProgressState
@@ -72,7 +73,7 @@ class GetListRekapGlobalAsyncUseCase(
                 val namaCostumer = dataDiriBatch?.get(kavling)?.nama ?: "-"
                 val tanggalPembelian = pembayaranBatch?.get(kavling).let {
                     if (it.isNullOrEmpty().not()) Pembayaran.getTanggalPembelian(it!!)
-                    else "-"
+                    else null
                 }
                 val hargaKavling = hargaKavlingBatch?.get(kavling)?.hargaDanTambahLuasan ?: 0L
                 val jumlahUangMasuk = pembayaranBatch?.get(kavling).let {
@@ -84,7 +85,7 @@ class GetListRekapGlobalAsyncUseCase(
                     RekapGlobal(
                     noKavling = kavling,
                     namaCostumer = namaCostumer,
-                    tanggalPembelian = tanggalPembelian,
+                    tanggalPembelian = tanggalPembelian?.toDate(),
                     harga = hargaKavling,
                     jumlahUangMasuk = jumlahUangMasuk,
                 )

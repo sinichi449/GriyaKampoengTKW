@@ -3,11 +3,13 @@ package net.bagusekasaputra.griyakampoengtkw.domain.entity.rekap
 import net.bagusekasaputra.griyakampoengtkw.domain.NumberUtil
 import java.math.BigDecimal
 import java.math.RoundingMode
+import java.util.Date
+
 
 data class RekapGlobal(
     val namaCostumer: String,
     val noKavling: String,
-    val tanggalPembelian: String,
+    val tanggalPembelian: Date? = null,
     val harga: Long,
     val jumlahUangMasuk: Long,
 ) {

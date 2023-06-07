@@ -29,7 +29,6 @@ import net.bagusekasaputra.griyakampoengtkw.presentation.model.RekapDetailTransp
 import net.bagusekasaputra.griyakampoengtkw.presentation.tableview.rekapGlobal.RgCell
 import net.bagusekasaputra.griyakampoengtkw.presentation.tableview.rekapGlobal.RgColumnHeader
 import net.bagusekasaputra.griyakampoengtkw.presentation.tableview.rekapGlobal.RgRowHeader
-import net.bagusekasaputra.griyakampoengtkw.presentation.toDate
 import java.util.Date
 import javax.inject.Inject
 
@@ -267,7 +266,7 @@ class RekapViewModel @Inject constructor(
             listRekapGlobal.forEach {
                 val listValues = mutableListOf<RgCell>().apply {
                     add(RgCell(it.noKavling, it.namaCostumer))
-                    add(RgCell(it.noKavling, it.tanggalPembelian.toDate()))
+                    add(RgCell(it.noKavling, it.tanggalPembelian))
                     add(RgCell(it.noKavling, it.harga))
                     add(RgCell(it.noKavling, it.jumlahUangMasuk))
                     add(RgCell(it.noKavling, it.sisaPembayaran))
