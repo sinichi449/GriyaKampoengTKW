@@ -13,6 +13,9 @@ import android.widget.Toast
 import androidx.appcompat.widget.PopupMenu
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -24,6 +27,7 @@ import com.google.android.material.floatingactionbutton.ExtendedFloatingActionBu
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.launch
 import net.bagusekasaputra.griyakampoengtkw.domain.DataMode
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.Block
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.Kavling
@@ -37,6 +41,7 @@ import net.bagusekasaputra.griyakampoengtkw.presentation.databinding.DialogAddBl
 import net.bagusekasaputra.griyakampoengtkw.presentation.databinding.DialogAddKavlingBinding
 import net.bagusekasaputra.griyakampoengtkw.presentation.databinding.DialogEditKavlingBinding
 import net.bagusekasaputra.griyakampoengtkw.presentation.databinding.FragmentKavlingBinding
+import net.bagusekasaputra.griyakampoengtkw.presentation.model.UiState
 import net.bagusekasaputra.griyakampoengtkw.presentation.util.DialogUtil
 import net.bagusekasaputra.griyakampoengtkw.presentation.util.FabHelper
 import net.bagusekasaputra.griyakampoengtkw.presentation.util.InputUtil
@@ -68,7 +73,8 @@ class KavlingFragment : Fragment() {
         fabAddKavling = requireActivity().findViewById(R.id.fab_add_kavling)
         fabAddBlock = requireActivity().findViewById(R.id.fab_add_block)
 
-        setupViewModel()
+//        setupViewModelLegacy()
+        binding.setupWithViewModel()
 
 //        setupFloatingButtons()
         val fabHelper = FabHelper(
@@ -108,24 +114,83 @@ class KavlingFragment : Fragment() {
             val currentBlockKode = viewModel.currentBlock.value
             currentBlockKode?.let { viewModel.kavlingsRefreshed[it]?.value = false }
 
-            syncData()
+            sync()
+        }
+
+        sync()
+    }
+
+    private fun FragmentKavlingBinding.setupWithViewModel() {
+        // Observe the blocksLive and if it not NULL, then call fetchKavlingFragmentUiState()
+        viewModel.blocksLive.observe(requireActivity()) {
+            it?.also { blockList ->
+                if (blockList.isNotEmpty()) {
+                    recyclerBlocks.setupBlocks(blockList)
+
+                    val blockFirstItem = blockList.first()
+                    viewModel.fetchKavlingFragmentUiState(blockFirstItem.kode)
+                }
+            }
+        }
+
+        lifecycleScope.launch {
+            repeatOnLifecycle(Lifecycle.State.CREATED) {
+                viewModel.kavlingFragmentUiState.collect {
+                    it?.also {  uiState ->
+                        when (uiState) {
+                            is UiState.Loading -> {
+                                swipeRefreshMain.isRefreshing = true
+                            }
+                            is UiState.Success -> {
+                                swipeRefreshMain.isRefreshing = false
+
+                                uiState.data?.also { kavlingUiState ->
+                                    setupKavlingRecyclerView(
+                                        kavlings = kavlingUiState.kavlingList,
+                                        mapProgressKavling = kavlingUiState.progressKavlingMap,
+                                    )
+                                }
+                            }
+                            is UiState.Failure -> {
+                                Toast.makeText(requireContext(), uiState.failMsg, Toast.LENGTH_LONG).show()
+                            }
+                        }
+                    }
+                }
+            }
         }
     }
 
-    override fun onResume() {
-        super.onResume()
-
-        syncData()
+    private fun sync() {
+        viewModel.getAllBlocks {
+            Toast.makeText(requireContext(), it, Toast.LENGTH_LONG).show()
+        }
     }
 
-    override fun onStop() {
-        super.onStop()
+    private fun RecyclerView.setupBlocks(blockList: List<Block>) {
+        invalidate()
 
-        Log.d("DEBUG_ME", "KavlingFragment: Saving KavlingRecyclerView's State onStop() ...")
+        binding.recyclerBlocks.adapter = BlockRecyclerAdapter(blockList) { position ->
+            val selectedBlock = blockList[position].kode
+
+            // Update the selected block in the viewModel
+            viewModel.currentBlock.value = selectedBlock
+
+            viewModel.fetchKavlingFragmentUiState(selectedBlock)
+        }
+
+        // If screen orientation is Landscape, then set the
+        // Block Recycler orientation to be Vertical instead, with a GridView
+        val screenOrientation = resources.configuration.orientation
+        binding.recyclerBlocks.layoutManager = if (screenOrientation == Configuration.ORIENTATION_LANDSCAPE)
+            GridLayoutManager(requireContext(), 2)
+        else
+            LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false)
     }
 
+    @Deprecated("Migrated to FragmentKavlingBinding.setupWithViewModel()")
     @SuppressLint("SetTextI18n")
-    private fun setupViewModel() {
+    private fun setupViewModelLegacy() {
         viewModel.blocksLive.observe(requireActivity()) {
             it?.let {
                 setupBlockRecyclerview(it)
@@ -179,7 +244,8 @@ class KavlingFragment : Fragment() {
 
     }
 
-    private fun syncData() {
+    @Deprecated("Migrated to sync()")
+    private fun syncDataLegacy() {
         viewModel.getAllBlocks { failMsg ->
             Snackbar.make(binding.root, failMsg, Snackbar.LENGTH_LONG).show()
         }
@@ -194,6 +260,7 @@ class KavlingFragment : Fragment() {
         }
     }
 
+    @Deprecated("Migrated to RecyclerView.setupBlocks()")
     private fun setupBlockRecyclerview(blocks: List<Block>) {
         val adapter = BlockRecyclerAdapter(blocks) { position ->
             val selectedBlock = blocks[position].kode
@@ -296,7 +363,8 @@ class KavlingFragment : Fragment() {
                     kode = kode,
                     warna = warna,
                     onComplete = { msg ->
-                        syncData()
+//                        syncDataLegacy()
+                        sync()
                         addBlockDialog.dismiss()
                         Snackbar.make(binding.root, msg, Snackbar.LENGTH_SHORT)
                             .show()
@@ -360,7 +428,7 @@ class KavlingFragment : Fragment() {
                     panjang = panjang,
                     lebar = lebar
                 ) { msg ->
-                    syncData()
+                    sync()
                     addKavlingDialog.dismiss()
                     Snackbar.make(binding.root, msg, Snackbar.LENGTH_SHORT).show()
                 }
@@ -402,7 +470,7 @@ class KavlingFragment : Fragment() {
                                 blockKode = blockKode,
                                 kavlingKode = kavling.kode,
                                 onComplete = { msg ->
-                                    syncData()
+                                    sync()
                                     dialog.dismiss()
                                     Snackbar.make(binding.root, msg, Snackbar.LENGTH_SHORT).show()
                                 }
@@ -460,7 +528,7 @@ class KavlingFragment : Fragment() {
                     newLebar = newLebar,
                     newType = newType,
                     onComplete = { msg ->
-                        syncData()
+                        sync()
                         editKavlingDialog.dismiss()
                         Snackbar.make(binding.root, msg, Snackbar.LENGTH_SHORT).show()
                     }

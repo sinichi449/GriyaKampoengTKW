@@ -40,6 +40,9 @@ interface PembayaranRoomDao {
     @Insert(onConflict = OnConflictStrategy.IGNORE)
     fun insertPembayaran(entity: PembayaranRoomEntity): Long
 
+    @Insert(onConflict = OnConflictStrategy.IGNORE)
+    fun insertAll(entityList: List<PembayaranRoomEntity>): List<Long>
+
     @Query("UPDATE pembayaran SET " +
             "termin=:newTermin, tanggal=:tanggal, jumlah_uang_dibayar=:jumlahUangDibayar, " +
             "keterangan=:keterangan, timeMillis=:timeMillis, invoice_date=:invoiceDate " +

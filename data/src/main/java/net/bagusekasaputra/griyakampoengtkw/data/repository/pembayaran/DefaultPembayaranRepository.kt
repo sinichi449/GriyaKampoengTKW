@@ -33,44 +33,54 @@ class DefaultPembayaranRepository(
     ): Flow<Result<List<Pembayaran>?>> {
         return callbackFlow {
             try {
-                val offlineMode = run {
-                    val localModels = localDataSource.getAllPembayaran(kavlingKode)
-                        .getOrThrow()
-                    val pembayaranModels = localModels?.map { model ->
-                        MyObjectMapper.mapPembayaran(model)
-                    }
-
-                    Result.success(pembayaranModels)
-                }
-                val onlineMode = run {
-                    val isInvalidCache = cacheHelper.checkAndInvalidateCache(
-                        cacheTable, cacheTable,
-                        onInvalid =  {
-                            localDataSource.deleteAll()
-                        }
-                    )
-                    val localModels = offlineMode.getOrThrow()
-
-                    if (isInvalidCache || localModels.isNullOrEmpty()) {
-                        val remoteModels = remoteDataSource.getAllPembayaran(kavlingKode).getOrThrow()
-                        if (!remoteModels.isNullOrEmpty()) {
-                            localDataSource.addAllPembayaranModel(kavlingKode, remoteModels).getOrThrow()
-
-                            offlineMode
-                        } else {
-                            Result.success(null)
-                        }
-                    } else {
-                        offlineMode
-                    }
-                }
                 val dataLamaMode = Result.failure<List<Pembayaran>?>(
                     UnsupportedOperationException("Fitur Data Lama pembayaran belum diaktifkan!")
                 )
 
                 trySendBlocking(when (dataMode) {
-                    DataMode.OFFLINE -> offlineMode
-                    DataMode.ONLINE -> onlineMode
+                    DataMode.OFFLINE -> {
+                        val localModels = localDataSource.getAllPembayaran(kavlingKode)
+                            .getOrThrow()
+                        val pembayaranModels = localModels?.map { model ->
+                            MyObjectMapper.mapPembayaran(model)
+                        }
+
+                        Result.success(pembayaranModels)
+                    }
+                    DataMode.ONLINE -> {
+                        val isInvalidCache = cacheHelper.checkAndInvalidateCache(
+                            cacheTable, cacheTable,
+                            onInvalid =  {
+                                localDataSource.deleteAll()
+                            }
+                        )
+                        val localModels = localDataSource.getAllPembayaran(kavlingKode)
+                            .getOrThrow()
+                        val pembayaranList: List<Pembayaran>?
+
+                        if (isInvalidCache || localModels.isNullOrEmpty()) {
+                            val remoteModels = remoteDataSource.getAllPembayaran(kavlingKode)
+                                .getOrThrow()
+                            pembayaranList = if (!remoteModels.isNullOrEmpty()) {
+                                localDataSource.addAllPembayaranModel(kavlingKode, remoteModels)
+                                    .getOrThrow()
+
+                                val refreshedLocalModel = localDataSource.getAllPembayaran(kavlingKode)
+                                    .getOrThrow()
+                                refreshedLocalModel?.map {
+                                    MyObjectMapper.mapPembayaran(it)
+                                }
+                            } else {
+                                null
+                            }
+                        } else {
+                            pembayaranList = localModels.map {
+                                MyObjectMapper.mapPembayaran(it)
+                            }
+                        }
+
+                        Result.success(pembayaranList)
+                    }
                     DataMode.DATA_LAMA -> dataLamaMode
                 })
             } catch (e: Exception) {

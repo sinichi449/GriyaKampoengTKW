@@ -1,5 +1,6 @@
 package net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.kavling
 
+import android.util.Log
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flow
@@ -53,6 +54,9 @@ class GetProgressKavlingAsyncUseCase(
                     angsuranBulanan = angsuranBulanan,
                     uangMasukBulanIni = uangMasukBulanIni,
                 )
+
+                Log.d("PROGRESS_KAVLING", "Kav. $kavling : $pembayaranList")
+
                 mapProgress[kavling] = progressKavling
             }
 
