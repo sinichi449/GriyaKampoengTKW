@@ -192,32 +192,6 @@ data class Pembayaran(
             }
         }
 
-        fun adakahPembayaranBulanDanTahunIni(
-            pembayarans: List<Pembayaran>,
-            bulan: Int, // Not calendar type of Bulan!
-            tahun: Int,
-        ): Boolean {
-            var sudahBayar = false
-            val tanggalDibayar = Calendar.getInstance()
-
-            // For loops can use "break" whenever pembayaran bulan ini has been found,
-            // That's why I use manual for() loop instead of forEach().
-            for (pembayaran in pembayarans) {
-                tanggalDibayar.time = pembayaran.tanggal.toDate()
-
-                val bulanDibayar = tanggalDibayar.get(Calendar.MONTH) + 1
-                val tahunDibayar = tanggalDibayar.get(Calendar.YEAR)
-
-                if ((bulan == bulanDibayar) && (tahun == tahunDibayar)) {
-                    sudahBayar = true
-
-                    break // <-- I need this convenient command
-                }
-            }
-
-            return sudahBayar
-        }
-
         fun uangMasukPadaBulanDanTahunIni(
             pembayarans: List<Pembayaran>,
             bulan: Int, // Not Calendar type of Bulan!
