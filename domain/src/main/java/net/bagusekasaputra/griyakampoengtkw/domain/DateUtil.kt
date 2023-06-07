@@ -141,7 +141,11 @@ object DateUtil {
     fun Date.toSlashedString(): String {
         val calendar = Calendar.getInstance().apply { time = this@toSlashedString }
         val tanggal = calendar.get(Calendar.DAY_OF_MONTH)
-        val bulan = calendar.get(Calendar.MONTH) + 1
+            .toString()
+            .padStart(2, '0')
+        val bulan = calendar.get(Calendar.MONTH).plus(1)
+            .toString()
+            .padStart(2, '0')
         val tahun = calendar.get(Calendar.YEAR)
 
         return "${tanggal}/${bulan}/${tahun}"

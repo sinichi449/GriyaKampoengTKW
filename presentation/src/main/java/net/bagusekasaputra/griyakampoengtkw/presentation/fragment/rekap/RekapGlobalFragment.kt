@@ -137,10 +137,6 @@ class RekapGlobalFragment : Fragment() {
                 }
 
                 override fun onColumnHeaderClicked(columnHeaderView: RecyclerView.ViewHolder, column: Int) {
-                    val previousSelectedColumn = selectionHandler.selectedColumnPosition
-                    // reset previous selected column
-                    sortColumn(previousSelectedColumn, SortState.UNSORTED)
-
                     val nextSortState = when (getSortingStatus(column)) {
                         SortState.UNSORTED -> SortState.ASCENDING
                         SortState.ASCENDING -> SortState.DESCENDING
