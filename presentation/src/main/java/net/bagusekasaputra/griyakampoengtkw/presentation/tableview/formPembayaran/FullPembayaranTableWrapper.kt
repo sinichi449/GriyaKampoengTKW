@@ -8,6 +8,9 @@ import net.bagusekasaputra.griyakampoengtkw.presentation.R
 import net.bagusekasaputra.griyakampoengtkw.presentation.tableview.AbstractTableWrapper
 import net.bagusekasaputra.griyakampoengtkw.presentation.tableview.GktTableViewAdapter
 
+/**
+ * Ordering for index column matters!!
+ */
 class FullPembayaranTableWrapper(
     tableFullPembayaran: TableView,
     private val pembayarans: List<Pembayaran>,
@@ -15,7 +18,8 @@ class FullPembayaranTableWrapper(
 
     private val cornerSeparator = "<>"
     private val cornerTitle = "Termin"
-    var widthColumnHeaders = listOf(
+    private val widthColumnHeaders = listOf(
+        Pair(INVOICE, 250),
         Pair(TANGGAL, 250),
         Pair(UANG_DIBAYAR, 350),
         Pair(TOTAL, 350),
@@ -85,6 +89,7 @@ class FullPembayaranTableWrapper(
     override suspend fun getColumnHeaderItems(): List<ColumnHeader> {
         val columnHeaders = mutableListOf<PbColumnHeader>()
         columnHeaders.apply {
+            add(INVOICE, PbColumnHeader("Invoice"))
             add(TANGGAL, PbColumnHeader("Tanggal"))
             add(UANG_DIBAYAR, PbColumnHeader("Uang Dibayar"))
             add(TOTAL, PbColumnHeader("Total"))
@@ -119,6 +124,7 @@ class FullPembayaranTableWrapper(
         pembayarans.forEach {
             val items = mutableListOf<CellItem>()
             items.apply {
+                add(INVOICE, PbCellItem(it.bulanAngsuran.bulanAndTahun))
                 add(TANGGAL, PbCellItem(it.tanggal))
                 add(UANG_DIBAYAR, PbCellItem(it.jumlahUangDibayar))
                 add(TOTAL, PbCellItem(it.totalUangMasuk))
@@ -134,10 +140,11 @@ class FullPembayaranTableWrapper(
 
 
     companion object {
-        const val TANGGAL = 0
-        const val UANG_DIBAYAR = 1
-        const val TOTAL = 2
-        const val PERSENTASE = 3
-        const val KETERANGAN_PROGRESS = 4
+        const val INVOICE = 0
+        const val TANGGAL = 1
+        const val UANG_DIBAYAR = 2
+        const val TOTAL = 3
+        const val PERSENTASE = 4
+        const val KETERANGAN_PROGRESS = 5
     }
 }
