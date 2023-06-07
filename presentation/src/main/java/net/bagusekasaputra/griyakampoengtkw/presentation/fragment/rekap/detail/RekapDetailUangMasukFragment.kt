@@ -90,6 +90,7 @@ class RekapDetailUangMasukFragment : Fragment() {
             RbdColumnHeader("Tanggal"),
             RbdColumnHeader("Jenis Pembayaran"),
             RbdColumnHeader("Jumlah Pembayaran"),
+            RbdColumnHeader("Invoice")
         )
         val rowHeaders = mutableListOf<RbdWithKavlingRowHeader>().run {
             var index = 1
@@ -112,6 +113,7 @@ class RekapDetailUangMasukFragment : Fragment() {
                     cells.add(RbdCell(pembayaran.tanggal))
                     cells.add(RbdCell(pembayaran.termin))
                     cells.add(RbdCell(pembayaran.jumlahUangDibayar))
+                    cells.add(RbdCell(pembayaran.bulanAngsuran.bulanAndTahun))
 
                     if (cells.isNotEmpty()) {
                         add(cells)
@@ -127,6 +129,7 @@ class RekapDetailUangMasukFragment : Fragment() {
         setColumnWidth(1, 300) // Tanggal
         setColumnWidth(2, 300) // Jenis Pembayaran
         setColumnWidth(3, 350) // Jumlah Pembayaran
+        setColumnWidth(4, 250) // Invoice
     }
 
     private fun setupFabScroll() {
