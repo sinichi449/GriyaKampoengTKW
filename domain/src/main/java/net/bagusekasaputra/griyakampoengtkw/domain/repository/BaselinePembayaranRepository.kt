@@ -10,6 +10,7 @@ interface BaselinePembayaranRepository {
 
     fun insert(baselinePembayaran: BaselinePembayaran): Flow<Result<Nothing?>>
 
+    @Deprecated("Will be removed soon.")
     suspend fun getAngsuran(kavling: String, dataMode: DataMode): Long?
 
     suspend fun refreshCache(kavlings: List<String>): Result<Nothing?>

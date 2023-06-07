@@ -335,7 +335,7 @@ class MainViewModel @Inject constructor(
     }
 
     fun getProgressAllKavling(blockKode: String) {
-        CoroutineScope(Dispatchers.IO).launch {
+        viewModelScope.launch(Dispatchers.IO) {
             // Get all kavling's in block
             val kavlingByBlockRequest = GetKavlingByBlockAsyncUseCase.Request(blockKode, dataMode)
             val kavlingList = getKavlingByBlockAsyncUseCase.execute(kavlingByBlockRequest).first()
@@ -346,7 +346,8 @@ class MainViewModel @Inject constructor(
                 ?: emptyList()
 
             // Progress Kavling
-            val request = GetProgressKavlingAsyncUseCase.Request(kavlingList)
+            val request = GetProgressKavlingAsyncUseCase.Request(kavlingList, dataMode)
+            Log.d("DEBUG_ME", "Getting Progress Kavling is $dataMode")
             getProgressKavlingAsyncUseCase.execute(request).collect { result ->
                 result.onSuccess {
                     _mapProgressKavling.postValue(it)

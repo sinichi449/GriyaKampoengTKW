@@ -1,4 +1,4 @@
-package net.bagusekasaputra.griyakampoengtkw.data.repository
+package net.bagusekasaputra.griyakampoengtkw.data.repository.pembayaran
 
 import android.util.Log
 import kotlinx.coroutines.channels.awaitClose
@@ -22,7 +22,8 @@ import net.bagusekasaputra.griyakampoengtkw.domain.DataMode
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.pembayaran.Pembayaran
 import net.bagusekasaputra.griyakampoengtkw.domain.repository.PembayaranRepository
 
-class PembayaranRepositoryImpl(
+@Deprecated("Migrated to DefaultPembayaranRepository")
+class LegacyPembayaranRepository(
     private val localPembayaranDataSource: LocalPembayaranDataSource,
     private val remotePembayaranSource: RemotePembayaranSource,
     private val backupPembayaranDataSource: BackupPembayaranDataSource,
@@ -271,33 +272,6 @@ class PembayaranRepositoryImpl(
 
             Result.failure(e)
         }
-    }
-
-    override suspend fun getUangMasukBulanIni(
-        kavlingKode: String,
-        bulan: Int,
-        tahun: Int,
-        dataMode: DataMode
-    ): Result<Long> {
-        return callbackFlow<Result<Long>> {
-            try {
-                val models = localPembayaranDataSource.getAllPembayaran(kavlingKode)
-                    .getOrThrow()
-                val pembayarans = models?.map { MyObjectMapper.mapPembayaran(it) }
-
-                if (!pembayarans.isNullOrEmpty()) {
-                    trySendBlocking(Result.success(
-                        Pembayaran.uangMasukPadaBulanDanTahunIni(pembayarans, bulan, tahun)
-                    ))
-                } else {
-                    trySendBlocking(Result.success(0L))
-                }
-            } catch (e: Exception) {
-                trySendBlocking(Result.failure(e))
-            }
-
-            awaitClose {  }
-        }.first()
     }
 
     override suspend fun refreshCache(kavlings: List<String>): Result<Nothing?> {

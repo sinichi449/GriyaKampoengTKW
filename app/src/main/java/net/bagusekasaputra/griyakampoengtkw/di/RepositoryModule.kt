@@ -10,8 +10,12 @@ import net.bagusekasaputra.griyakampoengtkw.data.interfaces.backup.*
 import net.bagusekasaputra.griyakampoengtkw.data.interfaces.local.*
 import net.bagusekasaputra.griyakampoengtkw.data.interfaces.remote.*
 import net.bagusekasaputra.griyakampoengtkw.data.repository.*
+import net.bagusekasaputra.griyakampoengtkw.data.repository.pembayaran.DefaultPembayaranRepository
+import net.bagusekasaputra.griyakampoengtkw.data.repository.pembayaran.LegacyPembayaranRepository
 import net.bagusekasaputra.griyakampoengtkw.domain.repository.*
 import java.io.File
+import javax.inject.Qualifier
+import javax.inject.Singleton
 
 @Module
 @InstallIn(SingletonComponent::class)
@@ -81,8 +85,9 @@ object RepositoryModule {
     /**
      * Pembayaran
      */
+    @Legacy
     @Provides
-    fun providePembayaranRepository(
+    fun provideLegacyPembayaranRepository(
         localPembayaranDataSource: LocalPembayaranDataSource,
         remotePembayaranSource: RemotePembayaranSource,
         backupPembayaranDataSource: BackupPembayaranDataSource,
@@ -90,7 +95,7 @@ object RepositoryModule {
         remoteMetadata: RemoteMetadataDataSource,
         cacheHelper: CacheHelper,
     ): PembayaranRepository {
-        return PembayaranRepositoryImpl(
+        return LegacyPembayaranRepository(
             localPembayaranDataSource,
             remotePembayaranSource,
             backupPembayaranDataSource,
@@ -98,6 +103,17 @@ object RepositoryModule {
             remoteMetadata,
             cacheHelper,
         )
+    }
+
+    @Singleton
+    @Default
+    @Provides
+    fun provideDefaultPembayaranRepository(
+        localDataSource: LocalPembayaranDataSource,
+        remoteDataSource: RemotePembayaranSource,
+        cacheHelper: CacheHelper,
+    ): PembayaranRepository {
+        return DefaultPembayaranRepository(localDataSource, remoteDataSource, cacheHelper)
     }
 
 
@@ -460,3 +476,9 @@ object RepositoryModule {
     }
 
 }
+
+@Qualifier
+annotation class Legacy
+
+@Qualifier
+annotation class Default

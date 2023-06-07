@@ -222,13 +222,14 @@ data class Pembayaran(
             pembayarans: List<Pembayaran>,
             bulan: Int, // Not Calendar type of Bulan!
             tahun: Int,
+            filterMode: Int,
         ): Long {
             val rangeTanggal = DateUtil.getMonthlyRangeDate(bulan - 1, tahun)
             val awalTanggal = rangeTanggal[0]
             val akhirTanggal = rangeTanggal[1]
 
             val pembayaranPadaBulanTsb = pembayarans.filterPeriode(
-                PeriodeRekap.CUSTOM, awalTanggal, akhirTanggal
+                PeriodeRekap.CUSTOM, awalTanggal, akhirTanggal, filterMode,
             )
             return if (!pembayaranPadaBulanTsb.isNullOrEmpty()) {
                 hitungTotalUangMasuk(pembayaranPadaBulanTsb)

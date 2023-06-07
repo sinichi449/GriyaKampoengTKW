@@ -23,20 +23,13 @@ interface PembayaranRepository: BatchableWithKavling<List<Pembayaran>?> {
 
     fun deleteAllPembayaran(kavlingKode: String): Flow<Result<Boolean>>
 
+    @Deprecated("Will be removed soon.")
     suspend fun sudahBayarAngsuran(
         kavlingKode: String,
         bulan: Int,
         tahun: Int,
         dataMode: DataMode
     ): Result<Boolean?>
-
-    // Currently offline only
-    suspend fun getUangMasukBulanIni(
-        kavlingKode: String,
-        bulan: Int,
-        tahun: Int,
-        dataMode: DataMode
-    ): Result<Long>
 
     suspend fun refreshCache(kavlings: List<String>): Result<Nothing?>
 

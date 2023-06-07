@@ -126,24 +126,6 @@ class MockPembayaranRepository: PembayaranRepository {
         }
     }
 
-    override suspend fun getUangMasukBulanIni(
-        kavlingKode: String,
-        bulan: Int,
-        tahun: Int,
-        dataMode: DataMode
-    ): Result<Long> {
-        val pembayarans = mapPembayarans[kavlingKode]
-
-        return if (!pembayarans.isNullOrEmpty()) {
-            Result.success(
-                Pembayaran.uangMasukPadaBulanDanTahunIni(
-                pembayarans, bulan, tahun
-            ))
-        } else {
-            Result.success(0L)
-        }
-    }
-
     override suspend fun refreshCache(kavlings: List<String>): Result<Nothing?> {
         TODO("Not yet implemented")
     }

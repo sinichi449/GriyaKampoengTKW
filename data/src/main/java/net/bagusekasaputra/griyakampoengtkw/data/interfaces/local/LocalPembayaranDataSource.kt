@@ -22,6 +22,9 @@ interface LocalPembayaranDataSource {
 
     suspend fun deleteAllPembayaranModel(kavlingKode: String): Result<Nothing?>
 
+    /**
+     * This should NOT delete foto pembayaran.
+     */
     suspend fun deleteAll(): Result<Nothing?>
 
 

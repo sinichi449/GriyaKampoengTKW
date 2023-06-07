@@ -108,7 +108,10 @@ object UseCaseModule {
      * Kavling
      */
     @Provides
-    fun provideGetKavlingsByBlockAsync(kavlingRepository: KavlingRepository, pembayaranRepository: PembayaranRepository)
+    fun provideGetKavlingsByBlockAsync(
+        kavlingRepository: KavlingRepository,
+        @Legacy pembayaranRepository: PembayaranRepository
+    )
         = GetKavlingByBlockAsyncUseCase(kavlingRepository, pembayaranRepository)
 
     @Provides
@@ -172,28 +175,28 @@ object UseCaseModule {
      * Pembayaran
      */
     @Provides
-    fun provideGetSinglePembayaranUseCase(pembayaranRepository: PembayaranRepository): GetSinglePembayaranByKavlingAndTerminAsyncUseCase {
+    fun provideGetSinglePembayaranUseCase(@Legacy pembayaranRepository: PembayaranRepository): GetSinglePembayaranByKavlingAndTerminAsyncUseCase {
         return GetSinglePembayaranByKavlingAndTerminAsyncUseCase(pembayaranRepository)
     }
 
     @Provides
-    fun provideInsertPembayaranUseCase(pembayaranRepository: PembayaranRepository): InsertPembayaranAsyncUseCase {
+    fun provideInsertPembayaranUseCase(@Legacy pembayaranRepository: PembayaranRepository): InsertPembayaranAsyncUseCase {
         return InsertPembayaranAsyncUseCase(pembayaranRepository)
     }
 
     @Provides
-    fun provideAddPembayaranUseCase(pembayaranRepository: PembayaranRepository): AddPembayaranUseCase {
+    fun provideAddPembayaranUseCase(@Legacy pembayaranRepository: PembayaranRepository): AddPembayaranUseCase {
         return AddPembayaranUseCase(pembayaranRepository)
     }
 
     @Provides
-    fun provideUpdatePembayaranUseCase(pembayaranRepository: PembayaranRepository): UpdatePembayaranAsyncUseCase {
+    fun provideUpdatePembayaranUseCase(@Legacy pembayaranRepository: PembayaranRepository): UpdatePembayaranAsyncUseCase {
         return UpdatePembayaranAsyncUseCase(pembayaranRepository)
     }
 
     @Provides
     fun provideDeletePembayaranUseCase(
-        pembayaranRepository: PembayaranRepository,
+        @Legacy pembayaranRepository: PembayaranRepository,
         fotoPembayaranRepository: FotoPembayaranRepository,
         standardAmbilKuitansiRepository: StandardAmbilKuitansiRepository,
     ): DeletePembayaranAsyncUseCase {
@@ -201,7 +204,10 @@ object UseCaseModule {
     }
 
     @Provides
-    fun provideDeleteAllPembayaran(pembayaranRepository: PembayaranRepository, fotoPembayaranRepository: FotoPembayaranRepository): DeleteAllPembayaranUseCase {
+    fun provideDeleteAllPembayaran(
+        @Legacy pembayaranRepository: PembayaranRepository,
+        fotoPembayaranRepository: FotoPembayaranRepository
+    ): DeleteAllPembayaranUseCase {
         return DeleteAllPembayaranUseCase(pembayaranRepository, fotoPembayaranRepository)
     }
 
@@ -211,7 +217,7 @@ object UseCaseModule {
      */
     @Provides
     fun provideGetListPembayaranBulananUseCase(
-        pembayaranRepository: PembayaranRepository,
+        @Legacy pembayaranRepository: PembayaranRepository,
         baselinePembayaranRepository: BaselinePembayaranRepository,
         hargaKavlingRepository: HargaKavlingRepository,
         fotoPembayaranRepository: FotoPembayaranRepository,
@@ -370,7 +376,7 @@ object UseCaseModule {
      */
     @Provides
     fun provideGetAllReportKavlingUseCase(
-        pembayaranRepository: PembayaranRepository,
+        @Legacy pembayaranRepository: PembayaranRepository,
         feeMarketingRepository: FeeMarketingRepository,
         biayaMarketingRepository: BiayaMarketingRepository,
     ): GetAllReportKavlingAsyncUseCase {
@@ -436,7 +442,7 @@ object UseCaseModule {
         blockRepository: BlockRepository,
         kavlingRepository: KavlingRepository,
         dataDiriRepository: DataDiriRepository,
-        pembayaranRepository: PembayaranRepository,
+        @Legacy pembayaranRepository: PembayaranRepository,
         hargaKavlingRepository: HargaKavlingRepository,
     ): GetListRekapGlobalAsyncUseCase {
         return GetListRekapGlobalAsyncUseCase(blockRepository, kavlingRepository, dataDiriRepository, pembayaranRepository, hargaKavlingRepository)
@@ -455,7 +461,7 @@ object UseCaseModule {
     fun provideCreateBackupUseCase(
         blokRepository: BlockRepository,
         kavlingRepository: KavlingRepository,
-        pembayaranRepository: PembayaranRepository,
+        @Legacy pembayaranRepository: PembayaranRepository,
         dataDiriRepository: DataDiriRepository,
         hargaKavlingRepository: HargaKavlingRepository,
         kavlingCatatanPembayaranRepository: KavlingCatatanPembayaranRepository,
@@ -492,7 +498,7 @@ object UseCaseModule {
     fun provideCalculateRekapBesarAndGetRekapBesarOverview(
         blockRepository: BlockRepository,
         kavlingRepository: KavlingRepository,
-        pembayaranRepository: PembayaranRepository,
+        @Legacy pembayaranRepository: PembayaranRepository,
         dataDiriRepository: DataDiriRepository,
         hargaKavlingRepository: HargaKavlingRepository,
         feeMarketingRepository: FeeMarketingRepository,
@@ -530,7 +536,7 @@ object UseCaseModule {
     fun providesGetAllIndenBookingUseCase(
         indenBookingRepository: IndenBookingRepository,
         dataDiriRepository: DataDiriRepository,
-        pembayaranRepository: PembayaranRepository,
+        @Legacy pembayaranRepository: PembayaranRepository,
         imageDataDiriRepository: ImageDataDiriRepository,
     ): GetAllIndenBookingAsyncUseCase {
         return GetAllIndenBookingAsyncUseCase(indenBookingRepository, dataDiriRepository, pembayaranRepository, imageDataDiriRepository)
@@ -576,14 +582,14 @@ object UseCaseModule {
     @Provides
     fun provideGetAllPembayaranIndenBookingAsyncUseCase(
         hargaRumahIndenBookingRepository: HargaRumahIndenBookingRepository,
-        pembayaranRepository: PembayaranRepository,
+        @Legacy pembayaranRepository: PembayaranRepository,
         fotoPembayaranRepository: FotoPembayaranIndenBookingRepository,
         ambilKuitansiRepository: IndenBookingAmbilKuitansiRepository,
     ): GetAllPembayaranIndenBookingAsyncUseCase {
         return GetAllPembayaranIndenBookingAsyncUseCase(hargaRumahIndenBookingRepository, pembayaranRepository, fotoPembayaranRepository, ambilKuitansiRepository)
     }
     @Provides
-    fun provideInsertPembayaranIndenBookingUseCase(pembayaranRepository: PembayaranRepository): InsertPembayaranIndenBookingAsyncUseCase {
+    fun provideInsertPembayaranIndenBookingUseCase(@Legacy pembayaranRepository: PembayaranRepository): InsertPembayaranIndenBookingAsyncUseCase {
         return InsertPembayaranIndenBookingAsyncUseCase(pembayaranRepository)
     }
 
@@ -627,7 +633,7 @@ object UseCaseModule {
      */
     @Provides
     fun provideGetProgressKavlingUseCase(
-        pembayaranRepository: PembayaranRepository,
+        @Default pembayaranRepository: PembayaranRepository,
         baselinePembayaranRepository: BaselinePembayaranRepository,
     ): GetProgressKavlingAsyncUseCase {
         return GetProgressKavlingAsyncUseCase(baselinePembayaranRepository, pembayaranRepository)

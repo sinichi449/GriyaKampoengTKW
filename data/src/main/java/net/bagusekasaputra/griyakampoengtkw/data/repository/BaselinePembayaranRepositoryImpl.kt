@@ -31,6 +31,8 @@ class BaselinePembayaranRepositoryImpl(
             if (!hasMetadataChecked) {
                 hasMetadataChecked = true
 
+                Log.d("DEBUG_ME", "BaselinePembayaranRepository `get()` skips cache checking !")
+
                 metadataHelper.checkCache {
                     metadataHelper.updateLocalMetadataOnInvalid()
 
