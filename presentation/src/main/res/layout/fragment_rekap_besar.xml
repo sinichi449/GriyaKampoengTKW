@@ -61,6 +61,15 @@
                     android:layout_marginStart="8dp"
                     android:visibility="gone"/>
 
+                <com.google.android.material.textview.MaterialTextView
+                    android:id="@+id/tv_pembayaranFilterMode"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Pembayaran berdasarkan tanggal"
+                    android:layout_marginTop="16dp"
+                    style="@style/TextAppearance.MaterialComponents.Body2"
+                    android:visibility="gone"/>
+
             </androidx.appcompat.widget.LinearLayoutCompat>
 
         </com.google.android.material.card.MaterialCardView>

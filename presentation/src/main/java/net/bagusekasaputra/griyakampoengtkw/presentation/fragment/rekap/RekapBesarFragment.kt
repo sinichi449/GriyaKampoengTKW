@@ -235,10 +235,26 @@ class RekapBesarFragment : Fragment() {
     private fun setupViewModel() {
         // Progress RekapBesarOverview
         val progressDialog = createProgressDialog()
+
         lifecycleScope.launch {
             repeatOnLifecycle(Lifecycle.State.STARTED) {
                 viewModel.rekapBesarOverviewMessage.collect {
                     progressDialog.setMessage(it)
+                }
+            }
+        }
+
+        lifecycleScope.launch {
+            repeatOnLifecycle(Lifecycle.State.STARTED) {
+                with(binding.tvPembayaranFilterMode) {
+                    viewModel.selectedPembayaranFilterMode.collect { filterName ->
+                        if (filterName.isNullOrEmpty()) {
+                            this?.visibility = View.GONE
+                        } else {
+                            this?.visibility = View.VISIBLE
+                            this?.text = filterName
+                        }
+                    }
                 }
             }
         }

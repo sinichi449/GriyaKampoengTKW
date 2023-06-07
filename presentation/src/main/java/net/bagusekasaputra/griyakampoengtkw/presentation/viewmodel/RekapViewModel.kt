@@ -10,15 +10,15 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import net.bagusekasaputra.griyakampoengtkw.domain.DateUtil
-import net.bagusekasaputra.griyakampoengtkw.domain.DateUtil.toSlashedString
-import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.kavling.GetListUnmigratedKavlingsAsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.rekap.GetListRekapGlobalAsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.rekap.GetRekapBesarDetailAsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.rekap.GetRekapBesarOverviewAsyncUseCase
+import net.bagusekasaputra.griyakampoengtkw.domain.entity.pembayaran.Pembayaran
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.rekap.PeriodeRekap
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.rekap.RekapBesarDetail
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.rekap.RekapBesarOverview
@@ -37,7 +37,6 @@ class RekapViewModel @Inject constructor(
     private val getListRekapGlobalAsyncUseCase: GetListRekapGlobalAsyncUseCase,
     private val getRekapBesarOverviewAsyncUseCase: GetRekapBesarOverviewAsyncUseCase,
     private val getRekapBesarDetailAsyncUseCase: GetRekapBesarDetailAsyncUseCase,
-    private val getListUnmigratedKavlingsAsyncUseCase: GetListUnmigratedKavlingsAsyncUseCase,
 ): ViewModel() {
 
     val currentFragment = MutableLiveData<RekapType>()
@@ -69,9 +68,6 @@ class RekapViewModel @Inject constructor(
         get() = _isRekapBesarDetailLoaded
 
     val rekapGlobalProgress = getListRekapGlobalAsyncUseCase.progressState.asLiveData(Dispatchers.Default)
-//    val rekapBesarProgress = getRekapBesarOverviewAsyncUseCase.messageProgress
-
-    private val _kavlingList = MutableLiveData<String>()
 
     private val _listKavlingDataLamaRekapBesarIncludedLive = MutableLiveData(emptyList<String>())
     val listKavlingDataLamaRekapBesarIncluded: LiveData<List<String>>
@@ -82,6 +78,10 @@ class RekapViewModel @Inject constructor(
     val selectedPeriodeRekap: LiveData<PeriodeRekap?>
         get() = _selectedPeriodeRekap
 
+    // Pembayaran Filter Mode
+    private val _selectedPembayaranFilterMode = MutableStateFlow<String?>(null)
+    val selectedPembayaranFilterMode = _selectedPembayaranFilterMode.asStateFlow()
+
     // Progress RekapBesarOverview
     val rekapBesarOverviewMessage = getRekapBesarOverviewAsyncUseCase.messageProgress
 
@@ -89,7 +89,6 @@ class RekapViewModel @Inject constructor(
     var selectedBackupName: String? = null
 
     var gettingRekapBesarJob: Job? = null
-    var kavlingLamaRekapBesarJob: Job? = null
 
 
     fun getListRekapGlobal(onFailure: (msg: String) -> Unit) {
@@ -161,6 +160,14 @@ class RekapViewModel @Inject constructor(
                     _rekapBesarOverviewLive.postValue(it)
 
                     isRekapBesarOverviewLoaded.postValue(true)
+
+                    _selectedPembayaranFilterMode.update {
+                        when (pembayaranFilterMode) {
+                            Pembayaran.FILTER_USING_TANGGAL -> "Pembayaran berdasarkan tanggal"
+                            Pembayaran.FILTER_USING_BULAN_ANGSURAN -> "Pembayaran berdasarkan invoice"
+                            else -> null
+                        }
+                    }
                 }
                 result.onFailure {
                     onFailure("Gagal merekap: ${it.cause}")
@@ -215,7 +222,7 @@ class RekapViewModel @Inject constructor(
         _rekapDetailTransportLive.value = rekapDetailTransport
     }
 
-    fun doesIncludeDataLama(): Boolean {
+    private fun doesIncludeDataLama(): Boolean {
         return _listKavlingDataLamaRekapBesarIncludedLive.value.isNullOrEmpty().not()
     }
 
@@ -284,9 +291,5 @@ class RekapViewModel @Inject constructor(
                 )
             )
         }
-    }
-
-    private fun List<Date>.toRangeString(): String {
-        return "${this[0].toSlashedString()} - ${this[1].toSlashedString()}"
     }
 }
