@@ -14,14 +14,19 @@ data class SisaPembayaran(
     val sisaBelumDibayar = hargaKavling.hargaDanTambahLuasan - totalUangMasuk
 
     fun getPresentase(): Double {
-        val mTotalUangMasuk = BigDecimal(totalUangMasuk)
-        val mHargaDanTambahLuasan = BigDecimal(hargaKavling.hargaDanTambahLuasan)
+        // Fix Division By Zero
+        return if (hargaKavling.hargaDanTambahLuasan <= 0) {
+            0.0
+        } else {
+            val mTotalUangMasuk = BigDecimal(totalUangMasuk)
+            val mHargaDanTambahLuasan = BigDecimal(hargaKavling.hargaDanTambahLuasan)
 
-        val persentase = mTotalUangMasuk
-            .divide(mHargaDanTambahLuasan, 4, RoundingMode.HALF_UP)
-            .multiply(BigDecimal(100))
+            val persentase = mTotalUangMasuk
+                .divide(mHargaDanTambahLuasan, 4, RoundingMode.HALF_UP)
+                .multiply(BigDecimal(100))
 
-        return persentase.toDouble()
+            persentase.toDouble()
+        }
     }
 
     fun getParsedTotalUangMasuk(): String {

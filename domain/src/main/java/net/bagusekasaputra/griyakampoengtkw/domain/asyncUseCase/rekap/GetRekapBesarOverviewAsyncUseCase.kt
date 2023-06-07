@@ -346,6 +346,9 @@ class GetRekapBesarOverviewAsyncUseCase(
         )
     }
 
+    /**
+     * Disable get harga kavling on Fetching Data Lama
+     */
     @Suppress("UNCHECKED_CAST")
     private suspend fun fetchDataLama(
         backupName: String,
@@ -353,10 +356,14 @@ class GetRekapBesarOverviewAsyncUseCase(
     ): RekapKavling {
         val result = buildList {
             batchableWithKavlingList.forEachIndexed { index, repository ->
-                val batchMap = repository
-                    .fromBackupBatch(backupName, includedKavlingList)
-                    .firstOrThrow()
-                    ?: emptyMap()
+                val batchMap = if (index != INDEX_BATCHABLE_HARGA_KAVLING) {
+                        repository
+                            .fromBackupBatch(backupName, includedKavlingList)
+                            .firstOrThrow()
+                            ?: emptyMap()
+                    } else {
+                        emptyMap()
+                    }
 
                 add(index, batchMap)
             }
