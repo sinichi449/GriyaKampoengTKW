@@ -181,6 +181,13 @@
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@id/tvInfo_pengeluaran"/>
 
+                <androidx.legacy.widget.Space
+                    android:layout_width="match_parent"
+                    android:layout_height="96dp"
+                    app:layout_constraintTop_toBottomOf="@id/card_pengeluaran"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"/>
+
             </androidx.constraintlayout.widget.ConstraintLayout>
 
         </androidx.core.widget.NestedScrollView>

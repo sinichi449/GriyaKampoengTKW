@@ -163,8 +163,8 @@ class RekapViewModel @Inject constructor(
 
                     _selectedPembayaranFilterMode.update {
                         when (pembayaranFilterMode) {
-                            Pembayaran.FILTER_USING_TANGGAL -> "Pembayaran berdasarkan tanggal"
-                            Pembayaran.FILTER_USING_BULAN_ANGSURAN -> "Pembayaran berdasarkan invoice"
+                            Pembayaran.FILTER_USING_TANGGAL -> "*Pembayaran berdasarkan tanggal."
+                            Pembayaran.FILTER_USING_BULAN_ANGSURAN -> "*Pembayaran berdasarkan invoice."
                             else -> null
                         }
                     }
