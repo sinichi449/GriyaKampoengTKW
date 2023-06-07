@@ -21,6 +21,8 @@
         app:show_horizontal_separator="true"
         app:show_vertical_separator="true"
         app:separator_color="@color/black"
+        app:allow_click_inside_column_header="true"
+        app:allow_click_inside_row_header="true"
         android:layout_margin="8dp"
         android:visibility="gone"/>
 

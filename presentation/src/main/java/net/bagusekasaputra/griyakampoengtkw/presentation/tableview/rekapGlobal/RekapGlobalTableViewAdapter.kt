@@ -8,12 +8,17 @@ import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.content.ContextCompat
 import androidx.core.graphics.TypefaceCompat
 import com.evrencoskun.tableview.adapter.AbstractTableAdapter
+import com.evrencoskun.tableview.adapter.recyclerview.holder.AbstractSorterViewHolder
 import com.evrencoskun.tableview.adapter.recyclerview.holder.AbstractViewHolder
+import com.evrencoskun.tableview.sort.SortState
+import net.bagusekasaputra.griyakampoengtkw.domain.DateUtil.toSlashedString
+import net.bagusekasaputra.griyakampoengtkw.domain.NumberUtil
 import net.bagusekasaputra.griyakampoengtkw.presentation.R
 import net.bagusekasaputra.griyakampoengtkw.presentation.databinding.TableRekapCellViewBinding
 import net.bagusekasaputra.griyakampoengtkw.presentation.databinding.TableRekapColumnHeaderBinding
 import net.bagusekasaputra.griyakampoengtkw.presentation.databinding.TableRekapCornerViewBinding
 import net.bagusekasaputra.griyakampoengtkw.presentation.databinding.TableRekapRowHeaderBinding
+import java.util.Date
 
 object RekapGlobalColumnPosition {
     const val NAMA = 0
@@ -26,13 +31,12 @@ object RekapGlobalColumnPosition {
 
 class RekapGlobalTableViewAdapter: AbstractTableAdapter<RgColumnHeader, RgRowHeader, RgCell>() {
 
-
     /**
      * Cell
      */
     class RgCellViewHolder(binding: TableRekapCellViewBinding): AbstractViewHolder(binding.root) {
         val container = binding.root
-        val text = binding.tvCellData
+        val tvCell = binding.tvCellData
     }
 
     override fun onCreateCellViewHolder(parent: ViewGroup, viewType: Int): AbstractViewHolder {
@@ -51,29 +55,60 @@ class RekapGlobalTableViewAdapter: AbstractTableAdapter<RgColumnHeader, RgRowHea
     ) {
         val viewHolder = holder as RgCellViewHolder
 
-        viewHolder.text.text = cellItemModel?.text ?: "-"
-        viewHolder.text.typeface = TypefaceCompat.create(
+        val typeface = if (columnPosition == RekapGlobalColumnPosition.PERSENTASE)
+            Typeface.MONOSPACE else Typeface.SERIF
+        viewHolder.tvCell.typeface = TypefaceCompat.create(
             holder.container.context,
-            Typeface.SERIF,
+            typeface,
             Typeface.NORMAL
         )
 
         if (columnPosition == RekapGlobalColumnPosition.NAMA) {
-            viewHolder.text.textAlignment = View.TEXT_ALIGNMENT_VIEW_START
+            viewHolder.tvCell.textAlignment = View.TEXT_ALIGNMENT_VIEW_START
         } else {
-            viewHolder.text.textAlignment = View.TEXT_ALIGNMENT_CENTER
+            viewHolder.tvCell.textAlignment = View.TEXT_ALIGNMENT_CENTER
+        }
+
+        viewHolder.tvCell.text = when (columnPosition) {
+            RekapGlobalColumnPosition.PERSENTASE -> {
+                val persentaseDouble = cellItemModel?.data as Double?
+                if (persentaseDouble != null) {
+                    "${persentaseDouble}%"
+                } else {
+                    "-"
+                }
+            }
+
+            RekapGlobalColumnPosition.TANGGAL_PEMBELIAN -> {
+                val tanggalPembelian = cellItemModel?.data as Date?
+
+                tanggalPembelian?.toSlashedString() ?: "-"
+            }
+
+            RekapGlobalColumnPosition.NAMA -> {
+                (cellItemModel?.data as String?) ?: "-"
+            }
+
+            RekapGlobalColumnPosition.HARGA,
+            RekapGlobalColumnPosition.SISA_PEMBAYARAN,
+            RekapGlobalColumnPosition.JUMLAH_UANG_MASUK, -> {
+                NumberUtil.formatLongToString(cellItemModel?.data as Long? ?: 0L)
+            }
+
+            else -> "N/A"
         }
 
         viewHolder.container.layoutParams.width = ConstraintLayout.LayoutParams.WRAP_CONTENT
-        viewHolder.text.requestLayout()
+        viewHolder.tvCell.requestLayout()
     }
 
     /**
      * Column Header
      */
-    class RgColumnHeaderViewHolder(binding: TableRekapColumnHeaderBinding): AbstractViewHolder(binding.root) {
+    class RgColumnHeaderViewHolder(binding: TableRekapColumnHeaderBinding): AbstractSorterViewHolder(binding.root) {
         val container = binding.root
         val text = binding.tvChData
+        val imgSortingState = binding.imgSortingState
 
         override fun setSelected(selectionState: SelectionState) {
             super.setSelected(selectionState)
@@ -85,6 +120,37 @@ class RekapGlobalTableViewAdapter: AbstractTableAdapter<RgColumnHeader, RgRowHea
                 text.setTextColor(
                     ContextCompat.getColor(container.context, R.color.white)
                 )
+            }
+        }
+
+        override fun onSortingStatusChanged(sortState: SortState) {
+            super.onSortingStatusChanged(sortState)
+
+            with(imgSortingState) {
+                val sortingIconRes = when (sortState) {
+                    SortState.ASCENDING -> {
+                        visibility = View.VISIBLE
+
+                        R.drawable.baseline_arrow_drop_up_24
+                    }
+                    SortState.DESCENDING -> {
+                        visibility = View.VISIBLE
+
+                        R.drawable.baseline_arrow_drop_down_24
+                    }
+                    SortState.UNSORTED -> {
+                        visibility = View.GONE
+
+                        null
+                    }
+                }
+
+                sortingIconRes?.also {
+                    val sortingIconDrawable = ContextCompat.getDrawable(
+                        container.context, it
+                    )
+                    setImageDrawable(sortingIconDrawable)
+                }
             }
         }
     }

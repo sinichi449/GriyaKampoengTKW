@@ -29,6 +29,7 @@ import net.bagusekasaputra.griyakampoengtkw.presentation.model.RekapDetailTransp
 import net.bagusekasaputra.griyakampoengtkw.presentation.tableview.rekapGlobal.RgCell
 import net.bagusekasaputra.griyakampoengtkw.presentation.tableview.rekapGlobal.RgColumnHeader
 import net.bagusekasaputra.griyakampoengtkw.presentation.tableview.rekapGlobal.RgRowHeader
+import net.bagusekasaputra.griyakampoengtkw.presentation.toDate
 import java.util.Date
 import javax.inject.Inject
 
@@ -45,9 +46,7 @@ class RekapViewModel @Inject constructor(
     val rekapDetailTransportLive: LiveData<RekapDetailTransport>
         get() = _rekapDetailTransportLive
 
-    private val _listRekapGlobalLive = MutableLiveData(
-        listOf(RekapGlobal("-", "-", "-", 0L, 0L))
-    )
+    private val _listRekapGlobalLive = MutableLiveData<List<RekapGlobal>>(emptyList())
     val listRekapGlobalLive: LiveData<List<RekapGlobal>>
         get() = _listRekapGlobalLive
 
@@ -267,12 +266,12 @@ class RekapViewModel @Inject constructor(
 
             listRekapGlobal.forEach {
                 val listValues = mutableListOf<RgCell>().apply {
-                    add(RgCell(it.namaCostumer))
-                    add(RgCell(it.tanggalPembelian))
-                    add(RgCell(it.parsedHarga))
-                    add(RgCell(it.parsedJumlahUangMasuk))
-                    add(RgCell(it.parsedSisaPembayaran))
-                    add(RgCell(it.parsedPersentase))
+                    add(RgCell(it.noKavling, it.namaCostumer))
+                    add(RgCell(it.noKavling, it.tanggalPembelian.toDate()))
+                    add(RgCell(it.noKavling, it.harga))
+                    add(RgCell(it.noKavling, it.jumlahUangMasuk))
+                    add(RgCell(it.noKavling, it.sisaPembayaran))
+                    add(RgCell(it.noKavling, it.persentase))
                 }
 
                 listCells.add(listValues)
@@ -282,12 +281,12 @@ class RekapViewModel @Inject constructor(
         } else {
             listOf(
                 listOf(
-                    RgCell("-"), // Nama
-                    RgCell("-"), // Tanggal pembelian
-                    RgCell("-"), // Harga
-                    RgCell("-"), // Jumlah uang masuk
-                    RgCell("-"), // Sisa pembayaran
-                    RgCell("-"), // Persentase
+                    RgCell("N/A",null), // Nama
+                    RgCell("N/A",null), // Tanggal pembelian
+                    RgCell("N/A",null), // Harga
+                    RgCell("N/A",null), // Jumlah uang masuk
+                    RgCell("N/A",null), // Sisa pembayaran
+                    RgCell("N/A",null), // Persentase
                 )
             )
         }

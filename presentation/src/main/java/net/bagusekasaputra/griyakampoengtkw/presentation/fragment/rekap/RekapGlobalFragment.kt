@@ -9,6 +9,8 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.repeatOnLifecycle
+import androidx.recyclerview.widget.RecyclerView
+import com.evrencoskun.tableview.listener.ITableViewListener
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -33,7 +35,7 @@ class RekapGlobalFragment : Fragment() {
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?,
-    ): View? {
+    ): View {
         // Inflate the layout for this fragment
         binding = FragmentRekapGlobalBinding.inflate(inflater, container, false)
 
@@ -75,11 +77,15 @@ class RekapGlobalFragment : Fragment() {
         }
 
         viewModel.listRekapGlobalLive.observe(requireActivity()) {
-            val columnHeaders = viewModel.getColumnHeaderRekapTable()
-            val rowHeaders = viewModel.getRowHeaderRekapTable()
-            val cellItems = viewModel.getListCellsRekapTable()
+            it?.also { rekapGlobalList ->
+                if (rekapGlobalList.isNotEmpty()) {
+                    val columnHeaders = viewModel.getColumnHeaderRekapTable()
+                    val rowHeaders = viewModel.getRowHeaderRekapTable()
+                    val cellItems = viewModel.getListCellsRekapTable()
 
-            setupRekapTableView(columnHeaders, rowHeaders, cellItems)
+                    setupRekapTableView(columnHeaders, rowHeaders, cellItems)
+                }
+            }
         }
     }
 
@@ -105,5 +111,50 @@ class RekapGlobalFragment : Fragment() {
     private fun LayoutWarningAndLoadingRekapBinding.setProgress(progressState: ProgressState) {
         linearprogressReport.progress = progressState.percent
         tvLoadingReport.text = progressState.message
+    }
+
+    class TableRekapListener: ITableViewListener {
+        override fun onCellClicked(cellView: RecyclerView.ViewHolder, column: Int, row: Int) {
+
+        }
+
+        override fun onCellDoubleClicked(cellView: RecyclerView.ViewHolder, column: Int, row: Int) {
+
+        }
+
+        override fun onCellLongPressed(cellView: RecyclerView.ViewHolder, column: Int, row: Int) {
+
+        }
+
+        override fun onColumnHeaderClicked(columnHeaderView: RecyclerView.ViewHolder, column: Int) {
+
+        }
+
+        override fun onColumnHeaderDoubleClicked(
+            columnHeaderView: RecyclerView.ViewHolder,
+            column: Int
+        ) {
+
+        }
+
+        override fun onColumnHeaderLongPressed(
+            columnHeaderView: RecyclerView.ViewHolder,
+            column: Int
+        ) {
+
+        }
+
+        override fun onRowHeaderClicked(rowHeaderView: RecyclerView.ViewHolder, row: Int) {
+
+        }
+
+        override fun onRowHeaderDoubleClicked(rowHeaderView: RecyclerView.ViewHolder, row: Int) {
+
+        }
+
+        override fun onRowHeaderLongPressed(rowHeaderView: RecyclerView.ViewHolder, row: Int) {
+
+        }
+
     }
 }
