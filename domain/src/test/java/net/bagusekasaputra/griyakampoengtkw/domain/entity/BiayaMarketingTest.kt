@@ -8,8 +8,6 @@ import net.bagusekasaputra.griyakampoengtkw.domain.entity.BiayaMarketing.Compani
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.rekap.PeriodeRekap
 import org.junit.Assert
 import org.junit.Test
-import org.mockito.ArgumentMatchers.anyLong
-import org.mockito.ArgumentMatchers.anyString
 import java.util.Calendar
 
 class BiayaMarketingTest {
@@ -36,10 +34,10 @@ class BiayaMarketingTest {
         val biayaMarketingList = mutableListOf<BiayaMarketing>().apply {
             generatedDateList.forEach { tanggal ->
                 add(BiayaMarketing(
-                    kavlingKode = anyString(),
+                    kavlingKode = "",
                     tanggal = tanggal.toSlashedString(),
-                    jenisBiaya = anyString(),
-                    harga = NumberUtil.formatLongToString(anyLong()),
+                    jenisBiaya = "",
+                    harga = NumberUtil.formatLongToString(0),
                 ))
             }
         }
@@ -67,10 +65,10 @@ class BiayaMarketingTest {
         val biayaMarketingList = mutableListOf<BiayaMarketing>().apply {
             generatedDateList.forEach { tanggal ->
                 add(BiayaMarketing(
-                    kavlingKode = anyString(),
+                    kavlingKode = "",
                     tanggal = tanggal.toSlashedString(),
-                    jenisBiaya = anyString(),
-                    harga = NumberUtil.formatLongToString(anyLong()),
+                    jenisBiaya = "",
+                    harga = NumberUtil.formatLongToString(0L),
                 ))
             }
         }

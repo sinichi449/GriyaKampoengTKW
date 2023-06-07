@@ -7,8 +7,6 @@ import net.bagusekasaputra.griyakampoengtkw.domain.entity.BiayaLain.Companion.fi
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.rekap.PeriodeRekap
 import org.junit.Assert
 import org.junit.Test
-import org.mockito.ArgumentMatchers.anyLong
-import org.mockito.ArgumentMatchers.anyString
 import java.util.Calendar
 
 class BiayaLainTest {
@@ -35,8 +33,8 @@ class BiayaLainTest {
         val biayaLainList = mutableListOf<BiayaLain>().apply {
             generatedDateList.forEach { tanggal ->
                 add(BiayaLain(
-                        jenisBiaya = anyString(),
-                        harga = anyLong(),
+                        jenisBiaya = "",
+                        harga = 1,
                         tanggal = tanggal.toSlashedString(),
                 ))
             }
@@ -65,8 +63,8 @@ class BiayaLainTest {
         val biayaLain = mutableListOf<BiayaLain>().apply {
             generatedDateList.forEach { tanggal ->
                 add(BiayaLain(
-                    jenisBiaya = anyString(),
-                    harga = anyLong(),
+                    jenisBiaya = "",
+                    harga = 1,
                     tanggal = tanggal.toSlashedString(),
                 ))
             }

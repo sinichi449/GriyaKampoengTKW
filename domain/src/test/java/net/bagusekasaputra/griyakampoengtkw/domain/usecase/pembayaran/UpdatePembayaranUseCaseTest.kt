@@ -7,7 +7,6 @@ import net.bagusekasaputra.griyakampoengtkw.domain.entity.pembayaran.Pembayaran
 import net.bagusekasaputra.griyakampoengtkw.domain.repository.PembayaranRepository
 import org.junit.Assert
 import org.junit.Test
-import org.mockito.ArgumentMatchers.anyString
 import org.mockito.Mockito
 
 class UpdatePembayaranUseCaseTest {
@@ -21,13 +20,13 @@ class UpdatePembayaranUseCaseTest {
                 termin = "ITJ 1",
                 tanggal = "5/6/2023",
                 jumlahUangDibayar = "0",
-                keterangan = anyString(),
+                keterangan = "",
                 timeMillis = System.currentTimeMillis(),
             )
             val newPembayaran = oldPembayaran.copy(termin = "DP 1")
             val useCase = getUseCase(pembayaranRepository)
             val request = UpdatePembayaranAsyncUseCase.KavlingRequest(
-                anyString(), oldPembayaran, newPembayaran
+                "", oldPembayaran, newPembayaran
             )
 
             val result = useCase.execute(request).first()
@@ -43,12 +42,12 @@ class UpdatePembayaranUseCaseTest {
                 termin = "ITJ 1",
                 tanggal = "5/6/2023",
                 jumlahUangDibayar = "0",
-                keterangan = anyString(),
+                keterangan = "",
                 timeMillis = System.currentTimeMillis(),
             )
             val useCase = getUseCase(pembayaranRepository)
             val request = UpdatePembayaranAsyncUseCase.KavlingRequest(
-                anyString(), pembayaran, pembayaran
+                "", pembayaran, pembayaran
             )
 
             val result = useCase.execute(request).first()

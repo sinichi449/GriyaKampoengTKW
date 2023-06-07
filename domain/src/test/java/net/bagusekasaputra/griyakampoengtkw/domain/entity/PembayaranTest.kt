@@ -16,11 +16,8 @@ import net.bagusekasaputra.griyakampoengtkw.domain.entity.rekap.PeriodeRekap
 import net.bagusekasaputra.griyakampoengtkw.domain.model.PembayaranJson
 import net.bagusekasaputra.griyakampoengtkw.domain.repository.MockHargaRumahIndenBookingRepository
 import net.bagusekasaputra.griyakampoengtkw.domain.repository.MockPembayaranRepository
-import net.bagusekasaputra.griyakampoengtkw.domain.repository.PembayaranRepository
 import org.junit.Assert
 import org.junit.Test
-import org.mockito.ArgumentMatchers
-import org.mockito.kotlin.mock
 import java.math.BigDecimal
 import java.math.RoundingMode
 import java.util.Calendar
@@ -30,8 +27,6 @@ class PembayaranTest {
 
     private val pembayaranRepository = MockPembayaranRepository()
     private val hargaRumahRepository = MockHargaRumahIndenBookingRepository()
-
-    private val mockPembayaranRepository = mock<PembayaranRepository>()
 
     @Test
     fun total_uang_masuk_on_specified_bulan_and_tahun() {
@@ -146,10 +141,10 @@ class PembayaranTest {
             val rangeTanggal = DateUtil.getListDate(startDate, endDate)
             rangeTanggal.forEach {
                 add(Pembayaran(
-                    termin = ArgumentMatchers.anyString(),
+                    termin = "",
                     tanggal = it.toSlashedString(),
-                    jumlahUangDibayar = NumberUtil.formatLongToString(ArgumentMatchers.anyLong()),
-                    keterangan = ArgumentMatchers.anyString(),
+                    jumlahUangDibayar = NumberUtil.formatLongToString(0L),
+                    keterangan = "",
                     timeMillis = System.currentTimeMillis(),
                 ))
             }
@@ -177,10 +172,10 @@ class PembayaranTest {
         val pembayaranList = mutableListOf<Pembayaran>().apply {
             rangeDate.forEach {
                 add(Pembayaran(
-                    termin = ArgumentMatchers.anyString(),
+                    termin = "",
                     tanggal = it.toSlashedString(),
-                    jumlahUangDibayar = NumberUtil.formatLongToString(ArgumentMatchers.anyLong()),
-                    keterangan = ArgumentMatchers.anyString(),
+                    jumlahUangDibayar = NumberUtil.formatLongToString(0L),
+                    keterangan = "",
                     timeMillis = System.currentTimeMillis(),
                 ))
             }
