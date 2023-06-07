@@ -161,29 +161,6 @@ class PembayaranTest {
     }
 
     @Test
-    fun whenCreatingBulanAngsuran_tanggalShouldSetToFirstDayInMonthAndNormalized() {
-        val calendar = Calendar.getInstance()
-        val tanggalSekarang = calendar.time.toSlashedString()
-        val pembayaran = Pembayaran(
-            termin = "Termin 5",
-            tanggal = tanggalSekarang,
-            jumlahUangDibayar = "0",
-            keterangan = "-",
-            timeMillis = System.currentTimeMillis(),
-        )
-
-        val firstDayInMonth = with(calendar) {
-            set(Calendar.DAY_OF_MONTH, getActualMinimum(Calendar.DAY_OF_MONTH))
-            normalize()
-
-            time
-        }
-        val tanggalBulanAngsuran = pembayaran.bulanAngsuran.date
-
-        Assert.assertEquals(firstDayInMonth, tanggalBulanAngsuran)
-    }
-
-    @Test
     fun filterPeriodeCustom_filterUsingBulanAngsuran_shouldCorrect() {
         val jsonPembayaran = "{\"DP 1\":{\"fullTermin\":\"DP 1\",\"jumlahUangDibayar\":5000000,\"keterangan\":\"Dp 1 Januari \",\"tanggal\":\"30/01/2023\",\"termin\":\"DP\",\"timeMillis\":1675082135719,\"urutan\":1,\"invoiceDateStr\":\"01/2023\"},\"DP 2\":{\"fullTermin\":\"DP 2\",\"jumlahUangDibayar\":400000,\"keterangan\":\"Dp 2 = TF 500 - biaya pengiriman 100 RB \",\"tanggal\":\"05/02/2023\",\"termin\":\"DP\",\"timeMillis\":1675661757873,\"urutan\":2,\"invoiceDateStr\":\"02/2023\"},\"DP 3\":{\"fullTermin\":\"DP 3\",\"jumlahUangDibayar\":5000000,\"keterangan\":\"Dp 3 February \",\"tanggal\":\"02/03/2023\",\"termin\":\"DP\",\"timeMillis\":1677727097661,\"urutan\":3,\"invoiceDateStr\":\"02/2023\"},\"DP 4\":{\"fullTermin\":\"DP 4\",\"jumlahUangDibayar\":5000000,\"keterangan\":\"Dp 4 Maret\",\"tanggal\":\"01/04/2023\",\"termin\":\"DP\",\"timeMillis\":1680322761479,\"urutan\":4,\"invoiceDateStr\":\"03/2023\"},\"DP 5\":{\"fullTermin\":\"DP 5\",\"jumlahUangDibayar\":5000000,\"keterangan\":\"Pemindahan dari B19 - A3\",\"tanggal\":\"30/04/2023\",\"termin\":\"DP\",\"timeMillis\":1682846004870,\"urutan\":5,\"invoiceDateStr\":\"04/2023\"},\"DP 6\":{\"fullTermin\":\"DP 6\",\"jumlahUangDibayar\":5000000,\"keterangan\":\"Dp 6 Bulan Mei\",\"tanggal\":\"01/06/2023\",\"termin\":\"DP\",\"timeMillis\":1685589258226,\"urutan\":6,\"invoiceDateStr\":\"05/2023\"},\"ITJ 1\":{\"fullTermin\":\"ITJ 1\",\"jumlahUangDibayar\":1000000,\"keterangan\":\"ITJ 1 \",\"tanggal\":\"01/01/2023\",\"termin\":\"ITJ\",\"timeMillis\":1672566322153,\"urutan\":1,\n\"invoiceDateStr\": \"01/2023\"}}"
         val terminNodes = JsonParser.parseString(jsonPembayaran)
@@ -216,6 +193,44 @@ class PembayaranTest {
             filterMode = FILTER_USING_BULAN_ANGSURAN,
         )!!
         Assert.assertEquals(false, filterMei.isEmpty())
+    }
+
+    @Test
+    fun whenCreatingBulanAngsuran_tanggalShouldSetToFirstDayInMonthAndNormalized() {
+        val calendar = Calendar.getInstance()
+        val tanggalSekarang = calendar.time.toSlashedString()
+        val pembayaran = Pembayaran(
+            termin = "Termin 5",
+            tanggal = tanggalSekarang,
+            jumlahUangDibayar = "0",
+            keterangan = "-",
+            timeMillis = System.currentTimeMillis(),
+        )
+
+        val firstDayInMonth = with(calendar) {
+            set(Calendar.DAY_OF_MONTH, getActualMinimum(Calendar.DAY_OF_MONTH))
+            normalize()
+
+            time
+        }
+        val tanggalBulanAngsuran = pembayaran.bulanAngsuran.date
+
+        Assert.assertEquals(firstDayInMonth, tanggalBulanAngsuran)
+    }
+
+    @Test
+    fun whenBulanAngsuranIsNotSpecified_shouldDefaultToTanggalPembayaran() {
+        val tanggalPembayaran = "08/06/2023"
+        val pembayaran = Pembayaran(
+            termin = "",
+            tanggal = tanggalPembayaran,
+            jumlahUangDibayar = "0",
+            keterangan = "-",
+            timeMillis = System.currentTimeMillis(),
+        )
+        val bulanAngsuran = pembayaran.bulanAngsuran
+
+        Assert.assertEquals("06/2023", bulanAngsuran.bulanAndTahun)
     }
 
     @Test

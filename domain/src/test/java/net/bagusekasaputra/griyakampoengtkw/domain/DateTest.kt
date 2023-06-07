@@ -12,10 +12,10 @@ class DateTest {
 
     @Test
     fun isWithinRange_shouldCorrect() {
-        val tanggalSatuJuni = "1/6/2023".toDate()
+        val tanggalSatuJuni = "01/06/2023".toDate()
         val rangeTanggalJuni = DateUtil.getMonthlyRangeDate(Calendar.JUNE, 2023)
 
-        Assert.assertEquals("1/6/2023", rangeTanggalJuni[0].toSlashedString())
+        Assert.assertEquals("01/06/2023", rangeTanggalJuni[0].toSlashedString())
         Assert.assertEquals(true, tanggalSatuJuni.isWithinRange(rangeTanggalJuni[0], rangeTanggalJuni[1]))
     }
 

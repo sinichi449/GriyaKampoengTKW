@@ -15,7 +15,7 @@ class BaselinePembayaranTest {
             tanggalPembelian, BaselinePembayaran.OPSI_TIMEFRAME_TAHUN, timeFrameTahun
         )
 
-        Assert.assertEquals("3/6/2027", tanggalSelesai.toSlashedString())
+        Assert.assertEquals("03/06/2027", tanggalSelesai.toSlashedString())
     }
 
     @Test
@@ -26,6 +26,6 @@ class BaselinePembayaranTest {
             tanggalPembelian, BaselinePembayaran.OPSI_TIMEFRAME_BULAN, timeFrameBulan
         )
 
-        Assert.assertEquals("3/9/2024", tanggalSelesai.toSlashedString())
+        Assert.assertEquals("03/09/2024", tanggalSelesai.toSlashedString())
     }
 }
