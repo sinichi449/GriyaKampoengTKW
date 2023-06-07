@@ -13,7 +13,7 @@ class KavlingModel(
 
     companion object {
         fun getBlockKode(kavlingKode: String): String {
-            val kavling = Kavling(kavlingKode, false, "", "", "", false)
+            val kavling = Kavling(kavlingKode, false, "", "", "")
 
             return kavling.blockKode
         }

@@ -11,6 +11,7 @@ data class ProgressKavling(
     val angsuranBulanan: Long,
     val uangMasukBulanIni: Long,
 ) {
+    val adaPembayaran = uangMasukBulanIni > 0L
 
     fun persentaseBulanIni(): Int {
         return if (angsuranBulanan > 0L && uangMasukBulanIni > 0L) {

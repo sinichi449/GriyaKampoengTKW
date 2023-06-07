@@ -35,16 +35,8 @@ class KavlingRecyclerAdapter(
 
     override fun onBindViewHolder(holder: MyViewHolder, position: Int) {
         holder.binding.tvCardBlockName.text = kavlings[position].kode
-//        holder.binding.tvUkuran.text = kavlings[position].ukuran
         holder.binding.tvTypeRumah.text = kavlings[position].type
-//        holder.binding.imgSudahIsiDataDiri.visibility = if (kavlings[position].belumIsi)
-//            View.GONE else View.VISIBLE
         holder.binding.cardKavling.isChecked = kavlings[position].getSudahIsi()
-//        holder.binding.cardKavling.setCardBackgroundColor(Color.parseColor(kavlings[position].warna))
-        holder.binding.imgSudahBayarBulanIni.visibility = if (kavlings[position].sudahBayarBulanIni)
-            View.VISIBLE
-        else
-            View.GONE
 
         // Special case for Kavling C1 and C6
         val kavling = kavlings[position]
@@ -58,15 +50,18 @@ class KavlingRecyclerAdapter(
 
         // Fill Layout progress settings
         val warna = Color.parseColor(kavling.warna)
-        val progress = mapProgressKavling[kavling.kode]?.persentaseBulanIni()
+        val progressKavling = mapProgressKavling[kavling.kode]
+        val persentase = progressKavling?.persentaseBulanIni()
 
         holder.binding.cardKavling.setCardBackgroundColor(warna)
         holder.binding.fillProgressPersen.setProgressBackgroundColor(warna)
         holder.binding.layoutRoot.setBackgroundColor(warna)
-        if (progress != null) {
-            Log.d("PROGRESS_PEMBAYARAN", "Progress Kav. ${kavling.kode} is ${progress}%")
-            holder.binding.fillProgressPersen.setProgress(progress, false)
+        if (persentase != null) {
+            Log.d("PROGRESS_PEMBAYARAN", "Progress Kav. ${kavling.kode} is ${persentase}%")
+            holder.binding.fillProgressPersen.setProgress(persentase, false)
         }
+        holder.binding.imgSudahBayarBulanIni.visibility = if (progressKavling?.adaPembayaran == true)
+            View.VISIBLE else View.GONE
 
 
         holder.binding.cardKavling.setOnClickListener {
@@ -77,7 +72,6 @@ class KavlingRecyclerAdapter(
             onRecyclerItemHold(it, position)
             true
         }
-//        setAnimation(holder.binding.root, position)
     }
 
 

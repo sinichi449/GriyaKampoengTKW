@@ -243,37 +243,6 @@ class LegacyPembayaranRepository(
         }
     }
 
-    override suspend fun sudahBayarAngsuran(
-        kavlingKode: String,
-        bulan: Int,
-        tahun: Int,
-        dataMode: DataMode
-    ): Result<Boolean?> {
-        return try {
-            val cacheModels = if (dataMode == DataMode.DATA_LAMA)
-                backupPembayaranDataSource.getAllPembayaran(kavlingKode)
-                    .getOrNull()
-            else
-                localPembayaranDataSource.getAllPembayaran(kavlingKode)
-                    .getOrNull()
-
-            if (cacheModels.isNullOrEmpty()) {
-                Result.success(false)
-            } else {
-                val pembayarans = cacheModels.map { MyObjectMapper.mapPembayaran(it) }
-                Result.success(
-                    Pembayaran.adakahPembayaranBulanDanTahunIni(
-                    pembayarans, bulan, tahun,
-                ))
-            }
-        } catch (e: Exception) {
-            e.printStackTrace()
-            Log.d("DEBUG_ME", "ERROR PembayaranRepo->sudahBayarAngsuran():144 : ${e.message}")
-
-            Result.failure(e)
-        }
-    }
-
     override suspend fun refreshCache(kavlings: List<String>): Result<Nothing?> {
         return try {
             localPembayaranDataSource.deleteAll().getOrThrow()

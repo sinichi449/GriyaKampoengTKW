@@ -33,10 +33,6 @@ class DefaultPembayaranRepository(
     ): Flow<Result<List<Pembayaran>?>> {
         return callbackFlow {
             try {
-                val dataLamaMode = Result.failure<List<Pembayaran>?>(
-                    UnsupportedOperationException("Fitur Data Lama pembayaran belum diaktifkan!")
-                )
-
                 trySendBlocking(when (dataMode) {
                     DataMode.OFFLINE -> {
                         val localModels = localDataSource.getAllPembayaran(kavlingKode)
@@ -81,7 +77,7 @@ class DefaultPembayaranRepository(
 
                         Result.success(pembayaranList)
                     }
-                    DataMode.DATA_LAMA -> dataLamaMode
+                    DataMode.DATA_LAMA -> Result.failure(UnsupportedOperationException("Fitur Data Lama pembayaran belum diaktifkan!"))
                 })
             } catch (e: Exception) {
                 trySendBlocking(Result.failure(e))
@@ -114,16 +110,6 @@ class DefaultPembayaranRepository(
     }
 
     override fun deleteAllPembayaran(kavlingKode: String): Flow<Result<Boolean>> {
-        TODO("Not yet implemented")
-    }
-
-    @Deprecated("Will be removed soon.")
-    override suspend fun sudahBayarAngsuran(
-        kavlingKode: String,
-        bulan: Int,
-        tahun: Int,
-        dataMode: DataMode
-    ): Result<Boolean?> {
         TODO("Not yet implemented")
     }
 

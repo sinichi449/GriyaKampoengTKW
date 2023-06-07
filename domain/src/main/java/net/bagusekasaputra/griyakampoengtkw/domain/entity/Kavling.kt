@@ -11,7 +11,6 @@ data class Kavling(
     val warna: String,
     val ukuran: String,
     val type: String,
-    var sudahBayarBulanIni: Boolean = false,
 ) {
     val blockKode = kode.substring(0, 1)
     val numKode = kode.substring(1).toInt()
