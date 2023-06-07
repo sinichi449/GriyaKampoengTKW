@@ -25,6 +25,2081 @@
       "ITJ 1": true
     }
   },
+  "backups": {
+    "Migrasi Kavling (15-04-2023)": {
+      "biayaLain": {
+        "Design siteplan Fandi ": {
+          "harga": 50000,
+          "jenisBiaya": "Design siteplan Fandi ",
+          "tanggal": "05/04/2023"
+        },
+        "Dp design 3D mas fian": {
+          "harga": 700000,
+          "jenisBiaya": "Dp design 3D mas fian",
+          "tanggal": "25/12/2022"
+        },
+        "Dp pembuatan APK": {
+          "harga": 500000,
+          "jenisBiaya": "Dp pembuatan APK",
+          "tanggal": "21/11/2022"
+        },
+        "Gunting Lakban Materai ": {
+          "harga": 30000,
+          "jenisBiaya": "Gunting Lakban Materai ",
+          "tanggal": "27/10/2022"
+        },
+        "Map amplop coklat besar": {
+          "harga": 50000,
+          "jenisBiaya": "Map amplop coklat besar",
+          "tanggal": "13/12/2022"
+        },
+        "P poneran": {
+          "harga": 100000,
+          "jenisBiaya": "P poneran",
+          "tanggal": "23/01/2023"
+        },
+        "Pelunasan Gambar 3D mas fian": {
+          "harga": 6106500,
+          "jenisBiaya": "Pelunasan Gambar 3D mas fian",
+          "tanggal": "11/01/2023"
+        },
+        "Service Kendaraan CB": {
+          "harga": 130000,
+          "jenisBiaya": "Service Kendaraan CB",
+          "tanggal": "25/11/2022"
+        },
+        "Uang Saku Perangkat Desa 3 orang ": {
+          "harga": 300000,
+          "jenisBiaya": "Uang Saku Perangkat Desa 3 orang ",
+          "tanggal": "02/04/2023"
+        },
+        "biaya FC berkas dan materai 16 , (balik nama AJB )": {
+          "harga": 180000,
+          "jenisBiaya": "biaya FC berkas dan materai 16 , (balik nama AJB )",
+          "tanggal": "04/04/2023"
+        },
+        "biaya pembersihan lahan": {
+          "harga": 200000,
+          "jenisBiaya": "biaya pembersihan lahan",
+          "tanggal": "06/04/2023"
+        },
+        "biaya slametan lahan ": {
+          "harga": 350000,
+          "jenisBiaya": "biaya slametan lahan ",
+          "tanggal": "04/04/2023"
+        },
+        "kwitansi ": {
+          "harga": 10000,
+          "jenisBiaya": "kwitansi ",
+          "tanggal": "04/11/2022"
+        },
+        "pembelian Map Oren dan kertas Glosy": {
+          "harga": 50000,
+          "jenisBiaya": "pembelian Map Oren dan kertas Glosy",
+          "tanggal": "03/11/2022"
+        },
+        "pembelian kwitansi 2": {
+          "harga": 10000,
+          "jenisBiaya": "pembelian kwitansi 2",
+          "tanggal": "06/01/2023"
+        },
+        "pembelian kwitansi dan materai ": {
+          "harga": 30000,
+          "jenisBiaya": "pembelian kwitansi dan materai ",
+          "tanggal": "02/04/2023"
+        },
+        "pembuatan berkas Pak Abi abudhabi ": {
+          "harga": 50000,
+          "jenisBiaya": "pembuatan berkas Pak Abi abudhabi ",
+          "tanggal": "12/10/2022"
+        },
+        "pembuatan stempel logo GKT ": {
+          "harga": 85000,
+          "jenisBiaya": "pembuatan stempel logo GKT ",
+          "tanggal": "31/10/2022"
+        },
+        "pencetakan brosur 100 lembar": {
+          "harga": 150000,
+          "jenisBiaya": "pencetakan brosur 100 lembar",
+          "tanggal": "20/12/2022"
+        }
+      },
+      "biayaMarketing": {
+        "A14": {
+          "Biaya pembuatan surat": {
+            "harga": 50000,
+            "jenisBiaya": "Biaya pembuatan surat",
+            "kavlingKode": "A14",
+            "tanggal": "22/11/2022"
+          },
+          "biaya antar jemput ibunya B lancy": {
+            "harga": 50000,
+            "jenisBiaya": "biaya antar jemput ibunya B lancy",
+            "kavlingKode": "A14",
+            "tanggal": "22/11/2022"
+          }
+        },
+        "A3": {
+          "Pembuatan Surat perjanjian": {
+            "harga": 50000,
+            "jenisBiaya": "Pembuatan Surat perjanjian",
+            "kavlingKode": "A3",
+            "tanggal": "18/11/2022"
+          }
+        },
+        "A4": {
+          "Biaya pembuatan surat": {
+            "harga": 50000,
+            "jenisBiaya": "Biaya pembuatan surat",
+            "kavlingKode": "A4",
+            "tanggal": "18/11/2022"
+          },
+          "Biaya pengiriman Surat ke Jakarta": {
+            "harga": 20000,
+            "jenisBiaya": "Biaya pengiriman Surat ke Jakarta",
+            "kavlingKode": "A4",
+            "tanggal": "18/11/2022"
+          }
+        },
+        "A7": {
+          "pembuatan surat perjanjian": {
+            "harga": 50000,
+            "jenisBiaya": "pembuatan surat perjanjian",
+            "kavlingKode": "A7",
+            "tanggal": "02/01/2023"
+          }
+        },
+        "A9": {
+          "biaya pembuatan surat": {
+            "harga": 50000,
+            "jenisBiaya": "biaya pembuatan surat",
+            "kavlingKode": "A9",
+            "tanggal": "18/11/2022"
+          }
+        },
+        "B12": {
+          "pembuatan surat": {
+            "harga": 50000,
+            "jenisBiaya": "pembuatan surat",
+            "kavlingKode": "B12",
+            "tanggal": "14/12/2022"
+          }
+        },
+        "B14": {
+          "pembuatan surat": {
+            "harga": 50000,
+            "jenisBiaya": "pembuatan surat",
+            "kavlingKode": "B14",
+            "tanggal": "06/01/2023"
+          }
+        },
+        "B16": {
+          "pembuatan surat": {
+            "harga": 50000,
+            "jenisBiaya": "pembuatan surat",
+            "kavlingKode": "B16",
+            "tanggal": "22/01/2023"
+          }
+        },
+        "B18": {
+          "pembuatan surat": {
+            "harga": 50000,
+            "jenisBiaya": "pembuatan surat",
+            "kavlingKode": "B18",
+            "tanggal": "22/12/2022"
+          }
+        },
+        "B19": {
+          "biaya pembuatan surat perjanjian": {
+            "harga": 50000,
+            "jenisBiaya": "biaya pembuatan surat perjanjian",
+            "kavlingKode": "B19",
+            "tanggal": "31/01/2023"
+          }
+        },
+        "D1": {
+          "Tes 1": {
+            "harga": 50000,
+            "jenisBiaya": "Tes 1",
+            "kavlingKode": "D1",
+            "tanggal": "02/04/2023"
+          },
+          "Tes 2": {
+            "harga": 40000,
+            "jenisBiaya": "Tes 2",
+            "kavlingKode": "D1",
+            "tanggal": "03/04/2023"
+          },
+          "Tes 3": {
+            "harga": 15000,
+            "jenisBiaya": "Tes 3",
+            "kavlingKode": "D1",
+            "tanggal": "04/04/2023"
+          }
+        },
+        "D2": {
+          "tes 2": {
+            "harga": 25000,
+            "jenisBiaya": "tes 2",
+            "kavlingKode": "D2",
+            "tanggal": "14/11/2022"
+          }
+        }
+      },
+      "blocks": {
+        "A": {
+          "kode": "A",
+          "warna": "#E93303"
+        },
+        "B": {
+          "kode": "B",
+          "warna": "#F57921"
+        },
+        "C": {
+          "kode": "C",
+          "warna": "#F9A51A"
+        },
+        "D": {
+          "kode": "D",
+          "warna": "#6750a4"
+        }
+      },
+      "catatanPembayaran": {
+        "A14": {
+          "content": "angsuran maksimal per tanggal 29 ",
+          "kavlingKode": "A14"
+        },
+        "A3": {
+          "content": "Rumah Type 45,3 km tidur 2 km mandi\n\nMarketing MB Novi dan MB Atin\n\n(Migrasi dari A2)",
+          "kavlingKode": "A3"
+        },
+        "A4": {
+          "content": "marketing MB nofi",
+          "kavlingKode": "A4"
+        },
+        "A5": {
+          "content": "Marketing Tegar",
+          "kavlingKode": "A5"
+        },
+        "A7": {
+          "content": "Free Sofa , \n.\nmarketing MB nofi",
+          "kavlingKode": "A7"
+        },
+        "A9": {
+          "content": "Rencana 2 Lantai ,setelah  Lebaran siap Dp 100 JT dan melanjutkan angsuran 7 jt /tgl 10 maksimal (Free Sofa) \n.\nmarketing MB Novi dan MB atin",
+          "kavlingKode": "A9"
+        },
+        "B11": {
+          "content": "marketing MB novi",
+          "kavlingKode": "B11"
+        },
+        "B12": {
+          "content": "marketing MB Novi ",
+          "kavlingKode": "B12"
+        },
+        "B13": {
+          "content": "Marketing Tegar",
+          "kavlingKode": "B13"
+        },
+        "B15": {
+          "content": "marketing MB Novi ",
+          "kavlingKode": "B15"
+        },
+        "B16": {
+          "content": "marketing MB Novi ",
+          "kavlingKode": "B16"
+        },
+        "B17": {
+          "content": "marketing MB Novi ",
+          "kavlingKode": "B17"
+        },
+        "B18": {
+          "content": "pembayaran maksimal per tgl 4 ,marketing tegar ",
+          "kavlingKode": "B18"
+        },
+        "B19": {
+          "content": "marketing MB Novi ",
+          "kavlingKode": "B19"
+        },
+        "B2": {
+          "content": "marketing MB Novi ",
+          "kavlingKode": "B2"
+        },
+        "B3": {
+          "content": "Marketing Tegar ",
+          "kavlingKode": "B3"
+        },
+        "B5": {
+          "content": "marketing MB novi",
+          "kavlingKode": "B5"
+        },
+        "B6": {
+          "content": "marketing MB novi",
+          "kavlingKode": "B6"
+        },
+        "B7": {
+          "content": "marketing Tegar ",
+          "kavlingKode": "B7"
+        },
+        "D1": {
+          "content": "Eta kadieu euy ",
+          "kavlingKode": "D1"
+        },
+        "D2": {
+          "content": "Data full mock",
+          "kavlingKode": "D2"
+        }
+      },
+      "dataDiri": {
+        "A14": {
+          "alamatIndo": "JL Utan panjang RT 04 RW 10 Kec, Kemayoran Jakarta Pusat ",
+          "alamatKerja": "Bangladesh",
+          "jenisIdentitas": "Passport",
+          "nama": "MD Mohidul",
+          "negaraBekerja": "Malaysia",
+          "noHp": "+60 14-973 3438",
+          "noIdentitas": "EE05565508"
+        },
+        "A3": {
+          "alamatIndo": "JL cikunir kelurahan Jakamulya RT 02 RW 11 kec Bekasi Selatan kota bekasi",
+          "alamatKerja": "18/F BLK B Summit Court\n148 Tin Hau  Temple RD\n Caswaybay",
+          "jenisIdentitas": "Passport",
+          "nama": "Siti Hartini",
+          "negaraBekerja": "Hongkong",
+          "noHp": "+852 9467 6220",
+          "noIdentitas": "AU351290"
+        },
+        "A4": {
+          "alamatIndo": "Alamat indonesia :\nDesa Kandibata Kec. Kabanjahe Kab. Karo, Sumatera utara \nKode pos 22111",
+          "alamatKerja": "GUNMA KEN TANO GUN KO NAGARE  CHO OOAZA MANBA 157 BANCHI 1 MACHINAMI DANCHI A -2\nKode pos : 370 1504",
+          "jenisIdentitas": "Passport",
+          "nama": "Eva Emilia Carolina BR Sinuraya",
+          "negaraBekerja": "Jepang",
+          "noHp": "+81 80-7538-2672",
+          "noIdentitas": "C7017202"
+        },
+        "A5": {
+          "alamatIndo": "Desa Wonodadi RT 03 RW 01 Wonodadi Blitar",
+          "alamatKerja": "Singapura ",
+          "jenisIdentitas": "Passport",
+          "nama": "Titin Wulandari ",
+          "negaraBekerja": "Singapore",
+          "noHp": "+62 823-3512-7483",
+          "noIdentitas": "C7666128"
+        },
+        "A7": {
+          "alamatIndo": "jl keramat RT 16 RW 03 kampung Buntu Talangagung Kepanjen Malang ",
+          "alamatKerja": "taiwan",
+          "jenisIdentitas": "Passport",
+          "nama": "Windi Novianti ",
+          "negaraBekerja": "Taiwan",
+          "noHp": "+886 981 431 639",
+          "noIdentitas": "B8833784"
+        },
+        "A9": {
+          "alamatIndo": "Jl raya sawahan turen rt09 rw03, kecamatan turen, kabupaten malang, jawa timur",
+          "alamatKerja": "Singapura ",
+          "jenisIdentitas": "Passport",
+          "nama": "Nurhayati ",
+          "negaraBekerja": "Singapore",
+          "noHp": "+65 8353 3837",
+          "noIdentitas": "C8190766"
+        },
+        "B11": {
+          "alamatIndo": "GG Juwet putih RT 02 RW 05 Desa warung dowo kec, Poh jentrek kab pasuruan",
+          "alamatKerja": "Singapura ",
+          "jenisIdentitas": "Passport",
+          "nama": "Hesti Milawati ",
+          "negaraBekerja": "Singapore",
+          "noHp": "+65 8903 2782",
+          "noIdentitas": "C8190476"
+        },
+        "B12": {
+          "alamatIndo": "jl.tanjung batu dalam RT 12 RW 3 desa Sedau,kec.singkawang selatan ",
+          "alamatKerja": "Hongkong ",
+          "jenisIdentitas": "Passport",
+          "nama": "Sri Wahyuni Bahtiyar",
+          "negaraBekerja": "Hongkong",
+          "noHp": "+852 6392 8814",
+          "noIdentitas": "C7637798"
+        },
+        "B13": {
+          "alamatIndo": "Jln raya tirtoyudo \nTangsi \nRt 01 rw 01 \nKec tirtoyudo \nKab malang",
+          "alamatKerja": "Singapura ",
+          "jenisIdentitas": "Passport",
+          "nama": "Ika Fitri Purwaningsih",
+          "negaraBekerja": "Singapore",
+          "noHp": "+65 9779 6027",
+          "noIdentitas": "C2235697"
+        },
+        "B14": {
+          "alamatIndo": "Perum  Buring Satelit Jln Palmerah V blok E no 12 Cemoro kandang Malang,RT/RW  003/007",
+          "alamatKerja": "Taiwan",
+          "jenisIdentitas": "Passport",
+          "nama": "Trihandayani ",
+          "negaraBekerja": "Taiwan",
+          "noHp": "+886 909 799 872",
+          "noIdentitas": "C8422229"
+        },
+        "B15": {
+          "alamatIndo": "DSN TEPAS RT /RW 005 /004 KELURAHAN /DESA TEPAS KECAMATAN KESAMBEN",
+          "alamatKerja": "Taiwan",
+          "jenisIdentitas": "Passport",
+          "nama": "Pipit Dismawati",
+          "negaraBekerja": "Taiwan",
+          "noHp": "+886 902 257 042",
+          "noIdentitas": "C2864401"
+        },
+        "B16": {
+          "alamatIndo": "jln SAJID WONOKASIHAN RT 005  RW 002.\nPAGEDANGAN TUREN MALANG",
+          "alamatKerja": "Singapura ",
+          "jenisIdentitas": "Passport",
+          "nama": "Budiyarti",
+          "negaraBekerja": "Singapore",
+          "noHp": "+65 9807 0965",
+          "noIdentitas": "C7454507"
+        },
+        "B17": {
+          "alamatIndo": "Banyuwangi ",
+          "alamatKerja": "Taiwan ",
+          "jenisIdentitas": "Passport",
+          "nama": "Iin Handayani ",
+          "negaraBekerja": "Taiwan",
+          "noHp": "+62 889-9129-6647",
+          "noIdentitas": "C7955586"
+        },
+        "B18": {
+          "alamatIndo": "Blitar",
+          "alamatKerja": "Hongkong ",
+          "jenisIdentitas": "Passport",
+          "nama": "Duwi Indah Setiyorini ",
+          "negaraBekerja": "Macau",
+          "noHp": "+853 6281 9874",
+          "noIdentitas": "C8327036"
+        },
+        "B19": {
+          "alamatIndo": "Desa Semampir RT 03 RW 01 kecamatan Banjarnegara ",
+          "alamatKerja": "748 YISHUN STREET 72 #01-216 NEE SOON CENTRAL GREEN SINGAPORE 760748",
+          "jenisIdentitas": "Passport",
+          "nama": "Diyananingsih ",
+          "negaraBekerja": "Singapore",
+          "noHp": "+65 9891 5433",
+          "noIdentitas": "C7454612"
+        },
+        "B2": {
+          "alamatIndo": "Dusun Sumberurip RT 09 RW 02 Desa Jogomulyan, kecamatan Tirtoyudo ",
+          "alamatKerja": "Singapura ",
+          "jenisIdentitas": "KTP",
+          "nama": "Dian Hermawati",
+          "negaraBekerja": "Singapore",
+          "noHp": "+65 9055 2036",
+          "noIdentitas": "3507305907810002"
+        },
+        "B3": {
+          "alamatIndo": "Galur Selatan RT 07 RW 01Desa Galur,kec.Johar Baru Jakarta Pusat ",
+          "alamatKerja": "Taiwan",
+          "jenisIdentitas": "Passport",
+          "nama": "Painatun",
+          "negaraBekerja": "Taiwan",
+          "noHp": "+886 979 127 886",
+          "noIdentitas": "00000"
+        },
+        "B5": {
+          "alamatIndo": "Desa Rangkah Kec.Tambaksari Surabaya",
+          "alamatKerja": "Singapura ",
+          "jenisIdentitas": "KTP",
+          "nama": "Ria Eka Sari",
+          "negaraBekerja": "Singapore",
+          "noHp": "+65 8421 5251",
+          "noIdentitas": "3578105612850002"
+        },
+        "B6": {
+          "alamatIndo": "Dusun karanggoso Rt.036 /  Rw.006 desa tasikmadu .kecamatan watulimo kabupaten Trenggalek",
+          "alamatKerja": "Singapura ",
+          "jenisIdentitas": "Passport",
+          "nama": "Laela Nurkumalasari ",
+          "negaraBekerja": "Singapore",
+          "noHp": "+65 8515 9408",
+          "noIdentitas": "AU372732"
+        },
+        "B7": {
+          "alamatIndo": "konoha",
+          "alamatKerja": "Malaysia ",
+          "jenisIdentitas": "Passport",
+          "nama": "Agistina",
+          "negaraBekerja": "Malaysia",
+          "noHp": "+60 14-230 1992",
+          "noIdentitas": "ggggg"
+        },
+        "D1": {
+          "alamatIndo": "Cianjur",
+          "alamatKerja": "Wakanda",
+          "jenisIdentitas": "Passport",
+          "nama": "joni",
+          "negaraBekerja": "Bangladesh",
+          "noHp": "081335998988",
+          "noIdentitas": "U00888"
+        },
+        "D2": {
+          "alamatIndo": "gsh wnsknd 567@hanma",
+          "alamatKerja": "kwnsins #3 jansn 00875\njajs",
+          "jenisIdentitas": "Passport",
+          "nama": "yyeye",
+          "negaraBekerja": "Singapore",
+          "noHp": "+65 9891 5433",
+          "noIdentitas": "CFGH657"
+        }
+      },
+      "feeMarketing": {
+        "A4": {
+          "biayaMarketer": 4000000,
+          "kavlingKode": "A4",
+          "namaMarketer": "Novitasari ",
+          "tanggalStr": "01/03/2023",
+          "timeMillis": 1677672352820
+        },
+        "D1": {
+          "biayaMarketer": 4500000,
+          "kavlingKode": "D1",
+          "namaMarketer": "Gilang gigi ilang",
+          "timeMillis": 1669186640904
+        },
+        "D2": {
+          "biayaMarketer": 1800000,
+          "kavlingKode": "D2",
+          "namaMarketer": "Yoyon ",
+          "tanggalStr": "25/11/2022",
+          "timeMillis": 1669351312300
+        }
+      },
+      "formPembayaran": {
+        "A14": {
+          "ITJ 1": {
+            "jumlahUangDibayar": 5000000,
+            "keterangan": "ITJ",
+            "tanggal": "15/11/2022",
+            "termin": "ITJ",
+            "timeMillis": 1668590932317,
+            "urutan": 1
+          }
+        },
+        "A3": {
+          "DP 1": {
+            "jumlahUangDibayar": 6600000,
+            "keterangan": "Dp masuk",
+            "tanggal": "31/10/2022",
+            "termin": "DP",
+            "timeMillis": 1668436995091,
+            "urutan": 1
+          },
+          "DP 2": {
+            "fullTermin": "DP 2",
+            "jumlahUangDibayar": 6600000,
+            "keterangan": "Dp2 November ",
+            "tanggal": "10/12/2022",
+            "termin": "DP",
+            "timeMillis": 1670656319649,
+            "urutan": 2
+          },
+          "DP 3": {
+            "fullTermin": "DP 3",
+            "jumlahUangDibayar": 3000000,
+            "keterangan": "DP 3 adik b Siti sakit ",
+            "tanggal": "06/01/2023",
+            "termin": "DP",
+            "timeMillis": 1672971492012,
+            "urutan": 3
+          },
+          "DP 4": {
+            "fullTermin": "DP 4",
+            "jumlahUangDibayar": 10200000,
+            "keterangan": "Dp 4 + kurangnya Dp 3",
+            "tanggal": "27/01/2023",
+            "termin": "DP",
+            "timeMillis": 1674868665113,
+            "urutan": 4
+          },
+          "DP 5": {
+            "fullTermin": "DP 5",
+            "jumlahUangDibayar": 7000000,
+            "keterangan": "Dp 5 pemindahan kav dari A2 ke A3",
+            "tanggal": "30/01/2023",
+            "termin": "DP",
+            "timeMillis": 1675062111827,
+            "urutan": 5
+          },
+          "DP 6": {
+            "fullTermin": "DP 6",
+            "jumlahUangDibayar": 2000000,
+            "keterangan": "February 2023 tidak ada pembayaran, pembayaran Maret hanya 2 jt",
+            "tanggal": "26/03/2023",
+            "termin": "DP",
+            "timeMillis": 1679797110318,
+            "urutan": 6
+          }
+        },
+        "A4": {
+          "DP 1": {
+            "jumlahUangDibayar": 40000000,
+            "keterangan": "DP 1",
+            "tanggal": "16/10/2022",
+            "termin": "DP",
+            "timeMillis": 1668431835961,
+            "urutan": 1
+          },
+          "Termin 1": {
+            "jumlahUangDibayar": 8000000,
+            "keterangan": "Termin 1",
+            "tanggal": "28/10/2022",
+            "termin": "Termin",
+            "timeMillis": 1668431883700,
+            "urutan": 1
+          },
+          "Termin 2": {
+            "fullTermin": "Termin 2",
+            "jumlahUangDibayar": 8000000,
+            "keterangan": "Termin 2 November ",
+            "tanggal": "01/12/2022",
+            "termin": "Termin",
+            "timeMillis": 1669868760877,
+            "urutan": 2
+          },
+          "Termin 3": {
+            "fullTermin": "Termin 3",
+            "jumlahUangDibayar": 8000000,
+            "keterangan": "termin 3",
+            "tanggal": "28/12/2022",
+            "termin": "Termin",
+            "timeMillis": 1672205865972,
+            "urutan": 3
+          },
+          "Termin 4": {
+            "fullTermin": "Termin 4",
+            "jumlahUangDibayar": 8000000,
+            "keterangan": "termin 4 Januari ",
+            "tanggal": "27/01/2023",
+            "termin": "Termin",
+            "timeMillis": 1674788812497,
+            "urutan": 4
+          },
+          "Termin 5": {
+            "fullTermin": "Termin 5",
+            "jumlahUangDibayar": 2000000,
+            "keterangan": "Termin Februari ",
+            "tanggal": "01/03/2023",
+            "termin": "Termin",
+            "timeMillis": 1677671932674,
+            "urutan": 5
+          },
+          "Termin 6": {
+            "fullTermin": "Termin 6",
+            "jumlahUangDibayar": 14000000,
+            "keterangan": "Kurangnya bulan feb + angs bulan maret",
+            "tanggal": "24/03/2023",
+            "termin": "Termin",
+            "timeMillis": 1679648358853,
+            "urutan": 6
+          }
+        },
+        "A5": {
+          "DP 1": {
+            "fullTermin": "DP 1",
+            "jumlahUangDibayar": 75000000,
+            "keterangan": "Dp 1 ",
+            "tanggal": "28/03/2023",
+            "termin": "DP",
+            "timeMillis": 1680000255992,
+            "urutan": 1
+          },
+          "DP 2": {
+            "fullTermin": "DP 2",
+            "jumlahUangDibayar": 50000000,
+            "keterangan": "Dp 2",
+            "tanggal": "30/03/2023",
+            "termin": "DP",
+            "timeMillis": 1680143829200,
+            "urutan": 2
+          },
+          "ITJ 1": {
+            "fullTermin": "ITJ 1",
+            "jumlahUangDibayar": 5000000,
+            "keterangan": "ITJ rumah kav A5",
+            "tanggal": "14/03/2023",
+            "termin": "ITJ",
+            "timeMillis": 1678794437788,
+            "urutan": 1
+          }
+        },
+        "A7": {
+          "DP 1": {
+            "fullTermin": "DP 1",
+            "jumlahUangDibayar": 5000000,
+            "keterangan": "Dp 1",
+            "tanggal": "02/01/2023",
+            "termin": "DP",
+            "timeMillis": 1672654523218,
+            "urutan": 1
+          },
+          "DP 2": {
+            "fullTermin": "DP 2",
+            "jumlahUangDibayar": 5000000,
+            "keterangan": "Dp 2",
+            "tanggal": "03/02/2023",
+            "termin": "DP",
+            "timeMillis": 1675441169796,
+            "urutan": 2
+          },
+          "DP 3": {
+            "fullTermin": "DP 3",
+            "jumlahUangDibayar": 2500000,
+            "keterangan": "Dp 3",
+            "tanggal": "06/03/2023",
+            "termin": "DP",
+            "timeMillis": 1678073619653,
+            "urutan": 3
+          },
+          "DP 4": {
+            "fullTermin": "DP 4",
+            "jumlahUangDibayar": 2500000,
+            "keterangan": "Dp 4 pemindahan dari kav A7 ke A9",
+            "tanggal": "06/04/2023",
+            "termin": "DP",
+            "timeMillis": 1680785519568,
+            "urutan": 4
+          },
+          "ITJ 1000000": {
+            "fullTermin": "ITJ 1",
+            "jumlahUangDibayar": 1000000,
+            "keterangan": "ITJ + Free Sofa",
+            "tanggal": "12/11/2022",
+            "termin": "ITJ",
+            "timeMillis": 1670280892862,
+            "urutan": 1
+          },
+          "ITJ 2": {
+            "fullTermin": "ITJ 2",
+            "jumlahUangDibayar": 4000000,
+            "keterangan": "ITJ 2 ",
+            "tanggal": "05/12/2022",
+            "termin": "ITJ",
+            "timeMillis": 1670280781813,
+            "urutan": 2
+          }
+        },
+        "A9": {
+          "DP 1": {
+            "fullTermin": "DP 1",
+            "jumlahUangDibayar": 7000000,
+            "keterangan": "DP 1 ",
+            "tanggal": "08/12/2022",
+            "termin": "DP",
+            "timeMillis": 1674111916516,
+            "urutan": 1
+          },
+          "DP 2": {
+            "fullTermin": "DP 2",
+            "jumlahUangDibayar": 7000000,
+            "keterangan": "DP 2",
+            "tanggal": "19/01/2023",
+            "termin": "DP",
+            "timeMillis": 1674111929544,
+            "urutan": 2
+          },
+          "DP 3": {
+            "fullTermin": "DP 3",
+            "jumlahUangDibayar": 2500000,
+            "keterangan": "Dp3",
+            "tanggal": "03/02/2023",
+            "termin": "DP",
+            "timeMillis": 1675393545259,
+            "urutan": 3
+          },
+          "DP 4": {
+            "fullTermin": "DP 4",
+            "jumlahUangDibayar": 4000000,
+            "keterangan": "Dp 4",
+            "tanggal": "27/02/2023",
+            "termin": "DP",
+            "timeMillis": 1677469330814,
+            "urutan": 4
+          },
+          "DP 5": {
+            "fullTermin": "DP 5",
+            "jumlahUangDibayar": 7500000,
+            "keterangan": "Dp 5",
+            "tanggal": "22/03/2023",
+            "termin": "DP",
+            "timeMillis": 1679496636681,
+            "urutan": 5
+          },
+          "ITJ 1": {
+            "fullTermin": "ITJ 1",
+            "jumlahUangDibayar": 1000000,
+            "keterangan": "ITJ Pertama Kav A9",
+            "tanggal": "17/11/2022",
+            "termin": "ITJ",
+            "timeMillis": 1674111938925,
+            "urutan": 1
+          }
+        },
+        "B11": {
+          "ITJ 1": {
+            "fullTermin": "ITJ 1",
+            "jumlahUangDibayar": 1000000,
+            "keterangan": "ITJ 1 TF dari MB Novi 6.650.000 uang masuk MB Hesti 1 JT MB Lela 5 JT sisa 650.000 pembayaran hutang",
+            "tanggal": "21/12/2022",
+            "termin": "ITJ",
+            "timeMillis": 1671695330888,
+            "urutan": 1
+          }
+        },
+        "B12": {
+          "DP 1": {
+            "fullTermin": "DP 1",
+            "jumlahUangDibayar": 6450000,
+            "keterangan": "dp 1 6.5 JT d potong 50rb kirim surat ",
+            "tanggal": "15/01/2023",
+            "termin": "DP",
+            "timeMillis": 1673745270619,
+            "urutan": 1
+          },
+          "DP 2": {
+            "fullTermin": "DP 2",
+            "jumlahUangDibayar": 6550000,
+            "keterangan": "DP 2",
+            "tanggal": "12/02/2023",
+            "termin": "DP",
+            "timeMillis": 1676176866576,
+            "urutan": 2
+          },
+          "DP 3": {
+            "fullTermin": "DP 3",
+            "jumlahUangDibayar": 6500000,
+            "keterangan": "Dp3 ",
+            "tanggal": "12/03/2023",
+            "termin": "DP",
+            "timeMillis": 1678593243349,
+            "urutan": 3
+          },
+          "ITJ 1": {
+            "fullTermin": "ITJ 1",
+            "jumlahUangDibayar": 6500000,
+            "keterangan": "ITJ 1 Desember ",
+            "tanggal": "12/12/2022",
+            "termin": "ITJ",
+            "timeMillis": 1670827509041,
+            "urutan": 1
+          }
+        },
+        "B13": {
+          "ITJ 1": {
+            "fullTermin": "ITJ 1",
+            "jumlahUangDibayar": 1000000,
+            "keterangan": "ITJ 1 ",
+            "tanggal": "21/01/2023",
+            "termin": "ITJ",
+            "timeMillis": 1674290285040,
+            "urutan": 1
+          }
+        },
+        "B14": {
+          "DP 1": {
+            "fullTermin": "DP 1",
+            "jumlahUangDibayar": 5000000,
+            "keterangan": "DP 1",
+            "tanggal": "24/02/2023",
+            "termin": "DP",
+            "timeMillis": 1677246722587,
+            "urutan": 1
+          },
+          "ITJ 1": {
+            "fullTermin": "ITJ 1",
+            "jumlahUangDibayar": 4000000,
+            "keterangan": "ITJ 1 ",
+            "tanggal": "06/01/2023",
+            "termin": "ITJ",
+            "timeMillis": 1672987948787,
+            "urutan": 1
+          }
+        },
+        "B15": {
+          "ITJ 1": {
+            "fullTermin": "ITJ 1",
+            "jumlahUangDibayar": 1000000,
+            "keterangan": "ITJ 1 kav B15",
+            "tanggal": "07/02/2023",
+            "termin": "ITJ",
+            "timeMillis": 1675779624264,
+            "urutan": 1
+          },
+          "ITJ 2": {
+            "fullTermin": "ITJ 2",
+            "jumlahUangDibayar": 1500000,
+            "keterangan": "ITJ 2",
+            "tanggal": "09/02/2023",
+            "termin": "ITJ",
+            "timeMillis": 1675935295599,
+            "urutan": 2
+          },
+          "ITJ 3": {
+            "fullTermin": "ITJ 3",
+            "jumlahUangDibayar": 1000000,
+            "keterangan": "ITJ 3 Maret (Belum gajian)",
+            "tanggal": "12/03/2023",
+            "termin": "ITJ",
+            "timeMillis": 1678593596503,
+            "urutan": 3
+          }
+        },
+        "B16": {
+          "DP 1": {
+            "fullTermin": "DP 1",
+            "jumlahUangDibayar": 5000000,
+            "keterangan": "DP 1",
+            "tanggal": "22/01/2023",
+            "termin": "DP",
+            "timeMillis": 1674358650480,
+            "urutan": 1
+          },
+          "DP 2": {
+            "fullTermin": "DP 2",
+            "jumlahUangDibayar": 5000000,
+            "keterangan": "Dp 2 ",
+            "tanggal": "27/02/2023",
+            "termin": "DP",
+            "timeMillis": 1677489695600,
+            "urutan": 2
+          },
+          "DP 3": {
+            "fullTermin": "DP 3",
+            "jumlahUangDibayar": 5000000,
+            "keterangan": "Dp 3",
+            "tanggal": "23/03/2023",
+            "termin": "DP",
+            "timeMillis": 1679552361659,
+            "urutan": 3
+          },
+          "ITJ 1": {
+            "fullTermin": "ITJ 1",
+            "jumlahUangDibayar": 1000000,
+            "keterangan": "ITJ 1 Kav B16",
+            "tanggal": "18/12/2022",
+            "termin": "ITJ",
+            "timeMillis": 1671333952469,
+            "urutan": 1
+          }
+        },
+        "B17": {
+          "ITJ 1": {
+            "fullTermin": "ITJ 1",
+            "jumlahUangDibayar": 1000000,
+            "keterangan": "ITJ 1 ",
+            "tanggal": "13/12/2022",
+            "termin": "ITJ",
+            "timeMillis": 1670895534641,
+            "urutan": 1
+          }
+        },
+        "B18": {
+          "DP 1": {
+            "fullTermin": "DP 1",
+            "jumlahUangDibayar": 5000000,
+            "keterangan": "Dp1",
+            "tanggal": "02/01/2023",
+            "termin": "DP",
+            "timeMillis": 1672665480917,
+            "urutan": 1
+          },
+          "DP 2": {
+            "fullTermin": "DP 2",
+            "jumlahUangDibayar": 1000000,
+            "keterangan": "Dp 2 sisanya bulan depan",
+            "tanggal": "01/02/2023",
+            "termin": "DP",
+            "timeMillis": 1675253214625,
+            "urutan": 2
+          },
+          "DP 3": {
+            "fullTermin": "DP 3",
+            "jumlahUangDibayar": 3000000,
+            "keterangan": "Dp 3",
+            "tanggal": "01/03/2023",
+            "termin": "DP",
+            "timeMillis": 1677644933137,
+            "urutan": 3
+          },
+          "DP 4": {
+            "fullTermin": "DP 4",
+            "jumlahUangDibayar": 1500000,
+            "keterangan": "Dp 4",
+            "tanggal": "04/04/2023",
+            "termin": "DP",
+            "timeMillis": 1680575602324,
+            "urutan": 4
+          },
+          "ITJ 1": {
+            "fullTermin": "ITJ 1",
+            "jumlahUangDibayar": 900000,
+            "keterangan": "ITJ 1",
+            "tanggal": "16/12/2022",
+            "termin": "ITJ",
+            "timeMillis": 1671360851364,
+            "urutan": 1
+          }
+        },
+        "B19": {
+          "DP 1": {
+            "fullTermin": "DP 1",
+            "jumlahUangDibayar": 5000000,
+            "keterangan": "Dp 1 Januari ",
+            "tanggal": "30/01/2023",
+            "termin": "DP",
+            "timeMillis": 1675082135719,
+            "urutan": 1
+          },
+          "DP 2": {
+            "fullTermin": "DP 2",
+            "jumlahUangDibayar": 400000,
+            "keterangan": "Dp 2 = TF 500 - biaya pengiriman 100 RB ",
+            "tanggal": "05/02/2023",
+            "termin": "DP",
+            "timeMillis": 1675661757873,
+            "urutan": 2
+          },
+          "DP 3": {
+            "fullTermin": "DP 3",
+            "jumlahUangDibayar": 5000000,
+            "keterangan": "Dp 3 February ",
+            "tanggal": "02/03/2023",
+            "termin": "DP",
+            "timeMillis": 1677727097661,
+            "urutan": 3
+          },
+          "DP 4": {
+            "fullTermin": "DP 4",
+            "jumlahUangDibayar": 5000000,
+            "keterangan": "Dp 4 Maret",
+            "tanggal": "01/04/2023",
+            "termin": "DP",
+            "timeMillis": 1680322761479,
+            "urutan": 4
+          },
+          "ITJ 1": {
+            "fullTermin": "ITJ 1",
+            "jumlahUangDibayar": 1000000,
+            "keterangan": "ITJ 1 ",
+            "tanggal": "01/01/2023",
+            "termin": "ITJ",
+            "timeMillis": 1672566322153,
+            "urutan": 1
+          }
+        },
+        "B2": {
+          "ITJ 1": {
+            "fullTermin": "ITJ 1",
+            "jumlahUangDibayar": 1500000,
+            "keterangan": "ITJ 1 kav B2",
+            "tanggal": "27/02/2023",
+            "termin": "ITJ",
+            "timeMillis": 1677483629639,
+            "urutan": 1
+          },
+          "ITJ 2": {
+            "fullTermin": "ITJ 2",
+            "jumlahUangDibayar": 1000000,
+            "keterangan": "-",
+            "tanggal": "06/04/2023",
+            "termin": "ITJ",
+            "timeMillis": 1680755570769,
+            "urutan": 2
+          }
+        },
+        "B3": {
+          "ITJ 1": {
+            "fullTermin": "ITJ 1",
+            "jumlahUangDibayar": 2000000,
+            "keterangan": "ITJ 1 Rumah Kav B 3",
+            "tanggal": "22/03/2023",
+            "termin": "ITJ",
+            "timeMillis": 1679469378262,
+            "urutan": 1
+          }
+        },
+        "B5": {
+          "ITJ 1": {
+            "fullTermin": "ITJ 1",
+            "jumlahUangDibayar": 1000000,
+            "keterangan": "ITJ 1",
+            "tanggal": "09/12/2022",
+            "termin": "ITJ",
+            "timeMillis": 1670590822520,
+            "urutan": 1
+          }
+        },
+        "B6": {
+          "DP 1": {
+            "fullTermin": "DP 1",
+            "jumlahUangDibayar": 1000000,
+            "keterangan": "Dp1",
+            "tanggal": "19/12/2022",
+            "termin": "DP",
+            "timeMillis": 1671422391736,
+            "urutan": 1
+          },
+          "DP 10": {
+            "fullTermin": "DP 10",
+            "jumlahUangDibayar": 2000000,
+            "keterangan": "DP 10",
+            "tanggal": "15/02/2023",
+            "termin": "DP",
+            "timeMillis": 1676439797080,
+            "urutan": 10
+          },
+          "DP 11": {
+            "fullTermin": "DP 11",
+            "jumlahUangDibayar": 800000,
+            "keterangan": "Dp 11",
+            "tanggal": "18/02/2023",
+            "termin": "DP",
+            "timeMillis": 1676684542066,
+            "urutan": 11
+          },
+          "DP 12": {
+            "fullTermin": "DP 12",
+            "jumlahUangDibayar": 500000,
+            "keterangan": "Dp 12",
+            "tanggal": "06/03/2023",
+            "termin": "DP",
+            "timeMillis": 1678084942499,
+            "urutan": 12
+          },
+          "DP 13": {
+            "fullTermin": "DP 13",
+            "jumlahUangDibayar": 3000000,
+            "keterangan": "Dp13 ",
+            "tanggal": "13/03/2023",
+            "termin": "DP",
+            "timeMillis": 1678683068767,
+            "urutan": 13
+          },
+          "DP 14": {
+            "fullTermin": "DP 14",
+            "jumlahUangDibayar": 1000000,
+            "keterangan": "DP 14",
+            "tanggal": "22/03/2023",
+            "termin": "DP",
+            "timeMillis": 1679451012550,
+            "urutan": 14
+          },
+          "DP 2": {
+            "fullTermin": "DP 2",
+            "jumlahUangDibayar": 1375000,
+            "keterangan": "-",
+            "tanggal": "19/12/2022",
+            "termin": "DP",
+            "timeMillis": 1671459285668,
+            "urutan": 2
+          },
+          "DP 3": {
+            "fullTermin": "DP 3",
+            "jumlahUangDibayar": 5000000,
+            "keterangan": "uang masuk TF dari MB Novi 6.650.0000 uang MB Lela 5 jt MB Hesti 1 JT sisa 650.000 pembayaran hutang",
+            "tanggal": "21/12/2022",
+            "termin": "DP",
+            "timeMillis": 1671590797816,
+            "urutan": 3
+          },
+          "DP 4": {
+            "fullTermin": "DP 4",
+            "jumlahUangDibayar": 13000000,
+            "keterangan": "Dp4",
+            "tanggal": "25/12/2022",
+            "termin": "DP",
+            "timeMillis": 1671973635206,
+            "urutan": 4
+          },
+          "DP 5": {
+            "fullTermin": "DP 5",
+            "jumlahUangDibayar": 4000000,
+            "keterangan": "Dp 5 uang masuk jam 19.53",
+            "tanggal": "01/01/2023",
+            "termin": "DP",
+            "timeMillis": 1672619632335,
+            "urutan": 5
+          },
+          "DP 6": {
+            "fullTermin": "DP 6",
+            "jumlahUangDibayar": 7130000,
+            "keterangan": "dp 6 masuk tgl 2 jam 00.30",
+            "tanggal": "02/01/2023",
+            "termin": "DP",
+            "timeMillis": 1672619724075,
+            "urutan": 6
+          },
+          "DP 7": {
+            "fullTermin": "DP 7",
+            "jumlahUangDibayar": 500000,
+            "keterangan": "DP 7",
+            "tanggal": "02/01/2023",
+            "termin": "DP",
+            "timeMillis": 1672634612482,
+            "urutan": 7
+          },
+          "DP 8": {
+            "fullTermin": "DP 8",
+            "jumlahUangDibayar": 1000000,
+            "keterangan": "Dp8",
+            "tanggal": "16/01/2023",
+            "termin": "DP",
+            "timeMillis": 1673855741812,
+            "urutan": 8
+          },
+          "DP 9": {
+            "fullTermin": "DP 9",
+            "jumlahUangDibayar": 4305000,
+            "keterangan": "Dp9",
+            "tanggal": "30/01/2023",
+            "termin": "DP",
+            "timeMillis": 1675046478743,
+            "urutan": 9
+          },
+          "ITJ 1": {
+            "fullTermin": "ITJ 1",
+            "jumlahUangDibayar": 5000000,
+            "keterangan": "ITJ ",
+            "tanggal": "09/12/2022",
+            "termin": "ITJ",
+            "timeMillis": 1670575902439,
+            "urutan": 1
+          }
+        },
+        "B7": {
+          "ITJ 1": {
+            "fullTermin": "ITJ 1",
+            "jumlahUangDibayar": 1000000,
+            "keterangan": "ITJ 1",
+            "tanggal": "26/03/2023",
+            "termin": "ITJ",
+            "timeMillis": 1680960836172,
+            "urutan": 1
+          }
+        },
+        "D1": {
+          "DP 1": {
+            "fullTermin": "DP 1",
+            "jumlahUangDibayar": 6500000,
+            "keterangan": "-",
+            "tanggal": "23/12/2022",
+            "termin": "DP",
+            "timeMillis": 1671754475463,
+            "urutan": 1
+          },
+          "DP 2": {
+            "fullTermin": "DP 2",
+            "jumlahUangDibayar": 10000000,
+            "keterangan": "-",
+            "tanggal": "23/12/2022",
+            "termin": "DP",
+            "timeMillis": 1671754484123,
+            "urutan": 2
+          },
+          "ITJ 1": {
+            "fullTermin": "ITJ 1",
+            "jumlahUangDibayar": 1000000,
+            "keterangan": "-",
+            "tanggal": "23/12/2022",
+            "termin": "ITJ",
+            "timeMillis": 1671754454326,
+            "urutan": 1
+          },
+          "ITJ 2": {
+            "fullTermin": "ITJ 2",
+            "jumlahUangDibayar": 1000000,
+            "keterangan": "-",
+            "tanggal": "23/12/2022",
+            "termin": "ITJ",
+            "timeMillis": 1671754464236,
+            "urutan": 2
+          },
+          "Termin 1": {
+            "fullTermin": "Termin 1",
+            "jumlahUangDibayar": 7500000,
+            "keterangan": "-",
+            "tanggal": "23/12/2022",
+            "termin": "Termin",
+            "timeMillis": 1671754493241,
+            "urutan": 1
+          },
+          "Termin 2": {
+            "fullTermin": "Termin 2",
+            "jumlahUangDibayar": 7500000,
+            "keterangan": "-",
+            "tanggal": "23/12/2022",
+            "termin": "Termin",
+            "timeMillis": 1671754498344,
+            "urutan": 2
+          },
+          "Termin 3": {
+            "fullTermin": "Termin 3",
+            "jumlahUangDibayar": 7500000,
+            "keterangan": "-",
+            "tanggal": "23/12/2022",
+            "termin": "Termin",
+            "timeMillis": 1671754503447,
+            "urutan": 3
+          }
+        },
+        "D2": {
+          "DP 1": {
+            "fullTermin": "DP 1",
+            "jumlahUangDibayar": 3500000,
+            "keterangan": "-",
+            "tanggal": "22/11/2022",
+            "termin": "DP",
+            "timeMillis": 1669123315506,
+            "urutan": 1
+          },
+          "DP 2": {
+            "fullTermin": "DP 2",
+            "jumlahUangDibayar": 4000000,
+            "keterangan": "-",
+            "tanggal": "22/11/2022",
+            "termin": "DP",
+            "timeMillis": 1669123334525,
+            "urutan": 2
+          },
+          "DP 3": {
+            "fullTermin": "DP 3",
+            "jumlahUangDibayar": 1500000,
+            "keterangan": "-",
+            "tanggal": "22/11/2022",
+            "termin": "DP",
+            "timeMillis": 1669123353817,
+            "urutan": 3
+          },
+          "ITJ 1": {
+            "fullTermin": "ITJ 3",
+            "jumlahUangDibayar": 2500000,
+            "keterangan": "-",
+            "tanggal": "22/11/2022",
+            "termin": "ITJ",
+            "timeMillis": 1670307703077,
+            "urutan": 3
+          },
+          "ITJ 2": {
+            "fullTermin": "ITJ 2",
+            "jumlahUangDibayar": 2500000,
+            "keterangan": "-",
+            "tanggal": "22/11/2022",
+            "termin": "ITJ",
+            "timeMillis": 1669123294687,
+            "urutan": 2
+          },
+          "ITJ 3": {
+            "fullTermin": "ITJ 1",
+            "jumlahUangDibayar": 2500000,
+            "keterangan": "-",
+            "tanggal": "22/11/2022",
+            "termin": "ITJ",
+            "timeMillis": 1670307729398,
+            "urutan": 1
+          }
+        }
+      },
+      "hargaKavling": {
+        "A1": {
+          "harga": 230000000,
+          "kavlingKode": "A1"
+        },
+        "A14": {
+          "harga": 230000000,
+          "kavlingKode": "A14",
+          "tambahLuasan": 0
+        },
+        "A3": {
+          "harga": 327000000,
+          "kavlingKode": "A3",
+          "tambahLuasan": 0
+        },
+        "A4": {
+          "harga": 230000000,
+          "kavlingKode": "A4",
+          "tambahLuasan": 0
+        },
+        "A5": {
+          "harga": 235000000,
+          "kavlingKode": "A5",
+          "tambahLuasan": 0
+        },
+        "A7": {
+          "harga": 230000000,
+          "kavlingKode": "A7",
+          "tambahLuasan": 0
+        },
+        "A9": {
+          "harga": 230000000,
+          "kavlingKode": "A9",
+          "tambahLuasan": 0
+        },
+        "B11": {
+          "harga": 380000000,
+          "kavlingKode": "B11",
+          "tambahLuasan": 0
+        },
+        "B12": {
+          "harga": 220000000,
+          "kavlingKode": "B12",
+          "tambahLuasan": 0
+        },
+        "B13": {
+          "harga": 230000000,
+          "kavlingKode": "B13",
+          "tambahLuasan": 0
+        },
+        "B14": {
+          "harga": 230000000,
+          "kavlingKode": "B14",
+          "tambahLuasan": 0
+        },
+        "B15": {
+          "harga": 230000000,
+          "kavlingKode": "B15",
+          "tambahLuasan": 0
+        },
+        "B16": {
+          "harga": 220000000,
+          "kavlingKode": "B16",
+          "tambahLuasan": 0
+        },
+        "B17": {
+          "harga": 220000000,
+          "kavlingKode": "B17",
+          "tambahLuasan": 0
+        },
+        "B18": {
+          "harga": 220000000,
+          "kavlingKode": "B18",
+          "tambahLuasan": 0
+        },
+        "B19": {
+          "harga": 230000000,
+          "kavlingKode": "B19",
+          "tambahLuasan": 0
+        },
+        "B2": {
+          "harga": 230000000,
+          "kavlingKode": "B2",
+          "tambahLuasan": 0
+        },
+        "B3": {
+          "harga": 230000000,
+          "kavlingKode": "B3",
+          "tambahLuasan": 0
+        },
+        "B5": {
+          "harga": 220000000,
+          "kavlingKode": "B5",
+          "tambahLuasan": 0
+        },
+        "B6": {
+          "harga": 225000000,
+          "kavlingKode": "B6",
+          "tambahLuasan": 0
+        },
+        "B7": {
+          "harga": 230000000,
+          "kavlingKode": "B7",
+          "tambahLuasan": 0
+        },
+        "C2": {
+          "harga": 150000000,
+          "kavlingKode": "C2"
+        },
+        "C4": {
+          "harga": 400000000,
+          "kavlingKode": "C4"
+        },
+        "C5": {
+          "harga": 380000000,
+          "kavlingKode": "C5",
+          "tambahLuasan": 5500000
+        },
+        "D1": {
+          "harga": 215000000,
+          "kavlingKode": "D1",
+          "tambahLuasan": 15000000
+        },
+        "D2": {
+          "harga": 215000000,
+          "kavlingKode": "D2",
+          "tambahLuasan": 50000000
+        }
+      },
+      "kavlings": {
+        "A": {
+          "A1": {
+            "active": true,
+            "kode": "A1",
+            "type": "Type 36",
+            "ukuran": "6x12",
+            "warna": "#E93303"
+          },
+          "A10": {
+            "active": true,
+            "kode": "A10",
+            "type": "Type 36",
+            "ukuran": "6x12",
+            "warna": "#E93303"
+          },
+          "A11": {
+            "active": true,
+            "kode": "A11",
+            "type": "Type 36",
+            "ukuran": "6x12",
+            "warna": "#E93303"
+          },
+          "A12": {
+            "active": true,
+            "kode": "A12",
+            "type": "Type 36",
+            "ukuran": "6x12",
+            "warna": "#E93303"
+          },
+          "A13": {
+            "active": true,
+            "kode": "A13",
+            "type": "Type 36",
+            "ukuran": "6x12",
+            "warna": "#E93303"
+          },
+          "A14": {
+            "active": false,
+            "kode": "A14",
+            "type": "Type 36",
+            "ukuran": "6x12",
+            "warna": "#E93303"
+          },
+          "A2": {
+            "active": true,
+            "kode": "A2",
+            "type": "Type 36",
+            "ukuran": "6x12",
+            "warna": "#E93303"
+          },
+          "A3": {
+            "active": false,
+            "kode": "A3",
+            "type": "Type 45",
+            "ukuran": "6x15.63",
+            "warna": "#E93303"
+          },
+          "A4": {
+            "active": false,
+            "kode": "A4",
+            "type": "Type 36",
+            "ukuran": "6x12",
+            "warna": "#E93303"
+          },
+          "A5": {
+            "active": false,
+            "kode": "A5",
+            "type": "Type 36",
+            "ukuran": "6x12",
+            "warna": "#E93303"
+          },
+          "A6": {
+            "active": true,
+            "kode": "A6",
+            "type": "Type 36",
+            "ukuran": "6x12",
+            "warna": "#E93303"
+          },
+          "A7": {
+            "active": false,
+            "kode": "A7",
+            "type": "Type 36",
+            "ukuran": "6x12",
+            "warna": "#E93303"
+          },
+          "A8": {
+            "active": true,
+            "kode": "A8",
+            "type": "Type 36",
+            "ukuran": "6x12",
+            "warna": "#E93303"
+          },
+          "A9": {
+            "active": false,
+            "kode": "A9",
+            "type": "Type 36",
+            "ukuran": "6x12",
+            "warna": "#E93303"
+          }
+        },
+        "B": {
+          "B1": {
+            "active": true,
+            "kode": "B1",
+            "type": "Type 36",
+            "ukuran": "6x11",
+            "warna": "#F57921"
+          },
+          "B10": {
+            "active": true,
+            "kode": "B10",
+            "type": "Type 36",
+            "ukuran": "6x11",
+            "warna": "#F57921"
+          },
+          "B11": {
+            "active": false,
+            "kode": "B11",
+            "type": "Type 36",
+            "ukuran": "6x11",
+            "warna": "#F57921"
+          },
+          "B12": {
+            "active": false,
+            "kode": "B12",
+            "type": "Type 36",
+            "ukuran": "6x11",
+            "warna": "#F57921"
+          },
+          "B13": {
+            "active": false,
+            "kode": "B13",
+            "type": "Type 36",
+            "ukuran": "6x11",
+            "warna": "#F57921"
+          },
+          "B14": {
+            "active": false,
+            "kode": "B14",
+            "type": "Type 36",
+            "ukuran": "6x11",
+            "warna": "#F57921"
+          },
+          "B15": {
+            "active": false,
+            "kode": "B15",
+            "type": "Type 36",
+            "ukuran": "6x11",
+            "warna": "#F57921"
+          },
+          "B16": {
+            "active": false,
+            "kode": "B16",
+            "type": "Type 36",
+            "ukuran": "6x11",
+            "warna": "#F57921"
+          },
+          "B17": {
+            "active": false,
+            "kode": "B17",
+            "type": "Type 36",
+            "ukuran": "6x11",
+            "warna": "#F57921"
+          },
+          "B18": {
+            "active": false,
+            "kode": "B18",
+            "type": "Type 36",
+            "ukuran": "6x11",
+            "warna": "#F57921"
+          },
+          "B19": {
+            "active": false,
+            "kode": "B19",
+            "type": "Type 36",
+            "ukuran": "6x11",
+            "warna": "#F57921"
+          },
+          "B2": {
+            "active": false,
+            "kode": "B2",
+            "type": "Type 36",
+            "ukuran": "6x11",
+            "warna": "#F57921"
+          },
+          "B20": {
+            "active": true,
+            "kode": "B20",
+            "type": "Type 36",
+            "ukuran": "6x11",
+            "warna": "#F57921"
+          },
+          "B3": {
+            "active": false,
+            "kode": "B3",
+            "type": "Type 36",
+            "ukuran": "6x11",
+            "warna": "#F57921"
+          },
+          "B4": {
+            "active": true,
+            "kode": "B4",
+            "type": "Type 36",
+            "ukuran": "6x11",
+            "warna": "#F57921"
+          },
+          "B5": {
+            "active": false,
+            "kode": "B5",
+            "type": "Type 36",
+            "ukuran": "6x11",
+            "warna": "#F57921"
+          },
+          "B6": {
+            "active": false,
+            "kode": "B6",
+            "type": "Type 36",
+            "ukuran": "6x11",
+            "warna": "#F57921"
+          },
+          "B7": {
+            "active": false,
+            "kode": "B7",
+            "type": "Type 36",
+            "ukuran": "6x11",
+            "warna": "#F57921"
+          },
+          "B8": {
+            "active": true,
+            "kode": "B8",
+            "type": "Type 36",
+            "ukuran": "6x11",
+            "warna": "#F57921"
+          },
+          "B9": {
+            "active": true,
+            "kode": "B9",
+            "type": "Type 36",
+            "ukuran": "6x11",
+            "warna": "#F57921"
+          }
+        },
+        "C": {
+          "C1": {
+            "active": true,
+            "kode": "C1",
+            "type": "Type 36",
+            "ukuran": "6x11",
+            "warna": "#F9A51A"
+          },
+          "C2": {
+            "active": true,
+            "kode": "C2",
+            "type": "Type 36",
+            "ukuran": "6x11",
+            "warna": "#F9A51A"
+          },
+          "C3": {
+            "active": true,
+            "kode": "C3",
+            "type": "Type 36",
+            "ukuran": "6x11",
+            "warna": "#F9A51A"
+          },
+          "C4": {
+            "active": true,
+            "kode": "C4",
+            "type": "Type 36",
+            "ukuran": "6x11",
+            "warna": "#F9A51A"
+          },
+          "C5": {
+            "active": true,
+            "kode": "C5",
+            "type": "Type 36",
+            "ukuran": "6x11",
+            "warna": "#F9A51A"
+          },
+          "C6": {
+            "active": true,
+            "kode": "C6",
+            "type": "Type 36",
+            "ukuran": "6x11",
+            "warna": "#F9A51A"
+          },
+          "C7": {
+            "active": true,
+            "kode": "C7",
+            "type": "Type 36",
+            "ukuran": "6x11",
+            "warna": "#F9A51A"
+          },
+          "C8": {
+            "active": true,
+            "kode": "C8",
+            "type": "Type 36",
+            "ukuran": "6x11",
+            "warna": "#F9A51A"
+          },
+          "C9": {
+            "active": true,
+            "kode": "C9",
+            "type": "Type 36",
+            "ukuran": "6x11",
+            "warna": "#F9A51A"
+          }
+        },
+        "D": {
+          "D1": {
+            "active": false,
+            "kode": "D1",
+            "type": "Omah e Zeus",
+            "ukuran": "999x6,58",
+            "warna": "#6750a4"
+          },
+          "D2": {
+            "active": false,
+            "kode": "D2",
+            "type": "Tes y",
+            "ukuran": "6x12",
+            "warna": "#6750a4"
+          }
+        }
+      },
+      "maintenance": false,
+      "metadata": {
+        "biayaLain": {
+          "tableName": "biayaLain",
+          "timestamp": 1680783449528
+        },
+        "biayaMarketing": {
+          "tableName": "biayaMarketing",
+          "timestamp": 1681237582297
+        },
+        "dataDiri": {
+          "tableName": "dataDiri",
+          "timestamp": 1680960761592
+        },
+        "feeMarketing": {
+          "tableName": "feeMarketing",
+          "timestamp": 1677672352805
+        },
+        "formPembayaran": {
+          "tableName": "formPembayaran",
+          "timestamp": 1680960836174
+        },
+        "hargaKavling": {
+          "tableName": "hargaKavling",
+          "timestamp": 1680960769341
+        },
+        "image_data_diri": {
+          "tableName": "image_data_diri",
+          "timestamp": 1678805172229
+        },
+        "image_foto_pembayaran": {
+          "A1": {
+            "tableName": "image_foto_pembayaran",
+            "timestamp": 1671702719020
+          },
+          "A10": {
+            "tableName": "image_foto_pembayaran",
+            "timestamp": 1671702719020
+          },
+          "A11": {
+            "tableName": "image_foto_pembayaran",
+            "timestamp": 1671702719020
+          },
+          "A12": {
+            "tableName": "image_foto_pembayaran",
+            "timestamp": 1671702719020
+          },
+          "A13": {
+            "tableName": "image_foto_pembayaran",
+            "timestamp": 1671702719020
+          },
+          "A14": {
+            "tableName": "image_foto_pembayaran",
+            "timestamp": 1671702719020
+          },
+          "A2": {
+            "tableName": "image_foto_pembayaran",
+            "timestamp": 1674868710576
+          },
+          "A3": {
+            "tableName": "image_foto_pembayaran",
+            "timestamp": 1679797467343
+          },
+          "A4": {
+            "tableName": "image_foto_pembayaran",
+            "timestamp": 1679648402969
+          },
+          "A5": {
+            "tableName": "image_foto_pembayaran",
+            "timestamp": 1680143862148
+          },
+          "A6": {
+            "tableName": "image_foto_pembayaran",
+            "timestamp": 1671702719020
+          },
+          "A7": {
+            "tableName": "image_foto_pembayaran",
+            "timestamp": 1680785548130
+          },
+          "A8": {
+            "tableName": "image_foto_pembayaran",
+            "timestamp": 1671702719020
+          },
+          "A9": {
+            "tableName": "image_foto_pembayaran",
+            "timestamp": 1679496665351
+          },
+          "B1": {
+            "tableName": "image_foto_pembayaran",
+            "timestamp": 1671702719020
+          },
+          "B10": {
+            "tableName": "image_foto_pembayaran",
+            "timestamp": 1671702719020
+          },
+          "B11": {
+            "tableName": "image_foto_pembayaran",
+            "timestamp": 1671759702701
+          },
+          "B12": {
+            "tableName": "image_foto_pembayaran",
+            "timestamp": 1678593298144
+          },
+          "B13": {
+            "tableName": "image_foto_pembayaran",
+            "timestamp": 1674290725834
+          },
+          "B14": {
+            "tableName": "image_foto_pembayaran",
+            "timestamp": 1677246757215
+          },
+          "B15": {
+            "tableName": "image_foto_pembayaran",
+            "timestamp": 1678593636619
+          },
+          "B16": {
+            "tableName": "image_foto_pembayaran",
+            "timestamp": 1679552387258
+          },
+          "B17": {
+            "tableName": "image_foto_pembayaran",
+            "timestamp": 1671702719020
+          },
+          "B18": {
+            "tableName": "image_foto_pembayaran",
+            "timestamp": 1680575705579
+          },
+          "B19": {
+            "tableName": "image_foto_pembayaran",
+            "timestamp": 1680322722023
+          },
+          "B2": {
+            "tableName": "image_foto_pembayaran",
+            "timestamp": 1680755589374
+          },
+          "B20": {
+            "tableName": "image_foto_pembayaran",
+            "timestamp": 1671702719020
+          },
+          "B3": {
+            "tableName": "image_foto_pembayaran",
+            "timestamp": 1679469401462
+          },
+          "B4": {
+            "tableName": "image_foto_pembayaran",
+            "timestamp": 1671702719020
+          },
+          "B5": {
+            "tableName": "image_foto_pembayaran",
+            "timestamp": 1671702719020
+          },
+          "B6": {
+            "tableName": "image_foto_pembayaran",
+            "timestamp": 1679451038413
+          },
+          "B7": {
+            "tableName": "image_foto_pembayaran",
+            "timestamp": 1671702719020
+          },
+          "B8": {
+            "tableName": "image_foto_pembayaran",
+            "timestamp": 1671702719020
+          },
+          "B9": {
+            "tableName": "image_foto_pembayaran",
+            "timestamp": 1671702719020
+          },
+          "C1": {
+            "tableName": "image_foto_pembayaran",
+            "timestamp": 1671702719020
+          },
+          "C2": {
+            "tableName": "image_foto_pembayaran",
+            "timestamp": 1671702719020
+          },
+          "C3": {
+            "tableName": "image_foto_pembayaran",
+            "timestamp": 1671702719020
+          },
+          "C4": {
+            "tableName": "image_foto_pembayaran",
+            "timestamp": 1671702719020
+          },
+          "C5": {
+            "tableName": "image_foto_pembayaran",
+            "timestamp": 1671702719020
+          },
+          "C6": {
+            "tableName": "image_foto_pembayaran",
+            "timestamp": 1671702719020
+          },
+          "C7": {
+            "tableName": "image_foto_pembayaran",
+            "timestamp": 1671702719020
+          },
+          "C8": {
+            "tableName": "image_foto_pembayaran",
+            "timestamp": 1671702719020
+          },
+          "C9": {
+            "tableName": "image_foto_pembayaran",
+            "timestamp": 1671702719020
+          },
+          "D1": {
+            "tableName": "image_foto_pembayaran",
+            "timestamp": 1671754723891
+          },
+          "D2": {
+            "tableName": "image_foto_pembayaran",
+            "timestamp": 1671754874263
+          }
+        },
+        "image_spr": {
+          "tableName": "image_spr",
+          "timestamp": 1677722346982
+        }
+      },
+      "unmigrated": [
+        "A14",
+        "B2",
+        "B3",
+        "B5",
+        "B7",
+        "B11",
+        "B13",
+        "B15",
+        "B17",
+        "B18"
+      ],
+      "update": {
+        "latestVersion": "2.0.6.4",
+        "latestVersionCode": 44,
+        "releaseNotes": [
+          "Tambah negara bekerja Brunei Darussalam",
+          "Tanda sudah bayar angsuran kavling bulan ini"
+        ],
+        "url": "https://drive.google.com/file/d/18cd9ZJBBb0dzsFlnt23syUIXKhGIPTN0/view?usp=sharing"
+      }
+    }
+  },
   "baselinePembayaran": {
     "A1": {
       "jumlahUang": 6250000,

@@ -93,30 +93,36 @@ data class Kavling(
             kavlingRepository: KavlingRepository,
             rekapExclusion: Boolean
         ): List<String> {
-            val kavlingKodeList = mutableListOf<String>()
+            return try {
+                val kavlingKodeList = mutableListOf<String>()
 
-            val blocks = blockRepository.getAllBlocks(dataMode).first().getOrThrow()
-            blocks?.forEach { block ->
-                val kavlingList = kavlingRepository.getKavlingByBlock(block.kode, dataMode).first().getOrThrow()
+                val blocks = blockRepository.getAllBlocks(dataMode).first().getOrThrow()
+                blocks?.forEach { block ->
+                    val kavlingList = kavlingRepository.getKavlingByBlock(block.kode, dataMode).first().getOrThrow()
 
-                kavlingList?.also {
-                    val sortedKavling = sortKavling(it, SingleBlockKavlingSorter())
-                    val sortedKodeKavlingList = getKavlingKodes(sortedKavling)
+                    kavlingList?.also {
+                        val sortedKavling = sortKavling(it, SingleBlockKavlingSorter())
+                        val sortedKodeKavlingList = getKavlingKodes(sortedKavling)
 
-                    kavlingKodeList.addAll(sortedKodeKavlingList)
+                        kavlingKodeList.addAll(sortedKodeKavlingList)
+                    }
                 }
-            }
 
-            return if (rekapExclusion) {
-                val exclusionList = kavlingRepository.getRekapExclusionList().getOrThrow()
+                if (rekapExclusion) {
+                    val exclusionList = kavlingRepository.getRekapExclusionList().getOrThrow()
 
-                if (exclusionList.isNullOrEmpty()) {
-                    kavlingKodeList
+                    if (exclusionList.isNullOrEmpty()) {
+                        kavlingKodeList
+                    } else {
+                        excludeKavlingKode(kavlingKodeList, exclusionList)
+                    }
                 } else {
-                    excludeKavlingKode(kavlingKodeList, exclusionList)
+                    kavlingKodeList
                 }
-            } else {
-                kavlingKodeList
+            } catch (e: Exception) {
+                e.printStackTrace()
+
+                throw e
             }
         }
     }

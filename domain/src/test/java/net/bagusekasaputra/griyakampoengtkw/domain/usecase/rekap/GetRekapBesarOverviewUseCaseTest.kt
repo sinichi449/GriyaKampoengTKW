@@ -39,7 +39,8 @@ import net.bagusekasaputra.griyakampoengtkw.domain.util.nodeReference
 import org.junit.Assert
 import org.junit.Before
 import org.junit.Test
-import org.mockito.ArgumentMatchers
+import org.mockito.ArgumentMatchers.anyList
+import org.mockito.ArgumentMatchers.anyString
 import org.mockito.Mockito
 import org.mockito.kotlin.any
 import org.mockito.kotlin.whenever
@@ -59,6 +60,7 @@ class GetRekapBesarOverviewUseCaseTest {
     private val rekapBesarDetailRepository = Mockito.mock(RekapBesarDetailRepository::class.java)
 
     private lateinit var kavlingKodeList: List<String>
+    private lateinit var unmigratedKavlingList: List<String>
 
     private val useCase = GetRekapBesarOverviewAsyncUseCase(blockRepository, kavlingRepository,
         pembayaranRepository, dataDiriRepository, hargaKavlingRepository, feeMarketingRepository,
@@ -84,10 +86,20 @@ class GetRekapBesarOverviewUseCaseTest {
 
                     orderedKavlingList
                 }!!
+            unmigratedKavlingList = testingFile.nodeReference()?.getAsJsonArray(TestingDataNodes.UNMIGRATED)
+                ?.run {
+                    buildList {
+                        this@run.forEach {
+                            Gson().fromJson(it, String::class.java)?.also { kavling ->
+                                add(kavling)
+                            }
+                        }
+                    }
+                }!!
 
             whenever(rekapBesarDetailRepository.delete()).thenReturn(Result.success(null))
             whenever(rekapBesarDetailRepository.insert(any())).thenReturn(Result.success(null))
-            whenever(pembayaranRepository.onlineBatch(ArgumentMatchers.anyList()))
+            whenever(pembayaranRepository.onlineBatch(anyList()))
                 .then {
                     flow<Result<Map<String, List<Pembayaran>?>?>> {
                         val pembayaranNode = testingFile.nodeReference()
@@ -110,7 +122,7 @@ class GetRekapBesarOverviewUseCaseTest {
                         emit(Result.success(result))
                     }
                 }
-            whenever(dataDiriRepository.onlineBatch(ArgumentMatchers.anyList()))
+            whenever(dataDiriRepository.onlineBatch(anyList()))
                 .then {
                     flow {
                         val rootNode = testingFile.nodeReference()
@@ -127,7 +139,7 @@ class GetRekapBesarOverviewUseCaseTest {
                         emit(Result.success(mapDataDiri))
                     }
                 }
-            whenever(hargaKavlingRepository.onlineBatch(ArgumentMatchers.anyList()))
+            whenever(hargaKavlingRepository.onlineBatch(anyList()))
                 .then {
                     flow {
                         val rootNodes = testingFile.nodeReference()
@@ -144,7 +156,7 @@ class GetRekapBesarOverviewUseCaseTest {
                         emit(Result.success(mapHargaKavling))
                     }
                 }
-            whenever(feeMarketingRepository.onlineBatch(ArgumentMatchers.anyList()))
+            whenever(feeMarketingRepository.onlineBatch(anyList()))
                 .then {
                     flow {
                         val rootNode = testingFile.nodeReference()
@@ -160,7 +172,7 @@ class GetRekapBesarOverviewUseCaseTest {
                         emit(Result.success(mapFeeMarketing))
                     }
                 }
-            whenever(biayaMarketingRepository.onlineBatch(ArgumentMatchers.anyList()))
+            whenever(biayaMarketingRepository.onlineBatch(anyList()))
                 .then {
                     flow {
                         val rootNode = testingFile.nodeReference()
@@ -184,6 +196,12 @@ class GetRekapBesarOverviewUseCaseTest {
                         emit(Result.success(mapBiayaMarketing))
                     }
                 }
+
+            whenever(pembayaranRepository.fromBackupBatch(anyString(), anyList()))
+                .then {
+
+                }
+
             whenever(biayaLainRepository.getAllOnline(any()))
                 .then {
                     flow {

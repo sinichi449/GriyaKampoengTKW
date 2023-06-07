@@ -265,11 +265,8 @@ class GetRekapBesarOverviewAsyncUseCase(
                 if (!request.listKavling.isNullOrEmpty()) {
                     request.listKavling
                 } else {
-                    val dataMode = if (request.backupName.isNullOrEmpty())
-                        DataMode.ONLINE else DataMode.DATA_LAMA
-
                     Kavling.fetchKavlingKodesNoDetail(
-                        dataMode, blockRepository, kavlingRepository, true
+                        DataMode.ONLINE, blockRepository, kavlingRepository, true
                     )
                 }
             val filter = RekapKavling.Filter(
