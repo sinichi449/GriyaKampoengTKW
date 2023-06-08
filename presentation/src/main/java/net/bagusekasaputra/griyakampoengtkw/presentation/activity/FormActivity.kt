@@ -13,7 +13,6 @@ import androidx.navigation.fragment.NavHostFragment
 import com.google.android.material.appbar.MaterialToolbar
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.floatingactionbutton.FloatingActionButton
-import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.parcelize.Parcelize
 import net.bagusekasaputra.griyakampoengtkw.presentation.R
@@ -41,17 +40,15 @@ class FormActivity : AppCompatActivity() {
             else null
 
 
-        when (val requestedFormType = intent?.extras?.getString(EXTRAS_FORM_TYPE)) {
-            FORM_DATA_DIRI_INDEN_BOOKING -> {
-                navController.navigate(R.id.nav_form_data_diri_inden_booking, args = keyIdBundle)
-            }
-            FORM_PEMBAYARAN_INDEN_BOOKING -> {
-                navController.navigate(R.id.nav_form_pembayaran_inden_booking, args = keyIdBundle)
-            }
-            else -> {
-                Log.d("FORM_ACTIVITY", "Unknown form type $requestedFormType !!")
-                Snackbar.make(binding.root, "Tipe form tidak dikenali!", Snackbar.LENGTH_LONG)
-                    .show()
+        intent?.extras?.getString(EXTRAS_FORM_TYPE)?.also {
+            when (it) {
+                FORM_DATA_DIRI_INDEN_BOOKING -> {
+                    navController.navigate(R.id.nav_form_data_diri_inden_booking, args = keyIdBundle)
+                }
+                FORM_PEMBAYARAN_INDEN_BOOKING -> {
+                    navController.navigate(R.id.nav_form_pembayaran_inden_booking, args = keyIdBundle)
+                }
+                else -> { Log.d("FORM_ACTIVITY", "Unknown form type $it !!") }
             }
         }
 
