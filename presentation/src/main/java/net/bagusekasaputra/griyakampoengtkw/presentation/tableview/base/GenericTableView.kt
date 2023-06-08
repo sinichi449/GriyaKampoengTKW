@@ -35,16 +35,16 @@ class GenericTableView<T>(
         tvTitle: TextView
     ) -> Unit)? = null
 
-    private var onCellClicked: ((
+    private var onClickedCellItem: ((
         cellView: RecyclerView.ViewHolder,
         column: Int,
         row: Int
     ) -> Unit)? = null
-    private var onColumnHeaderClicked: ((
+    private var onClickedColumnHeader: ((
         columnHeaderView: RecyclerView.ViewHolder,
         column: Int
     ) -> Unit)? = null
-    private var onRowHeaderClicked: ((
+    private var onClickedRowHeader: ((
         rowHeaderView: RecyclerView.ViewHolder,
         row: Int
     ) -> Unit)? = null
@@ -166,20 +166,36 @@ class GenericTableView<T>(
         }
     }
 
+    /**
+     * Table OnClick
+     */
     override fun onCellClicked(cellView: RecyclerView.ViewHolder, column: Int, row: Int) {
-        onCellClicked(cellView, column, row)
+        onClickedCellItem?.let {
+            it(cellView, column, row)
+        }
     }
 
+    override fun onRowHeaderClicked(rowHeaderView: RecyclerView.ViewHolder, row: Int) {
+        onClickedRowHeader?.let {
+            it(rowHeaderView, row)
+        }
+    }
+
+    override fun onColumnHeaderClicked(columnHeaderView: RecyclerView.ViewHolder, column: Int) {
+        onClickedColumnHeader?.let {
+            it(columnHeaderView, column)
+        }
+    }
+
+    /**
+     * Table onDoubleClick
+     */
     override fun onCellDoubleClicked(cellView: RecyclerView.ViewHolder, column: Int, row: Int) {
 
     }
 
-    override fun onCellLongPressed(cellView: RecyclerView.ViewHolder, column: Int, row: Int) {
+    override fun onRowHeaderDoubleClicked(rowHeaderView: RecyclerView.ViewHolder, row: Int) {
 
-    }
-
-    override fun onColumnHeaderClicked(columnHeaderView: RecyclerView.ViewHolder, column: Int) {
-        onColumnHeaderClicked(columnHeaderView, column)
     }
 
     override fun onColumnHeaderDoubleClicked(
@@ -189,15 +205,14 @@ class GenericTableView<T>(
 
     }
 
+    /**
+     * Table onLongPressed
+     */
+    override fun onCellLongPressed(cellView: RecyclerView.ViewHolder, column: Int, row: Int) {
+
+    }
+
     override fun onColumnHeaderLongPressed(columnHeaderView: RecyclerView.ViewHolder, column: Int) {
-
-    }
-
-    override fun onRowHeaderClicked(rowHeaderView: RecyclerView.ViewHolder, row: Int) {
-        onRowHeaderClicked(rowHeaderView, row)
-    }
-
-    override fun onRowHeaderDoubleClicked(rowHeaderView: RecyclerView.ViewHolder, row: Int) {
 
     }
 

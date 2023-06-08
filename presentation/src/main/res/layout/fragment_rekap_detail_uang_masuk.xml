@@ -39,8 +39,8 @@
             app:allow_click_inside_row_header="true"
             app:allow_click_inside_column_header="true"
             app:allow_click_inside_cell="true"
-            app:column_header_height="@dimen/table_pembayaran_column_header_height"
-            app:row_header_width="@dimen/table_rekap_double_row_header_width"/>
+            app:row_header_width="@dimen/table_generic_double_row_header_width"
+            app:column_header_height="@dimen/table_generic_column_header_height"/>
 
         <com.google.android.material.divider.MaterialDivider
             android:id="@+id/divider_rekap_total"
