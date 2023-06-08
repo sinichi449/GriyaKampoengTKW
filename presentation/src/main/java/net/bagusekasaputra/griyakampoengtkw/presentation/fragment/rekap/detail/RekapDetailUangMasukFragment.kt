@@ -9,12 +9,17 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import com.evrencoskun.tableview.TableView
 import dagger.hilt.android.AndroidEntryPoint
+import net.bagusekasaputra.griyakampoengtkw.domain.DateUtil.toDate
 import net.bagusekasaputra.griyakampoengtkw.domain.NumberUtil
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.rekap.PembayaranWithNamaCostumer
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.rekap.RekapBesarDetail
 import net.bagusekasaputra.griyakampoengtkw.presentation.activity.RekapBesarDetailActivity
 import net.bagusekasaputra.griyakampoengtkw.presentation.databinding.FragmentRekapDetailUangMasukBinding
 import net.bagusekasaputra.griyakampoengtkw.presentation.fragment.rekap.RekapType
+import net.bagusekasaputra.griyakampoengtkw.presentation.tableview.base.CellItem
+import net.bagusekasaputra.griyakampoengtkw.presentation.tableview.base.DoubleRowHeaderConfigurator
+import net.bagusekasaputra.griyakampoengtkw.presentation.tableview.base.GenericTableView
+import net.bagusekasaputra.griyakampoengtkw.presentation.tableview.base.RowHeader
 import net.bagusekasaputra.griyakampoengtkw.presentation.tableview.rekapBesarDetail.RbdCell
 import net.bagusekasaputra.griyakampoengtkw.presentation.tableview.rekapBesarDetail.RbdColumnHeader
 import net.bagusekasaputra.griyakampoengtkw.presentation.tableview.rekapBesarDetail.RbdWithKavlingRowHeader
@@ -47,7 +52,8 @@ class RekapDetailUangMasukFragment : Fragment() {
     private fun setupViewModel() {
         viewModel.rekapBesarDetailLive.observe(requireActivity()) {
             it?.also { rekapBesarDetail ->
-                binding.tableviewRekapUangMasuk.setAllItems(rekapBesarDetail.mapListPembayaranRekapBaru)
+//                binding.tableviewRekapUangMasuk.setAllItems(rekapBesarDetail.mapListPembayaranRekapBaru)
+                binding.tableviewRekapUangMasuk.setupTableRekap(rekapBesarDetail.getListPembayaranBaru())
 
                 val totalDataBaru = rekapBesarDetail.getTotalUangMasukPembayaran(RekapBesarDetail.DATA_BARU)
                 val rupiahTotalUangMasukRekapBaru = "Rp. ${NumberUtil.formatLongToString(totalDataBaru)}"
@@ -75,6 +81,7 @@ class RekapDetailUangMasukFragment : Fragment() {
         }
     }
 
+    @Deprecated("")
     private fun TableView.setAllItems(mapListPembayaranWithNamaCostumer: Map<String, List<PembayaranWithNamaCostumer>?>) {
         val adapter = RbdWithKavling_TableViewAdapter(onCellTextCreated = { position, tvCell ->
             if (position == 0) {
@@ -132,6 +139,42 @@ class RekapDetailUangMasukFragment : Fragment() {
         setColumnWidth(4, 250) // Invoice
     }
 
+    private fun TableView.setupTableRekap(pembayaranWithNama: List<PembayaranWithNamaCostumer>) {
+        val columnHeaderWidths = buildList {
+            add(COLUMN_NAMA_CUSTOMER to 350)
+            add(COLUMN_INVOICE to 250)
+            add(COLUMN_TANGGAL to 300)
+            add(COLUMN_JENIS_PEMBAYARAN to 300)
+            add(COLUMN_JUMLAH_PEMBAYARAN to 350)
+        }
+        val rowHeaderSeparator = "<>"
+        val doubleRowHeaderConfigurator = DoubleRowHeaderConfigurator(
+            cornerViewTitle = "Termin",
+            cornerTextSeparator = rowHeaderSeparator,
+        )
+
+        GenericTableView(this, pembayaranWithNama)
+            .buildColumnHeader("Nama Customer", "Invoice", "Tanggal", "Termin", "Uang Dibayar")
+            .buildRowHeader { index, pembayaran ->
+                val nomor = index + 1
+                val kavling = pembayaran.kavling
+
+                RowHeader(rowId = kavling, text = "${nomor}${rowHeaderSeparator}${kavling}")
+            }
+            .buildCellItems(
+                buildList {
+                    add { CellItem(it.kavling, it.namaCostumer) }
+                    add { CellItem(it.kavling, it.pembayaran.bulanAngsuran.bulanAndTahun) }
+                    add { CellItem(it.kavling, it.pembayaran.tanggal.toDate()) }
+                    add { CellItem(it.kavling, it.pembayaran.termin) }
+                    add { CellItem(it.kavling, it.pembayaran.parsedJumlahUangDibayar) }
+                }
+            )
+            .useDoubleCorner(doubleRowHeaderConfigurator)
+            .setWidthColumnHeaders(columnHeaderWidths)
+            .create()
+    }
+
     private fun setupFabScroll() {
         val dataLamaIncluded = viewModel.rekapDetailTransportLive.value?.includeDataLama
 
@@ -155,5 +198,25 @@ class RekapDetailUangMasukFragment : Fragment() {
         val totalAll = totalDataBaru + totalDataLama
         (requireActivity() as RekapBesarDetailActivity)
             .setToolbarTitle(RekapType.UangMasuk, totalAll)
+    }
+
+    private companion object {
+        const val COLUMN_NAMA_CUSTOMER = 0
+        const val COLUMN_INVOICE = 1
+        const val COLUMN_TANGGAL = 2
+        const val COLUMN_JENIS_PEMBAYARAN = 3
+        const val COLUMN_JUMLAH_PEMBAYARAN = 4
+
+        fun RekapBesarDetail.getListPembayaranBaru(): List<PembayaranWithNamaCostumer> {
+            val pembayaranMap = this.mapListPembayaranRekapBaru
+
+            return buildList {
+                pembayaranMap.keys.forEach { kavling ->
+                    pembayaranMap[kavling]?.also { pembayaranList ->
+                        addAll(pembayaranList)
+                    }
+                }
+            }
+        }
     }
 }

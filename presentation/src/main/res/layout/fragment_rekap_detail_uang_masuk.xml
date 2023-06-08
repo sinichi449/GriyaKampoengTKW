@@ -36,6 +36,9 @@
             app:separator_color="@color/black"
             app:show_horizontal_separator="true"
             app:show_vertical_separator="true"
+            app:allow_click_inside_row_header="true"
+            app:allow_click_inside_column_header="true"
+            app:allow_click_inside_cell="true"
             app:column_header_height="@dimen/table_pembayaran_column_header_height"
             app:row_header_width="@dimen/table_rekap_double_row_header_width"/>
 
