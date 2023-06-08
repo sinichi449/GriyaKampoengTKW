@@ -1,6 +1,5 @@
 package net.bagusekasaputra.griyakampoengtkw.presentation.tableview.base
 
-import android.graphics.Color
 import android.view.View
 import androidx.core.content.ContextCompat
 import com.evrencoskun.tableview.adapter.recyclerview.holder.AbstractSorterViewHolder
@@ -31,17 +30,35 @@ class ColumnHeaderViewHolder(
     private val imgSortingState = binding.imgSortingState
 
     // backgroundColor is clashing with JVM signature setBackgroundColor()
-    var columnHeaderBackgroundColour = R.color.abang
+    var columnHeaderBackgroundColour = R.color.table_column_header_colour
+    var columnHeaderTextColour = R.color.white
 
     private val context = container.context
 
     override fun setSelected(selectionState: SelectionState) {
         super.setSelected(selectionState)
 
-        if (!isSelected && !isShadowed) {
-            setBackgroundColor(ContextCompat.getColor(context, columnHeaderBackgroundColour))
-            tvColumnHeader.setTextColor(Color.WHITE)
+        when (selectionState) {
+            SelectionState.SELECTED -> {
+                columnHeaderTextColour = R.color.table_selected_colour
+                columnHeaderTextColour = R.color.white
+            }
+            SelectionState.SHADOWED -> {
+                columnHeaderBackgroundColour = R.color.table_shadowed_colour
+                columnHeaderTextColour = R.color.black
+            }
+            SelectionState.UNSELECTED -> {
+                columnHeaderBackgroundColour = R.color.table_column_header_colour
+                columnHeaderTextColour = R.color.white
+            }
         }
+
+        container.setBackgroundColor(
+            ContextCompat.getColor(context, columnHeaderBackgroundColour)
+        )
+        tvColumnHeader.setTextColor(
+            ContextCompat.getColor(context, columnHeaderTextColour)
+        )
     }
 
     override fun onSortingStatusChanged(pSortState: SortState) {

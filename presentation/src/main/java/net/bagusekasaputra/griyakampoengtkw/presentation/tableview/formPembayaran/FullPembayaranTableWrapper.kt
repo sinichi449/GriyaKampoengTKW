@@ -5,8 +5,8 @@ import android.view.Gravity
 import com.evrencoskun.tableview.TableView
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.pembayaran.Pembayaran
 import net.bagusekasaputra.griyakampoengtkw.presentation.R
-import net.bagusekasaputra.griyakampoengtkw.presentation.tableview.base.legacy.LegacyTableWrapper
 import net.bagusekasaputra.griyakampoengtkw.presentation.tableview.base.legacy.LegacyTableViewAdapter
+import net.bagusekasaputra.griyakampoengtkw.presentation.tableview.base.legacy.LegacyTableWrapper
 
 /**
  * Ordering for index column matters!!
@@ -50,7 +50,7 @@ class FullPembayaranTableWrapper(
 
             // Set Background color if sudah isi foto
             val backgroundColor = if (sudahIsiFotoPembayaran == true) 
-                R.color.table_selected_color else R.color.white
+                R.color.table_selected_colour else R.color.white
             viewHolder.containerBackground = backgroundColor
             viewHolder.rowHeadersTextColor = R.color.black
 
