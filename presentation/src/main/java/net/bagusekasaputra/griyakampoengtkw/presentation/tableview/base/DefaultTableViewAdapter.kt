@@ -1,8 +1,10 @@
 package net.bagusekasaputra.griyakampoengtkw.presentation.tableview.base
 
+import android.graphics.Typeface
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.graphics.TypefaceCompat
 import com.evrencoskun.tableview.adapter.AbstractTableAdapter
 import com.evrencoskun.tableview.adapter.recyclerview.holder.AbstractViewHolder
 import net.bagusekasaputra.griyakampoengtkw.presentation.databinding.TableGenericCellViewBinding
@@ -29,7 +31,8 @@ class DefaultTableViewAdapter(
     }
 
     /**
-     * The cell text is default to convert [CellItem.data] into [String].
+     * The cell text is default to convert [CellItem.data] into [String]. Typeface is set to
+     * [Typeface.SERIF] and [Typeface.NORMAL].
      */
     override fun onBindCellViewHolder(
         holder: AbstractViewHolder,
@@ -40,6 +43,10 @@ class DefaultTableViewAdapter(
         val viewHolder = holder as CellViewHolder
 
         viewHolder.tvCell.text = cellItemModel?.data?.toString() ?: "-"
+        viewHolder.tvCell.typeface = TypefaceCompat.create(
+            holder.container.context,
+            Typeface.SERIF, Typeface.NORMAL
+        )
 
         tableViewHolderListener.onBindCellViewHolder(viewHolder, cellItemModel, columnPosition, rowPosition)
     }

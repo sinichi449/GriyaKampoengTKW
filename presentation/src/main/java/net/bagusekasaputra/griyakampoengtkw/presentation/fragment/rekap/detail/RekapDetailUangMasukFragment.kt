@@ -9,7 +9,6 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import com.evrencoskun.tableview.TableView
 import dagger.hilt.android.AndroidEntryPoint
-import net.bagusekasaputra.griyakampoengtkw.domain.DateUtil.toDate
 import net.bagusekasaputra.griyakampoengtkw.domain.NumberUtil
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.rekap.PembayaranWithNamaCostumer
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.rekap.RekapBesarDetail
@@ -52,8 +51,7 @@ class RekapDetailUangMasukFragment : Fragment() {
     private fun setupViewModel() {
         viewModel.rekapBesarDetailLive.observe(requireActivity()) {
             it?.also { rekapBesarDetail ->
-//                binding.tableviewRekapUangMasuk.setAllItems(rekapBesarDetail.mapListPembayaranRekapBaru)
-                binding.tableviewRekapUangMasuk.setupTableRekap(rekapBesarDetail.getListPembayaranBaru())
+                binding.tableviewRekapUangMasuk.setupTableRekap(rekapBesarDetail.getListPembayaran(true))
 
                 val totalDataBaru = rekapBesarDetail.getTotalUangMasukPembayaran(RekapBesarDetail.DATA_BARU)
                 val rupiahTotalUangMasukRekapBaru = "Rp. ${NumberUtil.formatLongToString(totalDataBaru)}"
@@ -64,7 +62,7 @@ class RekapDetailUangMasukFragment : Fragment() {
                     binding.layoutDataLama.visibility = View.VISIBLE
                     binding.tvInfoDataBaru.visibility = View.VISIBLE
 
-                    binding.tableviewRekapUangMasukDataLama.setAllItems(rekapBesarDetail.mapListPembayaranRekapLama)
+                    binding.tableviewRekapUangMasukDataLama.setupTableRekap(rekapBesarDetail.getListPembayaran(false))
 
                     val totalDataLama = rekapBesarDetail.getTotalUangMasukPembayaran(RekapBesarDetail.DATA_LAMA)
                     val rupiahTotalUangMasukRekapLama = "Rp. ${NumberUtil.formatLongToString(totalDataLama)}"
@@ -161,17 +159,31 @@ class RekapDetailUangMasukFragment : Fragment() {
 
                 RowHeader(rowId = kavling, text = "${nomor}${rowHeaderSeparator}${kavling}")
             }
-            .buildCellItems(
-                buildList {
+            .buildCellItems(buildList {
                     add { CellItem(it.kavling, it.namaCostumer) }
                     add { CellItem(it.kavling, it.pembayaran.bulanAngsuran.bulanAndTahun) }
-                    add { CellItem(it.kavling, it.pembayaran.tanggal.toDate()) }
+                    add { CellItem(it.kavling, it.pembayaran.tanggal) }
                     add { CellItem(it.kavling, it.pembayaran.termin) }
                     add { CellItem(it.kavling, it.pembayaran.parsedJumlahUangDibayar) }
-                }
-            )
+                })
             .useDoubleCorner(doubleRowHeaderConfigurator)
             .setWidthColumnHeaders(columnHeaderWidths)
+            .setOnCellBinding { cellViewHolder, cellItem, col, row ->
+                with(cellViewHolder.tvCell) {
+                    gravity = if (col == COLUMN_NAMA_CUSTOMER) {
+                        Gravity.START
+                    } else {
+                        Gravity.CENTER
+                    }
+                    text = if (col == COLUMN_JUMLAH_PEMBAYARAN) {
+                        val jumlahUang = cellItem?.data as Long? ?: 0L
+
+                        NumberUtil.formatLongToString(jumlahUang)
+                    } else {
+                        cellItem?.data?.toString()
+                    }
+                }
+            }
             .create()
     }
 
@@ -207,8 +219,9 @@ class RekapDetailUangMasukFragment : Fragment() {
         const val COLUMN_JENIS_PEMBAYARAN = 3
         const val COLUMN_JUMLAH_PEMBAYARAN = 4
 
-        fun RekapBesarDetail.getListPembayaranBaru(): List<PembayaranWithNamaCostumer> {
-            val pembayaranMap = this.mapListPembayaranRekapBaru
+        fun RekapBesarDetail.getListPembayaran(dataBaru: Boolean): List<PembayaranWithNamaCostumer> {
+            val pembayaranMap = if (dataBaru) this.mapListPembayaranRekapBaru
+                else this.mapListPembayaranRekapLama
 
             return buildList {
                 pembayaranMap.keys.forEach { kavling ->

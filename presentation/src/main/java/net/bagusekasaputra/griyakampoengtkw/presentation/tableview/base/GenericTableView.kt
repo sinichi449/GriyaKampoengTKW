@@ -134,6 +134,19 @@ class GenericTableView<T>(
         return this
     }
 
+    fun setOnCellBinding(
+        onBind: (
+            cellViewHolder: CellViewHolder,
+            cellItem: CellItem?,
+            col: Int,
+            row: Int,
+        ) -> Unit,
+    ): GenericTableView<T> {
+        onCellBinding = onBind
+
+        return this
+    }
+
     private fun resetTableSortingStatus() {
         repeat(columnHeaders.size) { column ->
             tableView.sortColumn(column, SortState.UNSORTED)
@@ -142,6 +155,10 @@ class GenericTableView<T>(
         create()
     }
 
+
+    /**
+     * Table Binding Listeners
+     */
     override fun onBindCellViewHolder(
         holder: CellViewHolder,
         cellItemModel: CellItem?,
