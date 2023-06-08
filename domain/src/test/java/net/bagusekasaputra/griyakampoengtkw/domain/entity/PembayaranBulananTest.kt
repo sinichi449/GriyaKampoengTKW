@@ -152,6 +152,9 @@ class PembayaranBulananTest {
                 dateTo = bulanSekarang
             )
 
+            Assert.assertEquals(true,
+                bulanListPembayaranBulanan.isNotEmpty() && fromBulanBeliUntilToday.isNotEmpty()
+            )
             Assert.assertEquals(true, bulanListPembayaranBulanan.containsAll(fromBulanBeliUntilToday))
         }
     }
