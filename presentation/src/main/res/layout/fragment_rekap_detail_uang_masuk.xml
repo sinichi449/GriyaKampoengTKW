@@ -33,14 +33,17 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toBottomOf="@id/tvInfo_data_baru"
             android:layout_marginTop="16dp"
-            app:separator_color="@color/black"
             app:show_horizontal_separator="true"
             app:show_vertical_separator="true"
             app:allow_click_inside_row_header="true"
             app:allow_click_inside_column_header="true"
             app:allow_click_inside_cell="true"
             app:row_header_width="@dimen/table_generic_double_row_header_width"
-            app:column_header_height="@dimen/table_generic_column_header_height"/>
+            app:column_header_height="@dimen/table_generic_column_header_height"
+            app:selected_color="@color/table_selected_colour"
+            app:unselected_color="@color/table_unselected_colour"
+            app:shadow_color="@color/table_shadowed_colour"
+            app:separator_color="@color/table_separator_colour"/>
 
         <com.google.android.material.divider.MaterialDivider
             android:id="@+id/divider_rekap_total"

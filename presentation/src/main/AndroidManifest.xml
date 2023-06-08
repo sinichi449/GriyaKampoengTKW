@@ -10,26 +10,26 @@
         <activity
             android:name=".activity.FormActivity"
             android:exported="false"
-            android:theme="@style/Theme.GriyaKampung.BlackWhite"/>
+            android:theme="@style/Theme.GriyaKampoengTKW.BlackWhite"/>
         <activity
             android:name=".activity.DetailIndenBookingActivity"
             android:exported="false"
-            android:theme="@style/Theme.GriyaKampung.BlackWhite" />
+            android:theme="@style/Theme.GriyaKampoengTKW.BlackWhite" />
         <activity
             android:name=".activity.PembayaranTabelFullActivity"
             android:configChanges="orientation|keyboardHidden"
             android:exported="false"
             android:screenOrientation="landscape"
-            android:theme="@style/Theme.GriyaKampung.BlackWhite" />
+            android:theme="@style/Theme.GriyaKampoengTKW.BlackWhite" />
         <activity
             android:name=".activity.RekapBesarDetailActivity"
             android:exported="false"
-            android:theme="@style/Theme.GriyaKampung.BlackWhite" />
+            android:theme="@style/Theme.GriyaKampoengTKW.BlackWhite" />
         <activity
             android:name=".activity.SettingsActivity"
             android:exported="false"
             android:label="@string/title_activity_settings"
-            android:theme="@style/Theme.GriyaKampung.BlackWhite">
+            android:theme="@style/Theme.GriyaKampoengTKW.BlackWhite">
             <meta-data
                 android:name="android.app.lib_name"
                 android:value="" />

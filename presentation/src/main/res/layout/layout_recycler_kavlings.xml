@@ -15,7 +15,7 @@
     android:animateLayoutChanges="true"
     app:checkedIcon="@drawable/ic_baseline_check_circle_18"
     app:checkedIconMargin="-1dp"
-    android:theme="@style/Theme.GriyaKampung.BlackWhite">
+    android:theme="@style/Theme.GriyaKampoengTKW.BlackWhite">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/layout_root"

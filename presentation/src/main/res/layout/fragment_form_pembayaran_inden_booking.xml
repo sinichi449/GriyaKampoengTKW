@@ -5,7 +5,7 @@
     android:layout_height="match_parent"
     tools:context=".fragment.indenBooking.FormPembayaranIndenBookingFragment"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:theme="@style/Theme.GriyaKampung.BlackWhite">
+    android:theme="@style/Theme.GriyaKampoengTKW.BlackWhite">
 
     <androidx.core.widget.NestedScrollView
         android:id="@+id/scrollView_pembayaran_inden_booking"

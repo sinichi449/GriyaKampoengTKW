@@ -5,6 +5,7 @@ import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.evrencoskun.tableview.TableView
 import com.evrencoskun.tableview.listener.ITableViewListener
+import com.evrencoskun.tableview.sort.SortState
 
 class GenericTableView<T>(
     private val tableView: TableView,
@@ -133,6 +134,14 @@ class GenericTableView<T>(
         return this
     }
 
+    private fun resetTableSortingStatus() {
+        repeat(columnHeaders.size) { column ->
+            tableView.sortColumn(column, SortState.UNSORTED)
+        }
+
+        create()
+    }
+
     override fun onBindCellViewHolder(
         holder: CellViewHolder,
         cellItemModel: CellItem?,
@@ -159,8 +168,10 @@ class GenericTableView<T>(
     }
 
     override fun onCreateCornerView(view: View) {
-        onCornerViewClicked?.let { click ->
-            view.setOnClickListener {
+        view.setOnClickListener {
+            resetTableSortingStatus()
+
+            onCornerViewClicked?.let { click ->
                 click(view)
             }
         }
@@ -182,6 +193,14 @@ class GenericTableView<T>(
     }
 
     override fun onColumnHeaderClicked(columnHeaderView: RecyclerView.ViewHolder, column: Int) {
+        with(tableView) {
+            val nextSortState = when (getSortingStatus(column)) {
+                SortState.UNSORTED -> SortState.ASCENDING
+                SortState.ASCENDING -> SortState.DESCENDING
+                SortState.DESCENDING -> SortState.UNSORTED
+            }
+            sortColumn(column, nextSortState)
+        }
         onClickedColumnHeader?.let {
             it(columnHeaderView, column)
         }

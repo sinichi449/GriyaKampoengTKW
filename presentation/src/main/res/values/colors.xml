@@ -19,6 +19,7 @@
     <color name="table_unselected_colour">#ffffff</color>
     <color name="table_column_header_colour">@color/abang</color>
     <color name="table_text_colour">#000000</color>
+    <color name="table_separator_colour">#000000</color>
 
     <color name="status_pembayaran_nil">@color/black</color>
     <color name="status_pembayaran_aktif">@color/green_500</color>

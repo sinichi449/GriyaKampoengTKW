@@ -6,7 +6,7 @@
     android:layout_height="match_parent"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     tools:context=".fragment.indenBooking.IndenBookingFragment"
-    android:theme="@style/Theme.GriyaKampung.BlackWhite">
+    android:theme="@style/Theme.GriyaKampoengTKW.BlackWhite">
 
     <FrameLayout
         android:layout_width="match_parent"

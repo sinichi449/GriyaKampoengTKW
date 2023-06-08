@@ -42,7 +42,7 @@
                 app:layout_constraintVertical_chainStyle="packed"
                 android:layout_marginHorizontal="36dp"
                 android:progress="0"
-                android:theme="@style/Theme.GriyaKampung"
+                android:theme="@style/Theme.GriyaKampoengTKW"
                 android:visibility="gone"/>
 
             <com.google.android.material.textview.MaterialTextView

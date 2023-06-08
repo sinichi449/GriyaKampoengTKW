@@ -81,7 +81,7 @@ class RekapDetailUangMasukFragment : Fragment() {
         }
     }
 
-    @Deprecated("")
+    @Deprecated("Migrated to `setupTableRekap()`")
     private fun TableView.setAllItems(mapListPembayaranWithNamaCostumer: Map<String, List<PembayaranWithNamaCostumer>?>) {
         val adapter = RbdWithKavling_TableViewAdapter(onCellTextCreated = { position, tvCell ->
             if (position == 0) {
@@ -149,7 +149,7 @@ class RekapDetailUangMasukFragment : Fragment() {
         }
         val rowHeaderSeparator = "<>"
         val doubleRowHeaderConfigurator = DoubleRowHeaderConfigurator(
-            cornerViewTitle = "Termin",
+            cornerViewTitle = "Kavling",
             cornerTextSeparator = rowHeaderSeparator,
         )
 

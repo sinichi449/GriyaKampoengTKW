@@ -57,14 +57,14 @@
                 android:layout_height="wrap_content"
                 android:text="KTP"
                 android:checked="true"
-                android:theme="@style/Theme.GriyaKampung.Material3"/>
+                android:theme="@style/Theme.GriyaKampoengTKW.Material3"/>
 
             <RadioButton
                 android:id="@+id/rb_id_passport"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="Passport"
-                android:theme="@style/Theme.GriyaKampung.Material3"/>
+                android:theme="@style/Theme.GriyaKampoengTKW.Material3"/>
 
         </RadioGroup>
 
@@ -191,7 +191,7 @@
             android:layout_height="wrap_content"
             android:text="Batal"
             app:cornerRadius="8dp"
-            android:theme="@style/Theme.GriyaKampung"
+            android:theme="@style/Theme.GriyaKampoengTKW"
             style="@style/NormalDialogButton"/>
 
     </androidx.appcompat.widget.LinearLayoutCompat>

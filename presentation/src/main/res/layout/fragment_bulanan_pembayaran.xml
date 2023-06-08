@@ -5,7 +5,7 @@
     android:layout_height="match_parent"
     tools:context=".fragment.pembayaran.BulananPembayaranFragment"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:theme="@style/Theme.GriyaKampung.BlackWhite">
+    android:theme="@style/Theme.GriyaKampoengTKW.BlackWhite">
 
     <com.evrencoskun.tableview.TableView
         android:id="@+id/table_pembayaran_bulanan"

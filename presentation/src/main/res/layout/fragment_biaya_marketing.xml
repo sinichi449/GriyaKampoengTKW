@@ -6,7 +6,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     tools:context=".fragment.BiayaMarketingFragment"
-    android:theme="@style/Theme.GriyaKampung.BlackWhite">
+    android:theme="@style/Theme.GriyaKampoengTKW.BlackWhite">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
