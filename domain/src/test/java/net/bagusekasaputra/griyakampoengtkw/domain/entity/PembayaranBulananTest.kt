@@ -4,6 +4,9 @@ import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runTest
 import net.bagusekasaputra.griyakampoengtkw.domain.DataMode
+import net.bagusekasaputra.griyakampoengtkw.domain.DateUtil
+import net.bagusekasaputra.griyakampoengtkw.domain.DateUtil.normalize
+import net.bagusekasaputra.griyakampoengtkw.domain.DateUtil.toDate
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.pembayaran.BulanAngsuran
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.pembayaran.Pembayaran
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.pembayaran.PembayaranBulanan
@@ -12,6 +15,7 @@ import net.bagusekasaputra.griyakampoengtkw.domain.repository.MockRepository
 import net.bagusekasaputra.griyakampoengtkw.domain.util.getTestingFile
 import org.junit.Assert
 import org.junit.Test
+import java.util.Calendar
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class PembayaranBulananTest {
@@ -89,6 +93,66 @@ class PembayaranBulananTest {
             Assert.assertEquals(
                 true, isExistPembayaranInTheMonthOf(pembayaranBulananList, 5, 2023)
             )
+        }
+    }
+
+    @Test
+    fun whenPassedArgumentIsUnsortedPembayaranList_shouldKeepReturningOrderedPembayaranBulananList() {
+        runTest {
+            val kavling = "A11"
+            val pembayaranA11Deferred = CompletableDeferred<List<Pembayaran>>()
+
+            pembayaranRepository.getAllPembayaran(kavling, DataMode.ONLINE).collect { result ->
+                result.onSuccess {
+                    pembayaranA11Deferred.complete(it!!)
+                }
+                result.onFailure {
+                    pembayaranA11Deferred.completeExceptionally(it)
+                }
+            }
+
+            val pembayaranA11Original = pembayaranA11Deferred.await()
+            val pembayaranA11Shuffled = pembayaranA11Original.shuffled()
+
+            val pembayaranBulananList = PembayaranBulanan.groupPembayaranIntoBulanan(
+                kavling = kavling,
+                baselinePembayaran = BaselinePembayaran(
+                    kavling = kavling,
+                    opsiBulan = 48,
+                    jumlahUang = 5_000_000L,
+                    tanggalPembayaranMaks = 10,
+                ),
+                pembayaranList = pembayaranA11Shuffled
+            )
+            val bulanListPembayaranBulanan = pembayaranBulananList.run {
+                buildList {
+                    this@run.forEach {
+                        add(it.bulanTahunDate)
+                    }
+                }
+            }
+
+            val bulanBeliKavlingA11 = pembayaranA11Original
+                .sortedBy {
+                    it.tanggal.toDate()
+                }
+                .first().tanggal.toDate()
+                .run {
+                    // set tanggal to tanggal 1
+                    val calendar = Calendar.getInstance()
+                    calendar.time = this
+                    calendar.set(Calendar.DAY_OF_MONTH, calendar.getActualMinimum(Calendar.DAY_OF_MONTH))
+                    calendar.normalize()
+
+                    calendar.time
+                }
+            val bulanSekarang = Calendar.getInstance().time
+            val fromBulanBeliUntilToday = DateUtil.getListMonths(
+                dateFrom = bulanBeliKavlingA11,
+                dateTo = bulanSekarang
+            )
+
+            Assert.assertEquals(true, bulanListPembayaranBulanan.containsAll(fromBulanBeliUntilToday))
         }
     }
 
