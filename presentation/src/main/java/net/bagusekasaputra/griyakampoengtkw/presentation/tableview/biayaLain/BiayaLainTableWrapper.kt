@@ -35,7 +35,7 @@ class BiayaLainTableWrapper(
         }
     }
 
-    override suspend fun getColumnHeaderItems(): List<ColumnHeader> {
+    override suspend fun getColumnHeaderItems(): List<LegacyColumnHeader> {
         val columnHeaders = mutableListOf<BlColumnHeader>()
         columnHeaders.apply {
             add(JENIS_BIAYA, BlColumnHeader("Jenis Biaya"))
@@ -46,7 +46,7 @@ class BiayaLainTableWrapper(
         return columnHeaders
     }
 
-    override suspend fun getRowHeaderItems(): List<RowHeader> {
+    override suspend fun getRowHeaderItems(): List<LegacyRowHeader> {
         val rowHeaders = mutableListOf<BlRowHeader>()
         repeat(biayaLains.size) {
             rowHeaders.add(BlRowHeader(it.plus(1)))
@@ -55,7 +55,7 @@ class BiayaLainTableWrapper(
         return rowHeaders
     }
 
-    override suspend fun getCellItems(): List<List<CellItem>> {
+    override suspend fun getCellItems(): List<List<LegacyCellItem>> {
         val cellItems = mutableListOf<List<BlCell>>()
         biayaLains.forEach {
             val cell = mutableListOf<BlCell>()
@@ -78,20 +78,20 @@ class BiayaLainTableWrapper(
         const val TANGGAL = 2
     }
 
-    data class BlColumnHeader(val mData: String): ColumnHeader {
+    data class BlColumnHeader(val mData: String): LegacyColumnHeader {
         override fun getText(): String {
             return mData
         }
 
     }
 
-    data class BlRowHeader(val nomor: Int): RowHeader {
+    data class BlRowHeader(val nomor: Int): LegacyRowHeader {
         override fun getText(): String {
             return nomor.toString()
         }
     }
 
-    data class BlCell(val mData: String): CellItem {
+    data class BlCell(val mData: String): LegacyCellItem {
         override fun getText(): String {
             return mData
         }

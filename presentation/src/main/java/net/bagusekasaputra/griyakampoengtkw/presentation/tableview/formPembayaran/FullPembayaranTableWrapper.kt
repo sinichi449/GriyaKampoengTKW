@@ -67,26 +67,26 @@ class FullPembayaranTableWrapper(
         }
     }
 
-    data class PbColumnHeader(val columnHeaderText: String): ColumnHeader {
+    data class PbColumnHeader(val columnHeaderText: String): LegacyColumnHeader {
         override fun getText(): String {
             return columnHeaderText
         }
     }
 
-    data class PbCellItem(val cellText: String): CellItem {
+    data class PbCellItem(val cellText: String): LegacyCellItem {
         override fun getText(): String {
             return cellText
         }
     }
 
     // Row Header contains the following: No, Termin, Sudah Isi Foto, Sudah Ambil Kuitansi
-    data class PbRowHeader(val cornerAndRhData: String): RowHeader {
+    data class PbRowHeader(val cornerAndRhData: String): LegacyRowHeader {
         override fun getText(): String {
             return cornerAndRhData
         }
     }
 
-    override suspend fun getColumnHeaderItems(): List<ColumnHeader> {
+    override suspend fun getColumnHeaderItems(): List<LegacyColumnHeader> {
         val columnHeaders = mutableListOf<PbColumnHeader>()
         columnHeaders.apply {
             add(INVOICE, PbColumnHeader("Invoice"))
@@ -100,7 +100,7 @@ class FullPembayaranTableWrapper(
         return columnHeaders
     }
 
-    override suspend fun getRowHeaderItems(): List<RowHeader> {
+    override suspend fun getRowHeaderItems(): List<LegacyRowHeader> {
         val rowHeaders = mutableListOf<PbRowHeader>()
         pembayarans.forEachIndexed { index, pembayaran ->
             val nomor = index.plus(1).toString()
@@ -119,10 +119,10 @@ class FullPembayaranTableWrapper(
         return rowHeaders
     }
 
-    override suspend fun getCellItems(): List<List<CellItem>> {
-        val cellItems = mutableListOf<List<CellItem>>()
+    override suspend fun getCellItems(): List<List<LegacyCellItem>> {
+        val cellItems = mutableListOf<List<LegacyCellItem>>()
         pembayarans.forEach {
-            val items = mutableListOf<CellItem>()
+            val items = mutableListOf<LegacyCellItem>()
             items.apply {
                 add(INVOICE, PbCellItem(it.bulanAngsuran.bulanAndTahun))
                 add(TANGGAL, PbCellItem(it.tanggal))

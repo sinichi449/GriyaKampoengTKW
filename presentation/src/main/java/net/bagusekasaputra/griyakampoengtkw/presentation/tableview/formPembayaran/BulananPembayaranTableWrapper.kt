@@ -103,7 +103,7 @@ class BulananPembayaranTableWrapper(
         const val KELUNASAN = 4
     }
 
-    override suspend fun getColumnHeaderItems(): List<ColumnHeader> {
+    override suspend fun getColumnHeaderItems(): List<LegacyColumnHeader> {
         val columnHeaders = mutableListOf<PbColumnHeader>()
         columnHeaders.apply {
             add(BULAN, PbColumnHeader("Bulan"))
@@ -116,7 +116,7 @@ class BulananPembayaranTableWrapper(
         return columnHeaders
     }
 
-    override suspend fun getRowHeaderItems(): List<RowHeader> {
+    override suspend fun getRowHeaderItems(): List<LegacyRowHeader> {
         val pbRowHeaders = mutableListOf<PbRowHeader>()
         pembayaranBulanans.forEachIndexed { index, pembayaranBulanan ->
             val nomorAndKelunasan = "${index.plus(1)}${separatorKelunasan}${pembayaranBulanan.kelunasan.name}"
@@ -127,10 +127,10 @@ class BulananPembayaranTableWrapper(
         return pbRowHeaders
     }
 
-    override suspend fun getCellItems(): List<List<CellItem>> {
-        val cellItems = mutableListOf<List<CellItem>>()
+    override suspend fun getCellItems(): List<List<LegacyCellItem>> {
+        val cellItems = mutableListOf<List<LegacyCellItem>>()
         pembayaranBulanans.forEach {
-            val item = mutableListOf<CellItem>().apply {
+            val item = mutableListOf<LegacyCellItem>().apply {
                 add(BULAN, PbCell(it.parsedBulanTahun))
                 add(UANG_MASUK, PbCell(NumberUtil.formatLongToString(it.uangMasuk)))
                 add(TUNGGAKAN, PbCell(NumberUtil.formatLongToString(it.tunggakan)))
@@ -144,7 +144,7 @@ class BulananPembayaranTableWrapper(
         return cellItems
     }
 
-    private fun getNomorAndKelunasan(rowHeaderItem: RowHeader?): Pair<String, String> {
+    private fun getNomorAndKelunasan(rowHeaderItem: LegacyRowHeader?): Pair<String, String> {
         val nomorAndKelunasan = rowHeaderItem?.getText()?.split(separatorKelunasan)
         val nomor = nomorAndKelunasan?.get(0).toString()
         val kelunasan = nomorAndKelunasan?.get(1).toString()
@@ -152,19 +152,19 @@ class BulananPembayaranTableWrapper(
         return Pair(nomor, kelunasan)
     }
 
-    private data class PbColumnHeader(val columnHeaderText: String): ColumnHeader {
+    private data class PbColumnHeader(val columnHeaderText: String): LegacyColumnHeader {
         override fun getText(): String {
             return columnHeaderText
         }
     }
 
-    private data class PbRowHeader(val nomorAndKelunasan: String): RowHeader {
+    private data class PbRowHeader(val nomorAndKelunasan: String): LegacyRowHeader {
         override fun getText(): String {
             return nomorAndKelunasan
         }
     }
 
-    private class PbCell(val cellText: String): CellItem {
+    private class PbCell(val cellText: String): LegacyCellItem {
         override fun getText(): String {
             return cellText
         }

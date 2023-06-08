@@ -15,17 +15,17 @@ import net.bagusekasaputra.griyakampoengtkw.presentation.databinding.TableGeneri
 import net.bagusekasaputra.griyakampoengtkw.presentation.databinding.TableGenericDoubleRowHeaderBinding
 import net.bagusekasaputra.griyakampoengtkw.presentation.databinding.TableGenericSingleCornerViewBinding
 import net.bagusekasaputra.griyakampoengtkw.presentation.databinding.TableGenericSingleRowHeaderBinding
-import net.bagusekasaputra.griyakampoengtkw.presentation.tableview.base.legacy.LegacyTableWrapper.CellItem
-import net.bagusekasaputra.griyakampoengtkw.presentation.tableview.base.legacy.LegacyTableWrapper.ColumnHeader
-import net.bagusekasaputra.griyakampoengtkw.presentation.tableview.base.legacy.LegacyTableWrapper.RowHeader
+import net.bagusekasaputra.griyakampoengtkw.presentation.tableview.base.legacy.LegacyTableWrapper.LegacyCellItem
+import net.bagusekasaputra.griyakampoengtkw.presentation.tableview.base.legacy.LegacyTableWrapper.LegacyColumnHeader
+import net.bagusekasaputra.griyakampoengtkw.presentation.tableview.base.legacy.LegacyTableWrapper.LegacyRowHeader
 
 class LegacyTableViewAdapter(
     private val doubleRowHeaderConfig: DoubleRowHeaderConfiguration? = null,
-    private val additionalCellActions: (cellViewHolder: MyCellViewHolder, cellItem: CellItem?, column: Int, row: Int) -> Unit,
-    private val additionalRowHeaderActions: (rowHeaderViewHolder: AbstractViewHolder, rowHeaderItem: RowHeader?, rowPosition: Int) -> Unit,
-    private val additionalColumnHeaderActions: (columnHeaderViewHolder: MyColumnHeaderViewHolder, columnHeaderItem: ColumnHeader?, columnPosition: Int) -> Unit,
+    private val additionalCellActions: (cellViewHolder: MyCellViewHolder, cellItem: LegacyCellItem?, column: Int, row: Int) -> Unit,
+    private val additionalRowHeaderActions: (rowHeaderViewHolder: AbstractViewHolder, rowHeaderItem: LegacyRowHeader?, rowPosition: Int) -> Unit,
+    private val additionalColumnHeaderActions: (columnHeaderViewHolder: MyColumnHeaderViewHolder, columnHeaderItem: LegacyColumnHeader?, columnPosition: Int) -> Unit,
     private val additionalCornerViewActions: (view: View, text: TextView) -> Unit,
-): AbstractTableAdapter<ColumnHeader, RowHeader, CellItem>() {
+): AbstractTableAdapter<LegacyColumnHeader, LegacyRowHeader, LegacyCellItem>() {
 
     data class DoubleRowHeaderConfiguration(
         val cornerTitle: String,
@@ -182,7 +182,7 @@ class LegacyTableViewAdapter(
 
     override fun onBindRowHeaderViewHolder(
         holder: AbstractViewHolder,
-        rowHeaderItemModel: RowHeader?,
+        rowHeaderItemModel: LegacyRowHeader?,
         rowPosition: Int
     ) {
         if (doubleRowHeaderConfig != null) {
@@ -207,7 +207,7 @@ class LegacyTableViewAdapter(
 
     override fun onBindColumnHeaderViewHolder(
         holder: AbstractViewHolder,
-        columnHeaderItemModel: ColumnHeader?,
+        columnHeaderItemModel: LegacyColumnHeader?,
         columnPosition: Int
     ) {
         val viewHolder = holder as MyColumnHeaderViewHolder
@@ -222,7 +222,7 @@ class LegacyTableViewAdapter(
 
     override fun onBindCellViewHolder(
         holder: AbstractViewHolder,
-        cellItemModel: CellItem?,
+        cellItemModel: LegacyCellItem?,
         columnPosition: Int,
         rowPosition: Int
     ) {

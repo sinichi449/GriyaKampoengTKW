@@ -17,14 +17,14 @@ abstract class LegacyTableWrapper(
     private var defaultTableListener: ITableViewListener? = null
     private var columnHeaderWidths: List<Pair<Int, Int>>? = null
     private var doubleRowHeaderConfig: DoubleRowHeaderConfiguration? = null
-    private var additionalCellActions: (cellViewHolder: LegacyTableViewAdapter.MyCellViewHolder, cellItem: CellItem?, column: Int, row: Int) -> Unit = { _, _, _, _ ->}
-    private var additionalRowHeaderActions: (rowHeaderViewHolder: AbstractViewHolder, rowHeaderItem: RowHeader?, row: Int) -> Unit = { _, _, _ -> }
-    private var additionalColumnHeaderActions: (columnHeaderViewHolder: LegacyTableViewAdapter.MyColumnHeaderViewHolder, columnHeaderItem: ColumnHeader?, columnPosition: Int) -> Unit = { _, _, _ -> }
+    private var additionalCellActions: (cellViewHolder: LegacyTableViewAdapter.MyCellViewHolder, cellItem: LegacyCellItem?, column: Int, row: Int) -> Unit = { _, _, _, _ ->}
+    private var additionalRowHeaderActions: (rowHeaderViewHolder: AbstractViewHolder, rowHeaderItem: LegacyRowHeader?, row: Int) -> Unit = { _, _, _ -> }
+    private var additionalColumnHeaderActions: (columnHeaderViewHolder: LegacyTableViewAdapter.MyColumnHeaderViewHolder, columnHeaderItem: LegacyColumnHeader?, columnPosition: Int) -> Unit = { _, _, _ -> }
     private var additionalCornerViewAction: (view: View, text: TextView) -> Unit = { _, _ -> }
 
-    abstract suspend fun getColumnHeaderItems(): List<ColumnHeader>
-    abstract suspend fun getRowHeaderItems(): List<RowHeader>
-    abstract suspend fun getCellItems(): List<List<CellItem>>
+    abstract suspend fun getColumnHeaderItems(): List<LegacyColumnHeader>
+    abstract suspend fun getRowHeaderItems(): List<LegacyRowHeader>
+    abstract suspend fun getCellItems(): List<List<LegacyCellItem>>
 
     protected fun useDoubleCorner(cornerTitle: String, cornerSeparator: String): LegacyTableWrapper {
         doubleRowHeaderConfig = DoubleRowHeaderConfiguration(cornerTitle, cornerSeparator)
@@ -44,19 +44,19 @@ abstract class LegacyTableWrapper(
         return this
     }
 
-    fun setAdditionalCellActions(action: (cellViewHolder: LegacyTableViewAdapter.MyCellViewHolder, cellItem: CellItem?, column: Int, row: Int) -> Unit): LegacyTableWrapper {
+    fun setAdditionalCellActions(action: (cellViewHolder: LegacyTableViewAdapter.MyCellViewHolder, cellItem: LegacyCellItem?, column: Int, row: Int) -> Unit): LegacyTableWrapper {
         additionalCellActions = action
 
         return this
     }
 
-    fun setAdditionalRowHeaderActions(action: (rowHeaderViewHolder: AbstractViewHolder, rowHeaderItem: RowHeader?, row: Int) -> Unit): LegacyTableWrapper {
+    fun setAdditionalRowHeaderActions(action: (rowHeaderViewHolder: AbstractViewHolder, rowHeaderItem: LegacyRowHeader?, row: Int) -> Unit): LegacyTableWrapper {
         additionalRowHeaderActions = action
 
         return this
     }
 
-    fun setAdditionalColumnHeaderActions(action: (columnHeaderViewHolder: LegacyTableViewAdapter.MyColumnHeaderViewHolder, columnHeaderItem: ColumnHeader?, columnPosition: Int) -> Unit): LegacyTableWrapper {
+    fun setAdditionalColumnHeaderActions(action: (columnHeaderViewHolder: LegacyTableViewAdapter.MyColumnHeaderViewHolder, columnHeaderItem: LegacyColumnHeader?, columnPosition: Int) -> Unit): LegacyTableWrapper {
         additionalColumnHeaderActions = action
 
         return this
@@ -106,26 +106,26 @@ abstract class LegacyTableWrapper(
         }
     }
 
-    interface ColumnHeader {
+    interface LegacyColumnHeader {
         fun getText(): String
     }
 
-    interface RowHeader {
+    interface LegacyRowHeader {
         fun getText(): String
     }
 
-    interface CellItem {
+    interface LegacyCellItem {
         fun getText(): String
     }
 
     companion object {
         fun <T> createCellItems(
             collection: Collection<T>,
-            sequentialActions: List<(T) -> CellItem>
-        ): List<List<CellItem>> {
+            sequentialActions: List<(T) -> LegacyCellItem>
+        ): List<List<LegacyCellItem>> {
             return buildList {
                 collection.forEach { item ->
-                    val cells = mutableListOf<CellItem>()
+                    val cells = mutableListOf<LegacyCellItem>()
                     sequentialActions.forEach { action ->
                         cells.add(action(item))
                     }

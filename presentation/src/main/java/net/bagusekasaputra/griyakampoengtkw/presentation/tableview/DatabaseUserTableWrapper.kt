@@ -43,7 +43,7 @@ class DatabaseUserTableWrapper(
         }
     }
 
-    override suspend fun getColumnHeaderItems(): List<ColumnHeader> {
+    override suspend fun getColumnHeaderItems(): List<LegacyColumnHeader> {
         val columnHeaders = mutableListOf<DuColumnHeader>()
         columnHeaders.apply {
             add(NAMA, DuColumnHeader("Nama"))
@@ -58,7 +58,7 @@ class DatabaseUserTableWrapper(
         return columnHeaders
     }
 
-    override suspend fun getRowHeaderItems(): List<RowHeader> {
+    override suspend fun getRowHeaderItems(): List<LegacyRowHeader> {
         val rowHeaders = mutableListOf<DuRowHeader>()
         repeat(users.size) {
             rowHeaders.add(DuRowHeader(it.plus(1)))
@@ -67,7 +67,7 @@ class DatabaseUserTableWrapper(
         return rowHeaders
     }
 
-    override suspend fun getCellItems(): List<List<CellItem>> {
+    override suspend fun getCellItems(): List<List<LegacyCellItem>> {
         val cellItems = mutableListOf<List<DuCellItem>>()
         users.forEach {
             val cell = mutableListOf<DuCellItem>()
@@ -98,19 +98,19 @@ class DatabaseUserTableWrapper(
         const val KETERANGAN = 6
     }
 
-    data class DuColumnHeader(val mData: String): ColumnHeader {
+    data class DuColumnHeader(val mData: String): LegacyColumnHeader {
         override fun getText(): String {
             return mData
         }
     }
 
-    data class DuRowHeader(val nomor: Int): RowHeader {
+    data class DuRowHeader(val nomor: Int): LegacyRowHeader {
         override fun getText(): String {
             return nomor.toString()
         }
     }
 
-    data class DuCellItem(val mData: String): CellItem {
+    data class DuCellItem(val mData: String): LegacyCellItem {
         override fun getText(): String {
             return mData
         }
