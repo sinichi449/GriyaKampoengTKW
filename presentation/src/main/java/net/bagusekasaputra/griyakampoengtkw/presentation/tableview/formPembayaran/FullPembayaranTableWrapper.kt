@@ -5,8 +5,8 @@ import android.view.Gravity
 import com.evrencoskun.tableview.TableView
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.pembayaran.Pembayaran
 import net.bagusekasaputra.griyakampoengtkw.presentation.R
-import net.bagusekasaputra.griyakampoengtkw.presentation.tableview.AbstractTableWrapper
-import net.bagusekasaputra.griyakampoengtkw.presentation.tableview.GktTableViewAdapter
+import net.bagusekasaputra.griyakampoengtkw.presentation.tableview.base.legacy.LegacyTableWrapper
+import net.bagusekasaputra.griyakampoengtkw.presentation.tableview.base.legacy.LegacyTableViewAdapter
 
 /**
  * Ordering for index column matters!!
@@ -14,7 +14,7 @@ import net.bagusekasaputra.griyakampoengtkw.presentation.tableview.GktTableViewA
 class FullPembayaranTableWrapper(
     tableFullPembayaran: TableView,
     private val pembayarans: List<Pembayaran>,
-): AbstractTableWrapper(tableFullPembayaran) {
+): LegacyTableWrapper(tableFullPembayaran) {
 
     private val cornerSeparator = "<>"
     private val cornerTitle = "Termin"
@@ -46,7 +46,7 @@ class FullPembayaranTableWrapper(
             val sudahIsiFotoPembayaran = parseRowHeader?.get(2)?.toBoolean()
             val sudahAmbilKuitansi = parseRowHeader?.get(3)?.toBoolean()
 
-            val viewHolder = rowHeaderViewHolder as GktTableViewAdapter.MyDoubleRowHeaderViewHolder
+            val viewHolder = rowHeaderViewHolder as LegacyTableViewAdapter.MyDoubleRowHeaderViewHolder
 
             // Set Background color if sudah isi foto
             val backgroundColor = if (sudahIsiFotoPembayaran == true) 

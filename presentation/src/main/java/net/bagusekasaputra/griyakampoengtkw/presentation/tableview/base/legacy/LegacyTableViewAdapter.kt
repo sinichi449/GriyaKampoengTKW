@@ -1,4 +1,4 @@
-package net.bagusekasaputra.griyakampoengtkw.presentation.tableview
+package net.bagusekasaputra.griyakampoengtkw.presentation.tableview.base.legacy
 
 import android.view.LayoutInflater
 import android.view.View
@@ -15,11 +15,11 @@ import net.bagusekasaputra.griyakampoengtkw.presentation.databinding.TableGeneri
 import net.bagusekasaputra.griyakampoengtkw.presentation.databinding.TableGenericDoubleRowHeaderBinding
 import net.bagusekasaputra.griyakampoengtkw.presentation.databinding.TableGenericSingleCornerViewBinding
 import net.bagusekasaputra.griyakampoengtkw.presentation.databinding.TableGenericSingleRowHeaderBinding
-import net.bagusekasaputra.griyakampoengtkw.presentation.tableview.AbstractTableWrapper.CellItem
-import net.bagusekasaputra.griyakampoengtkw.presentation.tableview.AbstractTableWrapper.ColumnHeader
-import net.bagusekasaputra.griyakampoengtkw.presentation.tableview.AbstractTableWrapper.RowHeader
+import net.bagusekasaputra.griyakampoengtkw.presentation.tableview.base.legacy.LegacyTableWrapper.CellItem
+import net.bagusekasaputra.griyakampoengtkw.presentation.tableview.base.legacy.LegacyTableWrapper.ColumnHeader
+import net.bagusekasaputra.griyakampoengtkw.presentation.tableview.base.legacy.LegacyTableWrapper.RowHeader
 
-class GktTableViewAdapter(
+class LegacyTableViewAdapter(
     private val doubleRowHeaderConfig: DoubleRowHeaderConfiguration? = null,
     private val additionalCellActions: (cellViewHolder: MyCellViewHolder, cellItem: CellItem?, column: Int, row: Int) -> Unit,
     private val additionalRowHeaderActions: (rowHeaderViewHolder: AbstractViewHolder, rowHeaderItem: RowHeader?, rowPosition: Int) -> Unit,

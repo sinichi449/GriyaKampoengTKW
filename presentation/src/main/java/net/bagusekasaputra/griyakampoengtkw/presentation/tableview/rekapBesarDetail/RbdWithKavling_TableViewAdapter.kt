@@ -21,6 +21,7 @@ import net.bagusekasaputra.griyakampoengtkw.presentation.databinding.TableRekapB
  * This adapter is specifically made for the table which has 2 row headers,
  * that is [No, Kavling].
 */
+@Deprecated("Migrated to RekapBesarDetail[Entity]")
 class RbdWithKavling_TableViewAdapter(
     private val onCellTextCreated: (columnPosition: Int, cellTextView: TextView) -> Unit = { _, _ -> },
 ): AbstractTableAdapter<RbdColumnHeader, RbdWithKavlingRowHeader, RbdCell>() {

@@ -6,11 +6,12 @@ import android.view.Gravity
 import com.evrencoskun.tableview.TableView
 import net.bagusekasaputra.griyakampoengtkw.domain.DateUtil.toSlashedString
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.DatabaseUser
+import net.bagusekasaputra.griyakampoengtkw.presentation.tableview.base.legacy.LegacyTableWrapper
 
 class DatabaseUserTableWrapper(
     tableDatabaseUser: TableView,
     private val users: List<DatabaseUser>,
-): AbstractTableWrapper(tableDatabaseUser) {
+): LegacyTableWrapper(tableDatabaseUser) {
 
     private val columnHeaderWidths = listOf(
         Pair(NAMA, 350),

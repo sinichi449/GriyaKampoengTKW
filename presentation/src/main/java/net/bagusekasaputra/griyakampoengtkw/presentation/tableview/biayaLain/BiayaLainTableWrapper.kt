@@ -6,12 +6,12 @@ import com.evrencoskun.tableview.TableView
 import net.bagusekasaputra.griyakampoengtkw.domain.NumberUtil
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.BiayaLain
 import net.bagusekasaputra.griyakampoengtkw.presentation.R
-import net.bagusekasaputra.griyakampoengtkw.presentation.tableview.AbstractTableWrapper
+import net.bagusekasaputra.griyakampoengtkw.presentation.tableview.base.legacy.LegacyTableWrapper
 
 class BiayaLainTableWrapper(
     tableViewBiayaLain: TableView,
     private val biayaLains: List<BiayaLain>,
-): AbstractTableWrapper(tableViewBiayaLain) {
+): LegacyTableWrapper(tableViewBiayaLain) {
 
     private val columHeaderWidths = listOf(
         Pair(JENIS_BIAYA, 500),

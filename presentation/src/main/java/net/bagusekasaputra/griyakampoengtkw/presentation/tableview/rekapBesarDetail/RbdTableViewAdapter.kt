@@ -19,6 +19,7 @@ import net.bagusekasaputra.griyakampoengtkw.presentation.databinding.TableRekapB
 /**
  * RBD = Rekap Besar Detail
  */
+@Deprecated("Migrated to RekapBesarDetail[Entity]")
 class RbdTableViewAdapter(
     private val onCellTextCreated: (columnPosition: Int, cellTextView: TextView) -> Unit = { _, _ -> },
 ): AbstractTableAdapter<RbdColumnHeader, RbdRowHeader, RbdCell>() {

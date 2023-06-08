@@ -7,13 +7,13 @@ import net.bagusekasaputra.griyakampoengtkw.domain.NumberUtil
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.pembayaran.PembayaranBulanan
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.pembayaran.PembayaranBulanan.Kelunasan
 import net.bagusekasaputra.griyakampoengtkw.presentation.R
-import net.bagusekasaputra.griyakampoengtkw.presentation.tableview.AbstractTableWrapper
-import net.bagusekasaputra.griyakampoengtkw.presentation.tableview.GktTableViewAdapter
+import net.bagusekasaputra.griyakampoengtkw.presentation.tableview.base.legacy.LegacyTableWrapper
+import net.bagusekasaputra.griyakampoengtkw.presentation.tableview.base.legacy.LegacyTableViewAdapter
 
 class BulananPembayaranTableWrapper(
     private val tablePembayaranBulanan: TableView,
     private val pembayaranBulanans: List<PembayaranBulanan>,
-): AbstractTableWrapper(tablePembayaranBulanan) {
+): LegacyTableWrapper(tablePembayaranBulanan) {
 
     private val separatorKelunasan = "<>"
     private val columnHeaderWidths = listOf(
@@ -31,7 +31,7 @@ class BulananPembayaranTableWrapper(
             columnHeaderViewHolder.containerBackground = background
         }
         setAdditionalRowHeaderActions { rowHeaderViewHolder, rowHeaderItem, _ ->
-            val viewHolder = rowHeaderViewHolder as GktTableViewAdapter.MySingleRowHeaderViewHolder
+            val viewHolder = rowHeaderViewHolder as LegacyTableViewAdapter.MySingleRowHeaderViewHolder
 
             viewHolder.tvRowHeader.typeface = Typeface.SANS_SERIF
 
