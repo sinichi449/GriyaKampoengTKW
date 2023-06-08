@@ -39,42 +39,47 @@ data class PembayaranBulanan(
         fun groupPembayaranIntoBulanan(
             kavling: String,
             baselinePembayaran: BaselinePembayaran,
-            sortedListPembayaran: List<Pembayaran>
+            pembayaranList: List<Pembayaran>
         ): List<PembayaranBulanan> {
-            val sortedPembayaranByDate = sortedListPembayaran.sortedBy {
-                it.tanggal.toDate().time
+            val pembayaransSortedByBulanAngsuran = pembayaranList.sortedBy {
+                it.bulanAngsuran.date
             }
 
-            return if (sortedPembayaranByDate.isNotEmpty()) {
-                val tanggalPembayaranPertama = sortedPembayaranByDate.first().tanggal.toDate()
+            return if (pembayaransSortedByBulanAngsuran.isNotEmpty()) {
+                val bulanPembelianKavling = pembayaransSortedByBulanAngsuran.first()
+                    .bulanAngsuran.date
                 val tanggalSekarang = Calendar.getInstance().time
 
-                val listBulan = DateUtil.getListMonths(
-                    tanggalPembayaranPertama, tanggalSekarang
+                val fromPembelianUntilTodayDateList = DateUtil.getListMonths(
+                    bulanPembelianKavling, tanggalSekarang
                 )
                 val pembayaranBulanans = mutableListOf<PembayaranBulanan>()
 
-                listBulan.forEach {
+                fromPembelianUntilTodayDateList.forEach {
                     val calendar = Calendar.getInstance().apply {
                         time = it
                     }
+
+                    // Filter pembayaran
                     val rangeSatuBulan = DateUtil.getMonthlyRangeDate(
                         calendarMonth = calendar.get(Calendar.MONTH),
                         year = calendar.get(Calendar.YEAR)
                     )
-                    val filteredByOneMonthRangePembayarans = sortedListPembayaran.filterPeriode(
+                    val pembayaransFilterBulanIni = pembayaranList.filterPeriode(
                         periode = PeriodeRekap.CUSTOM,
                         start = rangeSatuBulan[0],
                         end = rangeSatuBulan[1],
+                        filterMode = Pembayaran.FILTER_USING_BULAN_ANGSURAN,
                     )
 
-                    pembayaranBulanans.add(PembayaranBulanan(
+                    val pembayaranBulanan = PembayaranBulanan(
                         kavling = kavling,
                         bulan = calendar.get(Calendar.MONTH) + 1,
                         tahun = calendar.get(Calendar.YEAR),
-                        listPembayaran = filteredByOneMonthRangePembayarans ?: emptyList(),
+                        listPembayaran = pembayaransFilterBulanIni ?: emptyList(),
                         baselinePembayaran = baselinePembayaran,
-                    ))
+                    )
+                    pembayaranBulanans.add(pembayaranBulanan)
                 }
 
                 val sortedByMonthsPembayaranBulanans = sort(pembayaranBulanans)
@@ -94,6 +99,10 @@ data class PembayaranBulanan(
             return pembayaranList
         }
 
+        /**
+         * Sort a list of [PembayaranBulanan] by [PembayaranBulanan.bulan] and [PembayaranBulanan.tahun],
+         * with the day of month is set to the first date of given month.
+         */
         private fun sort(listPembayaranBulanan: List<PembayaranBulanan>): List<PembayaranBulanan> {
             return listPembayaranBulanan.sortedBy {
                 // Convert bulan dan tahun ke objek Date, lalu diurut pakai "time" (timeMillis)
@@ -112,6 +121,10 @@ data class PembayaranBulanan(
             return mTotal
         }
 
+        /**
+         * Check if [PembayaranBulanan] is exist within [bulan] and [tahun].
+         * Not to be confused with checking for an existance of [Pembayaran].
+         */
         fun isExistPembayaranBulanan(list: List<PembayaranBulanan>, bulan: Int, tahun: Int): Boolean {
             var isExist = false
 
@@ -139,7 +152,6 @@ data class PembayaranBulanan(
             val calendar = Calendar.getInstance()
             val bulanSekarang = calendar.get(Calendar.MONTH) + 1
             val tahunSekarang = calendar.get(Calendar.YEAR)
-
             if (!isExistPembayaranBulanan(newList, bulanSekarang, tahunSekarang)) {
                 val kavling = newList[0].kavling
                 val baselinePembayaran = newList[0].baselinePembayaran

@@ -2,6 +2,7 @@ package net.bagusekasaputra.griyakampoengtkw.domain.repository
 
 import com.google.gson.Gson
 import kotlinx.coroutines.flow.flow
+import net.bagusekasaputra.griyakampoengtkw.domain.DataMode
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.Kavling
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.SingleBlockKavlingSorter
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.pembayaran.Pembayaran
@@ -65,12 +66,12 @@ class MockRepository(private val testingFile: File) {
 
     fun getPembayaranRepository(): PembayaranRepository {
         val pembayaranRepository = mock<PembayaranRepository>()
+        val pembayaranNode = testingFile.nodeReference()
+            ?.getAsJsonObject(TestingDataNodes.FORM_PEMBAYARAN)
 
         whenever(pembayaranRepository.onlineBatch(ArgumentMatchers.anyList()))
             .then { invocation ->
                 flow<Result<Map<String, List<Pembayaran>?>?>> {
-                    val pembayaranNode = testingFile.nodeReference()
-                        ?.getAsJsonObject(TestingDataNodes.FORM_PEMBAYARAN)
                     val kavlingList = invocation.arguments[0] as List<String>
                     val pembayaranMap = buildMap {
                         kavlingList.forEach { kavling ->
@@ -95,6 +96,29 @@ class MockRepository(private val testingFile: File) {
                     emit(Result.success(pembayaranMap))
                 }
             }
+        whenever(pembayaranRepository.getAllPembayaran(
+            kavlingKode = ArgumentMatchers.anyString(),
+            dataMode = ArgumentMatchers.any() ?: DataMode.ONLINE
+        )).then { invocation ->
+            flow {
+                val kavling = invocation.arguments[0].toString()
+                val terminNode = pembayaranNode?.getAsJsonObject(kavling)
+
+                val pembayaranList = buildList {
+                    terminNode?.keySet()?.forEach { termin ->
+                        terminNode[termin]?.let { pembayaranJson ->
+                            Gson().fromJson(pembayaranJson, PembayaranJson::class.java)
+                                ?.toDomain()
+                                ?.also { pembayaran ->
+                                    add(pembayaran)
+                                }
+                        }
+                    }
+                }
+
+                emit(Result.success(pembayaranList))
+            }
+        }
 
         return pembayaranRepository
     }

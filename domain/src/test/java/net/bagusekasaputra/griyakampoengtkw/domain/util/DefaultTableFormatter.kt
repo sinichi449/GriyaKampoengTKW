@@ -1,10 +1,11 @@
 package net.bagusekasaputra.griyakampoengtkw.domain.util
 
-class DefaultTableFormatter(
+class DefaultTableFormatter private constructor(
     private val columnHeaderItems: List<String>,
     private val rowHeaderItems: List<Int>,
     private val cellItems: List<List<String>>,
-): TableFormatter {
+) : TableFormatter {
+
     companion object {
         const val FORMAT_COLUMN_HEADER = "%-15s%-15s%-15s%-15s\n"
         const val FORMAT_ROWS = "%-15d%-15s%-15s%-15s\n"
@@ -12,6 +13,7 @@ class DefaultTableFormatter(
 
     override fun print() {
         createColumnHeader()
+        println(columnAndCellSeparator())
         createRows()
     }
 
@@ -25,6 +27,14 @@ class DefaultTableFormatter(
             val rowHeader = rowHeaderItems[it]
 
             System.out.format(FORMAT_ROWS, rowHeader, *cell)
+        }
+    }
+
+    private fun columnAndCellSeparator(): String {
+        return buildString {
+            repeat(56) {
+                append("-")
+            }
         }
     }
 
