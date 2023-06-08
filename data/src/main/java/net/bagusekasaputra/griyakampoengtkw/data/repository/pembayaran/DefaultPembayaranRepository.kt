@@ -1,5 +1,6 @@
 package net.bagusekasaputra.griyakampoengtkw.data.repository.pembayaran
 
+import android.util.Log
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.channels.trySendBlocking
 import kotlinx.coroutines.flow.Flow
@@ -19,6 +20,7 @@ class DefaultPembayaranRepository(
 ): PembayaranRepository {
 
     private val cacheTable = "formPembayaran"
+    private var shouldCheckCache = true
 
     override suspend fun getByKavlingAndTermin(
         kavlingKode: String,
@@ -44,12 +46,21 @@ class DefaultPembayaranRepository(
                         Result.success(pembayaranModels)
                     }
                     DataMode.ONLINE -> {
-                        val isInvalidCache = cacheHelper.checkAndInvalidateCache(
-                            cacheTable, cacheTable,
-                            onInvalid =  {
-                                localDataSource.deleteAll()
-                            }
-                        )
+                        val isInvalidCache = if (shouldCheckCache) {
+                            val invalidCache = cacheHelper.checkAndInvalidateCache(
+                                cacheTable, cacheTable,
+                                onInvalid =  { localDataSource.deleteAll() }
+                            )
+
+                            shouldCheckCache = false
+
+                            invalidCache
+                        } else {
+                            Log.d("DEBUG_ME", "Get All Pembayarans $kavlingKode skipped cache invalidation!")
+
+                            false
+                        }
+
                         val localModels = localDataSource.getAllPembayaran(kavlingKode)
                             .getOrThrow()
                         val pembayaranList: List<Pembayaran>?
@@ -57,6 +68,7 @@ class DefaultPembayaranRepository(
                         if (isInvalidCache || localModels.isNullOrEmpty()) {
                             val remoteModels = remoteDataSource.getAllPembayaran(kavlingKode)
                                 .getOrThrow()
+
                             pembayaranList = if (!remoteModels.isNullOrEmpty()) {
                                 localDataSource.addAllPembayaranModel(kavlingKode, remoteModels)
                                     .getOrThrow()

@@ -11,6 +11,10 @@ import net.bagusekasaputra.griyakampoengtkw.domain.repository.BaselinePembayaran
 import net.bagusekasaputra.griyakampoengtkw.domain.repository.PembayaranRepository
 import java.util.Calendar
 
+/**
+ * This use case should use different [PembayaranRepository]'s implementation
+ * than the rest of another use case classes.
+ */
 class GetProgressKavlingAsyncUseCase(
     private val baselinePembayaranRepository: BaselinePembayaranRepository,
     private val pembayaranRepository: PembayaranRepository,
