@@ -1,10 +1,12 @@
 package net.bagusekasaputra.griyakampoengtkw.domain.entity
 
+import net.bagusekasaputra.griyakampoengtkw.domain.entity.pembayaran.BulanAngsuran
+import net.bagusekasaputra.griyakampoengtkw.domain.entity.pembayaran.Pembayaran
 import java.math.BigDecimal
 import java.math.RoundingMode
 
 /**
- * Progress kavling is based on Pembayaran.BulanAngsuran as opposed to Pembayaran.tanggal.
+ * Progress kavling should based on [BulanAngsuran] as opposed to [Pembayaran.tanggal].
  */
 data class ProgressKavling(
     val kavling: String,
