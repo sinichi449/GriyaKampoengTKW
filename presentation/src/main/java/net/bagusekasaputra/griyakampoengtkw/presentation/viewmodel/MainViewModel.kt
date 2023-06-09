@@ -14,24 +14,22 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.flow.onCompletion
-import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import net.bagusekasaputra.griyakampoengtkw.domain.AsyncUseCaseHelper
 import net.bagusekasaputra.griyakampoengtkw.domain.DataMode
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.block.GetAllBlocksAsyncUseCase
+import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.kavling.GetKavlingAndProgressStreamAsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.kavling.GetKavlingByBlockAsyncUseCase
-import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.kavling.GetKavlingSequentiallyByBlockAsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.kavling.GetProgressKavlingAsyncUseCase
-import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.kavling.GetSingleProgressKavlingAsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.promotion.GetPromotionMessageAsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.AppUpdate
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.Block
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.Kavling
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.ProgressKavling
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.Promotion
+import net.bagusekasaputra.griyakampoengtkw.domain.entity.kavling.KavlingAndProgress
 import net.bagusekasaputra.griyakampoengtkw.domain.usecase.appupdate.GetUpdateInformationUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.usecase.block.AddNewBlockUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.usecase.kavling.AddKavlingUseCase
@@ -40,7 +38,6 @@ import net.bagusekasaputra.griyakampoengtkw.domain.usecase.kavling.RemoveKavling
 import net.bagusekasaputra.griyakampoengtkw.presentation.combineWith
 import net.bagusekasaputra.griyakampoengtkw.presentation.fragment.management.ManagementKavlingFragment
 import net.bagusekasaputra.griyakampoengtkw.presentation.logEvent
-import net.bagusekasaputra.griyakampoengtkw.domain.entity.kavling.KavlingAndProgress
 import net.bagusekasaputra.griyakampoengtkw.presentation.model.UiState
 import javax.inject.Inject
 
@@ -51,13 +48,12 @@ class MainViewModel @Inject constructor(
     private val addNewBlockUseCase: AddNewBlockUseCase,
     // Kavlings
     private val getKavlingByBlockUseCase: GetKavlingByBlockAsyncUseCase,
-    private val getKavlingSequentiallyUseCase: GetKavlingSequentiallyByBlockAsyncUseCase,
     private val addKavlingUseCase: AddKavlingUseCase,
     private val editKavlingUseCase: EditKavlingUseCase,
     private val removeKavlingUseCase: RemoveKavlingUseCase,
     // Progress Kavling
     private val getProgressKavlingUseCase: GetProgressKavlingAsyncUseCase,
-    private val getSingleProgressKavlingUseCase: GetSingleProgressKavlingAsyncUseCase,
+    private val getKavlingAndProgressStreamUseCase: GetKavlingAndProgressStreamAsyncUseCase,
     // App update
     private val getAppUpdateInformationUseCase: GetUpdateInformationUseCase,
     // Promotion
@@ -245,56 +241,56 @@ class MainViewModel @Inject constructor(
         jobFetchKavlings?.cancel()
 
        jobFetchKavlings = viewModelScope.launch(dispatchers) {
-            val kavlingRequest = GetKavlingSequentiallyByBlockAsyncUseCase.Request(blockKode)
-            getKavlingSequentiallyUseCase.execute(kavlingRequest)
-                .onStart {
-                    Log.d("SEQUENTIAL_KAVLING", "I'm on start!")
-                    // Reset previous lists first
-                    _kavlingWithProgressList.update { emptyList() }
-                    withContext(Dispatchers.Main) { onLoading() }
-                }
-                .onCompletion { throwable ->
-                    withContext(Dispatchers.Main) {
-                        if (throwable != null) {
-                            onFailure(throwable.localizedMessage ?: "Proses fetch Kavling dihentikan karena error!")
-                        } else {
-                            onComplete()
-                        }
-                    }
-                }
-                .collect { result ->
-                    result.onFailure { throwable ->
-                       withContext(Dispatchers.Main) {
-                           onFailure(throwable.localizedMessage ?: "Error mendapatkan kavling!")
-                       }
-                    }
-                    result.onSuccess { kavling ->
-                        if (kavling != null) {
-                            // As long as `kavling` is successfully emitted,
-                            // this will fetch `ProgressKavling` continuously.
-                            val progressRequest = GetSingleProgressKavlingAsyncUseCase
-                                .Request(kavling.kode)
-                            val fetchResult = getSingleProgressKavlingUseCase
-                                .execute(progressRequest)
-                                .first()
-
-                            fetchResult.onFailure {
-                                withContext(Dispatchers.Main) {
-                                    "Gagal mendapatkan progress kavling: ${it.localizedMessage}"
-                                }
-                            }
-                            fetchResult.onSuccess { progressKavling ->
-                                val item = KavlingAndProgress(
-                                    blok = blockKode,
-                                    kavling = kavling,
-                                    progress = progressKavling ?: ProgressKavling.EMPTY(kavling.kode),
-                                )
-
-                                item.updateStateFlow(_kavlingWithProgressList)
-                            }
-                        }
-                    }
-                }
+//            val kavlingRequest = GetKavlingSequentiallyByBlockAsyncUseCase.Request(blockKode)
+//            getKavlingSequentiallyUseCase.execute(kavlingRequest)
+//                .onStart {
+//                    Log.d("SEQUENTIAL_KAVLING", "I'm on start!")
+//                    // Reset previous lists first
+//                    _kavlingWithProgressList.update { emptyList() }
+//                    withContext(Dispatchers.Main) { onLoading() }
+//                }
+//                .onCompletion { throwable ->
+//                    withContext(Dispatchers.Main) {
+//                        if (throwable != null) {
+//                            onFailure(throwable.localizedMessage ?: "Proses fetch Kavling dihentikan karena error!")
+//                        } else {
+//                            onComplete()
+//                        }
+//                    }
+//                }
+//                .collect { result ->
+//                    result.onFailure { throwable ->
+//                       withContext(Dispatchers.Main) {
+//                           onFailure(throwable.localizedMessage ?: "Error mendapatkan kavling!")
+//                       }
+//                    }
+//                    result.onSuccess { kavling ->
+//                        if (kavling != null) {
+//                            // As long as `kavling` is successfully emitted,
+//                            // this will fetch `ProgressKavling` continuously.
+//                            val progressRequest = GetSingleProgressKavlingAsyncUseCase
+//                                .Request(kavling.kode)
+//                            val fetchResult = getSingleProgressKavlingUseCase
+//                                .execute(progressRequest)
+//                                .first()
+//
+//                            fetchResult.onFailure {
+//                                withContext(Dispatchers.Main) {
+//                                    "Gagal mendapatkan progress kavling: ${it.localizedMessage}"
+//                                }
+//                            }
+//                            fetchResult.onSuccess { progressKavling ->
+//                                val item = KavlingAndProgress(
+//                                    blok = blockKode,
+//                                    kavling = kavling,
+//                                    progress = progressKavling ?: ProgressKavling.EMPTY(kavling.kode),
+//                                )
+//
+//                                item.updateStateFlow(_kavlingWithProgressList)
+//                            }
+//                        }
+//                    }
+//                }
         }
     }
 
