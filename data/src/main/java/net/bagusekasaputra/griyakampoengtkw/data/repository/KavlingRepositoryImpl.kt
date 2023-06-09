@@ -7,8 +7,8 @@ import kotlinx.coroutines.flow.emitAll
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.flow.onStart
 import net.bagusekasaputra.griyakampoengtkw.data.CacheHelper
+import net.bagusekasaputra.griyakampoengtkw.data.CacheHelper.Companion.checkAndInvalidateCache
 import net.bagusekasaputra.griyakampoengtkw.data.DataUtil
 import net.bagusekasaputra.griyakampoengtkw.data.MyObjectMapper
 import net.bagusekasaputra.griyakampoengtkw.data.MyObjectMapper.mapKavling
@@ -31,31 +31,26 @@ class KavlingRepositoryImpl(
 
     private val remoteCacheKey = "kavling"
     private val localCacheTable = "kavling"
+    private var shouldCheckCache = true
 
     override fun getAsFlow(blok: String): Flow<Result<Kavling?>> {
         return localKavlingDataSource.getAsFlow(blok)
-            .onStart {
-                Log.d("SEQUENTIAL_KAVLING", "Checking Kavling cache ...")
+            .checkAndInvalidateCache(cacheHelper, localCacheTable, remoteCacheKey,
+                onInvalid = {
+                    Log.d("SEQUENTIAL_KAVLING", "Kavling cache is invalid! Purging local data source ...")
+                    localKavlingDataSource.deleteAll().getOrThrow()
 
-                cacheHelper.checkAndInvalidateCache(
-                    localTable = localCacheTable,
-                    remoteTable = remoteCacheKey,
-                    onInvalid = {
-                        Log.d("SEQUENTIAL_KAVLING", "Kavling cache is invalid! Purging local data source ...")
-                        localKavlingDataSource.deleteAll().getOrThrow()
-
-                        Log.d("SEQUENTIAL_KAVLING", "Pulling Kavling List from Remote Data Source ...")
-                        val remoteModels = remoteKavlingDataSource.getAllKavlings(blok)
-                            .getOrThrow()
-                        if (!remoteModels.isNullOrEmpty()) {
-                            remoteModels.forEach { Log.d("SEQUENTIAL_KAVLING", "Found ${it.kode} on Remote !") }
-                            localKavlingDataSource.addAll(remoteModels).getOrThrow()
-                        } else {
-                            Log.d("SEQUENTIAL_KAVLING", "Can't found any Kavling in Blok $blok on Remote Data Source!")
-                        }
+                    Log.d("SEQUENTIAL_KAVLING", "Pulling Kavling List from Remote Data Source ...")
+                    val remoteModels = remoteKavlingDataSource.getAllKavlings(blok)
+                        .getOrThrow()
+                    if (!remoteModels.isNullOrEmpty()) {
+                        remoteModels.forEach { Log.d("SEQUENTIAL_KAVLING", "Found ${it.kode} on Remote !") }
+                        localKavlingDataSource.addAll(remoteModels).getOrThrow()
+                    } else {
+                      Log.d("SEQUENTIAL_KAVLING", "Can't found any Kavling in Blok $blok on Remote Data Source!")
                     }
-                )
-            }
+                }
+            )
             .map {
                 DataUtil.mapSingleResult(
                     originResult = it,

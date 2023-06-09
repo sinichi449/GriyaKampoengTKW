@@ -7,6 +7,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CompletableDeferred
+import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
@@ -61,6 +62,7 @@ class MainViewModel @Inject constructor(
     private val getAppUpdateInformationUseCase: GetUpdateInformationUseCase,
     // Promotion
     private val getPromotionMessageUseCase: GetPromotionMessageAsyncUseCase,
+    private val dispatchers: CoroutineDispatcher = Dispatchers.IO
 ): ViewModel() {
 
     private val _blocksLive = MutableLiveData<List<Block>>()
@@ -238,10 +240,11 @@ class MainViewModel @Inject constructor(
         onComplete: () -> Unit,
         onFailure: (msg: String) -> Unit,
     ) {
-       viewModelScope.launch(Dispatchers.IO) {
+       viewModelScope.launch(dispatchers) {
             val kavlingRequest = GetKavlingSequentiallyByBlockAsyncUseCase.Request(blockKode)
             getKavlingSequentiallyUseCase.execute(kavlingRequest)
                 .onStart {
+                    Log.d("SEQUENTIAL_KAVLING", "I'm on start!")
                     withContext(Dispatchers.Main) { onLoading() }
                 }
                 .onCompletion { throwable ->

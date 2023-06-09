@@ -19,4 +19,5 @@ data class KavlingWithProgress(
             newList
         }
     }
+
 }

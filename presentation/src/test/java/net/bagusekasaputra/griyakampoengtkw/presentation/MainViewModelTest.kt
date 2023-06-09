@@ -1,10 +1,16 @@
 package net.bagusekasaputra.griyakampoengtkw.presentation
 
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.emitAll
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.onCompletion
 import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.flow.onStart
+import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.runTest
+import kotlinx.coroutines.test.setMain
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.block.GetAllBlocksAsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.kavling.GetKavlingByBlockAsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.kavling.GetKavlingSequentiallyByBlockAsyncUseCase
@@ -29,6 +35,7 @@ import org.mockito.kotlin.mock
 import org.mockito.kotlin.whenever
 import kotlin.random.Random
 
+@OptIn(ExperimentalCoroutinesApi::class)
 class MainViewModelTest {
 
     private val getAllBlocksUseCase = mock<GetAllBlocksAsyncUseCase>()
@@ -44,10 +51,12 @@ class MainViewModelTest {
     private val getKavlingSequentiallyUseCase = mock<GetKavlingSequentiallyByBlockAsyncUseCase>()
     private val getSingleProgressKavlingUseCase = mock<GetSingleProgressKavlingAsyncUseCase>()
 
+    private val dispatcher = StandardTestDispatcher()
     private val mainViewModel = MainViewModel(
         getAllBlocksUseCase, addNewBlockUseCase, getKavlingByBlockUseCase, getKavlingSequentiallyUseCase,
         addKavlingUseCase, editKavlingUseCase, removeKavlingUseCase, getProgresKavlingUseCase, getSingleProgressKavlingUseCase,
-        getAppUpdateInformationUseCase, getPromotionMessageUseCase
+        getAppUpdateInformationUseCase, getPromotionMessageUseCase,
+        dispatcher,
     )
 
     private val sizeProgressKavling = 20
@@ -126,6 +135,8 @@ class MainViewModelTest {
         )
 
         runTest {
+            Dispatchers.setMain(dispatcher)
+
             var list = emptyList<KavlingWithProgress>()
             mainViewModel.kavlingWithProgressList
                 .onEach {
@@ -135,5 +146,27 @@ class MainViewModelTest {
                     Assert.assertEquals(sizeProgressKavling, list.size)
                 }
         }
+    }
+    @Test
+    fun balbalbla() = runTest {
+        val flowA = flow {
+            repeat(10) {
+                delay(1000L)
+                emit(it + 1)
+            }
+        }.onStart {
+            print("This is a number")
+        }
+        val flowB = flow {
+            emitAll(flowA)
+        }
+
+        flowB
+            .onStart {
+                println("On flow C")
+            }
+            .collect {
+                print(it)
+            }
     }
 }

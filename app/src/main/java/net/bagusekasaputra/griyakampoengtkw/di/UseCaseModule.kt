@@ -4,6 +4,8 @@ import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.android.components.ViewModelComponent
+import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.Dispatchers
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.ambilKuitansi.InsertAmbilKuitansiAsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.backupRestore.CreateBackupAsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.backupRestore.GetListBackupAsyncUseCase
@@ -85,6 +87,11 @@ import java.io.File
 @Module
 @InstallIn(ViewModelComponent::class)
 object UseCaseModule {
+
+    @Provides
+    fun provideCoroutineDispatcher(): CoroutineDispatcher {
+        return Dispatchers.IO
+    }
 
     /**
      * App Update

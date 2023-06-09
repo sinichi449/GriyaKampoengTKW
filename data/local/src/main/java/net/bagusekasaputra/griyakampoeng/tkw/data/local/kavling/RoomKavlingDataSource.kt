@@ -1,5 +1,7 @@
 package net.bagusekasaputra.griyakampoeng.tkw.data.local.kavling
 
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flow
 import net.bagusekasaputra.griyakampoeng.tkw.data.local.MyRoomDatabase
 import net.bagusekasaputra.griyakampoeng.tkw.data.local.RoomRequestHelper
 import net.bagusekasaputra.griyakampoengtkw.data.interfaces.local.LocalKavlingDataSource
@@ -10,6 +12,23 @@ class RoomKavlingDataSource(
 ): LocalKavlingDataSource {
 
     private val kavlingRoomDao = roomDatabase.getKavlingDao()
+
+    override fun getAsFlow(blok: String): Flow<Result<KavlingModel?>> {
+        return flow {
+            val entities = kavlingRoomDao.getKavlingsByBlockKode(blok)
+            val models = entities?.map {
+                mapKavlingRoomEntity(it)
+            }
+
+            if (models.isNullOrEmpty()) {
+                emit(Result.success(null))
+            } else {
+                models.forEach {
+                    emit(Result.success(it))
+                }
+            }
+        }
+    }
 
     override suspend fun getKavlingByBlockKode(blockKode: String): Result<List<KavlingModel>?> {
         return try {

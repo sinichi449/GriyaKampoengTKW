@@ -1,9 +1,12 @@
 package net.bagusekasaputra.griyakampoengtkw.data
 
+import android.util.Log
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.channels.trySendBlocking
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.onStart
 import net.bagusekasaputra.griyakampoengtkw.data.interfaces.local.LocalMetadataDataSource
 import net.bagusekasaputra.griyakampoengtkw.data.interfaces.remote.RemoteMetadataDataSource
 import net.bagusekasaputra.griyakampoengtkw.data.model.MetadataModel
@@ -51,5 +54,20 @@ class CacheHelper(
 
             awaitClose {  }
         }.first()
+    }
+
+    companion object {
+        fun <T> Flow<Result<T>>.checkAndInvalidateCache(
+            cacheHelper: CacheHelper,
+            localTable: String,
+            remoteTable: String,
+            onInvalid: suspend () -> Unit,
+        ): Flow<Result<T>> {
+            return this.onStart {
+                Log.d("SEQUENTIAL_KAVLING", "Checking $remoteTable cache ...")
+
+                cacheHelper.checkAndInvalidateCache(localTable, remoteTable, onInvalid)
+            }
+        }
     }
 }

@@ -1,6 +1,5 @@
 package net.bagusekasaputra.griyakampoengtkw.data
 
-import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collectIndexed
 import kotlinx.coroutines.flow.flow
@@ -23,7 +22,6 @@ import org.mockito.kotlin.doSuspendableAnswer
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.whenever
 
-@OptIn(ExperimentalCoroutinesApi::class)
 class KavlingRepositoryImplTest {
 
     private val localKavlingDataSource: LocalKavlingDataSource = mock()
@@ -72,7 +70,7 @@ class KavlingRepositoryImplTest {
         setIsInvalidCache(true)
 
         val kavlingList = mutableListOf<KavlingModel>()
-        kavlingRepository.getAsFlow("B")
+        kavlingRepository.getAsFlow("A")
             .onCompletion {
                 Assert.assertEquals(true, kavlingList.isNotEmpty())
             }
@@ -84,9 +82,24 @@ class KavlingRepositoryImplTest {
                     kavling?.also { kavlingList.add(MyObjectMapper.mapKavling(it)) }
                 }
                 result.onFailure {
-                    throw it
+                    it.printStackTrace()
                 }
             }
+    }
+
+    @Test
+    fun whenLocalDataSourceThrowsException_shouldCatchedInRepository() = runTest {
+        val exception = Exception("ERROR IN LOCAL DATABASE!")
+        whenever(localKavlingDataSource.getAsFlow(anyString()))
+            .thenReturn(flow {
+                emit(Result.failure(exception))
+            })
+
+        kavlingRepository.getAsFlow("A").collect {
+            val result = it.exceptionOrNull()
+
+            Assert.assertEquals(exception, result)
+        }
     }
 
     private suspend fun setIsInvalidCache(invalid: Boolean) {
