@@ -4,6 +4,7 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collectIndexed
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.onCompletion
+import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.test.runTest
 import net.bagusekasaputra.griyakampoengtkw.data.interfaces.backup.BackupKavlingDataSource
 import net.bagusekasaputra.griyakampoengtkw.data.interfaces.local.LocalBlockDataSource
@@ -99,6 +100,26 @@ class KavlingRepositoryImplTest {
             val result = it.exceptionOrNull()
 
             Assert.assertEquals(exception, result)
+        }
+    }
+
+    @Test
+    fun balbalbalbal() = runTest {
+        val flowA = flow<Int> {
+            repeat(10) {
+                delay(100L)
+                emit(it + 1)
+            }
+        }.onStart {
+            println("Start 1")
+        }.onStart {
+            println("Start 2")
+        }.onStart {
+            println("Start 3")
+        }
+
+        flowA.collect {
+            println(it)
         }
     }
 

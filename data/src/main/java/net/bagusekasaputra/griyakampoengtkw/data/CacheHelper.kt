@@ -1,6 +1,5 @@
 package net.bagusekasaputra.griyakampoengtkw.data
 
-import android.util.Log
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.channels.trySendBlocking
 import kotlinx.coroutines.flow.Flow
@@ -64,8 +63,6 @@ class CacheHelper(
             onInvalid: suspend () -> Unit,
         ): Flow<Result<T>> {
             return this.onStart {
-                Log.d("SEQUENTIAL_KAVLING", "Checking $remoteTable cache ...")
-
                 cacheHelper.checkAndInvalidateCache(localTable, remoteTable, onInvalid)
             }
         }

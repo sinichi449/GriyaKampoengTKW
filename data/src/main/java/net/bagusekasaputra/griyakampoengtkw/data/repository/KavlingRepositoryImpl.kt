@@ -7,6 +7,7 @@ import kotlinx.coroutines.flow.emitAll
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.onStart
 import net.bagusekasaputra.griyakampoengtkw.data.CacheHelper
 import net.bagusekasaputra.griyakampoengtkw.data.CacheHelper.Companion.checkAndInvalidateCache
 import net.bagusekasaputra.griyakampoengtkw.data.DataUtil
@@ -31,10 +32,24 @@ class KavlingRepositoryImpl(
 
     private val remoteCacheKey = "kavling"
     private val localCacheTable = "kavling"
-    private var shouldCheckCache = true
 
     override fun getAsFlow(blok: String): Flow<Result<Kavling?>> {
         return localKavlingDataSource.getAsFlow(blok)
+            .onStart {
+                val cacheData = localKavlingDataSource.getKavlingByBlockKode(blok)
+                    .onFailure { emit(Result.failure(it)) }
+                    .getOrNull()
+                if (cacheData.isNullOrEmpty()) {
+                    Log.d("SEQUENTIAL_KAVLING", "Data from Cache is Empty! Fetching from remote data source now... ")
+
+                    val remoteModels = remoteKavlingDataSource.getAllKavlings(blok)
+                        .onFailure { emit(Result.failure(it)) }
+                        .getOrNull()
+                    if (!remoteModels.isNullOrEmpty()) {
+                        localKavlingDataSource.addAll(remoteModels)
+                    }
+                }
+            }
             .checkAndInvalidateCache(cacheHelper, localCacheTable, remoteCacheKey,
                 onInvalid = {
                     Log.d("SEQUENTIAL_KAVLING", "Kavling cache is invalid! Purging local data source ...")

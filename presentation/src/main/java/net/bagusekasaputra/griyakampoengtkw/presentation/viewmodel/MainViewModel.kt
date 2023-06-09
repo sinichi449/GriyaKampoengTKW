@@ -131,6 +131,8 @@ class MainViewModel @Inject constructor(
         Pair("D", MutableLiveData(false)),
     )
 
+    private var jobFetchKavlings: Job? = null
+
 
     /**
      * Blocks
@@ -240,11 +242,15 @@ class MainViewModel @Inject constructor(
         onComplete: () -> Unit,
         onFailure: (msg: String) -> Unit,
     ) {
-       viewModelScope.launch(dispatchers) {
+        jobFetchKavlings?.cancel()
+
+       jobFetchKavlings = viewModelScope.launch(dispatchers) {
             val kavlingRequest = GetKavlingSequentiallyByBlockAsyncUseCase.Request(blockKode)
             getKavlingSequentiallyUseCase.execute(kavlingRequest)
                 .onStart {
                     Log.d("SEQUENTIAL_KAVLING", "I'm on start!")
+                    // Reset previous lists first
+                    _kavlingWithProgressList.update { emptyList() }
                     withContext(Dispatchers.Main) { onLoading() }
                 }
                 .onCompletion { throwable ->
