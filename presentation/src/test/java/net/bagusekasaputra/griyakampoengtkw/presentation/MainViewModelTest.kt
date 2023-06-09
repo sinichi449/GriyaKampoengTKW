@@ -25,7 +25,7 @@ import net.bagusekasaputra.griyakampoengtkw.domain.usecase.block.AddNewBlockUseC
 import net.bagusekasaputra.griyakampoengtkw.domain.usecase.kavling.AddKavlingUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.usecase.kavling.EditKavlingUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.usecase.kavling.RemoveKavlingUseCase
-import net.bagusekasaputra.griyakampoengtkw.presentation.model.KavlingWithProgress
+import net.bagusekasaputra.griyakampoengtkw.domain.entity.kavling.KavlingAndProgress
 import net.bagusekasaputra.griyakampoengtkw.presentation.viewmodel.MainViewModel
 import org.junit.Assert
 import org.junit.Before
@@ -137,7 +137,7 @@ class MainViewModelTest {
         runTest {
             Dispatchers.setMain(dispatcher)
 
-            var list = emptyList<KavlingWithProgress>()
+            var list = emptyList<KavlingAndProgress>()
             mainViewModel.kavlingWithProgressList
                 .onEach {
                     list = it

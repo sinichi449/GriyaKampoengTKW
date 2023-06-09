@@ -9,18 +9,18 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import net.bagusekasaputra.griyakampoengtkw.presentation.databinding.LayoutRecyclerKavlingsBinding
-import net.bagusekasaputra.griyakampoengtkw.presentation.model.KavlingWithProgress
+import net.bagusekasaputra.griyakampoengtkw.domain.entity.kavling.KavlingAndProgress
 
 
 class KavlingRecyclerAdapter(
-    private var progressList: List<KavlingWithProgress>,
+    private var progressList: List<KavlingAndProgress>,
     private val onRecyclerItemClick: (position: Int) -> Unit,
     private val onRecyclerItemHold: (anchor: View, position: Int) -> Unit,
 ): RecyclerView.Adapter<KavlingRecyclerAdapter.MyViewHolder>() {
 
     private lateinit var context: Context
 
-    fun update(newList: List<KavlingWithProgress>) {
+    fun update(newList: List<KavlingAndProgress>) {
         val diffCallback = KavlingDataDiffCallback(progressList, newList)
         val diffResult = DiffUtil.calculateDiff(diffCallback)
 
@@ -100,8 +100,8 @@ class KavlingRecyclerAdapter(
 }
 
 class KavlingDataDiffCallback(
-    private val oldList: List<KavlingWithProgress>,
-    private val newList: List<KavlingWithProgress>,
+    private val oldList: List<KavlingAndProgress>,
+    private val newList: List<KavlingAndProgress>,
 ): DiffUtil.Callback() {
     override fun getOldListSize(): Int {
         return oldList.size

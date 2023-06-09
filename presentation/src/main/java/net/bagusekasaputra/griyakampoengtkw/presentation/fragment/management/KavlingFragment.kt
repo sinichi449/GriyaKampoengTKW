@@ -42,7 +42,7 @@ import net.bagusekasaputra.griyakampoengtkw.presentation.databinding.DialogAddBl
 import net.bagusekasaputra.griyakampoengtkw.presentation.databinding.DialogAddKavlingBinding
 import net.bagusekasaputra.griyakampoengtkw.presentation.databinding.DialogEditKavlingBinding
 import net.bagusekasaputra.griyakampoengtkw.presentation.databinding.FragmentKavlingBinding
-import net.bagusekasaputra.griyakampoengtkw.presentation.model.KavlingWithProgress
+import net.bagusekasaputra.griyakampoengtkw.domain.entity.kavling.KavlingAndProgress
 import net.bagusekasaputra.griyakampoengtkw.presentation.model.UiState
 import net.bagusekasaputra.griyakampoengtkw.presentation.util.DialogUtil
 import net.bagusekasaputra.griyakampoengtkw.presentation.util.FabHelper
@@ -178,7 +178,7 @@ class KavlingFragment : Fragment() {
             LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false)
     }
 
-    private fun RecyclerView.setupKavlings(list: List<KavlingWithProgress>) {
+    private fun RecyclerView.setupKavlings(list: List<KavlingAndProgress>) {
         kavlingRecyclerAdapter = KavlingRecyclerAdapter(
             progressList = list,
             onRecyclerItemClick = {

@@ -40,7 +40,7 @@ import net.bagusekasaputra.griyakampoengtkw.domain.usecase.kavling.RemoveKavling
 import net.bagusekasaputra.griyakampoengtkw.presentation.combineWith
 import net.bagusekasaputra.griyakampoengtkw.presentation.fragment.management.ManagementKavlingFragment
 import net.bagusekasaputra.griyakampoengtkw.presentation.logEvent
-import net.bagusekasaputra.griyakampoengtkw.presentation.model.KavlingWithProgress
+import net.bagusekasaputra.griyakampoengtkw.domain.entity.kavling.KavlingAndProgress
 import net.bagusekasaputra.griyakampoengtkw.presentation.model.UiState
 import javax.inject.Inject
 
@@ -92,7 +92,7 @@ class MainViewModel @Inject constructor(
     val shouldNavigateToKavlingFragment = MutableLiveData(false)
 
     // NEW!!
-    private val _kavlingWithProgressList = MutableStateFlow<List<KavlingWithProgress>>(emptyList())
+    private val _kavlingWithProgressList = MutableStateFlow<List<KavlingAndProgress>>(emptyList())
     val kavlingWithProgressList = _kavlingWithProgressList.asStateFlow()
 
     val currentBlock = MutableLiveData("A")
@@ -284,7 +284,7 @@ class MainViewModel @Inject constructor(
                                 }
                             }
                             fetchResult.onSuccess { progressKavling ->
-                                val item = KavlingWithProgress(
+                                val item = KavlingAndProgress(
                                     blok = blockKode,
                                     kavling = kavling,
                                     progress = progressKavling ?: ProgressKavling.EMPTY(kavling.kode),
