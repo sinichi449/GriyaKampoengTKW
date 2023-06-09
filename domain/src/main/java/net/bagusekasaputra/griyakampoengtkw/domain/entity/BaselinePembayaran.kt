@@ -90,5 +90,14 @@ data class BaselinePembayaran(
             return calendar.time
         }
 
+        fun EMPTY(kode: String): BaselinePembayaran {
+            return BaselinePembayaran(
+                kavling = kode,
+                opsiBulan = 0,
+                jumlahUang = 0L,
+                tanggalPembayaranMaks = 1,
+            )
+        }
+
     }
 }

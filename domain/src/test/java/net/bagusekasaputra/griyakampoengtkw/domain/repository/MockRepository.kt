@@ -1,17 +1,23 @@
 package net.bagusekasaputra.griyakampoengtkw.domain.repository
 
 import com.google.gson.Gson
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.flow
 import net.bagusekasaputra.griyakampoengtkw.domain.DataMode
+import net.bagusekasaputra.griyakampoengtkw.domain.entity.BaselinePembayaran
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.Kavling
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.SingleBlockKavlingSorter
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.pembayaran.Pembayaran
+import net.bagusekasaputra.griyakampoengtkw.domain.model.BaselinePembayaranJson
 import net.bagusekasaputra.griyakampoengtkw.domain.model.DataDiriJson
 import net.bagusekasaputra.griyakampoengtkw.domain.model.HargaKavlingJson
+import net.bagusekasaputra.griyakampoengtkw.domain.model.KavlingJson
 import net.bagusekasaputra.griyakampoengtkw.domain.model.PembayaranJson
 import net.bagusekasaputra.griyakampoengtkw.domain.model.TestingDataNodes
 import net.bagusekasaputra.griyakampoengtkw.domain.util.nodeReference
 import org.mockito.ArgumentMatchers
+import org.mockito.ArgumentMatchers.any
+import org.mockito.ArgumentMatchers.anyString
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.whenever
 import java.io.File
@@ -34,6 +40,84 @@ class MockRepository(private val testingFile: File) {
 
                 orderedKavlingList
             }!!
+    }
+
+    fun getKavlingRepository(): KavlingRepository {
+        val repository = mock<KavlingRepository>()
+        whenever(repository.getAsFlow(anyString())).then { invocation ->
+            flow {
+                val blok = invocation.arguments[0]!!.toString()
+                val kavlingNodes = testingFile.nodeReference()
+                    ?.getAsJsonObject(TestingDataNodes.KAVLINGS)
+                    ?.getAsJsonObject(blok)
+
+                val kavlingList = buildList {
+                    kavlingNodes?.keySet()?.forEach { kodeKavling ->
+                        kavlingNodes[kodeKavling]?.also { kavlingJson ->
+                            Gson().fromJson(kavlingJson, KavlingJson::class.java)?.also {
+                                add(it.toDomain())
+                            }
+                        }
+                    }
+                }
+                if (kavlingList.isNotEmpty()) {
+                    kavlingList.forEach {
+                        delay(500L)
+                        emit(Result.success(it))
+                    }
+                } else {
+                    emit(Result.success(null))
+                }
+            }
+        }
+        whenever(repository.getKavlingByBlock(
+            blockCode = anyString(),
+            dataMode = any() ?: DataMode.ONLINE,
+        )).then { invocation ->
+            flow {
+                val blok = invocation.arguments[0]!!.toString()
+                val kavlingNodes = testingFile.nodeReference()
+                    ?.getAsJsonObject(TestingDataNodes.KAVLINGS)
+                    ?.getAsJsonObject(blok)
+
+                val kavlingList = buildList {
+                    kavlingNodes?.keySet()?.forEach { kodeKavling ->
+                        kavlingNodes[kodeKavling]?.also { kavlingJson ->
+                            Gson().fromJson(kavlingJson, KavlingJson::class.java)?.also { kavling ->
+                                add(kavling.toDomain())
+                            }
+                        }
+                    }
+                }
+
+                emit(Result.success(kavlingList))
+            }
+        }
+
+        return repository
+    }
+
+    fun getBaselinePembayaranRepository(): BaselinePembayaranRepository {
+        val baselineRepository = mock<BaselinePembayaranRepository>()
+        whenever(baselineRepository.get(
+            kavling = anyString(),
+            dataMode = any() ?: DataMode.ONLINE,
+        )).then { invocation ->
+            flow<Result<BaselinePembayaran?>> {
+                val kavling = invocation.arguments[0]!!.toString()
+                val baselineNodes = testingFile.nodeReference()
+                    ?.getAsJsonObject(TestingDataNodes.BASELINE_PEMBAYARAN)
+                    ?.get(kavling)
+                val result = baselineNodes?.let { baselineJson ->
+                    Gson().fromJson(baselineJson, BaselinePembayaranJson::class.java)
+                        ?.toDomain()
+                }
+
+                emit(Result.success(result))
+            }
+        }
+
+        return baselineRepository
     }
 
     fun getDataDiriRepository(): DataDiriRepository {
@@ -150,6 +234,5 @@ class MockRepository(private val testingFile: File) {
 
         return hargaKavlingRepository
     }
-
 
 }

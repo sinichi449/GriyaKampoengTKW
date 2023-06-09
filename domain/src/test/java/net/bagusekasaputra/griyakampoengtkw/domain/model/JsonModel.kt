@@ -7,6 +7,7 @@ import net.bagusekasaputra.griyakampoengtkw.domain.entity.BiayaMarketing
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.DataDiri
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.FeeMarketing
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.HargaKavling
+import net.bagusekasaputra.griyakampoengtkw.domain.entity.Kavling
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.pembayaran.BulanAngsuran
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.pembayaran.Pembayaran
 
@@ -39,6 +40,24 @@ object TestingDataNodes {
     const val AMBIL_KUITANSI = "ambilKuitansi"
     const val KAVLING_EXCLUSION_LIST = "excludeForRekap"
     const val MAINTENTANCE = "maintenance"
+}
+
+data class KavlingJson(
+    val active: Boolean,
+    val kode: String,
+    val type: String,
+    val ukuran: String,
+    val warna: String,
+): JsonModel<Kavling> {
+    override fun toDomain(args: Any?): Kavling {
+        return Kavling(
+            kode = kode,
+            belumIsi = active,
+            warna = warna,
+            ukuran = ukuran,
+            type = type,
+        )
+    }
 }
 
 data class PembayaranJson(

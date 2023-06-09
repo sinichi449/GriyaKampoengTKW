@@ -124,6 +124,14 @@ data class Kavling(
                 throw e
             }
         }
+        fun EMPTY(kode: String): Kavling {
+            return Kavling(
+                kode = kode,
+                warna = "#000000",
+                ukuran = "0x0",
+                type = "NULL",
+            )
+        }
     }
 }
 
