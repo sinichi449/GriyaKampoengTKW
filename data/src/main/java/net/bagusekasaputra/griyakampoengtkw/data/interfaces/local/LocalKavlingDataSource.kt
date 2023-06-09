@@ -1,8 +1,11 @@
 package net.bagusekasaputra.griyakampoengtkw.data.interfaces.local
 
+import kotlinx.coroutines.flow.Flow
 import net.bagusekasaputra.griyakampoengtkw.data.model.KavlingModel
 
 interface LocalKavlingDataSource {
+
+    fun getAsFlow(blok: String): Flow<Result<KavlingModel?>>
 
     suspend fun getKavlingByBlockKode(blockKode: String): Result<List<KavlingModel>?>
 

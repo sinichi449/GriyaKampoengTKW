@@ -1,11 +1,14 @@
 package net.bagusekasaputra.griyakampoengtkw.data.repository
 
-import kotlinx.coroutines.delay
+import android.util.Log
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.emitAll
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.onStart
+import net.bagusekasaputra.griyakampoengtkw.data.CacheHelper
 import net.bagusekasaputra.griyakampoengtkw.data.DataUtil
 import net.bagusekasaputra.griyakampoengtkw.data.MyObjectMapper
 import net.bagusekasaputra.griyakampoengtkw.data.MyObjectMapper.mapKavling
@@ -23,35 +26,45 @@ class KavlingRepositoryImpl(
     private val remoteKavlingDataSource: RemoteKavlingDataSource,
     private val backupKavlingDataSource: BackupKavlingDataSource,
     private val localBlockDataSource: LocalBlockDataSource,
+    private val cacheHelper: CacheHelper,
 ): KavlingRepository {
 
-    private val dummyKavlingList = Kavling.getGriyaKavlingList()
+    private val remoteCacheKey = "kavling"
+    private val localCacheTable = "kavling"
 
     override fun getAsFlow(blok: String): Flow<Result<Kavling?>> {
-        // TODO
-        return flow {
-            val kavlingList = dummyKavlingList.filter {
-                val blokKode = it.substring(0, 1)
-                blokKode == blok
-            }
+        return localKavlingDataSource.getAsFlow(blok)
+            .onStart {
+                Log.d("SEQUENTIAL_KAVLING", "Checking Kavling cache ...")
 
-            if (kavlingList.isNotEmpty()) {
-                kavlingList.forEach {
-                    delay(500L)
-                    emit(Result.success(Kavling(
-                        kode = it,
-                        warna = "#000000",
-                        ukuran = "99x99",
-                        type = "NULL"
-                    )))
-                }
-            } else {
-                delay(500L)
-                emit(Result.success(null))
+                cacheHelper.checkAndInvalidateCache(
+                    localTable = localCacheTable,
+                    remoteTable = remoteCacheKey,
+                    onInvalid = {
+                        Log.d("SEQUENTIAL_KAVLING", "Kavling cache is invalid! Purging local data source ...")
+                        localKavlingDataSource.deleteAll().getOrThrow()
+
+                        Log.d("SEQUENTIAL_KAVLING", "Pulling Kavling List from Remote Data Source ...")
+                        val remoteModels = remoteKavlingDataSource.getAllKavlings(blok)
+                            .getOrThrow()
+                        if (!remoteModels.isNullOrEmpty()) {
+                            remoteModels.forEach { Log.d("SEQUENTIAL_KAVLING", "Found ${it.kode} on Remote !") }
+                            localKavlingDataSource.addAll(remoteModels).getOrThrow()
+                        } else {
+                            Log.d("SEQUENTIAL_KAVLING", "Can't found any Kavling in Blok $blok on Remote Data Source!")
+                        }
+                    }
+                )
             }
-        }.catch {
-            emit(Result.failure(it))
-        }
+            .map {
+                DataUtil.mapSingleResult(
+                    originResult = it,
+                    targetMapper = MyObjectMapper::mapKavling
+                )
+            }
+            .catch {
+                emit(Result.failure(it))
+            }
     }
 
     override fun getKavlingByBlock(
