@@ -556,4 +556,8 @@ class KavlingFragment : Fragment() {
             }
         })
     }
+
+    fun getKavlingRecyclerView(): RecyclerView {
+        return binding.recyclerKavlings
+    }
 }
