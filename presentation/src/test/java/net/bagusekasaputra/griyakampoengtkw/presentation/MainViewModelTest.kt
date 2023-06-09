@@ -121,7 +121,8 @@ class MainViewModelTest {
         mainViewModel.fetchKavlingListOn(
             blockKode = "A",
             onFailure = { println(it) },
-            onProgressFail = { println(it) }
+            onLoading = { println("Loading ...") },
+            onComplete = { println("Done!") }
         )
 
         runTest {
