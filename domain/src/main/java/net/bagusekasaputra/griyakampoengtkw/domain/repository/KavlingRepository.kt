@@ -6,6 +6,9 @@ import net.bagusekasaputra.griyakampoengtkw.domain.entity.Block
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.Kavling
 
 interface KavlingRepository {
+
+    fun getAsFlow(blok: String): Flow<Result<Kavling?>>
+
     fun getKavlingByBlock(blockCode: String, dataMode: DataMode): Flow<Result<List<Kavling>?>>
 
     fun getAllKavlings(blockKodes: List<String>): Flow<Result<HashMap<String, List<Kavling>>?>>

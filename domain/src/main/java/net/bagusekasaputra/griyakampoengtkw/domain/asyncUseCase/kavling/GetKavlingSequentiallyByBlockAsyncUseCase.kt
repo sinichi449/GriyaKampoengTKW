@@ -12,6 +12,6 @@ class GetKavlingSequentiallyByBlockAsyncUseCase(
     data class Request(val blok: String): AsyncUseCase.Request
 
     override fun process(request: Request): Flow<Result<Kavling?>> {
-        TODO("Not yet implemented")
+        return kavlingRepository.getAsFlow(request.blok)
     }
 }

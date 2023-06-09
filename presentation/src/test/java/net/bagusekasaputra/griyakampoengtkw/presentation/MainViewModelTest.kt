@@ -19,7 +19,7 @@ import net.bagusekasaputra.griyakampoengtkw.domain.usecase.block.AddNewBlockUseC
 import net.bagusekasaputra.griyakampoengtkw.domain.usecase.kavling.AddKavlingUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.usecase.kavling.EditKavlingUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.usecase.kavling.RemoveKavlingUseCase
-import net.bagusekasaputra.griyakampoengtkw.presentation.viewmodel.KavlingWithProgress
+import net.bagusekasaputra.griyakampoengtkw.presentation.model.KavlingWithProgress
 import net.bagusekasaputra.griyakampoengtkw.presentation.viewmodel.MainViewModel
 import org.junit.Assert
 import org.junit.Before
@@ -50,11 +50,11 @@ class MainViewModelTest {
         getAppUpdateInformationUseCase, getPromotionMessageUseCase
     )
 
+    private val sizeProgressKavling = 20
+    private val progressKosongNums = listOf(5, 10, 15)
+
     @Before
     fun initializeMocks() {
-        val dataSize = 20
-        val progressKosongNums = listOf(5, 10, 15)
-
         whenever(getKavlingSequentiallyUseCase.execute(
             any() ?: GetKavlingSequentiallyByBlockAsyncUseCase.Request("")
         )).thenAnswer {  invocation ->
@@ -62,7 +62,7 @@ class MainViewModelTest {
                 val blok = (invocation.arguments[0] as GetKavlingSequentiallyByBlockAsyncUseCase.Request)
                     .blok
                 val kavlingList = buildList {
-                    repeat(dataSize) { numKavling ->
+                    repeat(sizeProgressKavling) { numKavling ->
                         add(Kavling(
                             kode = "${blok}${numKavling + 1}",
                             belumIsi = false,
@@ -87,7 +87,7 @@ class MainViewModelTest {
                 val kavling = (invocation.arguments[0] as GetSingleProgressKavlingAsyncUseCase.Request)
                     .kavling
                 val progressList = buildList {
-                    repeat(dataSize) {
+                    repeat(sizeProgressKavling) {
                         if (progressKosongNums.contains(it)) {
                             add(ProgressKavling.EMPTY(kavling))
                         } else {
@@ -120,7 +120,7 @@ class MainViewModelTest {
     fun whenFetchingKavlingsSequentially_shouldNotCompletedWithOnlyOneObjectOrEmpty() {
         mainViewModel.fetchKavlingListOn(
             blockKode = "A",
-            onKavlingFail = { println(it) },
+            onFailure = { println(it) },
             onProgressFail = { println(it) }
         )
 
@@ -131,7 +131,7 @@ class MainViewModelTest {
                     list = it
                 }
                 .onCompletion {
-                    Assert.assertEquals(false, list.isEmpty())
+                    Assert.assertEquals(sizeProgressKavling, list.size)
                 }
         }
     }

@@ -6,30 +6,20 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
+import net.bagusekasaputra.griyakampoengtkw.domain.entity.Kavling
+import net.bagusekasaputra.griyakampoengtkw.domain.entity.ProgressKavling
 import net.bagusekasaputra.griyakampoengtkw.presentation.databinding.LayoutRecyclerKavlingsBinding
-import net.bagusekasaputra.griyakampoengtkw.presentation.model.KavlingWithProgress
 
-
-class KavlingRecyclerAdapter(
-    private var progressList: List<KavlingWithProgress>,
+@Deprecated("Migrated to KavlingRecyclerAdapter")
+class KavlingRecyclerAdapterLegacy(
+    private val kavlings: List<Kavling>,
+    private val mapProgressKavling: Map<String, ProgressKavling>,
     private val onRecyclerItemClick: (position: Int) -> Unit,
     private val onRecyclerItemHold: (anchor: View, position: Int) -> Unit,
-): RecyclerView.Adapter<KavlingRecyclerAdapter.MyViewHolder>() {
+): RecyclerView.Adapter<KavlingRecyclerAdapterLegacy.MyViewHolder>() {
 
     private lateinit var context: Context
-
-    fun update(newList: List<KavlingWithProgress>) {
-        val diffCallback = KavlingDataDiffCallback(progressList, newList)
-        val diffResult = DiffUtil.calculateDiff(diffCallback)
-
-        this.progressList = newList
-
-        Log.d("SEQUENTIAL_KAVLING", "New list's size is ${progressList.size}")
-
-        diffResult.dispatchUpdatesTo(this)
-    }
 
     class MyViewHolder(val binding: LayoutRecyclerKavlingsBinding): RecyclerView.ViewHolder(binding.root)
 
@@ -45,14 +35,12 @@ class KavlingRecyclerAdapter(
     }
 
     override fun onBindViewHolder(holder: MyViewHolder, position: Int) {
-        val progress = progressList[position]
-        val kavling = progress.kavling
-
-        holder.binding.tvCardBlockName.text = kavling.kode
-        holder.binding.tvTypeRumah.text = kavling.type
-        holder.binding.cardKavling.isChecked = kavling.getSudahIsi()
+        holder.binding.tvCardBlockName.text = kavlings[position].kode
+        holder.binding.tvTypeRumah.text = kavlings[position].type
+        holder.binding.cardKavling.isChecked = kavlings[position].getSudahIsi()
 
         // Special case for Kavling C1 and C6
+        val kavling = kavlings[position]
         holder.binding.tvUkuran.text =
             when (kavling.kode) {
                 "C1" -> "67,12 m2"
@@ -63,13 +51,17 @@ class KavlingRecyclerAdapter(
 
         // Fill Layout progress settings
         val warna = Color.parseColor(kavling.warna)
-        val persentase = progress.progress.persentaseBulanIni()
+        val progressKavling = mapProgressKavling[kavling.kode]
+        val persentase = progressKavling?.persentaseBulanIni()
 
         holder.binding.cardKavling.setCardBackgroundColor(warna)
         holder.binding.fillProgressPersen.setProgressBackgroundColor(warna)
         holder.binding.layoutRoot.setBackgroundColor(warna)
-        holder.binding.fillProgressPersen.setProgress(persentase, false)
-        holder.binding.imgSudahBayarBulanIni.visibility = if (progress.progress.adaPembayaran)
+        if (persentase != null) {
+            Log.d("PROGRESS_PEMBAYARAN", "Progress Kav. ${kavling.kode} is ${persentase}%")
+            holder.binding.fillProgressPersen.setProgress(persentase, false)
+        }
+        holder.binding.imgSudahBayarBulanIni.visibility = if (progressKavling?.adaPembayaran == true)
             View.VISIBLE else View.GONE
 
 
@@ -85,7 +77,7 @@ class KavlingRecyclerAdapter(
 
 
     override fun getItemCount(): Int {
-        return progressList.size
+        return kavlings.size
     }
 
 
@@ -97,32 +89,4 @@ class KavlingRecyclerAdapter(
         clearAnimation(holder.binding.root)
         super.onViewDetachedFromWindow(holder)
     }
-}
-
-class KavlingDataDiffCallback(
-    private val oldList: List<KavlingWithProgress>,
-    private val newList: List<KavlingWithProgress>,
-): DiffUtil.Callback() {
-    override fun getOldListSize(): Int {
-        return oldList.size
-    }
-
-    override fun getNewListSize(): Int {
-        return newList.size
-    }
-
-    override fun areItemsTheSame(oldItemPosition: Int, newItemPosition: Int): Boolean {
-        val oldItem = oldList[oldItemPosition]
-        val newItem = newList[newItemPosition]
-
-        return oldItem.kavling == newItem.kavling
-    }
-
-    override fun areContentsTheSame(oldItemPosition: Int, newItemPosition: Int): Boolean {
-        val oldItem = oldList[oldItemPosition]
-        val newItem = newList[newItemPosition]
-
-        return oldItem.equals(newItem)
-    }
-
 }

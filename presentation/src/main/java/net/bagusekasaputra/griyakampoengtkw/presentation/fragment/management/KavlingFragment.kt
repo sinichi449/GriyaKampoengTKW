@@ -37,10 +37,12 @@ import net.bagusekasaputra.griyakampoengtkw.presentation.activity.DetailActivity
 import net.bagusekasaputra.griyakampoengtkw.presentation.activity.MainActivity
 import net.bagusekasaputra.griyakampoengtkw.presentation.adapter.recyclerview.BlockRecyclerAdapter
 import net.bagusekasaputra.griyakampoengtkw.presentation.adapter.recyclerview.KavlingRecyclerAdapter
+import net.bagusekasaputra.griyakampoengtkw.presentation.adapter.recyclerview.KavlingRecyclerAdapterLegacy
 import net.bagusekasaputra.griyakampoengtkw.presentation.databinding.DialogAddBlockBinding
 import net.bagusekasaputra.griyakampoengtkw.presentation.databinding.DialogAddKavlingBinding
 import net.bagusekasaputra.griyakampoengtkw.presentation.databinding.DialogEditKavlingBinding
 import net.bagusekasaputra.griyakampoengtkw.presentation.databinding.FragmentKavlingBinding
+import net.bagusekasaputra.griyakampoengtkw.presentation.model.KavlingWithProgress
 import net.bagusekasaputra.griyakampoengtkw.presentation.model.UiState
 import net.bagusekasaputra.griyakampoengtkw.presentation.util.DialogUtil
 import net.bagusekasaputra.griyakampoengtkw.presentation.util.FabHelper
@@ -55,6 +57,8 @@ class KavlingFragment : Fragment() {
     private lateinit var fabActions: ExtendedFloatingActionButton
     private lateinit var fabAddKavling: FloatingActionButton
     private lateinit var fabAddBlock: FloatingActionButton
+
+    private var kavlingRecyclerAdapter: KavlingRecyclerAdapter? = null
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -72,6 +76,9 @@ class KavlingFragment : Fragment() {
         fabActions = requireActivity().findViewById(R.id.fab_actions)
         fabAddKavling = requireActivity().findViewById(R.id.fab_add_kavling)
         fabAddBlock = requireActivity().findViewById(R.id.fab_add_block)
+
+        // Init RecyclerKavlings
+        binding.recyclerKavlings.setupKavlings(emptyList())
 
 //        setupViewModelLegacy()
         binding.setupWithViewModel()
@@ -114,10 +121,10 @@ class KavlingFragment : Fragment() {
             val currentBlockKode = viewModel.currentBlock.value
             currentBlockKode?.let { viewModel.kavlingsRefreshed[it]?.value = false }
 
-            sync()
+            syncBlocks()
         }
 
-        sync()
+        syncBlocks()
     }
 
     private fun FragmentKavlingBinding.setupWithViewModel() {
@@ -128,40 +135,22 @@ class KavlingFragment : Fragment() {
                     recyclerBlocks.setupBlocks(blockList)
 
                     val blockFirstItem = blockList.first()
-                    viewModel.fetchKavlingFragmentUiState(blockFirstItem.kode)
+//                    viewModel.fetchKavlingFragmentUiState(blockFirstItem.kode)
+                    fetchKavlingList(blockFirstItem.kode)
                 }
             }
         }
 
         lifecycleScope.launch {
             repeatOnLifecycle(Lifecycle.State.CREATED) {
-                viewModel.kavlingFragmentUiState.collect {
-                    it?.also {  uiState ->
-                        when (uiState) {
-                            is UiState.Loading -> {
-                                swipeRefreshMain.isRefreshing = true
-                            }
-                            is UiState.Success -> {
-                                swipeRefreshMain.isRefreshing = false
-
-                                uiState.data?.also { kavlingUiState ->
-                                    setupKavlingRecyclerView(
-                                        kavlings = kavlingUiState.kavlingList,
-                                        mapProgressKavling = kavlingUiState.progressKavlingMap,
-                                    )
-                                }
-                            }
-                            is UiState.Failure -> {
-                                Toast.makeText(requireContext(), uiState.failMsg, Toast.LENGTH_LONG).show()
-                            }
-                        }
-                    }
+                viewModel.kavlingWithProgressList.collect {
+                    kavlingRecyclerAdapter?.update(it)
                 }
             }
         }
     }
 
-    private fun sync() {
+    private fun syncBlocks() {
         viewModel.getAllBlocks {
             Toast.makeText(requireContext(), it, Toast.LENGTH_LONG).show()
         }
@@ -176,7 +165,8 @@ class KavlingFragment : Fragment() {
             // Update the selected block in the viewModel
             viewModel.currentBlock.value = selectedBlock
 
-            viewModel.fetchKavlingFragmentUiState(selectedBlock)
+//            viewModel.fetchKavlingFragmentUiState(selectedBlock)
+            fetchKavlingList(selectedBlock)
         }
 
         // If screen orientation is Landscape, then set the
@@ -186,6 +176,40 @@ class KavlingFragment : Fragment() {
             GridLayoutManager(requireContext(), 2)
         else
             LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false)
+    }
+
+    private fun RecyclerView.setupKavlings(list: List<KavlingWithProgress>) {
+        kavlingRecyclerAdapter = KavlingRecyclerAdapter(
+            progressList = list,
+            onRecyclerItemClick = {
+                val intent = Intent(requireContext(), DetailActivity::class.java).apply {
+                    val kavling = list[it].kavling.kode
+                    putExtra(MainActivity.INTENT_KAVLING_KODE, kavling)
+                }
+                startActivity(intent)
+            },
+            onRecyclerItemHold = { _, _ ->},
+        )
+
+        adapter = kavlingRecyclerAdapter
+        layoutManager = GridLayoutManager(requireContext(), 3)
+    }
+
+    private fun fetchKavlingList(blok: String) {
+        with(binding) {
+            viewModel.fetchKavlingListOn(
+                blockKode = blok,
+                onLoading = {
+                    swipeRefreshMain.isRefreshing = true
+                },
+                onComplete = {
+                    swipeRefreshMain.isRefreshing = false
+                },
+                onFailure = {
+                    Toast.makeText(requireContext(), it, Toast.LENGTH_LONG).show()
+                }
+            )
+        }
     }
 
     @Deprecated("Migrated to FragmentKavlingBinding.setupWithViewModel()")
@@ -288,8 +312,9 @@ class KavlingFragment : Fragment() {
             LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false)
     }
 
+    @Deprecated("")
     private fun setupKavlingRecyclerView(kavlings: List<Kavling>, mapProgressKavling: Map<String, ProgressKavling>) {
-        val adapter = KavlingRecyclerAdapter(kavlings, mapProgressKavling,
+        val adapter = KavlingRecyclerAdapterLegacy(kavlings, mapProgressKavling,
             onRecyclerItemClick = {
                 val intent = Intent(requireContext(), DetailActivity::class.java).apply {
                     putExtra(MainActivity.INTENT_KAVLING_KODE, kavlings[it].kode)
@@ -364,7 +389,7 @@ class KavlingFragment : Fragment() {
                     warna = warna,
                     onComplete = { msg ->
 //                        syncDataLegacy()
-                        sync()
+                        syncBlocks()
                         addBlockDialog.dismiss()
                         Snackbar.make(binding.root, msg, Snackbar.LENGTH_SHORT)
                             .show()
@@ -428,7 +453,7 @@ class KavlingFragment : Fragment() {
                     panjang = panjang,
                     lebar = lebar
                 ) { msg ->
-                    sync()
+                    syncBlocks()
                     addKavlingDialog.dismiss()
                     Snackbar.make(binding.root, msg, Snackbar.LENGTH_SHORT).show()
                 }
@@ -470,7 +495,7 @@ class KavlingFragment : Fragment() {
                                 blockKode = blockKode,
                                 kavlingKode = kavling.kode,
                                 onComplete = { msg ->
-                                    sync()
+                                    syncBlocks()
                                     dialog.dismiss()
                                     Snackbar.make(binding.root, msg, Snackbar.LENGTH_SHORT).show()
                                 }
@@ -528,7 +553,7 @@ class KavlingFragment : Fragment() {
                     newLebar = newLebar,
                     newType = newType,
                     onComplete = { msg ->
-                        sync()
+                        syncBlocks()
                         editKavlingDialog.dismiss()
                         Snackbar.make(binding.root, msg, Snackbar.LENGTH_SHORT).show()
                     }
@@ -557,7 +582,35 @@ class KavlingFragment : Fragment() {
         })
     }
 
-    fun getKavlingRecyclerView(): RecyclerView {
-        return binding.recyclerKavlings
+    @Deprecated("")
+    private fun observeKavlingListLegacy() {
+        lifecycleScope.launch {
+            repeatOnLifecycle(Lifecycle.State.CREATED) {
+                viewModel.kavlingFragmentUiState.collect {
+                    it?.also {  uiState ->
+                        with(binding) {
+                            when (uiState) {
+                                is UiState.Loading -> {
+                                    swipeRefreshMain.isRefreshing = true
+                                }
+                                is UiState.Success -> {
+                                    swipeRefreshMain.isRefreshing = false
+
+                                    uiState.data?.also { kavlingUiState ->
+                                        setupKavlingRecyclerView(
+                                            kavlings = kavlingUiState.kavlingList,
+                                            mapProgressKavling = kavlingUiState.progressKavlingMap,
+                                        )
+                                    }
+                                }
+                                is UiState.Failure -> {
+                                    Toast.makeText(requireContext(), uiState.failMsg, Toast.LENGTH_LONG).show()
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
     }
 }

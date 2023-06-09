@@ -13,6 +13,8 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.onCompletion
+import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -37,6 +39,7 @@ import net.bagusekasaputra.griyakampoengtkw.domain.usecase.kavling.RemoveKavling
 import net.bagusekasaputra.griyakampoengtkw.presentation.combineWith
 import net.bagusekasaputra.griyakampoengtkw.presentation.fragment.management.ManagementKavlingFragment
 import net.bagusekasaputra.griyakampoengtkw.presentation.logEvent
+import net.bagusekasaputra.griyakampoengtkw.presentation.model.KavlingWithProgress
 import net.bagusekasaputra.griyakampoengtkw.presentation.model.UiState
 import javax.inject.Inject
 
@@ -231,44 +234,58 @@ class MainViewModel @Inject constructor(
     // NEW METHOD!!
     fun fetchKavlingListOn(
         blockKode: String,
-        onKavlingFail: (msg: String) -> Unit,
-        onProgressFail: (msg: String) -> Unit,
+        onLoading: () -> Unit,
+        onComplete: () -> Unit,
+        onFailure: (msg: String) -> Unit,
     ) {
        viewModelScope.launch(Dispatchers.IO) {
             val kavlingRequest = GetKavlingSequentiallyByBlockAsyncUseCase.Request(blockKode)
-            getKavlingSequentiallyUseCase.execute(kavlingRequest).collect { result ->
-                result.onFailure {
-                    it.sendMessageToMainThread(
-                        "Fetch Kavling List", onKavlingFail
-                    )
+            getKavlingSequentiallyUseCase.execute(kavlingRequest)
+                .onStart {
+                    withContext(Dispatchers.Main) { onLoading() }
                 }
-                result.onSuccess { kavling ->
-                    if (kavling != null) {
-                        // As long as `kavling` is successfully emitted,
-                        // this will fetch `ProgressKavling` continuously.
-                        val progressRequest = GetSingleProgressKavlingAsyncUseCase
-                            .Request(kavling.kode)
-                        val fetchResult = getSingleProgressKavlingUseCase
-                            .execute(progressRequest)
-                            .first()
-
-                        fetchResult.onFailure {
-                            it.sendMessageToMainThread(
-                                "Fetch Progress Kavling", onProgressFail
-                            )
+                .onCompletion { throwable ->
+                    withContext(Dispatchers.Main) {
+                        if (throwable != null) {
+                            onFailure(throwable.localizedMessage ?: "Proses fetch Kavling dihentikan karena error!")
+                        } else {
+                            onComplete()
                         }
-                        fetchResult.onSuccess { progressKavling ->
-                            progressKavling?.also {
-                                KavlingWithProgress(
+                    }
+                }
+                .collect { result ->
+                    result.onFailure { throwable ->
+                       withContext(Dispatchers.Main) {
+                           onFailure(throwable.localizedMessage ?: "Error mendapatkan kavling!")
+                       }
+                    }
+                    result.onSuccess { kavling ->
+                        if (kavling != null) {
+                            // As long as `kavling` is successfully emitted,
+                            // this will fetch `ProgressKavling` continuously.
+                            val progressRequest = GetSingleProgressKavlingAsyncUseCase
+                                .Request(kavling.kode)
+                            val fetchResult = getSingleProgressKavlingUseCase
+                                .execute(progressRequest)
+                                .first()
+
+                            fetchResult.onFailure {
+                                withContext(Dispatchers.Main) {
+                                    "Gagal mendapatkan progress kavling: ${it.localizedMessage}"
+                                }
+                            }
+                            fetchResult.onSuccess { progressKavling ->
+                                val item = KavlingWithProgress(
                                     blok = blockKode,
                                     kavling = kavling,
-                                    progress = it,
-                                ).addToFlow(_kavlingWithProgressList)
+                                    progress = progressKavling ?: ProgressKavling.EMPTY(kavling.kode),
+                                )
+
+                                item.updateStateFlow(_kavlingWithProgressList)
                             }
                         }
                     }
                 }
-            }
         }
     }
 
@@ -391,6 +408,7 @@ class MainViewModel @Inject constructor(
         asyncJobs.add(removeKavlingJob)
     }
 
+    @Deprecated("")
     fun getProgressAllKavling(blockKode: String) {
         viewModelScope.launch(Dispatchers.IO) {
             // Get all kavling's in block
@@ -532,30 +550,3 @@ data class KavlingFragmentUiState(
     val kavlingList: List<Kavling>,
     val progressKavlingMap: Map<String, ProgressKavling>,
 )
-
-data class KavlingWithProgress(
-    val blok: String,
-    val kavling: Kavling,
-    val progress: ProgressKavling,
-) {
-    fun addToFlow(flow: MutableStateFlow<List<KavlingWithProgress>>) {
-        flow.update {
-            val newList = it.toMutableList()
-            newList.add(this)
-
-            newList.toList()
-        }
-    }
-}
-
-suspend fun Throwable.sendMessageToMainThread(
-    processName: String,
-    onFail: (msg: String) -> Unit
-) {
-    withContext(Dispatchers.Main) {
-        onFail(
-            this@sendMessageToMainThread.localizedMessage
-                ?: "Terjadi kesalahan tidak diketahui pada $processName !"
-        )
-    }
-}

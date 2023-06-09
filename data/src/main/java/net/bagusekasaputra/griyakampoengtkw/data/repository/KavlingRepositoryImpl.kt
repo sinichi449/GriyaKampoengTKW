@@ -1,6 +1,8 @@
 package net.bagusekasaputra.griyakampoengtkw.data.repository
 
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.emitAll
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flow
@@ -22,6 +24,35 @@ class KavlingRepositoryImpl(
     private val backupKavlingDataSource: BackupKavlingDataSource,
     private val localBlockDataSource: LocalBlockDataSource,
 ): KavlingRepository {
+
+    private val dummyKavlingList = Kavling.getGriyaKavlingList()
+
+    override fun getAsFlow(blok: String): Flow<Result<Kavling?>> {
+        // TODO
+        return flow {
+            val kavlingList = dummyKavlingList.filter {
+                val blokKode = it.substring(0, 1)
+                blokKode == blok
+            }
+
+            if (kavlingList.isNotEmpty()) {
+                kavlingList.forEach {
+                    delay(500L)
+                    emit(Result.success(Kavling(
+                        kode = it,
+                        warna = "#000000",
+                        ukuran = "99x99",
+                        type = "NULL"
+                    )))
+                }
+            } else {
+                delay(500L)
+                emit(Result.success(null))
+            }
+        }.catch {
+            emit(Result.failure(it))
+        }
+    }
 
     override fun getKavlingByBlock(
         blockCode: String,

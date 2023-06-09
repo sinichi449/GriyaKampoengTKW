@@ -42,8 +42,10 @@ import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.indenBooking.ima
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.indenBooking.pembayaran.GetAllPembayaranIndenBookingAsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.indenBooking.pembayaran.InsertPembayaranIndenBookingAsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.kavling.GetKavlingByBlockAsyncUseCase
+import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.kavling.GetKavlingSequentiallyByBlockAsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.kavling.GetListUnmigratedKavlingsAsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.kavling.GetProgressKavlingAsyncUseCase
+import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.kavling.GetSingleProgressKavlingAsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.pembayaran.DeletePembayaranAsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.pembayaran.GetListPembayaranBulananAsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.pembayaran.GetSinglePembayaranByKavlingAndTerminAsyncUseCase
@@ -112,6 +114,11 @@ object UseCaseModule {
         kavlingRepository: KavlingRepository,
     )
         = GetKavlingByBlockAsyncUseCase(kavlingRepository)
+
+    @Provides
+    fun provideGetKavlingSequentiallyByBlockUseCase(kavlingRepository: KavlingRepository): GetKavlingSequentiallyByBlockAsyncUseCase {
+        return GetKavlingSequentiallyByBlockAsyncUseCase(kavlingRepository)
+    }
 
     @Provides
     fun provideAddKavlingUseCase(kavlingRepository: KavlingRepository)
@@ -636,6 +643,14 @@ object UseCaseModule {
         baselinePembayaranRepository: BaselinePembayaranRepository,
     ): GetProgressKavlingAsyncUseCase {
         return GetProgressKavlingAsyncUseCase(baselinePembayaranRepository, pembayaranRepository)
+    }
+
+    @Provides
+    fun provideGetSingleProgressKavlingUseCase(
+        @Default pembayaranRepository: PembayaranRepository,
+        baselinePembayaranRepository: BaselinePembayaranRepository,
+    ): GetSingleProgressKavlingAsyncUseCase {
+        return GetSingleProgressKavlingAsyncUseCase(pembayaranRepository, baselinePembayaranRepository)
     }
 
 
