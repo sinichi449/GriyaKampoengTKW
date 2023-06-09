@@ -20,7 +20,9 @@ import net.bagusekasaputra.griyakampoengtkw.domain.AsyncUseCaseHelper
 import net.bagusekasaputra.griyakampoengtkw.domain.DataMode
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.block.GetAllBlocksAsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.kavling.GetKavlingByBlockAsyncUseCase
+import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.kavling.GetKavlingSequentiallyByBlockAsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.kavling.GetProgressKavlingAsyncUseCase
+import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.kavling.GetSingleProgressKavlingAsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.promotion.GetPromotionMessageAsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.AppUpdate
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.Block
@@ -40,16 +42,22 @@ import javax.inject.Inject
 
 @HiltViewModel
 class MainViewModel @Inject constructor(
-    private val getAllBlocksAsyncUseCase: GetAllBlocksAsyncUseCase,
+    // Blocks
+    private val getAllBlocksUseCase: GetAllBlocksAsyncUseCase,
     private val addNewBlockUseCase: AddNewBlockUseCase,
-    private val getKavlingByBlockAsyncUseCase: GetKavlingByBlockAsyncUseCase,
+    // Kavlings
+    private val getKavlingByBlockUseCase: GetKavlingByBlockAsyncUseCase,
+    private val getKavlingSequentiallyUseCase: GetKavlingSequentiallyByBlockAsyncUseCase,
     private val addKavlingUseCase: AddKavlingUseCase,
     private val editKavlingUseCase: EditKavlingUseCase,
     private val removeKavlingUseCase: RemoveKavlingUseCase,
-//    private val getAppUpdateInformationUseCase: GetUpdateInformationUseCase,
-    private val getProgressKavlingAsyncUseCase: GetProgressKavlingAsyncUseCase,
+    // Progress Kavling
+    private val getProgressKavlingUseCase: GetProgressKavlingAsyncUseCase,
+    private val getSingleProgressKavlingUseCase: GetSingleProgressKavlingAsyncUseCase,
+    // App update
     private val getAppUpdateInformationUseCase: GetUpdateInformationUseCase,
-    private val getPromotionMessageAsyncUseCase: GetPromotionMessageAsyncUseCase,
+    // Promotion
+    private val getPromotionMessageUseCase: GetPromotionMessageAsyncUseCase,
 ): ViewModel() {
 
     private val _blocksLive = MutableLiveData<List<Block>>()
@@ -77,6 +85,10 @@ class MainViewModel @Inject constructor(
 
     val managementKavlingFragment = MutableLiveData<ManagementKavlingFragment?>(null)
     val shouldNavigateToKavlingFragment = MutableLiveData(false)
+
+    // NEW!!
+    private val _kavlingWithProgressList = MutableStateFlow<List<KavlingWithProgress>>(emptyList())
+    val kavlingWithProgressList = _kavlingWithProgressList.asStateFlow()
 
     val currentBlock = MutableLiveData("A")
 
@@ -128,7 +140,7 @@ class MainViewModel @Inject constructor(
 
             val gettingBlocksJob = asyncHelper.doWork(
                 request = request,
-                asyncUseCase = getAllBlocksAsyncUseCase,
+                asyncUseCase = getAllBlocksUseCase,
                 onSuccess = {
                     _blocksLive.postValue(it)
 
@@ -201,7 +213,7 @@ class MainViewModel @Inject constructor(
 
         val gettingKavlingsJob = asyncHelper.doWork(
             request = request,
-            asyncUseCase = getKavlingByBlockAsyncUseCase,
+            asyncUseCase = getKavlingByBlockUseCase,
             onSuccess = {
                 _kavlings.postValue(it)
 
@@ -214,6 +226,50 @@ class MainViewModel @Inject constructor(
         )
 
         asyncJobs.add(gettingKavlingsJob)
+    }
+
+    // NEW METHOD!!
+    fun fetchKavlingListOn(
+        blockKode: String,
+        onKavlingFail: (msg: String) -> Unit,
+        onProgressFail: (msg: String) -> Unit,
+    ) {
+       viewModelScope.launch(Dispatchers.IO) {
+            val kavlingRequest = GetKavlingSequentiallyByBlockAsyncUseCase.Request(blockKode)
+            getKavlingSequentiallyUseCase.execute(kavlingRequest).collect { result ->
+                result.onFailure {
+                    it.sendMessageToMainThread(
+                        "Fetch Kavling List", onKavlingFail
+                    )
+                }
+                result.onSuccess { kavling ->
+                    if (kavling != null) {
+                        // As long as `kavling` is successfully emitted,
+                        // this will fetch `ProgressKavling` continuously.
+                        val progressRequest = GetSingleProgressKavlingAsyncUseCase
+                            .Request(kavling.kode)
+                        val fetchResult = getSingleProgressKavlingUseCase
+                            .execute(progressRequest)
+                            .first()
+
+                        fetchResult.onFailure {
+                            it.sendMessageToMainThread(
+                                "Fetch Progress Kavling", onProgressFail
+                            )
+                        }
+                        fetchResult.onSuccess { progressKavling ->
+                            progressKavling?.also {
+                                KavlingWithProgress(
+                                    blok = blockKode,
+                                    kavling = kavling,
+                                    progress = it,
+                                ).addToFlow(_kavlingWithProgressList)
+                            }
+                        }
+                    }
+                }
+            }
+        }
     }
 
     fun addKavling(
@@ -339,7 +395,7 @@ class MainViewModel @Inject constructor(
         viewModelScope.launch(Dispatchers.IO) {
             // Get all kavling's in block
             val kavlingByBlockRequest = GetKavlingByBlockAsyncUseCase.Request(blockKode, dataMode)
-            val kavlingList = getKavlingByBlockAsyncUseCase.execute(kavlingByBlockRequest).first()
+            val kavlingList = getKavlingByBlockUseCase.execute(kavlingByBlockRequest).first()
                 .getOrThrow()
                 ?.let {
                     Kavling.getKavlingKodes(it)
@@ -349,7 +405,7 @@ class MainViewModel @Inject constructor(
             // Progress Kavling
             val request = GetProgressKavlingAsyncUseCase.Request(kavlingList, dataMode)
             Log.d("DEBUG_ME", "Getting Progress Kavling is $dataMode")
-            getProgressKavlingAsyncUseCase.execute(request).collect { result ->
+            getProgressKavlingUseCase.execute(request).collect { result ->
                 result.onSuccess {
                     _mapProgressKavling.postValue(it)
                 }
@@ -397,7 +453,7 @@ class MainViewModel @Inject constructor(
     fun getPromotionMessage(onFailure: (msg: String) -> Unit = {}) {
         viewModelScope.launch {
             val request = GetPromotionMessageAsyncUseCase.Request
-            getPromotionMessageAsyncUseCase.execute(request).collect { result ->
+            getPromotionMessageUseCase.execute(request).collect { result ->
                 result.onSuccess {
                     _promotionMessage.postValue(it)
                 }
@@ -427,7 +483,7 @@ class MainViewModel @Inject constructor(
 
             val kavlingRequest = GetKavlingByBlockAsyncUseCase.Request(blockKode, fetchDataMode)
             val kavlingListDeffered = CompletableDeferred<List<Kavling>>()
-            getKavlingByBlockAsyncUseCase.execute(kavlingRequest).collect { result ->
+            getKavlingByBlockUseCase.execute(kavlingRequest).collect { result ->
                 result.onSuccess {
                     kavlingListDeffered.complete(it ?: emptyList())
                 }
@@ -442,7 +498,7 @@ class MainViewModel @Inject constructor(
                 dataMode = fetchDataMode
             )
             val progressKavlingMap = CompletableDeferred<Map<String, ProgressKavling>>()
-            getProgressKavlingAsyncUseCase.execute(progressKavlingRequest).collect { result ->
+            getProgressKavlingUseCase.execute(progressKavlingRequest).collect { result ->
                 result.onSuccess {
                     progressKavlingMap.complete(it ?: emptyMap())
                 }
@@ -476,3 +532,30 @@ data class KavlingFragmentUiState(
     val kavlingList: List<Kavling>,
     val progressKavlingMap: Map<String, ProgressKavling>,
 )
+
+data class KavlingWithProgress(
+    val blok: String,
+    val kavling: Kavling,
+    val progress: ProgressKavling,
+) {
+    fun addToFlow(flow: MutableStateFlow<List<KavlingWithProgress>>) {
+        flow.update {
+            val newList = it.toMutableList()
+            newList.add(this)
+
+            newList.toList()
+        }
+    }
+}
+
+suspend fun Throwable.sendMessageToMainThread(
+    processName: String,
+    onFail: (msg: String) -> Unit
+) {
+    withContext(Dispatchers.Main) {
+        onFail(
+            this@sendMessageToMainThread.localizedMessage
+                ?: "Terjadi kesalahan tidak diketahui pada $processName !"
+        )
+    }
+}

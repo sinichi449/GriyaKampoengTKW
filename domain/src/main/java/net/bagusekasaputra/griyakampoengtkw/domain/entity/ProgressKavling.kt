@@ -34,4 +34,14 @@ data class ProgressKavling(
         }
     }
 
+    companion object {
+        fun EMPTY(kavling: String): ProgressKavling {
+            return ProgressKavling(
+                kavling = kavling,
+                angsuranBulanan = 0L,
+                uangMasukBulanIni = 0L,
+            )
+        }
+    }
+
 }
