@@ -59,6 +59,7 @@ class ManagementKavlingFragment : Fragment() {
                 fragmentManager = childFragmentManager,
                 fragments = fragments,
             )
+            offscreenPageLimit = 3
 
             addOnPageChangeListener(object : ViewPager.OnPageChangeListener {
                 override fun onPageScrolled(position: Int, positionOffset: Float, positionOffsetPixels: Int) {}
