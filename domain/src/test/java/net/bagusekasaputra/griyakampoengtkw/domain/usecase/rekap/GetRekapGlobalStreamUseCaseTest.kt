@@ -20,6 +20,9 @@ class GetRekapGlobalStreamUseCaseTest {
     private val testingFile = getTestingFile(this)
 
     private val mockRepository = MockRepository(testingFile)
+
+    private val blockRepository = mockRepository.getBlockRepository()
+    private val kavlingRepository = mockRepository.getKavlingRepository()
     private val dataDiriRepository = mockRepository.getDataDiriRepository()
     private val pembayaranRepository = mockRepository.getPembayaranRepository()
     private val hargaKavlingRepository = mockRepository.getHargaKavlingRepository()
@@ -27,7 +30,11 @@ class GetRekapGlobalStreamUseCaseTest {
     private val kavlingKodeList = mockRepository.getKavlingKodeList()
 
     private val useCase = GetRekapGlobalStreamAsyncUseCase(
-        dataDiriRepository, pembayaranRepository, hargaKavlingRepository
+        blockRepository = blockRepository,
+        kavlingRepository = kavlingRepository,
+        dataDiriRepository = dataDiriRepository,
+        pembayaranRepository = pembayaranRepository,
+        hargaKavlingRepository = hargaKavlingRepository,
     )
 
     @Test

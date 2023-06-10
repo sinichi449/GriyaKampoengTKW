@@ -43,6 +43,12 @@ class MockRepository(private val testingFile: File) {
             }!!
     }
 
+    fun getBlockRepository(): BlockRepository {
+        val repository = mock<BlockRepository>()
+
+        return repository
+    }
+
     fun getKavlingRepository(): KavlingRepository {
         val repository = mock<KavlingRepository>()
         whenever(repository.getAsFlow(anyString())).then { invocation ->

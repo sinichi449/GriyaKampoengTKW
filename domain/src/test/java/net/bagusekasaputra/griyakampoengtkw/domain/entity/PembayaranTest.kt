@@ -2,7 +2,10 @@ package net.bagusekasaputra.griyakampoengtkw.domain.entity
 
 import com.google.gson.Gson
 import com.google.gson.JsonParser
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.test.runTest
 import net.bagusekasaputra.griyakampoengtkw.domain.DataMode
 import net.bagusekasaputra.griyakampoengtkw.domain.DateUtil
 import net.bagusekasaputra.griyakampoengtkw.domain.DateUtil.normalize
@@ -13,11 +16,16 @@ import net.bagusekasaputra.griyakampoengtkw.domain.entity.pembayaran.BulanAngsur
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.pembayaran.Pembayaran
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.pembayaran.Pembayaran.Companion.FILTER_USING_BULAN_ANGSURAN
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.pembayaran.Pembayaran.Companion.filterPeriode
+import net.bagusekasaputra.griyakampoengtkw.domain.entity.pembayaran.Pembayaran.Companion.sortByTermin
+import net.bagusekasaputra.griyakampoengtkw.domain.entity.pembayaran.Pembayaran.Companion.totalUangMasuk
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.rekap.PeriodeRekap
 import net.bagusekasaputra.griyakampoengtkw.domain.juta
 import net.bagusekasaputra.griyakampoengtkw.domain.model.PembayaranJson
 import net.bagusekasaputra.griyakampoengtkw.domain.repository.MockHargaRumahIndenBookingRepository
 import net.bagusekasaputra.griyakampoengtkw.domain.repository.MockPembayaranRepository
+import net.bagusekasaputra.griyakampoengtkw.domain.repository.MockRepository
+import net.bagusekasaputra.griyakampoengtkw.domain.repository.MockRepository.Companion.DEFAULT_DATA_MODE
+import net.bagusekasaputra.griyakampoengtkw.domain.util.getTestingFile
 import org.junit.Assert
 import org.junit.Test
 import java.math.BigDecimal
@@ -25,10 +33,14 @@ import java.math.RoundingMode
 import java.util.Calendar
 
 
+@OptIn(ExperimentalCoroutinesApi::class)
 class PembayaranTest {
 
     private val pembayaranRepository = MockPembayaranRepository()
     private val hargaRumahRepository = MockHargaRumahIndenBookingRepository()
+
+    private val mockRepository = MockRepository(getTestingFile(this))
+    private val mockPembayaranRepository = mockRepository.getPembayaranRepository()
 
 
     @Test
@@ -288,5 +300,21 @@ class PembayaranTest {
         Assert.assertEquals(5_000_000L, uangMasukMaret)
         Assert.assertEquals(5_000_000L, uangMasukApril)
         Assert.assertEquals(5_000_000L, uangMasukMei)
+    }
+
+    @Test
+    fun givenOrderedOrShuffledPembayaranList_whenHitungTotalUangMasuk_shouldReturnTheSame() = runTest {
+        val kavling = "A11"
+        val sortedPembayaran = pembayaranRepository.getAllPembayaran(kavling, DEFAULT_DATA_MODE)
+            .first()
+            .getOrThrow()
+            ?.sortByTermin()
+
+        val shuffledPembayaran = sortedPembayaran?.shuffled()
+
+        val sortedUangMasuk = sortedPembayaran?.totalUangMasuk()
+        val shuffledUangMasuk = shuffledPembayaran?.totalUangMasuk()
+
+        Assert.assertEquals(sortedUangMasuk, shuffledUangMasuk)
     }
 }
