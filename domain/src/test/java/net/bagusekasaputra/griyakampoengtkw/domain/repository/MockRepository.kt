@@ -235,4 +235,8 @@ class MockRepository(private val testingFile: File) {
         return hargaKavlingRepository
     }
 
+    companion object {
+        val DEFAULT_DATA_MODE = DataMode.ONLINE
+    }
+
 }
