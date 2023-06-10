@@ -107,10 +107,12 @@ class ManagementKavlingFragment : Fragment() {
         super.onResume()
 
         viewModel.managementKavlingFragment.value = this
+        fabActions?.visibility = View.VISIBLE
     }
 
     override fun onPause() {
         viewModel.managementKavlingFragment.value = null
+        fabActions?.visibility = View.GONE
 
         super.onPause()
     }

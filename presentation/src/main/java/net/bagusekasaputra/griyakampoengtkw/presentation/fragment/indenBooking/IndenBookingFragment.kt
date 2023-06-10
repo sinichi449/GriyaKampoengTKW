@@ -23,6 +23,7 @@ import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
 import net.bagusekasaputra.griyakampoengtkw.presentation.R
@@ -42,6 +43,8 @@ class IndenBookingFragment : Fragment() {
     private lateinit var binding: FragmentIndenBookingBinding
     private val mainViewModel: MainViewModel by activityViewModels()
     private val viewModel: IndenBookingViewModel by activityViewModels()
+
+    private var fabActions: FloatingActionButton? = null
 
     private val REQUEST_CODE_INPUT_NEW_INDEN_BOOKING = 801
     private val REQUEST_CODE_EDIT_INDEN_BOOKING = 802
@@ -93,6 +96,8 @@ class IndenBookingFragment : Fragment() {
         // Inflate the layout for this fragment
         binding = FragmentIndenBookingBinding.inflate(inflater, container, false)
 
+        fabActions = requireActivity().findViewById(R.id.fab_action_inden_booking)
+
         return binding.root
     }
 
@@ -107,7 +112,7 @@ class IndenBookingFragment : Fragment() {
             sync()
         }
 
-        binding.fabTambahkan.setOnClickListener {
+        fabActions?.setOnClickListener {
             // To FormActivity
             val intent = Intent(requireContext(), FormActivity::class.java)
             intent.putExtra(FormActivity.EXTRAS_FORM_TYPE,
@@ -117,6 +122,18 @@ class IndenBookingFragment : Fragment() {
         }
 
         sync()
+    }
+
+    override fun onResume() {
+        super.onResume()
+
+        // enable this `fabAction`
+        fabActions?.visibility = View.VISIBLE
+    }
+
+    override fun onPause() {
+        fabActions?.visibility = View.GONE
+        super.onPause()
     }
 
     private fun setupViewModel() {
