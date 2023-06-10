@@ -10,8 +10,8 @@ import kotlinx.coroutines.flow.update
 import net.bagusekasaputra.griyakampoengtkw.domain.DataMode
 import net.bagusekasaputra.griyakampoengtkw.domain.DateUtil.toDate
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.AsyncUseCase
-import net.bagusekasaputra.griyakampoengtkw.domain.entity.kavling.Kavling
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.ProgressState
+import net.bagusekasaputra.griyakampoengtkw.domain.entity.kavling.Kavling
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.pembayaran.Pembayaran
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.rekap.RekapGlobal
 import net.bagusekasaputra.griyakampoengtkw.domain.repository.BlockRepository
@@ -20,6 +20,7 @@ import net.bagusekasaputra.griyakampoengtkw.domain.repository.HargaKavlingReposi
 import net.bagusekasaputra.griyakampoengtkw.domain.repository.KavlingRepository
 import net.bagusekasaputra.griyakampoengtkw.domain.repository.PembayaranRepository
 
+@Deprecated("Migrated to GetRekapGlobalStreamAsyncUseCase")
 class GetListRekapGlobalAsyncUseCase(
     private val blockRepository: BlockRepository,
     private val kavlingRepository: KavlingRepository,

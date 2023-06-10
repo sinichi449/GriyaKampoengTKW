@@ -5,6 +5,7 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.flow
 import net.bagusekasaputra.griyakampoengtkw.domain.DataMode
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.BaselinePembayaran
+import net.bagusekasaputra.griyakampoengtkw.domain.entity.HargaKavling
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.kavling.Kavling
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.kavling.SingleBlockKavlingSorter
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.pembayaran.Pembayaran
@@ -144,6 +145,23 @@ class MockRepository(private val testingFile: File) {
                     emit(Result.success(dataDiriMap))
                 }
             }
+        whenever(dataDiriRepository.getDataDiri(
+            kavlingKode = anyString(),
+            dataMode = any() ?: DEFAULT_DATA_MODE
+        )).then { invocation ->
+            flow {
+                val kavling = invocation.arguments[0]!!.toString()
+                val dataDiriJson = testingFile.nodeReference()
+                    ?.getAsJsonObject(TestingDataNodes.DATA_DIRI)
+                    ?.get(kavling)
+
+                val dataDiri = dataDiriJson?.let {
+                    Gson().fromJson(it, DataDiriJson::class.java)?.toDomain()
+                }
+
+                emit(Result.success(dataDiri))
+            }
+        }
 
         return dataDiriRepository
     }
@@ -216,6 +234,7 @@ class MockRepository(private val testingFile: File) {
                         ?.getAsJsonObject(TestingDataNodes.HARGA_KAVLING)
                     val kavlingList = invocation.arguments[0] as List<String>
 
+
                     val hargaKavlingMap = buildMap {
                         kavlingList.forEach { kavling ->
                             hargaKavlingNode?.get(kavling)?.also { hargaKavlingJson ->
@@ -231,6 +250,23 @@ class MockRepository(private val testingFile: File) {
                     emit(Result.success(hargaKavlingMap))
                 }
             }
+        whenever(hargaKavlingRepository.getHargaKavling(
+            kavlingKode = anyString(),
+            dataMode = any() ?: DEFAULT_DATA_MODE,
+        )).then { invocation ->
+            flow<Result<HargaKavling?>> {
+                val kavling = invocation.arguments[0]!!.toString()
+                val hargaKavlingJson = testingFile.nodeReference()
+                    ?.getAsJsonObject(TestingDataNodes.HARGA_KAVLING)
+                    ?.getAsJsonObject(TestingDataNodes.KAVLINGS)
+
+                val hargaKavling = hargaKavlingJson?.let {
+                    Gson().fromJson(it, HargaKavlingJson::class.java)?.toDomain()
+                }
+
+                emit(Result.success(hargaKavling))
+            }
+        }
 
         return hargaKavlingRepository
     }
