@@ -7,12 +7,14 @@ import kotlinx.coroutines.flow.flow
 import net.bagusekasaputra.griyakampoengtkw.domain.DataMode
 import net.bagusekasaputra.griyakampoengtkw.domain.DateUtil.toDate
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.AsyncUseCase
+import net.bagusekasaputra.griyakampoengtkw.domain.entity.kavling.Kavling
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.pembayaran.Pembayaran.Companion.sortByTermin
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.pembayaran.Pembayaran.Companion.tanggalPembelian
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.pembayaran.Pembayaran.Companion.totalUangMasuk
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.rekap.RekapGlobal
 import net.bagusekasaputra.griyakampoengtkw.domain.repository.DataDiriRepository
 import net.bagusekasaputra.griyakampoengtkw.domain.repository.HargaKavlingRepository
+import net.bagusekasaputra.griyakampoengtkw.domain.repository.KavlingRepository
 import net.bagusekasaputra.griyakampoengtkw.domain.repository.PembayaranRepository
 
 /**
@@ -24,6 +26,21 @@ class GetRekapGlobalStreamAsyncUseCase(
     private val hargaKavlingRepository: HargaKavlingRepository,
 ): AsyncUseCase<GetRekapGlobalStreamAsyncUseCase.Request, List<RekapGlobal>>() {
 
+    /**
+     * @param [kavlingList] specify [Kavling.kode] to a [List] of [String] which you want to get the [RekapGlobal] of.
+     * If you leave this arguments as an [emptyList], then this use case will assume all available [Kavling]
+     * in [KavlingRepository].
+     * **Note**: if you pass an [emptyList], currently will throw a [NotImplementedError].
+     *
+     * @param [excludedList] specify [Kavling.kode] to a [List] of [String] which you want to _exclude_
+     * from fetching [RekapGlobal]. If you leave this arguments as an [emptyList], then this use case will assume all
+     * available _excluded_ [Kavling] in [KavlingRepository], which are pre-configured to be _excluded_.
+     * **Note**: if you pass an [emptyList], currently will throw a [NotImplementedError].
+     *
+     * @param dataMode prefer [DataMode.ONLINE] as the other [DataMode] are either will throw a [NotImplementedError]
+     * or simply buggy.
+     *
+     */
     data class Request(
         val kavlingList: List<String> = emptyList(),
         val excludedList: List<String> = emptyList(),
