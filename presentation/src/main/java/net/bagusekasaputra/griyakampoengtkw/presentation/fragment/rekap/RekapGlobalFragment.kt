@@ -126,6 +126,10 @@ class RekapGlobalFragment : Fragment() {
                 },
                 onCompleted = {
                     snackBarLoading.dismiss()
+
+                    binding.tableRekapGlobal.setupTableRekapBesar(
+                        rekapViewModel.rekapGlobalList.value
+                    )
                 },
                 onFailed = {
                     Toast.makeText(requireContext(), it, Toast.LENGTH_LONG).show()
