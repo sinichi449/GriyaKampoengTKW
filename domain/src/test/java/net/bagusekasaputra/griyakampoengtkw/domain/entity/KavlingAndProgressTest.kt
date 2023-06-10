@@ -1,7 +1,9 @@
 package net.bagusekasaputra.griyakampoengtkw.domain.entity
 
+import net.bagusekasaputra.griyakampoengtkw.domain.entity.kavling.Kavling
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.kavling.KavlingAndProgress
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.kavling.KavlingAndProgress.Companion.sortByKavling
+import net.bagusekasaputra.griyakampoengtkw.domain.entity.kavling.ProgressKavling
 import org.junit.Assert
 import org.junit.Test
 import kotlin.random.Random

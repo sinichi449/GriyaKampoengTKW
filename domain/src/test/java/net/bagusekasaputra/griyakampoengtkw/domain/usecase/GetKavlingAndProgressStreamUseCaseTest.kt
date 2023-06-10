@@ -8,8 +8,8 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.test.runTest
 import net.bagusekasaputra.griyakampoengtkw.domain.DataMode
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.kavling.GetKavlingAndProgressStreamAsyncUseCase
-import net.bagusekasaputra.griyakampoengtkw.domain.entity.Kavling
-import net.bagusekasaputra.griyakampoengtkw.domain.entity.SingleBlockKavlingSorter
+import net.bagusekasaputra.griyakampoengtkw.domain.entity.kavling.Kavling
+import net.bagusekasaputra.griyakampoengtkw.domain.entity.kavling.SingleBlockKavlingSorter
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.kavling.KavlingAndProgress
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.pembayaran.Pembayaran
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.pembayaran.Pembayaran.Companion.FILTER_USING_BULAN_ANGSURAN

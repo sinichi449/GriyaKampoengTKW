@@ -28,8 +28,8 @@ import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.kavling.GetProgr
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.promotion.GetPromotionMessageAsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.AppUpdate
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.Block
-import net.bagusekasaputra.griyakampoengtkw.domain.entity.Kavling
-import net.bagusekasaputra.griyakampoengtkw.domain.entity.ProgressKavling
+import net.bagusekasaputra.griyakampoengtkw.domain.entity.kavling.Kavling
+import net.bagusekasaputra.griyakampoengtkw.domain.entity.kavling.ProgressKavling
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.Promotion
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.kavling.KavlingAndProgress
 import net.bagusekasaputra.griyakampoengtkw.domain.usecase.appupdate.GetUpdateInformationUseCase

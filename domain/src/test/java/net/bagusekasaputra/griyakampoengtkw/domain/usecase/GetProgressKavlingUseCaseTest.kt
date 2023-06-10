@@ -7,9 +7,9 @@ import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.test.runTest
 import net.bagusekasaputra.griyakampoengtkw.domain.DataMode
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.kavling.GetProgressKavlingAsyncUseCase
-import net.bagusekasaputra.griyakampoengtkw.domain.entity.Kavling
-import net.bagusekasaputra.griyakampoengtkw.domain.entity.ProgressKavling
-import net.bagusekasaputra.griyakampoengtkw.domain.entity.SingleBlockKavlingSorter
+import net.bagusekasaputra.griyakampoengtkw.domain.entity.kavling.Kavling
+import net.bagusekasaputra.griyakampoengtkw.domain.entity.kavling.ProgressKavling
+import net.bagusekasaputra.griyakampoengtkw.domain.entity.kavling.SingleBlockKavlingSorter
 import net.bagusekasaputra.griyakampoengtkw.domain.model.BaselinePembayaranJson
 import net.bagusekasaputra.griyakampoengtkw.domain.model.PembayaranJson
 import net.bagusekasaputra.griyakampoengtkw.domain.model.TestingDataNodes

@@ -6,7 +6,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
 import kotlinx.coroutines.flow.first
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.AsyncUseCase
-import net.bagusekasaputra.griyakampoengtkw.domain.entity.UnmigratedKavling
+import net.bagusekasaputra.griyakampoengtkw.domain.entity.kavling.UnmigratedKavling
 import net.bagusekasaputra.griyakampoengtkw.domain.repository.DataDiriRepository
 import net.bagusekasaputra.griyakampoengtkw.domain.repository.KavlingRepository
 

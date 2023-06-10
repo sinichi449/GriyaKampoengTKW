@@ -5,8 +5,8 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.flow
 import net.bagusekasaputra.griyakampoengtkw.domain.DataMode
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.BaselinePembayaran
-import net.bagusekasaputra.griyakampoengtkw.domain.entity.Kavling
-import net.bagusekasaputra.griyakampoengtkw.domain.entity.SingleBlockKavlingSorter
+import net.bagusekasaputra.griyakampoengtkw.domain.entity.kavling.Kavling
+import net.bagusekasaputra.griyakampoengtkw.domain.entity.kavling.SingleBlockKavlingSorter
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.pembayaran.Pembayaran
 import net.bagusekasaputra.griyakampoengtkw.domain.model.BaselinePembayaranJson
 import net.bagusekasaputra.griyakampoengtkw.domain.model.DataDiriJson

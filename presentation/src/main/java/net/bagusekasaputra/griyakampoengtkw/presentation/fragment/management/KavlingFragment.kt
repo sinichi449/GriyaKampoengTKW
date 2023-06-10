@@ -30,8 +30,8 @@ import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 import net.bagusekasaputra.griyakampoengtkw.domain.DataMode
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.Block
-import net.bagusekasaputra.griyakampoengtkw.domain.entity.Kavling
-import net.bagusekasaputra.griyakampoengtkw.domain.entity.ProgressKavling
+import net.bagusekasaputra.griyakampoengtkw.domain.entity.kavling.Kavling
+import net.bagusekasaputra.griyakampoengtkw.domain.entity.kavling.ProgressKavling
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.kavling.KavlingAndProgress
 import net.bagusekasaputra.griyakampoengtkw.presentation.R
 import net.bagusekasaputra.griyakampoengtkw.presentation.activity.DetailActivity

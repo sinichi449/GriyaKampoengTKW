@@ -1,4 +1,4 @@
-package net.bagusekasaputra.griyakampoengtkw.domain.entity
+package net.bagusekasaputra.griyakampoengtkw.domain.entity.kavling
 
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.pembayaran.BulanAngsuran
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.pembayaran.Pembayaran

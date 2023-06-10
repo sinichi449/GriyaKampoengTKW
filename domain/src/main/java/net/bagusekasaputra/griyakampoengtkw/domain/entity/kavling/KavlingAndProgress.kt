@@ -1,10 +1,5 @@
 package net.bagusekasaputra.griyakampoengtkw.domain.entity.kavling
 
-import net.bagusekasaputra.griyakampoengtkw.domain.entity.Kavling
-import net.bagusekasaputra.griyakampoengtkw.domain.entity.KavlingSorter
-import net.bagusekasaputra.griyakampoengtkw.domain.entity.ProgressKavling
-import net.bagusekasaputra.griyakampoengtkw.domain.entity.SingleBlockKavlingSorter
-
 data class KavlingAndProgress(
     val blok: String,
     val kavling: Kavling,

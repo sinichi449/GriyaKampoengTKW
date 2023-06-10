@@ -1,6 +1,6 @@
 package net.bagusekasaputra.griyakampoengtkw.data.model
 
-import net.bagusekasaputra.griyakampoengtkw.domain.entity.Kavling
+import net.bagusekasaputra.griyakampoengtkw.domain.entity.kavling.Kavling
 
 class KavlingModel(
     val kode: String = "",

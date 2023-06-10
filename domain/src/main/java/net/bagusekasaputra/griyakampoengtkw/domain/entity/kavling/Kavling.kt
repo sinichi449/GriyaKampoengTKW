@@ -1,4 +1,4 @@
-package net.bagusekasaputra.griyakampoengtkw.domain.entity
+package net.bagusekasaputra.griyakampoengtkw.domain.entity.kavling
 
 import kotlinx.coroutines.flow.first
 import net.bagusekasaputra.griyakampoengtkw.domain.DataMode

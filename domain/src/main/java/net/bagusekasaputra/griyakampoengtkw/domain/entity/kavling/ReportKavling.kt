@@ -1,6 +1,8 @@
-package net.bagusekasaputra.griyakampoengtkw.domain.entity
+package net.bagusekasaputra.griyakampoengtkw.domain.entity.kavling
 
 import net.bagusekasaputra.griyakampoengtkw.domain.NumberUtil
+import net.bagusekasaputra.griyakampoengtkw.domain.entity.BiayaMarketing
+import net.bagusekasaputra.griyakampoengtkw.domain.entity.FeeMarketing
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.pembayaran.Pembayaran
 
 data class ReportKavling(

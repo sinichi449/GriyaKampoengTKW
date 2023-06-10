@@ -46,7 +46,7 @@ import net.bagusekasaputra.griyakampoengtkw.domain.entity.HargaKavling
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.ImageSpr
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.IndenBookingAmbilKuitansi
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.IndenBookingCatatanPembayaran
-import net.bagusekasaputra.griyakampoengtkw.domain.entity.Kavling
+import net.bagusekasaputra.griyakampoengtkw.domain.entity.kavling.Kavling
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.KavlingCatatanPembayaran
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.Promotion
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.StandardAmbilKuitansi

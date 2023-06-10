@@ -12,7 +12,7 @@ import net.bagusekasaputra.griyakampoengtkw.data.interfaces.local.LocalKavlingDa
 import net.bagusekasaputra.griyakampoengtkw.data.interfaces.remote.RemoteKavlingDataSource
 import net.bagusekasaputra.griyakampoengtkw.data.model.KavlingModel
 import net.bagusekasaputra.griyakampoengtkw.data.repository.KavlingRepositoryImpl
-import net.bagusekasaputra.griyakampoengtkw.domain.entity.Kavling
+import net.bagusekasaputra.griyakampoengtkw.domain.entity.kavling.Kavling
 import org.junit.Assert
 import org.junit.Before
 import org.junit.Test

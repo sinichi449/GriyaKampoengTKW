@@ -6,7 +6,7 @@ import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.flow.first
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.backupRestore.GetListBackupAsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.kavling.GetListUnmigratedKavlingsAsyncUseCase
-import net.bagusekasaputra.griyakampoengtkw.domain.entity.UnmigratedKavling
+import net.bagusekasaputra.griyakampoengtkw.domain.entity.kavling.UnmigratedKavling
 import javax.inject.Inject
 
 @HiltViewModel

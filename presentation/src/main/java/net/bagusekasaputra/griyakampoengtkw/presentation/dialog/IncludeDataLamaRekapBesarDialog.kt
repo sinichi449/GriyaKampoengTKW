@@ -16,7 +16,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import net.bagusekasaputra.griyakampoengtkw.domain.entity.UnmigratedKavling
+import net.bagusekasaputra.griyakampoengtkw.domain.entity.kavling.UnmigratedKavling
 import net.bagusekasaputra.griyakampoengtkw.presentation.viewmodel.BackupRestoreViewModel
 import net.bagusekasaputra.griyakampoengtkw.presentation.viewmodel.RekapViewModel
 import kotlin.coroutines.resume

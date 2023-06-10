@@ -5,7 +5,7 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flow
 import net.bagusekasaputra.griyakampoengtkw.domain.DataMode
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.AsyncUseCase
-import net.bagusekasaputra.griyakampoengtkw.domain.entity.ProgressKavling
+import net.bagusekasaputra.griyakampoengtkw.domain.entity.kavling.ProgressKavling
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.pembayaran.Pembayaran
 import net.bagusekasaputra.griyakampoengtkw.domain.repository.BaselinePembayaranRepository
 import net.bagusekasaputra.griyakampoengtkw.domain.repository.PembayaranRepository

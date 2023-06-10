@@ -12,7 +12,7 @@ import net.bagusekasaputra.griyakampoengtkw.domain.DateUtil.toSlashedString
 import net.bagusekasaputra.griyakampoengtkw.domain.NumberUtil
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.reportKavling.GetAllReportKavlingAsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.ProgressState
-import net.bagusekasaputra.griyakampoengtkw.domain.entity.ReportKavling
+import net.bagusekasaputra.griyakampoengtkw.domain.entity.kavling.ReportKavling
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.ReportTotalUangMasuk
 import net.bagusekasaputra.griyakampoengtkw.presentation.logEvent
 import net.bagusekasaputra.griyakampoengtkw.presentation.tableview.report.TumCell

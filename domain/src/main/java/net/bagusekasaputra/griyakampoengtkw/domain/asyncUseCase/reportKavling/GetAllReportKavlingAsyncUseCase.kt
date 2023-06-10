@@ -6,9 +6,9 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flow
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.AsyncUseCase
-import net.bagusekasaputra.griyakampoengtkw.domain.entity.Kavling
+import net.bagusekasaputra.griyakampoengtkw.domain.entity.kavling.Kavling
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.ProgressState
-import net.bagusekasaputra.griyakampoengtkw.domain.entity.ReportKavling
+import net.bagusekasaputra.griyakampoengtkw.domain.entity.kavling.ReportKavling
 import net.bagusekasaputra.griyakampoengtkw.domain.repository.BiayaMarketingRepository
 import net.bagusekasaputra.griyakampoengtkw.domain.repository.FeeMarketingRepository
 import net.bagusekasaputra.griyakampoengtkw.domain.repository.PembayaranRepository

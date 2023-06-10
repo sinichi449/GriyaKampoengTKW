@@ -19,7 +19,7 @@ import net.bagusekasaputra.griyakampoengtkw.data.interfaces.local.LocalKavlingDa
 import net.bagusekasaputra.griyakampoengtkw.data.interfaces.remote.RemoteKavlingDataSource
 import net.bagusekasaputra.griyakampoengtkw.domain.DataMode
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.Block
-import net.bagusekasaputra.griyakampoengtkw.domain.entity.Kavling
+import net.bagusekasaputra.griyakampoengtkw.domain.entity.kavling.Kavling
 import net.bagusekasaputra.griyakampoengtkw.domain.repository.KavlingRepository
 
 class KavlingRepositoryImpl(

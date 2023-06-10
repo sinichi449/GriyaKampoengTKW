@@ -20,7 +20,7 @@ import net.bagusekasaputra.griyakampoengtkw.domain.entity.DataDiri
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.FeeMarketing
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.FeeMarketing.Companion.filterPeriode
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.HargaKavling
-import net.bagusekasaputra.griyakampoengtkw.domain.entity.Kavling
+import net.bagusekasaputra.griyakampoengtkw.domain.entity.kavling.Kavling
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.pembayaran.Pembayaran
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.pembayaran.Pembayaran.Companion.filterPeriode
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.rekap.PembayaranWithNamaCostumer

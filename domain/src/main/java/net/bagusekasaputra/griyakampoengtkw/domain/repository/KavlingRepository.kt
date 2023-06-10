@@ -3,7 +3,7 @@ package net.bagusekasaputra.griyakampoengtkw.domain.repository
 import kotlinx.coroutines.flow.Flow
 import net.bagusekasaputra.griyakampoengtkw.domain.DataMode
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.Block
-import net.bagusekasaputra.griyakampoengtkw.domain.entity.Kavling
+import net.bagusekasaputra.griyakampoengtkw.domain.entity.kavling.Kavling
 
 interface KavlingRepository {
 
