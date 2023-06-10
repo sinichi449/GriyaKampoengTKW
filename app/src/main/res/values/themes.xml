@@ -44,11 +44,6 @@
         <item name="colorPrimaryInverse">@color/md_theme_light_inversePrimary</item>
     </style>
 
-    <style name="ShowcaseView.GriyaStyle" parent="ShowcaseView">
-        <item name="sv_backgroundColor">#CC6200EE</item>
-        <item name="sv_showcaseColor">@color/teal_200</item>
-    </style>
-
     <style name="FadingAlertDialog">
         <item name="android:windowEnterAnimation">@anim/dialog_fade_in</item>
         <item name="android:windowExitAnimation">@anim/dialog_fade_out</item>
