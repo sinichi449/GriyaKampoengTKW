@@ -22,6 +22,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.github.dhaval2404.colorpicker.MaterialColorPickerDialog
 import com.github.dhaval2404.colorpicker.model.ColorShape
 import com.github.dhaval2404.colorpicker.model.ColorSwatch
+import com.google.android.material.card.MaterialCardView
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
 import com.google.android.material.floatingactionbutton.FloatingActionButton
@@ -32,7 +33,6 @@ import net.bagusekasaputra.griyakampoengtkw.domain.DataMode
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.Block
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.kavling.Kavling
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.kavling.ProgressKavling
-import net.bagusekasaputra.griyakampoengtkw.domain.entity.kavling.KavlingAndProgress
 import net.bagusekasaputra.griyakampoengtkw.presentation.R
 import net.bagusekasaputra.griyakampoengtkw.presentation.activity.DetailActivity
 import net.bagusekasaputra.griyakampoengtkw.presentation.activity.MainActivity
@@ -50,7 +50,7 @@ import net.bagusekasaputra.griyakampoengtkw.presentation.util.InputUtil
 import net.bagusekasaputra.griyakampoengtkw.presentation.viewmodel.MainViewModel
 
 @AndroidEntryPoint
-class KavlingFragment : Fragment() {
+class KavlingFragment : Fragment(), KavlingRecyclerAdapter.ItemListener {
 
     private lateinit var binding: FragmentKavlingBinding
     private val viewModel: MainViewModel by activityViewModels()
@@ -60,6 +60,12 @@ class KavlingFragment : Fragment() {
 
     private var kavlingRecyclerAdapter: KavlingRecyclerAdapter? = null
 
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+
+        Log.d("KAVLING_FRAGMENT", "onCreate()")
+    }
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -67,18 +73,61 @@ class KavlingFragment : Fragment() {
         // Inflate the layout for this fragment
         binding = FragmentKavlingBinding.inflate(inflater, container, false)
 
+        Log.d("KAVLING_FRAGMENT", "onCreateView()")
+
         return binding.root
     }
 
+    override fun onStart() {
+        super.onStart()
+
+        Log.d("KAVLING_FRAGMENT", "onStart()")
+    }
+
+    override fun onResume() {
+        super.onResume()
+
+        Log.d("KAVLING_FRAGMENT", "onResume()")
+    }
+
+    override fun onPause() {
+        Log.d("KAVLING_FRAGMENT", "onPause()")
+        super.onPause()
+    }
+
+    override fun onStop() {
+        Log.d("KAVLING_FRAGMENT", "onStop()")
+        super.onStop()
+    }
+
+    override fun onDestroyView() {
+        Log.d("KAVLING_FRAGMENT", "onDestroyView()")
+        super.onDestroyView()
+    }
+
+
+    override fun onDestroy() {
+        Log.d("KAVLING_FRAGMENT", "onDestroy()")
+        super.onDestroy()
+    }
+
+
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        Log.d("KAVLING_FRAGMENT", "onViewCreated()")
 
         fabActions = requireActivity().findViewById(R.id.fab_actions)
         fabAddKavling = requireActivity().findViewById(R.id.fab_add_kavling)
         fabAddBlock = requireActivity().findViewById(R.id.fab_add_block)
 
         // Init RecyclerKavlings
-        binding.recyclerKavlings.setupKavlings(emptyList())
+        with(binding.recyclerKavlings) {
+            kavlingRecyclerAdapter = KavlingRecyclerAdapter(emptyList(), this@KavlingFragment)
+            adapter = kavlingRecyclerAdapter
+            layoutManager = GridLayoutManager(requireContext(), 3)
+        }
 
         binding.setupWithViewModel()
 
@@ -143,6 +192,7 @@ class KavlingFragment : Fragment() {
         lifecycleScope.launch {
             repeatOnLifecycle(Lifecycle.State.CREATED) {
                 viewModel.kavlingAndProgressList.collect {
+
                     kavlingRecyclerAdapter?.update(it)
                 }
             }
@@ -175,25 +225,6 @@ class KavlingFragment : Fragment() {
             LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false)
     }
 
-    private fun RecyclerView.setupKavlings(list: List<KavlingAndProgress>) {
-        // when an item inside `kavlingRecyclerAdapter` is clicked,
-        // navigate to `DetailActivity` and pass selected kavling.
-        kavlingRecyclerAdapter = KavlingRecyclerAdapter(
-            progressList = list,
-            onRecyclerItemClick = {
-                val intent = Intent(requireContext(), DetailActivity::class.java).apply {
-                    val kavling = list[it].kavling.kode
-                    putExtra(MainActivity.INTENT_KAVLING_KODE, kavling)
-                }
-                startActivity(intent)
-            },
-            onRecyclerItemHold = { _, _ ->},
-        )
-
-        adapter = kavlingRecyclerAdapter
-        layoutManager = GridLayoutManager(requireContext(), 3)
-    }
-
     private fun fetchKavlingList(blok: String) {
         with(binding) {
             viewModel.fetchKavlingListOn(
@@ -209,6 +240,21 @@ class KavlingFragment : Fragment() {
                 }
             )
         }
+    }
+
+    override fun onKavlingItemClick(kavlingView: MaterialCardView, position: Int) {
+        val intent = Intent(requireContext(), DetailActivity::class.java).apply {
+            val kavlingAndProgress = viewModel.kavlingAndProgressList.value
+            val kavlingOnly = kavlingAndProgress[position].kavling
+
+            putExtra(MainActivity.INTENT_KAVLING_KODE, kavlingOnly.kode)
+        }
+        startActivity(intent)
+    }
+
+    override fun onKavlingItemHold(kavlingView: MaterialCardView, anchor: View, position: Int): Boolean {
+        // TODO
+        return false
     }
 
     @Deprecated("Migrated to FragmentKavlingBinding.setupWithViewModel()")

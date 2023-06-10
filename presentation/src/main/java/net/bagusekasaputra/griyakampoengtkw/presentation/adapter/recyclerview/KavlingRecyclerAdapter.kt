@@ -7,14 +7,13 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
+import com.google.android.material.card.MaterialCardView
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.kavling.KavlingAndProgress
 import net.bagusekasaputra.griyakampoengtkw.presentation.databinding.LayoutRecyclerKavlingsBinding
 
-
 class KavlingRecyclerAdapter(
     private var progressList: List<KavlingAndProgress>,
-    private val onRecyclerItemClick: (position: Int) -> Unit,
-    private val onRecyclerItemHold: (anchor: View, position: Int) -> Unit,
+    private val listener: ItemListener,
 ): RecyclerView.Adapter<KavlingRecyclerAdapter.MyViewHolder>() {
 
     private lateinit var context: Context
@@ -71,12 +70,11 @@ class KavlingRecyclerAdapter(
 
 
         holder.binding.cardKavling.setOnClickListener {
-            onRecyclerItemClick(position)
+            listener.onKavlingItemClick(holder.binding.cardKavling, position)
         }
 
         holder.binding.cardKavling.setOnLongClickListener {
-            onRecyclerItemHold(it, position)
-            true
+            listener.onKavlingItemHold(holder.binding.cardKavling, it, position)
         }
     }
 
@@ -93,6 +91,16 @@ class KavlingRecyclerAdapter(
     override fun onViewDetachedFromWindow(holder: MyViewHolder) {
         clearAnimation(holder.binding.root)
         super.onViewDetachedFromWindow(holder)
+    }
+
+    interface ItemListener {
+        fun onKavlingItemClick(kavlingView: MaterialCardView, position: Int)
+
+        fun onKavlingItemHold(
+            kavlingView: MaterialCardView,
+            anchor: View,
+            position: Int
+        ): Boolean
     }
 }
 
@@ -119,7 +127,7 @@ class KavlingDataDiffCallback(
         val oldItem = oldList[oldItemPosition]
         val newItem = newList[newItemPosition]
 
-        return oldItem.equals(newItem)
+        return oldItem == newItem
     }
 
 }
