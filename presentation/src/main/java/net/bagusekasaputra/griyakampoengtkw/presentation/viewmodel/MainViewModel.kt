@@ -14,6 +14,8 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.onCompletion
+import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -87,9 +89,9 @@ class MainViewModel @Inject constructor(
     val managementKavlingFragment = MutableLiveData<ManagementKavlingFragment?>(null)
     val shouldNavigateToKavlingFragment = MutableLiveData(false)
 
-    // NEW!!
-    private val _kavlingWithProgressList = MutableStateFlow<List<KavlingAndProgress>>(emptyList())
-    val kavlingWithProgressList = _kavlingWithProgressList.asStateFlow()
+    /** * [KavlingAndProgress] * **/
+    private val _kavlingAndProgressList = MutableStateFlow<List<KavlingAndProgress>>(emptyList())
+    val kavlingAndProgressList = _kavlingAndProgressList.asStateFlow()
 
     val currentBlock = MutableLiveData("A")
 
@@ -240,57 +242,43 @@ class MainViewModel @Inject constructor(
     ) {
         jobFetchKavlings?.cancel()
 
-       jobFetchKavlings = viewModelScope.launch(dispatchers) {
-//            val kavlingRequest = GetKavlingSequentiallyByBlockAsyncUseCase.Request(blockKode)
-//            getKavlingSequentiallyUseCase.execute(kavlingRequest)
-//                .onStart {
-//                    Log.d("SEQUENTIAL_KAVLING", "I'm on start!")
-//                    // Reset previous lists first
-//                    _kavlingWithProgressList.update { emptyList() }
-//                    withContext(Dispatchers.Main) { onLoading() }
-//                }
-//                .onCompletion { throwable ->
-//                    withContext(Dispatchers.Main) {
-//                        if (throwable != null) {
-//                            onFailure(throwable.localizedMessage ?: "Proses fetch Kavling dihentikan karena error!")
-//                        } else {
-//                            onComplete()
-//                        }
-//                    }
-//                }
-//                .collect { result ->
-//                    result.onFailure { throwable ->
-//                       withContext(Dispatchers.Main) {
-//                           onFailure(throwable.localizedMessage ?: "Error mendapatkan kavling!")
-//                       }
-//                    }
-//                    result.onSuccess { kavling ->
-//                        if (kavling != null) {
-//                            // As long as `kavling` is successfully emitted,
-//                            // this will fetch `ProgressKavling` continuously.
-//                            val progressRequest = GetSingleProgressKavlingAsyncUseCase
-//                                .Request(kavling.kode)
-//                            val fetchResult = getSingleProgressKavlingUseCase
-//                                .execute(progressRequest)
-//                                .first()
-//
-//                            fetchResult.onFailure {
-//                                withContext(Dispatchers.Main) {
-//                                    "Gagal mendapatkan progress kavling: ${it.localizedMessage}"
-//                                }
-//                            }
-//                            fetchResult.onSuccess { progressKavling ->
-//                                val item = KavlingAndProgress(
-//                                    blok = blockKode,
-//                                    kavling = kavling,
-//                                    progress = progressKavling ?: ProgressKavling.EMPTY(kavling.kode),
-//                                )
-//
-//                                item.updateStateFlow(_kavlingWithProgressList)
-//                            }
-//                        }
-//                    }
-//                }
+        jobFetchKavlings = viewModelScope.launch(dispatchers) {
+            val request = GetKavlingAndProgressStreamAsyncUseCase.Request(blockKode, dataMode)
+            getKavlingAndProgressStreamUseCase.execute(request)
+                .onStart {
+                    // reset current `_kavlingAndProgressList`
+                    _kavlingAndProgressList.update { emptyList() }
+
+                    withContext(Dispatchers.Main) { onLoading() }
+                }
+                .onCompletion { throwable ->
+                    // if `Flow.collect` has completed, call `onComplete` if `throwable`
+                    // is `null`, or `onFailure` when it is not null.
+                    val success = throwable == null
+                    withContext(Dispatchers.Main) {
+                        if (success) {
+                            onComplete()
+                        } else {
+                            withContext(Dispatchers.Main) {
+                                onFailure("Terjadi kesalahan mendapatkan progress kavling : ${throwable?.localizedMessage}")
+                            }
+                        }
+                    }
+                }
+                .collect { result ->
+                    result.onFailure {
+                        withContext(Dispatchers.Main) {
+                            onFailure("Gagal mendapatkan kavling : ${it.localizedMessage}")
+                        }
+                    }
+                    result.onSuccess { items ->
+                        // continuously updating `_kavlingAndProgressList` until `Flow.collect`
+                        // has completed.
+                        if (!items.isNullOrEmpty()) {
+                            _kavlingAndProgressList.update { items }
+                        }
+                    }
+                }
         }
     }
 
@@ -489,6 +477,7 @@ class MainViewModel @Inject constructor(
         }
     }
 
+    @Deprecated("Use fetchKavlingListOn()")
     fun fetchKavlingFragmentUiState(blockKode: String) {
         viewModelScope.launch(Dispatchers.IO) {
             _kavlingFragmentUiState.update {

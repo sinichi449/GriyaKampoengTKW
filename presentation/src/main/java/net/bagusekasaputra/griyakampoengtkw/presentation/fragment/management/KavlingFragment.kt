@@ -32,6 +32,7 @@ import net.bagusekasaputra.griyakampoengtkw.domain.DataMode
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.Block
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.Kavling
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.ProgressKavling
+import net.bagusekasaputra.griyakampoengtkw.domain.entity.kavling.KavlingAndProgress
 import net.bagusekasaputra.griyakampoengtkw.presentation.R
 import net.bagusekasaputra.griyakampoengtkw.presentation.activity.DetailActivity
 import net.bagusekasaputra.griyakampoengtkw.presentation.activity.MainActivity
@@ -42,7 +43,6 @@ import net.bagusekasaputra.griyakampoengtkw.presentation.databinding.DialogAddBl
 import net.bagusekasaputra.griyakampoengtkw.presentation.databinding.DialogAddKavlingBinding
 import net.bagusekasaputra.griyakampoengtkw.presentation.databinding.DialogEditKavlingBinding
 import net.bagusekasaputra.griyakampoengtkw.presentation.databinding.FragmentKavlingBinding
-import net.bagusekasaputra.griyakampoengtkw.domain.entity.kavling.KavlingAndProgress
 import net.bagusekasaputra.griyakampoengtkw.presentation.model.UiState
 import net.bagusekasaputra.griyakampoengtkw.presentation.util.DialogUtil
 import net.bagusekasaputra.griyakampoengtkw.presentation.util.FabHelper
@@ -80,7 +80,6 @@ class KavlingFragment : Fragment() {
         // Init RecyclerKavlings
         binding.recyclerKavlings.setupKavlings(emptyList())
 
-//        setupViewModelLegacy()
         binding.setupWithViewModel()
 
 //        setupFloatingButtons()
@@ -143,7 +142,7 @@ class KavlingFragment : Fragment() {
 
         lifecycleScope.launch {
             repeatOnLifecycle(Lifecycle.State.CREATED) {
-                viewModel.kavlingWithProgressList.collect {
+                viewModel.kavlingAndProgressList.collect {
                     kavlingRecyclerAdapter?.update(it)
                 }
             }
@@ -157,8 +156,6 @@ class KavlingFragment : Fragment() {
     }
 
     private fun RecyclerView.setupBlocks(blockList: List<Block>) {
-        invalidate()
-
         binding.recyclerBlocks.adapter = BlockRecyclerAdapter(blockList) { position ->
             val selectedBlock = blockList[position].kode
 
@@ -179,6 +176,8 @@ class KavlingFragment : Fragment() {
     }
 
     private fun RecyclerView.setupKavlings(list: List<KavlingAndProgress>) {
+        // when an item inside `kavlingRecyclerAdapter` is clicked,
+        // navigate to `DetailActivity` and pass selected kavling.
         kavlingRecyclerAdapter = KavlingRecyclerAdapter(
             progressList = list,
             onRecyclerItemClick = {

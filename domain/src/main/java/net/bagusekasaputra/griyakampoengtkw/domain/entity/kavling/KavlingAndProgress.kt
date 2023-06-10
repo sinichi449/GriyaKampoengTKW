@@ -1,7 +1,5 @@
 package net.bagusekasaputra.griyakampoengtkw.domain.entity.kavling
 
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.update
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.Kavling
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.KavlingSorter
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.ProgressKavling
@@ -12,15 +10,6 @@ data class KavlingAndProgress(
     val kavling: Kavling,
     val progress: ProgressKavling,
 ) {
-
-    fun updateStateFlow(stateFlow: MutableStateFlow<List<KavlingAndProgress>>) {
-        stateFlow.update {
-            val newList = it.toMutableList()
-            newList.add(this)
-
-            newList
-        }
-    }
 
     companion object {
         fun List<KavlingAndProgress>.containsMultipleBloks(blok: String): Boolean {

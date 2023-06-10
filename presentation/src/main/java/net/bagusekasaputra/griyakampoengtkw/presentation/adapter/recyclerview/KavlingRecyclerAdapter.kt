@@ -2,14 +2,13 @@ package net.bagusekasaputra.griyakampoengtkw.presentation.adapter.recyclerview
 
 import android.content.Context
 import android.graphics.Color
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
-import net.bagusekasaputra.griyakampoengtkw.presentation.databinding.LayoutRecyclerKavlingsBinding
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.kavling.KavlingAndProgress
+import net.bagusekasaputra.griyakampoengtkw.presentation.databinding.LayoutRecyclerKavlingsBinding
 
 
 class KavlingRecyclerAdapter(
@@ -25,8 +24,6 @@ class KavlingRecyclerAdapter(
         val diffResult = DiffUtil.calculateDiff(diffCallback)
 
         this.progressList = newList
-
-        Log.d("SEQUENTIAL_KAVLING", "New list's size is ${progressList.size}")
 
         diffResult.dispatchUpdatesTo(this)
     }

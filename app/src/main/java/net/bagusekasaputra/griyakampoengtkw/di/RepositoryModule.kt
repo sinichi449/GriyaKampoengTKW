@@ -478,8 +478,14 @@ object RepositoryModule {
 
 }
 
+/**
+ * Refres to any deprecated Repositories.
+ */
 @Qualifier
 annotation class Legacy
 
+/**
+ * Refers to any maintained Repositories.
+ */
 @Qualifier
 annotation class Default
