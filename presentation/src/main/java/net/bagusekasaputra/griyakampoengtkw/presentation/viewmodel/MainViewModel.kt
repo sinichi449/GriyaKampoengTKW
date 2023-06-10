@@ -138,29 +138,37 @@ class MainViewModel @Inject constructor(
     /**
      * Blocks
      */
-    fun getAllBlocks(onFailure: (msg: String) -> Unit) {
+    fun getAllBlocks(
+        onLoading: () -> Unit,
+        onComplete: () -> Unit,
+        onFailure: (msg: String) -> Unit
+    ) {
         // Because Block is static, i.e, they always appears there
         // compared to the kavlings which need to be clicked when they need to be appeared ,
         // there's no need to pull the data locally.
         if (blockRefreshed.value != true) {
             logEvent("Blocks are already refreshed!")
-            val request = GetAllBlocksAsyncUseCase.Request(dataMode)
 
-            val gettingBlocksJob = asyncHelper.doWork(
-                request = request,
-                asyncUseCase = getAllBlocksUseCase,
-                onSuccess = {
-                    _blocksLive.postValue(it)
+            onLoading()
 
-                    blockRefreshed.postValue(true)
-                },
-                onFailure = {
-                    onFailure("Gagal mendapatkan block: ${it.message}")
-                },
-                successMsgOnUiThread = false,
-            )
+            viewModelScope.launch(Dispatchers.IO) {
+                val request = GetAllBlocksAsyncUseCase.Request(dataMode)
+                getAllBlocksUseCase.execute(request).collect { result ->
+                    result.onFailure {
+                        withContext(Dispatchers.Main) {
+                            onFailure("Gagal mendapatkan Blok : ${it.localizedMessage}")
+                        }
+                    }
+                    result.onSuccess {
+                        _blocksLive.postValue(it)
+                        blockRefreshed.postValue(true)
 
-            asyncJobs.add(gettingBlocksJob)
+                        withContext(Dispatchers.Main) {
+                            onComplete()
+                        }
+                    }
+                }
+            }
         } else {
             logEvent("Blocks not refreshed, refreshing now ...")
         }

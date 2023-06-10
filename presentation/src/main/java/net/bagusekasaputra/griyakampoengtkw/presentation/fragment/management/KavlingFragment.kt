@@ -28,6 +28,7 @@ import com.google.android.material.floatingactionbutton.ExtendedFloatingActionBu
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.flow.collectIndexed
 import kotlinx.coroutines.launch
 import net.bagusekasaputra.griyakampoengtkw.domain.DataMode
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.Block
@@ -77,41 +78,6 @@ class KavlingFragment : Fragment(), KavlingRecyclerAdapter.ItemListener {
 
         return binding.root
     }
-
-    override fun onStart() {
-        super.onStart()
-
-        Log.d("KAVLING_FRAGMENT", "onStart()")
-    }
-
-    override fun onResume() {
-        super.onResume()
-
-        Log.d("KAVLING_FRAGMENT", "onResume()")
-    }
-
-    override fun onPause() {
-        Log.d("KAVLING_FRAGMENT", "onPause()")
-        super.onPause()
-    }
-
-    override fun onStop() {
-        Log.d("KAVLING_FRAGMENT", "onStop()")
-        super.onStop()
-    }
-
-    override fun onDestroyView() {
-        Log.d("KAVLING_FRAGMENT", "onDestroyView()")
-        super.onDestroyView()
-    }
-
-
-    override fun onDestroy() {
-        Log.d("KAVLING_FRAGMENT", "onDestroy()")
-        super.onDestroy()
-    }
-
-
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -175,6 +141,7 @@ class KavlingFragment : Fragment(), KavlingRecyclerAdapter.ItemListener {
         syncBlocks()
     }
 
+    @SuppressLint("NotifyDataSetChanged")
     private fun FragmentKavlingBinding.setupWithViewModel() {
         // Observe the blocksLive and if it not NULL, then call fetchKavlingFragmentUiState()
         viewModel.blocksLive.observe(requireActivity()) {
@@ -191,18 +158,30 @@ class KavlingFragment : Fragment(), KavlingRecyclerAdapter.ItemListener {
 
         lifecycleScope.launch {
             repeatOnLifecycle(Lifecycle.State.CREATED) {
-                viewModel.kavlingAndProgressList.collect {
-                    kavlingRecyclerAdapter?.update(it)
-                    binding.recyclerKavlings.adapter = kavlingRecyclerAdapter
+                viewModel.kavlingAndProgressList.collectIndexed { _, value ->
+                    kavlingRecyclerAdapter?.update(value)
+                    kavlingRecyclerAdapter?.notifyDataSetChanged()
+//                    binding.recyclerKavlings.adapter = kavlingRecyclerAdapter
                 }
             }
         }
     }
 
     private fun syncBlocks() {
-        viewModel.getAllBlocks {
-            Toast.makeText(requireContext(), it, Toast.LENGTH_LONG).show()
-        }
+        val snackBarLoading = Snackbar.make(binding.root, "Mendapatkan list Blok ...", Snackbar.LENGTH_INDEFINITE)
+        viewModel.getAllBlocks(
+            onLoading = {
+                snackBarLoading.show()
+            },
+            onComplete = {
+                snackBarLoading.dismiss()
+            },
+            onFailure = {
+                snackBarLoading.dismiss()
+
+                Toast.makeText(requireContext(), it, Toast.LENGTH_LONG).show()
+            }
+        )
     }
 
     private fun RecyclerView.setupBlocks(blockList: List<Block>) {
@@ -315,9 +294,13 @@ class KavlingFragment : Fragment(), KavlingRecyclerAdapter.ItemListener {
 
     @Deprecated("Migrated to sync()")
     private fun syncDataLegacy() {
-        viewModel.getAllBlocks { failMsg ->
-            Snackbar.make(binding.root, failMsg, Snackbar.LENGTH_LONG).show()
-        }
+        viewModel.getAllBlocks(
+            onLoading = {},
+            onComplete = {},
+            onFailure = {
+                Snackbar.make(binding.root, it, Snackbar.LENGTH_LONG).show()
+            }
+        )
 
         val currentBlock = viewModel.currentBlock.value
         if (currentBlock != null) {
