@@ -79,6 +79,15 @@ data class Pembayaran(
         const val FILTER_USING_TANGGAL = 0
         const val FILTER_USING_BULAN_ANGSURAN = 1
 
+        /**
+         * Iteratively sums up [Pembayaran.jumlahUangDibayar] in every element of
+         * [listPembayaran], by converting [Pembayaran.jumlahUangDibayar] into [Long] type
+         * using [NumberUtil.formatLongToString].
+         *
+         * If [listPembayaran] is an [emptyList], will return zero.
+         *
+         * @param listPembayaran any [Pembayaran]'s [List]
+         */
         fun hitungTotalUangMasuk(listPembayaran: List<Pembayaran>): Long {
             var mTotal = 0L
 
@@ -109,11 +118,28 @@ data class Pembayaran(
             return pembayarans.last().sisaBelumTerbayar
         }
 
+        /**
+         * Sorting [Pembayaran]'s [List]
+         *
+         * @param listPembayaran any [Pembayaran]'s [List].
+         * @param sorter you can implement your own [PembayaranSorter] or use built-in
+         * [TerminPembayaranSorter].
+         *
+         * @see [sortByTermin]
+         */
         fun sortPembayaran(
             listPembayaran: List<Pembayaran>,
             sorter: PembayaranSorter,
         ) = sorter.sort(listPembayaran)
 
+        /**
+         * _Tanggal pembelian_ is simply the first index of sorted [Pembayaran]'s List.
+         *
+         * @param sortedListPembayaran you must sort this [List] first, use [sortPembayaran]
+         * or [sortByTermin].
+         * @throws Exception when [sortedListPembayaran] is empty.
+         * @see tanggalPembelian
+         */
         fun getTanggalPembelian(sortedListPembayaran: List<Pembayaran>) =
             if (sortedListPembayaran.isEmpty())
                 throw Exception("Get tanggal pembelian gagal -> argumen sortedListPembayaran dengan list masih kosong tidak boleh!")
@@ -291,6 +317,27 @@ data class Pembayaran(
                 return "1"
             }
         }
+
+        /**
+         * Extension for [sortPembayaran].
+         */
+        fun List<Pembayaran>.sortByTermin()
+                = sortPembayaran(this, TerminPembayaranSorter())
+
+        /**
+         * Extension for [getTanggalPembelian].
+         *
+         * Note: [Pembayaran]'s List must be sorted first, you can use
+         * either [sortPembayaran] or [sortByTermin] to do that.
+         */
+        fun List<Pembayaran>.tanggalPembelian()
+            = getTanggalPembelian(this)
+
+        /**
+         * Extension for [hitungTotalUangMasuk].
+         */
+        fun List<Pembayaran>.totalUangMasuk()
+            = hitungTotalUangMasuk(this)
     }
 
     enum class JenisPembayaran(val text: String) {
