@@ -28,10 +28,10 @@ import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.kavling.GetProgr
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.promotion.GetPromotionMessageAsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.AppUpdate
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.Block
-import net.bagusekasaputra.griyakampoengtkw.domain.entity.kavling.Kavling
-import net.bagusekasaputra.griyakampoengtkw.domain.entity.kavling.ProgressKavling
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.Promotion
+import net.bagusekasaputra.griyakampoengtkw.domain.entity.kavling.Kavling
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.kavling.KavlingAndProgress
+import net.bagusekasaputra.griyakampoengtkw.domain.entity.kavling.ProgressKavling
 import net.bagusekasaputra.griyakampoengtkw.domain.usecase.appupdate.GetUpdateInformationUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.usecase.block.AddNewBlockUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.usecase.kavling.AddKavlingUseCase
@@ -83,7 +83,10 @@ class MainViewModel @Inject constructor(
     /**
      * [KavlingFragmentUiState] contains all the data needed for [net.bagusekasaputra.griyakampoengtkw.presentation.fragment.management.KavlingFragment]'s screen.
      */
+    @Deprecated("Use _kavlingAndProgressList")
     private val _kavlingFragmentUiState = MutableStateFlow<UiState<KavlingFragmentUiState>?>(null)
+
+    @Deprecated("Use _kavlingAndProgressList")
     val kavlingFragmentUiState = _kavlingFragmentUiState.asStateFlow()
 
     val managementKavlingFragment = MutableLiveData<ManagementKavlingFragment?>(null)

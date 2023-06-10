@@ -8,6 +8,7 @@ import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.viewpager.widget.ViewPager
+import com.google.android.material.appbar.AppBarLayout
 import com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
 import com.google.android.material.tabs.TabLayout
 import dagger.hilt.android.AndroidEntryPoint
@@ -74,6 +75,10 @@ class ManagementKavlingFragment : Fragment() {
                         }
                         FRAGMENT_REKAP -> {
                             viewModel.shouldNavigateToKavlingFragment.value = true
+
+                            // Hide appbar
+                            val appBarMain = requireActivity().findViewById<AppBarLayout>(R.id.appbar_main)
+                            appBarMain.setExpanded(false, true)
 
 //                            binding.fabActions.hide()
                             fabActions?.hide()
