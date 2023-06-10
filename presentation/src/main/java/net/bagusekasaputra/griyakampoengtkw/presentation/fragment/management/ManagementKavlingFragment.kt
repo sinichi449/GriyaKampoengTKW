@@ -8,6 +8,7 @@ import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.viewpager.widget.ViewPager
+import com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
 import com.google.android.material.tabs.TabLayout
 import dagger.hilt.android.AndroidEntryPoint
 import net.bagusekasaputra.griyakampoengtkw.presentation.R
@@ -21,6 +22,7 @@ class ManagementKavlingFragment : Fragment() {
 
     private lateinit var binding: FragmentManagementKavlingBinding
     private val viewModel: MainViewModel by activityViewModels()
+    private var fabActions: ExtendedFloatingActionButton? = null
 
     // This listener need to be removed on onStop()
     // Set visibility of MainActivity's FAB
@@ -32,6 +34,8 @@ class ManagementKavlingFragment : Fragment() {
         // Inflate the layout for this fragment
         binding = FragmentManagementKavlingBinding.inflate(inflater, container, false)
 
+        fabActions = requireActivity().findViewById(R.id.fab_actions)
+
         return binding.root
     }
 
@@ -40,7 +44,8 @@ class ManagementKavlingFragment : Fragment() {
 
         setupViewPager()
 
-        binding.fabActions.shrink()
+//        binding.fabActions.shrink()
+        fabActions?.shrink()
     }
 
     private fun setupViewPager() {
@@ -63,17 +68,20 @@ class ManagementKavlingFragment : Fragment() {
                         FRAGMENT_KAVLING -> {
                             viewModel.shouldNavigateToKavlingFragment.value = false
 
-                            binding.fabActions.show()
+//                            binding.fabActions.show()
+                            fabActions?.show()
                         }
                         FRAGMENT_REKAP -> {
                             viewModel.shouldNavigateToKavlingFragment.value = true
 
-                            binding.fabActions.hide()
+//                            binding.fabActions.hide()
+                            fabActions?.hide()
                         }
                         FRAGMENT_BIAYA_LAIN -> {
                             viewModel.shouldNavigateToKavlingFragment.value = true
 
-                            binding.fabActions.show()
+//                            binding.fabActions.show()
+                            fabActions?.show()
                         }
                     }
                 }
