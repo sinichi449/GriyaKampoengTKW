@@ -11,6 +11,8 @@ import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.kavling.GetKavli
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.Kavling
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.SingleBlockKavlingSorter
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.kavling.KavlingAndProgress
+import net.bagusekasaputra.griyakampoengtkw.domain.entity.pembayaran.Pembayaran
+import net.bagusekasaputra.griyakampoengtkw.domain.entity.pembayaran.Pembayaran.Companion.FILTER_USING_BULAN_ANGSURAN
 import net.bagusekasaputra.griyakampoengtkw.domain.repository.MockRepository
 import net.bagusekasaputra.griyakampoengtkw.domain.util.getTestingFile
 import org.junit.Assert
@@ -143,5 +145,61 @@ class GetKavlingAndProgressStreamUseCaseTest {
         executeUseCase()
 
         baselineRepository = mockRepository.getBaselinePembayaranRepository()
+    }
+
+    @Test
+    fun whenQueryingPembayaran_shouldFilteredUsingBulanAngsuranAndReturnTotalUangMasuk() = runTest {
+        val blok = "A"
+        val bulanIni = 5
+        val tahunIni = 2023
+        val kavlingList = mockRepository.getKavlingKodeList().filter {
+            // get list only for those matching `blok`
+            it.substring(0, 1) == blok
+        }
+
+        val correctUangMasukMap = buildMap {
+            kavlingList.forEach { kode ->
+                val uangMasukBulanIni = pembayaranRepository.getAllPembayaran(kode, defaultDataMode)
+                    .first()
+                    .getOrThrow()
+                    ?.let {
+                        Pembayaran.uangMasukPadaBulanDanTahunIni(
+                            it, bulanIni, tahunIni, FILTER_USING_BULAN_ANGSURAN
+                        )
+                    }
+
+                put(kode, uangMasukBulanIni ?: 0L)
+            }
+        }
+
+        val request = GetKavlingAndProgressStreamAsyncUseCase.Request(
+            blok = blok,
+            dataMode = defaultDataMode,
+            bulanAngsuran = bulanIni,
+            tahunAngsuran = tahunIni,
+        )
+        var resultList = emptyList<KavlingAndProgress>()
+        useCase.execute(request).collect { result ->
+            result.onFailure {
+                throw it
+            }
+            result.onSuccess {
+                it?.also { list ->
+                    resultList = list
+                }
+            }
+        }
+
+        val resultUangMasukMap = buildMap<String, Long> {
+            kavlingList.forEach { kode ->
+                resultList.forEach { item ->
+                    if (item.kavling.kode == kode) {
+                        put(kode, item.progress.uangMasukBulanIni)
+                    }
+                }
+            }
+        }
+
+        Assert.assertEquals(correctUangMasukMap, resultUangMasukMap)
     }
 }
