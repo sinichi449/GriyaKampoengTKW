@@ -57,6 +57,7 @@ import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.promotion.GetPro
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.rekap.GetListRekapGlobalAsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.rekap.GetRekapBesarDetailAsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.rekap.GetRekapBesarOverviewAsyncUseCase
+import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.rekap.GetRekapGlobalStreamAsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.reportKavling.GetAllReportKavlingAsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.statusPembayaran.GetStatusPembayaranKavlingAsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.repository.*
@@ -464,6 +465,15 @@ object UseCaseModule {
     ): GetListRekapGlobalAsyncUseCase {
         return GetListRekapGlobalAsyncUseCase(blockRepository, kavlingRepository, dataDiriRepository, pembayaranRepository, hargaKavlingRepository)
     }
+
+    @Provides
+    fun provideGetRekapGlobalStreamUseCase(
+        blockRepository: BlockRepository,
+        kavlingRepository: KavlingRepository,
+        dataDiriRepository: DataDiriRepository,
+        @Legacy pembayaranRepository: PembayaranRepository,
+        hargaKavlingRepository: HargaKavlingRepository,
+    ) = GetRekapGlobalStreamAsyncUseCase(blockRepository, kavlingRepository, dataDiriRepository, pembayaranRepository, hargaKavlingRepository)
 
 
     /**

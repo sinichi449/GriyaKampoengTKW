@@ -19,6 +19,14 @@ class DefaultTableViewAdapter(
     private val tableViewHolderListener: TableViewHolderListener,
 ): AbstractTableAdapter<ColumnHeader, RowHeader, CellItem>() {
 
+    fun <T> updateData(dataProvider: TableViewDataProvider<T>, newData: Collection<T>) {
+        setAllItems(
+            dataProvider.getColumnHeaders(newData),
+            dataProvider.getRowHeaders(newData),
+            dataProvider.getCellItems(newData)
+        )
+    }
+
     /**
      * Cell
      */

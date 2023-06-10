@@ -15,6 +15,8 @@ class GenericTableView<T>(
     private var rowHeaders: List<RowHeader> = emptyList()
     private var cellItems: List<List<CellItem>> = emptyList()
 
+    private var dataProvider: TableViewDataProvider<T>? = null
+
     private var onCellBinding: ((
         viewHolder: CellViewHolder,
         item: CellItem?,
@@ -55,18 +57,25 @@ class GenericTableView<T>(
 
     private var doubleRowHeaderConfigurator: DoubleRowHeaderConfigurator? = null
 
+    var tableAdapter: DefaultTableViewAdapter? = null
+        private set
+
 
     fun create() {
         with(tableView) {
-            val adapter = DefaultTableViewAdapter(
+            tableAdapter = DefaultTableViewAdapter(
                 configurator = doubleRowHeaderConfigurator,
                 tableViewHolderListener = this@GenericTableView,
             )
 
-            setAdapter(adapter)
+            setAdapter(tableAdapter)
 
-            adapter.setAllItems(columnHeaders, rowHeaders, cellItems)
-            adapter.notifyDataSetChanged()
+            if (dataProvider != null) {
+                tableAdapter?.updateData(dataProvider!!, dataSets)
+            } else {
+                tableAdapter?.setAllItems(columnHeaders, rowHeaders, cellItems)
+            }
+            tableAdapter?.notifyDataSetChanged()
 
             columnWidths?.forEach {
                 setColumnWidth(it.first, it.second)
@@ -83,6 +92,22 @@ class GenericTableView<T>(
         }
     }
 
+    fun updateData(newData: Collection<T>) {
+        if (dataProvider != null) {
+            tableAdapter?.updateData(dataProvider!!, newData)
+        }
+    }
+
+    fun setDataProvider(dataProvider: TableViewDataProvider<T>): GenericTableView<T> {
+        this.dataProvider = dataProvider
+
+        // set all items
+        this.columnHeaders = dataProvider.getColumnHeaders(dataSets)
+        this.rowHeaders = dataProvider.getRowHeaders(dataSets)
+        this.cellItems = dataProvider.getCellItems(dataSets)
+
+        return this
+    }
 
     fun buildColumnHeader(vararg title: String): GenericTableView<T> {
         columnHeaders = buildList {

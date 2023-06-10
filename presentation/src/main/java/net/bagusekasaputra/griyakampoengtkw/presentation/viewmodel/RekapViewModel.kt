@@ -11,13 +11,17 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.onCompletion
+import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import net.bagusekasaputra.griyakampoengtkw.domain.DataMode
 import net.bagusekasaputra.griyakampoengtkw.domain.DateUtil
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.rekap.GetListRekapGlobalAsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.rekap.GetRekapBesarDetailAsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.rekap.GetRekapBesarOverviewAsyncUseCase
+import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.rekap.GetRekapGlobalStreamAsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.pembayaran.Pembayaran
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.rekap.PeriodeRekap
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.rekap.RekapBesarDetail
@@ -35,6 +39,7 @@ import javax.inject.Inject
 @HiltViewModel
 class RekapViewModel @Inject constructor(
     private val getListRekapGlobalAsyncUseCase: GetListRekapGlobalAsyncUseCase,
+    private val getRekapGlobalStreamUseCase: GetRekapGlobalStreamAsyncUseCase,
     private val getRekapBesarOverviewAsyncUseCase: GetRekapBesarOverviewAsyncUseCase,
     private val getRekapBesarDetailAsyncUseCase: GetRekapBesarDetailAsyncUseCase,
 ): ViewModel() {
@@ -45,10 +50,13 @@ class RekapViewModel @Inject constructor(
     val rekapDetailTransportLive: LiveData<RekapDetailTransport>
         get() = _rekapDetailTransportLive
 
+    /* Rekap Global */
     private val _listRekapGlobalLive = MutableLiveData<List<RekapGlobal>>(emptyList())
     val listRekapGlobalLive: LiveData<List<RekapGlobal>>
         get() = _listRekapGlobalLive
-
+    // New
+    private val _rekapGlobalList = MutableStateFlow(emptyList<RekapGlobal>())
+    val rekapGlobalList = _rekapGlobalList.asStateFlow()
 
     private val _rekapBesarOverviewLive = MutableLiveData<RekapBesarOverview>()
     val rekapBesarOverviewLive: LiveData<RekapBesarOverview>
@@ -85,10 +93,21 @@ class RekapViewModel @Inject constructor(
 
     var fabScrollMode = FabMode.Downward
     var selectedBackupName: String? = null
+    var dataMode: DataMode = DataMode.ONLINE
 
     var gettingRekapBesarJob: Job? = null
+    var jobFetchRekapGlobal: Job? = null
+        private set
+
+    fun cancelFetchRekapGlobal() {
+        jobFetchRekapGlobal?.cancel()
+    }
 
 
+    /**
+     * Rekap Global
+     */
+    @Deprecated("Migrated to fetchRekapGlobalOfKavlings()")
     fun getListRekapGlobal(onFailure: (msg: String) -> Unit) {
         // Create request for all available Kavlings
         val request = GetListRekapGlobalAsyncUseCase.Request(null)
@@ -115,6 +134,62 @@ class RekapViewModel @Inject constructor(
         }
     }
 
+    fun fetchRekapGlobalOfKavlings(
+        kavlingList: List<String>,
+        exclusionList: List<String>,
+        onLoading: () -> Unit,
+        onCompleted: () -> Unit,
+        onFailed: (msg: String) -> Unit
+    ) {
+        jobFetchRekapGlobal?.cancel()
+
+        jobFetchRekapGlobal = viewModelScope.launch(Dispatchers.IO) {
+            val request = GetRekapGlobalStreamAsyncUseCase.Request(
+                kavlingList = kavlingList,
+                excludedList = exclusionList,
+                dataMode = dataMode,
+            )
+            getRekapGlobalStreamUseCase.execute(request)
+                .onStart {
+                    // clear `_rekapGlobalList`
+                    _rekapGlobalList.update { emptyList() }
+                    withContext(Dispatchers.Main) {
+                        onLoading()
+                    }
+                }
+                .onCompletion { throwable ->
+                    val isSuccess = throwable == null
+                    withContext(Dispatchers.Main) {
+                        if (isSuccess) {
+                            onCompleted()
+                        } else {
+                            onFailed("Tidak dapat menyelesaikan Rekap : ${throwable?.localizedMessage}")
+                        }
+                    }
+                }
+                .collect { result ->
+                    result.onFailure {
+                        withContext(Dispatchers.Main) {
+                            onFailed("Terjadi kesalahan mendapatkan Rekap Global : ${it.localizedMessage}")
+                        }
+                    }
+                    result.onSuccess { items ->
+                        if (!items.isNullOrEmpty()) {
+                            _rekapGlobalList.update { oldList ->
+                                val newList = oldList.toMutableList()
+                                newList.add(items.last())
+
+                                newList
+                            }
+                        }
+                    }
+            }
+        }
+    }
+
+    /**
+     * Rekap Besar
+     */
     fun getRekapBesarOverview(
         periode: PeriodeRekap,
         startDate: Date? = null,

@@ -12,6 +12,7 @@ import net.bagusekasaputra.griyakampoengtkw.domain.entity.pembayaran.Pembayaran.
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.pembayaran.Pembayaran.Companion.tanggalPembelian
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.pembayaran.Pembayaran.Companion.totalUangMasuk
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.rekap.RekapGlobal
+import net.bagusekasaputra.griyakampoengtkw.domain.repository.BlockRepository
 import net.bagusekasaputra.griyakampoengtkw.domain.repository.DataDiriRepository
 import net.bagusekasaputra.griyakampoengtkw.domain.repository.HargaKavlingRepository
 import net.bagusekasaputra.griyakampoengtkw.domain.repository.KavlingRepository
@@ -21,6 +22,8 @@ import net.bagusekasaputra.griyakampoengtkw.domain.repository.PembayaranReposito
  * Get a stream of [RekapGlobal] data.
  */
 class GetRekapGlobalStreamAsyncUseCase(
+    private val blockRepository: BlockRepository,
+    private val kavlingRepository: KavlingRepository,
     private val dataDiriRepository: DataDiriRepository,
     private val pembayaranRepository: PembayaranRepository,
     private val hargaKavlingRepository: HargaKavlingRepository,
@@ -30,12 +33,10 @@ class GetRekapGlobalStreamAsyncUseCase(
      * @param [kavlingList] specify [Kavling.kode] to a [List] of [String] which you want to get the [RekapGlobal] of.
      * If you leave this arguments as an [emptyList], then this use case will assume all available [Kavling]
      * in [KavlingRepository].
-     * **Note**: if you pass an [emptyList], currently will throw a [NotImplementedError].
      *
      * @param [excludedList] specify [Kavling.kode] to a [List] of [String] which you want to _exclude_
      * from fetching [RekapGlobal]. If you leave this arguments as an [emptyList], then this use case will assume all
      * available _excluded_ [Kavling] in [KavlingRepository], which are pre-configured to be _excluded_.
-     * **Note**: if you pass an [emptyList], currently will throw a [NotImplementedError].
      *
      * @param dataMode prefer [DataMode.ONLINE] as the other [DataMode] are either will throw a [NotImplementedError]
      * or simply buggy.
@@ -51,10 +52,13 @@ class GetRekapGlobalStreamAsyncUseCase(
         return flow {
             val resultList = mutableListOf<RekapGlobal>()
 
-            val kavlingList = if (request.kavlingList.isNotEmpty()) {
-                request.kavlingList
-            } else {
-                throw NotImplementedError("Masih dalam pengembangan")
+            val kavlingList = request.kavlingList.ifEmpty {
+                Kavling.fetchKavlingKodesNoDetail(
+                    dataMode = request.dataMode,
+                    blockRepository = blockRepository,
+                    kavlingRepository = kavlingRepository,
+                    rekapExclusion = request.excludedList.isEmpty()
+                )
             }
 
             kavlingList.forEach { kavling ->
@@ -78,14 +82,15 @@ class GetRekapGlobalStreamAsyncUseCase(
                         null else sortedPembayaran.tanggalPembelian().toDate()
                     val uangMasuk = sortedPembayaran?.totalUangMasuk() ?: 0L
 
-
-                    resultList.add(RekapGlobal(
+                    val rekapGlobal = RekapGlobal(
                         noKavling = kavling,
                         namaCostumer = nama,
                         tanggalPembelian = tglPembelian,
                         harga = hargaDanTambahLuasan,
                         jumlahUangMasuk = uangMasuk,
-                    ))
+                    )
+                    resultList.add(rekapGlobal)
+
                     if (resultList.isNotEmpty()) {
                         emit(Result.success(resultList))
                     } else {
