@@ -192,8 +192,8 @@ class KavlingFragment : Fragment(), KavlingRecyclerAdapter.ItemListener {
         lifecycleScope.launch {
             repeatOnLifecycle(Lifecycle.State.CREATED) {
                 viewModel.kavlingAndProgressList.collect {
-
                     kavlingRecyclerAdapter?.update(it)
+                    binding.recyclerKavlings.adapter = kavlingRecyclerAdapter
                 }
             }
         }
