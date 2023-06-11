@@ -2,6 +2,7 @@ package net.bagusekasaputra.griyakampoengtkw.domain.entity.pembayaran
 
 import net.bagusekasaputra.griyakampoengtkw.domain.DateUtil
 import net.bagusekasaputra.griyakampoengtkw.domain.DateUtil.toDate
+import net.bagusekasaputra.griyakampoengtkw.domain.NumberUtil
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.BaselinePembayaran
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.pembayaran.Pembayaran.Companion.filterPeriode
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.rekap.PeriodeRekap
@@ -16,8 +17,13 @@ data class PembayaranBulanan(
     var alokasi: Long = 0L,
 ) {
     val uangMasuk = Pembayaran.hitungTotalUangMasuk(listPembayaran)
+    val uangMasukParsed = NumberUtil.formatLongToString(uangMasuk)
+
     val tunggakan: Long
         get() = baselinePembayaran.jumlahUang - uangMasuk
+    val tunggakanParsed = NumberUtil.formatLongToString(tunggakan)
+
+    val alokasiParsed = NumberUtil.formatLongToString(alokasi)
 
     val kelunasan: Kelunasan
         get() = if (tunggakan <= 0) {

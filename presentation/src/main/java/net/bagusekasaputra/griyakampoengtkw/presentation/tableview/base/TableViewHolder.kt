@@ -1,6 +1,8 @@
 package net.bagusekasaputra.griyakampoengtkw.presentation.tableview.base
 
 import android.view.View
+import android.widget.TextView
+import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.content.ContextCompat
 import com.evrencoskun.tableview.adapter.recyclerview.holder.AbstractSorterViewHolder
 import com.evrencoskun.tableview.adapter.recyclerview.holder.AbstractViewHolder
@@ -17,6 +19,24 @@ import net.bagusekasaputra.griyakampoengtkw.presentation.databinding.TableGeneri
 class CellViewHolder(binding: TableGenericCellViewBinding) : AbstractViewHolder(binding.root) {
     val container = binding.root
     val tvCell = binding.tvCellData
+
+    private val context = container.context
+
+    var bgColour = R.color.table_cell_bg_colour
+    var textColour = R.color.table_text_colour
+
+    override fun setSelected(selectionState: SelectionState) {
+        super.setSelected(selectionState)
+
+        if (!isSelected && !isShadowed) {
+            container.setBackgroundColor(
+                ContextCompat.getColor(context, bgColour)
+            )
+            tvCell.setTextColor(
+                ContextCompat.getColor(context, textColour)
+            )
+        }
+    }
 }
 
 /**
@@ -38,27 +58,17 @@ class ColumnHeaderViewHolder(
     override fun setSelected(selectionState: SelectionState) {
         super.setSelected(selectionState)
 
-        when (selectionState) {
-            SelectionState.SELECTED -> {
-                columnHeaderTextColour = R.color.table_selected_colour
-                columnHeaderTextColour = R.color.white
-            }
-            SelectionState.SHADOWED -> {
-                columnHeaderBackgroundColour = R.color.table_shadowed_colour
-                columnHeaderTextColour = R.color.black
-            }
-            SelectionState.UNSELECTED -> {
-                columnHeaderBackgroundColour = R.color.table_column_header_colour
-                columnHeaderTextColour = R.color.white
-            }
+        if (!isSelected && !isShadowed) {
+            container.setBackgroundColor(
+                ContextCompat.getColor(context, columnHeaderBackgroundColour)
+            )
+            tvColumnHeader.setTextColor(
+                ContextCompat.getColor(context, columnHeaderTextColour)
+            )
         }
 
-        container.setBackgroundColor(
-            ContextCompat.getColor(context, columnHeaderBackgroundColour)
-        )
-        tvColumnHeader.setTextColor(
-            ContextCompat.getColor(context, columnHeaderTextColour)
-        )
+        tvColumnHeader.layoutParams.width = ConstraintLayout.LayoutParams.MATCH_CONSTRAINT
+        tvColumnHeader.requestLayout()
     }
 
     override fun onSortingStatusChanged(pSortState: SortState) {
@@ -95,11 +105,35 @@ class ColumnHeaderViewHolder(
  * Row Header
  */
 abstract class RowHeaderViewHolder(
-    rowHeaderView: View,
+    private val rowHeaderView: View,
     val configurator: DoubleRowHeaderConfigurator?,
 ): AbstractViewHolder(rowHeaderView) {
+    private val context = rowHeaderView.context
 
     abstract fun setRowHeaderText(text: String)
+
+    abstract fun getRowHeaderBgColour(): Int
+
+    abstract fun getTextView(): TextView
+
+    abstract fun getTextViewColour(): Int
+
+    abstract fun setRowHeaderBgColour(colour: Int)
+
+    abstract fun setTextViewColour(colour: Int)
+
+    override fun setSelected(selectionState: SelectionState) {
+        super.setSelected(selectionState)
+
+        if (!isSelected && !isShadowed) {
+            rowHeaderView.setBackgroundColor(
+                ContextCompat.getColor(context, getRowHeaderBgColour())
+            )
+            getTextView().setTextColor(
+                ContextCompat.getColor(context, getTextViewColour())
+            )
+        }
+    }
 }
 
 class SingleRowHeaderViewHolder(
@@ -108,8 +142,31 @@ class SingleRowHeaderViewHolder(
     val container = binding.root
     val tvRowHeader = binding.tvRhNomor
 
+    var bgColour = R.color.table_unselected_colour
+    var textColour = R.color.table_text_colour
+
     override fun setRowHeaderText(text: String) {
         tvRowHeader.text = text
+    }
+
+    override fun getRowHeaderBgColour(): Int {
+        return bgColour
+    }
+
+    override fun getTextView(): TextView {
+        return tvRowHeader
+    }
+
+    override fun getTextViewColour(): Int {
+        return textColour
+    }
+
+    override fun setRowHeaderBgColour(colour: Int) {
+        this.bgColour = colour
+    }
+
+    override fun setTextViewColour(colour: Int) {
+        this.textColour = colour
     }
 }
 
@@ -121,12 +178,35 @@ class DoubleRowHeaderViewHolder(
     val tvNomor = binding.tvRhNomor
     val tvRowHeader = binding.tvRhData
 
+    var bgColour = R.color.table_unselected_colour
+    var textColour = R.color.table_text_colour
+
     override fun setRowHeaderText(text: String) {
         assert(configurator != null)
 
         val split = text.split(configurator!!.cornerTextSeparator)
         tvNomor.text = split[0]
         tvRowHeader.text = split[1]
+    }
+
+    override fun getRowHeaderBgColour(): Int {
+        return bgColour
+    }
+
+    override fun getTextView(): TextView {
+        return tvRowHeader
+    }
+
+    override fun getTextViewColour(): Int {
+        return textColour
+    }
+
+    override fun setRowHeaderBgColour(colour: Int) {
+        this.bgColour = colour
+    }
+
+    override fun setTextViewColour(colour: Int) {
+        this.textColour = colour
     }
 }
 

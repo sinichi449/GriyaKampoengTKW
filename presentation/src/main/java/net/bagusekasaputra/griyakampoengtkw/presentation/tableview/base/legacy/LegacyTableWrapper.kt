@@ -11,6 +11,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import net.bagusekasaputra.griyakampoengtkw.presentation.tableview.base.legacy.LegacyTableViewAdapter.DoubleRowHeaderConfiguration
 
+@Deprecated("Migrate to GenericTableAdapter")
 abstract class LegacyTableWrapper(
     private val tableView: TableView,
 ) {

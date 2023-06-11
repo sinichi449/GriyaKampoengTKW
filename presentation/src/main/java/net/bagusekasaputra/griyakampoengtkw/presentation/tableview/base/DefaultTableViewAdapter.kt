@@ -106,7 +106,7 @@ class DefaultTableViewAdapter(
     }
 
     /**
-     * The row header's text is default to convert [RowHeader.text] into [String].
+     * The row header's text is default to convert [RowHeader.data] into [String].
      */
     override fun onBindRowHeaderViewHolder(
         holder: AbstractViewHolder,
@@ -115,7 +115,7 @@ class DefaultTableViewAdapter(
     ) {
         val viewHolder = holder as RowHeaderViewHolder
 
-        viewHolder.setRowHeaderText(rowHeaderItemModel?.text ?: "-")
+        viewHolder.setRowHeaderText(rowHeaderItemModel?.data ?: "-")
 
         tableViewHolderListener.onBindRowHeaderViewHolder(viewHolder, rowHeaderItemModel, rowPosition)
     }

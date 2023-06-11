@@ -1,7 +1,6 @@
 package net.bagusekasaputra.griyakampoengtkw.presentation.tableview.base
 
 import android.view.View
-import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.evrencoskun.tableview.TableView
 import com.evrencoskun.tableview.listener.ITableViewListener
@@ -33,10 +32,7 @@ class GenericTableView<T>(
         item: ColumnHeader?,
         column: Int
     ) -> Unit)? = null
-    private var onCreateCornerView: ((
-        cornerView: View,
-        tvTitle: TextView
-    ) -> Unit)? = null
+    private var onCornerViewBinding: ((cornerView: View) -> Unit)? = null
 
     private var onClickedCellItem: ((
         cellView: RecyclerView.ViewHolder,
@@ -159,15 +155,26 @@ class GenericTableView<T>(
         return this
     }
 
-    fun setOnCellBinding(
-        onBind: (
-            cellViewHolder: CellViewHolder,
-            cellItem: CellItem?,
-            col: Int,
-            row: Int,
-        ) -> Unit,
-    ): GenericTableView<T> {
+    fun setOnCellBinding(onBind: (cellViewHolder: CellViewHolder, cellItem: CellItem?, col: Int, row: Int, ) -> Unit, ): GenericTableView<T> {
         onCellBinding = onBind
+
+        return this
+    }
+
+    fun setOnColumnHeaderBinding(onBind: (viewHolder: ColumnHeaderViewHolder, item: ColumnHeader?, column: Int) -> Unit): GenericTableView<T> {
+        this.onColumnHeaderBinding = onBind
+
+        return this
+    }
+
+    fun setOnRowHeaderBinding(onBind: (viewHolder: RowHeaderViewHolder, item: RowHeader?, row: Int) -> Unit): GenericTableView<T> {
+        this.onRowHeaderBinding = onBind
+
+        return this
+    }
+
+    fun setOnCornerViewBinding(onBind: (cornerView: View) -> Unit): GenericTableView<T> {
+        this.onCornerViewBinding = onBind
 
         return this
     }
@@ -210,6 +217,10 @@ class GenericTableView<T>(
     }
 
     override fun onCreateCornerView(view: View) {
+        onCornerViewBinding?.let {
+            it(view)
+        }
+
         view.setOnClickListener {
             resetTableSortingStatus()
 
@@ -241,7 +252,11 @@ class GenericTableView<T>(
                 SortState.ASCENDING -> SortState.DESCENDING
                 SortState.DESCENDING -> SortState.UNSORTED
             }
-            sortColumn(column, nextSortState)
+            if (nextSortState != SortState.UNSORTED) {
+                sortColumn(column, nextSortState)
+            } else {
+                resetTableSortingStatus()
+            }
         }
         onClickedColumnHeader?.let {
             it(columnHeaderView, column)

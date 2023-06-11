@@ -157,7 +157,7 @@ class RekapDetailUangMasukFragment : Fragment() {
                 val nomor = index + 1
                 val kavling = pembayaran.kavling
 
-                RowHeader(rowId = kavling, text = "${nomor}${rowHeaderSeparator}${kavling}")
+                RowHeader(rowId = kavling, data = "${nomor}${rowHeaderSeparator}${kavling}")
             }
             .buildCellItems(buildList {
                     add { CellItem(it.kavling, it.namaCostumer) }

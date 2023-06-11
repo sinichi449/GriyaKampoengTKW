@@ -8,14 +8,14 @@ data class ColumnHeader(
 
 data class RowHeader(
     val rowId: String,
-    val text: String
+    val data: String
 ): ISortableModel {
     override fun getId(): String {
         return rowId
     }
 
     override fun getContent(): Any {
-        return text
+        return data
     }
 }
 

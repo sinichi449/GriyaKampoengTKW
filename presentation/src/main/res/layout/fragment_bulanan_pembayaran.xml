@@ -14,11 +14,16 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:column_header_height="@dimen/table_pembayaran_column_header_height"
+        app:column_header_height="@dimen/table_generic_column_header_height"
         app:row_header_width="@dimen/table_generic_single_row_header_width"
-        app:separator_color="@color/black"
+        app:separator_color="@color/table_separator_colour"
+        app:unselected_color="@color/table_unselected_colour"
+        app:shadow_color="@color/table_shadowed_colour"
         app:show_horizontal_separator="true"
         app:show_vertical_separator="true"
+        app:allow_click_inside_cell="true"
+        app:allow_click_inside_row_header="true"
+        app:allow_click_inside_column_header="true"
         android:layout_marginHorizontal="4dp"/>
 
     <com.google.android.material.divider.MaterialDivider

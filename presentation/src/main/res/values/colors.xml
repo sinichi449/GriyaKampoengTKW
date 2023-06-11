@@ -15,9 +15,11 @@
     <color name="pembayaran_bulanan_nil">#E1E1E1</color>
 
     <color name="table_selected_colour">#FFF59D</color>
-    <color name="table_shadowed_colour">#f2f2f2</color>
+    <color name="table_text_selected_colour">@color/black</color>
+    <color name="table_shadowed_colour">#9FA8DA</color>
     <color name="table_unselected_colour">#ffffff</color>
     <color name="table_column_header_colour">@color/abang</color>
+    <color name="table_cell_bg_colour">@color/white</color>
     <color name="table_text_colour">#000000</color>
     <color name="table_separator_colour">#000000</color>
 

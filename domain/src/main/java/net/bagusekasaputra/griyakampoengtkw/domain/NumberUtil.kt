@@ -23,4 +23,12 @@ object NumberUtil {
     fun formatStringToLong(numStr: String): Long {
         return numStr.replace(",", "").toLong()
     }
+
+    /**
+     * Extension for [formatLongToString]
+     */
+    fun Long.numericToString(): String {
+        return formatLongToString(this)
+    }
+
 }
