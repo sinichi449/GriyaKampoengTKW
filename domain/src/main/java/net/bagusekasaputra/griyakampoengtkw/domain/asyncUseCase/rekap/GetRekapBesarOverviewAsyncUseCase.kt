@@ -167,7 +167,7 @@ class GetRekapBesarOverviewAsyncUseCase(
 
 
                     val totalPembayaranPerKavlingBaru = Pembayaran.hitungTotalUangMasuk(listPembayaranBaru ?: emptyList())
-                    val totalSisaBelumBayarPerKavlingBaru = Pembayaran.hitungTotalSisaBelumBayar(hargaKavlingBaru ?: HargaKavling(kavling, "0", "0"), totalPembayaranPerKavlingBaru)
+                    val totalSisaBelumBayarPerKavlingBaru = Pembayaran.hitungTotalSisaBelumBayarWithTambahLuasan(hargaKavlingBaru ?: HargaKavling(kavling, "0", "0"), totalPembayaranPerKavlingBaru)
                     val totalBiayaMarketingPerKavlingBaru = BiayaMarketing.hitungTotalBiayaMarketing(listBiayaMarketingBaru ?: emptyList())
 
                     // Sum it UP!
@@ -517,7 +517,7 @@ class GetRekapBesarOverviewAsyncUseCase(
                 val uangMasukKavling = Pembayaran.hitungTotalUangMasuk(pembayaranList)
 
                 totalUangMasuk += uangMasukKavling
-                totalSisaBelumBayar += Pembayaran.hitungTotalSisaBelumBayar(hargaKavling, uangMasukKavling)
+                totalSisaBelumBayar += Pembayaran.hitungTotalSisaBelumBayarWithTambahLuasan(hargaKavling, uangMasukKavling)
                 totalFeeMarketing += feeMarketing.parsedBiayaMarketer
                 totalBiayaMarketing += BiayaMarketing.hitungTotalBiayaMarketing(biayaMarketingList)
             }

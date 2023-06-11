@@ -126,7 +126,7 @@ data class Pembayaran(
             return mTotal
         }
 
-        fun hitungTotalSisaBelumBayar(hargaKavling: HargaKavling, jumlahUangMasukKavling: Long): Long {
+        fun hitungTotalSisaBelumBayarWithTambahLuasan(hargaKavling: HargaKavling, jumlahUangMasukKavling: Long): Long {
             return hargaKavling.hargaDanTambahLuasan - jumlahUangMasukKavling
         }
 
