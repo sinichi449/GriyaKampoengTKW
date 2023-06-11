@@ -9,6 +9,8 @@ import java.util.Date
 
 object DateUtil {
 
+    fun getBulanSekarang() = Calendar.getInstance().get(Calendar.MONTH) + 1
+
     fun getTahunSekarang() = Calendar.getInstance().get(Calendar.YEAR)
 
     fun getYearlyRangeDate(): List<Date> {
