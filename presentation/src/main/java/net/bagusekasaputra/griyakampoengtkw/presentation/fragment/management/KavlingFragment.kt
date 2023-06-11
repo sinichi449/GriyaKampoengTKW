@@ -33,18 +33,15 @@ import kotlinx.coroutines.launch
 import net.bagusekasaputra.griyakampoengtkw.domain.DataMode
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.Block
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.kavling.Kavling
-import net.bagusekasaputra.griyakampoengtkw.domain.entity.kavling.ProgressKavling
 import net.bagusekasaputra.griyakampoengtkw.presentation.R
 import net.bagusekasaputra.griyakampoengtkw.presentation.activity.DetailActivity
 import net.bagusekasaputra.griyakampoengtkw.presentation.activity.MainActivity
 import net.bagusekasaputra.griyakampoengtkw.presentation.adapter.recyclerview.BlockRecyclerAdapter
 import net.bagusekasaputra.griyakampoengtkw.presentation.adapter.recyclerview.KavlingRecyclerAdapter
-import net.bagusekasaputra.griyakampoengtkw.presentation.adapter.recyclerview.KavlingRecyclerAdapterLegacy
 import net.bagusekasaputra.griyakampoengtkw.presentation.databinding.DialogAddBlockBinding
 import net.bagusekasaputra.griyakampoengtkw.presentation.databinding.DialogAddKavlingBinding
 import net.bagusekasaputra.griyakampoengtkw.presentation.databinding.DialogEditKavlingBinding
 import net.bagusekasaputra.griyakampoengtkw.presentation.databinding.FragmentKavlingBinding
-import net.bagusekasaputra.griyakampoengtkw.presentation.model.UiState
 import net.bagusekasaputra.griyakampoengtkw.presentation.util.DialogUtil
 import net.bagusekasaputra.griyakampoengtkw.presentation.util.FabHelper
 import net.bagusekasaputra.griyakampoengtkw.presentation.util.InputUtil
@@ -234,143 +231,6 @@ class KavlingFragment : Fragment(), KavlingRecyclerAdapter.ItemListener {
     override fun onKavlingItemHold(kavlingView: MaterialCardView, anchor: View, position: Int): Boolean {
         // TODO
         return false
-    }
-
-    @Deprecated("Migrated to FragmentKavlingBinding.setupWithViewModel()")
-    @SuppressLint("SetTextI18n")
-    private fun setupViewModelLegacy() {
-        viewModel.blocksLive.observe(requireActivity()) {
-            it?.let {
-                setupBlockRecyclerview(it)
-            }
-        }
-
-        viewModel.kavlingAndProgress.observe(requireActivity()) {
-            it?.also { kavlingAndProgress ->
-                val kavlings = kavlingAndProgress.first
-                val mapProgressKavling = kavlingAndProgress.second ?: emptyMap()
-
-                if (mapProgressKavling.isNotEmpty()) {
-                    Log.d("STATUS_PEMBAYARAN", "Success KavlingFragment not null!")
-
-                    mapProgressKavling.keys.forEach { kavling ->
-                        val persentase = mapProgressKavling[kavling]?.persentaseBulanIni()
-
-                        Log.d("STATUS_PEMBAYARAN", "${kavling}: ${persentase}%")
-                    }
-                } else {
-                    Log.d("STATUS_PEMBAYARAN", "KavlingFragment got NULL Progress")
-                }
-
-                if (!kavlings.isNullOrEmpty()) {
-                    setupKavlingRecyclerView(kavlings, mapProgressKavling)
-                }
-            }
-        }
-
-        viewModel.isFinishOperation.observe(requireActivity()) {
-            it?.let { finish ->
-                binding.swipeRefreshMain.isRefreshing = !finish
-            }
-        }
-
-        viewModel.currentBlock.observe(requireActivity()) { blockKode ->
-            val infoBlokText = "Blok"
-            if (blockKode != null) {
-                val keteranganBlok = when (blockKode) {
-                    "A" -> "A Lantai 1"
-                    "B" -> "B Lantai 2"
-                    "C" -> "C Lantai 1 (Type Custom)"
-                    else -> "D (Developer)"
-                }
-
-                binding.tvInfoBlock?.text = "$infoBlokText $keteranganBlok"
-            } else {
-                binding.tvInfoBlock?.text = infoBlokText
-            }
-        }
-
-    }
-
-    @Deprecated("Migrated to sync()")
-    private fun syncDataLegacy() {
-        viewModel.getAllBlocks(
-            onLoading = {},
-            onComplete = {},
-            onFailure = {
-                Snackbar.make(binding.root, it, Snackbar.LENGTH_LONG).show()
-            }
-        )
-
-        val currentBlock = viewModel.currentBlock.value
-        if (currentBlock != null) {
-            viewModel.getKavlings(currentBlock) { failMsg ->
-                Snackbar.make(binding.root, failMsg, Snackbar.LENGTH_LONG).show()
-            }
-
-            viewModel.getProgressAllKavling(currentBlock)
-        }
-    }
-
-    @Deprecated("Migrated to RecyclerView.setupBlocks()")
-    private fun setupBlockRecyclerview(blocks: List<Block>) {
-        val adapter = BlockRecyclerAdapter(blocks) { position ->
-            val selectedBlock = blocks[position].kode
-
-            // Update the selected block in the viewModel
-            viewModel.currentBlock.value = selectedBlock
-
-            viewModel.getKavlings(
-                blockKode = selectedBlock,
-                onFailure = { Toast.makeText(requireContext(), it, Toast.LENGTH_SHORT).show() }
-            )
-
-            // Get Progress Kavling
-            viewModel.getProgressAllKavling(selectedBlock)
-        }
-
-        binding.recyclerBlocks.adapter = adapter
-
-        // If screen orientation is Landscape, then set the
-        // Block Recycler orientation to be Vertical instead, with a GridView
-        val screenOrientation = resources.configuration.orientation
-        binding.recyclerBlocks.layoutManager = if (screenOrientation == Configuration.ORIENTATION_LANDSCAPE)
-            GridLayoutManager(requireContext(), 2)
-        else
-            LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false)
-    }
-
-    @Deprecated("")
-    private fun setupKavlingRecyclerView(kavlings: List<Kavling>, mapProgressKavling: Map<String, ProgressKavling>) {
-        val adapter = KavlingRecyclerAdapterLegacy(kavlings, mapProgressKavling,
-            onRecyclerItemClick = {
-                val intent = Intent(requireContext(), DetailActivity::class.java).apply {
-                    putExtra(MainActivity.INTENT_KAVLING_KODE, kavlings[it].kode)
-                }
-                startActivity(intent)
-            },
-            onRecyclerItemHold = { anchor, position ->
-                showPopupActionKalvingDialog(anchor, kavlings[position])
-            }
-        )
-
-//        val customAdapter = ScaleInAnimationAdapter(adapter)
-
-//        kavlingRecyclerView.adapter = customAdapter
-
-        binding.recyclerKavlings.adapter = adapter
-
-        // If screen is in Landscape mode, I want to show more spans number in the kavling
-        val screenOrientation = resources.configuration.orientation
-        val spansCount = if (screenOrientation == Configuration.ORIENTATION_LANDSCAPE) 5 else 3
-        binding.recyclerKavlings.layoutManager = GridLayoutManager(requireContext(), spansCount)
-
-
-//        val kavlingRecyclerState = viewModel.kavlingRecyclerState
-//        if (kavlingRecyclerState != null) {
-//            kavlingRecyclerView.layoutManager?.onRestoreInstanceState(kavlingRecyclerState)
-//        }
-        binding.recyclerKavlings.setHasFixedSize(true)
     }
 
     @SuppressLint("SetTextI18n")
@@ -608,37 +468,5 @@ class KavlingFragment : Fragment(), KavlingRecyclerAdapter.ItemListener {
                 }
             }
         })
-    }
-
-    @Deprecated("")
-    private fun observeKavlingListLegacy() {
-        lifecycleScope.launch {
-            repeatOnLifecycle(Lifecycle.State.CREATED) {
-                viewModel.kavlingFragmentUiState.collect {
-                    it?.also {  uiState ->
-                        with(binding) {
-                            when (uiState) {
-                                is UiState.Loading -> {
-                                    swipeRefreshMain.isRefreshing = true
-                                }
-                                is UiState.Success -> {
-                                    swipeRefreshMain.isRefreshing = false
-
-                                    uiState.data?.also { kavlingUiState ->
-                                        setupKavlingRecyclerView(
-                                            kavlings = kavlingUiState.kavlingList,
-                                            mapProgressKavling = kavlingUiState.progressKavlingMap,
-                                        )
-                                    }
-                                }
-                                is UiState.Failure -> {
-                                    Toast.makeText(requireContext(), uiState.failMsg, Toast.LENGTH_LONG).show()
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        }
     }
 }
