@@ -46,7 +46,6 @@ import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.indenBooking.pem
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.kavling.GetKavlingAndProgressStreamAsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.kavling.GetKavlingByBlockAsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.kavling.GetListUnmigratedKavlingsAsyncUseCase
-import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.kavling.GetProgressKavlingAsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.pembayaran.DeletePembayaranAsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.pembayaran.GetListPembayaranBulananAsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.pembayaran.GetSinglePembayaranByKavlingAndTerminAsyncUseCase
@@ -653,19 +652,6 @@ object UseCaseModule {
     fun provideSetBaselinePembayaranUseCase(baselinePembayaranRepository: BaselinePembayaranRepository): SetBaselinePembayaranAsyncUseCase {
         return SetBaselinePembayaranAsyncUseCase(baselinePembayaranRepository)
     }
-
-
-    /**
-     * Progress Kavling
-     */
-    @Provides
-    fun provideGetProgressKavlingUseCase(
-        @Default pembayaranRepository: PembayaranRepository,
-        baselinePembayaranRepository: BaselinePembayaranRepository,
-    ): GetProgressKavlingAsyncUseCase {
-        return GetProgressKavlingAsyncUseCase(baselinePembayaranRepository, pembayaranRepository)
-    }
-
 
     /**
      * Status Pembayaran

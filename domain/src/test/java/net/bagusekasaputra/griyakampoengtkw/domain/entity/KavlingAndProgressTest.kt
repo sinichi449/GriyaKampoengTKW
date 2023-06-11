@@ -10,6 +10,17 @@ import kotlin.random.Random
 
 class KavlingAndProgressTest {
 
+    /**
+     * Functional Tests
+     */
+    @Test
+    fun persentaseBulanIni_shouldBasedOnTotalTunggakan() {
+
+    }
+
+    /**
+     * Conditional Tests
+     */
     @Test
     fun givenUnsortedListOfThis_shouldSortedByKavling() {
         val blok = "C"

@@ -26,8 +26,6 @@ class GetProgressKavlingUseCaseTest {
         baselineRepository = baselinePembayaranRepository,
     )
 
-    private lateinit var kavlingKodeList: List<String>
-
     private companion object {
         const val BULAN_INI = 6
         const val TAHUN_INI = 2023
@@ -38,8 +36,6 @@ class GetProgressKavlingUseCaseTest {
         runTest {
             val blok = "A"
             val kavling = "A4"
-            val bulanAngsuran = 6
-            val tahunAngsuran = 2023
 
             /*
             Kav. A4
@@ -59,8 +55,8 @@ class GetProgressKavlingUseCaseTest {
             val request = GetKavlingAndProgressStreamAsyncUseCase.Request(
                 blok = blok,
                 dataMode = DEFAULT_DATA_MODE,
-                bulanAngsuran = bulanAngsuran,
-                tahunAngsuran = tahunAngsuran
+                bulanAngsuran = BULAN_INI,
+                tahunAngsuran = TAHUN_INI,
             )
             var progressKavlingList = emptyList<KavlingAndProgress>()
             useCase.execute(request).collect { result ->
