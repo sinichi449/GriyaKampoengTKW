@@ -1,5 +1,6 @@
 package net.bagusekasaputra.griyakampoengtkw.domain.entity
 
+import net.bagusekasaputra.griyakampoengtkw.domain.DateUtil
 import net.bagusekasaputra.griyakampoengtkw.domain.DateUtil.toDate
 import net.bagusekasaputra.griyakampoengtkw.domain.DateUtil.toLocalDate
 import net.bagusekasaputra.griyakampoengtkw.domain.NumberUtil
@@ -12,6 +13,8 @@ import java.math.RoundingMode
 import java.time.Period
 import java.util.Calendar
 import java.util.Date
+import net.bagusekasaputra.griyakampoengtkw.domain.entity.pembayaran.BulanAngsuran
+import net.bagusekasaputra.griyakampoengtkw.domain.entity.pembayaran.Pembayaran.Companion.FILTER_USING_BULAN_ANGSURAN
 
 data class BaselinePembayaran(
     val kavling: String,
@@ -22,16 +25,27 @@ data class BaselinePembayaran(
 ) {
     val parsedJumlahUang = NumberUtil.formatLongToString(jumlahUang)
 
-    fun hitungSisaBlmBayarBulanIni(listPembayaran: List<Pembayaran>): Long {
+    fun hitungSisaBlmBayarBulanIni(
+        listPembayaran: List<Pembayaran>,
+        bulan: Int = DateUtil.getBulanSekarang(),
+        tahun: Int = DateUtil.getTahunSekarang(),
+    ): Long {
         var totalPembayaranBulanIni = 0L
 
-        listPembayaran.filterPeriode(PeriodeRekap.BULAN_INI, null, null)?.forEach {
+        val dateRange = DateUtil.getMonthlyRangeDate(bulan - 1, tahun)
+        val startDate = dateRange.first()
+        val endDate = dateRange.last()
+        listPembayaran.filterPeriode(
+            PeriodeRekap.CUSTOM, startDate, endDate,
+            FILTER_USING_BULAN_ANGSURAN
+        )?.forEach {
             totalPembayaranBulanIni += it.parsedJumlahUangDibayar
         }
 
         // Sisa Belum Bayar = Angsuran Bulanan - Total Pembayaran Bulan Ini
         val sisaBelumBayarBulanIni = jumlahUang - totalPembayaranBulanIni
 
+        // Prevent negative value
         if (sisaBelumBayarBulanIni < 0L) {
             return 0L
         }
@@ -39,6 +53,10 @@ data class BaselinePembayaran(
         return sisaBelumBayarBulanIni
     }
 
+    /**
+     * Calculate remaining month from tanggal pembelian and [opsiBulan] to current month.
+     * **Note:** Not to be confused with [BulanAngsuran].
+     */
     fun hitungSisaBulanAngsuran(sortedPembayarans: List<Pembayaran>): Int {
         val tanggalPembelian = Pembayaran.getTanggalPembelian(sortedPembayarans).toDate()
 
