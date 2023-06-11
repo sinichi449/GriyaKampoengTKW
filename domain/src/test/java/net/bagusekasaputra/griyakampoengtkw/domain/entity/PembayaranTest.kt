@@ -25,7 +25,6 @@ import net.bagusekasaputra.griyakampoengtkw.domain.repository.MockHargaRumahInde
 import net.bagusekasaputra.griyakampoengtkw.domain.repository.MockPembayaranRepository
 import net.bagusekasaputra.griyakampoengtkw.domain.repository.MockRepository
 import net.bagusekasaputra.griyakampoengtkw.domain.repository.MockRepository.Companion.DEFAULT_DATA_MODE
-import net.bagusekasaputra.griyakampoengtkw.domain.util.DefaultTableFormatter
 import net.bagusekasaputra.griyakampoengtkw.domain.util.getTestingFile
 import org.junit.Assert
 import org.junit.Test
@@ -317,39 +316,5 @@ class PembayaranTest {
         val shuffledUangMasuk = shuffledPembayaran?.totalUangMasuk()
 
         Assert.assertEquals(sortedUangMasuk, shuffledUangMasuk)
-    }
-
-    @Test
-    fun whenAtPreviousMonthsDoNotExistBulanAngsuran_shouldInvoiceSetToThoseMonths() = runTest {
-        val kavling = "A12"
-        val pembayaranList = mockPembayaranRepository.getAllPembayaran(kavling, DEFAULT_DATA_MODE)
-            .first()
-            .getOrThrow()!!
-            .sortByTermin()
-
-        DefaultTableFormatter.Builder()
-            .setColumnHeaders(
-                listOf("No.", "Termin", "Invoice", "Tanggal", "Uang Dibayar")
-            )
-            .setRowHeaders(buildList {
-                repeat(pembayaranList.size) {
-                    add(it + 1)
-                }
-            })
-            .setCellItems(buildList {
-                pembayaranList.forEach { item ->
-                    val cell = mutableListOf<String>()
-
-                    cell.add(item.termin)
-                    cell.add(item.bulanAngsuran.bulanAndTahun)
-                    cell.add(item.tanggal)
-                    cell.add(item.jumlahUangDibayar)
-
-                    add(cell)
-                }
-            })
-            .setNumOfWhiteSpaces(12)
-            .build()
-            .print()
     }
 }
