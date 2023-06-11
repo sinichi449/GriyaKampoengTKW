@@ -1,4 +1,4 @@
-package net.bagusekasaputra.griyakampoengtkw.domain.entity
+package net.bagusekasaputra.griyakampoengtkw.domain.entity.misc
 
 sealed class UseCaseException(cause: Throwable): Throwable(cause) {
 

@@ -7,9 +7,9 @@ import kotlinx.coroutines.flow.flow
 import net.bagusekasaputra.griyakampoengtkw.domain.DataMode
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.AsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.BaselinePembayaran
-import net.bagusekasaputra.griyakampoengtkw.domain.entity.kavling.ProgressKavlingLegacy
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.kavling.KavlingAndProgress
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.kavling.KavlingAndProgress.Companion.sortByKavling
+import net.bagusekasaputra.griyakampoengtkw.domain.entity.kavling.ProgressKavlingLegacy
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.pembayaran.Pembayaran
 import net.bagusekasaputra.griyakampoengtkw.domain.repository.BaselinePembayaranRepository
 import net.bagusekasaputra.griyakampoengtkw.domain.repository.KavlingRepository

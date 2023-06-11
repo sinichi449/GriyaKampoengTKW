@@ -22,7 +22,7 @@ import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import net.bagusekasaputra.griyakampoengtkw.domain.DateUtil.toSlashedString
-import net.bagusekasaputra.griyakampoengtkw.domain.entity.ProgressState
+import net.bagusekasaputra.griyakampoengtkw.domain.entity.misc.ProgressState
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.rekap.RekapGlobal
 import net.bagusekasaputra.griyakampoengtkw.presentation.databinding.FragmentRekapGlobalBinding
 import net.bagusekasaputra.griyakampoengtkw.presentation.databinding.LayoutWarningAndLoadingRekapBinding

@@ -5,8 +5,8 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
-import net.bagusekasaputra.griyakampoengtkw.domain.entity.Result
-import net.bagusekasaputra.griyakampoengtkw.domain.entity.UseCaseException
+import net.bagusekasaputra.griyakampoengtkw.domain.entity.misc.Result
+import net.bagusekasaputra.griyakampoengtkw.domain.entity.misc.UseCaseException
 
 abstract class UseCase<I: UseCase.Request, O: UseCase.Response> {
 
