@@ -4,17 +4,33 @@ import net.bagusekasaputra.griyakampoengtkw.domain.DateUtil
 import net.bagusekasaputra.griyakampoengtkw.domain.DateUtil.getCustomRangeDate
 import net.bagusekasaputra.griyakampoengtkw.domain.DateUtil.getWeeklyRangeDate
 import net.bagusekasaputra.griyakampoengtkw.domain.DateUtil.isWithinRange
-import net.bagusekasaputra.griyakampoengtkw.domain.DateUtil.normalize
 import net.bagusekasaputra.griyakampoengtkw.domain.DateUtil.toDate
 import net.bagusekasaputra.griyakampoengtkw.domain.NumberUtil
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.HargaKavling
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.indenBooking.HargaRumahIndenBooking
+import net.bagusekasaputra.griyakampoengtkw.domain.entity.pembayaran.Pembayaran.JenisPembayaran
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.rekap.PeriodeRekap
 import java.math.BigDecimal
 import java.math.RoundingMode
 import java.util.Calendar
 import java.util.Date
 
+/**
+ * A class for representing Pembayaran. You must pass these essential arguments: [termin],
+ * [tanggal], [jumlahUangDibayar], [keterangan], and [timeMillis].
+ *
+ * @param termin must be a combination of [JenisPembayaran] and an integer. E.g: **ITJ 1**, **DP 3**,
+ * **Termin 20**, etc. Note that between [JenisPembayaran] and the integer, there should be a **whitespace**.
+ * Don't pass this kind of argument: _ITJ1_, _DP3_, _Termin20_, etc.
+ * @param tanggal a slashed-style date to show when the [Pembayaran] occurred,
+ * for example: _17/12/2023_ would means December, 17th 2023. Highly recommended to pad the Integer < 10 with **0**. So, to represent June, 9th 2023 would be
+ * _09/06/2023_.
+ * @param jumlahUangDibayar a comma separated [String] represents the amount of [Pembayaran].
+ * For example: _1,000,000_, 3,500,000_, etc.
+ * @param bulanAngsuran specify [BulanAngsuran], which refers to at what month and year the [Pembayaran]
+ * should be.
+ *
+ */
 data class Pembayaran(
     val termin: String,
     val tanggal: String,
@@ -349,56 +365,6 @@ data class Pembayaran(
     interface PembayaranSorter {
         fun sort(pembayaranList: List<Pembayaran>): List<Pembayaran>
     }
-}
-
-/**
- * Tanggal is set to Calendar.getActualMinimum(DAY_OF_MONTH)
- */
-data class BulanAngsuran(
-    // Not calendar type!!
-    val bulan: Int,
-    val tahun: Int,
-) {
-    val date: Date get() {
-        val calendar = Calendar.getInstance()
-        calendar.set(Calendar.YEAR, tahun)
-        calendar.set(Calendar.MONTH, bulan - 1)
-        calendar.set(Calendar.DAY_OF_MONTH, calendar.getActualMinimum(Calendar.DAY_OF_MONTH))
-        calendar.normalize()
-
-        return calendar.time
-    }
-
-    val bulanAndTahun: String get() {
-        val bulanPadded = bulan.toString().padStart(2, '0')
-
-        return "${bulanPadded}${DEFAULT_SEPARATOR}${tahun}"
-    }
-
-
-    companion object {
-        const val DEFAULT_SEPARATOR = "/"
-        // Parse tanggal pembayaran into Bulan Angsuran
-        fun defaultToTanggalPembayaran(tanggalPembayaran: String): BulanAngsuran {
-            val calendar = Calendar.getInstance().apply {
-                time = tanggalPembayaran.toDate()
-            }
-            val bulan = calendar.get(Calendar.MONTH) + 1
-            val tahun = calendar.get(Calendar.YEAR)
-
-            return BulanAngsuran(bulan, tahun)
-        }
-
-        fun fromString(invoiceUntuk: String, separator: String): BulanAngsuran {
-            val separateBulanAndTahun = invoiceUntuk.split(separator)
-
-            return BulanAngsuran(
-                bulan = separateBulanAndTahun[0].toInt(),
-                tahun = separateBulanAndTahun[1].toInt(),
-            )
-        }
-    }
-
 }
 
 /**
