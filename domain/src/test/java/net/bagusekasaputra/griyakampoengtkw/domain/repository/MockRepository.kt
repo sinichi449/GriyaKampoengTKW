@@ -264,7 +264,7 @@ class MockRepository(private val testingFile: File) {
                 val kavling = invocation.arguments[0]!!.toString()
                 val hargaKavlingJson = testingFile.nodeReference()
                     ?.getAsJsonObject(TestingDataNodes.HARGA_KAVLING)
-                    ?.getAsJsonObject(TestingDataNodes.KAVLINGS)
+                    ?.getAsJsonObject(kavling)
 
                 val hargaKavling = hargaKavlingJson?.let {
                     Gson().fromJson(it, HargaKavlingJson::class.java)?.toDomain()

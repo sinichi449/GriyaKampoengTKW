@@ -31,4 +31,11 @@ object NumberUtil {
         return formatLongToString(this)
     }
 
+    /**
+     * Extension for [formatStringToLong]
+     */
+    fun String.numericToLong(): Long {
+        return formatStringToLong(this)
+    }
+
 }
