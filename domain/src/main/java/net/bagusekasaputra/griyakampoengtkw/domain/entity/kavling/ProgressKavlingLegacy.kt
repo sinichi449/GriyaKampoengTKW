@@ -8,7 +8,8 @@ import java.math.RoundingMode
 /**
  * Progress kavling should based on [BulanAngsuran] as opposed to [Pembayaran.tanggal].
  */
-data class ProgressKavling(
+@Deprecated("Migrated to ProgressKavlingLegacy")
+data class ProgressKavlingLegacy(
     val kavling: String,
     val angsuranBulanan: Long,
     val uangMasukBulanIni: Long,
@@ -35,8 +36,8 @@ data class ProgressKavling(
     }
 
     companion object {
-        fun EMPTY(kavling: String): ProgressKavling {
-            return ProgressKavling(
+        fun EMPTY(kavling: String): ProgressKavlingLegacy {
+            return ProgressKavlingLegacy(
                 kavling = kavling,
                 angsuranBulanan = 0L,
                 uangMasukBulanIni = 0L,

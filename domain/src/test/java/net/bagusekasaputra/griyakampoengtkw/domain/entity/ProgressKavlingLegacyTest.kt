@@ -1,32 +1,32 @@
 package net.bagusekasaputra.griyakampoengtkw.domain.entity
 
-import net.bagusekasaputra.griyakampoengtkw.domain.entity.kavling.ProgressKavling
+import net.bagusekasaputra.griyakampoengtkw.domain.entity.kavling.ProgressKavlingLegacy
 import org.junit.Assert
 import org.junit.Test
 import kotlin.random.Random
 
-class ProgressKavlingTest {
+class ProgressKavlingLegacyTest {
 
     @Test
     fun whenUangMasukBulanIniIsLessThanZero_shouldNotShowIconSudahBayar_adaPembayaranIsFalse() {
-        val progressKavling = ProgressKavling(
+        val progressKavlingLegacy = ProgressKavlingLegacy(
             kavling = "",
             angsuranBulanan = 0,
             uangMasukBulanIni = Random.nextLong(from = -128, until = 0)
         )
 
-        Assert.assertEquals(false, progressKavling.adaPembayaran)
+        Assert.assertEquals(false, progressKavlingLegacy.adaPembayaran)
     }
 
     @Test
     fun whenAngsuranBulananAndUangMasukBulanIniIsZero_shouldReturnZeroPersentase() {
-        val progressKavling = ProgressKavling(
+        val progressKavlingLegacy = ProgressKavlingLegacy(
             kavling = "",
             angsuranBulanan = 0,
             uangMasukBulanIni = 0,
         )
 
-        Assert.assertEquals(0, progressKavling.persentaseBulanIni())
+        Assert.assertEquals(0, progressKavlingLegacy.persentaseBulanIni())
     }
 
 }

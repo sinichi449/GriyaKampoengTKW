@@ -3,7 +3,7 @@ package net.bagusekasaputra.griyakampoengtkw.domain.entity.kavling
 data class KavlingAndProgress(
     val blok: String,
     val kavling: Kavling,
-    val progress: ProgressKavling,
+    val progress: ProgressKavlingLegacy,
 ) {
 
     companion object {

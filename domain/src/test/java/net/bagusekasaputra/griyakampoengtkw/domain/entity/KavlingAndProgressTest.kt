@@ -3,7 +3,7 @@ package net.bagusekasaputra.griyakampoengtkw.domain.entity
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.kavling.Kavling
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.kavling.KavlingAndProgress
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.kavling.KavlingAndProgress.Companion.sortByKavling
-import net.bagusekasaputra.griyakampoengtkw.domain.entity.kavling.ProgressKavling
+import net.bagusekasaputra.griyakampoengtkw.domain.entity.kavling.ProgressKavlingLegacy
 import org.junit.Assert
 import org.junit.Test
 import kotlin.random.Random
@@ -30,12 +30,12 @@ class KavlingAndProgressTest {
                 val numKavling = it + 1
                 val kode = "${blok}${numKavling}"
                 val kavling = Kavling.EMPTY(kode)
-                val progressKavling = ProgressKavling.EMPTY(kode)
+                val progressKavlingLegacy = ProgressKavlingLegacy.EMPTY(kode)
 
                 add(KavlingAndProgress(
                     blok = blok,
                     kavling = kavling,
-                    progress = progressKavling,
+                    progress = progressKavlingLegacy,
                 ))
             }
         }
@@ -61,7 +61,7 @@ class KavlingAndProgressTest {
                 add(KavlingAndProgress(
                     blok = blok,
                     kavling = Kavling.EMPTY(kode),
-                    progress = ProgressKavling.EMPTY(kode),
+                    progress = ProgressKavlingLegacy.EMPTY(kode),
                 ))
             }
         }
