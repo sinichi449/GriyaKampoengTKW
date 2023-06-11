@@ -12,7 +12,6 @@ import androidx.core.content.ContextCompat
 import androidx.core.graphics.TypefaceCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
-import androidx.lifecycle.lifecycleScope
 import com.evrencoskun.tableview.TableView
 import dagger.hilt.android.AndroidEntryPoint
 import net.bagusekasaputra.griyakampoengtkw.domain.NumberUtil
@@ -28,7 +27,6 @@ import net.bagusekasaputra.griyakampoengtkw.presentation.tableview.base.GenericT
 import net.bagusekasaputra.griyakampoengtkw.presentation.tableview.base.RowHeader
 import net.bagusekasaputra.griyakampoengtkw.presentation.tableview.base.SingleRowHeaderViewHolder
 import net.bagusekasaputra.griyakampoengtkw.presentation.tableview.base.TableViewDataProvider
-import net.bagusekasaputra.griyakampoengtkw.presentation.tableview.formPembayaran.BulananPembayaranTableWrapper
 import net.bagusekasaputra.griyakampoengtkw.presentation.viewmodel.FormPembayaranViewModel
 import java.util.Calendar
 import kotlin.math.absoluteValue
@@ -118,7 +116,6 @@ class BulananPembayaranFragment : Fragment() {
     private fun setupViewModel() {
         viewModel.pembayaranBulanansLive.observe(requireActivity()) {
             it?.also {
-//                setTablePembayaranBulanan(it)
                 binding.tablePembayaranBulanan.setupTablePembayaranBulanan(it)
                 setTotalTunggakan(it)
             }
@@ -192,8 +189,8 @@ class BulananPembayaranFragment : Fragment() {
 
                             val tunggakan = cellItem?.data as Long
                             cellBackgroundColour = if (tunggakan < 0L) android.R.color.darker_gray
-                                else if (tunggakan == 0L) R.color.white
-                                else R.color.pembayaran_bulanan_belum_lunas
+                            else if (tunggakan == 0L) R.color.white
+                            else R.color.pembayaran_bulanan_belum_lunas
 
                             tvCell.text = tunggakan.numericToString()
                         }
@@ -233,12 +230,6 @@ class BulananPembayaranFragment : Fragment() {
                 }
             }
             .create()
-    }
-
-    @Deprecated("Migrated to setupTablePembayaranBulanan()")
-    private fun setTablePembayaranBulanan(pembayaranBulanans: List<PembayaranBulanan>) {
-        BulananPembayaranTableWrapper(binding.tablePembayaranBulanan, pembayaranBulanans)
-            .createTable(lifecycleScope)
     }
 
     private fun setTotalTunggakan(pembayaranBulanans: List<PembayaranBulanan>) {
