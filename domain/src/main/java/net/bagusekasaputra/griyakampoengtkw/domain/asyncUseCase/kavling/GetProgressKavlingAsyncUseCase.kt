@@ -15,6 +15,7 @@ import java.util.Calendar
  * This use case should use different [PembayaranRepository]'s implementation
  * than the rest of another use case classes.
  */
+@Deprecated("Migrated to GetKavlingAndProgressStreamAsyncUseCase")
 class GetProgressKavlingAsyncUseCase(
     private val baselinePembayaranRepository: BaselinePembayaranRepository,
     private val pembayaranRepository: PembayaranRepository,

@@ -1,19 +1,16 @@
 package net.bagusekasaputra.griyakampoengtkw.presentation.viewmodel
 
-import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.onCompletion
 import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.update
@@ -23,24 +20,19 @@ import net.bagusekasaputra.griyakampoengtkw.domain.AsyncUseCaseHelper
 import net.bagusekasaputra.griyakampoengtkw.domain.DataMode
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.block.GetAllBlocksAsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.kavling.GetKavlingAndProgressStreamAsyncUseCase
-import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.kavling.GetKavlingByBlockAsyncUseCase
-import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.kavling.GetProgressKavlingAsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.promotion.GetPromotionMessageAsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.AppUpdate
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.Block
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.Promotion
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.kavling.Kavling
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.kavling.KavlingAndProgress
-import net.bagusekasaputra.griyakampoengtkw.domain.entity.kavling.ProgressKavling
 import net.bagusekasaputra.griyakampoengtkw.domain.usecase.appupdate.GetUpdateInformationUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.usecase.block.AddNewBlockUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.usecase.kavling.AddKavlingUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.usecase.kavling.EditKavlingUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.usecase.kavling.RemoveKavlingUseCase
-import net.bagusekasaputra.griyakampoengtkw.presentation.combineWith
 import net.bagusekasaputra.griyakampoengtkw.presentation.fragment.management.ManagementKavlingFragment
 import net.bagusekasaputra.griyakampoengtkw.presentation.logEvent
-import net.bagusekasaputra.griyakampoengtkw.presentation.model.UiState
 import javax.inject.Inject
 
 @HiltViewModel
@@ -48,14 +40,11 @@ class MainViewModel @Inject constructor(
     // Blocks
     private val getAllBlocksUseCase: GetAllBlocksAsyncUseCase,
     private val addNewBlockUseCase: AddNewBlockUseCase,
-    // Kavlings
-    private val getKavlingByBlockUseCase: GetKavlingByBlockAsyncUseCase,
+    // Kavlings and KavlingAndProgress
+    private val getKavlingAndProgressStreamUseCase: GetKavlingAndProgressStreamAsyncUseCase,
     private val addKavlingUseCase: AddKavlingUseCase,
     private val editKavlingUseCase: EditKavlingUseCase,
     private val removeKavlingUseCase: RemoveKavlingUseCase,
-    // Progress Kavling
-    private val getProgressKavlingUseCase: GetProgressKavlingAsyncUseCase,
-    private val getKavlingAndProgressStreamUseCase: GetKavlingAndProgressStreamAsyncUseCase,
     // App update
     private val getAppUpdateInformationUseCase: GetUpdateInformationUseCase,
     // Promotion
@@ -67,28 +56,12 @@ class MainViewModel @Inject constructor(
     val blocksLive: LiveData<List<Block>>
         get() = _blocksLive
 
-    private val _kavlings = MutableLiveData<List<Kavling>>()
-
-    private val _mapProgressKavling = MutableLiveData<Map<String, ProgressKavling>?>(null)
-
-    // Kavling and Progress kavling combined
-    val kavlingAndProgress = _kavlings.combineWith(_mapProgressKavling) { listKavling, mapProgress ->
-        Pair(listKavling, mapProgress)
-    }
-
-
     // Promotion Message
     private val _promotionMessage = MutableLiveData<Promotion?>(null)
 
     /**
-     * [KavlingFragmentUiState] contains all the data needed for [net.bagusekasaputra.griyakampoengtkw.presentation.fragment.management.KavlingFragment]'s screen.
+     * Back button listener for MainActivity
      */
-    @Deprecated("Use _kavlingAndProgressList")
-    private val _kavlingFragmentUiState = MutableStateFlow<UiState<KavlingFragmentUiState>?>(null)
-
-    @Deprecated("Use _kavlingAndProgressList")
-    val kavlingFragmentUiState = _kavlingFragmentUiState.asStateFlow()
-
     val managementKavlingFragment = MutableLiveData<ManagementKavlingFragment?>(null)
     val shouldNavigateToKavlingFragment = MutableLiveData(false)
 
@@ -207,44 +180,6 @@ class MainViewModel @Inject constructor(
     /**
      * Kavlings
      */
-    fun getKavlings(blockKode: String, onFailure: (msg: String) -> Unit) {
-        // Kavlings entity are dynamic, to load them you need to click the corresponding blocks.
-        // So, when the kavlings are refreshed, I need to only pull the data from local storage
-        // by manipulating the "offlineMode" parameter of GET request.
-        val request = if (kavlingsRefreshed[blockKode]?.value != true) {
-                logEvent("Kavling on the block $blockKode isn't refreshed, refreshing now ...")
-
-                // If not refreshed, then pull from whatever data mode allow
-                GetKavlingByBlockAsyncUseCase.Request(blockKode, dataMode)
-            } else {
-                logEvent("Kavling the block $blockKode already refreshed!")
-
-                // Otherwise, pull from local storage by invoking "offline" parameter as TRUE
-                // EXCEPT when the DataMode is DATA_LAMA
-                if (dataMode == DataMode.DATA_LAMA)
-                    GetKavlingByBlockAsyncUseCase.Request(blockKode, DataMode.DATA_LAMA)
-                else
-                    GetKavlingByBlockAsyncUseCase.Request(blockKode, DataMode.OFFLINE)
-            }
-
-        val gettingKavlingsJob = asyncHelper.doWork(
-            request = request,
-            asyncUseCase = getKavlingByBlockUseCase,
-            onSuccess = {
-                _kavlings.postValue(it)
-
-                kavlingsRefreshed[blockKode]?.postValue(true)
-            },
-            onFailure = {
-                onFailure("Gagal mendapatkan kavling: ${it.message}")
-            },
-            successMsgOnUiThread = false,
-        )
-
-        asyncJobs.add(gettingKavlingsJob)
-    }
-
-    // NEW METHOD!!
     fun fetchKavlingListOn(
         blockKode: String,
         onLoading: () -> Unit,
@@ -412,32 +347,6 @@ class MainViewModel @Inject constructor(
         asyncJobs.add(removeKavlingJob)
     }
 
-    @Deprecated("")
-    fun getProgressAllKavling(blockKode: String) {
-        viewModelScope.launch(Dispatchers.IO) {
-            // Get all kavling's in block
-            val kavlingByBlockRequest = GetKavlingByBlockAsyncUseCase.Request(blockKode, dataMode)
-            val kavlingList = getKavlingByBlockUseCase.execute(kavlingByBlockRequest).first()
-                .getOrThrow()
-                ?.let {
-                    Kavling.getKavlingKodes(it)
-                }
-                ?: emptyList()
-
-            // Progress Kavling
-            val request = GetProgressKavlingAsyncUseCase.Request(kavlingList, dataMode)
-            Log.d("DEBUG_ME", "Getting Progress Kavling is $dataMode")
-            getProgressKavlingUseCase.execute(request).collect { result ->
-                result.onSuccess {
-                    _mapProgressKavling.postValue(it)
-                }
-                result.onFailure {
-                    Log.d("STATUS_PEMBAYARAN", "Terjadi kesalahan ViewModel : ${it.message}")
-                }
-            }
-        }
-    }
-
     fun checkUpdates(
         versionName: String,
         versionCode: Int,
@@ -488,60 +397,6 @@ class MainViewModel @Inject constructor(
         }
     }
 
-    @Deprecated("Use fetchKavlingListOn()")
-    fun fetchKavlingFragmentUiState(blockKode: String) {
-        viewModelScope.launch(Dispatchers.IO) {
-            _kavlingFragmentUiState.update {
-                UiState.Loading()
-            }
-
-            // If block has been refreshed or loaded before, set dataMode to DataMode.OFFLINE.
-            val blockAlreadyRefreshed = kavlingsRefreshed[blockKode]?.value == true
-            val fetchDataMode =
-                if (dataMode != DataMode.DATA_LAMA) {
-                    if (blockAlreadyRefreshed) DataMode.OFFLINE else dataMode
-                } else {
-                    DataMode.DATA_LAMA
-                }
-
-            val kavlingRequest = GetKavlingByBlockAsyncUseCase.Request(blockKode, fetchDataMode)
-            val kavlingListDeffered = CompletableDeferred<List<Kavling>>()
-            getKavlingByBlockUseCase.execute(kavlingRequest).collect { result ->
-                result.onSuccess {
-                    kavlingListDeffered.complete(it ?: emptyList())
-                }
-                result.onFailure {
-                    kavlingListDeffered.completeExceptionally(it)
-                }
-            }
-            val kavlingList = kavlingListDeffered.await()
-
-            val progressKavlingRequest = GetProgressKavlingAsyncUseCase.Request(
-                listKavling = Kavling.getKavlingKodes(kavlingList),
-                dataMode = fetchDataMode
-            )
-            val progressKavlingMap = CompletableDeferred<Map<String, ProgressKavling>>()
-            getProgressKavlingUseCase.execute(progressKavlingRequest).collect { result ->
-                result.onSuccess {
-                    progressKavlingMap.complete(it ?: emptyMap())
-                }
-                result.onFailure {
-                    progressKavlingMap.completeExceptionally(it)
-                }
-            }
-
-            kavlingsRefreshed[blockKode]?.postValue(true)
-
-            _kavlingFragmentUiState.update {
-                UiState.Success(KavlingFragmentUiState(
-                    blockKode = blockKode,
-                    kavlingList = kavlingList,
-                    progressKavlingMap = progressKavlingMap.await(),
-                ))
-            }
-        }
-    }
-
     override fun onCleared() {
         logEvent("MainViewModel is about to be cleared!")
 
@@ -549,9 +404,3 @@ class MainViewModel @Inject constructor(
         super.onCleared()
     }
 }
-
-data class KavlingFragmentUiState(
-    val blockKode: String,
-    val kavlingList: List<Kavling>,
-    val progressKavlingMap: Map<String, ProgressKavling>,
-)
