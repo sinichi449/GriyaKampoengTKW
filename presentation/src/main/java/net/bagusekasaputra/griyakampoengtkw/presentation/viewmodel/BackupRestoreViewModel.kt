@@ -3,6 +3,7 @@ package net.bagusekasaputra.griyakampoengtkw.presentation.viewmodel
 import androidx.lifecycle.ViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CompletableDeferred
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.first
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.backupRestore.GetListBackupAsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.kavling.GetListUnmigratedKavlingsAsyncUseCase
@@ -15,9 +16,15 @@ class BackupRestoreViewModel @Inject constructor(
     private val getListUnmigratedKavlingsAsyncUseCase: GetListUnmigratedKavlingsAsyncUseCase,
 ): ViewModel() {
 
+    private var jobFetchBackups: Job? = null
+
+    fun cancelFetchBackups() {
+        jobFetchBackups?.cancel()
+    }
+
     suspend fun getListBackup() : List<String>? {
         val request = GetListBackupAsyncUseCase.Request
-        val completableDeferred = CompletableDeferred<List<String>?>()
+        val completableDeferred = CompletableDeferred<List<String>?>(jobFetchBackups)
 
         getListBackupAsyncUseCase.execute(request).collect { result ->
             result.onSuccess {

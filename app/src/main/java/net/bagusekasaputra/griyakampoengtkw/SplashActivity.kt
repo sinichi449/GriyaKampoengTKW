@@ -1,6 +1,8 @@
 package net.bagusekasaputra.griyakampoengtkw
 
 import android.annotation.SuppressLint
+import android.app.ProgressDialog
+import android.content.DialogInterface
 import android.content.Intent
 import android.content.SharedPreferences
 import android.os.Bundle
@@ -44,6 +46,7 @@ import net.bagusekasaputra.griyakampoengtkw.model.ConnectionCheckResult
 import net.bagusekasaputra.griyakampoengtkw.presentation.R
 import net.bagusekasaputra.griyakampoengtkw.presentation.activity.MainActivity
 import net.bagusekasaputra.griyakampoengtkw.presentation.util.GriyaNodes
+import net.bagusekasaputra.griyakampoengtkw.presentation.viewmodel.BackupRestoreViewModel
 import java.io.IOException
 import java.net.InetSocketAddress
 import java.net.Socket
@@ -56,6 +59,7 @@ class SplashActivity : AppCompatActivity() {
     private lateinit var bindingPure: ActivitySplashPureBinding
     private lateinit var bindingLoading: ActivitySplashWithLoadingBinding
     private val viewModel by viewModels<AppViewModel>()
+    private val backupRestoreViewModel by viewModels<BackupRestoreViewModel>()
 
     // Need to be initialized at onCreate()
     private lateinit var biometricManager: BiometricManager
@@ -186,9 +190,12 @@ class SplashActivity : AppCompatActivity() {
     }
 
     /**
-     * Put [Tahapan.reference] into [SharedPreferences].
-     *
-     *
+     * @param jenisData when it is [DATA_BARU], will write [SharedPreferences] of key `dataLamaPath`
+     * to `null`. And if it is [DATA_LAMA], will put backup name which is got from [dialogPilihDataLama]
+     * into [SharedPreferences]
+     * @param tahapan will have to be put into [SharedPreferences], since it will be the main factor
+     * to where the [FirebaseDatabase]'s node which needs to be accessed.
+     * @param isOnline will be send to [MainActivity] via [Intent].
      */
     private fun handleTahapanAndJenisData(
         jenisData: Int,
@@ -231,7 +238,13 @@ class SplashActivity : AppCompatActivity() {
                 }
             )
         } else {
-            goToMainActivity(DataMode.DATA_LAMA)
+            dialogPilihDataLama { _, namaBackup ->
+                sharedPreferences.edit(true) {
+                    putString("NAMA_BACKUP", namaBackup)
+                }
+
+                goToMainActivity(DataMode.DATA_LAMA)
+            }
         }
     }
 
@@ -279,6 +292,65 @@ class SplashActivity : AppCompatActivity() {
 
         startActivity(intent)
         finish()
+    }
+
+    private fun dialogPilihTahapan(onSelectedTahapan: (dialog: DialogFragment, tahapan: Tahapan) -> Unit) {
+        PilihTahapanBottomSheetDialog(
+            onItemSelected = onSelectedTahapan,
+            onFailure = { finish() }
+        )
+            .show(supportFragmentManager, null)
+    }
+
+    /**
+     * Fetch backup names from [BackupRestoreViewModel.getListBackup].
+     *
+     * If the backup names are empty or `null`, will show a dialog which informs the user that there are
+     * no available backups.
+     */
+    private fun dialogPilihDataLama(onSelectedDataLama: (dialog: DialogInterface, namaBackup: String) -> Unit) {
+        val loadingBackupsDialog = ProgressDialog(this).apply {
+            setTitle("Memuat Backup")
+            setMessage("Sedang memuat data cadangan yang tersedia, mohon tunggu ...")
+            setOnCancelListener {
+                backupRestoreViewModel.cancelFetchBackups()
+            }
+        }
+
+        lifecycleScope.launch(Dispatchers.IO) {
+            // show loading
+            withContext(Dispatchers.Main) { loadingBackupsDialog.show() }
+
+            // Get available nama backup
+            val arrBackup = backupRestoreViewModel.getListBackup()?.toTypedArray()
+
+            // Show dialog pilih data lama
+            withContext(Dispatchers.Main) {
+                loadingBackupsDialog.dismiss()
+
+                if (!arrBackup.isNullOrEmpty()) {
+                    MaterialAlertDialogBuilder(this@SplashActivity).apply {
+                        setTitle("Pilih Backup")
+                        setCancelable(false)
+                        setSingleChoiceItems(arrBackup, 0) { dialog, checkedPosition ->
+                            onSelectedDataLama(dialog, arrBackup[checkedPosition])
+                        }
+                        setNegativeButton("Cancel") { dialog, _ ->
+                            dialog.dismiss()
+                        }
+                    }.show()
+                } else {
+                    // Show Backup is Unavailable
+                    MaterialAlertDialogBuilder(this@SplashActivity).apply {
+                        setTitle("Backup Tidak Ditemukan!")
+                        setMessage("Tidak ada data lama yang bisa ditampilkan karena tidak dapat memuat data yang diperlukan dari server. Coba lagi nanti atau hubungi developer.")
+                        setPositiveButton("OK") { dialog, _ ->
+                            dialog.dismiss()
+                        }
+                    }.show()
+                }
+            }
+        }
     }
 
     private suspend fun connectivityCheckAndInitServer(
@@ -385,14 +457,6 @@ class SplashActivity : AppCompatActivity() {
 
             maintenanceRef.addListenerForSingleValueEvent(eventListener)
         }
-    }
-
-    private fun dialogPilihTahapan(onSelectedTahapan: (dialog: DialogFragment, tahapan: Tahapan) -> Unit) {
-        PilihTahapanBottomSheetDialog(
-            onItemSelected = onSelectedTahapan,
-            onFailure = { finish() }
-        )
-            .show(supportFragmentManager, null)
     }
 
     companion object {
