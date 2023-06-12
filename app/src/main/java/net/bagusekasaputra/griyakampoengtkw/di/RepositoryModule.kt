@@ -10,6 +10,7 @@ import net.bagusekasaputra.griyakampoengtkw.data.interfaces.backup.*
 import net.bagusekasaputra.griyakampoengtkw.data.interfaces.local.*
 import net.bagusekasaputra.griyakampoengtkw.data.interfaces.remote.*
 import net.bagusekasaputra.griyakampoengtkw.data.repository.*
+import net.bagusekasaputra.griyakampoengtkw.data.repository.backupRestore.DefaultBackupRestoreRepository
 import net.bagusekasaputra.griyakampoengtkw.data.repository.pembayaran.DefaultPembayaranRepository
 import net.bagusekasaputra.griyakampoengtkw.data.repository.pembayaran.LegacyPembayaranRepository
 import net.bagusekasaputra.griyakampoengtkw.domain.repository.*
@@ -304,40 +305,8 @@ object RepositoryModule {
      * Backup / Restore
      */
     @Provides
-    fun provideBackupRestoreRepository(
-        @InternalDir internalFiles: File,
-        backupBlokDataSource: BackupBlokDataSource,
-        backupKavlingDataSource: BackupKavlingDataSource,
-        backupPembayaranDataSource: BackupPembayaranDataSource,
-        backupDataDiriDataSource: BackupDataDiriDataSource,
-        backupHargaKavlingDataSource: BackupHargaKavlingDataSource,
-        backupCatatanPembayaranDataSource: BackupCatatanPembayaranDataSource,
-        backupBiayaMarketingDataSource: BackupBiayaMarketingDataSource,
-        backupFeeMarketingDataSource: BackupFeeMarketingDataSource,
-        backupBiayaLainDataSource: BackupBiayaLainDataSource,
-        backupImageDataDiriDataSource: BackupImageDataDiriDataSource,
-        backupFotoPembayaranDataSource: BackupFotoPembayaranDataSource,
-        backupImageSPRDataSource: BackupImageSPRDataSource,
-        backupRestoreDataSource: BackupRestoreDataSource,
-        remoteBackupRestoreDataSource: RemoteBackupRestoreDataSource,
-    ): BackupRestoreRepository {
-        return BackupRestoreRepositoryImpl(
-            internalFiles,
-            backupBlokDataSource,
-            backupKavlingDataSource,
-            backupPembayaranDataSource,
-            backupDataDiriDataSource,
-            backupHargaKavlingDataSource,
-            backupCatatanPembayaranDataSource,
-            backupBiayaMarketingDataSource,
-            backupFeeMarketingDataSource,
-            backupBiayaLainDataSource,
-            backupImageDataDiriDataSource,
-            backupFotoPembayaranDataSource,
-            backupImageSPRDataSource,
-            backupRestoreDataSource,
-            remoteBackupRestoreDataSource,
-        )
+    fun provideBackupRestoreRepository(): BackupRestoreRepository {
+        return DefaultBackupRestoreRepository()
     }
 
 

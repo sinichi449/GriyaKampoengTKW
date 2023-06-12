@@ -484,36 +484,8 @@ object UseCaseModule {
     }
 
     @Provides
-    fun provideCreateBackupUseCase(
-        blokRepository: BlockRepository,
-        kavlingRepository: KavlingRepository,
-        @Legacy pembayaranRepository: PembayaranRepository,
-        dataDiriRepository: DataDiriRepository,
-        hargaKavlingRepository: HargaKavlingRepository,
-        kavlingCatatanPembayaranRepository: KavlingCatatanPembayaranRepository,
-        biayaMarketingRepository: BiayaMarketingRepository,
-        feeMarketingRepository: FeeMarketingRepository,
-        biayaLainRepository: BiayaLainRepository,
-        imageDataDiriRepository: ImageDataDiriRepository,
-        fotoPembayaranRepository: FotoPembayaranRepository,
-        imageSprRepository: ImageSprRepository,
-        backupRestoreRepository: BackupRestoreRepository,
-    ): CreateBackupAsyncUseCase {
-        return CreateBackupAsyncUseCase(
-            blokRepository,
-            kavlingRepository,
-            pembayaranRepository,
-            dataDiriRepository,
-            hargaKavlingRepository,
-            kavlingCatatanPembayaranRepository,
-            biayaMarketingRepository,
-            feeMarketingRepository,
-            biayaLainRepository,
-            imageDataDiriRepository,
-            fotoPembayaranRepository,
-            imageSprRepository,
-            backupRestoreRepository,
-        )
+    fun provideCreateBackupUseCase(): CreateBackupAsyncUseCase {
+        return CreateBackupAsyncUseCase()
     }
 
 

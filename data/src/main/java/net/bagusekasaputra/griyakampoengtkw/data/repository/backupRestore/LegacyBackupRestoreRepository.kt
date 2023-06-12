@@ -1,4 +1,4 @@
-package net.bagusekasaputra.griyakampoengtkw.data.repository
+package net.bagusekasaputra.griyakampoengtkw.data.repository.backupRestore
 
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.channels.trySendBlocking
@@ -22,20 +22,21 @@ import net.bagusekasaputra.griyakampoengtkw.data.interfaces.backup.BackupRestore
 import net.bagusekasaputra.griyakampoengtkw.data.interfaces.remote.RemoteBackupRestoreDataSource
 import net.bagusekasaputra.griyakampoengtkw.data.model.BiayaLainModel
 import net.bagusekasaputra.griyakampoengtkw.data.model.BiayaMarketingModel
-import net.bagusekasaputra.griyakampoengtkw.data.model.KavlingCatatanPembayaranModel
 import net.bagusekasaputra.griyakampoengtkw.data.model.DataDiriModel
 import net.bagusekasaputra.griyakampoengtkw.data.model.FeeMarketingModel
 import net.bagusekasaputra.griyakampoengtkw.data.model.FotoPembayaranModel
 import net.bagusekasaputra.griyakampoengtkw.data.model.HargaKavlingModel
 import net.bagusekasaputra.griyakampoengtkw.data.model.ImageDataDiriModel
 import net.bagusekasaputra.griyakampoengtkw.data.model.ImageSprModel
+import net.bagusekasaputra.griyakampoengtkw.data.model.KavlingCatatanPembayaranModel
 import net.bagusekasaputra.griyakampoengtkw.data.model.KavlingModel
 import net.bagusekasaputra.griyakampoengtkw.data.model.PembayaranModel
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.BackupRestoreEntity
 import net.bagusekasaputra.griyakampoengtkw.domain.repository.BackupRestoreRepository
 import java.io.File
 
-class BackupRestoreRepositoryImpl(
+@Deprecated("Migrated to DefaultBackupRestoreRepository.")
+class LegacyBackupRestoreRepository(
     private val internalFiles: File,
     private val backupBlokDataSource: BackupBlokDataSource,
     private val backupKavlingDataSource: BackupKavlingDataSource,

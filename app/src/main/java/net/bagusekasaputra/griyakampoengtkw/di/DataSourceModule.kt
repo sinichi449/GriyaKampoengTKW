@@ -2,7 +2,6 @@
 
 package net.bagusekasaputra.griyakampoengtkw.di
 
-import android.content.SharedPreferences
 import com.google.firebase.database.DatabaseReference
 import com.google.firebase.storage.StorageReference
 import dagger.Module
@@ -40,19 +39,6 @@ import net.bagusekasaputra.griyakampoeng.tkw.data.local.metadata.RoomMetadataDat
 import net.bagusekasaputra.griyakampoeng.tkw.data.local.pembayaran.LocalPembayaranIndenBookingDataSource
 import net.bagusekasaputra.griyakampoeng.tkw.data.local.pembayaran.RoomPembayaranLocalDataSource
 import net.bagusekasaputra.griyakampoeng.tkw.data.local.pengingat.RoomPengingatDataSource
-import net.bagusekasaputra.griyakampoengtkw.data.backup.BackupRestoreDataSourceImpl
-import net.bagusekasaputra.griyakampoengtkw.data.backup.biayaLain.BackupBiayaLainDataSourceImpl
-import net.bagusekasaputra.griyakampoengtkw.data.backup.biayaMarketing.BackupBiayaMarketingDataSourceImpl
-import net.bagusekasaputra.griyakampoengtkw.data.backup.blok.BackupBlokDataSourceImpl
-import net.bagusekasaputra.griyakampoengtkw.data.backup.catatanPembayaran.BackupCatatanPembayaranDataSourceImpl
-import net.bagusekasaputra.griyakampoengtkw.data.backup.dataDiri.BackupDataDiriDataSourceImpl
-import net.bagusekasaputra.griyakampoengtkw.data.backup.feeMarketing.BackupFeeMarketingDataSourceImpl
-import net.bagusekasaputra.griyakampoengtkw.data.backup.fotoPembayaran.BackupFotoPembayaranDataSourceImpl
-import net.bagusekasaputra.griyakampoengtkw.data.backup.hargaKavling.BackupHargaKavlingDataSourceImpl
-import net.bagusekasaputra.griyakampoengtkw.data.backup.imageDataDiri.BackupImageDataDiriDataSourceImpl
-import net.bagusekasaputra.griyakampoengtkw.data.backup.imageSpr.BackupImageSPRDataSourceImpl
-import net.bagusekasaputra.griyakampoengtkw.data.backup.kavling.BackupKavlingDataSourceImpl
-import net.bagusekasaputra.griyakampoengtkw.data.backup.pembayaran.BackupPembayaranDataSourceImpl
 import net.bagusekasaputra.griyakampoengtkw.data.interfaces.backup.*
 import net.bagusekasaputra.griyakampoengtkw.data.interfaces.local.*
 import net.bagusekasaputra.griyakampoengtkw.data.interfaces.remote.*
@@ -80,6 +66,19 @@ import net.bagusekasaputra.griyakampoengtkw.data.remote.pembayaran.RemotePembaya
 import net.bagusekasaputra.griyakampoengtkw.data.remote.promotion.FirebasePromotionDataSource
 import net.bagusekasaputra.griyakampoengtkw.data.remote.statusPembayaran.FirebaseStatusPembayaranDataSource
 import net.bagusekasaputra.griyakampoengtkw.data.remote.tahapan.FirebaseTahapanDataSource
+import net.bagusekasaputra.griyakampoengtkw.data.remote_backup.BackupFirebaseBackupRestoreDataSource
+import net.bagusekasaputra.griyakampoengtkw.data.remote_backup.BackupFirebaseBiayaLainDataSource
+import net.bagusekasaputra.griyakampoengtkw.data.remote_backup.BackupFirebaseBiayaMarketingDataSource
+import net.bagusekasaputra.griyakampoengtkw.data.remote_backup.BackupFirebaseBlokDataSource
+import net.bagusekasaputra.griyakampoengtkw.data.remote_backup.BackupFirebaseCatatanPembayaranDataSource
+import net.bagusekasaputra.griyakampoengtkw.data.remote_backup.BackupFirebaseDataDiriDataSource
+import net.bagusekasaputra.griyakampoengtkw.data.remote_backup.BackupFirebaseFeeMarketingDataSource
+import net.bagusekasaputra.griyakampoengtkw.data.remote_backup.BackupFirebaseFotoPembayaranDataSource
+import net.bagusekasaputra.griyakampoengtkw.data.remote_backup.BackupFirebaseHargaKavlingDataSource
+import net.bagusekasaputra.griyakampoengtkw.data.remote_backup.BackupFirebaseImageDataDiriDataSource
+import net.bagusekasaputra.griyakampoengtkw.data.remote_backup.BackupFirebaseImageSPRDataSource
+import net.bagusekasaputra.griyakampoengtkw.data.remote_backup.BackupFirebaseKavlingDataSource
+import net.bagusekasaputra.griyakampoengtkw.data.remote_backup.BackupFirebasePembayaranDataSource
 import java.io.File
 import javax.inject.Qualifier
 
@@ -137,8 +136,8 @@ object DataSourceModule {
     }
 
     @Provides
-    fun provideBackupBlokDataSource(sharedPreferences: SharedPreferences): BackupBlokDataSource {
-        return BackupBlokDataSourceImpl(sharedPreferences)
+    fun provideBackupBlokDataSource(): BackupBlokDataSource {
+        return BackupFirebaseBlokDataSource()
     }
 
 
@@ -158,8 +157,8 @@ object DataSourceModule {
     }
 
     @Provides
-    fun provideBackupKavlingDataSource(sharedPreferences: SharedPreferences): BackupKavlingDataSource {
-        return BackupKavlingDataSourceImpl(sharedPreferences)
+    fun provideBackupKavlingDataSource(): BackupKavlingDataSource {
+        return BackupFirebaseKavlingDataSource()
     }
 
 
@@ -182,8 +181,8 @@ object DataSourceModule {
     }
 
     @Provides
-    fun provideBackupDataDiriDataSource(sharedPreferences: SharedPreferences): BackupDataDiriDataSource {
-        return BackupDataDiriDataSourceImpl(sharedPreferences)
+    fun provideBackupDataDiriDataSource(): BackupDataDiriDataSource {
+        return BackupFirebaseDataDiriDataSource()
     }
 
     /**
@@ -208,8 +207,8 @@ object DataSourceModule {
     }
 
     @Provides
-    fun provideBackupImageDataDiriDataSource(sharedPreferences: SharedPreferences): BackupImageDataDiriDataSource {
-        return BackupImageDataDiriDataSourceImpl(sharedPreferences)
+    fun provideBackupImageDataDiriDataSource(): BackupImageDataDiriDataSource {
+        return BackupFirebaseImageDataDiriDataSource()
     }
 
 
@@ -236,8 +235,8 @@ object DataSourceModule {
     }
 
     @Provides
-    fun provideBackupImageSPRDataSource(sharedPreferences: SharedPreferences): BackupImageSPRDataSource {
-        return BackupImageSPRDataSourceImpl(sharedPreferences)
+    fun provideBackupImageSPRDataSource(): BackupImageSPRDataSource {
+        return BackupFirebaseImageSPRDataSource()
     }
 
 
@@ -257,8 +256,8 @@ object DataSourceModule {
     }
 
     @Provides
-    fun provideBackupFeeMarketingDataSource(sharedPreferences: SharedPreferences): BackupFeeMarketingDataSource {
-        return BackupFeeMarketingDataSourceImpl(sharedPreferences)
+    fun provideBackupFeeMarketingDataSource(): BackupFeeMarketingDataSource {
+        return BackupFirebaseFeeMarketingDataSource()
     }
 
 
@@ -278,8 +277,8 @@ object DataSourceModule {
     }
 
     @Provides
-    fun provideBackupBiayaMarketingDataSource(sharedPreferences: SharedPreferences): BackupBiayaMarketingDataSource {
-        return BackupBiayaMarketingDataSourceImpl(sharedPreferences)
+    fun provideBackupBiayaMarketingDataSource(): BackupBiayaMarketingDataSource {
+        return BackupFirebaseBiayaMarketingDataSource()
     }
 
 
@@ -299,8 +298,8 @@ object DataSourceModule {
     }
 
     @Provides
-    fun provideBackupCatatanPembayaranDataSource(sharedPreferences: SharedPreferences): BackupCatatanPembayaranDataSource {
-        return BackupCatatanPembayaranDataSourceImpl(sharedPreferences)
+    fun provideBackupCatatanPembayaranDataSource(): BackupCatatanPembayaranDataSource {
+        return BackupFirebaseCatatanPembayaranDataSource()
     }
 
     /**
@@ -337,8 +336,8 @@ object DataSourceModule {
     }
 
     @Provides
-    fun provideBackupPembayaranDataSource(sharedPreferences: SharedPreferences): BackupPembayaranDataSource {
-        return BackupPembayaranDataSourceImpl(sharedPreferences)
+    fun provideBackupPembayaranDataSource(): BackupPembayaranDataSource {
+        return BackupFirebasePembayaranDataSource()
     }
 
 
@@ -358,8 +357,8 @@ object DataSourceModule {
     }
 
     @Provides
-    fun provideBackupHargaKavlingDataSource(sharedPreferences: SharedPreferences): BackupHargaKavlingDataSource {
-        return BackupHargaKavlingDataSourceImpl(sharedPreferences)
+    fun provideBackupHargaKavlingDataSource(): BackupHargaKavlingDataSource {
+        return BackupFirebaseHargaKavlingDataSource()
     }
 
 
@@ -391,8 +390,8 @@ object DataSourceModule {
     }
 
     @Provides
-    fun provideBackupFotoPembayaranDataSource(sharedPreferences: SharedPreferences): BackupFotoPembayaranDataSource {
-        return BackupFotoPembayaranDataSourceImpl(sharedPreferences)
+    fun provideBackupFotoPembayaranDataSource(): BackupFotoPembayaranDataSource {
+        return BackupFirebaseFotoPembayaranDataSource()
     }
 
 
@@ -418,8 +417,8 @@ object DataSourceModule {
     }
 
     @Provides
-    fun provideBackupBiayaLainDataSource(sharedPreferences: SharedPreferences): BackupBiayaLainDataSource {
-        return BackupBiayaLainDataSourceImpl(sharedPreferences)
+    fun provideBackupBiayaLainDataSource(): BackupBiayaLainDataSource {
+        return BackupFirebaseBiayaLainDataSource()
     }
 
 
@@ -428,7 +427,7 @@ object DataSourceModule {
      */
     @Provides
     fun provideBackupRestoreDataSource(): BackupRestoreDataSource {
-        return BackupRestoreDataSourceImpl()
+        return BackupFirebaseBackupRestoreDataSource()
     }
 
     @Provides
