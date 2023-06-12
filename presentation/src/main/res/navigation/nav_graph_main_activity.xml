@@ -24,6 +24,11 @@
         android:name="net.bagusekasaputra.griyakampoengtkw.presentation.fragment.BiayaPribadiFragment"
         android:label="Biaya Pribadi"
         tools:layout="@layout/fragment_biaya_pribadi" />
+    <fragment
+        android:id="@id/nav_biaya_pembangunan"
+        android:name="net.bagusekasaputra.griyakampoengtkw.presentation.fragment.biayaPembangunan.BiayaPembangunanFragment"
+        android:label="Biaya Pembangunan"
+        tools:layout="@layout/fragment_biaya_pembangunan"/>
     <activity
         android:id="@+id/nav_pengaturan"
         android:name="net.bagusekasaputra.griyakampoengtkw.presentation.activity.SettingsActivity"

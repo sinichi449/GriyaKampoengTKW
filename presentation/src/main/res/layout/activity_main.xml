@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.drawerlayout.widget.DrawerLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.drawerlayout.widget.DrawerLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/drawer_main"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
@@ -55,6 +56,7 @@
 
         </androidx.coordinatorlayout.widget.CoordinatorLayout>
 
+        <!-- ExtendedFab Management Kavling & Biaya Lain -->
         <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
             android:id="@+id/fab_actions"
             android:layout_width="wrap_content"
@@ -68,6 +70,7 @@
             app:elevation="16dp"
             android:theme="@style/Theme.GriyaKampoengTKW.BlackWhite"/>
 
+        <!-- Fab Kavling Tambah -->
         <com.google.android.material.floatingactionbutton.FloatingActionButton
             android:id="@+id/fab_add_kavling"
             android:layout_width="wrap_content"
@@ -81,6 +84,7 @@
             android:theme="@style/Theme.GriyaKampoengTKW.BlackWhite"
             android:visibility="gone"/>
 
+        <!-- Fab Blok Tambah -->
         <com.google.android.material.floatingactionbutton.FloatingActionButton
             android:id="@+id/fab_add_block"
             android:layout_width="wrap_content"
@@ -95,7 +99,7 @@
             android:theme="@style/Theme.GriyaKampoengTKW.BlackWhite"
             android:visibility="gone"/>
 
-
+        <!-- Fab Biaya Lain Tambah -->
         <com.google.android.material.floatingactionbutton.FloatingActionButton
             android:id="@+id/fab_tambah_biaya_lain"
             android:layout_width="wrap_content"
@@ -109,6 +113,7 @@
             android:theme="@style/Theme.GriyaKampoengTKW.BlackWhite"
             android:visibility="gone"/>
 
+        <!-- Fab Biaya Lain Edit -->
         <com.google.android.material.floatingactionbutton.FloatingActionButton
             android:id="@+id/fab_edit_biaya_lain"
             android:layout_width="wrap_content"
@@ -123,6 +128,7 @@
             android:theme="@style/Theme.GriyaKampoengTKW.BlackWhite"
             android:visibility="gone"/>
 
+        <!-- Fab Inden Booking -->
         <com.google.android.material.floatingactionbutton.FloatingActionButton
             android:id="@+id/fab_action_inden_booking"
             android:layout_width="wrap_content"
@@ -134,55 +140,31 @@
             android:src="@drawable/ic_baseline_add_24"
             android:visibility="gone"/>
 
+        <!-- Fab Biaya Material Fragment -->
+        <com.google.android.material.floatingactionbutton.FloatingActionButton
+            android:id="@+id/fab_action_biaya_material"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            android:layout_marginBottom="24dp"
+            android:layout_marginEnd="24dp"
+            android:src="@drawable/ic_baseline_add_24"
+            android:visibility="gone"/>
+
+        <!-- Fab Biaya Upah Kerja Fragment -->
+        <com.google.android.material.floatingactionbutton.FloatingActionButton
+            android:id="@+id/fab_action_biaya_upah_kerja"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            android:layout_marginBottom="24dp"
+            android:layout_marginEnd="24dp"
+            android:src="@drawable/ic_baseline_add_24"
+            android:visibility="gone"/>
+
     </androidx.constraintlayout.widget.ConstraintLayout>
-
-<!--    <androidx.constraintlayout.widget.ConstraintLayout-->
-<!--        android:layout_width="match_parent"-->
-<!--        android:layout_height="match_parent">-->
-
-<!--        <com.google.android.material.appbar.AppBarLayout-->
-<!--            android:id="@+id/appbar_main"-->
-<!--            android:layout_width="match_parent"-->
-<!--            android:layout_height="wrap_content"-->
-<!--            app:layout_constraintTop_toTopOf="parent"-->
-<!--            app:layout_constraintStart_toStartOf="parent"-->
-<!--            app:layout_constraintEnd_toEndOf="parent"-->
-<!--            android:background="@color/primaryColor"-->
-<!--            app:elevation="0dp">-->
-
-<!--            <com.google.android.material.appbar.MaterialToolbar-->
-<!--                android:id="@+id/toolbar_main"-->
-<!--                android:layout_width="match_parent"-->
-<!--                android:layout_height="wrap_content"-->
-<!--                app:title="Site Plan"-->
-<!--                app:titleTextColor="@color/primaryTextColor"-->
-<!--                app:navigationIcon="@drawable/baseline_menu_24"-->
-<!--                app:navigationIconTint="@color/black"-->
-<!--                android:theme="@style/ThemeOverlay.MaterialComponents.Toolbar.Primary"-->
-<!--                app:menu="@menu/menu_main"/>-->
-
-<!--            <include-->
-<!--                android:id="@+id/connectivity_status"-->
-<!--                layout="@layout/layout_connectivity_status"-->
-<!--                android:layout_width="match_parent"-->
-<!--                android:layout_height="wrap_content"-->
-<!--                android:visibility="gone"/>-->
-
-<!--        </com.google.android.material.appbar.AppBarLayout>-->
-
-<!--        <androidx.fragment.app.FragmentContainerView-->
-<!--            android:id="@+id/navHostFragment_main"-->
-<!--            android:name="androidx.navigation.fragment.NavHostFragment"-->
-<!--            android:layout_width="match_parent"-->
-<!--            android:layout_height="0dp"-->
-<!--            app:defaultNavHost="true"-->
-<!--            app:navGraph="@navigation/nav_graph_main_activity"-->
-<!--            app:layout_constraintTop_toBottomOf="@id/appbar_main"-->
-<!--            app:layout_constraintBottom_toBottomOf="parent"-->
-<!--            app:layout_constraintStart_toStartOf="parent"-->
-<!--            app:layout_constraintEnd_toEndOf="parent"/>-->
-
-<!--    </androidx.constraintlayout.widget.ConstraintLayout>-->
 
     <com.google.android.material.navigation.NavigationView
         android:id="@+id/navView_main"

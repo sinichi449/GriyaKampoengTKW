@@ -31,6 +31,13 @@
         android:checkable="true"/>
 
     <item
+        android:id="@+id/nav_biaya_pembangunan"
+        android:title="Biaya Pembangunan"
+        android:icon="@drawable/baseline_foundation_24"
+        app:showAsAction="ifRoom"
+        android:checkable="true"/>
+
+    <item
         android:id="@id/nav_pengaturan"
         android:title="Pengaturan"
         android:icon="@drawable/settings_24px"
