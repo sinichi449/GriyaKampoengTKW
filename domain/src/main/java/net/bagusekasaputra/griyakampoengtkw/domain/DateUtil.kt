@@ -192,6 +192,12 @@ object DateUtil {
         )
     }
 
+    fun Long.timeMillisToDate(): Date {
+        return Calendar.getInstance().apply {
+            timeInMillis = this@timeMillisToDate
+        }.time
+    }
+
     fun namaBulanShort(bulan: Int): String {
         return when (bulan) {
             1 -> "Jan"
