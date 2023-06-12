@@ -309,6 +309,7 @@ class SplashActivity : AppCompatActivity() {
      * no available backups.
      */
     private fun dialogPilihDataLama(onSelectedDataLama: (dialog: DialogInterface, namaBackup: String) -> Unit) {
+        @Suppress("DEPRECATION")
         val loadingBackupsDialog = ProgressDialog(this).apply {
             setTitle("Memuat Backup")
             setMessage("Sedang memuat data cadangan yang tersedia, mohon tunggu ...")
