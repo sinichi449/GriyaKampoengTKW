@@ -1,6 +1,7 @@
 package net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.backupRestore
 
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flow
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.AsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.repository.BackupRestoreRepository
 
@@ -11,6 +12,8 @@ class GetListBackupAsyncUseCase(
     object Request: AsyncUseCase.Request
 
     override fun process(request: Request): Flow<Result<List<String>?>> {
-        return backupRestoreRepository.getListBackups()
+        return flow {
+            emit(backupRestoreRepository.getListBackups())
+        }
     }
 }

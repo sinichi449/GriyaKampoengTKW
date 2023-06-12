@@ -4,7 +4,7 @@ import android.util.Log
 
 object RoomRequestHelper {
 
-    inline fun <M> roomOperation(work: () -> M?): Result<M?> {
+    inline fun <M> roomOperation(work: () -> M): Result<M> {
         return try {
             Result.success(work())
         } catch (e: java.lang.Exception) {

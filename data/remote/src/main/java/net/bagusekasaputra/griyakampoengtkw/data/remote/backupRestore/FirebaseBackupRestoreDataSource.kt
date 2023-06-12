@@ -40,4 +40,8 @@ class FirebaseBackupRestoreDataSource(
             backupRef.addListenerForSingleValueEvent(eventListener)
         }
     }
+
+    override fun getTableName(): String {
+        return FirebaseNodes.BACKUPS
+    }
 }

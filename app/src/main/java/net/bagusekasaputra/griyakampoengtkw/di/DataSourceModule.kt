@@ -11,6 +11,7 @@ import dagger.hilt.components.SingletonComponent
 import net.bagusekasaputra.griyakampoeng.tkw.data.local.MyRoomDatabase
 import net.bagusekasaputra.griyakampoeng.tkw.data.local.ambilKuitansi.indenBooking.RoomIndenBookingAmbilKuitansiDataSource
 import net.bagusekasaputra.griyakampoeng.tkw.data.local.ambilKuitansi.standard.RoomStandardAmbilKuitansiDataSource
+import net.bagusekasaputra.griyakampoeng.tkw.data.local.backupRestore.RoomBackupRestoreDataSource
 import net.bagusekasaputra.griyakampoeng.tkw.data.local.baselinePembayaran.RoomBaselinePembayaranLocalDataSource
 import net.bagusekasaputra.griyakampoeng.tkw.data.local.biayaLain.RoomBiayaLainDataSource
 import net.bagusekasaputra.griyakampoeng.tkw.data.local.biayaMarketing.RoomBiayaMarketingDataSource
@@ -428,6 +429,11 @@ object DataSourceModule {
     @Provides
     fun provideBackupRestoreDataSource(): BackupRestoreDataSource {
         return BackupFirebaseBackupRestoreDataSource()
+    }
+
+    @Provides
+    fun provideLocalBackupRestoreDataSource(roomDatabase: MyRoomDatabase): LocalBackupRestoreDataSource {
+        return RoomBackupRestoreDataSource(roomDatabase)
     }
 
     @Provides

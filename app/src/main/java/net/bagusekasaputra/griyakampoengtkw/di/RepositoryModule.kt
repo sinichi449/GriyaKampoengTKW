@@ -10,7 +10,7 @@ import net.bagusekasaputra.griyakampoengtkw.data.interfaces.backup.*
 import net.bagusekasaputra.griyakampoengtkw.data.interfaces.local.*
 import net.bagusekasaputra.griyakampoengtkw.data.interfaces.remote.*
 import net.bagusekasaputra.griyakampoengtkw.data.repository.*
-import net.bagusekasaputra.griyakampoengtkw.data.repository.backupRestore.DefaultBackupRestoreRepository
+import net.bagusekasaputra.griyakampoengtkw.data.repository.DefaultBackupRestoreRepository
 import net.bagusekasaputra.griyakampoengtkw.data.repository.pembayaran.DefaultPembayaranRepository
 import net.bagusekasaputra.griyakampoengtkw.data.repository.pembayaran.LegacyPembayaranRepository
 import net.bagusekasaputra.griyakampoengtkw.domain.repository.*
@@ -305,8 +305,12 @@ object RepositoryModule {
      * Backup / Restore
      */
     @Provides
-    fun provideBackupRestoreRepository(): BackupRestoreRepository {
-        return DefaultBackupRestoreRepository()
+    fun provideBackupRestoreRepository(
+        localDataSource: LocalBackupRestoreDataSource,
+        remoteDataSource: RemoteBackupRestoreDataSource,
+        cacheHelper: CacheHelper
+    ): BackupRestoreRepository {
+        return DefaultBackupRestoreRepository(localDataSource, remoteDataSource, cacheHelper)
     }
 
 
