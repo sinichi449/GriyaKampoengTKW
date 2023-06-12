@@ -37,7 +37,6 @@ import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.suspendCancellableCoroutine
 import kotlinx.coroutines.withContext
-import net.bagusekasaputra.griyakampoengtkw.data.remote.FirebaseNodes
 import net.bagusekasaputra.griyakampoengtkw.databinding.ActivitySplashPureBinding
 import net.bagusekasaputra.griyakampoengtkw.databinding.ActivitySplashWithLoadingBinding
 import net.bagusekasaputra.griyakampoengtkw.domain.DataMode
@@ -51,6 +50,8 @@ import java.io.IOException
 import java.net.InetSocketAddress
 import java.net.Socket
 import javax.inject.Inject
+import net.bagusekasaputra.griyakampoengtkw.data.remote.FirebaseNodes as RemoteNodes
+import net.bagusekasaputra.griyakampoengtkw.data.remote_backup.FirebaseNodes as BackupNodes
 
 @SuppressLint("CustomSplashScreen")
 @AndroidEntryPoint
@@ -77,6 +78,12 @@ class SplashActivity : AppCompatActivity() {
             clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS)
             statusBarColor = ContextCompat.getColor(this@SplashActivity, R.color.abang)
         }
+
+        // Clean up `SharedPreferences`' runtime keys, such as selected tahapan or selected jenis data.
+        sharedPreferences.cleanUpOnStart(
+            ConstsSharedPrefs.SELECTED_TAHAPAN,
+            BackupNodes.KEY_BACKUP_NAME
+        )
 
         bindingPure = ActivitySplashPureBinding.inflate(layoutInflater)
         setContentView(bindingPure.root)
@@ -207,12 +214,6 @@ class SplashActivity : AppCompatActivity() {
         }
 
         if (jenisData == DATA_BARU) {
-            // Nullify the sharedPreference Data Lama to prevent MainActivity/DetailActivity
-            // to DataLama mode
-            sharedPreferences.edit(true) {
-                putString("dataLamaPath", null)
-            }
-
             // Initialize cache
             viewModel.initializeCache(
                 tahapan = tahapan,
@@ -240,7 +241,7 @@ class SplashActivity : AppCompatActivity() {
         } else {
             dialogPilihDataLama { _, namaBackup ->
                 sharedPreferences.edit(true) {
-                    putString("NAMA_BACKUP", namaBackup)
+                    putString(BackupNodes.KEY_BACKUP_NAME, namaBackup)
                 }
 
                 goToMainActivity(DataMode.DATA_LAMA)
@@ -453,12 +454,30 @@ class SplashActivity : AppCompatActivity() {
             }
 
             val database = FirebaseDatabase.getInstance(GriyaNodes.firebaseUrl)
-            val maintenanceRef = database.reference.child(FirebaseNodes.MAINTENTANCE)
+            val maintenanceRef = database.reference.child(RemoteNodes.MAINTENTANCE)
 
 
             maintenanceRef.addListenerForSingleValueEvent(eventListener)
         }
     }
+
+    /**
+     * Do cleanup on app start because, after process death, some [SharedPreferences]' keys will
+     * meddle in the process.
+     *
+     * For example, if you did [SharedPreferences.edit] to put a `backupName` and have forgotten
+     * to clean this up, then whatever [DataMode] user chooses on [showJenisDataButton] will be
+     * [DATA_LAMA].
+     */
+    @Suppress("SameParameterValue")
+    private fun SharedPreferences.cleanUpOnStart(vararg keys: String) {
+        edit(true) {
+            keys.forEach { key ->
+                remove(key)
+            }
+        }
+    }
+
 
     companion object {
         const val DATA_LAMA = 0
