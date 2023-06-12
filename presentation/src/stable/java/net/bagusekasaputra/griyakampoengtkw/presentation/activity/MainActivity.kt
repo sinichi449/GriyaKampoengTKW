@@ -12,24 +12,19 @@ import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.edit
-import androidx.core.text.HtmlCompat
 import androidx.navigation.NavController
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.navigateUp
 import androidx.navigation.ui.onNavDestinationSelected
 import androidx.navigation.ui.setupWithNavController
-import com.crowdfire.cfalertdialog.CFAlertDialog
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
 import net.bagusekasaputra.griyakampoengtkw.domain.DataMode
-import net.bagusekasaputra.griyakampoengtkw.domain.entity.Promotion
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.Tahapan
 import net.bagusekasaputra.griyakampoengtkw.presentation.R
 import net.bagusekasaputra.griyakampoengtkw.presentation.databinding.ActivityMainBinding
-import net.bagusekasaputra.griyakampoengtkw.presentation.databinding.DialogPromotionFooterBinding
-import net.bagusekasaputra.griyakampoengtkw.presentation.databinding.DialogPromotionHeaderBinding
 import net.bagusekasaputra.griyakampoengtkw.presentation.databinding.HeaderMainNavBinding
 import net.bagusekasaputra.griyakampoengtkw.presentation.util.GriyaNodes
 import net.bagusekasaputra.griyakampoengtkw.presentation.viewmodel.MainViewModel
@@ -47,17 +42,33 @@ class MainActivity : AppCompatActivity() {
         
         const val EXTRAS_VERSION_NAME = "versionName"
         const val EXTRAS_VERSION_CODE = "versionCode"
-        const val EXTRAS_DATA_MODE = "EXTRAS_DATA_MODE"
+        const val EXTRAS_DATA_MODE = "dataMode"
     }
 
     private lateinit var binding: ActivityMainBinding
     private val viewModel: MainViewModel by viewModels()
-//    private val biayaLainViewModel: BiayaLainViewModel by viewModels()
 
     private lateinit var navController: NavController
     private lateinit var appBarConfiguration: AppBarConfiguration
 
-    // SharedPreferences to load the user settings
+    /**
+     * [appBarTopLevelDestinations] is equal to a question:
+     * "At which navigation menu should I show [R.drawable.baseline_menu_24] instead of
+     * [R.drawable.ic_baseline_arrow_back_24] icon?"
+     */
+    private val appBarTopLevelDestinations by lazy {
+        setOf(
+            R.id.nav_management_kavling,
+            R.id.nav_database_user,
+            R.id.nav_inden_booking,
+            R.id.nav_biaya_pribadi,
+            R.id.nav_biaya_pembangunan,
+            R.id.nav_pengaturan,
+        )
+    }
+
+    // SharedPreferences to load the user settings, selected tahapan, and selected
+    // data lama name.
     @Inject
     lateinit var sharedPrefs: SharedPreferences
 
@@ -71,14 +82,7 @@ class MainActivity : AppCompatActivity() {
         navController = (supportFragmentManager.findFragmentById(R.id.navHostFragment_main)
                 as NavHostFragment).navController
         appBarConfiguration = AppBarConfiguration(
-            topLevelDestinationIds = setOf(
-                R.id.nav_management_kavling,
-                R.id.nav_database_user,
-                R.id.nav_inden_booking,
-                R.id.nav_biaya_pribadi,
-                R.id.nav_biaya_pembangunan,
-                R.id.nav_pengaturan,
-            ),
+            topLevelDestinationIds = appBarTopLevelDestinations,
             drawerLayout = binding.drawerMain,
         )
 
@@ -113,24 +117,32 @@ class MainActivity : AppCompatActivity() {
         }
 
         // Data Lama / Data Baru Mode?
-        val pathDataLama = intent?.getStringExtra("dataLamaPath")
-        if (pathDataLama != null) {
-            viewModel.dataMode = DataMode.DATA_LAMA
+        with(binding.connectivityStatus) {
+            handleDataMode(intent, sharedPrefs) { dataMode ->
+                val layoutConnectivityVisibility : Int
+                val tvStatusText: String
+                when (dataMode) {
+                    DataMode.ONLINE -> {
+                        layoutConnectivityVisibility = View.GONE
+                        tvStatusText = "Online"
+                    }
+                    DataMode.OFFLINE -> {
+                        layoutConnectivityVisibility = View.VISIBLE
+                        tvStatusText = "Offline"
+                    }
+                    DataMode.DATA_LAMA -> {
+                        layoutConnectivityVisibility = View.GONE
+                        tvStatusText = "Mode DataLama"
+                    }
+                }
 
-            sharedPrefs.edit(true) {
-                putString("dataLamaPath", pathDataLama)
+                // Will visibile if `dataMode` != `DataMode.ONLINE`
+                constraintConnectivity.visibility = layoutConnectivityVisibility
+                tvStatus.text = tvStatusText
+
+                viewModel.dataMode = dataMode
+                viewModel.offlineMode = dataMode == DataMode.OFFLINE
             }
-
-            binding.connectivityStatus.constraintConnectivity.visibility = View.VISIBLE
-            binding.connectivityStatus.tvStatus.text = "Mode Data Lama"
-        }
-
-        val offlineMode = sharedPrefs.getBoolean("offline_mode", false)
-        if (offlineMode) {
-            viewModel.offlineMode = true
-            viewModel.dataMode = DataMode.OFFLINE
-
-            binding.connectivityStatus.constraintConnectivity.visibility = View.VISIBLE
         }
 
         setupViewModel()
@@ -151,6 +163,35 @@ class MainActivity : AppCompatActivity() {
 //        }
     }
 
+    /**
+     * Edit [sharedPreferences] following the received [EXTRAS_DATA_MODE] `Intent`.
+     */
+    private fun handleDataMode(
+        intent: Intent?,
+        sharedPreferences: SharedPreferences,
+        onDataModeReceived: (dataMode: DataMode) -> Unit,
+    ) {
+        val dataMode = intent?.extras?.getString(EXTRAS_DATA_MODE)
+
+        if (!dataMode.isNullOrEmpty()) {
+            sharedPreferences.edit(true) {
+                putString("DATA_MODE", dataMode)
+            }
+
+            when (dataMode) {
+                DataMode.ONLINE.name -> {
+                    onDataModeReceived(DataMode.ONLINE)
+                }
+                DataMode.OFFLINE.name -> {
+                    onDataModeReceived(DataMode.OFFLINE)
+                }
+                DataMode.DATA_LAMA.name -> {
+                    onDataModeReceived(DataMode.DATA_LAMA)
+                }
+            }
+        }
+    }
+
     @Deprecated("Deprecated in Java")
     override fun onBackPressed() {
         with(viewModel.managementKavlingFragment.value) {
@@ -162,29 +203,6 @@ class MainActivity : AppCompatActivity() {
                 super.onBackPressed()
             }
         }
-    }
-
-    private fun showPromotionMessageDialog(promotion: Promotion) {
-        val message = StringBuilder()
-        promotion.texts.forEach {
-            message.append("- ")
-                .append(it)
-                .append("\n")
-        }
-        val headerView = DialogPromotionHeaderBinding.inflate(layoutInflater)
-        val footerView = DialogPromotionFooterBinding.inflate(layoutInflater)
-
-        val footerText = "<i>Investasikan gajimu untuk Rumah Impianmu!</i>"
-        footerView.tvFooter.text = HtmlCompat.fromHtml(footerText, HtmlCompat.FROM_HTML_MODE_LEGACY)
-
-        CFAlertDialog.Builder(this).apply {
-            setDialogStyle(CFAlertDialog.CFAlertStyle.ALERT)
-            setHeaderView(headerView.root)
-            setTitle(promotion.title)
-            setMessage(message)
-            setFooterView(footerView.root)
-        }.create()
-            .show()
     }
 
     override fun onSupportNavigateUp(): Boolean {

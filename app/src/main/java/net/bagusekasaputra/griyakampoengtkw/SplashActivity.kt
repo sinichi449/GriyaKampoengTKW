@@ -36,9 +36,9 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.suspendCancellableCoroutine
 import kotlinx.coroutines.withContext
 import net.bagusekasaputra.griyakampoengtkw.data.remote.FirebaseNodes
-import net.bagusekasaputra.griyakampoengtkw.dataLama.ui.DataLamaActivity
 import net.bagusekasaputra.griyakampoengtkw.databinding.ActivitySplashPureBinding
 import net.bagusekasaputra.griyakampoengtkw.databinding.ActivitySplashWithLoadingBinding
+import net.bagusekasaputra.griyakampoengtkw.domain.DataMode
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.Tahapan
 import net.bagusekasaputra.griyakampoengtkw.model.ConnectionCheckResult
 import net.bagusekasaputra.griyakampoengtkw.presentation.R
@@ -155,7 +155,10 @@ class SplashActivity : AppCompatActivity() {
                                 val selectedJenisData = tahapanAndJenisData.second
 
                                 if ((selectedTahapan != null) && (selectedJenisData != null)) {
-                                    handleTahapanAndJenisData(selectedJenisData, selectedTahapan)
+                                    handleTahapanAndJenisData(
+                                        selectedJenisData, selectedTahapan,
+                                        connectivityCheckResult.isDeviceOnline,
+                                    )
                                 }
                             }
                         }
@@ -190,6 +193,7 @@ class SplashActivity : AppCompatActivity() {
     private fun handleTahapanAndJenisData(
         jenisData: Int,
         tahapan: Tahapan,
+        isOnline: Boolean,
     ) {
         sharedPreferences.edit(true) {
             putString(ConstsSharedPrefs.SELECTED_TAHAPAN, tahapan.reference)
@@ -213,7 +217,7 @@ class SplashActivity : AppCompatActivity() {
                     }
                 },
                 onSuccess = {
-                    goToMainActivity()
+                    goToMainActivity(if (isOnline) DataMode.ONLINE else DataMode.OFFLINE)
                 },
                 onFailure = {
                     MaterialAlertDialogBuilder(this@SplashActivity).apply {
@@ -227,7 +231,7 @@ class SplashActivity : AppCompatActivity() {
                 }
             )
         } else {
-            goToDocumentLamaActivity()
+            goToMainActivity(DataMode.DATA_LAMA)
         }
     }
 
@@ -258,19 +262,23 @@ class SplashActivity : AppCompatActivity() {
         }
     }
 
-    private fun goToMainActivity() {
+    /**
+     * Navigate to [MainActivity] with some extras: [BuildConfig.VERSION_NAME],
+     * [BuildConfig.VERSION_CODE], and a [DataMode].
+     *
+     * After invoking [startActivity], this activity will [finish].
+     *
+     * @param dataMode will have to be passed to [MainActivity].
+     */
+    private fun goToMainActivity(dataMode: DataMode) {
         val intent = Intent(this, MainActivity::class.java)
-        // Passing BuildConfig for update check to MainActivity
+
         intent.putExtra(MainActivity.EXTRAS_VERSION_NAME, BuildConfig.VERSION_NAME)
         intent.putExtra(MainActivity.EXTRAS_VERSION_CODE, BuildConfig.VERSION_CODE)
+        intent.putExtra(MainActivity.EXTRAS_DATA_MODE, dataMode.name)
 
         startActivity(intent)
         finish()
-    }
-
-    private fun goToDocumentLamaActivity() {
-        val intent = Intent(this, DataLamaActivity::class.java)
-        startActivity(intent)
     }
 
     private suspend fun connectivityCheckAndInitServer(
