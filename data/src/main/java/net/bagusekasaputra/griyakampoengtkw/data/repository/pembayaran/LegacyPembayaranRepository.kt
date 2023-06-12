@@ -12,7 +12,6 @@ import net.bagusekasaputra.griyakampoengtkw.data.CacheHelper
 import net.bagusekasaputra.griyakampoengtkw.data.DataUtil
 import net.bagusekasaputra.griyakampoengtkw.data.MyObjectMapper
 import net.bagusekasaputra.griyakampoengtkw.data.MyObjectMapper.mapPembayaran
-import net.bagusekasaputra.griyakampoengtkw.data.interfaces.backup.BackupPembayaranDataSource
 import net.bagusekasaputra.griyakampoengtkw.data.interfaces.local.LocalMetadataDataSource
 import net.bagusekasaputra.griyakampoengtkw.data.interfaces.local.LocalPembayaranDataSource
 import net.bagusekasaputra.griyakampoengtkw.data.interfaces.remote.RemoteMetadataDataSource
@@ -26,7 +25,6 @@ import net.bagusekasaputra.griyakampoengtkw.domain.repository.PembayaranReposito
 class LegacyPembayaranRepository(
     private val localPembayaranDataSource: LocalPembayaranDataSource,
     private val remotePembayaranDataSource: RemotePembayaranDataSource,
-    private val backupPembayaranDataSource: BackupPembayaranDataSource,
     private val localMetadata: LocalMetadataDataSource,
     private val remoteMetadata: RemoteMetadataDataSource,
     private val cacheHelper: CacheHelper,
@@ -118,36 +116,8 @@ class LegacyPembayaranRepository(
         }
     }
 
-    private fun getFromDataLama(kavlingKode: String): Flow<Result<List<Pembayaran>?>> {
-        return flow {
-            val backupResult = backupPembayaranDataSource.getAllPembayaran(kavlingKode)
-            val mapResult = DataUtil.mapListResult(
-                originResult = backupResult,
-                targetMapper = ::mapPembayaran,
-            )
-
-            emit(mapResult)
-        }
-    }
-
     override fun getBatchBackup(listKavling: List<String>): Flow<Result<Map<String, List<Pembayaran>?>?>> {
-        return callbackFlow {
-            try {
-                val mapListPembayaran = mutableMapOf<String, List<Pembayaran>?>()
-
-                listKavling.forEach { kavling ->
-                    mapListPembayaran[kavling] = getFromDataLama(kavling).first().getOrThrow()
-                }
-
-                trySendBlocking(Result.success(mapListPembayaran))
-            } catch (e: Exception) {
-                e.printStackTrace()
-
-                trySendBlocking(Result.failure(e))
-            }
-
-            awaitClose {  }
-        }
+        TODO("Not yet implemented")
     }
 
     override fun fromBackupBatch(
@@ -219,13 +189,11 @@ class LegacyPembayaranRepository(
                     emitAll(flowOffline)
                 }
             }
-            val flowDataLama = getFromDataLama(kavlingKode)
-
 
             when (dataMode) {
                 DataMode.ONLINE -> emitAll(flowOnline)
                 DataMode.OFFLINE -> emitAll(flowOffline)
-                DataMode.DATA_LAMA -> emitAll(flowDataLama)
+                DataMode.DATA_LAMA -> TODO("Not yet implemented")
             }
         }
     }

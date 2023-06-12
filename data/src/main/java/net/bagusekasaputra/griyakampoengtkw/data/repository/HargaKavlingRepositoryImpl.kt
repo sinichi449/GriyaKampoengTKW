@@ -11,7 +11,6 @@ import kotlinx.coroutines.flow.flow
 import net.bagusekasaputra.griyakampoengtkw.data.DataUtil
 import net.bagusekasaputra.griyakampoengtkw.data.MyObjectMapper
 import net.bagusekasaputra.griyakampoengtkw.data.MyObjectMapper.mapHargaKavling
-import net.bagusekasaputra.griyakampoengtkw.data.interfaces.backup.BackupHargaKavlingDataSource
 import net.bagusekasaputra.griyakampoengtkw.data.interfaces.local.LocalHargaKavlingDataSource
 import net.bagusekasaputra.griyakampoengtkw.data.interfaces.local.LocalMetadataDataSource
 import net.bagusekasaputra.griyakampoengtkw.data.interfaces.remote.RemoteHargaKavlingSource
@@ -24,7 +23,6 @@ import net.bagusekasaputra.griyakampoengtkw.domain.repository.HargaKavlingReposi
 class HargaKavlingRepositoryImpl(
     private val localHargaKavlingDataSource: LocalHargaKavlingDataSource,
     private val remoteHargaKavlingSource: RemoteHargaKavlingSource,
-    private val backupHargaKavlingDataSource: BackupHargaKavlingDataSource,
     private val localMetadata: LocalMetadataDataSource,
     private val remoteMetadata: RemoteMetadataDataSource,
 ): HargaKavlingRepository {
@@ -160,23 +158,11 @@ class HargaKavlingRepositoryImpl(
                     emitAll(flowOffline)
                 }
             }
-            val flowDataLama = flow<Result<HargaKavling?>> {
-                backupHargaKavlingDataSource.getHargaKavling(kavlingKode)
-                    .onSuccess {
-                        emit(DataUtil.mapSingleResult(
-                            originResult = Result.success(it),
-                            targetMapper = ::mapHargaKavling,
-                        ))
-                    }
-                    .onFailure {
-                        emit(Result.failure(it))
-                    }
-            }
 
             when (dataMode) {
                 DataMode.OFFLINE -> emitAll(flowOffline)
                 DataMode.ONLINE -> emitAll(flowOnline)
-                DataMode.DATA_LAMA -> emitAll(flowDataLama)
+                DataMode.DATA_LAMA -> TODO("Not yet implemented")
             }
         }
     }

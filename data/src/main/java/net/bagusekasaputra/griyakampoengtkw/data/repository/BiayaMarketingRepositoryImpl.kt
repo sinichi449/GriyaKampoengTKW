@@ -11,7 +11,6 @@ import kotlinx.coroutines.flow.flow
 import net.bagusekasaputra.griyakampoengtkw.data.DataUtil
 import net.bagusekasaputra.griyakampoengtkw.data.MyObjectMapper
 import net.bagusekasaputra.griyakampoengtkw.data.MyObjectMapper.mapBiayaMarketing
-import net.bagusekasaputra.griyakampoengtkw.data.interfaces.backup.BackupBiayaMarketingDataSource
 import net.bagusekasaputra.griyakampoengtkw.data.interfaces.local.LocalBiayaMarketingDataSource
 import net.bagusekasaputra.griyakampoengtkw.data.interfaces.local.LocalMetadataDataSource
 import net.bagusekasaputra.griyakampoengtkw.data.interfaces.remote.RemoteBiayaMarketingDataSource
@@ -24,7 +23,6 @@ import net.bagusekasaputra.griyakampoengtkw.domain.repository.BiayaMarketingRepo
 class BiayaMarketingRepositoryImpl(
     private val localBiayaMarketingDataSource: LocalBiayaMarketingDataSource,
     private val remoteBiayaMarketingDataSource: RemoteBiayaMarketingDataSource,
-    private val backupBiayaMarketingDataSource: BackupBiayaMarketingDataSource,
     private val localMetadata: LocalMetadataDataSource,
     private val remoteMetadata: RemoteMetadataDataSource,
 ): BiayaMarketingRepository {
@@ -214,23 +212,11 @@ class BiayaMarketingRepositoryImpl(
                     emitAll(flowOffline)
                 }
             }
-            val flowDataLama = flow<Result<List<BiayaMarketing>>> {
-                backupBiayaMarketingDataSource.getAllBiayaMarketing(kavlingKode)
-                    .onSuccess {
-                        emit(DataUtil.mapListResult(
-                            originResult = Result.success(it),
-                            targetMapper = ::mapBiayaMarketing,
-                        ))
-                    }
-                    .onFailure {
-                        emit(Result.failure(it))
-                    }
-            }
 
             when (dataMode) {
                 DataMode.OFFLINE -> emitAll(flowOffline)
                 DataMode.ONLINE -> emitAll(flowOnline)
-                DataMode.DATA_LAMA -> emitAll(flowDataLama)
+                DataMode.DATA_LAMA -> TODO("Not yet implemented")
             }
         }
     }

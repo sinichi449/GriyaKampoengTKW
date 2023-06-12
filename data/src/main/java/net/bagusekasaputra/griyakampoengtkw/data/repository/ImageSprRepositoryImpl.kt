@@ -9,9 +9,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
 import kotlinx.coroutines.flow.emitAll
 import kotlinx.coroutines.flow.flow
-import net.bagusekasaputra.griyakampoengtkw.data.DataUtil
 import net.bagusekasaputra.griyakampoengtkw.data.MyObjectMapper.mapImageSpr
-import net.bagusekasaputra.griyakampoengtkw.data.interfaces.backup.BackupImageSPRDataSource
 import net.bagusekasaputra.griyakampoengtkw.data.interfaces.local.LocalImageSprDataSource
 import net.bagusekasaputra.griyakampoengtkw.data.interfaces.local.LocalMetadataDataSource
 import net.bagusekasaputra.griyakampoengtkw.data.interfaces.remote.RemoteImageSprDataSource
@@ -25,7 +23,6 @@ import net.bagusekasaputra.griyakampoengtkw.domain.repository.ImageSprRepository
 class ImageSprRepositoryImpl(
     private val localImageSpr: LocalImageSprDataSource,
     private val remoteImageSpr: RemoteImageSprDataSource,
-    private val backupImageSprDataSource: BackupImageSPRDataSource,
     private val localMetadata: LocalMetadataDataSource,
     private val remoteMetadata: RemoteMetadataDataSource,
     private val contentResolver: ContentResolver,
@@ -121,26 +118,7 @@ class ImageSprRepositoryImpl(
     }
 
     override fun getFromBackup(kavlingKode: String): Flow<Result<ImageSpr?>> {
-        return callbackFlow {
-            backupImageSprDataSource.getImageSPR(kavlingKode)
-                .onSuccess {
-                    if (it != null) {
-                        trySendBlocking(DataUtil.mapSingleResult(
-                            originResult = Result.success(it),
-                            targetMapper = { imageSprModel ->
-                                mapImageSpr(imageSprModel, contentResolver)
-                            },
-                        ))
-                    } else {
-                        trySendBlocking(Result.success(null))
-                    }
-                }
-                .onFailure {
-                    trySendBlocking(Result.failure(Throwable("ImageSprRepoImpl:113 failed -> ${it.cause}")))
-                }
-
-            awaitClose {  }
-        }
+        TODO("Not yet implemented")
     }
 
     override fun getBatchUri(listKavling: List<String>): Flow<Result<List<ImageSprUri>?>> {

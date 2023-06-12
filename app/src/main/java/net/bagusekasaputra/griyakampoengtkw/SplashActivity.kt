@@ -51,7 +51,6 @@ import java.net.InetSocketAddress
 import java.net.Socket
 import javax.inject.Inject
 import net.bagusekasaputra.griyakampoengtkw.data.remote.FirebaseNodes as RemoteNodes
-import net.bagusekasaputra.griyakampoengtkw.data.remote_backup.FirebaseNodes as BackupNodes
 
 @SuppressLint("CustomSplashScreen")
 @AndroidEntryPoint
@@ -82,7 +81,7 @@ class SplashActivity : AppCompatActivity() {
         // Clean up `SharedPreferences`' runtime keys, such as selected tahapan or selected jenis data.
         sharedPreferences.cleanUpOnStart(
             ConstsSharedPrefs.SELECTED_TAHAPAN,
-            BackupNodes.KEY_BACKUP_NAME
+            ConstsSharedPrefs.BACKUP_NAME
         )
 
         bindingPure = ActivitySplashPureBinding.inflate(layoutInflater)
@@ -241,7 +240,7 @@ class SplashActivity : AppCompatActivity() {
         } else {
             dialogPilihDataLama { _, namaBackup ->
                 sharedPreferences.edit(true) {
-                    putString(BackupNodes.KEY_BACKUP_NAME, namaBackup)
+                    putString(ConstsSharedPrefs.BACKUP_NAME, namaBackup)
                 }
 
                 goToMainActivity(DataMode.DATA_LAMA)

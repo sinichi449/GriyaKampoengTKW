@@ -1,17 +1,12 @@
 package net.bagusekasaputra.griyakampoengtkw.data.repository
 
 import android.util.Log
-import kotlinx.coroutines.channels.awaitClose
-import kotlinx.coroutines.channels.trySendBlocking
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.callbackFlow
 import kotlinx.coroutines.flow.emitAll
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.map
-import net.bagusekasaputra.griyakampoengtkw.data.DataUtil
 import net.bagusekasaputra.griyakampoengtkw.data.MyObjectMapper.mapBiayaLain
-import net.bagusekasaputra.griyakampoengtkw.data.interfaces.backup.BackupBiayaLainDataSource
 import net.bagusekasaputra.griyakampoengtkw.data.interfaces.local.LocalBiayaLainDataSource
 import net.bagusekasaputra.griyakampoengtkw.data.interfaces.local.LocalMetadataDataSource
 import net.bagusekasaputra.griyakampoengtkw.data.interfaces.remote.RemoteBiayaLainDataSource
@@ -24,7 +19,6 @@ import net.bagusekasaputra.griyakampoengtkw.domain.repository.BiayaLainRepositor
 class BiayaLainRepositoryImpl(
     private val localBiayaLainDataSource: LocalBiayaLainDataSource,
     private val remoteBiayaLainDataSource: RemoteBiayaLainDataSource,
-    private val backupBiayaLainDataSource: BackupBiayaLainDataSource,
     private val localMetadata: LocalMetadataDataSource,
     private val remoteMetadata: RemoteMetadataDataSource,
 ): BiayaLainRepository {
@@ -109,20 +103,7 @@ class BiayaLainRepositoryImpl(
     }
 
     override fun getFromBackup(): Flow<Result<List<BiayaLain>?>> {
-        return callbackFlow {
-            backupBiayaLainDataSource.getAllBiayaLain()
-                .onSuccess {
-                    trySendBlocking(DataUtil.mapListResult(
-                        originResult = Result.success(it),
-                        targetMapper = ::mapBiayaLain,
-                    ))
-                }
-                .onFailure {
-                    trySendBlocking(Result.failure(Throwable("Gagal mendapatkan Biaya Lain dari Backup: ${it.cause}")))
-                }
-
-            awaitClose {  }
-        }
+        TODO("Not yet implemented")
     }
 
     override fun getSingle(jenisBiaya: String, offline: Boolean): Flow<Result<BiayaLain?>> {

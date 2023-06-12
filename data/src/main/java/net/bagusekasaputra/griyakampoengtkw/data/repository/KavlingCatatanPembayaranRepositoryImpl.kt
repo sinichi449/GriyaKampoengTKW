@@ -9,7 +9,6 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flow
 import net.bagusekasaputra.griyakampoengtkw.data.DataUtil
 import net.bagusekasaputra.griyakampoengtkw.data.MyObjectMapper.mapKavlingCatatanPembayaran
-import net.bagusekasaputra.griyakampoengtkw.data.interfaces.backup.BackupCatatanPembayaranDataSource
 import net.bagusekasaputra.griyakampoengtkw.data.interfaces.local.LocalKavlingCatatanPembayaranDataSource
 import net.bagusekasaputra.griyakampoengtkw.data.interfaces.remote.RemoteKavlingCatatanPembayaranDataSource
 import net.bagusekasaputra.griyakampoengtkw.domain.DataMode
@@ -19,7 +18,6 @@ import net.bagusekasaputra.griyakampoengtkw.domain.repository.KavlingCatatanPemb
 class KavlingCatatanPembayaranRepositoryImpl(
     private val localKavlingCatatanPembayaranDataSource: LocalKavlingCatatanPembayaranDataSource,
     private val remoteKavlingCatatanPembayaranDataSource: RemoteKavlingCatatanPembayaranDataSource,
-    private val backupCatatanPembayaranDataSource: BackupCatatanPembayaranDataSource,
 ): KavlingCatatanPembayaranRepository {
 
     override fun getCatatan(
@@ -60,20 +58,11 @@ class KavlingCatatanPembayaranRepositoryImpl(
                     emitAll(flowOffline)
                 }
             }
-            val flowDataLama = flow<Result<KavlingCatatanPembayaran?>> {
-                backupCatatanPembayaranDataSource.getCatatanPembayaran(kavlingKode)
-                    .onSuccess {
-                        emit(DataUtil.mapSingleResult(
-                            originResult = Result.success(it),
-                            targetMapper = ::mapKavlingCatatanPembayaran,
-                        ))
-                    }
-            }
 
             when (dataMode) {
                 DataMode.OFFLINE -> emitAll(flowOffline)
                 DataMode.ONLINE -> emitAll(flowOnline)
-                DataMode.DATA_LAMA -> emitAll(flowDataLama)
+                DataMode.DATA_LAMA -> TODO("Not yet implemented")
             }
         }
     }

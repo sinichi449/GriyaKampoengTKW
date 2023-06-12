@@ -8,9 +8,7 @@ import kotlinx.coroutines.flow.callbackFlow
 import kotlinx.coroutines.flow.emitAll
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flow
-import net.bagusekasaputra.griyakampoengtkw.data.DataUtil
 import net.bagusekasaputra.griyakampoengtkw.data.MyObjectMapper.mapFotoPembayaran
-import net.bagusekasaputra.griyakampoengtkw.data.interfaces.backup.BackupFotoPembayaranDataSource
 import net.bagusekasaputra.griyakampoengtkw.data.interfaces.local.LocalFotoPembayaranDataSource
 import net.bagusekasaputra.griyakampoengtkw.data.interfaces.local.LocalMetadataDataSource
 import net.bagusekasaputra.griyakampoengtkw.data.interfaces.remote.RemoteFotoPembayaranDataSource
@@ -25,7 +23,6 @@ class FotoPembayaranRepositoryImpl(
     private val localFotoPembayaran: LocalFotoPembayaranDataSource,
     private val deviceDataSource: LocalFotoPembayaranDataSource,
     private val remoteFotoPembayaran: RemoteFotoPembayaranDataSource,
-    private val backupFotoPembayaranDataSource: BackupFotoPembayaranDataSource,
     private val localMetadata: LocalMetadataDataSource,
     private val remoteMetadata: RemoteMetadataDataSource,
 ): FotoPembayaranRepository {
@@ -97,20 +94,7 @@ class FotoPembayaranRepositoryImpl(
     }
 
     override fun getFromBackup(kavlingKode: String, termin: String): Flow<Result<FotoPembayaran?>> {
-        return callbackFlow {
-            backupFotoPembayaranDataSource.getFotoPembayaran(kavlingKode, termin)
-                .onSuccess {
-                    trySendBlocking(DataUtil.mapSingleResult(
-                        originResult = Result.success(it),
-                        targetMapper = ::mapFotoPembayaran,
-                    ))
-                }
-                .onFailure {
-                    trySendBlocking(Result.failure(Throwable("Gagal mendapatkan Foto Pembayaran $kavlingKode $termin : ${it.cause}")))
-                }
-
-            awaitClose {  }
-        }
+        TODO("Not yet implemented")
     }
 
     override fun getBatchUri(mapKavlingTermin: Map<String, List<String>>): Flow<Result<List<FotoPembayaran>?>> {
@@ -193,17 +177,7 @@ class FotoPembayaranRepositoryImpl(
     override fun isFotoPembayaranExist(kavlingKode: String, termin: String, dataMode: DataMode): Flow<Result<Boolean>> {
         return flow {
             if (dataMode == DataMode.DATA_LAMA) {
-                backupFotoPembayaranDataSource.isFotoPembayaranExist(kavlingKode, termin)
-                    .onSuccess {
-                        if (it == null) {
-                            emit(Result.failure(Throwable("Pengecekan Foto Pembayaran berakhir NULL (FotoPembayaranRepoImpl:167)")))
-                        } else {
-                            emit(Result.success(it))
-                        }
-                    }
-                    .onFailure {
-                        emit(Result.failure(Throwable("Gagal Availability Foto Pembayaran $kavlingKode $termin: ${it.cause}")))
-                    }
+                TODO("Not yet implemented")
             } else {
                 emitAll(remoteFotoPembayaran.isFotoPembayaranExist(kavlingKode, termin))
             }
@@ -211,33 +185,7 @@ class FotoPembayaranRepositoryImpl(
     }
 
     override fun deleteAllFotoPembayaran(kavlingKode: String): Flow<Result<Nothing?>> {
-//        return flow {
-//            // Deleting both in the Device storage and in the Room Database
-//            val deviceResult = deviceDataSource.deleteAllFotoPembayaran(kavlingKode)
-//
-//            deviceResult.onFailure {
-//                emit(Result.failure(it))
-//            }
-//
-//            val localResult = localFotoPembayaran.deleteAllFotoPembayaran(kavlingKode)
-//
-//            emit(localResult)
-//        }
-        return callbackFlow {
-            updateMetadata(kavlingKode)
-
-            localFotoPembayaran.deleteAll(kavlingKode)
-
-            remoteFotoPembayaran.deleteAll(kavlingKode)
-                .onSuccess {
-                    trySendBlocking(Result.success(null))
-                }
-                .onFailure {
-
-                }
-
-            awaitClose {  }
-        }
+        TODO("Not yet implemented")
     }
 
     private suspend fun updateMetadata(kavlingKode: String) {

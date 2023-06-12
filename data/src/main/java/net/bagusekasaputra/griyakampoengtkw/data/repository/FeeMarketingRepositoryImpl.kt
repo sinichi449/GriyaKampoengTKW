@@ -11,7 +11,6 @@ import kotlinx.coroutines.flow.flow
 import net.bagusekasaputra.griyakampoengtkw.data.DataUtil
 import net.bagusekasaputra.griyakampoengtkw.data.MyObjectMapper
 import net.bagusekasaputra.griyakampoengtkw.data.MyObjectMapper.mapFeeMarketing
-import net.bagusekasaputra.griyakampoengtkw.data.interfaces.backup.BackupFeeMarketingDataSource
 import net.bagusekasaputra.griyakampoengtkw.data.interfaces.local.LocalFeeMarketingDataSource
 import net.bagusekasaputra.griyakampoengtkw.data.interfaces.local.LocalMetadataDataSource
 import net.bagusekasaputra.griyakampoengtkw.data.interfaces.remote.RemoteFeeMarketingDataSource
@@ -24,7 +23,6 @@ import net.bagusekasaputra.griyakampoengtkw.domain.repository.FeeMarketingReposi
 class FeeMarketingRepositoryImpl(
     private val localFeeMarketingDataSource: LocalFeeMarketingDataSource,
     private val remoteFeeMarketingDataSource: RemoteFeeMarketingDataSource,
-    private val backupFeeMarketingDataSource: BackupFeeMarketingDataSource,
     private val localMetadata: LocalMetadataDataSource,
     private val remoteMetadata: RemoteMetadataDataSource,
 ): FeeMarketingRepository {
@@ -184,23 +182,11 @@ class FeeMarketingRepositoryImpl(
                     emitAll(flowOffline)
                 }
             }
-            val flowDataLama = flow<Result<FeeMarketing?>> {
-                backupFeeMarketingDataSource.getFeeMarketing(kavlingKode)
-                    .onSuccess {
-                        emit(DataUtil.mapSingleResult(
-                            originResult = Result.success(it),
-                            targetMapper = ::mapFeeMarketing,
-                        ))
-                    }
-                    .onFailure {
-                        emit(Result.failure(it))
-                    }
-            }
 
             when (dataMode) {
                 DataMode.OFFLINE -> emitAll(flowOffline)
                 DataMode.ONLINE -> emitAll(flowOnline)
-                DataMode.DATA_LAMA -> emitAll(flowDataLama)
+                DataMode.DATA_LAMA -> TODO("Not yet implemented")
             }
         }
     }

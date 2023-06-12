@@ -13,7 +13,6 @@ import kotlinx.coroutines.flow.emitAll
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flow
 import net.bagusekasaputra.griyakampoengtkw.data.CacheHelper
-import net.bagusekasaputra.griyakampoengtkw.data.interfaces.backup.BackupImageDataDiriDataSource
 import net.bagusekasaputra.griyakampoengtkw.data.interfaces.local.LocalImageDataDiriDataSource
 import net.bagusekasaputra.griyakampoengtkw.data.interfaces.local.LocalMetadataDataSource
 import net.bagusekasaputra.griyakampoengtkw.data.interfaces.remote.RemoteImageDataDiriDataSource
@@ -29,7 +28,6 @@ import java.io.File
 class ImageDataDiriRepositoryImpl(
     private val localImageDataDiri: LocalImageDataDiriDataSource,
     private val remoteImageDataDiri: RemoteImageDataDiriDataSource,
-    private val backupImageDataDiri: BackupImageDataDiriDataSource,
     private val localMetadata: LocalMetadataDataSource,
     private val remoteMetadata: RemoteMetadataDataSource,
     private val externalFileDir: File?,
@@ -139,21 +137,7 @@ class ImageDataDiriRepositoryImpl(
     }
 
     override fun getFromBackup(kavlingKode: String): Flow<Result<ImageDataDiri?>> {
-        return callbackFlow {
-            backupImageDataDiri.getImageDataDiri(kavlingKode)
-                .onSuccess {
-                    if (it == null) {
-                        trySendBlocking(Result.success(null))
-                    } else {
-                        trySendBlocking(Result.success(mapImageDataDiri(it)))
-                    }
-                }
-                .onFailure {
-                    trySendBlocking(Result.failure(Throwable("Gagal mendapatkan ImageDataDiri dari Backup: ${it.cause}")))
-                }
-
-            awaitClose {  }
-        }
+        TODO("Not yet implemented")
     }
 
     override fun addImage(kavlingKode: String, uri: Uri): Flow<Result<Boolean?>> {

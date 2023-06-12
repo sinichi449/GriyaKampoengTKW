@@ -19,11 +19,10 @@ import net.bagusekasaputra.griyakampoengtkw.ConstsSharedPrefs
 import net.bagusekasaputra.griyakampoengtkw.data.CacheHelper
 import net.bagusekasaputra.griyakampoengtkw.data.interfaces.local.LocalMetadataDataSource
 import net.bagusekasaputra.griyakampoengtkw.data.interfaces.remote.RemoteMetadataDataSource
-import net.bagusekasaputra.griyakampoengtkw.data.remote_backup.FirebaseNodes
+import net.bagusekasaputra.griyakampoengtkw.data.remote.FirebaseNodes
 import net.bagusekasaputra.griyakampoengtkw.presentation.util.GriyaNodes.Companion.firebaseUrl
 import javax.inject.Qualifier
 import javax.inject.Singleton
-import net.bagusekasaputra.griyakampoengtkw.data.remote_backup.FirebaseNodes as BackupNodes
 
 @Module
 @InstallIn(SingletonComponent::class)
@@ -129,7 +128,7 @@ object DatabaseModule {
     }
 
     private fun SharedPreferences.getBackupName(): String? {
-        return getString(BackupNodes.KEY_BACKUP_NAME, "")
+        return getString(ConstsSharedPrefs.BACKUP_NAME, "")
     }
 }
 

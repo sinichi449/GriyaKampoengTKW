@@ -6,7 +6,6 @@ import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
 import net.bagusekasaputra.griyakampoengtkw.data.CacheHelper
-import net.bagusekasaputra.griyakampoengtkw.data.interfaces.backup.*
 import net.bagusekasaputra.griyakampoengtkw.data.interfaces.local.*
 import net.bagusekasaputra.griyakampoengtkw.data.interfaces.remote.*
 import net.bagusekasaputra.griyakampoengtkw.data.repository.*
@@ -49,11 +48,10 @@ object RepositoryModule {
     fun provideKavlingRepository(
         localKavlingDataSource: LocalKavlingDataSource,
         remoteKavlingDataSource: RemoteKavlingDataSource,
-        backupKavlingDataSource: BackupKavlingDataSource,
         localBlockDataSource: LocalBlockDataSource,
         cacheHelper: CacheHelper
     ): KavlingRepository {
-        return KavlingRepositoryImpl(localKavlingDataSource, remoteKavlingDataSource, backupKavlingDataSource, localBlockDataSource, cacheHelper)
+        return KavlingRepositoryImpl(localKavlingDataSource, remoteKavlingDataSource, localBlockDataSource, cacheHelper)
     }
 
 
@@ -65,7 +63,6 @@ object RepositoryModule {
         localDataDiriDataSource: LocalDataDiriDataSource,
         remoteDataDiriDataSource: RemoteDataDiriDataSource,
         remoteKavlingDataSource: RemoteKavlingDataSource,
-        backupDataDiriDataSource: BackupDataDiriDataSource,
         localMetadata: LocalMetadataDataSource,
         remoteMetadata: RemoteMetadataDataSource,
         cacheHelper: CacheHelper,
@@ -74,7 +71,6 @@ object RepositoryModule {
             localDataDiriDataSource,
             remoteDataDiriDataSource,
             remoteKavlingDataSource,
-            backupDataDiriDataSource,
             localMetadata,
             remoteMetadata,
             cacheHelper,
@@ -90,7 +86,6 @@ object RepositoryModule {
     fun provideLegacyPembayaranRepository(
         localPembayaranDataSource: LocalPembayaranDataSource,
         remotePembayaranDataSource: RemotePembayaranDataSource,
-        backupPembayaranDataSource: BackupPembayaranDataSource,
         localMetadata: LocalMetadataDataSource,
         remoteMetadata: RemoteMetadataDataSource,
         cacheHelper: CacheHelper,
@@ -98,7 +93,6 @@ object RepositoryModule {
         return LegacyPembayaranRepository(
             localPembayaranDataSource,
             remotePembayaranDataSource,
-            backupPembayaranDataSource,
             localMetadata,
             remoteMetadata,
             cacheHelper,
@@ -124,14 +118,12 @@ object RepositoryModule {
     fun provideHargaKavlingRepository(
         localHargaKavlingDataSource: LocalHargaKavlingDataSource,
         remoteHargaKavlingSource: RemoteHargaKavlingSource,
-        backupHargaKavlingDataSource: BackupHargaKavlingDataSource,
         localMetadata: LocalMetadataDataSource,
         remoteMetadata: RemoteMetadataDataSource,
     ): HargaKavlingRepository {
         return HargaKavlingRepositoryImpl(
             localHargaKavlingDataSource,
             remoteHargaKavlingSource,
-            backupHargaKavlingDataSource,
             localMetadata,
             remoteMetadata
         )
@@ -152,7 +144,6 @@ object RepositoryModule {
     fun provideImageDataDiriRepository(
         localImageDataDiriDataSource: LocalImageDataDiriDataSource,
         remoteImageDataDiriDataSource: RemoteImageDataDiriDataSource,
-        backupImageDataDiriDataSource: BackupImageDataDiriDataSource,
         localMetadataDataSource: LocalMetadataDataSource,
         remoteMetadataDataSource: RemoteMetadataDataSource,
         @ExternalDir externalFileDir: File?,
@@ -162,7 +153,6 @@ object RepositoryModule {
         return ImageDataDiriRepositoryImpl(
             localImageDataDiriDataSource,
             remoteImageDataDiriDataSource,
-            backupImageDataDiriDataSource,
             localMetadataDataSource,
             remoteMetadataDataSource,
             externalFileDir,
@@ -184,12 +174,11 @@ object RepositoryModule {
     fun provideImageSprRepository(
         localImageSprDataSource: LocalImageSprDataSource,
         remoteImageSprDataSource: RemoteImageSprDataSource,
-        backupImageSPRDataSource: BackupImageSPRDataSource,
         localMetadata: LocalMetadataDataSource,
         remoteMetadata: RemoteMetadataDataSource,
         contentResolver: ContentResolver
     ): ImageSprRepository {
-        return ImageSprRepositoryImpl(localImageSprDataSource, remoteImageSprDataSource, backupImageSPRDataSource, localMetadata, remoteMetadata, contentResolver)
+        return ImageSprRepositoryImpl(localImageSprDataSource, remoteImageSprDataSource, localMetadata, remoteMetadata, contentResolver)
     }
 
 
@@ -200,11 +189,10 @@ object RepositoryModule {
     fun provideFeeMarketingRepository(
         localFeeMarketingDataSource: LocalFeeMarketingDataSource,
         remoteFeeMarketingDataSource: RemoteFeeMarketingDataSource,
-        backupFeeMarketingDataSource: BackupFeeMarketingDataSource,
         localMetadata: LocalMetadataDataSource,
         remoteMetadata: RemoteMetadataDataSource,
     ): FeeMarketingRepository {
-        return FeeMarketingRepositoryImpl(localFeeMarketingDataSource, remoteFeeMarketingDataSource, backupFeeMarketingDataSource, localMetadata, remoteMetadata)
+        return FeeMarketingRepositoryImpl(localFeeMarketingDataSource, remoteFeeMarketingDataSource, localMetadata, remoteMetadata)
     }
 
 
@@ -215,11 +203,10 @@ object RepositoryModule {
     fun provideBiayaMarketingRepository(
         localBiayaMarketingDataSource: LocalBiayaMarketingDataSource,
         remoteBiayaMarketDataSource: RemoteBiayaMarketingDataSource,
-        backupBiayaMarketingDataSource: BackupBiayaMarketingDataSource,
         localMetadata: LocalMetadataDataSource,
         remoteMetadata: RemoteMetadataDataSource,
     ): BiayaMarketingRepository {
-        return BiayaMarketingRepositoryImpl(localBiayaMarketingDataSource, remoteBiayaMarketDataSource, backupBiayaMarketingDataSource, localMetadata, remoteMetadata)
+        return BiayaMarketingRepositoryImpl(localBiayaMarketingDataSource, remoteBiayaMarketDataSource, localMetadata, remoteMetadata)
     }
 
 
@@ -230,9 +217,8 @@ object RepositoryModule {
     fun provideKavlingCatatanPembayaranRepository(
         localKavlingCatatanPembayaranDataSource: LocalKavlingCatatanPembayaranDataSource,
         remoteKavlingCatatanPembayaranDataSource: RemoteKavlingCatatanPembayaranDataSource,
-        backupCatatanPembayaranDataSource: BackupCatatanPembayaranDataSource,
     ): KavlingCatatanPembayaranRepository {
-        return KavlingCatatanPembayaranRepositoryImpl(localKavlingCatatanPembayaranDataSource, remoteKavlingCatatanPembayaranDataSource, backupCatatanPembayaranDataSource)
+        return KavlingCatatanPembayaranRepositoryImpl(localKavlingCatatanPembayaranDataSource, remoteKavlingCatatanPembayaranDataSource)
     }
 
     /**
@@ -257,7 +243,6 @@ object RepositoryModule {
         @DataSourceModule.RoomDatabase roomDataSource: LocalFotoPembayaranDataSource,
         @DataSourceModule.DeviceStorage deviceStorageDataSource: LocalFotoPembayaranDataSource,
         remoteFotoPembayaranDataSource: RemoteFotoPembayaranDataSource,
-        backupFotoPembayaranDataSource: BackupFotoPembayaranDataSource,
         localMetadataDataSource: LocalMetadataDataSource,
         remoteMetadataDataSource: RemoteMetadataDataSource,
     ): FotoPembayaranRepository {
@@ -265,7 +250,6 @@ object RepositoryModule {
             roomDataSource,
             deviceStorageDataSource,
             remoteFotoPembayaranDataSource,
-            backupFotoPembayaranDataSource,
             localMetadataDataSource,
             remoteMetadataDataSource,
         )
@@ -286,14 +270,12 @@ object RepositoryModule {
     fun provideBiayaLainRepository(
         localBiayaLainDataSource: LocalBiayaLainDataSource,
         remoteBiayaLainDataSource: RemoteBiayaLainDataSource,
-        backupBiayaLainDataSource: BackupBiayaLainDataSource,
         localMetadataDataSource: LocalMetadataDataSource,
         remoteMetadataDataSource: RemoteMetadataDataSource,
     ): BiayaLainRepository {
         return BiayaLainRepositoryImpl(
             localBiayaLainDataSource,
             remoteBiayaLainDataSource,
-            backupBiayaLainDataSource,
             localMetadataDataSource,
             remoteMetadataDataSource,
         )

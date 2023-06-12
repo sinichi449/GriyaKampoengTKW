@@ -12,7 +12,6 @@ import net.bagusekasaputra.griyakampoengtkw.data.CacheHelper
 import net.bagusekasaputra.griyakampoengtkw.data.DataUtil
 import net.bagusekasaputra.griyakampoengtkw.data.MyObjectMapper
 import net.bagusekasaputra.griyakampoengtkw.data.MyObjectMapper.mapDataDiri
-import net.bagusekasaputra.griyakampoengtkw.data.interfaces.backup.BackupDataDiriDataSource
 import net.bagusekasaputra.griyakampoengtkw.data.interfaces.local.LocalDataDiriDataSource
 import net.bagusekasaputra.griyakampoengtkw.data.interfaces.local.LocalMetadataDataSource
 import net.bagusekasaputra.griyakampoengtkw.data.interfaces.remote.RemoteDataDiriDataSource
@@ -27,7 +26,6 @@ class DataDiriRepositoryImpl(
     private val localDataDiriDataSource: LocalDataDiriDataSource,
     private val remoteDataDiriDataSource: RemoteDataDiriDataSource,
     private val remoteKavlingDataSource: RemoteKavlingDataSource,
-    private val backupDataDiriDataSource: BackupDataDiriDataSource,
     private val localMetadata: LocalMetadataDataSource,
     private val remoteMetadata: RemoteMetadataDataSource,
     private val cacheHelper: CacheHelper,
@@ -155,23 +153,11 @@ class DataDiriRepositoryImpl(
                     emitAll(flowOffline)
                 }
             }
-            val flowDataLama = flow<Result<DataDiri?>> {
-                backupDataDiriDataSource.getDataDiri(kavlingKode)
-                    .onSuccess {
-                        emit(DataUtil.mapSingleResult(
-                            originResult = Result.success(it),
-                            targetMapper = ::mapDataDiri,
-                        ))
-                    }
-                    .onFailure {
-                        emit(Result.failure(it))
-                    }
-            }
 
             when (dataMode) {
                 DataMode.OFFLINE -> emitAll(flowOffline)
                 DataMode.ONLINE -> emitAll(flowOnline)
-                DataMode.DATA_LAMA -> emitAll(flowDataLama)
+                DataMode.DATA_LAMA -> TODO("Not yet implemented")
             }
         }
     }

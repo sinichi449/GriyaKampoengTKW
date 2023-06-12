@@ -40,7 +40,6 @@ import net.bagusekasaputra.griyakampoeng.tkw.data.local.metadata.RoomMetadataDat
 import net.bagusekasaputra.griyakampoeng.tkw.data.local.pembayaran.LocalPembayaranIndenBookingDataSource
 import net.bagusekasaputra.griyakampoeng.tkw.data.local.pembayaran.RoomPembayaranLocalDataSource
 import net.bagusekasaputra.griyakampoeng.tkw.data.local.pengingat.RoomPengingatDataSource
-import net.bagusekasaputra.griyakampoengtkw.data.interfaces.backup.*
 import net.bagusekasaputra.griyakampoengtkw.data.interfaces.local.*
 import net.bagusekasaputra.griyakampoengtkw.data.interfaces.remote.*
 import net.bagusekasaputra.griyakampoengtkw.data.remote.ambilKuitansi.FirebaseIndenBookingAmbilKuitansiDataSource
@@ -67,18 +66,6 @@ import net.bagusekasaputra.griyakampoengtkw.data.remote.pembayaran.RemotePembaya
 import net.bagusekasaputra.griyakampoengtkw.data.remote.promotion.FirebasePromotionDataSource
 import net.bagusekasaputra.griyakampoengtkw.data.remote.statusPembayaran.FirebaseStatusPembayaranDataSource
 import net.bagusekasaputra.griyakampoengtkw.data.remote.tahapan.FirebaseTahapanDataSource
-import net.bagusekasaputra.griyakampoengtkw.data.remote_backup.BackupFirebaseBackupRestoreDataSource
-import net.bagusekasaputra.griyakampoengtkw.data.remote_backup.BackupFirebaseBiayaLainDataSource
-import net.bagusekasaputra.griyakampoengtkw.data.remote_backup.BackupFirebaseBiayaMarketingDataSource
-import net.bagusekasaputra.griyakampoengtkw.data.remote_backup.BackupFirebaseCatatanPembayaranDataSource
-import net.bagusekasaputra.griyakampoengtkw.data.remote_backup.BackupFirebaseDataDiriDataSource
-import net.bagusekasaputra.griyakampoengtkw.data.remote_backup.BackupFirebaseFeeMarketingDataSource
-import net.bagusekasaputra.griyakampoengtkw.data.remote_backup.BackupFirebaseFotoPembayaranDataSource
-import net.bagusekasaputra.griyakampoengtkw.data.remote_backup.BackupFirebaseHargaKavlingDataSource
-import net.bagusekasaputra.griyakampoengtkw.data.remote_backup.BackupFirebaseImageDataDiriDataSource
-import net.bagusekasaputra.griyakampoengtkw.data.remote_backup.BackupFirebaseImageSPRDataSource
-import net.bagusekasaputra.griyakampoengtkw.data.remote_backup.BackupFirebaseKavlingDataSource
-import net.bagusekasaputra.griyakampoengtkw.data.remote_backup.BackupFirebasePembayaranDataSource
 import java.io.File
 import javax.inject.Qualifier
 
@@ -151,11 +138,6 @@ object DataSourceModule {
         )
     }
 
-    @Provides
-    fun provideBackupKavlingDataSource(): BackupKavlingDataSource {
-        return BackupFirebaseKavlingDataSource()
-    }
-
 
     /**
      * Data Diri
@@ -173,11 +155,6 @@ object DataSourceModule {
         return net.bagusekasaputra.griyakampoengtkw.data.remote.datadiri.FirebaseDataDiriDataSource(
             databaseReference
         )
-    }
-
-    @Provides
-    fun provideBackupDataDiriDataSource(): BackupDataDiriDataSource {
-        return BackupFirebaseDataDiriDataSource()
     }
 
     /**
@@ -199,11 +176,6 @@ object DataSourceModule {
         imageIndenBooking: RemoteFotoIdentitasIndenBookingDataSource,
     ): RemoteImageDataDiriDataSource {
         return StorageImageDataDiriDataSource(storageReference, externalFilesDir, imageIndenBooking)
-    }
-
-    @Provides
-    fun provideBackupImageDataDiriDataSource(): BackupImageDataDiriDataSource {
-        return BackupFirebaseImageDataDiriDataSource()
     }
 
 
@@ -229,11 +201,6 @@ object DataSourceModule {
         return StorageImageSprDataSource(storageReference, externalFilesDir)
     }
 
-    @Provides
-    fun provideBackupImageSPRDataSource(): BackupImageSPRDataSource {
-        return BackupFirebaseImageSPRDataSource()
-    }
-
 
     /**
      * Fee Marketing
@@ -248,11 +215,6 @@ object DataSourceModule {
     @Provides
     fun provideLocalFeeMarketingDataSource(roomDatabase: MyRoomDatabase): LocalFeeMarketingDataSource {
         return RoomFeeMarketingDataSource(roomDatabase)
-    }
-
-    @Provides
-    fun provideBackupFeeMarketingDataSource(): BackupFeeMarketingDataSource {
-        return BackupFirebaseFeeMarketingDataSource()
     }
 
 
@@ -271,11 +233,6 @@ object DataSourceModule {
         return RoomBiayaMarketingDataSource(roomDatabase)
     }
 
-    @Provides
-    fun provideBackupBiayaMarketingDataSource(): BackupBiayaMarketingDataSource {
-        return BackupFirebaseBiayaMarketingDataSource()
-    }
-
 
     /**
      * Kavling Catatan Pembayaran
@@ -290,11 +247,6 @@ object DataSourceModule {
     @Provides
     fun provideLocalKavlingCatatanPembayaranDataSource(roomDatabase: MyRoomDatabase): LocalKavlingCatatanPembayaranDataSource {
         return RoomKavlingCatatanPembayaranDataSource(roomDatabase)
-    }
-
-    @Provides
-    fun provideBackupCatatanPembayaranDataSource(): BackupCatatanPembayaranDataSource {
-        return BackupFirebaseCatatanPembayaranDataSource()
     }
 
     /**
@@ -330,11 +282,6 @@ object DataSourceModule {
         return RoomPembayaranLocalDataSource(roomDatabase, pembayaranIndenBookingDataSource)
     }
 
-    @Provides
-    fun provideBackupPembayaranDataSource(): BackupPembayaranDataSource {
-        return BackupFirebasePembayaranDataSource()
-    }
-
 
     /**
      * Harga Kavling
@@ -349,11 +296,6 @@ object DataSourceModule {
     @Provides
     fun provideLocalHargaKavlingDataSource(roomDatabase: MyRoomDatabase): LocalHargaKavlingDataSource {
         return RoomHargaKavlingDataSource(roomDatabase)
-    }
-
-    @Provides
-    fun provideBackupHargaKavlingDataSource(): BackupHargaKavlingDataSource {
-        return BackupFirebaseHargaKavlingDataSource()
     }
 
 
@@ -384,11 +326,6 @@ object DataSourceModule {
         return StorageFotoPembayaranDataSource(storageReference, externalFilesDir)
     }
 
-    @Provides
-    fun provideBackupFotoPembayaranDataSource(): BackupFotoPembayaranDataSource {
-        return BackupFirebaseFotoPembayaranDataSource()
-    }
-
 
     /**
      * Pengingat
@@ -411,19 +348,10 @@ object DataSourceModule {
         return FirebaseBiayaLainDataSource(databaseReference)
     }
 
-    @Provides
-    fun provideBackupBiayaLainDataSource(): BackupBiayaLainDataSource {
-        return BackupFirebaseBiayaLainDataSource()
-    }
-
 
     /**
      * Backup Restore
      */
-    @Provides
-    fun provideBackupRestoreDataSource(): BackupRestoreDataSource {
-        return BackupFirebaseBackupRestoreDataSource()
-    }
 
     @Provides
     fun provideLocalBackupRestoreDataSource(roomDatabase: MyRoomDatabase): LocalBackupRestoreDataSource {

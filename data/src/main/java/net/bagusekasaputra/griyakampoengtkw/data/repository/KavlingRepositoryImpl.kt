@@ -13,7 +13,6 @@ import net.bagusekasaputra.griyakampoengtkw.data.CacheHelper.Companion.checkAndI
 import net.bagusekasaputra.griyakampoengtkw.data.DataUtil
 import net.bagusekasaputra.griyakampoengtkw.data.MyObjectMapper
 import net.bagusekasaputra.griyakampoengtkw.data.MyObjectMapper.mapKavling
-import net.bagusekasaputra.griyakampoengtkw.data.interfaces.backup.BackupKavlingDataSource
 import net.bagusekasaputra.griyakampoengtkw.data.interfaces.local.LocalBlockDataSource
 import net.bagusekasaputra.griyakampoengtkw.data.interfaces.local.LocalKavlingDataSource
 import net.bagusekasaputra.griyakampoengtkw.data.interfaces.remote.RemoteKavlingDataSource
@@ -25,7 +24,6 @@ import net.bagusekasaputra.griyakampoengtkw.domain.repository.KavlingRepository
 class KavlingRepositoryImpl(
     private val localKavlingDataSource: LocalKavlingDataSource,
     private val remoteKavlingDataSource: RemoteKavlingDataSource,
-    private val backupKavlingDataSource: BackupKavlingDataSource,
     private val localBlockDataSource: LocalBlockDataSource,
     private val cacheHelper: CacheHelper,
 ): KavlingRepository {
@@ -129,14 +127,7 @@ class KavlingRepositoryImpl(
             when (dataMode) {
                 DataMode.OFFLINE -> emitAll(flowLocal)
                 DataMode.ONLINE -> emitAll(flowRemote)
-                DataMode.DATA_LAMA -> {
-                    emit(DataUtil.mapListResult(
-                        originResult = backupKavlingDataSource.getKavlingByBlockKode(
-                            blockCode
-                        ), targetMapper = {
-                            mapKavling(it)
-                        }))
-                }
+                DataMode.DATA_LAMA -> TODO("Not yet implemented")
             }
         }
     }
