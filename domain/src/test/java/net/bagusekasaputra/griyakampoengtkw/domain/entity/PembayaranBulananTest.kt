@@ -159,4 +159,26 @@ class PembayaranBulananTest {
         }
     }
 
+    @Test
+    fun givenPreviousMonthsHasNoPembayaranEntry_whenHitungAlokasi_shouldTunggakanRecursivelyIncreasing() {
+        val kavling = "B3"
+        val bulanSekarang = 6
+        val tahunSekarang = 2023
+
+        val pembayaranList = listOf(Pembayaran(
+            termin = "ITJ 1",
+            tanggal = "22/03/2023",
+            jumlahUangDibayar = "2,000,000",
+            keterangan = "-",
+            timeMillis = System.currentTimeMillis(),
+        ))
+        val pembayaranBulanan = listOf(PembayaranBulanan(
+            kavling = kavling,
+            bulan = 3,
+            tahun = 2023,
+            listPembayaran = pembayaranList,
+            baselinePembayaran = BaselinePembayaran.EMPTY(kavling),
+        ))
+    }
+
 }

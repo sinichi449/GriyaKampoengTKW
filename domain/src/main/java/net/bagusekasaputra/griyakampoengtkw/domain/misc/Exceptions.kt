@@ -1,4 +1,4 @@
-package net.bagusekasaputra.griyakampoengtkw.domain.entity.misc
+package net.bagusekasaputra.griyakampoengtkw.domain.misc
 
 sealed class UseCaseException(cause: Throwable): Throwable(cause) {
 
@@ -15,3 +15,7 @@ sealed class UseCaseException(cause: Throwable): Throwable(cause) {
 class NullHargaKavlingException(
     message: String = "Error harga kavling masih kosong"
 ): Throwable(message)
+
+class InvalidTimeFrameBaselinePembayaranException(
+    message: String = "Timeframe pembayaran tidak valid!! Timeframe harus lebih besar dari 0 bulan."
+): Exception(message)

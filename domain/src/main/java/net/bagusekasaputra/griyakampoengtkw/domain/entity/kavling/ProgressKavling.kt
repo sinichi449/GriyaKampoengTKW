@@ -1,6 +1,6 @@
 package net.bagusekasaputra.griyakampoengtkw.domain.entity.kavling
 
-import net.bagusekasaputra.griyakampoengtkw.domain.entity.misc.UncompletedDomainEntity
+import net.bagusekasaputra.griyakampoengtkw.domain.misc.UncompletedDomainEntity
 
 @UncompletedDomainEntity
 data class ProgressKavling(

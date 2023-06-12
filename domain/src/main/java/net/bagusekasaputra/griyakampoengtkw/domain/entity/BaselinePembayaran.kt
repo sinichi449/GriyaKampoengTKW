@@ -15,6 +15,7 @@ import java.util.Calendar
 import java.util.Date
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.pembayaran.BulanAngsuran
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.pembayaran.Pembayaran.Companion.FILTER_USING_BULAN_ANGSURAN
+import net.bagusekasaputra.griyakampoengtkw.domain.misc.InvalidTimeFrameBaselinePembayaranException
 
 data class BaselinePembayaran(
     val kavling: String,
@@ -81,6 +82,10 @@ data class BaselinePembayaran(
 
         fun hitungAngsuranPerBulan(hargaKavling: HargaKavling, opsiTimeFrame: Int, timeFrame: Int): Double {
             // Tambah Luasan doesn't included
+            if (timeFrame <= 0) {
+                throw InvalidTimeFrameBaselinePembayaranException()
+            }
+
             val mHargaKavling = BigDecimal(hargaKavling.hargaLong)
             val mTimeFrameBulan = when (opsiTimeFrame) {
                 OPSI_TIMEFRAME_BULAN -> BigDecimal(timeFrame)

@@ -11,7 +11,7 @@ import net.bagusekasaputra.griyakampoengtkw.domain.AsyncUseCaseHelper
 import net.bagusekasaputra.griyakampoengtkw.domain.DateUtil.toSlashedString
 import net.bagusekasaputra.griyakampoengtkw.domain.NumberUtil
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.reportKavling.GetAllReportKavlingAsyncUseCase
-import net.bagusekasaputra.griyakampoengtkw.domain.entity.misc.ProgressState
+import net.bagusekasaputra.griyakampoengtkw.domain.misc.ProgressState
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.kavling.ReportKavling
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.ReportTotalUangMasuk
 import net.bagusekasaputra.griyakampoengtkw.presentation.logEvent

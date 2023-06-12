@@ -5,6 +5,7 @@ import kotlinx.coroutines.test.runTest
 import net.bagusekasaputra.griyakampoengtkw.domain.DateUtil.toDate
 import net.bagusekasaputra.griyakampoengtkw.domain.DateUtil.toSlashedString
 import net.bagusekasaputra.griyakampoengtkw.domain.firstOrThrow
+import net.bagusekasaputra.griyakampoengtkw.domain.misc.InvalidTimeFrameBaselinePembayaranException
 import net.bagusekasaputra.griyakampoengtkw.domain.repository.MockRepository
 import net.bagusekasaputra.griyakampoengtkw.domain.repository.MockRepository.Companion.DEFAULT_DATA_MODE
 import net.bagusekasaputra.griyakampoengtkw.domain.util.getTestingFile
@@ -87,4 +88,37 @@ class BaselinePembayaranTest {
         )
     }
 
+    @Test
+    fun givenTimeFrameIsZero_whenHitungAngsuranPerBulan_shouldThrowArithmeticException() {
+        val hargaKavling = HargaKavling(
+            kavlingKode = "B3",
+            harga = "230,000,000",
+            tambahanLuas = "0",
+        )
+
+        Assert.assertThrows(InvalidTimeFrameBaselinePembayaranException::class.java) {
+            BaselinePembayaran.hitungAngsuranPerBulan(
+                hargaKavling = hargaKavling,
+                opsiTimeFrame = BaselinePembayaran.OPSI_TIMEFRAME_BULAN,
+                timeFrame = 0,
+            )
+        }
+    }
+
+    @Test
+    fun givenOpsiTimeFrameIsInvalid_whenHitungAngsuranBulan_shouldThrowIllegalArgumentException() {
+        val hargaKavling = HargaKavling(
+            kavlingKode = "B3",
+            harga = "230,000,000",
+            tambahanLuas = "0"
+        )
+
+        Assert.assertThrows(IllegalArgumentException::class.java) {
+            BaselinePembayaran.hitungAngsuranPerBulan(
+                hargaKavling = hargaKavling,
+                opsiTimeFrame = 999,
+                timeFrame = 10,
+            )
+        }
+    }
 }

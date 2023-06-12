@@ -7,6 +7,7 @@ import net.bagusekasaputra.griyakampoengtkw.domain.entity.BaselinePembayaran
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.pembayaran.Pembayaran.Companion.filterPeriode
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.rekap.PeriodeRekap
 import java.util.Calendar
+import java.util.Date
 
 data class PembayaranBulanan(
     val kavling: String,
@@ -40,12 +41,12 @@ data class PembayaranBulanan(
         LUNAS("LUNAS"), KURANG("KURANG"), NIL("NIL")
     }
 
-
     companion object {
         fun groupPembayaranIntoBulanan(
             kavling: String,
             baselinePembayaran: BaselinePembayaran,
-            pembayaranList: List<Pembayaran>
+            pembayaranList: List<Pembayaran>,
+            tanggalSekarang: Date = Calendar.getInstance().time,
         ): List<PembayaranBulanan> {
             val pembayaransSortedByBulanAngsuran = pembayaranList.sortedBy {
                 it.bulanAngsuran.date
@@ -54,7 +55,6 @@ data class PembayaranBulanan(
             return if (pembayaransSortedByBulanAngsuran.isNotEmpty()) {
                 val bulanPembelianKavling = pembayaransSortedByBulanAngsuran.first()
                     .bulanAngsuran.date
-                val tanggalSekarang = Calendar.getInstance().time
 
                 val fromPembelianUntilTodayDateList = DateUtil.getListMonths(
                     bulanPembelianKavling, tanggalSekarang

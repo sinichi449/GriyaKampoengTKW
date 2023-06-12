@@ -1,4 +1,4 @@
-package net.bagusekasaputra.griyakampoengtkw.domain.entity.misc
+package net.bagusekasaputra.griyakampoengtkw.domain.misc
 
 data class ProgressState(
     val percent: Int,

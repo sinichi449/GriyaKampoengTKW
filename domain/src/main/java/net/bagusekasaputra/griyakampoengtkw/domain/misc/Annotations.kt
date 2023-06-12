@@ -1,4 +1,4 @@
-package net.bagusekasaputra.griyakampoengtkw.domain.entity.misc
+package net.bagusekasaputra.griyakampoengtkw.domain.misc
 
 @RequiresOptIn(
     message = "This entity is not yet completed!",
