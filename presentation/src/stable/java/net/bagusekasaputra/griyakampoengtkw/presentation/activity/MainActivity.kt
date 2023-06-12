@@ -117,31 +117,28 @@ class MainActivity : AppCompatActivity() {
         }
 
         // Data Lama / Data Baru Mode?
-        with(binding.connectivityStatus) {
-            handleDataMode(intent, sharedPrefs) { dataMode ->
-                val layoutConnectivityVisibility : Int
-                val tvStatusText: String
-                when (dataMode) {
-                    DataMode.ONLINE -> {
-                        layoutConnectivityVisibility = View.GONE
-                        tvStatusText = "Online"
-                    }
-                    DataMode.OFFLINE -> {
-                        layoutConnectivityVisibility = View.VISIBLE
-                        tvStatusText = "Offline"
-                    }
-                    DataMode.DATA_LAMA -> {
-                        layoutConnectivityVisibility = View.GONE
-                        tvStatusText = "Mode DataLama"
-                    }
+        handleDataMode(intent, sharedPrefs) { dataMode ->
+            val layoutConnectivityVisibility : Int
+            val tvStatusText: String
+            when (dataMode) {
+                DataMode.ONLINE -> {
+                    layoutConnectivityVisibility = View.GONE
+                    tvStatusText = "Online"
                 }
+                DataMode.OFFLINE -> {
+                    layoutConnectivityVisibility = View.VISIBLE
+                    tvStatusText = "Offline"
+                }
+                DataMode.DATA_LAMA -> {
+                    layoutConnectivityVisibility = View.GONE
+                    tvStatusText = "Mode DataLama"
+                }
+            }
 
-                // Will visibile if `dataMode` != `DataMode.ONLINE`
+            // Connectivity status will visibile if `dataMode` != `DataMode.ONLINE`
+            with(binding.connectivityStatus) {
                 constraintConnectivity.visibility = layoutConnectivityVisibility
                 tvStatus.text = tvStatusText
-
-                viewModel.dataMode = dataMode
-                viewModel.offlineMode = dataMode == DataMode.OFFLINE
             }
         }
 
@@ -178,17 +175,21 @@ class MainActivity : AppCompatActivity() {
                 putString("DATA_MODE", dataMode)
             }
 
-            when (dataMode) {
-                DataMode.ONLINE.name -> {
-                    onDataModeReceived(DataMode.ONLINE)
-                }
-                DataMode.OFFLINE.name -> {
-                    onDataModeReceived(DataMode.OFFLINE)
-                }
-                DataMode.DATA_LAMA.name -> {
-                    onDataModeReceived(DataMode.DATA_LAMA)
+            val result: DataMode = when (dataMode) {
+                DataMode.ONLINE.name -> DataMode.ONLINE
+                DataMode.OFFLINE.name -> DataMode.OFFLINE
+                DataMode.DATA_LAMA.name -> DataMode.DATA_LAMA
+                else -> {
+                    Toast.makeText(this, "Data Mode $dataMode tidak dikenali!", Toast.LENGTH_SHORT)
+                        .show()
+
+                    DataMode.ONLINE
                 }
             }
+            onDataModeReceived(result)
+
+            viewModel.dataMode = result
+            viewModel.offlineMode = result == DataMode.OFFLINE
         }
     }
 
