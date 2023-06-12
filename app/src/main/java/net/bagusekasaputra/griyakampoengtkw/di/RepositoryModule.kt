@@ -10,7 +10,6 @@ import net.bagusekasaputra.griyakampoengtkw.data.interfaces.backup.*
 import net.bagusekasaputra.griyakampoengtkw.data.interfaces.local.*
 import net.bagusekasaputra.griyakampoengtkw.data.interfaces.remote.*
 import net.bagusekasaputra.griyakampoengtkw.data.repository.*
-import net.bagusekasaputra.griyakampoengtkw.data.repository.DefaultBackupRestoreRepository
 import net.bagusekasaputra.griyakampoengtkw.data.repository.pembayaran.DefaultPembayaranRepository
 import net.bagusekasaputra.griyakampoengtkw.data.repository.pembayaran.LegacyPembayaranRepository
 import net.bagusekasaputra.griyakampoengtkw.domain.repository.*
@@ -38,9 +37,8 @@ object RepositoryModule {
     fun provideBlockRepository(
         localBlockDataSource: LocalBlockDataSource,
         remoteBlockDataSource: RemoteBlockDataSource,
-        backupBlokDataSource: BackupBlokDataSource,
     ): BlockRepository {
-        return BlockRepositoryImpl(localBlockDataSource, remoteBlockDataSource, backupBlokDataSource)
+        return BlockRepositoryImpl(localBlockDataSource, remoteBlockDataSource)
     }
 
 

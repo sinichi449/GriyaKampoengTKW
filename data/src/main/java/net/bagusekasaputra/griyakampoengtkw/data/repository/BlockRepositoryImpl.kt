@@ -5,7 +5,6 @@ import kotlinx.coroutines.flow.emitAll
 import kotlinx.coroutines.flow.flow
 import net.bagusekasaputra.griyakampoengtkw.data.DataUtil
 import net.bagusekasaputra.griyakampoengtkw.data.MyObjectMapper.mapBlockModel
-import net.bagusekasaputra.griyakampoengtkw.data.interfaces.backup.BackupBlokDataSource
 import net.bagusekasaputra.griyakampoengtkw.data.interfaces.local.LocalBlockDataSource
 import net.bagusekasaputra.griyakampoengtkw.data.interfaces.remote.RemoteBlockDataSource
 import net.bagusekasaputra.griyakampoengtkw.domain.DataMode
@@ -15,12 +14,11 @@ import net.bagusekasaputra.griyakampoengtkw.domain.repository.BlockRepository
 class BlockRepositoryImpl(
     private val localBlockDataSource: LocalBlockDataSource,
     private val remoteBlockDataSource: RemoteBlockDataSource,
-    private val backupBlokDataSource: BackupBlokDataSource,
 ): BlockRepository {
 
     override fun getAllBlocks(dataMode: DataMode): Flow<Result<List<Block>?>> {
-        return flow<Result<List<Block>?>> {
-            val flowOffline = flow<Result<List<Block>?>> {
+        return flow {
+            val flowOffline = flow {
                 // Emit blocks from local instead
                 val getBlockFromLocal = localBlockDataSource.getAllBlocks()
 
@@ -55,20 +53,23 @@ class BlockRepositoryImpl(
                 }
             }
 
+//            val flowDataLama = flow<Result<List<Block>>> {
+//                val bloks = backupBlokDataSource.getAllBlocks()
+//                    .getOrEmitFailure(this)
+//
+//                if (bloks.isNullOrEmpty()) {
+//                    emit(Result.success(null))
+//                } else {
+//                    localBlockDataSource.addAll(bloks)
+//
+//                    emitAll(flowOffline)
+//                }
+//            }
+
             when (dataMode) {
                 DataMode.ONLINE -> emitAll(flowOnline)
                 DataMode.OFFLINE -> emitAll(flowOffline)
-                DataMode.DATA_LAMA -> {
-                    val blocks = backupBlokDataSource.getAllBlocks()
-                    val mappedBlocks = DataUtil.mapListResult(
-                        originResult = blocks,
-                        targetMapper = {
-                            mapBlockModel(it)
-                        }
-                    )
-
-                    emit(mappedBlocks)
-                }
+                DataMode.DATA_LAMA -> TODO("Not yet implemented")
             }
         }
     }

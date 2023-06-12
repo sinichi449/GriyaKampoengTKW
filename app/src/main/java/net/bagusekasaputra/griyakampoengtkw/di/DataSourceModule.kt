@@ -70,7 +70,6 @@ import net.bagusekasaputra.griyakampoengtkw.data.remote.tahapan.FirebaseTahapanD
 import net.bagusekasaputra.griyakampoengtkw.data.remote_backup.BackupFirebaseBackupRestoreDataSource
 import net.bagusekasaputra.griyakampoengtkw.data.remote_backup.BackupFirebaseBiayaLainDataSource
 import net.bagusekasaputra.griyakampoengtkw.data.remote_backup.BackupFirebaseBiayaMarketingDataSource
-import net.bagusekasaputra.griyakampoengtkw.data.remote_backup.BackupFirebaseBlokDataSource
 import net.bagusekasaputra.griyakampoengtkw.data.remote_backup.BackupFirebaseCatatanPembayaranDataSource
 import net.bagusekasaputra.griyakampoengtkw.data.remote_backup.BackupFirebaseDataDiriDataSource
 import net.bagusekasaputra.griyakampoengtkw.data.remote_backup.BackupFirebaseFeeMarketingDataSource
@@ -134,11 +133,6 @@ object DataSourceModule {
         return net.bagusekasaputra.griyakampoengtkw.data.remote.block.FirebaseBlockDataSource(
             databaseReference
         )
-    }
-
-    @Provides
-    fun provideBackupBlokDataSource(): BackupBlokDataSource {
-        return BackupFirebaseBlokDataSource()
     }
 
 

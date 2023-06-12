@@ -19,9 +19,11 @@ import net.bagusekasaputra.griyakampoengtkw.ConstsSharedPrefs
 import net.bagusekasaputra.griyakampoengtkw.data.CacheHelper
 import net.bagusekasaputra.griyakampoengtkw.data.interfaces.local.LocalMetadataDataSource
 import net.bagusekasaputra.griyakampoengtkw.data.interfaces.remote.RemoteMetadataDataSource
+import net.bagusekasaputra.griyakampoengtkw.data.remote_backup.FirebaseNodes
 import net.bagusekasaputra.griyakampoengtkw.presentation.util.GriyaNodes.Companion.firebaseUrl
 import javax.inject.Qualifier
 import javax.inject.Singleton
+import net.bagusekasaputra.griyakampoengtkw.data.remote_backup.FirebaseNodes as BackupNodes
 
 @Module
 @InstallIn(SingletonComponent::class)
@@ -43,15 +45,27 @@ object DatabaseModule {
         }
 
         val tahapanReference = getTahapanReference(sharedPrefs)
+        val backupName = sharedPrefs.getBackupName()
+
+        // Set database file name's suffix to `tahapanReference` if `backupName` is not `null`.
+        // Note that if `backupName` is not null, it means user has selected `DataMode.DATA_LAMA`.
+        val dbName = if (backupName.isNullOrEmpty()) {
+            tahapanReference
+        } else {
+            backupName.replace(" ", "_") // Remote whitespaces
+        }
         return Room.databaseBuilder(
             appContext, MyRoomDatabase::class.java,
-            "griya_kampoeng_tkw_$tahapanReference.db"
+            "GKT_${dbName}.db"
         )
             .fallbackToDestructiveMigration()
             .addCallback(onDestructiveMigrationCallback)
             .build()
     }
 
+    /**
+     * Firebase Realtime-Database
+     */
     @RootReference
     @Provides
     fun providesRootFirebaseDatabaseReference()
@@ -61,11 +75,23 @@ object DatabaseModule {
     @Provides
     fun provideTahapanFirebaseDatabaseReference(sharedPrefs: SharedPreferences): DatabaseReference {
         val rootReference = FirebaseDatabase.getInstance(firebaseUrl).reference
+        val tahapanReference = rootReference.child(getTahapanReference(sharedPrefs))
 
-        return rootReference.child(getTahapanReference(sharedPrefs))
+        // Get reference by whether the `SharedPreferences`' has `backupName` value.
+        // If yes, then it should point to `backups/$backupName` reference.
+        return sharedPrefs.getBackupName().run {
+            if (this.isNullOrEmpty()) {
+                tahapanReference
+            } else {
+                tahapanReference.child(FirebaseNodes.BACKUPS)
+                    .child(this)
+            }
+        }
     }
 
-
+    /**
+     * Firebase Storage
+     */
     @RootReference
     @Provides
     fun provideRootStorageReference() = FirebaseStorage.getInstance().reference
@@ -74,9 +100,20 @@ object DatabaseModule {
     @Provides
     fun provideTahapanStorageReference(sharedPrefs: SharedPreferences): StorageReference {
         val rootReference = FirebaseStorage.getInstance().reference
+        val tahapanReference = rootReference.child(getTahapanReference(sharedPrefs))
 
-        return rootReference.child(getTahapanReference(sharedPrefs))
+        // Get reference by whether the `SharedPreferences`' has `backupName` value.
+        // If yes, then it should point to `backups/$backupName` reference.
+        return sharedPrefs.getBackupName().run {
+            if (this.isNullOrEmpty()) {
+                tahapanReference
+            } else {
+                tahapanReference.child(FirebaseNodes.BACKUPS)
+                    .child(this)
+            }
+        }
     }
+
 
     @Singleton
     @Provides
@@ -89,6 +126,10 @@ object DatabaseModule {
 
     private fun getTahapanReference(sharedPrefs: SharedPreferences): String {
         return sharedPrefs.getString(ConstsSharedPrefs.SELECTED_TAHAPAN, "TAHAP_1")!!
+    }
+
+    private fun SharedPreferences.getBackupName(): String? {
+        return getString(BackupNodes.KEY_BACKUP_NAME, "")
     }
 }
 

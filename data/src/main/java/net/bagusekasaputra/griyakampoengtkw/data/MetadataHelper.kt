@@ -13,7 +13,7 @@ class MetadataHelper(
 
     suspend fun checkCache(onInvalidCache: suspend () -> Unit) {
         val localTimestamp = localMetadata.get(metadataTable)?.timestamp
-        val remoteTimestamp = remoteMetadata.get(metadataTable)?.timestamp!!
+        val remoteTimestamp = remoteMetadata.get(metadataTable)?.timestamp
         val cacheInvalid = localTimestamp != remoteTimestamp
 
         Log.d("DEBUG_ME", "Table metadata \"$metadataTable\" localtimestap is $localTimestamp and the remote is $remoteTimestamp")
@@ -21,9 +21,9 @@ class MetadataHelper(
         if (cacheInvalid) {
             onInvalidCache()
 
-            localMetadata.insert(
-                MetadataModel(metadataTable, remoteTimestamp)
-            )
+            remoteTimestamp?.also {
+                localMetadata.insert(MetadataModel(metadataTable, it))
+            }
         }
     }
 

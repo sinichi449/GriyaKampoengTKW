@@ -213,8 +213,9 @@ class MainViewModel @Inject constructor(
                 }
                 .collect { result ->
                     result.onFailure {
+                        it.printStackTrace()
                         withContext(Dispatchers.Main) {
-                            onFailure("Gagal mendapatkan kavling : ${it.localizedMessage}")
+                            onFailure("Gagal mendapatkan kavling : $it")
                         }
                     }
                     result.onSuccess { items ->

@@ -130,7 +130,7 @@ class MainActivity : AppCompatActivity() {
                     tvStatusText = "Offline"
                 }
                 DataMode.DATA_LAMA -> {
-                    layoutConnectivityVisibility = View.GONE
+                    layoutConnectivityVisibility = View.VISIBLE
                     tvStatusText = "Mode DataLama"
                 }
             }
@@ -188,7 +188,7 @@ class MainActivity : AppCompatActivity() {
             }
             onDataModeReceived(result)
 
-            viewModel.dataMode = result
+            viewModel.dataMode = if (result != DataMode.OFFLINE) DataMode.ONLINE else DataMode.OFFLINE
             viewModel.offlineMode = result == DataMode.OFFLINE
         }
     }

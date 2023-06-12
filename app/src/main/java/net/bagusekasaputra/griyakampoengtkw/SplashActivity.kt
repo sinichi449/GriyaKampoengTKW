@@ -199,7 +199,7 @@ class SplashActivity : AppCompatActivity() {
     /**
      * @param jenisData when it is [DATA_BARU], will write [SharedPreferences] of key `dataLamaPath`
      * to `null`. And if it is [DATA_LAMA], will put backup name which is got from [dialogPilihDataLama]
-     * into [SharedPreferences]
+     * into [SharedPreferences].
      * @param tahapan will have to be put into [SharedPreferences], since it will be the main factor
      * to where the [FirebaseDatabase]'s node which needs to be accessed.
      * @param isOnline will be send to [MainActivity] via [Intent].
@@ -308,6 +308,10 @@ class SplashActivity : AppCompatActivity() {
      *
      * If the backup names are empty or `null`, will show a dialog which informs the user that there are
      * no available backups.
+     *
+     * **WARNING**: [dialogPilihDataLama] should be executed **BEFORE** any code that can represets
+     * [onSelectedDataLama]. If whatever code executed _after_ [dialogPilihDataLama], the databaseReference
+     * will pointing to the wrong child!.
      */
     private fun dialogPilihDataLama(onSelectedDataLama: (dialog: DialogInterface, namaBackup: String) -> Unit) {
         @Suppress("DEPRECATION")
@@ -335,6 +339,8 @@ class SplashActivity : AppCompatActivity() {
                         setTitle("Pilih Backup")
                         setCancelable(false)
                         setSingleChoiceItems(arrBackup, 0) { dialog, checkedPosition ->
+                            dialog.dismiss()
+
                             onSelectedDataLama(dialog, arrBackup[checkedPosition])
                         }
                         setNegativeButton("Cancel") { dialog, _ ->

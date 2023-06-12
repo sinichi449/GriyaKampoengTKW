@@ -31,8 +31,6 @@ class BaselinePembayaranRepositoryImpl(
             if (!hasMetadataChecked) {
                 hasMetadataChecked = true
 
-                Log.d("DEBUG_ME", "BaselinePembayaranRepository `get()` skips cache checking !")
-
                 metadataHelper.checkCache {
                     metadataHelper.updateLocalMetadataOnInvalid()
 
@@ -43,6 +41,8 @@ class BaselinePembayaranRepositoryImpl(
                     }
                 }
             }
+
+            Log.d("DEBUG_ME", "BaselinePembayaranRepository `get()` skips cache checking !")
 
             val flowOffline = flow {
                 val localResult = localDataSource.get(kavling)
@@ -60,7 +60,7 @@ class BaselinePembayaranRepositoryImpl(
                     val model = remoteResult.getOrThrow()
 
                     if (model != null) {
-                        localDataSource.insert(model)
+                        localDataSource.insert(model).getOrThrow()
                     } else {
                         emit(Result.success(null))
                     }
