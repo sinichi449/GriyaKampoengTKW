@@ -1,6 +1,7 @@
 package net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.pengembalian
 
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flow
 import net.bagusekasaputra.griyakampoengtkw.domain.DataMode
 import net.bagusekasaputra.griyakampoengtkw.domain.addIfNotNull
@@ -9,10 +10,20 @@ import net.bagusekasaputra.griyakampoengtkw.domain.entity.pembayaran.Pengembalia
 import net.bagusekasaputra.griyakampoengtkw.domain.getOrEmitFailure
 import net.bagusekasaputra.griyakampoengtkw.domain.repository.PengembalianRepository
 
+/**
+ * Stream [List] of [Pengembalian] entity sequentially.
+ *
+ * Don't use this use case with [first] method, since it will return a single [List].
+ */
 class GetPengembalianStreamAsyncUseCase(
     private val pengembalianRepository: PengembalianRepository,
 ): AsyncUseCase<GetPengembalianStreamAsyncUseCase.Request, List<Pengembalian>>() {
 
+    /**
+     * @param keyIds if left as an [emptyList], will retrieve all available keyIds from
+     * [PengembalianRepository].
+     * @param dataMode specify [DataMode] for this use case operation.
+     */
     data class Request(
         val keyIds: List<String> = emptyList(),
         val dataMode: DataMode = DataMode.ONLINE,
