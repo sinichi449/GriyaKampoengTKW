@@ -44,6 +44,10 @@ class MainActivity : AppCompatActivity() {
 
     companion object {
         const val INTENT_KAVLING_KODE = "kavling_kode"
+        
+        const val EXTRAS_VERSION_NAME = "versionName"
+        const val EXTRAS_VERSION_CODE = "versionCode"
+        const val EXTRAS_DATA_MODE = "EXTRAS_DATA_MODE"
     }
 
     private lateinit var binding: ActivityMainBinding
@@ -91,8 +95,8 @@ class MainActivity : AppCompatActivity() {
             setupWithNavController(navController)
 
             // Getting BuildConfig from Splash Activity
-            val appVersionName = intent.getStringExtra("versionName") ?: "NULL"
-            val appVersionCode = intent.getIntExtra("versionCode", 0)
+            val appVersionName = intent.getStringExtra(EXTRAS_VERSION_NAME) ?: "NULL"
+            val appVersionCode = intent.getIntExtra(EXTRAS_VERSION_CODE, 0)
 
             val navHeaderLayoutBinding = HeaderMainNavBinding.inflate(layoutInflater)
             navHeaderLayoutBinding.tvVersionName.text = "v$appVersionName"
@@ -189,8 +193,8 @@ class MainActivity : AppCompatActivity() {
 
     private fun checkUpdate() {
         // Getting BuildConfig from Splash Activity, and check available update.
-        val appVersionName = intent.getStringExtra("versionName")
-        val appVersionCode = intent.getIntExtra("versionCode", 0)
+        val appVersionName = intent.getStringExtra(EXTRAS_VERSION_NAME)
+        val appVersionCode = intent.getIntExtra(EXTRAS_VERSION_CODE, 0)
         if (appVersionName != null) {
             if ((appVersionName != "") and (appVersionCode != 0)) {
                 viewModel.checkUpdates(

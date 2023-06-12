@@ -39,8 +39,8 @@ import net.bagusekasaputra.griyakampoengtkw.data.remote.FirebaseNodes
 import net.bagusekasaputra.griyakampoengtkw.dataLama.ui.DataLamaActivity
 import net.bagusekasaputra.griyakampoengtkw.databinding.ActivitySplashPureBinding
 import net.bagusekasaputra.griyakampoengtkw.databinding.ActivitySplashWithLoadingBinding
-import net.bagusekasaputra.griyakampoengtkw.model.ConnectionCheckResult
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.Tahapan
+import net.bagusekasaputra.griyakampoengtkw.model.ConnectionCheckResult
 import net.bagusekasaputra.griyakampoengtkw.presentation.R
 import net.bagusekasaputra.griyakampoengtkw.presentation.activity.MainActivity
 import net.bagusekasaputra.griyakampoengtkw.presentation.util.GriyaNodes
@@ -50,7 +50,6 @@ import java.net.Socket
 import javax.inject.Inject
 
 @SuppressLint("CustomSplashScreen")
-@Suppress("DEPRECATION")
 @AndroidEntryPoint
 class SplashActivity : AppCompatActivity() {
 
@@ -157,36 +156,6 @@ class SplashActivity : AppCompatActivity() {
 
                                 if ((selectedTahapan != null) && (selectedJenisData != null)) {
                                     handleTahapanAndJenisData(selectedJenisData, selectedTahapan)
-
-                                    // Skip cache initialization on DATA_LAMA
-                                    if (selectedJenisData == DATA_LAMA) {
-                                        goToDocumentLamaActivity()
-                                    } else {
-                                        // Initialize cache
-                                        viewModel.initializeCache(
-                                            tahapan = selectedTahapan,
-                                            onProgress = {
-                                                bindingLoading.apply {
-                                                    layoutPilihData.root.visibility = View.GONE
-                                                    layoutCekKoneksi.root.visibility = View.VISIBLE
-                                                    layoutCekKoneksi.tvInfoPeriksaInternet.text = "Menginisialisasi Cache"
-                                                }
-                                            },
-                                            onSuccess = {
-                                                goToMainActivity(connectivityCheckResult.isDeviceOnline)
-                                            },
-                                            onFailure = {
-                                                MaterialAlertDialogBuilder(this@SplashActivity).apply {
-                                                    setTitle("Gagal Menginisialisasi Cache")
-                                                    setMessage(it)
-                                                    setCancelable(false)
-                                                    setPositiveButton("Keluar") { _, _ ->
-                                                        this@SplashActivity.finish()
-                                                    }
-                                                }.show()
-                                            }
-                                        )
-                                    }
                                 }
                             }
                         }
@@ -213,9 +182,14 @@ class SplashActivity : AppCompatActivity() {
         handler.postDelayed(splashRunnable, millis)
     }
 
+    /**
+     * Put [Tahapan.reference] into [SharedPreferences].
+     *
+     *
+     */
     private fun handleTahapanAndJenisData(
         jenisData: Int,
-        tahapan: Tahapan
+        tahapan: Tahapan,
     ) {
         sharedPreferences.edit(true) {
             putString(ConstsSharedPrefs.SELECTED_TAHAPAN, tahapan.reference)
@@ -227,6 +201,33 @@ class SplashActivity : AppCompatActivity() {
             sharedPreferences.edit(true) {
                 putString("dataLamaPath", null)
             }
+
+            // Initialize cache
+            viewModel.initializeCache(
+                tahapan = tahapan,
+                onProgress = {
+                    bindingLoading.apply {
+                        layoutPilihData.root.visibility = View.GONE
+                        layoutCekKoneksi.root.visibility = View.VISIBLE
+                        layoutCekKoneksi.tvInfoPeriksaInternet.text = "Menginisialisasi Cache"
+                    }
+                },
+                onSuccess = {
+                    goToMainActivity()
+                },
+                onFailure = {
+                    MaterialAlertDialogBuilder(this@SplashActivity).apply {
+                        setTitle("Gagal Menginisialisasi Cache")
+                        setMessage(it)
+                        setCancelable(false)
+                        setPositiveButton("Keluar") { _, _ ->
+                            this@SplashActivity.finish()
+                        }
+                    }.show()
+                }
+            )
+        } else {
+            goToDocumentLamaActivity()
         }
     }
 
@@ -257,16 +258,11 @@ class SplashActivity : AppCompatActivity() {
         }
     }
 
-    private fun goToMainActivity(isOnline: Boolean) {
+    private fun goToMainActivity() {
         val intent = Intent(this, MainActivity::class.java)
-
-        intent.putExtra(GriyaNodes.INTENT_IS_ONLINE, isOnline)
-
         // Passing BuildConfig for update check to MainActivity
-        intent.putExtra("versionName", BuildConfig.VERSION_NAME)
-        intent.putExtra("versionCode", BuildConfig.VERSION_CODE)
-
-        intent.putExtra("isNewDataSelected", true)
+        intent.putExtra(MainActivity.EXTRAS_VERSION_NAME, BuildConfig.VERSION_NAME)
+        intent.putExtra(MainActivity.EXTRAS_VERSION_CODE, BuildConfig.VERSION_CODE)
 
         startActivity(intent)
         finish()
