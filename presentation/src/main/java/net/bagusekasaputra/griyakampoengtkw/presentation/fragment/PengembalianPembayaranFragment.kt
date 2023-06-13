@@ -6,6 +6,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import com.google.android.material.floatingactionbutton.FloatingActionButton
+import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
 import net.bagusekasaputra.griyakampoengtkw.presentation.R
 import net.bagusekasaputra.griyakampoengtkw.presentation.databinding.FragmentPengembalianPembayaranBinding
@@ -34,6 +35,14 @@ class PengembalianPembayaranFragment : Fragment() {
 
         with(binding) {
             UiUtils.hideFabsOnVerticalScroll(scrollViewContent, fabAction)
+
+            fabAction?.setOnClickListener {
+                Snackbar.make(
+                    binding.root,
+                    "Ini pengembalian pembayaran",
+                    Snackbar.LENGTH_SHORT
+                ).show()
+            }
         }
     }
 
