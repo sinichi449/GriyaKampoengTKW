@@ -21,6 +21,7 @@ import net.bagusekasaputra.griyakampoengtkw.data.interfaces.local.LocalMetadataD
 import net.bagusekasaputra.griyakampoengtkw.data.interfaces.remote.RemoteMetadataDataSource
 import net.bagusekasaputra.griyakampoengtkw.data.remote.FirebaseNodes
 import net.bagusekasaputra.griyakampoengtkw.presentation.util.GriyaNodes.Companion.firebaseUrl
+import java.io.File
 import javax.inject.Qualifier
 import javax.inject.Singleton
 
@@ -130,6 +131,34 @@ object DatabaseModule {
     private fun SharedPreferences.getBackupName(): String? {
         return getString(ConstsSharedPrefs.BACKUP_NAME, "")
     }
+
+    /**
+     * Device Storage
+     */
+    @InternalDir
+    @Provides
+    fun provideInternalFilesDir(@ApplicationContext ctx: Context): File {
+        return ctx.filesDir
+    }
+
+    @ExternalDir
+    @Provides
+    fun provideExternalFilesDir(@ApplicationContext context: Context, sharedPrefs: SharedPreferences): File? {
+        val root = context.getExternalFilesDir(null)
+        val tahapan = getTahapanReference(sharedPrefs)
+        val backupName = sharedPrefs.getBackupName()
+        val fileWithTahapan = File(root, tahapan)
+
+        val resultFile: File = if (!backupName.isNullOrEmpty()) {
+            File(fileWithTahapan, "${FirebaseNodes.BACKUPS}/$backupName")
+        } else {
+            fileWithTahapan
+        }
+
+        if (!resultFile.exists()) resultFile.mkdirs()
+
+        return resultFile
+    }
 }
 
 @Qualifier
@@ -137,3 +166,9 @@ annotation class RootReference
 
 @Qualifier
 annotation class TahapanReference
+
+@Qualifier
+annotation class InternalDir
+
+@Qualifier
+annotation class ExternalDir

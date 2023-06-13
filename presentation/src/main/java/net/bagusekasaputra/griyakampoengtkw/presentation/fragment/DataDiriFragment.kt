@@ -41,7 +41,6 @@ import net.bagusekasaputra.griyakampoengtkw.presentation.util.NotificationUtil
 import net.bagusekasaputra.griyakampoengtkw.presentation.util.UiUtils
 import net.bagusekasaputra.griyakampoengtkw.presentation.viewmodel.DetailViewModel
 import net.bagusekasaputra.griyakampoengtkw.presentation.viewmodel.ImageViewModel
-import java.io.File
 import javax.inject.Inject
 
 @Suppress("DEPRECATION")
@@ -127,12 +126,12 @@ class DataDiriFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         // Create an external directory for cache
-        File(requireContext().getExternalFilesDir(null), "data_diri_images").let {
-            if (it.exists().not()) it.mkdir()
-        }
-        File(requireContext().getExternalFilesDir(null), "spr_images").let {
-            if (it.exists().not()) it.mkdir()
-        }
+//        File(requireContext().getExternalFilesDir(null), "data_diri_images").let {
+//            if (it.exists().not()) it.mkdir()
+//        }
+//        File(requireContext().getExternalFilesDir(null), "spr_images").let {
+//            if (it.exists().not()) it.mkdir()
+//        }
 
         offlineMode = viewModel.offlineMode
 

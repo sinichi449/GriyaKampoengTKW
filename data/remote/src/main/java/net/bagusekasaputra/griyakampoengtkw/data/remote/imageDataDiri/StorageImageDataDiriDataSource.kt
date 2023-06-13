@@ -28,6 +28,12 @@ class StorageImageDataDiriDataSource(
 
     private val imageDataDiriRef = storageReference.child(FirebaseNodes.IMAGE_DATA_DIRI)
 
+    init {
+        // Creating folder if not exist
+        val dstDir = File(externalFilesDir, ImageDataDiriModel.DST_FOLDER)
+        if (!dstDir.exists()) dstDir.mkdir()
+    }
+
     override suspend fun get(kavlingKode: String): ImageDataDiriModel? {
         return callbackFlow {
             val dstDir = File(externalFilesDir, ImageDataDiriModel.DST_FOLDER)
