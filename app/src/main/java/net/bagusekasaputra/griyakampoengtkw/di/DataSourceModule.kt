@@ -12,30 +12,7 @@ import net.bagusekasaputra.griyakampoeng.tkw.data.local.MyRoomDatabase
 import net.bagusekasaputra.griyakampoeng.tkw.data.local.sources.*
 import net.bagusekasaputra.griyakampoengtkw.data.interfaces.local.*
 import net.bagusekasaputra.griyakampoengtkw.data.interfaces.remote.*
-import net.bagusekasaputra.griyakampoengtkw.data.remote.ambilKuitansi.FirebaseIndenBookingAmbilKuitansiDataSource
-import net.bagusekasaputra.griyakampoengtkw.data.remote.ambilKuitansi.FirebaseStandardAmbilKuitansiDataSource
-import net.bagusekasaputra.griyakampoengtkw.data.remote.backupRestore.FirebaseBackupRestoreDataSource
-import net.bagusekasaputra.griyakampoengtkw.data.remote.baselinePembayaran.FirebaseBaselinePembayaranDataSource
-import net.bagusekasaputra.griyakampoengtkw.data.remote.biayaLain.FirebaseBiayaLainDataSource
-import net.bagusekasaputra.griyakampoengtkw.data.remote.catatanPembayaran.FirebaseIndenBookingCatatanPembayaranDataSource
-import net.bagusekasaputra.griyakampoengtkw.data.remote.databaseUser.FirebaseDatabaseUserDataSource
-import net.bagusekasaputra.griyakampoengtkw.data.remote.fotoPembayaran.StorageFotoPembayaranDataSource
-import net.bagusekasaputra.griyakampoengtkw.data.remote.imageDataDiri.RemoteFotoIdentitasIndenBookingDataSource
-import net.bagusekasaputra.griyakampoengtkw.data.remote.imageDataDiri.StorageImageDataDiriDataSource
-import net.bagusekasaputra.griyakampoengtkw.data.remote.imageSpr.StorageImageSprDataSource
-import net.bagusekasaputra.griyakampoengtkw.data.remote.indenBooking.FirebaseIndenBookingDataSource
-import net.bagusekasaputra.griyakampoengtkw.data.remote.indenBooking.fotoPembayaran.FirebaseFotoPembayaranIndenBookingDataSource
-import net.bagusekasaputra.griyakampoengtkw.data.remote.indenBooking.hargaRumah.FirebaseHargaRumahDataSource
-import net.bagusekasaputra.griyakampoengtkw.data.remote.indenBooking.imageDataDiri.FirebaseFotoIdentitasIndenBookingDataSource
-import net.bagusekasaputra.griyakampoengtkw.data.remote.indenBooking.imageDataDiri.FirebaseImageDataDiriIndenBookingDataSource
-import net.bagusekasaputra.griyakampoengtkw.data.remote.indenBooking.pembayaran.FirebasePembayaranIndenBookingDataSource
-import net.bagusekasaputra.griyakampoengtkw.data.remote.kavling.FirebaseKavlingDataSource
-import net.bagusekasaputra.griyakampoengtkw.data.remote.metadata.FirebaseMetadataDataSource
-import net.bagusekasaputra.griyakampoengtkw.data.remote.pembayaran.FirebasePembayaranDataSource
-import net.bagusekasaputra.griyakampoengtkw.data.remote.pembayaran.RemotePembayaranIndenBookingDataSource
-import net.bagusekasaputra.griyakampoengtkw.data.remote.promotion.FirebasePromotionDataSource
-import net.bagusekasaputra.griyakampoengtkw.data.remote.statusPembayaran.FirebaseStatusPembayaranDataSource
-import net.bagusekasaputra.griyakampoengtkw.data.remote.tahapan.FirebaseTahapanDataSource
+import net.bagusekasaputra.griyakampoengtkw.data.remote.sources.*
 import java.io.File
 import javax.inject.Qualifier
 
@@ -71,7 +48,7 @@ object DataSourceModule {
     fun provideRemoteAppUpdateSource(
         @RootReference databaseReference: DatabaseReference
     ): RemoteAppUpdateSource {
-        return net.bagusekasaputra.griyakampoengtkw.data.remote.appupdate.FirebaseAppUpdateSource(
+        return FirebaseAppUpdateSource(
             databaseReference
         )
     }
@@ -87,7 +64,7 @@ object DataSourceModule {
 
     @Provides
     fun provideRemoteBlockDataSource(@TahapanReference databaseReference: DatabaseReference): RemoteBlockDataSource {
-        return net.bagusekasaputra.griyakampoengtkw.data.remote.block.FirebaseBlockDataSource(
+        return FirebaseBlockDataSource(
             databaseReference
         )
     }
@@ -122,7 +99,7 @@ object DataSourceModule {
 
     @Provides
     fun provideRemoteDataDiriRepository(@TahapanReference databaseReference: DatabaseReference): RemoteDataDiriDataSource {
-        return net.bagusekasaputra.griyakampoengtkw.data.remote.datadiri.FirebaseDataDiriDataSource(
+        return FirebaseDataDiriDataSource(
             databaseReference
         )
     }
@@ -177,7 +154,7 @@ object DataSourceModule {
      */
     @Provides
     fun provideRemoteFeeMarketingDataSource(@TahapanReference databaseReference: DatabaseReference): RemoteFeeMarketingDataSource {
-        return net.bagusekasaputra.griyakampoengtkw.data.remote.feeMarketing.FirebaseFeeMarketingDataSource(
+        return FirebaseFeeMarketingDataSource(
             databaseReference
         )
     }
@@ -193,7 +170,7 @@ object DataSourceModule {
      */
     @Provides
     fun provideRemoteBiayaMarketingDataSource(@TahapanReference databaseReference: DatabaseReference): RemoteBiayaMarketingDataSource {
-        return net.bagusekasaputra.griyakampoengtkw.data.remote.biayaMarketing.FirebaseBiayaMarketingDataSource(
+        return FirebaseBiayaMarketingDataSource(
             databaseReference
         )
     }
@@ -209,7 +186,7 @@ object DataSourceModule {
      */
     @Provides
     fun provideRemoteKavlingCatatanPembayaranDataSource(@TahapanReference databaseReference: DatabaseReference): RemoteKavlingCatatanPembayaranDataSource {
-        return net.bagusekasaputra.griyakampoengtkw.data.remote.catatanPembayaran.FirebaseKavlingCatatanPembayaranDataSource(
+        return FirebaseKavlingCatatanPembayaranDataSource(
             databaseReference
         )
     }
@@ -258,7 +235,7 @@ object DataSourceModule {
      */
     @Provides
     fun provideRemoteHargaKavlingSource(@TahapanReference databaseReference: DatabaseReference): RemoteHargaKavlingSource {
-        return net.bagusekasaputra.griyakampoengtkw.data.remote.hargakavling.FirebaseHargaKavlingSource(
+        return FirebaseHargaKavlingSource(
             databaseReference
         )
     }
