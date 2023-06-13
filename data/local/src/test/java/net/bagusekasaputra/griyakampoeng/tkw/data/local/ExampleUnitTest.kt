@@ -1,6 +1,6 @@
 package net.bagusekasaputra.griyakampoeng.tkw.data.local
 
-import net.bagusekasaputra.griyakampoeng.tkw.data.local.kavling.KavlingRoomEntity
+import net.bagusekasaputra.griyakampoeng.tkw.data.local.model.KavlingRoomEntity
 import net.bagusekasaputra.griyakampoengtkw.data.model.KavlingModel
 import org.junit.Assert.assertEquals
 import org.junit.Test

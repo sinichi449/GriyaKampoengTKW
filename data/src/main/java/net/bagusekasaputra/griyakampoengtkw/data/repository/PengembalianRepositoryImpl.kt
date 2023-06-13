@@ -69,39 +69,6 @@ class PengembalianRepositoryImpl(
                 targetMapper = MyObjectMapper::mapPengembalian
             )
         }
-//        return flow {
-//            val isInvalidCache = if (shouldCheckCache) {
-//                // Only checks cache ONCE
-//                shouldCheckCache = false
-//
-//                cacheHelper.checkAndInvalidateCache(
-//                    cacheableLocal = localDataSource,
-//                    cacheableRemote = remoteDataSource,
-//                    onInvalid = {
-//                        localDataSource.invalidate().getOrThrow()
-//                    }
-//                )
-//            } else {
-//                false
-//            }
-//
-//            if (isInvalidCache) {
-//                val remoteModel = remoteDataSource.get(keyId).getOrThrow()
-//                if (remoteModel != null) {
-//                    // Download bukti foto
-//                    val destinationUri = remoteModel.downloadDstUri()
-//                    remoteDataSource.downloadImage(keyId, destinationUri).getOrThrow()
-//
-//                    // Insert to Cache
-//                    localDataSource.insert(remoteModel.copy(uri = destinationUri)).getOrThrow()
-//                }
-//            }
-//
-//            emit(DataUtil.mapSingleResult(
-//                originResult = localDataSource.get(keyId),
-//                targetMapper = MyObjectMapper::mapPengembalian,
-//            ))
-//        }
     }
 
     override suspend fun getKeyIds(dataMode: DataMode): Result<List<String>?> {

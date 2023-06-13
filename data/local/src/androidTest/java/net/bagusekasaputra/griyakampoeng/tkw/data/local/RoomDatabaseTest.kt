@@ -5,8 +5,8 @@ import androidx.room.Room
 import androidx.test.core.app.ApplicationProvider
 import androidx.test.espresso.matcher.ViewMatchers.assertThat
 import androidx.test.ext.junit.runners.AndroidJUnit4
-import net.bagusekasaputra.griyakampoeng.tkw.data.local.pembayaran.PembayaranRoomDao
-import net.bagusekasaputra.griyakampoeng.tkw.data.local.pembayaran.PembayaranRoomEntity
+import net.bagusekasaputra.griyakampoeng.tkw.data.local.model.PembayaranRoomDao
+import net.bagusekasaputra.griyakampoeng.tkw.data.local.model.PembayaranRoomEntity
 import org.hamcrest.CoreMatchers.equalTo
 import org.junit.After
 import org.junit.Before
