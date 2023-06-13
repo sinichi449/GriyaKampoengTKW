@@ -23,6 +23,7 @@ import net.bagusekasaputra.griyakampoengtkw.data.model.KavlingCatatanPembayaranM
 import net.bagusekasaputra.griyakampoengtkw.data.model.KavlingModel
 import net.bagusekasaputra.griyakampoengtkw.data.model.PembayaranModel
 import net.bagusekasaputra.griyakampoengtkw.data.model.PembayaranModel.Companion.toInvoiceDateStr
+import net.bagusekasaputra.griyakampoengtkw.data.model.PengembalianModel
 import net.bagusekasaputra.griyakampoengtkw.data.model.PromotionModel
 import net.bagusekasaputra.griyakampoengtkw.data.model.StandardAmbilKuitansiModel
 import net.bagusekasaputra.griyakampoengtkw.data.model.StatusPembayaranModel
@@ -43,10 +44,8 @@ import net.bagusekasaputra.griyakampoengtkw.domain.entity.DatabaseUser
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.FeeMarketing
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.FotoPembayaran
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.HargaKavling
-import net.bagusekasaputra.griyakampoengtkw.domain.entity.images.ImageSpr
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.IndenBookingAmbilKuitansi
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.IndenBookingCatatanPembayaran
-import net.bagusekasaputra.griyakampoengtkw.domain.entity.kavling.Kavling
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.KavlingCatatanPembayaran
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.Promotion
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.StandardAmbilKuitansi
@@ -54,10 +53,13 @@ import net.bagusekasaputra.griyakampoengtkw.domain.entity.Tahapan
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.images.FotoPembayaranIndenBooking
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.images.ImageDataDiriIndenBooking
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.images.ImageDataDiriUri
+import net.bagusekasaputra.griyakampoengtkw.domain.entity.images.ImageSpr
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.images.ImageSprUri
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.indenBooking.HargaRumahIndenBooking
+import net.bagusekasaputra.griyakampoengtkw.domain.entity.kavling.Kavling
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.pembayaran.BulanAngsuran
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.pembayaran.Pembayaran
+import net.bagusekasaputra.griyakampoengtkw.domain.entity.pembayaran.Pengembalian
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.statusPembayaran.LogPengembalian
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.statusPembayaran.StatusPembayaran
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.statusPembayaran.StatusPembayaran.LogStatus
@@ -733,6 +735,39 @@ object MyObjectMapper {
             ImageDataDiriIndenBooking(
                 keyId = model.keyId,
                 uriStrDataDiri = model.uriStr,
+            )
+        }
+    }
+
+    /**
+     * Pengembalian Pembayaran
+     */
+    fun mapPengembalian(model: PengembalianModel): Pengembalian {
+        return model.let {
+            Pengembalian(
+                keyId = it.keyId,
+                kavling = it.kavling,
+                namaCustomer = it.namaCustomer,
+                tanggal = it.tanggal.toDate(),
+                jumlah = it.jumlah,
+                keterangan = it.keterangan,
+                uri = it.uri,
+                timeMillis = it.timeMillis,
+            )
+        }
+    }
+
+    fun mapPengembalian(pengembalian: Pengembalian): PengembalianModel {
+        return pengembalian.let {
+            PengembalianModel(
+                keyId = it.keyId,
+                kavling = it.kavling,
+                namaCustomer = it.namaCustomer,
+                tanggal = it.tanggal.toSlashedString(),
+                jumlah = it.jumlah,
+                keterangan = it.keterangan,
+                uri = it.uri,
+                timeMillis = it.timeMillis,
             )
         }
     }
