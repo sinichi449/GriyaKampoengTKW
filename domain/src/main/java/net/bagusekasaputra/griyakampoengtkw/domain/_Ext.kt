@@ -8,7 +8,16 @@ import java.math.BigDecimal
 fun getFotoPembayaranFolderName() = "fotoPembayaran"
 
 enum class DataMode {
-    ONLINE, OFFLINE, DATA_LAMA
+    ONLINE, OFFLINE, DATA_LAMA,
+}
+
+fun dataModeOf(str: String): DataMode {
+    return when (str) {
+        DataMode.ONLINE.name -> DataMode.ONLINE
+        DataMode.OFFLINE.name -> DataMode.OFFLINE
+        DataMode.DATA_LAMA.name -> DataMode.DATA_LAMA
+        else -> DataMode.ONLINE
+    }
 }
 
 suspend fun <T> Flow<Result<T>>.firstOrThrow(): T {

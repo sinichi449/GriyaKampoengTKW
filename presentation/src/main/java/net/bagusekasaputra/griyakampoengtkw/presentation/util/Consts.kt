@@ -17,4 +17,6 @@ object Consts {
         add("Korea")
     }
 
+    const val KEY_DATA_MODE = "DATA_MODE"
+
 }

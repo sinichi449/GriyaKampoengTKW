@@ -22,10 +22,12 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
 import net.bagusekasaputra.griyakampoengtkw.domain.DataMode
+import net.bagusekasaputra.griyakampoengtkw.domain.dataModeOf
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.Tahapan
 import net.bagusekasaputra.griyakampoengtkw.presentation.R
 import net.bagusekasaputra.griyakampoengtkw.presentation.databinding.ActivityMainBinding
 import net.bagusekasaputra.griyakampoengtkw.presentation.databinding.HeaderMainNavBinding
+import net.bagusekasaputra.griyakampoengtkw.presentation.util.Consts
 import net.bagusekasaputra.griyakampoengtkw.presentation.util.GriyaNodes
 import net.bagusekasaputra.griyakampoengtkw.presentation.viewmodel.MainViewModel
 import javax.inject.Inject
@@ -132,7 +134,7 @@ class MainActivity : AppCompatActivity() {
                 }
                 DataMode.DATA_LAMA -> {
                     layoutConnectivityVisibility = View.VISIBLE
-                    tvStatusText = "Mode DataLama"
+                    tvStatusText = "Mode Data Lama"
                 }
             }
 
@@ -173,20 +175,11 @@ class MainActivity : AppCompatActivity() {
 
         if (!dataMode.isNullOrEmpty()) {
             sharedPreferences.edit(true) {
-                putString("DATA_MODE", dataMode)
+                putString(Consts.KEY_DATA_MODE, dataMode)
             }
 
-            val result: DataMode = when (dataMode) {
-                DataMode.ONLINE.name -> DataMode.ONLINE
-                DataMode.OFFLINE.name -> DataMode.OFFLINE
-                DataMode.DATA_LAMA.name -> DataMode.DATA_LAMA
-                else -> {
-                    Toast.makeText(this, "Data Mode $dataMode tidak dikenali!", Toast.LENGTH_SHORT)
-                        .show()
+            val result = dataModeOf(dataMode)
 
-                    DataMode.ONLINE
-                }
-            }
             onDataModeReceived(result)
 
             viewModel.dataMode = if (result != DataMode.OFFLINE) DataMode.ONLINE else DataMode.OFFLINE

@@ -14,6 +14,7 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.tabs.TabLayout
 import dagger.hilt.android.AndroidEntryPoint
 import net.bagusekasaputra.griyakampoengtkw.domain.DataMode
+import net.bagusekasaputra.griyakampoengtkw.domain.dataModeOf
 import net.bagusekasaputra.griyakampoengtkw.presentation.R
 import net.bagusekasaputra.griyakampoengtkw.presentation.adapter.viewpager.DetailViewPagerAdapter
 import net.bagusekasaputra.griyakampoengtkw.presentation.databinding.ActivityDetailBinding
@@ -21,6 +22,7 @@ import net.bagusekasaputra.griyakampoengtkw.presentation.fragment.BiayaMarketing
 import net.bagusekasaputra.griyakampoengtkw.presentation.fragment.DataDiriFragment
 import net.bagusekasaputra.griyakampoengtkw.presentation.fragment.pembayaran.FormPembayaranFragment
 import net.bagusekasaputra.griyakampoengtkw.presentation.receiver.ProgressReceiver
+import net.bagusekasaputra.griyakampoengtkw.presentation.util.Consts
 import net.bagusekasaputra.griyakampoengtkw.presentation.util.GriyaNodes
 import net.bagusekasaputra.griyakampoengtkw.presentation.viewmodel.DetailViewModel
 import net.bagusekasaputra.griyakampoengtkw.presentation.viewmodel.FormPembayaranViewModel
@@ -73,27 +75,36 @@ class DetailActivity : AppCompatActivity() {
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
 
         // Data Lama / Data Baru Mode?
-        val pathDataLama = sharedPrefs.getString("dataLamaPath", null)
-        if (pathDataLama != null) {
-            viewModel.dataMode = DataMode.DATA_LAMA
-            imageViewModel.dataMode = DataMode.DATA_LAMA
-            pembayaranViewModel.dataMode = DataMode.DATA_LAMA
+        handleDataMode(sharedPrefs) { dataMode ->
+            with(binding.connectivityStatus) {
+                val layoutConnectivityVisibility: Int
+                val statusText: String
 
-            binding.connectivityStatus.constraintConnectivity.visibility = View.VISIBLE
-            binding.connectivityStatus.tvStatus.text = "Mode Data Lama"
+                when (dataMode) {
+                    DataMode.OFFLINE -> {
+                        layoutConnectivityVisibility = View.VISIBLE
+                        statusText = "Offline"
+                    }
+                    DataMode.DATA_LAMA -> {
+                        layoutConnectivityVisibility = View.VISIBLE
+                        statusText = "Mode Data Lama"
+                    }
+                    else -> {
+                        layoutConnectivityVisibility = View.GONE
+                        statusText = ""
+                    }
+                }
+
+                constraintConnectivity.visibility = layoutConnectivityVisibility
+                tvStatus.text = statusText
+
+                val dataModeViewModel = if (dataMode == DataMode.OFFLINE) DataMode.OFFLINE
+                    else DataMode.ONLINE
+                viewModel.dataMode = dataModeViewModel
+                imageViewModel.dataMode = dataModeViewModel
+                pembayaranViewModel.dataMode = dataModeViewModel
+            }
         }
-
-
-        // DataMode check
-        val offlineMode = sharedPrefs.getBoolean("offline_mode", false)
-        if (offlineMode) {
-            viewModel.offlineMode = true
-            imageViewModel.dataMode = DataMode.OFFLINE
-            pembayaranViewModel.dataMode = DataMode.OFFLINE
-
-            binding.connectivityStatus.constraintConnectivity.visibility = View.VISIBLE
-        }
-
 
         val kavlingKode = intent.getStringExtra(MainActivity.INTENT_KAVLING_KODE)
         kavlingKode?.let {
@@ -136,6 +147,16 @@ class DetailActivity : AppCompatActivity() {
             arguments = Bundle().apply {
                 putString(GriyaNodes.INTENT_KAVLING_KODE, kavlingKode)
             }
+        }
+    }
+
+    private fun handleDataMode(
+        sharedPreferences: SharedPreferences,
+        onDataModeReceived: (dataMode: DataMode) -> Unit,
+    ) {
+        val dataMode = sharedPreferences.getString(Consts.KEY_DATA_MODE, "")
+        if (!dataMode.isNullOrEmpty()) {
+            onDataModeReceived(dataModeOf(dataMode))
         }
     }
 
