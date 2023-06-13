@@ -125,14 +125,6 @@ class DataDiriFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        // Create an external directory for cache
-//        File(requireContext().getExternalFilesDir(null), "data_diri_images").let {
-//            if (it.exists().not()) it.mkdir()
-//        }
-//        File(requireContext().getExternalFilesDir(null), "spr_images").let {
-//            if (it.exists().not()) it.mkdir()
-//        }
-
         offlineMode = viewModel.offlineMode
 
         setupExtendedFloatingButton()

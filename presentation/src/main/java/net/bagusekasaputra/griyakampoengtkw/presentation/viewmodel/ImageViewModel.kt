@@ -26,8 +26,8 @@ import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.indenBooking.fot
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.indenBooking.imageDataDiri.GetImageDataDiriIndenBookingAsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.FotoKuitansi
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.FotoPembayaran
-import net.bagusekasaputra.griyakampoengtkw.domain.entity.ImageDataDiri
-import net.bagusekasaputra.griyakampoengtkw.domain.entity.ImageSpr
+import net.bagusekasaputra.griyakampoengtkw.domain.entity.images.ImageDataDiri
+import net.bagusekasaputra.griyakampoengtkw.domain.entity.images.ImageSpr
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.images.FotoPembayaranIndenBooking
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.images.ImageDataDiriIndenBooking
 import net.bagusekasaputra.griyakampoengtkw.domain.usecase.fotoKuitansi.AddFotoKuitansiUseCase

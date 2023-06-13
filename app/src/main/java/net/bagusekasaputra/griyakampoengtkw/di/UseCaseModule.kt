@@ -329,7 +329,7 @@ object UseCaseModule {
      * Image Data Diri
      */
     @Provides
-    fun provideGetImageDataDiriByKavlingKode(imageDataDiriRepository: ImageDataDiriRepository)
+    fun provideGetImageDataDiriByKavlingKodeUseCase(imageDataDiriRepository: ImageDataDiriRepository)
         = GetImageDataDiriByKavlingKodeUseCase(imageDataDiriRepository)
 
     @Provides

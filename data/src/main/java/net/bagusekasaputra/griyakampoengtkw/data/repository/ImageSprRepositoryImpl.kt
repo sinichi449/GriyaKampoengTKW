@@ -16,7 +16,7 @@ import net.bagusekasaputra.griyakampoengtkw.data.interfaces.remote.RemoteImageSp
 import net.bagusekasaputra.griyakampoengtkw.data.interfaces.remote.RemoteMetadataDataSource
 import net.bagusekasaputra.griyakampoengtkw.data.model.ImageSprModel
 import net.bagusekasaputra.griyakampoengtkw.data.model.MetadataModel
-import net.bagusekasaputra.griyakampoengtkw.domain.entity.ImageSpr
+import net.bagusekasaputra.griyakampoengtkw.domain.entity.images.ImageSpr
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.images.ImageSprUri
 import net.bagusekasaputra.griyakampoengtkw.domain.repository.ImageSprRepository
 

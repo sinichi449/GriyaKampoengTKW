@@ -38,7 +38,6 @@ import net.bagusekasaputra.griyakampoengtkw.presentation.viewmodel.DetailViewMod
 import net.bagusekasaputra.griyakampoengtkw.presentation.viewmodel.FormPembayaranViewModel
 import net.bagusekasaputra.griyakampoengtkw.presentation.viewmodel.FormPembayaranViewModel.TablePembayaranType
 import net.bagusekasaputra.griyakampoengtkw.presentation.viewmodel.PembayaranSyncRequest
-import java.io.File
 import java.util.*
 import javax.inject.Inject
 
@@ -97,11 +96,6 @@ class FormPembayaranFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
-        // Creating foto pembayaran Directory on external storage
-        File(requireContext().getExternalFilesDir(null), "foto_pembayaran_images").let {
-            if (it.exists().not()) it.mkdir()
-        }
 
         setupViewModel()
 

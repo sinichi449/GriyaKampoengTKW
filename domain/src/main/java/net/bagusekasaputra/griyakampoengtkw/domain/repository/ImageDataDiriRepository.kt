@@ -2,7 +2,7 @@ package net.bagusekasaputra.griyakampoengtkw.domain.repository
 
 import android.net.Uri
 import kotlinx.coroutines.flow.Flow
-import net.bagusekasaputra.griyakampoengtkw.domain.entity.ImageDataDiri
+import net.bagusekasaputra.griyakampoengtkw.domain.entity.images.ImageDataDiri
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.images.ImageDataDiriUri
 
 interface ImageDataDiriRepository {

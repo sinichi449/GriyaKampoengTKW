@@ -24,6 +24,12 @@ class StorageImageSprDataSource(
         "StorageImageSpr->$func(): $msg"
     }
 
+    init {
+        // Creating base directory if not exist
+        val dstDir = File(externalFilesDir, ImageSprModel.DST_ROOT)
+        if (!dstDir.exists()) dstDir.mkdir()
+    }
+
     override suspend fun get(kavlingKode: String): Result<ImageSprModel?> {
         return callbackFlow<Result<ImageSprModel?>> {
             val rootDir = File(externalFilesDir, ImageSprModel.DST_ROOT)

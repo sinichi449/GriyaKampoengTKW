@@ -2,7 +2,7 @@ package net.bagusekasaputra.griyakampoengtkw.domain.repository
 
 import android.net.Uri
 import kotlinx.coroutines.flow.Flow
-import net.bagusekasaputra.griyakampoengtkw.domain.entity.ImageSpr
+import net.bagusekasaputra.griyakampoengtkw.domain.entity.images.ImageSpr
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.images.ImageSprUri
 
 interface ImageSprRepository {

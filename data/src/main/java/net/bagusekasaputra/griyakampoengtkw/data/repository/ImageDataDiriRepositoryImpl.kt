@@ -20,7 +20,7 @@ import net.bagusekasaputra.griyakampoengtkw.data.interfaces.remote.RemoteMetadat
 import net.bagusekasaputra.griyakampoengtkw.data.model.ImageDataDiriModel
 import net.bagusekasaputra.griyakampoengtkw.data.model.MetadataModel
 import net.bagusekasaputra.griyakampoengtkw.domain.ImageUtil
-import net.bagusekasaputra.griyakampoengtkw.domain.entity.ImageDataDiri
+import net.bagusekasaputra.griyakampoengtkw.domain.entity.images.ImageDataDiri
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.images.ImageDataDiriUri
 import net.bagusekasaputra.griyakampoengtkw.domain.repository.ImageDataDiriRepository
 import java.io.File

@@ -52,8 +52,6 @@ class LocalFotoPembayaranDataSourceImpl(
         fromRemote: Boolean
     ): Result<Nothing?> {
         try {
-            FotoPembayaranModel.createKavlingFolderIfNotExist(externalFilesDir, fotoPembayaranModel.kavlingKode)
-
             val fotoPembayaran: FotoPembayaranEntity
             // The difference between fromRemote=false and -true is the dstUri.
             if (fromRemote) {

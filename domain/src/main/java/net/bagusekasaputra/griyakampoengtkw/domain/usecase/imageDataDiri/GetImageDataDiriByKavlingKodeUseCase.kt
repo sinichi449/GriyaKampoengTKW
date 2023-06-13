@@ -3,7 +3,7 @@ package net.bagusekasaputra.griyakampoengtkw.domain.usecase.imageDataDiri
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import net.bagusekasaputra.griyakampoengtkw.domain.DataMode
-import net.bagusekasaputra.griyakampoengtkw.domain.entity.ImageDataDiri
+import net.bagusekasaputra.griyakampoengtkw.domain.entity.images.ImageDataDiri
 import net.bagusekasaputra.griyakampoengtkw.domain.repository.ImageDataDiriRepository
 import net.bagusekasaputra.griyakampoengtkw.domain.usecase.UseCase
 

@@ -24,10 +24,14 @@ class StorageFotoPembayaranDataSource(
 
     private val fotoPembayaranRef = storageReference.child(FirebaseNodes.IMAGES_FOTO_PEMBAYARAN)
 
+    init {
+        // Create directory for foto pembayaran
+        val dstDir = File(externalFilesDir, FotoPembayaranModel.DST_FOLDER)
+        if (!dstDir.exists()) dstDir.mkdir()
+    }
+
     override suspend fun get(kavlingKode: String, termin: String): FotoPembayaranModel? {
         return callbackFlow {
-            FotoPembayaranModel.createKavlingFolderIfNotExist(externalFilesDir, kavlingKode)
-
             val model = FotoPembayaranModel(kavlingKode = kavlingKode, termin = termin)
             val filename = model.getKavlingAndFilePath()
             val dstFile = File(externalFilesDir, FotoPembayaranModel.DST_FOLDER).let { rootDir ->
