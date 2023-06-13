@@ -29,6 +29,11 @@
         android:name="net.bagusekasaputra.griyakampoengtkw.presentation.fragment.biayaPembangunan.BiayaPembangunanFragment"
         android:label="Biaya Pembangunan"
         tools:layout="@layout/fragment_biaya_pembangunan"/>
+    <fragment
+        android:id="@id/nav_pengembalian_pembayaran"
+        android:name="net.bagusekasaputra.griyakampoengtkw.presentation.fragment.PengembalianPembayaranFragment"
+        android:label="Pengembalian Pembayaran"
+        tools:layout="@layout/fragment_pengembalian_pembayaran"/>
     <activity
         android:id="@+id/nav_pengaturan"
         android:name="net.bagusekasaputra.griyakampoengtkw.presentation.activity.SettingsActivity"

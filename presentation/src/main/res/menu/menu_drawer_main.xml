@@ -38,6 +38,13 @@
         android:checkable="true"/>
 
     <item
+        android:id="@+id/nav_pengembalian_pembayaran"
+        android:title="Pengembalian Pembayaran"
+        android:icon="@drawable/baseline_mood_bad_24"
+        app:showAsAction="ifRoom"
+        android:checkable="true"/>
+
+    <item
         android:id="@id/nav_pengaturan"
         android:title="Pengaturan"
         android:icon="@drawable/settings_24px"

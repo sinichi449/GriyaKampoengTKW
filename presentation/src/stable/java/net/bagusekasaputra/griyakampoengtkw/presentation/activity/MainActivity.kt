@@ -63,6 +63,7 @@ class MainActivity : AppCompatActivity() {
             R.id.nav_inden_booking,
             R.id.nav_biaya_pribadi,
             R.id.nav_biaya_pembangunan,
+            R.id.nav_pengembalian_pembayaran,
             R.id.nav_pengaturan,
         )
     }
