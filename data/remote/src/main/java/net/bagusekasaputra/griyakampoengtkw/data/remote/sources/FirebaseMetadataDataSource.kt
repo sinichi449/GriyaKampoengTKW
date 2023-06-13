@@ -18,7 +18,9 @@ class FirebaseMetadataDataSource(
     databaseReference: DatabaseReference,
 ): RemoteMetadataDataSource {
 
-    private val metadataRef = databaseReference.child(FirebaseNodes.METADATA_ROOT)
+    private val metadataRef by lazy {
+        databaseReference.child(FirebaseNodes.METADATA_ROOT)
+    }
 
     override suspend fun get(tableName: String): MetadataModel? {
         return callbackFlow {
@@ -35,6 +37,7 @@ class FirebaseMetadataDataSource(
             }
 
             val targetRef = metadataRef.child(tableName)
+            Log.d("METADATA_DIR", "targetRef is $targetRef")
             targetRef.addListenerForSingleValueEvent(listener)
 
             awaitClose {
