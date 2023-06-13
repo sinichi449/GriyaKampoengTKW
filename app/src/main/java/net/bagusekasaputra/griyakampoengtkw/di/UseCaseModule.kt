@@ -51,6 +51,7 @@ import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.pembayaran.GetLi
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.pembayaran.GetSinglePembayaranByKavlingAndTerminAsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.pembayaran.InsertPembayaranAsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.pembayaran.UpdatePembayaranAsyncUseCase
+import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.pengembalian.GetPengembalianStreamAsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.pengingat.*
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.promotion.GetPromotionMessageAsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.rekap.GetListRekapGlobalAsyncUseCase
@@ -681,4 +682,11 @@ object UseCaseModule {
     fun provideGetImageDataDiriIndenBookingUseCase(imageDataDiriRepository: ImageDataDiriIndenBookingRepository): GetImageDataDiriIndenBookingAsyncUseCase {
         return GetImageDataDiriIndenBookingAsyncUseCase(imageDataDiriRepository)
     }
+
+    /**
+     * Pengembalian Pembayaran
+     */
+    @Provides
+    fun provideGetPengembalianStreamUseCase(pengembalianRepository: PengembalianRepository)
+        = GetPengembalianStreamAsyncUseCase(pengembalianRepository)
 }

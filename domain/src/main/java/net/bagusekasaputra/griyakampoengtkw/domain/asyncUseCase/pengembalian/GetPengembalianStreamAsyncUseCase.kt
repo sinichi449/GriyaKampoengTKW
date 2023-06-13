@@ -1,6 +1,7 @@
 package net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.pengembalian
 
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flow
 import net.bagusekasaputra.griyakampoengtkw.domain.DataMode
@@ -43,6 +44,7 @@ class GetPengembalianStreamAsyncUseCase(
 
                 keyIds.forEach { keyId ->
                     pengembalianRepository.getAsFlow(keyId, request.dataMode)
+                        .catch { emit(Result.failure(it)) }
                         .collect { result ->
                             result.onFailure { emit(Result.failure(it)) }
 
