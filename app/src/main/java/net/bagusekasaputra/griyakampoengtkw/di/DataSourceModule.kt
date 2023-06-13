@@ -474,4 +474,20 @@ object DataSourceModule {
         return FirebaseImageDataDiriIndenBookingDataSource(storageReference)
     }
 
+    /**
+     * Pengembalian Pembayaran
+     */
+    @Provides
+    fun provideLocalPengembalianDataSource(myRoomDatabase: MyRoomDatabase): LocalPengembalianDataSource {
+        return RoomPengembalianDataSource(myRoomDatabase)
+    }
+
+    @Provides
+    fun provideRemotePengembalianDataSource(
+        @TahapanReference databaseReference: DatabaseReference,
+        @TahapanReference storageReference: StorageReference,
+    ): RemotePengembalianDataSource {
+        return FirebasePengembalianDataSource(databaseReference, storageReference)
+    }
+
 }

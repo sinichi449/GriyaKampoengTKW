@@ -429,6 +429,19 @@ object RepositoryModule {
         return ImageDataDiriIndenBookingRepositoryImpl(localDataSource, remoteDataSource, externalFileDir, cacheHelper)
     }
 
+    /**
+     * Pengembalian Pembayaran
+     */
+    @Provides
+    fun providePengembalianRepository(
+        localDataSource: LocalPengembalianDataSource,
+        remoteDataSource: RemotePengembalianDataSource,
+        @ExternalDir externalFileDir: File?,
+        cacheHelper: CacheHelper,
+    ): PengembalianRepository {
+        return PengembalianRepositoryImpl(localDataSource, remoteDataSource, cacheHelper, externalFileDir)
+    }
+
 }
 
 /**

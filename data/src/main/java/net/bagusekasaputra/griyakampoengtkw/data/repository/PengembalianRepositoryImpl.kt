@@ -41,6 +41,9 @@ class PengembalianRepositoryImpl(
                         cacheableRemote = remoteDataSource,
                         onInvalid = {
                             localDataSource.invalidate()
+
+                            // Delete all image too
+                            dstDir.listFiles { dir, _ -> dir.delete() }
                         }
                     )
                 } else {
@@ -52,7 +55,7 @@ class PengembalianRepositoryImpl(
             saveFetchResult = { remoteModel ->
                 if (remoteModel != null) {
                     // Download bukti foto
-                    val downloadDestination = remoteModel.downloadDstUri()
+                    val downloadDestination = downloadDstUriOf(keyId)
                     val downloadSucceed = remoteDataSource.downloadImage(keyId, downloadDestination)
 
                     val localModel = if (downloadSucceed)
@@ -99,7 +102,7 @@ class PengembalianRepositoryImpl(
         TODO("Not yet implemented")
     }
 
-    private fun PengembalianModel.downloadDstUri(): String {
-        return File(dstDir, this.fileName).toUri().toString()
+    private fun downloadDstUriOf(keyId: String): String {
+        return File(dstDir, PengembalianModel.getFilename(keyId)).toUri().toString()
     }
 }

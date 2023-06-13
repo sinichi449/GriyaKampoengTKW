@@ -1,12 +1,16 @@
 package net.bagusekasaputra.griyakampoengtkw.data.remote
 
 import com.google.firebase.database.DataSnapshot
+import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.DatabaseReference
+import com.google.firebase.database.ValueEventListener
 import com.google.firebase.database.ktx.getValue
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.channels.trySendBlocking
 import kotlinx.coroutines.flow.callbackFlow
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.suspendCancellableCoroutine
 import net.bagusekasaputra.griyakampoengtkw.data.model.PembayaranModel
 import java.util.concurrent.atomic.AtomicBoolean
 
@@ -177,6 +181,32 @@ object FirebaseRequestHelper {
 
             awaitClose {  }
         }.first()
+    }
+
+    @OptIn(ExperimentalCoroutinesApi::class)
+    suspend fun <O> readDataOnce(
+        reference: DatabaseReference,
+        withDataReceived: (snapshot: DataSnapshot) -> Result<O>
+    ) = suspendCancellableCoroutine<Result<O>> { continuation ->
+        val eventListener = object : ValueEventListener {
+            override fun onDataChange(snapshot: DataSnapshot) {
+                if (continuation.isActive) {
+                    continuation.resume(withDataReceived(snapshot), null)
+                }
+            }
+
+            override fun onCancelled(error: DatabaseError) {
+                if (continuation.isActive) {
+                    val exception = error.toException()
+
+                    exception.printStackTrace()
+
+                    continuation.resume(Result.failure(exception), null)
+                }
+            }
+        }
+
+        reference.addListenerForSingleValueEvent(eventListener)
     }
 
     private suspend fun isDataExist(target: DatabaseReference): Boolean {
