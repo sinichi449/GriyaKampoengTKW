@@ -4,7 +4,7 @@ import java.util.UUID
 
 object IdUtil {
 
-    fun generateUUID(): String {
+    fun generateKeyId(): String {
         return UUID.randomUUID().toString()
     }
 }

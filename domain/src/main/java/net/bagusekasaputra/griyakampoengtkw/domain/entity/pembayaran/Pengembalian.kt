@@ -4,7 +4,7 @@ import net.bagusekasaputra.griyakampoengtkw.domain.IdUtil
 import java.util.Date
 
 data class Pengembalian(
-    val keyId: String = IdUtil.generateUUID(),
+    val keyId: String = IdUtil.generateKeyId(),
     val kavling: String,
     val namaCustomer: String = "",
     val tanggal: Date,

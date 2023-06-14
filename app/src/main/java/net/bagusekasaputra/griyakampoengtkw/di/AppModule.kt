@@ -14,6 +14,8 @@ import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
+import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.Dispatchers
 import net.bagusekasaputra.griyakampoengtkw.presentation.util.GriyaNodes
 
 @Module
@@ -43,4 +45,8 @@ object AppModule {
     fun providesRootFirebaseDatabaseReference()
             = FirebaseDatabase.getInstance(GriyaNodes.firebaseUrl).reference
 
+    @Provides
+    fun provideIOCoroutineDispatcher(): CoroutineDispatcher {
+        return Dispatchers.IO
+    }
 }

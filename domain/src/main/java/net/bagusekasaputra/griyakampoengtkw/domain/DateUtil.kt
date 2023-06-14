@@ -206,6 +206,10 @@ object DateUtil {
         return date.toSlashedString()
     }
 
+    fun String.dateToTimeMillis(): Long {
+        return this.toDate().time
+    }
+
     fun namaBulanShort(bulan: Int): String {
         return when (bulan) {
             1 -> "Jan"

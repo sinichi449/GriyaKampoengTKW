@@ -5,17 +5,26 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.activityViewModels
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.launch
 import net.bagusekasaputra.griyakampoengtkw.presentation.R
 import net.bagusekasaputra.griyakampoengtkw.presentation.databinding.FragmentBiayaMaterialBinding
+import net.bagusekasaputra.griyakampoengtkw.presentation.fragment.biayaPembangunan.BiayaPembangunanFragment.Companion.PAGE_BIAYA_MATERIAL
+import net.bagusekasaputra.griyakampoengtkw.presentation.viewmodel.BiayaPembangunanViewModel
 
 @AndroidEntryPoint
 class BiayaMaterialFragment : Fragment() {
 
     private lateinit var binding: FragmentBiayaMaterialBinding
     private var fabAction: FloatingActionButton? = null
+
+    private val viewModel by activityViewModels<BiayaPembangunanViewModel>()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -35,17 +44,31 @@ class BiayaMaterialFragment : Fragment() {
             Snackbar.make(binding.root, "Tambah Biaya Material", Snackbar.LENGTH_SHORT)
                 .show()
         }
+
+        with(binding) {
+            setupWithViewModel()
+
+            swipeRefreshBiayaMaterial.setOnRefreshListener { sync() }
+        }
     }
 
-    override fun onResume() {
-        super.onResume()
-
-        fabAction?.visibility = View.VISIBLE
+    private fun FragmentBiayaMaterialBinding.setupWithViewModel() {
+        // If `currentViewPagerPage` is this fragment, set `fabAction visibility to visible`
+        // and vice versa if not
+        lifecycleScope.launch {
+            repeatOnLifecycle(Lifecycle.State.RESUMED) {
+                viewModel.currentViewPagerPage.collect { currentPage ->
+                    if (currentPage == PAGE_BIAYA_MATERIAL) {
+                        fabAction?.show()
+                    } else {
+                        fabAction?.hide()
+                    }
+                }
+            }
+        }
     }
 
-    override fun onPause() {
-        fabAction?.visibility = View.GONE
-
-        super.onPause()
+    private fun sync() {
+        binding.swipeRefreshBiayaMaterial.isRefreshing = false
     }
 }

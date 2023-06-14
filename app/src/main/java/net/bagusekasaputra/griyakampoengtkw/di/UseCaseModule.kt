@@ -5,8 +5,6 @@ import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.android.components.ViewModelComponent
-import kotlinx.coroutines.CoroutineDispatcher
-import kotlinx.coroutines.Dispatchers
 import net.bagusekasaputra.griyakampoengtkw.cache.CacheInitializer
 import net.bagusekasaputra.griyakampoengtkw.cache.DefaultCacheInitializer
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.ambilKuitansi.InsertAmbilKuitansiAsyncUseCase
@@ -52,6 +50,7 @@ import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.indenBooking.pem
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.kavling.GetKavlingAndProgressStreamAsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.kavling.GetKavlingByBlockAsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.kavling.GetListUnmigratedKavlingsAsyncUseCase
+import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.pembangunan.GetAllBiayaMaterialStreamAsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.pembayaran.DeletePembayaranAsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.pembayaran.GetListPembayaranBulananAsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.pembayaran.GetSinglePembayaranByKavlingAndTerminAsyncUseCase
@@ -75,6 +74,7 @@ import net.bagusekasaputra.griyakampoengtkw.domain.repository.BackupRestoreRepos
 import net.bagusekasaputra.griyakampoengtkw.domain.repository.BaselinePembayaranRepository
 import net.bagusekasaputra.griyakampoengtkw.domain.repository.BiayaLainRepository
 import net.bagusekasaputra.griyakampoengtkw.domain.repository.BiayaMarketingRepository
+import net.bagusekasaputra.griyakampoengtkw.domain.repository.BiayaMaterialRepository
 import net.bagusekasaputra.griyakampoengtkw.domain.repository.BiayaPribadiRepository
 import net.bagusekasaputra.griyakampoengtkw.domain.repository.BlockRepository
 import net.bagusekasaputra.griyakampoengtkw.domain.repository.DataDiriRepository
@@ -134,11 +134,6 @@ object UseCaseModule {
     @Provides
     fun provideCacheInitializer(sharedPrefs: SharedPreferences): CacheInitializer {
         return DefaultCacheInitializer(sharedPrefs)
-    }
-
-    @Provides
-    fun provideCoroutineDispatcher(): CoroutineDispatcher {
-        return Dispatchers.IO
     }
 
     /**
@@ -737,4 +732,11 @@ object UseCaseModule {
     @Provides
     fun provideGetPengembalianStreamUseCase(pengembalianRepository: PengembalianRepository)
         = GetPengembalianStreamAsyncUseCase(pengembalianRepository)
+
+    /**
+     * Biaya Material
+     */
+    @Provides
+    fun provideGetAllBiayaMaterialStreamUseCase(biayaMaterialRepository: BiayaMaterialRepository)
+        = GetAllBiayaMaterialStreamAsyncUseCase(biayaMaterialRepository)
 }

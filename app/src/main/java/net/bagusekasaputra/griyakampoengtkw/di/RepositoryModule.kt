@@ -63,6 +63,7 @@ import net.bagusekasaputra.griyakampoengtkw.data.repository.AppUpdateRepositoryI
 import net.bagusekasaputra.griyakampoengtkw.data.repository.BaselinePembayaranRepositoryImpl
 import net.bagusekasaputra.griyakampoengtkw.data.repository.BiayaLainRepositoryImpl
 import net.bagusekasaputra.griyakampoengtkw.data.repository.BiayaMarketingRepositoryImpl
+import net.bagusekasaputra.griyakampoengtkw.data.repository.BiayaMaterialRepositoryImpl
 import net.bagusekasaputra.griyakampoengtkw.data.repository.BiayaPribadiRepositoryImpl
 import net.bagusekasaputra.griyakampoengtkw.data.repository.BlockRepositoryImpl
 import net.bagusekasaputra.griyakampoengtkw.data.repository.DataDiriRepositoryImpl
@@ -96,6 +97,7 @@ import net.bagusekasaputra.griyakampoengtkw.domain.repository.BackupRestoreRepos
 import net.bagusekasaputra.griyakampoengtkw.domain.repository.BaselinePembayaranRepository
 import net.bagusekasaputra.griyakampoengtkw.domain.repository.BiayaLainRepository
 import net.bagusekasaputra.griyakampoengtkw.domain.repository.BiayaMarketingRepository
+import net.bagusekasaputra.griyakampoengtkw.domain.repository.BiayaMaterialRepository
 import net.bagusekasaputra.griyakampoengtkw.domain.repository.BiayaPribadiRepository
 import net.bagusekasaputra.griyakampoengtkw.domain.repository.BlockRepository
 import net.bagusekasaputra.griyakampoengtkw.domain.repository.DataDiriRepository
@@ -549,4 +551,8 @@ object RepositoryModule {
         return PengembalianRepositoryImpl(localDataSource, remoteDataSource, cacheHelper, externalFileDir)
     }
 
+    @Provides
+    fun provideBiayaMaterialRepository(): BiayaMaterialRepository {
+        return BiayaMaterialRepositoryImpl()
+    }
 }
