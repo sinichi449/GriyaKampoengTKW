@@ -50,7 +50,10 @@ import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.indenBooking.pem
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.kavling.GetKavlingAndProgressStreamAsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.kavling.GetKavlingByBlockAsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.kavling.GetListUnmigratedKavlingsAsyncUseCase
+import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.pembangunan.DeleteBiayaMaterialAsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.pembangunan.GetAllBiayaMaterialStreamAsyncUseCase
+import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.pembangunan.InsertBiayaMaterialAsyncUseCase
+import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.pembangunan.UpdateBiayaMaterialAsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.pembayaran.DeletePembayaranAsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.pembayaran.GetListPembayaranBulananAsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.pembayaran.GetSinglePembayaranByKavlingAndTerminAsyncUseCase
@@ -739,4 +742,17 @@ object UseCaseModule {
     @Provides
     fun provideGetAllBiayaMaterialStreamUseCase(biayaMaterialRepository: BiayaMaterialRepository)
         = GetAllBiayaMaterialStreamAsyncUseCase(biayaMaterialRepository)
+
+    @Provides
+    fun provideInsertBiayaMaterialUseCase(biayaMaterialRepository: BiayaMaterialRepository)
+        = InsertBiayaMaterialAsyncUseCase(biayaMaterialRepository)
+
+    @Provides
+    fun provideUpdateBiayaMaterialUseCase(biayaMaterialRepository: BiayaMaterialRepository)
+        = UpdateBiayaMaterialAsyncUseCase(biayaMaterialRepository)
+
+    @Provides
+    fun provideDeleteBiayaMaterialUseCase(biayaMaterialRepository: BiayaMaterialRepository)
+        = DeleteBiayaMaterialAsyncUseCase(biayaMaterialRepository)
+
 }

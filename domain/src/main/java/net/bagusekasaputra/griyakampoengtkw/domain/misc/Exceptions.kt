@@ -19,3 +19,11 @@ class NullHargaKavlingException(
 class InvalidTimeFrameBaselinePembayaranException(
     message: String = "Timeframe pembayaran tidak valid!! Timeframe harus lebih besar dari 0 bulan."
 ): Exception(message)
+
+class NotTheSameKeyIdException(
+    message: String = "KeyId tidak sama!"
+): Exception(message)
+
+class ChangesNotDetectedException(
+    message: String = "Tidak ada perubahan pada data!"
+): Exception(message)

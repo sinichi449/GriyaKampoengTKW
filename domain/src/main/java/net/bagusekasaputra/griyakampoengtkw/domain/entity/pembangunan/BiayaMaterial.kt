@@ -1,5 +1,6 @@
 package net.bagusekasaputra.griyakampoengtkw.domain.entity.pembangunan
 
+import net.bagusekasaputra.griyakampoengtkw.domain.DateUtil.toSlashedString
 import net.bagusekasaputra.griyakampoengtkw.domain.IdUtil
 import java.util.Calendar
 import java.util.Date
@@ -23,6 +24,17 @@ data class BiayaMaterial(
     uriFoto = buktiPembayaran,
 ) {
     val totalBiayaMaterial = biaya
+
+    fun isEqualTo(other: BiayaMaterial): Boolean {
+        return keyId == other.keyId
+                && untukKavling == other.untukKavling
+                && namaItem == other.namaItem
+                && pcs == other.pcs
+                && hargaPerItem == other.hargaPerItem
+                && tanggalBeli.toSlashedString() == other.tanggalBeli.toSlashedString()
+                && buktiPembayaran == other.buktiPembayaran
+                && mKeterangan == other.mKeterangan
+    }
 
     companion object {
         fun EMPTY(kavling: String): BiayaMaterial {
