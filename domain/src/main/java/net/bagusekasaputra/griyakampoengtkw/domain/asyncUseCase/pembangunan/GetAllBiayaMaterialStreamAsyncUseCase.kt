@@ -22,7 +22,11 @@ class GetAllBiayaMaterialStreamAsyncUseCase(
                 result.onSuccess { biayaMaterial ->
                     resultList.addIfNotNull(biayaMaterial)
 
-                    emit(Result.success(resultList.ifEmpty { null }))
+                    emit(Result.success(
+                        resultList.sortedBy { it.tanggal.time }
+                            .ifEmpty { null }
+                        )
+                    )
                 }
             }
         }
