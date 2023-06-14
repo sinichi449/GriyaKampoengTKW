@@ -1,17 +1,23 @@
 package net.bagusekasaputra.griyakampoengtkw.di
 
+import android.content.SharedPreferences
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.android.components.ViewModelComponent
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
+import net.bagusekasaputra.griyakampoengtkw.cache.CacheInitializer
+import net.bagusekasaputra.griyakampoengtkw.cache.DefaultCacheInitializer
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.ambilKuitansi.InsertAmbilKuitansiAsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.backupRestore.CreateBackupAsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.backupRestore.GetListBackupAsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.baselinePembayaran.GetBaselinePembayaranByKavlingAsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.baselinePembayaran.SetBaselinePembayaranAsyncUseCase
-import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.biayaLain.*
+import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.biayaLain.AddBiayaLainAsyncUseCase
+import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.biayaLain.DeleteBiayaLainAsyncUseCase
+import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.biayaLain.GetAllBiayaLainAsyncUseCase
+import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.biayaLain.UpdateBiayaLainAsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.biayaMarketing.GetAllBiayaMarketingByKavlingKodeAsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.biayaPribadi.GetAllBiayaPribadiAsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.block.GetAllBlocksAsyncUseCase
@@ -52,7 +58,11 @@ import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.pembayaran.GetSi
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.pembayaran.InsertPembayaranAsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.pembayaran.UpdatePembayaranAsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.pengembalian.GetPengembalianStreamAsyncUseCase
-import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.pengingat.*
+import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.pengingat.AddPengingatAsyncUseCase
+import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.pengingat.DeletePengingatAsyncUseCase
+import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.pengingat.GetAllPengingatAsyncUseCase
+import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.pengingat.TurnOnOffPengingatAsyncUseCase
+import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.pengingat.UpdatePengingatAsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.promotion.GetPromotionMessageAsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.rekap.GetListRekapGlobalAsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.rekap.GetRekapBesarDetailAsyncUseCase
@@ -60,9 +70,41 @@ import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.rekap.GetRekapBe
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.rekap.GetRekapGlobalStreamAsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.reportKavling.GetAllReportKavlingAsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.statusPembayaran.GetStatusPembayaranKavlingAsyncUseCase
-import net.bagusekasaputra.griyakampoengtkw.domain.repository.*
+import net.bagusekasaputra.griyakampoengtkw.domain.repository.AppUpdateRepository
+import net.bagusekasaputra.griyakampoengtkw.domain.repository.BackupRestoreRepository
+import net.bagusekasaputra.griyakampoengtkw.domain.repository.BaselinePembayaranRepository
+import net.bagusekasaputra.griyakampoengtkw.domain.repository.BiayaLainRepository
+import net.bagusekasaputra.griyakampoengtkw.domain.repository.BiayaMarketingRepository
+import net.bagusekasaputra.griyakampoengtkw.domain.repository.BiayaPribadiRepository
+import net.bagusekasaputra.griyakampoengtkw.domain.repository.BlockRepository
+import net.bagusekasaputra.griyakampoengtkw.domain.repository.DataDiriRepository
+import net.bagusekasaputra.griyakampoengtkw.domain.repository.DatabaseUserRepository
+import net.bagusekasaputra.griyakampoengtkw.domain.repository.FeeMarketingRepository
+import net.bagusekasaputra.griyakampoengtkw.domain.repository.FotoKuitansiRepository
+import net.bagusekasaputra.griyakampoengtkw.domain.repository.FotoPembayaranIndenBookingRepository
+import net.bagusekasaputra.griyakampoengtkw.domain.repository.FotoPembayaranRepository
+import net.bagusekasaputra.griyakampoengtkw.domain.repository.HargaKavlingRepository
+import net.bagusekasaputra.griyakampoengtkw.domain.repository.HargaRumahIndenBookingRepository
+import net.bagusekasaputra.griyakampoengtkw.domain.repository.ImageDataDiriIndenBookingRepository
+import net.bagusekasaputra.griyakampoengtkw.domain.repository.ImageDataDiriRepository
+import net.bagusekasaputra.griyakampoengtkw.domain.repository.ImageSprRepository
+import net.bagusekasaputra.griyakampoengtkw.domain.repository.IndenBookingAmbilKuitansiRepository
+import net.bagusekasaputra.griyakampoengtkw.domain.repository.IndenBookingCatatanPembayaranRepository
+import net.bagusekasaputra.griyakampoengtkw.domain.repository.IndenBookingRepository
+import net.bagusekasaputra.griyakampoengtkw.domain.repository.KavlingCatatanPembayaranRepository
+import net.bagusekasaputra.griyakampoengtkw.domain.repository.KavlingRepository
+import net.bagusekasaputra.griyakampoengtkw.domain.repository.PembayaranRepository
+import net.bagusekasaputra.griyakampoengtkw.domain.repository.PengembalianRepository
+import net.bagusekasaputra.griyakampoengtkw.domain.repository.PengingatRepository
+import net.bagusekasaputra.griyakampoengtkw.domain.repository.PromotionRepository
+import net.bagusekasaputra.griyakampoengtkw.domain.repository.RekapBesarDetailRepository
+import net.bagusekasaputra.griyakampoengtkw.domain.repository.StandardAmbilKuitansiRepository
+import net.bagusekasaputra.griyakampoengtkw.domain.repository.StatusPembayaranRepository
 import net.bagusekasaputra.griyakampoengtkw.domain.usecase.appupdate.GetUpdateInformationUseCase
-import net.bagusekasaputra.griyakampoengtkw.domain.usecase.biayaMarketing.*
+import net.bagusekasaputra.griyakampoengtkw.domain.usecase.biayaMarketing.AddBiayaMarketingUseCase
+import net.bagusekasaputra.griyakampoengtkw.domain.usecase.biayaMarketing.DeleteAllBiayaMarketingUseCase
+import net.bagusekasaputra.griyakampoengtkw.domain.usecase.biayaMarketing.DeleteSingleBiayaMarketingUseCase
+import net.bagusekasaputra.griyakampoengtkw.domain.usecase.biayaMarketing.EditBiayaMarketingUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.usecase.block.AddNewBlockUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.usecase.datadiri.AddDataDiriUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.usecase.datadiri.DeleteDataDiriUseCase
@@ -81,12 +123,18 @@ import net.bagusekasaputra.griyakampoengtkw.domain.usecase.imageSpr.GetImageSprB
 import net.bagusekasaputra.griyakampoengtkw.domain.usecase.kavling.AddKavlingUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.usecase.kavling.EditKavlingUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.usecase.kavling.RemoveKavlingUseCase
-import net.bagusekasaputra.griyakampoengtkw.domain.usecase.pembayaran.*
+import net.bagusekasaputra.griyakampoengtkw.domain.usecase.pembayaran.AddPembayaranUseCase
+import net.bagusekasaputra.griyakampoengtkw.domain.usecase.pembayaran.DeleteAllPembayaranUseCase
 import java.io.File
 
 @Module
 @InstallIn(ViewModelComponent::class)
 object UseCaseModule {
+
+    @Provides
+    fun provideCacheInitializer(sharedPrefs: SharedPreferences): CacheInitializer {
+        return DefaultCacheInitializer(sharedPrefs)
+    }
 
     @Provides
     fun provideCoroutineDispatcher(): CoroutineDispatcher {

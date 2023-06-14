@@ -1,5 +1,6 @@
 package net.bagusekasaputra.griyakampoengtkw.data.remote.sources
 
+import android.util.Log
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.DatabaseReference
@@ -40,6 +41,7 @@ class FirebaseTahapanDataSource(
                 }
             }
 
+            Log.d("FIREBASE_URL", "Tahapan is at $rootDatabaseReference")
             rootDatabaseReference.addListenerForSingleValueEvent(eventListener)
         }
     }

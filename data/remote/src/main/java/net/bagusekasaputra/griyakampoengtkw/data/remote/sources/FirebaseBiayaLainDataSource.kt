@@ -1,5 +1,6 @@
 package net.bagusekasaputra.griyakampoengtkw.data.remote.sources
 
+import android.util.Log
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.DatabaseReference
@@ -22,6 +23,7 @@ class FirebaseBiayaLainDataSource(
 
     override fun getAll(): Flow<Result<List<BiayaLainModel>?>> {
         return callbackFlow {
+            Log.d("FIREBASE_URL", "Biaya Lain is at $biayaLainRef")
             val valueListener = object : ValueEventListener {
                 override fun onDataChange(snapshot: DataSnapshot) {
                     val biayaLainMap = snapshot.getValue<HashMap<String, BiayaLainModel>>()

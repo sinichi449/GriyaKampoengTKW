@@ -12,8 +12,8 @@ import com.google.firebase.storage.StorageReference
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
+import dagger.hilt.android.components.ViewModelComponent
 import dagger.hilt.android.qualifiers.ApplicationContext
-import dagger.hilt.components.SingletonComponent
 import net.bagusekasaputra.griyakampoeng.tkw.data.local.MyRoomDatabase
 import net.bagusekasaputra.griyakampoengtkw.ConstsSharedPrefs
 import net.bagusekasaputra.griyakampoengtkw.data.CacheHelper
@@ -22,11 +22,9 @@ import net.bagusekasaputra.griyakampoengtkw.data.interfaces.remote.RemoteMetadat
 import net.bagusekasaputra.griyakampoengtkw.data.remote.FirebaseNodes
 import net.bagusekasaputra.griyakampoengtkw.presentation.util.GriyaNodes.Companion.firebaseUrl
 import java.io.File
-import javax.inject.Qualifier
-import javax.inject.Singleton
 
 @Module
-@InstallIn(SingletonComponent::class)
+@InstallIn(ViewModelComponent::class)
 object DatabaseModule {
 
     @Provides
@@ -66,11 +64,6 @@ object DatabaseModule {
     /**
      * Firebase Realtime-Database
      */
-    @RootReference
-    @Provides
-    fun providesRootFirebaseDatabaseReference()
-        = FirebaseDatabase.getInstance(firebaseUrl).reference
-
     @TahapanReference
     @Provides
     fun provideTahapanFirebaseDatabaseReference(sharedPrefs: SharedPreferences): DatabaseReference {
@@ -92,9 +85,6 @@ object DatabaseModule {
     /**
      * Firebase Storage
      */
-    @RootReference
-    @Provides
-    fun provideRootStorageReference() = FirebaseStorage.getInstance().reference
 
     @TahapanReference
     @Provides
@@ -114,8 +104,6 @@ object DatabaseModule {
         }
     }
 
-
-    @Singleton
     @Provides
     fun provideCacheHelper(
         localMetadataDataSource: LocalMetadataDataSource,
@@ -160,15 +148,3 @@ object DatabaseModule {
         return resultFile
     }
 }
-
-@Qualifier
-annotation class RootReference
-
-@Qualifier
-annotation class TahapanReference
-
-@Qualifier
-annotation class InternalDir
-
-@Qualifier
-annotation class ExternalDir

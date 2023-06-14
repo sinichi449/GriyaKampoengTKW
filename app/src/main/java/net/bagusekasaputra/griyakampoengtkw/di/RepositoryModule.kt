@@ -4,20 +4,128 @@ import android.content.ContentResolver
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
-import dagger.hilt.components.SingletonComponent
+import dagger.hilt.android.components.ViewModelComponent
 import net.bagusekasaputra.griyakampoengtkw.data.CacheHelper
-import net.bagusekasaputra.griyakampoengtkw.data.interfaces.local.*
-import net.bagusekasaputra.griyakampoengtkw.data.interfaces.remote.*
-import net.bagusekasaputra.griyakampoengtkw.data.repository.*
+import net.bagusekasaputra.griyakampoengtkw.data.interfaces.local.LocalBackupRestoreDataSource
+import net.bagusekasaputra.griyakampoengtkw.data.interfaces.local.LocalBaselinePembayaranDataSource
+import net.bagusekasaputra.griyakampoengtkw.data.interfaces.local.LocalBiayaLainDataSource
+import net.bagusekasaputra.griyakampoengtkw.data.interfaces.local.LocalBiayaMarketingDataSource
+import net.bagusekasaputra.griyakampoengtkw.data.interfaces.local.LocalBlockDataSource
+import net.bagusekasaputra.griyakampoengtkw.data.interfaces.local.LocalDataDiriDataSource
+import net.bagusekasaputra.griyakampoengtkw.data.interfaces.local.LocalFeeMarketingDataSource
+import net.bagusekasaputra.griyakampoengtkw.data.interfaces.local.LocalFotoKuitansiDataSource
+import net.bagusekasaputra.griyakampoengtkw.data.interfaces.local.LocalFotoPembayaranDataSource
+import net.bagusekasaputra.griyakampoengtkw.data.interfaces.local.LocalFotoPembayaranIndenBookingDataSource
+import net.bagusekasaputra.griyakampoengtkw.data.interfaces.local.LocalHargaKavlingDataSource
+import net.bagusekasaputra.griyakampoengtkw.data.interfaces.local.LocalHargaRumahIndenBookingDataSource
+import net.bagusekasaputra.griyakampoengtkw.data.interfaces.local.LocalImageDataDiriDataSource
+import net.bagusekasaputra.griyakampoengtkw.data.interfaces.local.LocalImageDataDiriIndenBookingDataSource
+import net.bagusekasaputra.griyakampoengtkw.data.interfaces.local.LocalImageSprDataSource
+import net.bagusekasaputra.griyakampoengtkw.data.interfaces.local.LocalIndenBookingAmbilKuitansiDataSource
+import net.bagusekasaputra.griyakampoengtkw.data.interfaces.local.LocalIndenBookingCatatanPembayaranDataSource
+import net.bagusekasaputra.griyakampoengtkw.data.interfaces.local.LocalIndenBookingDataSource
+import net.bagusekasaputra.griyakampoengtkw.data.interfaces.local.LocalKavlingCatatanPembayaranDataSource
+import net.bagusekasaputra.griyakampoengtkw.data.interfaces.local.LocalKavlingDataSource
+import net.bagusekasaputra.griyakampoengtkw.data.interfaces.local.LocalMetadataDataSource
+import net.bagusekasaputra.griyakampoengtkw.data.interfaces.local.LocalPembayaranDataSource
+import net.bagusekasaputra.griyakampoengtkw.data.interfaces.local.LocalPengembalianDataSource
+import net.bagusekasaputra.griyakampoengtkw.data.interfaces.local.LocalPengingatDataSource
+import net.bagusekasaputra.griyakampoengtkw.data.interfaces.local.LocalStandardAmbilKuitansiDataSource
+import net.bagusekasaputra.griyakampoengtkw.data.interfaces.remote.RemoteAppUpdateSource
+import net.bagusekasaputra.griyakampoengtkw.data.interfaces.remote.RemoteBackupRestoreDataSource
+import net.bagusekasaputra.griyakampoengtkw.data.interfaces.remote.RemoteBaselinePembayaranDataSource
+import net.bagusekasaputra.griyakampoengtkw.data.interfaces.remote.RemoteBiayaLainDataSource
+import net.bagusekasaputra.griyakampoengtkw.data.interfaces.remote.RemoteBiayaMarketingDataSource
+import net.bagusekasaputra.griyakampoengtkw.data.interfaces.remote.RemoteBlockDataSource
+import net.bagusekasaputra.griyakampoengtkw.data.interfaces.remote.RemoteDataDiriDataSource
+import net.bagusekasaputra.griyakampoengtkw.data.interfaces.remote.RemoteDatabaseUserDataSource
+import net.bagusekasaputra.griyakampoengtkw.data.interfaces.remote.RemoteFeeMarketingDataSource
+import net.bagusekasaputra.griyakampoengtkw.data.interfaces.remote.RemoteFotoPembayaranDataSource
+import net.bagusekasaputra.griyakampoengtkw.data.interfaces.remote.RemoteFotoPembayaranIndenBookingDataSource
+import net.bagusekasaputra.griyakampoengtkw.data.interfaces.remote.RemoteHargaKavlingSource
+import net.bagusekasaputra.griyakampoengtkw.data.interfaces.remote.RemoteHargaRumahIndenBookingDataSource
+import net.bagusekasaputra.griyakampoengtkw.data.interfaces.remote.RemoteImageDataDiriDataSource
+import net.bagusekasaputra.griyakampoengtkw.data.interfaces.remote.RemoteImageDataDiriIndenBookingDataSource
+import net.bagusekasaputra.griyakampoengtkw.data.interfaces.remote.RemoteImageSprDataSource
+import net.bagusekasaputra.griyakampoengtkw.data.interfaces.remote.RemoteIndenBookingAmbilKuitansiDataSource
+import net.bagusekasaputra.griyakampoengtkw.data.interfaces.remote.RemoteIndenBookingCatatanPembayaranDataSource
+import net.bagusekasaputra.griyakampoengtkw.data.interfaces.remote.RemoteIndenBookingDataSource
+import net.bagusekasaputra.griyakampoengtkw.data.interfaces.remote.RemoteKavlingCatatanPembayaranDataSource
+import net.bagusekasaputra.griyakampoengtkw.data.interfaces.remote.RemoteKavlingDataSource
+import net.bagusekasaputra.griyakampoengtkw.data.interfaces.remote.RemoteMetadataDataSource
+import net.bagusekasaputra.griyakampoengtkw.data.interfaces.remote.RemotePembayaranDataSource
+import net.bagusekasaputra.griyakampoengtkw.data.interfaces.remote.RemotePengembalianDataSource
+import net.bagusekasaputra.griyakampoengtkw.data.interfaces.remote.RemotePromotionDataSource
+import net.bagusekasaputra.griyakampoengtkw.data.interfaces.remote.RemoteStandardAmbilKuitansiDataSource
+import net.bagusekasaputra.griyakampoengtkw.data.interfaces.remote.RemoteStatusPembayaranDataSource
+import net.bagusekasaputra.griyakampoengtkw.data.interfaces.remote.RemoteTahapanDataSource
+import net.bagusekasaputra.griyakampoengtkw.data.repository.AppUpdateRepositoryImpl
+import net.bagusekasaputra.griyakampoengtkw.data.repository.BaselinePembayaranRepositoryImpl
+import net.bagusekasaputra.griyakampoengtkw.data.repository.BiayaLainRepositoryImpl
+import net.bagusekasaputra.griyakampoengtkw.data.repository.BiayaMarketingRepositoryImpl
+import net.bagusekasaputra.griyakampoengtkw.data.repository.BiayaPribadiRepositoryImpl
+import net.bagusekasaputra.griyakampoengtkw.data.repository.BlockRepositoryImpl
+import net.bagusekasaputra.griyakampoengtkw.data.repository.DataDiriRepositoryImpl
+import net.bagusekasaputra.griyakampoengtkw.data.repository.DatabaseUserRepositoryImpl
+import net.bagusekasaputra.griyakampoengtkw.data.repository.DefaultBackupRestoreRepository
+import net.bagusekasaputra.griyakampoengtkw.data.repository.FeeMarketingRepositoryImpl
+import net.bagusekasaputra.griyakampoengtkw.data.repository.FotoKuitansiRepositoryImpl
+import net.bagusekasaputra.griyakampoengtkw.data.repository.FotoPembayaranIndenBookingRepositoryImpl
+import net.bagusekasaputra.griyakampoengtkw.data.repository.FotoPembayaranRepositoryImpl
+import net.bagusekasaputra.griyakampoengtkw.data.repository.HargaKavlingRepositoryImpl
+import net.bagusekasaputra.griyakampoengtkw.data.repository.HargaRumahIndenBookingRepositoryImpl
+import net.bagusekasaputra.griyakampoengtkw.data.repository.ImageDataDiriIndenBookingRepositoryImpl
+import net.bagusekasaputra.griyakampoengtkw.data.repository.ImageDataDiriRepositoryImpl
+import net.bagusekasaputra.griyakampoengtkw.data.repository.ImageSprRepositoryImpl
+import net.bagusekasaputra.griyakampoengtkw.data.repository.IndenBookingAmbilKuitansiRepositoryImpl
+import net.bagusekasaputra.griyakampoengtkw.data.repository.IndenBookingCatatanPembayaranRepositoryImpl
+import net.bagusekasaputra.griyakampoengtkw.data.repository.IndenBookingRepositoryImpl
+import net.bagusekasaputra.griyakampoengtkw.data.repository.KavlingCatatanPembayaranRepositoryImpl
+import net.bagusekasaputra.griyakampoengtkw.data.repository.KavlingRepositoryImpl
+import net.bagusekasaputra.griyakampoengtkw.data.repository.PengembalianRepositoryImpl
+import net.bagusekasaputra.griyakampoengtkw.data.repository.PengingatRepositoryImpl
+import net.bagusekasaputra.griyakampoengtkw.data.repository.PromotionRepositoryImpl
+import net.bagusekasaputra.griyakampoengtkw.data.repository.RekapBesarDetailRepositoryImpl
+import net.bagusekasaputra.griyakampoengtkw.data.repository.StandardAmbilKuitansiRepositoryImpl
+import net.bagusekasaputra.griyakampoengtkw.data.repository.StatusPembayaranRepositoryImpl
+import net.bagusekasaputra.griyakampoengtkw.data.repository.TahapanRepositoryImpl
 import net.bagusekasaputra.griyakampoengtkw.data.repository.pembayaran.DefaultPembayaranRepository
 import net.bagusekasaputra.griyakampoengtkw.data.repository.pembayaran.LegacyPembayaranRepository
-import net.bagusekasaputra.griyakampoengtkw.domain.repository.*
+import net.bagusekasaputra.griyakampoengtkw.domain.repository.AppUpdateRepository
+import net.bagusekasaputra.griyakampoengtkw.domain.repository.BackupRestoreRepository
+import net.bagusekasaputra.griyakampoengtkw.domain.repository.BaselinePembayaranRepository
+import net.bagusekasaputra.griyakampoengtkw.domain.repository.BiayaLainRepository
+import net.bagusekasaputra.griyakampoengtkw.domain.repository.BiayaMarketingRepository
+import net.bagusekasaputra.griyakampoengtkw.domain.repository.BiayaPribadiRepository
+import net.bagusekasaputra.griyakampoengtkw.domain.repository.BlockRepository
+import net.bagusekasaputra.griyakampoengtkw.domain.repository.DataDiriRepository
+import net.bagusekasaputra.griyakampoengtkw.domain.repository.DatabaseUserRepository
+import net.bagusekasaputra.griyakampoengtkw.domain.repository.FeeMarketingRepository
+import net.bagusekasaputra.griyakampoengtkw.domain.repository.FotoKuitansiRepository
+import net.bagusekasaputra.griyakampoengtkw.domain.repository.FotoPembayaranIndenBookingRepository
+import net.bagusekasaputra.griyakampoengtkw.domain.repository.FotoPembayaranRepository
+import net.bagusekasaputra.griyakampoengtkw.domain.repository.HargaKavlingRepository
+import net.bagusekasaputra.griyakampoengtkw.domain.repository.HargaRumahIndenBookingRepository
+import net.bagusekasaputra.griyakampoengtkw.domain.repository.ImageDataDiriIndenBookingRepository
+import net.bagusekasaputra.griyakampoengtkw.domain.repository.ImageDataDiriRepository
+import net.bagusekasaputra.griyakampoengtkw.domain.repository.ImageSprRepository
+import net.bagusekasaputra.griyakampoengtkw.domain.repository.IndenBookingAmbilKuitansiRepository
+import net.bagusekasaputra.griyakampoengtkw.domain.repository.IndenBookingCatatanPembayaranRepository
+import net.bagusekasaputra.griyakampoengtkw.domain.repository.IndenBookingRepository
+import net.bagusekasaputra.griyakampoengtkw.domain.repository.KavlingCatatanPembayaranRepository
+import net.bagusekasaputra.griyakampoengtkw.domain.repository.KavlingRepository
+import net.bagusekasaputra.griyakampoengtkw.domain.repository.PembayaranRepository
+import net.bagusekasaputra.griyakampoengtkw.domain.repository.PengembalianRepository
+import net.bagusekasaputra.griyakampoengtkw.domain.repository.PengingatRepository
+import net.bagusekasaputra.griyakampoengtkw.domain.repository.PromotionRepository
+import net.bagusekasaputra.griyakampoengtkw.domain.repository.RekapBesarDetailRepository
+import net.bagusekasaputra.griyakampoengtkw.domain.repository.StandardAmbilKuitansiRepository
+import net.bagusekasaputra.griyakampoengtkw.domain.repository.StatusPembayaranRepository
+import net.bagusekasaputra.griyakampoengtkw.domain.repository.TahapanRepository
 import java.io.File
-import javax.inject.Qualifier
-import javax.inject.Singleton
 
 @Module
-@InstallIn(SingletonComponent::class)
+@InstallIn(ViewModelComponent::class)
 object RepositoryModule {
 
     /**
@@ -98,8 +206,7 @@ object RepositoryModule {
             cacheHelper,
         )
     }
-
-    @Singleton
+    
     @Default
     @Provides
     fun provideDefaultPembayaranRepository(
@@ -443,15 +550,3 @@ object RepositoryModule {
     }
 
 }
-
-/**
- * Refres to any deprecated Repositories.
- */
-@Qualifier
-annotation class Legacy
-
-/**
- * Refers to any maintained Repositories.
- */
-@Qualifier
-annotation class Default

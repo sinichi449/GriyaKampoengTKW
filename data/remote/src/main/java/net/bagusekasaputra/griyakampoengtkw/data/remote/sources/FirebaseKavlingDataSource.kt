@@ -1,5 +1,6 @@
 package net.bagusekasaputra.griyakampoengtkw.data.remote.sources
 
+import android.util.Log
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.DatabaseReference
@@ -24,6 +25,7 @@ class FirebaseKavlingDataSource(
     private val kavlingRef = databaseReference.child(FirebaseNodes.KAVLINGS)
 
     override suspend fun getAllKavlings(blockKode: String): Result<List<KavlingModel>?> {
+        Log.d("FIREBASE_URL", "Kavling is at $kavlingRef")
         return FirebaseRequestHelper.getOperation(
             pathToChild = kavlingRef.child(blockKode),
             onGetSnapshot = { snapshot ->

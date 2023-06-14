@@ -23,6 +23,7 @@ class FirebaseMetadataDataSource(
     }
 
     override suspend fun get(tableName: String): MetadataModel? {
+        Log.d("FIREBASE_URL", "Metadata is at $metadataRef")
         return callbackFlow {
             val listener = object : ValueEventListener {
                 override fun onDataChange(snapshot: DataSnapshot) {
@@ -37,7 +38,6 @@ class FirebaseMetadataDataSource(
             }
 
             val targetRef = metadataRef.child(tableName)
-            Log.d("METADATA_DIR", "targetRef is $targetRef")
             targetRef.addListenerForSingleValueEvent(listener)
 
             awaitClose {

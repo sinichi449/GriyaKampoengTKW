@@ -1,5 +1,6 @@
 package net.bagusekasaputra.griyakampoengtkw.data.remote.sources
 
+import android.util.Log
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.DatabaseReference
@@ -18,6 +19,7 @@ class FirebaseBackupRestoreDataSource(
 
     override suspend fun getListBackup(): Result<List<String>?> {
         return suspendCoroutine { continuation ->
+            Log.d("FIREBASE_URL", "BackupRestore is at $backupRef")
             val eventListener = object : ValueEventListener {
                 override fun onDataChange(snapshot: DataSnapshot) {
                     val listBackup = mutableListOf<String>()

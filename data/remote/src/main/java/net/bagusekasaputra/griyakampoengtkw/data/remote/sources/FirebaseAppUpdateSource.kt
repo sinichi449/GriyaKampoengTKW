@@ -1,5 +1,6 @@
 package net.bagusekasaputra.griyakampoengtkw.data.remote.sources
 
+import android.util.Log
 import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.ktx.getValue
 import kotlinx.coroutines.channels.awaitClose
@@ -11,12 +12,13 @@ import net.bagusekasaputra.griyakampoengtkw.data.model.AppUpdateModel
 import net.bagusekasaputra.griyakampoengtkw.data.remote.FirebaseNodes
 
 class FirebaseAppUpdateSource(
-    private val databaseReference: DatabaseReference
+    databaseReference: DatabaseReference
 ): RemoteAppUpdateSource {
 
     private val updateRef = databaseReference.child(FirebaseNodes.UPDATE)
 
     override suspend fun getUpdateInformation(): Result<AppUpdateModel?> {
+        Log.d("FIREBASE_URL", "App update is at $updateRef")
         return callbackFlow<Result<AppUpdateModel?>> {
             updateRef.get()
                 .addOnSuccessListener { snapshot ->

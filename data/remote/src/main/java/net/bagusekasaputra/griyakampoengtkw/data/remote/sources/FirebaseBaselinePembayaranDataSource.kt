@@ -1,5 +1,6 @@
 package net.bagusekasaputra.griyakampoengtkw.data.remote.sources
 
+import android.util.Log
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.DatabaseReference
@@ -23,6 +24,7 @@ class FirebaseBaselinePembayaranDataSource(
 
     override suspend fun get(kavling: String): Result<BaselinePembayaranModel?> {
         return suspendCancellableCoroutine { continuation ->
+            Log.d("FIREBASE_URL", "BaselinePembayaran is at $baselinePembayaranRef")
             val eventListener = object : ValueEventListener {
                 override fun onDataChange(snapshot: DataSnapshot) {
                     if (continuation.isActive) {
