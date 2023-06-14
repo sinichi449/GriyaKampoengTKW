@@ -1,16 +1,126 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+    android:id="@+id/swipeRefresh_biayaMaterial"
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".fragment.biayaPembangunan.BiayaMaterialFragment">
+    tools:context=".fragment.biayaPembangunan.BiayaMaterialFragment"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
 
-    <!-- TODO: Update blank fragment layout -->
-    <TextView
+    <androidx.core.widget.NestedScrollView
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:text="Material"
-        android:gravity="center"
-        style="@style/TextAppearance.MaterialComponents.Headline3"/>
+        android:layout_height="wrap_content">
 
-</FrameLayout>
+        <androidx.appcompat.widget.LinearLayoutCompat
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <androidx.legacy.widget.Space
+                android:layout_width="match_parent"
+                android:layout_height="16dp"/>
+
+            <!-- Layout Filters -->
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginHorizontal="4dp">
+
+                <Spinner
+                    android:id="@+id/spinner_kavling"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintEnd_toStartOf="@id/spinner_timeFrame"
+                    android:layout_marginEnd="8dp"/>
+
+                <Spinner
+                    android:id="@+id/spinner_timeFrame"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toEndOf="@id/spinner_kavling"
+                    android:layout_marginStart="8dp"/>
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+            <androidx.legacy.widget.Space
+                android:layout_width="match_parent"
+                android:layout_height="32dp"/>
+
+            <com.evrencoskun.tableview.TableView
+                android:id="@+id/tableview_biayaMaterial"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginHorizontal="4dp"
+                app:row_header_width="@dimen/table_generic_single_row_header_width"
+                app:column_header_height="@dimen/table_generic_column_header_height"
+                app:allow_click_inside_column_header="true"
+                app:allow_click_inside_row_header="true"
+                app:allow_click_inside_cell="true"
+                app:separator_color="@color/table_separator_colour"
+                app:show_horizontal_separator="true"
+                app:show_vertical_separator="true"
+                app:selected_color="@color/table_selected_colour"
+                app:shadow_color="@color/table_shadowed_colour"
+                app:unselected_color="@color/table_unselected_colour"/>
+
+            <androidx.legacy.widget.Space
+                android:layout_width="match_parent"
+                android:layout_height="36dp"/>
+
+            <com.google.android.material.divider.MaterialDivider
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginHorizontal="8dp"/>
+
+            <androidx.legacy.widget.Space
+                android:layout_width="match_parent"
+                android:layout_height="8dp"/>
+
+            <!-- Layout Total -->
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginHorizontal="8dp">
+
+                <androidx.constraintlayout.widget.Guideline
+                    android:id="@+id/guideline_totalBiayaMaterial"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    app:layout_constraintGuide_percent="0.5"/>
+
+                <com.google.android.material.textview.MaterialTextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintEnd_toStartOf="@id/guideline_totalBiayaMaterial"
+                    android:text="Total Biaya"
+                    style="@style/TextAppearance.GriyaKampoengTKW.TableSummaryTitle"/>
+
+                <com.google.android.material.textview.MaterialTextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toEndOf="@id/guideline_totalBiayaMaterial"
+                    android:text="Rp. 0"
+                    style="@style/TextAppearance.GriyaKampoengTKW.TableSummaryText"/>
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+            <!-- Extra space to prevent being shadowed by fabs -->
+            <androidx.legacy.widget.Space
+                android:layout_width="match_parent"
+                android:layout_height="96dp"/>
+
+        </androidx.appcompat.widget.LinearLayoutCompat>
+
+    </androidx.core.widget.NestedScrollView>
+
+</androidx.swiperefreshlayout.widget.SwipeRefreshLayout>

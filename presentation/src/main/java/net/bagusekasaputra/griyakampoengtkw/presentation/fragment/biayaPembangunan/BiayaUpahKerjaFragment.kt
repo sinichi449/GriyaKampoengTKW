@@ -5,17 +5,25 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.activityViewModels
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.launch
 import net.bagusekasaputra.griyakampoengtkw.presentation.R
 import net.bagusekasaputra.griyakampoengtkw.presentation.databinding.FragmentBiayaUpahKerjaBinding
+import net.bagusekasaputra.griyakampoengtkw.presentation.viewmodel.BiayaPembangunanViewModel
 
 @AndroidEntryPoint
 class BiayaUpahKerjaFragment : Fragment() {
 
     private lateinit var binding: FragmentBiayaUpahKerjaBinding
     private var fabAction: FloatingActionButton? = null
+
+    private val viewModel by activityViewModels<BiayaPembangunanViewModel>()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -36,17 +44,25 @@ class BiayaUpahKerjaFragment : Fragment() {
             Snackbar.make(binding.root, "Tambah Biaya Upah Kerja", Snackbar.LENGTH_SHORT)
                 .show()
         }
+
+        with(binding) {
+            setupWithViewModel()
+        }
     }
 
-    override fun onResume() {
-        super.onResume()
-
-        fabAction?.visibility = View.VISIBLE
-    }
-
-    override fun onPause() {
-        fabAction?.visibility = View.GONE
-
-        super.onPause()
+    private fun FragmentBiayaUpahKerjaBinding.setupWithViewModel() {
+        // If `currentViewPagerPage` is this fragment, set `fabAction visibility to visible`
+        // and vice versa if not
+        lifecycleScope.launch {
+            repeatOnLifecycle(Lifecycle.State.RESUMED) {
+                viewModel.currentViewPagerPage.collect { currentPage ->
+                    if (currentPage == BiayaPembangunanFragment.PAGE_UPAH_KERJA) {
+                        fabAction?.show()
+                    } else {
+                        fabAction?.hide()
+                    }
+                }
+            }
+        }
     }
 }

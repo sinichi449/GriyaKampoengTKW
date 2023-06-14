@@ -140,4 +140,13 @@
         <item name="shapeAppearanceSmallComponent">@style/ShapeAppearance.MaterialComponents.SmallComponent</item>
     </style>
 
+    <style name="TextAppearance.GriyaKampoengTKW.TableSummaryTitle" parent="TextAppearance.MaterialComponents.Headline6">
+        <item name="android:textSize">15sp</item>
+        <item name="android:gravity">start</item>
+    </style>
+
+    <style name="TextAppearance.GriyaKampoengTKW.TableSummaryText" parent="TextAppearance.MaterialComponents.Subtitle1">
+        <item name="android:gravity">end</item>
+    </style>
+
 </resources>

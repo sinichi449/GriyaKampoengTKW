@@ -29,6 +29,11 @@ class BiayaPembangunanFragment : Fragment() {
         }
     }
 
+    companion object {
+        const val PAGE_BIAYA_MATERIAL = 0
+        const val PAGE_UPAH_KERJA = 1
+    }
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
