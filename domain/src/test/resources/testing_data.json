@@ -4499,6 +4499,24 @@
     ],
     "title": "Update unit yg tersedia!"
   },
+  "pengembalianPembayaran": {
+    "0859d64b-516d-4811-831b-c21cb301c31f": {
+      "jumlah": "5,000,000",
+      "kavling": "D99",
+      "keterangan": "tes 1",
+      "namaCustomer": "Paijo",
+      "tanggal": "14/05/2023",
+      "timeMillis": 1686724309126,
+    },
+    "daa35eb0-e1a2-4624-bec3-bee25b52d2da": {
+      "jumlah": "7,000,000",
+      "kavling": "D100",
+      "keterangan": "tes 2",
+      "namaCustomer": "Sukiman",
+      "tanggal": "14/03/2023",
+      "timeMillis": 1686724309126
+    }
+  },
   "statusPembayaran": {
     "D1": {
       "kavling": "D1",

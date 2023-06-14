@@ -14,6 +14,7 @@ import net.bagusekasaputra.griyakampoengtkw.domain.model.DataDiriJson
 import net.bagusekasaputra.griyakampoengtkw.domain.model.HargaKavlingJson
 import net.bagusekasaputra.griyakampoengtkw.domain.model.KavlingJson
 import net.bagusekasaputra.griyakampoengtkw.domain.model.PembayaranJson
+import net.bagusekasaputra.griyakampoengtkw.domain.model.PengembalianJson
 import net.bagusekasaputra.griyakampoengtkw.domain.model.TestingDataNodes
 import net.bagusekasaputra.griyakampoengtkw.domain.util.nodeReference
 import org.mockito.ArgumentMatchers
@@ -275,6 +276,30 @@ class MockRepository(private val testingFile: File) {
         }
 
         return hargaKavlingRepository
+    }
+
+    suspend fun getPengembalianRepository(): PengembalianRepository {
+        val repository = mock<PengembalianRepository>()
+        whenever(repository.getAll(
+            dataMode = any() ?: DEFAULT_DATA_MODE,
+        )).then {
+            val pengembalianNode = testingFile.nodeReference()
+                ?.getAsJsonObject(TestingDataNodes.PENGEMBALIAN_PEMBAYARAN)
+
+            val pengembalianList = buildList {
+                pengembalianNode?.keySet()?.forEach { keyId ->
+                    pengembalianNode.get(keyId).also { pengembalianJson ->
+                        Gson().fromJson(pengembalianJson, PengembalianJson::class.java)?.also { pengembalian ->
+                            add(pengembalian.toDomain(keyId))
+                        }
+                    }
+                }
+            }
+
+            Result.success(pengembalianList.ifEmpty { null })
+        }
+
+        return repository
     }
 
     companion object {

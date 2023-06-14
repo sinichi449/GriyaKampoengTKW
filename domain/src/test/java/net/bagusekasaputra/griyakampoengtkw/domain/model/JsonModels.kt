@@ -1,6 +1,8 @@
 package net.bagusekasaputra.griyakampoengtkw.domain.model
 
+import net.bagusekasaputra.griyakampoengtkw.domain.DateUtil.toDate
 import net.bagusekasaputra.griyakampoengtkw.domain.NumberUtil
+import net.bagusekasaputra.griyakampoengtkw.domain.NumberUtil.numericToLong
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.BaselinePembayaran
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.BiayaLain
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.BiayaMarketing
@@ -10,6 +12,7 @@ import net.bagusekasaputra.griyakampoengtkw.domain.entity.HargaKavling
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.kavling.Kavling
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.pembayaran.BulanAngsuran
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.pembayaran.Pembayaran
+import net.bagusekasaputra.griyakampoengtkw.domain.entity.pembayaran.Pengembalian
 
 interface JsonModel<T> {
 
@@ -40,6 +43,7 @@ object TestingDataNodes {
     const val AMBIL_KUITANSI = "ambilKuitansi"
     const val KAVLING_EXCLUSION_LIST = "excludeForRekap"
     const val MAINTENTANCE = "maintenance"
+    const val PENGEMBALIAN_PEMBAYARAN = "pengembalianPembayaran"
 }
 
 data class KavlingJson(
@@ -179,6 +183,29 @@ data class BaselinePembayaranJson(
         return BaselinePembayaran(
             kavling, opsiBulan,
             jumlahUang, tanggalPembayaranMaks
+        )
+    }
+}
+
+data class PengembalianJson(
+    val jumlah: String = "",
+    val kavling: String = "",
+    val keterangan: String = "",
+    val namaCustomer: String = "",
+    val tanggal: String = "",
+    val timeMillis: Long = 0L,
+): JsonModel<Pengembalian> {
+    override fun toDomain(args: Any?): Pengembalian {
+        val keyId = args as String
+        return Pengembalian(
+            keyId = keyId,
+            kavling = kavling,
+            namaCustomer = namaCustomer,
+            tanggal = tanggal.toDate(),
+            jumlah = jumlah.numericToLong(),
+            keterangan = keterangan,
+            uri = "",
+            timeMillis = timeMillis,
         )
     }
 }
