@@ -5,6 +5,10 @@ import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.AdapterView
+import android.widget.AdapterView.OnItemSelectedListener
+import android.widget.ArrayAdapter
+import android.widget.Spinner
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
@@ -12,6 +16,7 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import com.evrencoskun.tableview.TableView
+import com.evrencoskun.tableview.filter.Filter
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
@@ -244,6 +249,30 @@ class BiayaMaterialFragment : Fragment() {
         biayaMaterialTable?.create()
     }
 
+    private fun Spinner.setupKavlingFilter(
+        kavlingList: List<String>,
+        filterTableView: Filter,
+    ) {
+        adapter = ArrayAdapter(requireContext(),
+            android.R.layout.simple_spinner_dropdown_item,
+            kavlingList,
+        )
+
+        onItemSelectedListener = object : OnItemSelectedListener {
+            override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
+                if (position == 0) {
+                    // No filter
+                    filterTableView.set(COLUMN_KAVLING, "")
+                } else {
+                    val requestedKavlingToFilter = kavlingList[position]
+                    filterTableView.set(COLUMN_KAVLING, requestedKavlingToFilter)
+                }
+            }
+
+            override fun onNothingSelected(parent: AdapterView<*>?) {}
+        }
+    }
+
     private fun sync() {
         with(binding) {
             viewModel.getAllBiayaMaterial(object : OnResultListener {
@@ -256,6 +285,16 @@ class BiayaMaterialFragment : Fragment() {
 
                     tableviewBiayaMaterial.setupBiayaMaterialTable(
                         viewModel.biayaMaterialList.value
+                    )
+
+                    // Add "Semua" filterable item
+                    val kavlingList = buildList {
+                        add("Semua")
+                        addAll(viewModel.kavlingKodeList.value)
+                    }
+                    spinnerKavling.setupKavlingFilter(
+                        kavlingList = kavlingList,
+                        filterTableView = Filter(tableviewBiayaMaterial),
                     )
                 }
 

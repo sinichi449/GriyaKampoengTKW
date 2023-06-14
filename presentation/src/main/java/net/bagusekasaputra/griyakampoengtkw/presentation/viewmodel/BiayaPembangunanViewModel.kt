@@ -26,6 +26,10 @@ class BiayaPembangunanViewModel @Inject constructor(
     private val _biayaMaterialList = MutableStateFlow(listOf(BiayaMaterial.EMPTY("-")))
     val biayaMaterialList = _biayaMaterialList.asStateFlow()
 
+    /* List Kavling for filter */
+    private val _kavlingKodeList = MutableStateFlow(emptyList<String>())
+    val kavlingKodeList = _kavlingKodeList.asStateFlow()
+
     /* Current ViewPager page */
     private val _currentViewPagerPage = MutableStateFlow(0)
     val currentViewPagerPage = _currentViewPagerPage
@@ -45,6 +49,7 @@ class BiayaPembangunanViewModel @Inject constructor(
                     withContext(Dispatchers.Main) { listener.onLoading() }
                 }
                 .onCompletion {
+                    populateKavlingKodeList(_biayaMaterialList.value)
                     withContext(Dispatchers.Main) { listener.onCompleted() }
                 }
                 .collect { result ->
@@ -59,6 +64,17 @@ class BiayaPembangunanViewModel @Inject constructor(
                         }
                     }
                 }
+        }
+    }
+
+    private fun populateKavlingKodeList(biayaMaterials: List<BiayaMaterial>) {
+        _kavlingKodeList.update {
+            // TODO: Sort and distinct kavlings
+            buildList {
+                biayaMaterials.forEach { item ->
+                    add(item.kavling)
+                }
+            }
         }
     }
 
