@@ -8,7 +8,6 @@ import java.util.Calendar
 import java.util.Date
 
 object DateUtil {
-
     fun getBulanSekarang() = Calendar.getInstance().get(Calendar.MONTH) + 1
 
     fun getTahunSekarang() = Calendar.getInstance().get(Calendar.YEAR)
@@ -196,6 +195,15 @@ object DateUtil {
         return Calendar.getInstance().apply {
             timeInMillis = this@timeMillisToDate
         }.time
+    }
+
+    fun Long.timeMillisToSlashedString(): String {
+        val date = Calendar.getInstance()
+            .apply { timeInMillis = this@timeMillisToSlashedString }
+            .normalize()
+            .time
+
+        return date.toSlashedString()
     }
 
     fun namaBulanShort(bulan: Int): String {

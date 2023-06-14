@@ -1,6 +1,7 @@
 package net.bagusekasaputra.griyakampoengtkw.data.remote.sources
 
 import android.net.Uri
+import android.util.Log
 import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.ktx.getValue
 import com.google.firebase.storage.StorageReference
@@ -25,6 +26,11 @@ class FirebasePengembalianDataSource(
 
     private val imageRef by lazy {
         storageReference.child(FirebaseNodes.IMAGE_PENGEMBALIAN)
+    }
+
+    init {
+        Log.d("FIREBASE_URL", "Pengembalian is at $pengembalianRef")
+        Log.d("FIREBASE_URL", "Image Pengembalian is at $imageRef")
     }
 
     override suspend fun get(keyId: String) = readDataOnce(

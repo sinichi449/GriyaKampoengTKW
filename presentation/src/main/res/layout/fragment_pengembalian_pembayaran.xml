@@ -9,12 +9,92 @@
     tools:context=".fragment.PengembalianPembayaranFragment"
     app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
-   <androidx.core.widget.NestedScrollView
-       android:id="@+id/scrollView_content"
-       android:layout_width="match_parent"
-       android:layout_height="wrap_content">
+    <androidx.core.widget.NestedScrollView
+        android:id="@+id/scrollView_content"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
 
-   </androidx.core.widget.NestedScrollView>
+        <androidx.appcompat.widget.LinearLayoutCompat
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <com.evrencoskun.tableview.TableView
+                android:id="@+id/tableview_pengembalianPembayaran"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="24dp"
+                android:layout_marginHorizontal="4dp"
+                app:row_header_width="@dimen/table_generic_double_row_header_width"
+                app:column_header_height="@dimen/table_generic_column_header_height"
+                app:allow_click_inside_column_header="true"
+                app:allow_click_inside_row_header="true"
+                app:allow_click_inside_cell="true"
+                app:separator_color="@color/table_separator_colour"
+                app:show_horizontal_separator="true"
+                app:show_vertical_separator="true"
+                app:selected_color="@color/table_selected_colour"
+                app:shadow_color="@color/table_shadowed_colour"
+                app:unselected_color="@color/table_unselected_colour"/>
+
+            <androidx.legacy.widget.Space
+                android:layout_width="match_parent"
+                android:layout_height="36dp"/>
+
+            <com.google.android.material.divider.MaterialDivider
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginHorizontal="16dp"/>
+
+            <androidx.legacy.widget.Space
+                android:layout_width="match_parent"
+                android:layout_height="8dp"/>
+
+            <!-- Layout Total -->
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginHorizontal="16dp">
+
+                <androidx.constraintlayout.widget.Guideline
+                    android:id="@+id/guidelineVertical_totalPengembalian"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    app:layout_constraintGuide_percent="0.5"/>
+
+                <com.google.android.material.textview.MaterialTextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintEnd_toStartOf="@id/guidelineVertical_totalPengembalian"
+                    android:gravity="start"
+                    android:text="Total Pengembalian"
+                    style="@style/TextAppearance.MaterialComponents.Headline6"
+                    android:textSize="15sp"/>
+
+                <com.google.android.material.textview.MaterialTextView
+                    android:id="@+id/tv_totalPengembalian"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintStart_toEndOf="@id/guidelineVertical_totalPengembalian"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    android:gravity="end"
+                    android:text="Rp. 0"
+                    style="@style/TextAppearance.MaterialComponents.Subtitle1"/>
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+            <!-- Additional space to prevent layout being shadowed by fabs -->
+            <androidx.legacy.widget.Space
+                android:layout_width="match_parent"
+                android:layout_height="96dp"/>
+
+        </androidx.appcompat.widget.LinearLayoutCompat>
+
+    </androidx.core.widget.NestedScrollView>
 
 
 </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
