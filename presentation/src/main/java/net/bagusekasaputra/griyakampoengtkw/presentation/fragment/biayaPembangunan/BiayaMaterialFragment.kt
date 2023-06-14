@@ -30,6 +30,7 @@ import net.bagusekasaputra.griyakampoengtkw.presentation.tableview.base.RowHeade
 import net.bagusekasaputra.griyakampoengtkw.presentation.tableview.base.SingleRowHeaderViewHolder
 import net.bagusekasaputra.griyakampoengtkw.presentation.tableview.base.TableViewDataProvider
 import net.bagusekasaputra.griyakampoengtkw.presentation.util.NotificationUtil
+import net.bagusekasaputra.griyakampoengtkw.presentation.util.UiUtils
 import net.bagusekasaputra.griyakampoengtkw.presentation.viewmodel.BiayaPembangunanViewModel
 import net.bagusekasaputra.griyakampoengtkw.presentation.viewmodel.OnResultListener
 
@@ -133,6 +134,8 @@ class BiayaMaterialFragment : Fragment() {
             setupWithViewModel()
 
             swipeRefreshBiayaMaterial.setOnRefreshListener { sync() }
+
+            UiUtils.hideFabsOnVerticalScroll(scrollViewContent, fabAction)
         }
 
         sync()
