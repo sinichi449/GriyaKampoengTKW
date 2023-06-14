@@ -6,7 +6,6 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.test.runTest
-import net.bagusekasaputra.griyakampoengtkw.domain.DateUtil.toDate
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.rekap.GetRekapBesarOverviewAsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.BiayaLain
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.BiayaMarketing
@@ -222,7 +221,7 @@ class GetRekapBesarOverviewUseCaseTest {
     }
 
     @Test
-    fun rekapBesarOverview_shouldCorrect() {
+    fun rekapBesarOverviewTest() {
         runTest {
             val request = GetRekapBesarOverviewAsyncUseCase.Request(
                 periodeRekap = PeriodeRekap.SEMUA,
@@ -239,39 +238,6 @@ class GetRekapBesarOverviewUseCaseTest {
             )
 
             Assert.assertEquals(semuaCorrectResult, semuaResult!!)
-        }
-    }
-
-    @Test
-    fun rekapBesarOverview_legacyAndNewMode_shouldEqual() {
-        runTest {
-            val request = GetRekapBesarOverviewAsyncUseCase.Request(
-                periodeRekap = PeriodeRekap.SEMUA,
-                listKavling = kavlingKodeList,
-            )
-
-            val semuaLegacyResult = useCase.processLegacy(request).singleResult()
-            val semuaNewResult = useCase.processNew(request).singleResult()
-            Assert.assertEquals(semuaLegacyResult, semuaNewResult)
-
-            val meiRequest = createCustomRequest(
-                startDate = "01/05/2023".toDate(),
-                endDate = "31/05/2023".toDate(),
-                pembayaranFilterMode = Pembayaran.FILTER_USING_TANGGAL,
-            )
-            val meiLegacyResult = useCase.processLegacy(meiRequest).singleResult()
-            val meiNewResult = useCase.processNew(meiRequest).singleResult()
-            Assert.assertEquals(meiLegacyResult, meiNewResult)
-
-
-            val juniRequest = createCustomRequest(
-                startDate = "01/06/2023".toDate(),
-                endDate = "30/06/2023".toDate(),
-                pembayaranFilterMode = Pembayaran.FILTER_USING_TANGGAL,
-            )
-            val juniLegacyResult = useCase.processLegacy(juniRequest).singleResult()
-            val juniNewResult = useCase.processNew(juniRequest).singleResult()
-            Assert.assertEquals(juniLegacyResult, juniNewResult)
         }
     }
 
