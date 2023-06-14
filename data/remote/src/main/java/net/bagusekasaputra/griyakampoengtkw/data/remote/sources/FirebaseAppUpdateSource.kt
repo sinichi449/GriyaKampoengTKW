@@ -17,8 +17,11 @@ class FirebaseAppUpdateSource(
 
     private val updateRef = databaseReference.child(FirebaseNodes.UPDATE)
 
-    override suspend fun getUpdateInformation(): Result<AppUpdateModel?> {
+    init {
         Log.d("FIREBASE_URL", "App update is at $updateRef")
+    }
+
+    override suspend fun getUpdateInformation(): Result<AppUpdateModel?> {
         return callbackFlow<Result<AppUpdateModel?>> {
             updateRef.get()
                 .addOnSuccessListener { snapshot ->

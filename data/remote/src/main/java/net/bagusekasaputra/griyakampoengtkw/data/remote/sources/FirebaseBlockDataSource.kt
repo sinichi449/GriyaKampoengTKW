@@ -18,9 +18,11 @@ class FirebaseBlockDataSource(
 
     private val blockRef = databaseReference.child(FirebaseNodes.BLOCKS)
 
-    override suspend fun getAllBlocks(): Result<List<BlockModel>?> {
-        Log.d("INIT_CACHE", "Using ${blockRef.parent?.toString()} as root reference!")
+    init {
+        Log.d("FIREBASE_URL", "Blok is at $blockRef")
+    }
 
+    override suspend fun getAllBlocks(): Result<List<BlockModel>?> {
         return FirebaseRequestHelper.getOperation(
             pathToChild = blockRef,
             onGetSnapshot = { snapshot ->

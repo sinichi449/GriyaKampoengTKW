@@ -21,6 +21,10 @@ class FirebaseBiayaLainDataSource(
 
     private val biayaLainRef = databaseReference.child(FirebaseNodes.BIAYA_LAIN)
 
+    init {
+        Log.d("FIREBASE_URL", "Biaya Lain is at $biayaLainRef")
+    }
+
     override fun getAll(): Flow<Result<List<BiayaLainModel>?>> {
         return callbackFlow {
             Log.d("FIREBASE_URL", "Biaya Lain is at $biayaLainRef")

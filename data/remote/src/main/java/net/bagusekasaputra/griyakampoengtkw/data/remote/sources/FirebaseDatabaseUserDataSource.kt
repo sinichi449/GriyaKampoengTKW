@@ -1,5 +1,6 @@
 package net.bagusekasaputra.griyakampoengtkw.data.remote.sources
 
+import android.util.Log
 import com.google.firebase.database.DatabaseReference
 import net.bagusekasaputra.griyakampoengtkw.data.interfaces.remote.RemoteDatabaseUserDataSource
 import net.bagusekasaputra.griyakampoengtkw.data.model.DatabaseUserModel
@@ -13,6 +14,10 @@ class FirebaseDatabaseUserDataSource(
 ): RemoteDatabaseUserDataSource {
 
     private val databaseUserRef = databaseReference.child(FirebaseNodes.DATABASE_USER)
+
+    init {
+        Log.d("FIREBASE_URL", "Database User is at $databaseUserRef")
+    }
 
     override suspend fun getAll(): Result<DatabaseUserModel?> {
         TODO("Not yet implemented")

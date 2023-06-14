@@ -17,9 +17,12 @@ class FirebaseBackupRestoreDataSource(
 
     private val backupRef = databaseReference.child(FirebaseNodes.BACKUPS)
 
+    init {
+        Log.d("FIREBASE_URL", "BackupRestore is at $backupRef")
+    }
+
     override suspend fun getListBackup(): Result<List<String>?> {
         return suspendCoroutine { continuation ->
-            Log.d("FIREBASE_URL", "BackupRestore is at $backupRef")
             val eventListener = object : ValueEventListener {
                 override fun onDataChange(snapshot: DataSnapshot) {
                     val listBackup = mutableListOf<String>()

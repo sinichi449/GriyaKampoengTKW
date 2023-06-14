@@ -1,5 +1,6 @@
 package net.bagusekasaputra.griyakampoengtkw.data.remote.sources
 
+import android.util.Log
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.DatabaseReference
@@ -21,6 +22,10 @@ class FirebaseFeeMarketingDataSource(
 ): RemoteFeeMarketingDataSource {
 
     private val feeMarketingRef = databaseReference.child(FirebaseNodes.FEE_MARKETING)
+
+    init {
+        Log.d("FIREBASE_URL", "Fee Marketing is at $feeMarketingRef")
+    }
 
     override suspend fun getByKavlingKode(kavlingKode: String): Result<FeeMarketingModel?> {
         return callbackFlow<Result<FeeMarketingModel?>> {

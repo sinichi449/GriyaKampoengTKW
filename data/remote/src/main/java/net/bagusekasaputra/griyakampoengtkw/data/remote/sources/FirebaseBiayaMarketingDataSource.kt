@@ -22,6 +22,10 @@ class FirebaseBiayaMarketingDataSource(
 
     // Path to child => biayaMarketing/$kavling/$jenisBiaya
 
+    init {
+        Log.d("FIREBASE_URL", "Biaya Marketing is at $biayaMarketingRef")
+    }
+
     override suspend fun getAllBiayaMarketing(kavlingKode: String): Result<List<BiayaMarketingModel>?> {
         return FirebaseRequestHelper.getOperation(
             pathToChild = biayaMarketingRef.child(kavlingKode),

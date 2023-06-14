@@ -22,9 +22,12 @@ class FirebaseBaselinePembayaranDataSource(
         databaseReference.child(FirebaseNodes.BASELINE_PEMBAYARAN)
     }
 
+    init {
+        Log.d("FIREBASE_URL", "BaselinePembayaran is at $baselinePembayaranRef")
+    }
+
     override suspend fun get(kavling: String): Result<BaselinePembayaranModel?> {
         return suspendCancellableCoroutine { continuation ->
-            Log.d("FIREBASE_URL", "BaselinePembayaran is at $baselinePembayaranRef")
             val eventListener = object : ValueEventListener {
                 override fun onDataChange(snapshot: DataSnapshot) {
                     if (continuation.isActive) {

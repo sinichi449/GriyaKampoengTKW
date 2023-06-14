@@ -1,5 +1,6 @@
 package net.bagusekasaputra.griyakampoengtkw.data.remote.sources
 
+import android.util.Log
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.DatabaseReference
@@ -26,6 +27,10 @@ class FirebaseDataDiriDataSource(
 ): RemoteDataDiriDataSource {
 
     private val dataDiriRef = databaseReference.child(FirebaseNodes.DATA_DIRI)
+
+    init {
+        Log.d("FIREBASE_URL", "Data Diri is at $dataDiriRef")
+    }
 
     override suspend fun getDataDiri(kavlingKode: String): Result<DataDiriModel?> {
         return callbackFlow<Result<DataDiriModel?>> {
