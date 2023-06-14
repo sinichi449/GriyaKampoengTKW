@@ -21,10 +21,10 @@ class GetAllBiayaMaterialStreamAsyncUseCase(
                 result.onFailure { emit(Result.failure(it)) }
                 result.onSuccess { biayaMaterial ->
                     resultList.addIfNotNull(biayaMaterial)
+
+                    emit(Result.success(resultList.ifEmpty { null }))
                 }
             }
-
-            emit(Result.success(resultList.ifEmpty { null }))
         }
     }
 

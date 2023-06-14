@@ -39,7 +39,7 @@ class BiayaMaterialRepositoryImpl: BiayaMaterialRepository {
 
             mockLists.forEach {
                 emit(Result.success(it))
-                delay(100L)
+                delay(Random.nextLong(from = 50L, until = 1000L))
             }
         }
     }
