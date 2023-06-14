@@ -146,9 +146,7 @@ class RekapBesarFragment : Fragment() {
                 }
             }
 
-            override fun onNothingSelected(parentView: AdapterView<*>?) {
-
-            }
+            override fun onNothingSelected(parentView: AdapterView<*>?) {}
 
         }
 

@@ -46,7 +46,7 @@ class RekapDetailFeeMarketingFragment : Fragment() {
     private fun setupViewModel() {
         viewModel.rekapBesarDetailLive.observe(requireActivity()) {
             it?.also { rekapBesarDetail ->
-                binding.tableviewRekapFeeMarketing.setAllItems(rekapBesarDetail.mapFeeMarketingRekapBaru)
+                binding.tableviewRekapFeeMarketing.setAllItems(rekapBesarDetail.feeMarketingBaru)
 
                 val totalDataBaru = rekapBesarDetail.getTotalFeeMarketing(RekapBesarDetail.DATA_BARU)
 
@@ -58,7 +58,7 @@ class RekapDetailFeeMarketingFragment : Fragment() {
                     binding.layoutDataLama.visibility = View.VISIBLE
                     binding.tvInfoDataBaru.visibility = View.VISIBLE
 
-                    binding.tableviewRekapFeeMarketingDataLama.setAllItems(rekapBesarDetail.mapFeeMarketingRekapLama)
+                    binding.tableviewRekapFeeMarketingDataLama.setAllItems(rekapBesarDetail.feeMarketingLama)
 
                     val totalDataLama = rekapBesarDetail.getTotalFeeMarketing(RekapBesarDetail.DATA_LAMA)
                     val rupiahTotalFeeMarketingRekapLama = "Rp. ${NumberUtil.formatLongToString(totalDataLama)}"

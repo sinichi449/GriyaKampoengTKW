@@ -126,12 +126,12 @@ class GetRekapBesarOverviewAsyncUseCase(
 
             _messageProgress.update { "Sedang menghitung rekap ..." }
             val rekapBesarDetail = RekapBesarDetail(
-                mapListPembayaranRekapBaru = baruRekapKavling.pembayaranWithNamaCostumer,
-                mapFeeMarketingRekapBaru = baruRekapKavling.feeMarketingMap,
-                mapListBiayaMarketingRekapBaru = baruRekapKavling.biayaMarketingMap,
-                mapListPembayaranRekapLama = lamaRekapKavling.pembayaranWithNamaCostumer,
-                mapFeeMarketingRekapLama = lamaRekapKavling.feeMarketingMap,
-                mapListBiayaMarketingRekapLama = lamaRekapKavling.biayaMarketingMap,
+                pembayaranBaru = baruRekapKavling.pembayaranWithNamaCostumer,
+                feeMarketingBaru = baruRekapKavling.feeMarketingMap,
+                biayaMarketingBaru = baruRekapKavling.biayaMarketingMap,
+                pembayaranLama = lamaRekapKavling.pembayaranWithNamaCostumer,
+                feeMarketingLama = lamaRekapKavling.feeMarketingMap,
+                biayaMarketingLama = lamaRekapKavling.biayaMarketingMap,
                 listBiayaLain = biayaLainList,
                 listSisaPembayaran = baruRekapKavling.sisaPembayaran,
             )

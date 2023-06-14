@@ -220,8 +220,8 @@ class RekapDetailUangMasukFragment : Fragment() {
         const val COLUMN_JUMLAH_PEMBAYARAN = 4
 
         fun RekapBesarDetail.getListPembayaran(dataBaru: Boolean): List<PembayaranWithNamaCostumer> {
-            val pembayaranMap = if (dataBaru) this.mapListPembayaranRekapBaru
-                else this.mapListPembayaranRekapLama
+            val pembayaranMap = if (dataBaru) this.pembayaranBaru
+                else this.pembayaranLama
 
             return buildList {
                 pembayaranMap.keys.forEach { kavling ->

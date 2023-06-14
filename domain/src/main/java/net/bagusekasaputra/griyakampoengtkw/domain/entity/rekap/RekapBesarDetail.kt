@@ -7,14 +7,14 @@ import net.bagusekasaputra.griyakampoengtkw.domain.entity.pembayaran.Pembayaran
 
 data class RekapBesarDetail(
     // Data Baru
-    val mapListPembayaranRekapBaru: Map<String, List<PembayaranWithNamaCostumer>?>,
-    val mapFeeMarketingRekapBaru: Map<String, FeeMarketing?>,
-    val mapListBiayaMarketingRekapBaru: Map<String, List<BiayaMarketing>?>,
+    val pembayaranBaru: Map<String, List<PembayaranWithNamaCostumer>?>,
+    val feeMarketingBaru: Map<String, FeeMarketing?>,
+    val biayaMarketingBaru: Map<String, List<BiayaMarketing>?>,
 
     // Data Lama
-    val mapListPembayaranRekapLama: Map<String, List<PembayaranWithNamaCostumer>?> = mapOf(),
-    val mapFeeMarketingRekapLama: Map<String, FeeMarketing?> = mapOf(),
-    val mapListBiayaMarketingRekapLama: Map<String, List<BiayaMarketing>?> = mapOf(),
+    val pembayaranLama: Map<String, List<PembayaranWithNamaCostumer>?> = mapOf(),
+    val feeMarketingLama: Map<String, FeeMarketing?> = mapOf(),
+    val biayaMarketingLama: Map<String, List<BiayaMarketing>?> = mapOf(),
 
     // Agnostic :V
     val listBiayaLain: List<BiayaLain>?,
@@ -28,7 +28,7 @@ data class RekapBesarDetail(
 
     fun getTotalUangMasukPembayaran(data: String): Long {
         val mapSelectedPembayaran = if (data == DATA_BARU)
-            mapListPembayaranRekapBaru else mapListPembayaranRekapLama
+            pembayaranBaru else pembayaranLama
         val mMapPembayaran = mutableMapOf<String, List<Pembayaran>?>()
 
         // Convert the map PembayaranWithNamaCostumer to Pembayaran
@@ -48,14 +48,14 @@ data class RekapBesarDetail(
 
     fun getTotalFeeMarketing(data: String): Long {
         val mapFeeMarketing = if (data == DATA_BARU)
-            mapFeeMarketingRekapBaru else mapFeeMarketingRekapLama
+            feeMarketingBaru else feeMarketingLama
 
         return FeeMarketing.hitungTotalAllKavling(mapFeeMarketing)
     }
 
     fun getTotalBiayaMarketing(data: String): Long {
         val mapBiayaMarketing = if (data == DATA_BARU)
-            mapListBiayaMarketingRekapBaru else mapListBiayaMarketingRekapLama
+            biayaMarketingBaru else biayaMarketingLama
 
         return BiayaMarketing.hitungTotalAllKavling(mapBiayaMarketing)
     }
