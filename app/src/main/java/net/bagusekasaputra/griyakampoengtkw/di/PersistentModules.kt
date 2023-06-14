@@ -25,7 +25,7 @@ import java.io.File
 
 @Module
 @InstallIn(ViewModelComponent::class)
-object DatabaseModule {
+object PersistentModules {
 
     @Provides
     fun provideMyRoomDatabase(

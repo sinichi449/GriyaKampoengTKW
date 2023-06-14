@@ -1,7 +1,7 @@
 package net.bagusekasaputra.griyakampoengtkw
 
 import com.google.firebase.database.DatabaseReference
-import net.bagusekasaputra.griyakampoengtkw.di.DatabaseModule
+import net.bagusekasaputra.griyakampoengtkw.di.PersistentModules
 
 object ConstsSharedPrefs {
 
@@ -15,8 +15,8 @@ object ConstsSharedPrefs {
     /**
      * As a key pointer for [DatabaseReference]' child when user has selected [SplashActivity.DATA_LAMA].
      *
-     * @see DatabaseModule.provideTahapanFirebaseDatabaseReference
-     * @see DatabaseModule.provideTahapanStorageReference
+     * @see PersistentModules.provideTahapanFirebaseDatabaseReference
+     * @see PersistentModules.provideTahapanStorageReference
      */
     const val BACKUP_NAME = "BACKUP_NAME"
 
