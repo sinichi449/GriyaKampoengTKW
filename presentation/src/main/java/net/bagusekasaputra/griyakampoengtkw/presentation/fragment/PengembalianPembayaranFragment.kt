@@ -238,7 +238,14 @@ class PengembalianPembayaranFragment : Fragment() {
         with(binding) {
             viewModel.getAllPengembalianList(
                 onLoading = { swipeRefreshPengembalianPembayaran.isRefreshing = true },
-                onCompleted = { swipeRefreshPengembalianPembayaran.isRefreshing = false },
+                onCompleted = {
+                    swipeRefreshPengembalianPembayaran.isRefreshing = false
+
+                    // Set table as fixed as the data completed
+                    tableviewPengembalianPembayaran.setupTablePengembalian(
+                        items = viewModel.pengembalianList.value ?: emptyList()
+                    )
+                },
                 onFailed = {
                     NotificationUtil.createNotification(
                         activity = requireActivity(),
