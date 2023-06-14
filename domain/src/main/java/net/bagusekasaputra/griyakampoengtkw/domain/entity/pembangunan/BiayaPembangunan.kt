@@ -9,4 +9,16 @@ abstract class BiayaPembangunan(
     val keterangan: String,
     val timeMillis: Long,
     val uriFoto: String,
-)
+) {
+
+    companion object {
+        fun List<BiayaPembangunan>.totalBiaya(): Long {
+            var total = 0L
+            this.forEach { item ->
+                total += item.biaya
+            }
+
+            return total
+        }
+    }
+}

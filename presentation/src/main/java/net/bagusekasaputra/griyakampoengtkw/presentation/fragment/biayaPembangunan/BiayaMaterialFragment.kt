@@ -20,12 +20,14 @@ import com.evrencoskun.tableview.TableView
 import com.evrencoskun.tableview.filter.Filter
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.android.material.snackbar.Snackbar
+import com.google.android.material.textview.MaterialTextView
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.launch
 import net.bagusekasaputra.griyakampoengtkw.domain.DateUtil.timeMillisToSlashedString
 import net.bagusekasaputra.griyakampoengtkw.domain.NumberUtil.numericToString
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.pembangunan.BiayaMaterial
+import net.bagusekasaputra.griyakampoengtkw.domain.entity.pembangunan.BiayaPembangunan.Companion.totalBiaya
 import net.bagusekasaputra.griyakampoengtkw.presentation.R
 import net.bagusekasaputra.griyakampoengtkw.presentation.databinding.FragmentBiayaMaterialBinding
 import net.bagusekasaputra.griyakampoengtkw.presentation.dialog.ActionBiayaMaterialBottomSheetDialog
@@ -283,6 +285,13 @@ class BiayaMaterialFragment : Fragment() {
         }
     }
 
+    private fun MaterialTextView.setTotalBiaya(items: List<BiayaMaterial>) {
+        val totalParsed = items.totalBiaya().numericToString()
+        val withRupiah = "Rp. $totalParsed"
+
+        text = withRupiah
+    }
+
     private fun onBiayaMaterialClickListener(rowPosition: Int) {
         val biayaMaterialActionDialog = ActionBiayaMaterialBottomSheetDialog()
         biayaMaterialActionDialog.arguments = bundleOf(
@@ -302,13 +311,6 @@ class BiayaMaterialFragment : Fragment() {
                 override fun onCompleted() {
                     swipeRefreshBiayaMaterial.isRefreshing = false
 
-                    tableviewBiayaMaterial.setupBiayaMaterialTable(
-                        items = viewModel.biayaMaterialList.value,
-                        onItemClicked = { rowPosition ->
-                            onBiayaMaterialClickListener(rowPosition)
-                        }
-                    )
-
                     // Add "Semua" filterable item
                     val kavlingList = buildList {
                         add("Semua")
@@ -318,6 +320,15 @@ class BiayaMaterialFragment : Fragment() {
                         kavlingList = kavlingList,
                         filterTableView = Filter(tableviewBiayaMaterial),
                     )
+
+                    val biayaMaterialList = viewModel.biayaMaterialList.value
+                    tableviewBiayaMaterial.setupBiayaMaterialTable(
+                        items = biayaMaterialList,
+                        onItemClicked = { rowPosition ->
+                            onBiayaMaterialClickListener(rowPosition)
+                        }
+                    )
+                    tvTotalBiaya.setTotalBiaya(biayaMaterialList)
                 }
 
                 override fun onFailure(failMsg: String?) {
