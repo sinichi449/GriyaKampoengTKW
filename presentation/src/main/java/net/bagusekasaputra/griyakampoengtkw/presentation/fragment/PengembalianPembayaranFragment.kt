@@ -136,7 +136,7 @@ class PengembalianPembayaranFragment : Fragment() {
 
     private fun FragmentPengembalianPembayaranBinding.setupWithViewModel() {
         lifecycleScope.launch {
-            repeatOnLifecycle(Lifecycle.State.STARTED) {
+            repeatOnLifecycle(Lifecycle.State.CREATED) {
                 viewModel.pengembalianList
                     .onStart {
                         tableviewPengembalianPembayaran.setupTablePengembalian(emptyList())
