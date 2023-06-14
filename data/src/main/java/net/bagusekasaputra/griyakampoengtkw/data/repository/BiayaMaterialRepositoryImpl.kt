@@ -21,7 +21,7 @@ class BiayaMaterialRepositoryImpl: BiayaMaterialRepository {
                 repeat(itemSize) { index ->
                     val tanggalBeli = Random.nextLong(
                         from = "14/06/2020".dateToTimeMillis(),
-                        until = "14/06/2020".dateToTimeMillis(),
+                        until = "14/06/2023".dateToTimeMillis(),
                     )
                     val hargaItem = Random.nextLong(from = 1L, until = 3_000L) * 1_000L
                     val pcs = Random.nextInt(from = 1, until = 100)
@@ -32,14 +32,14 @@ class BiayaMaterialRepositoryImpl: BiayaMaterialRepository {
                         namaItem = "Item ${index + 1}",
                         hargaPerItem = hargaItem,
                         pcs = pcs,
-                        buktiPembayaran = "https://www.google.com",
+                        buktiPembayaran = if (Random.nextBoolean()) "https://www.google.com" else "",
                     ))
                 }
             }
 
             mockLists.forEach {
                 emit(Result.success(it))
-                delay(250L)
+                delay(100L)
             }
         }
     }

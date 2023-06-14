@@ -14,7 +14,7 @@
         app:layout_constraintBottom_toBottomOf="parent"
         android:text="Cell Data"
         android:gravity="center"
-        android:layout_marginHorizontal="8dp"
+        android:layout_marginHorizontal="16dp"
         android:textSize="@dimen/table_pembayaran_cell_text_size"
         android:textColor="@color/black"/>
 
