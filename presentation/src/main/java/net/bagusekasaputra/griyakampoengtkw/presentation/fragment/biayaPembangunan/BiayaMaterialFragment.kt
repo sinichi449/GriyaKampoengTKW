@@ -10,6 +10,7 @@ import android.widget.AdapterView.OnItemSelectedListener
 import android.widget.ArrayAdapter
 import android.widget.Spinner
 import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Lifecycle
@@ -27,6 +28,7 @@ import net.bagusekasaputra.griyakampoengtkw.domain.NumberUtil.numericToString
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.pembangunan.BiayaMaterial
 import net.bagusekasaputra.griyakampoengtkw.presentation.R
 import net.bagusekasaputra.griyakampoengtkw.presentation.databinding.FragmentBiayaMaterialBinding
+import net.bagusekasaputra.griyakampoengtkw.presentation.dialog.ActionBiayaMaterialBottomSheetDialog
 import net.bagusekasaputra.griyakampoengtkw.presentation.fragment.biayaPembangunan.BiayaPembangunanFragment.Companion.PAGE_BIAYA_MATERIAL
 import net.bagusekasaputra.griyakampoengtkw.presentation.tableview.base.CellItem
 import net.bagusekasaputra.griyakampoengtkw.presentation.tableview.base.ColumnHeader
@@ -98,7 +100,7 @@ class BiayaMaterialFragment : Fragment() {
     }
     private var biayaMaterialTable: GenericTableView<BiayaMaterial>? = null
 
-    private companion object {
+    companion object {
         const val NOTIFICATION_CHANNEL_ID = "BiayaMaterialFragment"
         const val ON_FETCH_FAILED_CODE = 1301
 
@@ -114,6 +116,8 @@ class BiayaMaterialFragment : Fragment() {
         const val INDEX_NOMOR = 0
         const val INDEX_BUKTI_PEMBAYARAN = 1
         const val INDEX_KEY_ID = 2
+
+        const val EXTRAS_ROW_POSITION = "EXTRAS_ROW_POSITION"
     }
 
     override fun onCreateView(
@@ -177,7 +181,10 @@ class BiayaMaterialFragment : Fragment() {
         }
     }
 
-    private fun TableView.setupBiayaMaterialTable(items: List<BiayaMaterial>) {
+    private fun TableView.setupBiayaMaterialTable(
+        items: List<BiayaMaterial>,
+        onItemClicked: (row: Int) -> Unit = {},
+    ) {
         val columnHeaderWidths = buildList {
             add(Pair(COLUMN_KAVLING, 200))
             add(Pair(COLUMN_PCS, 150))
@@ -245,6 +252,9 @@ class BiayaMaterialFragment : Fragment() {
                     tvColumnHeader.requestLayout()
                 }
             }
+            .setOnClickedRowHeader { _, row ->
+                onItemClicked(row)
+            }
 
         biayaMaterialTable?.create()
     }
@@ -273,6 +283,15 @@ class BiayaMaterialFragment : Fragment() {
         }
     }
 
+    private fun onBiayaMaterialClickListener(rowPosition: Int) {
+        val biayaMaterialActionDialog = ActionBiayaMaterialBottomSheetDialog()
+        biayaMaterialActionDialog.arguments = bundleOf(
+            EXTRAS_ROW_POSITION to rowPosition
+        )
+
+        biayaMaterialActionDialog.show(childFragmentManager, null)
+    }
+
     private fun sync() {
         with(binding) {
             viewModel.getAllBiayaMaterial(object : OnResultListener {
@@ -284,7 +303,10 @@ class BiayaMaterialFragment : Fragment() {
                     swipeRefreshBiayaMaterial.isRefreshing = false
 
                     tableviewBiayaMaterial.setupBiayaMaterialTable(
-                        viewModel.biayaMaterialList.value
+                        items = viewModel.biayaMaterialList.value,
+                        onItemClicked = { rowPosition ->
+                            onBiayaMaterialClickListener(rowPosition)
+                        }
                     )
 
                     // Add "Semua" filterable item

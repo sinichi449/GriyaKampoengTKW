@@ -179,6 +179,12 @@ class GenericTableView<T>(
         return this
     }
 
+    fun setOnClickedRowHeader(onClick: (rowHeaderView: RecyclerView.ViewHolder, row: Int) -> Unit): GenericTableView<T> {
+        this.onClickedRowHeader = onClick
+
+        return this
+    }
+
     private fun resetTableSortingStatus() {
         repeat(columnHeaders.size) { column ->
             tableView.sortColumn(column, SortState.UNSORTED)
@@ -229,6 +235,7 @@ class GenericTableView<T>(
             }
         }
     }
+
 
     /**
      * Table OnClick

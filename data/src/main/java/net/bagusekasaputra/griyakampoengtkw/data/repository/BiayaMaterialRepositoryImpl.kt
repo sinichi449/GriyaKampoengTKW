@@ -16,9 +16,8 @@ class BiayaMaterialRepositoryImpl: BiayaMaterialRepository {
     override fun getAsFlow(dataMode: DataMode): Flow<Result<BiayaMaterial?>> {
         return flow {
             val kavlingList = Kavling.getGriyaKavlingList()
-            val itemSize = Random.nextInt(from = 10, until = 50)
             val mockLists = buildList {
-                repeat(itemSize) { index ->
+                repeat(10) { index ->
                     val tanggalBeli = Random.nextLong(
                         from = "14/06/2020".dateToTimeMillis(),
                         until = "14/06/2023".dateToTimeMillis(),
@@ -39,7 +38,7 @@ class BiayaMaterialRepositoryImpl: BiayaMaterialRepository {
 
             mockLists.forEach {
                 emit(Result.success(it))
-                delay(Random.nextLong(from = 50L, until = 1000L))
+                delay(50L)
             }
         }
     }
