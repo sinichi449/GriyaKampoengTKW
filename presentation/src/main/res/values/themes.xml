@@ -84,6 +84,7 @@
     <!-- Widgets -->
     <style name="OutlinedTextInputLayout" parent="Widget.Material3.TextInputLayout.OutlinedBox">
         <item name="theme">@style/Theme.GriyaKampoengTKW.Material3</item>
+        <item name="drawableEndCompat">@id/clear_text</item>
     </style>
     <style name="OutlineEditText" parent="Widget.Material3.TextInputEditText.OutlinedBox">
         <item name="theme">@style/Theme.GriyaKampoengTKW.Material3</item>
@@ -91,6 +92,7 @@
 
     <style name="DenseOutlinedTextInputLayout" parent="Widget.Material3.TextInputLayout.OutlinedBox.Dense">
         <item name="theme">@style/Theme.GriyaKampoengTKW.Material3</item>
+        <item name="drawableEndCompat">@id/clear_text</item>
     </style>
     <style name="DenseOutlineEditText" parent="Widget.Material3.TextInputEditText.OutlinedBox.Dense">
         <item name="theme">@style/Theme.GriyaKampoengTKW.Material3</item>
