@@ -256,6 +256,22 @@ class MainActivity : AppCompatActivity() {
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         return item.onNavDestinationSelected(navController) ||
-                super.onOptionsItemSelected(item)
+                when (item.itemId) {
+                    R.id.ganti_tahapan -> {
+                        // TODO: Ganti Tahapan logic
+                        false
+                    }
+                    else -> super.onOptionsItemSelected(item)
+                }
     }
+
+//    private fun getCurrentTahapan(sharedPreferences: SharedPreferences): String {
+//
+//    }
+//
+//    private fun dialogPilihTahapan(currentTahapan: String): String {
+//
+//    }
+//
+//    private fun createRestartPendingIntent()
 }
