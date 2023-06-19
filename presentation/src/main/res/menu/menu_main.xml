@@ -14,4 +14,10 @@
 <!--        android:title="Help"-->
 <!--        app:showAsAction="ifRoom" />-->
 
+    <item
+        android:id="@+id/ganti_tahapan"
+        android:icon="@drawable/outline_uang_masuk_virtual_24"
+        android:title="Ganti Tahapan"
+        app:showAsAction="ifRoom"/>
+
 </menu>
