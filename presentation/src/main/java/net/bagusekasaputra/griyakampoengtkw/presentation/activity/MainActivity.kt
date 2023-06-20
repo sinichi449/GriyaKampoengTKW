@@ -1,10 +1,12 @@
 package net.bagusekasaputra.griyakampoengtkw.presentation.activity
 
 import android.annotation.SuppressLint
+import android.app.ProgressDialog
 import android.content.Intent
 import android.content.SharedPreferences
 import android.net.Uri
 import android.os.Bundle
+import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
@@ -12,6 +14,7 @@ import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.edit
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.NavController
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.AppBarConfiguration
@@ -21,15 +24,24 @@ import androidx.navigation.ui.setupWithNavController
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.cancel
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.suspendCancellableCoroutine
+import kotlinx.coroutines.withContext
 import net.bagusekasaputra.griyakampoengtkw.domain.DataMode
 import net.bagusekasaputra.griyakampoengtkw.domain.dataModeOf
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.Tahapan
+import net.bagusekasaputra.griyakampoengtkw.domain.entity.Tahapan.Companion.toStringArray
+import net.bagusekasaputra.griyakampoengtkw.domain.misc.UserCanceledOperationException
 import net.bagusekasaputra.griyakampoengtkw.presentation.R
 import net.bagusekasaputra.griyakampoengtkw.presentation.databinding.ActivityMainBinding
 import net.bagusekasaputra.griyakampoengtkw.presentation.databinding.HeaderMainNavBinding
 import net.bagusekasaputra.griyakampoengtkw.presentation.util.Consts
 import net.bagusekasaputra.griyakampoengtkw.presentation.util.GriyaNodes
 import net.bagusekasaputra.griyakampoengtkw.presentation.viewmodel.MainViewModel
+import net.bagusekasaputra.griyakampoengtkw.presentation.viewmodel.ViewModelListener
 import javax.inject.Inject
 
 /**
@@ -45,6 +57,8 @@ class MainActivity : AppCompatActivity() {
         const val EXTRAS_VERSION_NAME = "versionName"
         const val EXTRAS_VERSION_CODE = "versionCode"
         const val EXTRAS_DATA_MODE = "dataMode"
+
+        const val EXTRAS_CHANGE_TAHAPAN_REFERENCE = "EXTRAS_CHANGE_TAHAPAN_REFERENCE"
     }
 
     private lateinit var binding: ActivityMainBinding
@@ -93,9 +107,11 @@ class MainActivity : AppCompatActivity() {
         setSupportActionBar(binding.toolbarMain)
 
         // Toolbar subtitle -> Tahapan
-        sharedPrefs.getString("SELECTED_TAHAPAN", null)?.also {
-            binding.toolbarMain.subtitle = Tahapan.getSimpleInstance(it).nama.uppercase()
+        val currentTahapan = getCurrentTahapan(sharedPrefs)
+        if (currentTahapan.isNotEmpty()) {
+            binding.toolbarMain.subtitle = Tahapan.getSimpleInstance(currentTahapan).nama.uppercase()
         }
+
 
         // Setup navigation view and header layout
         with(binding.navViewMain) {
@@ -254,24 +270,102 @@ class MainActivity : AppCompatActivity() {
         return super.onCreateOptionsMenu(menu)
     }
 
+    @OptIn(ExperimentalCoroutinesApi::class)
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         return item.onNavDestinationSelected(navController) ||
                 when (item.itemId) {
                     R.id.ganti_tahapan -> {
-                        // TODO: Ganti Tahapan logic
-                        false
+                        lifecycleScope.launch(Dispatchers.IO) {
+                            val progressDialog = withContext(Dispatchers.Main) {
+                                ProgressDialog(this@MainActivity).apply {
+                                    setMessage("Mendapatkan tahapan yang tersedia ...")
+                                }
+                            }
+                            val fetchTahapanListener = object : ViewModelListener {
+                                override fun onProgress() {
+                                    progressDialog.show()
+                                }
+
+                                override fun onCompleted() {
+                                    progressDialog.dismiss()
+                                }
+
+                                override fun onFailed(failMsg: String?) {
+                                    progressDialog.dismiss()
+
+                                    Log.d("DIALOG_TAHAPAN", failMsg ?: "An error occured when getting tahapan.")
+                                }
+
+                            }
+                            val tahapanList = viewModel.getAvailableTahapan(fetchTahapanListener)
+                            val selectedTahapanPosition = withContext(Dispatchers.Main) {
+                                suspendCancellableCoroutine { continuation ->
+                                    dialogOnTahapanChangeSelection(
+                                        tahapanList = tahapanList.toStringArray(),
+                                        onSelectedTahapan = {
+                                            continuation.resume(it, null)
+                                        },
+                                        onCanceled = {
+                                            dialogOnTahapanChangeCanceled("Operasi telah dibatalkan oleh user.") {
+                                                continuation.cancel(UserCanceledOperationException())
+                                                cancel()
+                                            }
+                                        }
+                                    )
+                                }
+                            }
+                            val selectedTahapan = tahapanList[selectedTahapanPosition]
+
+                            withContext(Dispatchers.Main) {
+                                restartAndChangeTahapan(selectedTahapan)
+                            }
+                        }
+
+                        true
                     }
                     else -> super.onOptionsItemSelected(item)
                 }
     }
 
-//    private fun getCurrentTahapan(sharedPreferences: SharedPreferences): String {
-//
-//    }
-//
-//    private fun dialogPilihTahapan(currentTahapan: String): String {
-//
-//    }
-//
-//    private fun createRestartPendingIntent()
+    private fun getCurrentTahapan(sharedPreferences: SharedPreferences): String {
+        return sharedPreferences.getString("SELECTED_TAHAPAN", "") ?: ""
+    }
+
+    private fun dialogOnTahapanChangeCanceled(message: String?, onDismiss: () -> Unit) {
+        MaterialAlertDialogBuilder(this@MainActivity).apply {
+            setTitle("Gagal")
+            setMessage(message)
+            setOnDismissListener { onDismiss() }
+        }.show()
+    }
+
+    private fun dialogOnTahapanChangeSelection(
+        tahapanList: Array<String>,
+        onSelectedTahapan: (position: Int) -> Unit,
+        onCanceled: () -> Unit,
+    ) {
+        MaterialAlertDialogBuilder(this@MainActivity).apply {
+            setTitle("Pilih Tahapan")
+            setCancelable(false)
+            setSingleChoiceItems(tahapanList, 0) { dialog, checkPosition ->
+                dialog.dismiss()
+
+                onSelectedTahapan(checkPosition)
+            }
+            setNegativeButton("Batal") { dialog, _ ->
+                dialog.dismiss()
+
+                onCanceled()
+            }
+        }.show()
+    }
+
+    private fun restartAndChangeTahapan(tahapan: Tahapan) {
+        val intent = Intent(this,
+            Class.forName("net.bagusekasaputra.griyakampoengtkw.SplashActivity"))
+        intent.putExtra(EXTRAS_CHANGE_TAHAPAN_REFERENCE, tahapan.reference)
+        intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+
+        startActivity(intent)
+    }
 }

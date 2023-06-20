@@ -1,5 +1,6 @@
 package net.bagusekasaputra.griyakampoengtkw
 
+import android.content.pm.PackageManager
 import android.util.Log
 import androidx.biometric.BiometricManager
 import androidx.biometric.BiometricPrompt
@@ -7,24 +8,28 @@ import androidx.biometric.BiometricPrompt.PromptInfo
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.FragmentActivity
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import net.bagusekasaputra.griyakampoengtkw.databinding.DialogPasswordAuthenticationBinding
 
 @Suppress("DEPRECATION")
 object BiometricUtil {
 
     fun beginAuthentication(activity: FragmentActivity, biometricManager: BiometricManager, biometricPrompt: BiometricPrompt) {
-        val canAuthenticate = biometricManager.canAuthenticate()
-        if (canAuthenticate == BiometricManager.BIOMETRIC_SUCCESS) {
-            biometricPrompt.authenticate(getPromptInfo())
-        } else {
-            MaterialAlertDialogBuilder(activity.applicationContext)
-                .setTitle("Gagal Menginisialisasi Biometrik")
-                .setMessage("Terjadi kesalahan dalam memulai proses autentikasi. Silakan hubungi developer aplikasi untuk mendapatkan perbaikan.")
-                .setPositiveButton("OK") { dialog, _ ->
-                    dialog.dismiss()
-                }
-                .setOnDismissListener { activity.finish() }
-                .create()
-                .show()
+        val hasFingerPrintHw = activity.packageManager.hasSystemFeature(PackageManager.FEATURE_FINGERPRINT)
+        if (hasFingerPrintHw) {
+            val canAuthenticate = biometricManager.canAuthenticate()
+            if (canAuthenticate == BiometricManager.BIOMETRIC_SUCCESS) {
+                biometricPrompt.authenticate(getPromptInfo())
+            } else {
+                MaterialAlertDialogBuilder(activity)
+                    .setTitle("Gagal Menginisialisasi Biometrik")
+                    .setMessage("Terjadi kesalahan dalam memulai proses autentikasi. Silakan hubungi developer aplikasi untuk mendapatkan perbaikan.")
+                    .setPositiveButton("OK") { dialog, _ ->
+                        dialog.dismiss()
+                    }
+                    .setOnDismissListener { activity.finish() }
+                    .create()
+                    .show()
+            }
         }
     }
 
@@ -65,5 +70,34 @@ object BiometricUtil {
             .setDescription("Anda memerlukan kunci biometrik untuk dapat mengakses data di dalam aplikasi ini.")
             .setDeviceCredentialAllowed(true)
             .build()
+    }
+
+    fun fallbackToPasswordAuthentication(
+        activity: FragmentActivity,
+        onCorrectPassword: () -> Unit,
+        onFalsePassword: () -> Unit
+    ) {
+        val dialogBinding = DialogPasswordAuthenticationBinding.inflate(activity.layoutInflater)
+
+        MaterialAlertDialogBuilder(activity).apply {
+            setView(dialogBinding.root)
+            setCancelable(false)
+            setPositiveButton("OK") { dialog, _ ->
+                dialog.dismiss()
+
+                val password = dialogBinding.edtPassword.text.toString()
+                if (passwordIsCorrect(password)) onCorrectPassword() else onFalsePassword()
+            }
+            setNegativeButton("Batal") { dialog, _ ->
+                dialog.dismiss()
+
+                onFalsePassword()
+            }
+        }
+            .show()
+    }
+
+    private fun passwordIsCorrect(password: String): Boolean {
+        return password == "r4h4s14d3cH!"
     }
 }

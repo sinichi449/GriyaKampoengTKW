@@ -22,8 +22,19 @@ data class Tahapan(val reference: String) {
     val nama = "$capitalizeNama $urutan"
 
     companion object {
+
         fun getSimpleInstance(reference: String): Tahapan {
             return Tahapan(reference)
+        }
+
+        fun List<Tahapan>.toStringArray(): Array<String> {
+            val references = buildList {
+                this@toStringArray.forEach { tahapan ->
+                    add(tahapan.nama)
+                }
+            }
+
+            return references.toTypedArray()
         }
 
     }

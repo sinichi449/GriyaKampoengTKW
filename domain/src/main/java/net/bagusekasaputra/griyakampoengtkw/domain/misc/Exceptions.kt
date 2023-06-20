@@ -19,3 +19,7 @@ class NullHargaKavlingException(
 class InvalidTimeFrameBaselinePembayaranException(
     message: String = "Timeframe pembayaran tidak valid!! Timeframe harus lebih besar dari 0 bulan."
 ): Exception(message)
+
+class UserCanceledOperationException(
+    message: String = "Operasi telah dibatalkan oleh user"
+): Exception(message)

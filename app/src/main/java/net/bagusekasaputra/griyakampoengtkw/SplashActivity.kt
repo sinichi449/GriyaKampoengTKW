@@ -5,6 +5,7 @@ import android.app.ProgressDialog
 import android.content.DialogInterface
 import android.content.Intent
 import android.content.SharedPreferences
+import android.content.pm.PackageManager
 import android.os.Bundle
 import android.os.Handler
 import android.view.View
@@ -90,104 +91,42 @@ class SplashActivity : AppCompatActivity() {
         // Disable Dark Theme
         AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
 
-        // Init biometric authentication. If authentication is successful,
-        // then execute connectivityCheckAndInitServer() and initialize the cache.
-        biometricManager = BiometricManager.from(this)
-        biometricPrompt = BiometricUtil.instanceOfBiometricPrompt(this,
-            onFailure = { errorCode: Int, _ ->
-                if (errorCode == BiometricPrompt.ERROR_USER_CANCELED ||
+        val fingerPrintHwAvailable = packageManager.hasSystemFeature(PackageManager.FEATURE_FINGERPRINT)
+        if (fingerPrintHwAvailable) {
+            // Init biometric authentication. If authentication is successful,
+            // then execute connectivityCheckAndInitServer() and initialize the cache.
+            biometricManager = BiometricManager.from(this)
+            biometricPrompt = BiometricUtil.instanceOfBiometricPrompt(this,
+                onFailure = { errorCode: Int, _ ->
+                    if (errorCode == BiometricPrompt.ERROR_USER_CANCELED ||
                         errorCode == BiometricPrompt.ERROR_NEGATIVE_BUTTON ||
                         errorCode == BiometricPrompt.ERROR_CANCELED) {
-                    MaterialAlertDialogBuilder(this).apply {
-                        setTitle("Authentikasi Gagal")
-                        setMessage("Aplikasi ini memerlukan autentikasi pengguna. Jika tidak ada proses autentikasi yang berjalan sukses, aplikasi ini akan keluar.")
-                        setPositiveButton("OK") { dialog, _ ->
-                            dialog.dismiss()
-                        }
-                        setCancelable(false)
-
-                        setOnDismissListener { finish() }
-                    }.create()
-                        .show()
-                }
-            },
-            onSuccess = {
-                // Connectivity check and init server
-                val dispatcher = Dispatchers.IO
-
-                lifecycleScope.launch(dispatcher) {
-                    val connectivityCheckResult = connectivityCheckAndInitServer(
-                        dispatcher = dispatcher,
-                        onDeviceConnectivityCheck = { isOnline ->
-                            if (isOnline) {
-                                bindingLoading.layoutCekKoneksi.tvInfoPeriksaInternet.text = "Memeriksa status server"
-                            } else {
-                                Toast.makeText(this@SplashActivity, "Device terdeteksi offline, mohon cek koneksi Anda.", Toast.LENGTH_LONG).show()
-                            }
-                        },
-                        onServerMaintenance = {
-                            MaterialAlertDialogBuilder(this@SplashActivity)
-                                .setTitle("Server Maintenance")
-                                .setCancelable(false)
-                                .setMessage("Mohon maaf, untuk saat ini server sedang menjalani proses pemeliharaan. Anda hanya bisa membuka Data Lama. Silakan coba lagi nanti.")
-                                .setPositiveButton("Oke") { dialog, _ ->
-                                    dialog.dismiss()
-                                }
-                                .create()
-                                .show()
-                        },
-                        onFailureCheckMaintenance = { failMsg ->
-                            Toast.makeText(this@SplashActivity, "Gagal mengecek status server: $failMsg", Toast.LENGTH_LONG).show()
-                        },
-                    )
-
-                    // Pilih Tahapan and save Tahapan to ViewModel
-                    withContext(Dispatchers.Main) {
-                        dialogPilihTahapan { dialog, tahapan ->
-                            viewModel.selectedTahapan.value = tahapan
-
-                            dialog.dismiss()
-                        }
+                        onAuthenticationFailed()
                     }
+                },
+                onSuccess = { onAuthenticationSuccess() }
+            )
+        } else {
+            BiometricUtil.fallbackToPasswordAuthentication(
+                this,
+                onCorrectPassword = { onAuthenticationSuccess() },
+                onFalsePassword = { onAuthenticationFailed() }
+            )
+        }
 
-                    // Show jenis data
-                    withContext(Dispatchers.Main) {
-                        showJenisDataButton(connectivityCheckResult) {
-                            viewModel.selectedJenisData.value = it
-                        }
-                    }
-
-                    // Handle Tahapan and Jenis Data And initialize cache
-                    withContext(Dispatchers.Main) {
-                        viewModel.tahapanAndJenisData.observe(this@SplashActivity) {
-                            it?.also { tahapanAndJenisData ->
-                                val selectedTahapan = tahapanAndJenisData.first
-                                val selectedJenisData = tahapanAndJenisData.second
-
-                                if ((selectedTahapan != null) && (selectedJenisData != null)) {
-                                    handleTahapanAndJenisData(
-                                        selectedJenisData, selectedTahapan,
-                                        connectivityCheckResult.isDeviceOnline,
-                                    )
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        )
-
-        showSplashScreen(1.5f)
+        showSplashScreen(1.5f, fingerPrintHwAvailable)
     }
 
     @Suppress("SameParameterValue")
-    private fun showSplashScreen(seconds: Float) {
+    private fun showSplashScreen(seconds: Float, fingerPrintAvailable: Boolean) {
         val handler = Handler()
         val splashRunnable = Runnable {
             bindingLoading = ActivitySplashWithLoadingBinding.inflate(layoutInflater)
             setContentView(bindingLoading.root)
 
-            BiometricUtil.beginAuthentication(this, biometricManager, biometricPrompt)
+            if (fingerPrintAvailable) {
+                BiometricUtil.beginAuthentication(this, biometricManager, biometricPrompt)
+            }
         }
         // Convert integer to long milliseconds
         val millis = (seconds * 1000).toLong()
@@ -203,6 +142,92 @@ class SplashActivity : AppCompatActivity() {
      * to where the [FirebaseDatabase]'s node which needs to be accessed.
      * @param isOnline will be send to [MainActivity] via [Intent].
      */
+
+    private fun onAuthenticationFailed() {
+        MaterialAlertDialogBuilder(this).apply {
+            setTitle("Authentikasi Gagal")
+            setMessage("Aplikasi ini memerlukan autentikasi pengguna. Jika tidak ada proses autentikasi yang berjalan sukses, aplikasi ini akan keluar.")
+            setPositiveButton("OK") { dialog, _ ->
+                dialog.dismiss()
+            }
+            setCancelable(false)
+
+            setOnDismissListener { finish() }
+        }.create()
+            .show()
+    }
+
+    private fun onAuthenticationSuccess() {
+        // Connectivity check and init server
+        val dispatcher = Dispatchers.IO
+
+        lifecycleScope.launch(dispatcher) {
+            val connectivityCheckResult = connectivityCheckAndInitServer(
+                dispatcher = dispatcher,
+                onDeviceConnectivityCheck = { isOnline ->
+                    if (isOnline) {
+                        bindingLoading.layoutCekKoneksi.tvInfoPeriksaInternet.text = "Memeriksa status server"
+                    } else {
+                        Toast.makeText(this@SplashActivity, "Device terdeteksi offline, mohon cek koneksi Anda.", Toast.LENGTH_LONG).show()
+                    }
+                },
+                onServerMaintenance = {
+                    MaterialAlertDialogBuilder(this@SplashActivity)
+                        .setTitle("Server Maintenance")
+                        .setCancelable(false)
+                        .setMessage("Mohon maaf, untuk saat ini server sedang menjalani proses pemeliharaan. Anda hanya bisa membuka Data Lama. Silakan coba lagi nanti.")
+                        .setPositiveButton("Oke") { dialog, _ ->
+                            dialog.dismiss()
+                        }
+                        .create()
+                        .show()
+                },
+                onFailureCheckMaintenance = { failMsg ->
+                    Toast.makeText(this@SplashActivity, "Gagal mengecek status server: $failMsg", Toast.LENGTH_LONG).show()
+                },
+            )
+
+            // Pilih Tahapan and save Tahapan to ViewModel
+            withContext(Dispatchers.Main) {
+                // Get pending change tahapan if available
+                val selectedTahapanChange = getChangeTahapanFromIntent(intent)
+                if (selectedTahapanChange != null) {
+                    viewModel.selectedTahapan.value = selectedTahapanChange
+                } else {
+                    dialogPilihTahapan { dialog, tahapan ->
+                        viewModel.selectedTahapan.value = tahapan
+
+                        dialog.dismiss()
+                    }
+                }
+            }
+
+            // Show jenis data
+            withContext(Dispatchers.Main) {
+                showJenisDataButton(connectivityCheckResult) {
+                    viewModel.selectedJenisData.value = it
+                }
+            }
+
+            // Handle Tahapan and Jenis Data And initialize cache
+            withContext(Dispatchers.Main) {
+                viewModel.tahapanAndJenisData.observe(this@SplashActivity) {
+                    it?.also { tahapanAndJenisData ->
+                        val selectedTahapan = tahapanAndJenisData.first
+                        val selectedJenisData = tahapanAndJenisData.second
+
+                        if ((selectedTahapan != null) && (selectedJenisData != null)) {
+                            handleTahapanAndJenisData(
+                                selectedJenisData, selectedTahapan,
+                                connectivityCheckResult.isDeviceOnline,
+                            )
+                        }
+                    }
+                }
+            }
+        }
+    }
+
     private fun handleTahapanAndJenisData(
         jenisData: Int,
         tahapan: Tahapan,
@@ -480,6 +505,14 @@ class SplashActivity : AppCompatActivity() {
             keys.forEach { key ->
                 remove(key)
             }
+        }
+    }
+
+    private fun getChangeTahapanFromIntent(intent: Intent?): Tahapan? {
+        val selectedTahapanReference = intent?.extras?.getString(MainActivity.EXTRAS_CHANGE_TAHAPAN_REFERENCE)
+
+        return selectedTahapanReference?.let {
+            Tahapan.getSimpleInstance(it)
         }
     }
 

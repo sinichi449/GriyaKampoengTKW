@@ -24,8 +24,10 @@ import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.promotion.GetPro
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.AppUpdate
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.Block
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.Promotion
+import net.bagusekasaputra.griyakampoengtkw.domain.entity.Tahapan
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.kavling.Kavling
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.kavling.KavlingAndProgress
+import net.bagusekasaputra.griyakampoengtkw.domain.repository.TahapanRepository
 import net.bagusekasaputra.griyakampoengtkw.domain.usecase.appupdate.GetUpdateInformationUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.usecase.block.AddNewBlockUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.usecase.kavling.AddKavlingUseCase
@@ -49,6 +51,7 @@ class MainViewModel @Inject constructor(
     private val getAppUpdateInformationUseCase: GetUpdateInformationUseCase,
     // Promotion
     private val getPromotionMessageUseCase: GetPromotionMessageAsyncUseCase,
+    private val tahapanRepository: TahapanRepository,
     private val dispatchers: CoroutineDispatcher = Dispatchers.IO
 ): ViewModel() {
 
@@ -395,6 +398,29 @@ class MainViewModel @Inject constructor(
                     }
                 }
             }
+        }
+    }
+
+    /* Tahapan */
+    suspend fun getAvailableTahapan(listener: ViewModelListener): List<Tahapan> {
+        withContext(Dispatchers.Main) { listener.onProgress() }
+
+        val tahapanList = withContext(Dispatchers.IO) {
+            val tahapanResult = tahapanRepository.getAllTahapan()
+            if (tahapanResult.isFailure) {
+                withContext(Dispatchers.Main) {
+                    listener.onFailed(tahapanResult.exceptionOrNull()?.message)
+                }
+                emptyList()
+            } else {
+                tahapanResult.getOrNull()
+            }
+        }
+
+        return withContext(Dispatchers.Main) {
+            listener.onCompleted()
+
+            tahapanList ?: emptyList()
         }
     }
 
