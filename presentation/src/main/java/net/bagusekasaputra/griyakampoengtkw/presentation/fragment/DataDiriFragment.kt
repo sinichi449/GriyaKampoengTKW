@@ -157,7 +157,7 @@ class DataDiriFragment : Fragment() {
             }
         }
 
-        binding.tvNoHp.setOnClickListener {
+        binding.tvNoHp?.setOnClickListener {
             val phoneNumber = viewModel.dataDiriLive.value?.noHp
             if (phoneNumber != null) {
                 UiUtils.openWhatsapp(requireContext(), phoneNumber)
@@ -227,13 +227,13 @@ class DataDiriFragment : Fragment() {
         }
 
         viewModel.dataDiriLive.observe(requireActivity()) { dataDiri ->
-            binding.tvNama.text = dataDiri?.nama ?: "-"
-            binding.tvJenisIdentitas.text = dataDiri?.jenisIdentitas ?: "KTP"
-            binding.tvNoIdentitas.text = dataDiri?.noIdentitas ?: "-"
-            binding.tvNegaraBekerja.text = dataDiri?.negaraBekerja ?: "Hongkong"
-            binding.tvAlamatKerja.text = dataDiri?.alamatKerja ?: "-"
-            binding.tvAlamatIndo.text = dataDiri?.alamatIndo ?: "-"
-            binding.tvNoHp.apply {
+            binding.tvNama?.text = dataDiri?.nama ?: "-"
+            binding.tvJenisIdentitas?.text = dataDiri?.jenisIdentitas ?: "KTP"
+            binding.tvNoIdentitas?.text = dataDiri?.noIdentitas ?: "-"
+            binding.tvNegaraBekerja?.text = dataDiri?.negaraBekerja ?: "Hongkong"
+            binding.tvAlamatKerja?.text = dataDiri?.alamatKerja ?: "-"
+            binding.tvAlamatIndo?.text = dataDiri?.alamatIndo ?: "-"
+            binding.tvNoHp?.apply {
                 // Apply underline to No Hp
                 val content = SpannableString(dataDiri?.noHp ?: "-")
                 content.setSpan(UnderlineSpan(), 0, content.length, 0)

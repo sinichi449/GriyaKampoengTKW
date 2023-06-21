@@ -25,4 +25,5 @@
 
     <string name="open_drawer_desc">Open Drawer</string>
     <string name="close_drawer_desc">Close Drawer</string>
+    <string name="title_activity_compose">ComposeActivity</string>
 </resources>

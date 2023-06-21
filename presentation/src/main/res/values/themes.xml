@@ -70,10 +70,10 @@
         <item name="colorOnPrimary">@color/secondaryTextColor</item>
     </style>
 
-<!--    <style name="ShowcaseView.GriyaStyle" parent="ShowcaseView">-->
-<!--        <item name="sv_backgroundColor">#CC6200EE</item>-->
-<!--        <item name="sv_showcaseColor">@color/teal_200</item>-->
-<!--    </style>-->
+    <!--    <style name="ShowcaseView.GriyaStyle" parent="ShowcaseView">-->
+    <!--        <item name="sv_backgroundColor">#CC6200EE</item>-->
+    <!--        <item name="sv_showcaseColor">@color/teal_200</item>-->
+    <!--    </style>-->
 
     <style name="FadingAlertDialog">
         <item name="android:windowEnterAnimation">@anim/dialog_fade_in</item>
@@ -85,6 +85,7 @@
     <style name="OutlinedTextInputLayout" parent="Widget.Material3.TextInputLayout.OutlinedBox">
         <item name="theme">@style/Theme.GriyaKampoengTKW.Material3</item>
     </style>
+
     <style name="OutlineEditText" parent="Widget.Material3.TextInputEditText.OutlinedBox">
         <item name="theme">@style/Theme.GriyaKampoengTKW.Material3</item>
     </style>
@@ -92,6 +93,7 @@
     <style name="DenseOutlinedTextInputLayout" parent="Widget.Material3.TextInputLayout.OutlinedBox.Dense">
         <item name="theme">@style/Theme.GriyaKampoengTKW.Material3</item>
     </style>
+
     <style name="DenseOutlineEditText" parent="Widget.Material3.TextInputEditText.OutlinedBox.Dense">
         <item name="theme">@style/Theme.GriyaKampoengTKW.Material3</item>
     </style>
@@ -101,6 +103,7 @@
         <item name="backgroundTint">@color/secondaryColor</item>
         <item name="android:textColor">@color/secondaryTextColor</item>
     </style>
+
     <style name="TextDialogButton" parent="Widget.MaterialComponents.Button.TextButton">
         <item name="theme">@style/Theme.GriyaKampoengTKW</item>
         <item name="android:textColor">@color/abang</item>
@@ -134,10 +137,16 @@
         <item name="colorPrimary">@color/purple_700</item>
         <item name="colorSurface">@color/white</item>
         <item name="colorOnSurface">@color/black</item>
-        <item name="textAppearanceHeadline6">@style/TextAppearance.MaterialComponents.Headline6</item>
-        <item name="textAppearanceSubtitle2">@style/TextAppearance.MaterialComponents.Subtitle2</item>
+        <item name="textAppearanceHeadline6">@style/TextAppearance.MaterialComponents.Headline6
+        </item>
+        <item name="textAppearanceSubtitle2">@style/TextAppearance.MaterialComponents.Subtitle2
+        </item>
         <item name="textAppearanceBody2">@style/TextAppearance.MaterialComponents.Body2</item>
-        <item name="shapeAppearanceSmallComponent">@style/ShapeAppearance.MaterialComponents.SmallComponent</item>
+        <item name="shapeAppearanceSmallComponent">
+            @style/ShapeAppearance.MaterialComponents.SmallComponent
+        </item>
     </style>
+
+    <style name="Theme.GriyaKampung" parent="android:Theme.Material.Light.NoActionBar" />
 
 </resources>

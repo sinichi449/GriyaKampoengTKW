@@ -9,9 +9,14 @@
 
     <application>
         <activity
+            android:name=".activity.ComposeActivity"
+            android:exported="false"
+            android:label="@string/title_activity_compose"
+            android:theme="@style/Theme.GriyaKampung" />
+        <activity
             android:name=".activity.FormActivity"
             android:exported="false"
-            android:theme="@style/Theme.GriyaKampoengTKW.BlackWhite"/>
+            android:theme="@style/Theme.GriyaKampoengTKW.BlackWhite" />
         <activity
             android:name=".activity.DetailIndenBookingActivity"
             android:exported="false"
