@@ -3,9 +3,6 @@ package net.bagusekasaputra.griyakampoengtkw.presentation.ui.screen
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.wrapContentHeight
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -40,18 +37,16 @@ fun DataDiriDetailCard(
 
     ElevatedCard(modifier = Modifier
         .fillMaxWidth()
-        .wrapContentHeight()
         .then(modifier)) { 
-        LazyColumn(modifier = Modifier.fillMaxWidth()) {
-            itemsIndexed(items = dataDiriRows) { index, row ->
-                val evenIndex = index % 2 == 0
-                ItemDataDiriRow(
-                    header = row.first,
-                    content = row.second,
-                    isRowNama = index == 0,
-                    isEvenIndexed = evenIndex,
-                )
-            }
+        dataDiriRows.forEachIndexed { index, row ->
+            val evenIndex = index % 2 == 0
+
+            ItemDataDiriRow(
+                header = row.first,
+                content = row.second,
+                isRowNama = index == 0,
+                isEvenIndexed = evenIndex,
+            )
         }
     }
 }
@@ -90,7 +85,7 @@ fun ItemDataDiriRow(
         Text(
             text = content,
             style = if (isRowNama) {
-                MaterialTheme.typography.labelMedium
+                MaterialTheme.typography.titleSmall
             } else {
                 MaterialTheme.typography.bodyMedium
             },

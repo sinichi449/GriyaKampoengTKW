@@ -21,6 +21,14 @@ import android.widget.ArrayAdapter
 import android.widget.Toast
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
+import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.ViewCompositionStrategy
+import androidx.compose.ui.unit.dp
 import androidx.core.content.res.ResourcesCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
@@ -33,6 +41,8 @@ import net.bagusekasaputra.griyakampoengtkw.presentation.R
 import net.bagusekasaputra.griyakampoengtkw.presentation.activity.FullImageActivity
 import net.bagusekasaputra.griyakampoengtkw.presentation.databinding.DialogTambahDataDiriBinding
 import net.bagusekasaputra.griyakampoengtkw.presentation.databinding.FragmentDataDiriBinding
+import net.bagusekasaputra.griyakampoengtkw.presentation.ui.screen.DataDiriDetailCard
+import net.bagusekasaputra.griyakampoengtkw.presentation.ui.theme.GriyaKampoengTkwTheme
 import net.bagusekasaputra.griyakampoengtkw.presentation.util.Consts
 import net.bagusekasaputra.griyakampoengtkw.presentation.util.DialogUtil
 import net.bagusekasaputra.griyakampoengtkw.presentation.util.GriyaNodes
@@ -112,6 +122,22 @@ class DataDiriFragment : Fragment() {
     ): View {
         // Inflate the layout for this fragment
         binding = FragmentDataDiriBinding.inflate(inflater, container, false)
+
+        binding.composeViewDataDiriDetailColumn?.apply {
+            setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnLifecycleDestroyed(lifecycle))
+            setContent {
+                GriyaKampoengTkwTheme {
+                    Surface(modifier = Modifier.fillMaxWidth(), color = MaterialTheme.colorScheme.background) {
+                        val dataDiri = viewModel.dataDiriLive.observeAsState()
+
+                        DataDiriDetailCard(
+                            dataDiri = if (dataDiri.value == null) DataDiri.EMPTY() else dataDiri.value!!,
+                            modifier = Modifier.padding(16.dp)
+                        )
+                    }
+                }
+            }
+        }
 
         arguments?.getString("kavling_kode").let { args ->
             args?.let {
