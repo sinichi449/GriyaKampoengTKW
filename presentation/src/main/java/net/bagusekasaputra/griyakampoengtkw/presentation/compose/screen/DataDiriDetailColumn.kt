@@ -16,11 +16,6 @@ import androidx.constraintlayout.compose.Dimension
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.DataDiri
 
 @Composable
-fun DataDiriDetailColumn() {
-
-}
-
-@Composable
 fun DataDiriDetailCard(
     modifier: Modifier = Modifier,
     dataDiri: DataDiri = DataDiri.EMPTY(),
@@ -59,8 +54,8 @@ fun ItemDataDiriRow(
     isRowNama: Boolean = false, // If true, then use labelMedium, else use bodyMedium style.
     isEvenIndexed: Boolean = false,
 ) {
-    val oddBackground = MaterialTheme.colorScheme.surfaceVariant
-    val evenBackground = MaterialTheme.colorScheme.surface
+    val oddBackground = MaterialTheme.colorScheme.surface
+    val evenBackground = MaterialTheme.colorScheme.surfaceVariant
 
     ConstraintLayout(modifier = Modifier
         .background(if (isEvenIndexed) evenBackground else oddBackground)
