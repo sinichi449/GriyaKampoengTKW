@@ -23,7 +23,7 @@ class ActionPembayaranBottomSheetDialog : ActionBottomSheetDialog() {
                 BundleCompat.getParcelable(it, EXTRAS_PEMBAYARAN, PembayaranPercelable::class.java)
             }?.item
 
-            return "$kavling - ${pembayaran?.termin}"
+            return "${pembayaran?.termin}"
         }
     override val menuDialogs: List<ActionMenusDialog>
         get() {

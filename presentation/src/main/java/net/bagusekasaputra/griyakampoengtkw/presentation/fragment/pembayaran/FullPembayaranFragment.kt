@@ -29,7 +29,7 @@ class FullPembayaranFragment : Fragment() {
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
         binding = FragmentFullPembayaranBinding.inflate(inflater, container, false)
 
         return binding.root
@@ -96,54 +96,36 @@ class FullPembayaranFragment : Fragment() {
                 cellView: RecyclerView.ViewHolder,
                 column: Int,
                 row: Int
-            ) {
-
-            }
+            ) {}
 
             override fun onCellLongPressed(
                 cellView: RecyclerView.ViewHolder,
                 column: Int,
                 row: Int
-            ) {
-
-            }
+            ) {}
 
             override fun onColumnHeaderClicked(
                 columnHeaderView: RecyclerView.ViewHolder,
                 column: Int
-            ) {
-
-            }
+            ) {}
 
             override fun onColumnHeaderDoubleClicked(
                 columnHeaderView: RecyclerView.ViewHolder,
                 column: Int
-            ) {
-
-            }
+            ) {}
 
             override fun onColumnHeaderLongPressed(
                 columnHeaderView: RecyclerView.ViewHolder,
                 column: Int
-            ) {
-
-            }
+            ) {}
 
             override fun onRowHeaderClicked(rowHeaderView: RecyclerView.ViewHolder, row: Int) {
-//                val actionDialog = ActionPembayaranStandardBottomSheetDialogLegacy()
-//                val positionBundle = bundleOf(
-//                    ActionPembayaranStandardBottomSheetDialogLegacy.EXTRAS_INDEX_PEMBAYARAN_POSITION
-//                            to row,
-//                )
-//                actionDialog.arguments = positionBundle
-//
-//                actionDialog.show(childFragmentManager, null)
-
-                if (pembayarans.isEmpty()) {
+                val pembayaranList = viewModel.fullPembayaransLive.value
+                if (pembayaranList.isNullOrEmpty()) {
                     Snackbar.make(binding.root, "Pembayaran Masih Kosong!", Snackbar.LENGTH_SHORT)
                         .show()
                 } else {
-                    val pembayaran = pembayarans[row]
+                    val pembayaran = pembayaranList[row]
                     val actionDialog = ActionPembayaranBottomSheetDialog()
                     actionDialog.arguments = ActionPembayaranBottomSheetDialog.PembayaranPercelable
                         .createPembayaranBundle(viewModel.currentKavlingKode!!, pembayaran)
@@ -155,13 +137,9 @@ class FullPembayaranFragment : Fragment() {
             override fun onRowHeaderDoubleClicked(
                 rowHeaderView: RecyclerView.ViewHolder,
                 row: Int
-            ) {
+            ) {}
 
-            }
-
-            override fun onRowHeaderLongPressed(rowHeaderView: RecyclerView.ViewHolder, row: Int) {
-
-            }
+            override fun onRowHeaderLongPressed(rowHeaderView: RecyclerView.ViewHolder, row: Int) {}
         }
 
         FullPembayaranTableWrapper(binding.tableFormPembayaran, pembayarans)
