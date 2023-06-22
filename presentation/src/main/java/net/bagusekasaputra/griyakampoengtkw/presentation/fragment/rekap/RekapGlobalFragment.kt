@@ -22,8 +22,9 @@ import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import net.bagusekasaputra.griyakampoengtkw.domain.DateUtil.toSlashedString
-import net.bagusekasaputra.griyakampoengtkw.domain.misc.ProgressState
+import net.bagusekasaputra.griyakampoengtkw.domain.NumberUtil.numericToString
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.rekap.RekapGlobal
+import net.bagusekasaputra.griyakampoengtkw.domain.misc.ProgressState
 import net.bagusekasaputra.griyakampoengtkw.presentation.databinding.FragmentRekapGlobalBinding
 import net.bagusekasaputra.griyakampoengtkw.presentation.databinding.LayoutWarningAndLoadingRekapBinding
 import net.bagusekasaputra.griyakampoengtkw.presentation.tableview.base.CellItem
@@ -38,6 +39,7 @@ import net.bagusekasaputra.griyakampoengtkw.presentation.tableview.rekapGlobal.R
 import net.bagusekasaputra.griyakampoengtkw.presentation.tableview.rekapGlobal.RgColumnHeader
 import net.bagusekasaputra.griyakampoengtkw.presentation.tableview.rekapGlobal.RgRowHeader
 import net.bagusekasaputra.griyakampoengtkw.presentation.viewmodel.RekapViewModel
+import java.util.Calendar
 
 @AndroidEntryPoint
 class RekapGlobalFragment : Fragment() {
@@ -73,11 +75,11 @@ class RekapGlobalFragment : Fragment() {
                     val cells = mutableListOf<CellItem>()
 
                     cells.add(CellItem(it.noKavling, it.namaCostumer))
-                    cells.add(CellItem(it.noKavling, it.tanggalPembelian?.toSlashedString() ?: "-"))
-                    cells.add(CellItem(it.noKavling, it.parsedHarga))
-                    cells.add(CellItem(it.noKavling, it.parsedJumlahUangMasuk))
-                    cells.add(CellItem(it.noKavling, it.parsedSisaPembayaran))
-                    cells.add(CellItem(it.noKavling, it.parsedPersentase))
+                    cells.add(CellItem(it.noKavling, it.tanggalPembelian?.time))
+                    cells.add(CellItem(it.noKavling, it.harga))
+                    cells.add(CellItem(it.noKavling, it.jumlahUangMasuk))
+                    cells.add(CellItem(it.noKavling, it.sisaPembayaran))
+                    cells.add(CellItem(it.noKavling, it.persentase))
 
                     add(cells)
                 }
@@ -159,6 +161,30 @@ class RekapGlobalFragment : Fragment() {
             .useDoubleCorner(DoubleRowHeaderConfigurator("Kavling", cornerSeparator))
             .setWidthColumnHeaders(columnHeaderWidths)
             .setDataProvider(dataProviderTableView)
+            .setOnCellBinding { cellViewHolder, cellItem, column, row ->
+                with(cellViewHolder) {
+                    when (column) {
+                        COLUMN_TANGGAL_PEMBELIAN -> {
+                            val tanggal = Calendar.getInstance().apply {
+                                timeInMillis = (cellItem?.data as Long?) ?: 1L
+                            }.time.toSlashedString()
+
+                            tvCell.text = tanggal
+                        }
+                        COLUMN_HARGA, COLUMN_JUMLAH_UANG_MASUK,
+                            COLUMN_SISA_PEMBAYARAN -> {
+                            val numberInRupiah = (cellItem?.data as Long?) ?: 0L
+
+                            tvCell.text = numberInRupiah.numericToString()
+                        }
+                        COLUMN_PERSENTASE -> {
+                            val persentase = (cellItem?.data as Double?) ?: 0.0
+
+                            tvCell.text = "${persentase}%"
+                        }
+                    }
+                }
+            }
 
         genericTableView?.create()
     }
