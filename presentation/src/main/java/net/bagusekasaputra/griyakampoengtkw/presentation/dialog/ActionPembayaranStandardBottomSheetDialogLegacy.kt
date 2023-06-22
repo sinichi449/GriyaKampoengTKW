@@ -30,7 +30,7 @@ import net.bagusekasaputra.griyakampoengtkw.presentation.viewmodel.PembayaranSyn
 import javax.inject.Inject
 
 @AndroidEntryPoint
-class ActionPembayaranStandardBottomSheetDialog: BottomSheetDialogFragment() {
+class ActionPembayaranStandardBottomSheetDialogLegacy: BottomSheetDialogFragment() {
 
     private lateinit var binding: DialogActionsItemPembayaranBinding
     private val viewModel by activityViewModels<FormPembayaranViewModel>()
@@ -154,21 +154,21 @@ class ActionPembayaranStandardBottomSheetDialog: BottomSheetDialogFragment() {
 
                     viewModel.insertAmbilKuitansi(standardAmbilKuitansi,
                         onProgress = {
-                            this@ActionPembayaranStandardBottomSheetDialog.isCancelable = false
+                            this@ActionPembayaranStandardBottomSheetDialogLegacy.isCancelable = false
                             isEnabled = false
 
                             visibility = View.GONE
                             binding.progressAmbilKuitansi.visibility = View.VISIBLE
                         },
                         onSuccess = {
-                            this@ActionPembayaranStandardBottomSheetDialog.isCancelable = true
+                            this@ActionPembayaranStandardBottomSheetDialogLegacy.isCancelable = true
                             isEnabled = true
 
                             visibility = View.VISIBLE
                             binding.progressAmbilKuitansi.visibility = View.GONE
                         },
                         onFailure = {
-                            this@ActionPembayaranStandardBottomSheetDialog.dismiss()
+                            this@ActionPembayaranStandardBottomSheetDialogLegacy.dismiss()
 
                             Toast.makeText(requireContext(), it, Toast.LENGTH_LONG).show()
                         }
@@ -214,7 +214,7 @@ class ActionPembayaranStandardBottomSheetDialog: BottomSheetDialogFragment() {
 
                                     Toast.makeText(requireContext(), msg, Toast.LENGTH_SHORT).show()
 
-                                    this@ActionPembayaranStandardBottomSheetDialog.dismiss()
+                                    this@ActionPembayaranStandardBottomSheetDialogLegacy.dismiss()
 
                                     viewModel.requestSync(PembayaranSyncRequest.TABEL_PEMBAYARAN)
                                 }
@@ -276,14 +276,14 @@ class ActionPembayaranStandardBottomSheetDialog: BottomSheetDialogFragment() {
                             Toast.makeText(requireContext(), "Berhasil menghapus pembayaran!", Toast.LENGTH_SHORT).show()
                             dialogHapus.dismiss()
 
-                            this@ActionPembayaranStandardBottomSheetDialog.dismiss()
+                            this@ActionPembayaranStandardBottomSheetDialogLegacy.dismiss()
 
                             viewModel.requestSync(PembayaranSyncRequest.TABEL_PEMBAYARAN)
                         },
                         onFailure = {
                             Toast.makeText(requireContext(), it, Toast.LENGTH_LONG).show()
 
-                            this@ActionPembayaranStandardBottomSheetDialog.dismiss()
+                            this@ActionPembayaranStandardBottomSheetDialogLegacy.dismiss()
                         }
                     )
                 }
