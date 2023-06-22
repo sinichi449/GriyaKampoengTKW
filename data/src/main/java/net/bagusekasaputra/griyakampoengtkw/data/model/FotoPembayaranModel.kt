@@ -24,7 +24,7 @@ data class FotoPembayaranModel(
         fun createKavlingFolderIfNotExist(externalFilesDir: File?, kavlingKode: String) {
             File(externalFilesDir, DST_FOLDER).let { rootDir ->
                 File(rootDir, kavlingKode).let { targetDir ->
-                    if (targetDir.exists().not()) targetDir.mkdir()
+                    if (targetDir.exists().not()) targetDir.mkdirs()
                 }
             }
         }

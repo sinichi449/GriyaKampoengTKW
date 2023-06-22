@@ -18,17 +18,27 @@ import net.bagusekasaputra.griyakampoengtkw.data.remote.FirebaseNodes
 import java.io.File
 
 class StorageFotoPembayaranDataSource(
-    storageReference: StorageReference,
+    private val storageReference: StorageReference,
     private val externalFilesDir: File?,
 ): RemoteFotoPembayaranDataSource {
 
     private val fotoPembayaranRef = storageReference.child(FirebaseNodes.IMAGES_FOTO_PEMBAYARAN)
+
+    private fun referenceFromUrl(pembayaranImageRef: StorageReference, model: FotoPembayaranModel): StorageReference {
+        val url = buildString {
+            append("${pembayaranImageRef}/")
+            append(model.getKavlingAndFilePath())
+        }
+        return storageReference.storage.getReferenceFromUrl(url)
+    }
 
     init {
         // Create directory for foto pembayaran
         val dstDir = File(externalFilesDir, FotoPembayaranModel.DST_FOLDER)
         if (!dstDir.exists()) dstDir.mkdir()
     }
+
+
 
     override suspend fun get(kavlingKode: String, termin: String): FotoPembayaranModel? {
         return callbackFlow {
@@ -37,6 +47,7 @@ class StorageFotoPembayaranDataSource(
             val dstFile = File(externalFilesDir, FotoPembayaranModel.DST_FOLDER).let { rootDir ->
                 File(rootDir, filename)
             }
+            FotoPembayaranModel.createKavlingFolderIfNotExist(externalFilesDir, kavlingKode)
 
             Log.d("DEBUG_ME", "StorageFotoPembayaran->get(): Saving \"$filename\" to ${dstFile.toUri()}")
 
@@ -64,7 +75,10 @@ class StorageFotoPembayaranDataSource(
                 Log.d("DEBUG_ME", "StorageFotoPembayaran->get(): Failed to download \"$filename\": ${it.message}")
                 trySendBlocking(null)
             }
-            val downloadFotoPembayaranTask = fotoPembayaranRef.child(filename).getFile(dstFile)
+
+            val terminReference = fotoPembayaranRef.child(model.getKavlingAndFilePath())
+            Log.d("FOTO_PEMBAYARAN", "Reference is $terminReference")
+            val downloadFotoPembayaranTask = terminReference.getFile(dstFile)
 
             downloadFotoPembayaranTask
                 .addOnProgressListener(onProgressListener)
