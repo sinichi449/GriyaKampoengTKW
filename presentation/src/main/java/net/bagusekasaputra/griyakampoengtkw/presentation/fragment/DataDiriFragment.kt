@@ -41,8 +41,8 @@ import net.bagusekasaputra.griyakampoengtkw.presentation.R
 import net.bagusekasaputra.griyakampoengtkw.presentation.activity.FullImageActivity
 import net.bagusekasaputra.griyakampoengtkw.presentation.databinding.DialogTambahDataDiriBinding
 import net.bagusekasaputra.griyakampoengtkw.presentation.databinding.FragmentDataDiriBinding
-import net.bagusekasaputra.griyakampoengtkw.presentation.ui.screen.DataDiriDetailCard
-import net.bagusekasaputra.griyakampoengtkw.presentation.ui.theme.GriyaKampoengTkwTheme
+import net.bagusekasaputra.griyakampoengtkw.presentation.compose.screen.DataDiriDetailCard
+import net.bagusekasaputra.griyakampoengtkw.presentation.compose.theme.GriyaKampoengTkwTheme
 import net.bagusekasaputra.griyakampoengtkw.presentation.util.Consts
 import net.bagusekasaputra.griyakampoengtkw.presentation.util.DialogUtil
 import net.bagusekasaputra.griyakampoengtkw.presentation.util.GriyaNodes

@@ -1,4 +1,4 @@
-package net.bagusekasaputra.griyakampoengtkw.presentation.ui.screen
+package net.bagusekasaputra.griyakampoengtkw.presentation.compose.screen
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.fillMaxWidth

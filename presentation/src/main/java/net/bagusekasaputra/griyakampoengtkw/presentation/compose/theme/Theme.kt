@@ -1,4 +1,4 @@
-package net.bagusekasaputra.griyakampoengtkw.presentation.ui.theme
+package net.bagusekasaputra.griyakampoengtkw.presentation.compose.theme
 
 import android.app.Activity
 import android.os.Build
