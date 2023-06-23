@@ -15,10 +15,12 @@ import net.bagusekasaputra.griyakampoengtkw.domain.NumberUtil.numericToString
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.BaselinePembayaran
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.pembayaran.BulanAngsuran
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.pembayaran.Pembayaran
+import net.bagusekasaputra.griyakampoengtkw.presentation.R
 import net.bagusekasaputra.griyakampoengtkw.presentation.databinding.FragmentFullPembayaranBinding
 import net.bagusekasaputra.griyakampoengtkw.presentation.tableview.base.CellItem
 import net.bagusekasaputra.griyakampoengtkw.presentation.tableview.base.ColumnHeader
 import net.bagusekasaputra.griyakampoengtkw.presentation.tableview.base.DoubleRowHeaderConfigurator
+import net.bagusekasaputra.griyakampoengtkw.presentation.tableview.base.DoubleRowHeaderViewHolder
 import net.bagusekasaputra.griyakampoengtkw.presentation.tableview.base.GenericTableView
 import net.bagusekasaputra.griyakampoengtkw.presentation.tableview.base.RowHeader
 import net.bagusekasaputra.griyakampoengtkw.presentation.tableview.base.TableViewDataProvider
@@ -41,6 +43,37 @@ class FullPembayaranFragment : Fragment() {
         const val COLUMN_KETERANGAN_PROGRESS = 5
 
         const val ROW_SEPARATOR = "<>"
+        const val ROW_NOMOR = 0
+        const val ROW_TERMIN = 1
+        const val ROW_STATUS_FOTO_PEMBAYARAN = 2
+        const val ROW_STATUS_AMBIL_KUITANSI = 3
+
+        data class RowHeaderData(
+            val nomor: Int,
+            val termin: String,
+            val sudahIsiFoto: Boolean,
+            val sudahAmbilKuitansi: Boolean,
+        ) {
+            fun asString(separator: String) = buildString {
+                append(nomor).append(separator)
+                append(termin).append(separator)
+                append(sudahIsiFoto).append(separator)
+                append(sudahAmbilKuitansi).append(separator)
+            }
+
+            companion object {
+                fun fromString(str: String, separator: String): RowHeaderData {
+                    val split = str.split(separator)
+
+                    return RowHeaderData(
+                        nomor = split[ROW_NOMOR].toInt(),
+                        termin = split[ROW_TERMIN],
+                        sudahIsiFoto = split[ROW_STATUS_FOTO_PEMBAYARAN].toBoolean(),
+                        sudahAmbilKuitansi = split[ROW_STATUS_AMBIL_KUITANSI].toBoolean()
+                    )
+                }
+            }
+        }
     }
 
     private val tableDataProvider = object : TableViewDataProvider<Pembayaran> {
@@ -65,10 +98,14 @@ class FullPembayaranFragment : Fragment() {
             return buildList {
                 pembayaranList.forEachIndexed { index, pembayaran ->
                     val rowId = getRowAndCellId(index)
-                    val termin = pembayaran.termin
-                    val rowData = "${rowId}<>${termin}"
+                    val rowHeaderData = RowHeaderData(
+                        nomor = rowId.toInt(),
+                        termin = pembayaran.termin,
+                        sudahIsiFoto = pembayaran.sudahIsiFotoPembayaran,
+                        sudahAmbilKuitansi = pembayaran.sudahAmbilKuitansi,
+                    )
 
-                    add(RowHeader(rowId = rowId, data = rowData))
+                    add(RowHeader(rowId = rowId, data = rowHeaderData.asString(ROW_SEPARATOR)))
                 }
             }
         }
@@ -156,6 +193,28 @@ class FullPembayaranFragment : Fragment() {
 
         GenericTableView(binding.tableFormPembayaran, pembayarans)
             .setDataProvider(tableDataProvider)
+            .setOnRowHeaderBinding { viewHolder, item, row ->
+                val rowHeaderData = item?.data?.let {
+                    RowHeaderData.fromString(it, ROW_SEPARATOR)
+                }
+                if (rowHeaderData != null) {
+                    with(viewHolder as DoubleRowHeaderViewHolder) {
+                        bgColour = if (rowHeaderData.sudahIsiFoto) {
+                            R.color.table_selected_colour
+                        } else {
+                            R.color.table_unselected_colour
+                        }
+
+                        val termin = buildString {
+                            append(rowHeaderData.termin)
+                            if (rowHeaderData.sudahAmbilKuitansi) {
+                                append(" {*}")
+                            }
+                        }
+                        tvRowHeader.text = termin
+                    }
+                }
+            }
             .setOnCellBinding { cellViewHolder, cellItem, column, _ ->
                 with(cellViewHolder) {
                     when (column) {
