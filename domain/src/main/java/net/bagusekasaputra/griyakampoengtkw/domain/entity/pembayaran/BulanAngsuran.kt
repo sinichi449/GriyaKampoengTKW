@@ -70,6 +70,17 @@ data class BulanAngsuran(
                 tahun = tahunIni,
             )
         }
+
+        fun fromDate(date: Date): BulanAngsuran {
+            val calendar = Calendar.getInstance().apply {
+                time = date
+            }.normalize()
+
+            val bulan = calendar.get(Calendar.MONTH) + 1
+            val tahun = calendar.get(Calendar.YEAR)
+
+            return BulanAngsuran(bulan, tahun)
+        }
     }
 
 }

@@ -1,30 +1,97 @@
 package net.bagusekasaputra.griyakampoengtkw.presentation.fragment.pembayaran
 
 import android.os.Bundle
+import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
-import androidx.lifecycle.lifecycleScope
-import androidx.recyclerview.widget.RecyclerView
-import com.evrencoskun.tableview.listener.ITableViewListener
-import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import dagger.hilt.android.AndroidEntryPoint
+import net.bagusekasaputra.griyakampoengtkw.domain.DateUtil.toSlashedString
 import net.bagusekasaputra.griyakampoengtkw.domain.NumberUtil
+import net.bagusekasaputra.griyakampoengtkw.domain.NumberUtil.numericToLong
+import net.bagusekasaputra.griyakampoengtkw.domain.NumberUtil.numericToString
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.BaselinePembayaran
+import net.bagusekasaputra.griyakampoengtkw.domain.entity.pembayaran.BulanAngsuran
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.pembayaran.Pembayaran
 import net.bagusekasaputra.griyakampoengtkw.presentation.databinding.FragmentFullPembayaranBinding
-import net.bagusekasaputra.griyakampoengtkw.presentation.dialog.ActionPembayaranStandardBottomSheetDialogLegacy
-import net.bagusekasaputra.griyakampoengtkw.presentation.tableview.formPembayaran.FullPembayaranTableWrapper
+import net.bagusekasaputra.griyakampoengtkw.presentation.tableview.base.CellItem
+import net.bagusekasaputra.griyakampoengtkw.presentation.tableview.base.ColumnHeader
+import net.bagusekasaputra.griyakampoengtkw.presentation.tableview.base.DoubleRowHeaderConfigurator
+import net.bagusekasaputra.griyakampoengtkw.presentation.tableview.base.GenericTableView
+import net.bagusekasaputra.griyakampoengtkw.presentation.tableview.base.RowHeader
+import net.bagusekasaputra.griyakampoengtkw.presentation.tableview.base.TableViewDataProvider
+import net.bagusekasaputra.griyakampoengtkw.presentation.toDate
 import net.bagusekasaputra.griyakampoengtkw.presentation.viewmodel.FormPembayaranViewModel
+import java.util.Date
 
 @AndroidEntryPoint
 class FullPembayaranFragment : Fragment() {
 
     private lateinit var binding: FragmentFullPembayaranBinding
     private val viewModel by activityViewModels<FormPembayaranViewModel>()
+
+    companion object {
+        const val COLUMN_INVOICE = 0
+        const val COLUMN_TANGGAL = 1
+        const val COLUMN_UANG_DIBAYAR = 2
+        const val COLUMN_TOTAL = 3
+        const val COLUMN_PERSENTASE = 4
+        const val COLUMN_KETERANGAN_PROGRESS = 5
+
+        const val ROW_SEPARATOR = "<>"
+    }
+
+    private val tableDataProvider = object : TableViewDataProvider<Pembayaran> {
+        fun getRowAndCellId(index: Int): String {
+            return (index + 1).toString()
+        }
+
+        override fun getColumnHeaders(data: Collection<Pembayaran>): List<ColumnHeader> {
+            return buildList {
+                add(ColumnHeader("Invoice"))
+                add(ColumnHeader("Tanggal"))
+                add(ColumnHeader("Uang Dibayar"))
+                add(ColumnHeader("Total"))
+                add(ColumnHeader("Persentase"))
+                add(ColumnHeader("Keterangan"))
+            }
+        }
+
+        override fun getRowHeaders(data: Collection<Pembayaran>): List<RowHeader> {
+            val pembayaranList = data.toMutableList()
+
+            return buildList {
+                pembayaranList.forEachIndexed { index, pembayaran ->
+                    val rowId = getRowAndCellId(index)
+                    val termin = pembayaran.termin
+                    val rowData = "${rowId}<>${termin}"
+
+                    add(RowHeader(rowId = rowId, data = rowData))
+                }
+            }
+        }
+
+        override fun getCellItems(data: Collection<Pembayaran>): List<List<CellItem>> {
+            val pembayaranList = data.toMutableList()
+            return buildList {
+                pembayaranList.forEachIndexed { index, pembayaran ->
+                    val cellId = getRowAndCellId(index)
+                    val cell = mutableListOf<CellItem>()
+
+                    cell.add(CellItem(cellId = cellId, data = pembayaran.bulanAngsuran.date))
+                    cell.add(CellItem(cellId = cellId, data = pembayaran.tanggal.toDate()))
+                    cell.add(CellItem(cellId = cellId, data = pembayaran.jumlahUangDibayar.numericToLong()))
+                    cell.add(CellItem(cellId = cellId, data = pembayaran.totalUangMasuk.numericToLong()))
+                    cell.add(CellItem(cellId = cellId, data = pembayaran.presentase))
+                    cell.add(CellItem(cellId = cellId, data = pembayaran.keterangan))
+
+                    add(cell)
+                }
+            }
+        }
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -78,82 +145,56 @@ class FullPembayaranFragment : Fragment() {
     }
 
     private fun setTablePembayaran(pembayarans: List<Pembayaran>) {
-        val listener = object : ITableViewListener {
-            override fun onCellClicked(cellView: RecyclerView.ViewHolder, column: Int, row: Int) {
-                if (column == FullPembayaranTableWrapper.KETERANGAN_PROGRESS) {
-                    viewModel.fullPembayaransLive.value?.also {
-                        val pembayaran = it[row]
-                        MaterialAlertDialogBuilder(requireContext())
-                            .setTitle("${viewModel.currentKavlingKode} - ${pembayaran.termin}")
-                            .setMessage(pembayaran.keterangan)
-                            .create()
-                            .show()
+        val widthColumnHeaders = listOf(
+            Pair(COLUMN_INVOICE, 250),
+            Pair(COLUMN_TANGGAL, 250),
+            Pair(COLUMN_UANG_DIBAYAR, 350),
+            Pair(COLUMN_TOTAL, 350),
+            Pair(COLUMN_PERSENTASE, 300),
+            Pair(COLUMN_KETERANGAN_PROGRESS, 500),
+        )
+
+        GenericTableView(binding.tableFormPembayaran, pembayarans)
+            .setDataProvider(tableDataProvider)
+            .setOnCellBinding { cellViewHolder, cellItem, column, _ ->
+                with(cellViewHolder) {
+                    when (column) {
+                        COLUMN_INVOICE -> {
+                            val invoice = (cellItem?.data as Date?)?.let {
+                                BulanAngsuran.fromDate(it).bulanAndTahun
+                            } ?: "NULL"
+
+                            tvCell.text = invoice
+                        }
+                        COLUMN_TANGGAL -> {
+                            val tanggalPembayaran = (cellItem?.data as Date?)?.toSlashedString() ?: "NULL"
+
+                            tvCell.text = tanggalPembayaran
+                        }
+                        COLUMN_UANG_DIBAYAR, COLUMN_TOTAL -> {
+                            val uang = (cellItem?.data as Long?)?.numericToString() ?: "0"
+
+                            tvCell.text = uang
+                        }
+                        COLUMN_PERSENTASE -> {
+                            val persentase = (cellItem?.data as Double?)?.run {
+                                "${this}%"
+                            } ?: "0%"
+
+                            tvCell.text = persentase
+                        }
+                        COLUMN_KETERANGAN_PROGRESS -> {
+                            tvCell.gravity = Gravity.START
+                        }
                     }
                 }
             }
-
-            override fun onCellDoubleClicked(
-                cellView: RecyclerView.ViewHolder,
-                column: Int,
-                row: Int
-            ) {}
-
-            override fun onCellLongPressed(
-                cellView: RecyclerView.ViewHolder,
-                column: Int,
-                row: Int
-            ) {}
-
-            override fun onColumnHeaderClicked(
-                columnHeaderView: RecyclerView.ViewHolder,
-                column: Int
-            ) {}
-
-            override fun onColumnHeaderDoubleClicked(
-                columnHeaderView: RecyclerView.ViewHolder,
-                column: Int
-            ) {}
-
-            override fun onColumnHeaderLongPressed(
-                columnHeaderView: RecyclerView.ViewHolder,
-                column: Int
-            ) {}
-
-            override fun onRowHeaderClicked(rowHeaderView: RecyclerView.ViewHolder, row: Int) {
-                val actionDialog = ActionPembayaranStandardBottomSheetDialogLegacy()
-                val positionBundle = bundleOf(
-                    ActionPembayaranStandardBottomSheetDialogLegacy.EXTRAS_INDEX_PEMBAYARAN_POSITION
-                            to row,
-                )
-                actionDialog.arguments = positionBundle
-
-                actionDialog.show(childFragmentManager, null)
-
-//                val pembayaranList = viewModel.fullPembayaransLive.value
-//                if (pembayaranList.isNullOrEmpty()) {
-//                    Snackbar.make(binding.root, "Pembayaran Masih Kosong!", Snackbar.LENGTH_SHORT)
-//                        .show()
-//                } else {
-//                    val pembayaran = pembayaranList[row]
-//                    val actionDialog = ActionPembayaranBottomSheetDialog()
-//                    actionDialog.arguments = ActionPembayaranBottomSheetDialog.PembayaranPercelable
-//                        .createPembayaranBundle(viewModel.currentKavlingKode!!, pembayaran)
-//
-//                    actionDialog.show(childFragmentManager, null)
-//                }
-            }
-
-            override fun onRowHeaderDoubleClicked(
-                rowHeaderView: RecyclerView.ViewHolder,
-                row: Int
-            ) {}
-
-            override fun onRowHeaderLongPressed(rowHeaderView: RecyclerView.ViewHolder, row: Int) {}
-        }
-
-        FullPembayaranTableWrapper(binding.tableFormPembayaran, pembayarans)
-            .setTableListener(listener)
-            .createTable(lifecycleScope)
+            .setWidthColumnHeaders(widthColumnHeaders)
+            .useDoubleCorner(DoubleRowHeaderConfigurator(
+                cornerViewTitle = "Termin",
+                cornerTextSeparator = ROW_SEPARATOR
+            ))
+            .create()
     }
 
     private fun setupFullScreen(
