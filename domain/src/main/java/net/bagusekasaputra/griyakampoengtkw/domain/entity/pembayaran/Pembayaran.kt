@@ -334,6 +334,20 @@ data class Pembayaran(
             }
         }
 
+        fun List<Pembayaran>.groupByTermins(jenisTermins: List<String>): Map<String, List<Pembayaran>> {
+            fun getListByTermin(pembayaranList: List<Pembayaran>, jenisTermin: String): List<Pembayaran> {
+                return pembayaranList.filter {
+                    it.getJenisTermin() == jenisTermin
+                }
+            }
+
+            return buildMap {
+                jenisTermins.forEach { termin ->
+                    put(termin, getListByTermin(this@groupByTermins, termin))
+                }
+            }
+        }
+
         /**
          * Extension for [sortPembayaran].
          */

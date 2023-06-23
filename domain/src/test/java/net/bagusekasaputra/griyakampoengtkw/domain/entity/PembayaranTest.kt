@@ -16,6 +16,7 @@ import net.bagusekasaputra.griyakampoengtkw.domain.entity.pembayaran.BulanAngsur
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.pembayaran.Pembayaran
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.pembayaran.Pembayaran.Companion.FILTER_USING_BULAN_ANGSURAN
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.pembayaran.Pembayaran.Companion.filterPeriode
+import net.bagusekasaputra.griyakampoengtkw.domain.entity.pembayaran.Pembayaran.Companion.groupByTermins
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.pembayaran.Pembayaran.Companion.sortByTermin
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.pembayaran.Pembayaran.Companion.totalUangMasuk
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.rekap.PeriodeRekap
@@ -316,5 +317,30 @@ class PembayaranTest {
         val shuffledUangMasuk = shuffledPembayaran?.totalUangMasuk()
 
         Assert.assertEquals(sortedUangMasuk, shuffledUangMasuk)
+    }
+
+    @Test
+    fun groupByJenisTerminTest() = runTest {
+        val kavling = "A11"
+        val pembayaranList = pembayaranRepository.getAllPembayaran(kavling, DEFAULT_DATA_MODE)
+            .first().getOrThrow()?.toMutableList()
+
+        // Above `pembayaranList` has no `Termin`. Add manually here.
+        pembayaranList?.add(
+            Pembayaran(
+                termin = "Termin 1",
+                tanggal = "23/06/2023",
+                jumlahUangDibayar = "7,500,000",
+                keterangan = "-",
+                timeMillis = System.currentTimeMillis(),
+            )
+        )
+
+        // `pembayaranList` has 1 ITJ, 8 DP, and 1 Termin
+        val terminList = listOf("ITJ", "DP", "Termin")
+        val grouped = pembayaranList?.groupByTermins(terminList)
+        Assert.assertEquals(grouped?.get("ITJ")?.size, 1)
+        Assert.assertEquals(grouped?.get("DP")?.size, 8)
+        Assert.assertEquals(grouped?.get("Termin")?.size, 1)
     }
 }
