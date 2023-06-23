@@ -13,10 +13,10 @@ class FormInputViewModel @Inject constructor(
 
 ): ViewModel() {
 
-    private val _pembayaranSelectedJenisTermin = MutableStateFlow<Pembayaran.JenisPembayaran?>(null)
+    private val _pembayaranSelectedJenisTermin = MutableStateFlow<Pembayaran.JenisTermin?>(null)
     val pembayaranSelectedJenisTermin = _pembayaranSelectedJenisTermin.asStateFlow()
 
-    fun setSelectedJenisTermin(jenisTermin: Pembayaran.JenisPembayaran) {
+    fun setSelectedJenisTermin(jenisTermin: Pembayaran.JenisTermin) {
         _pembayaranSelectedJenisTermin.update { jenisTermin }
     }
 

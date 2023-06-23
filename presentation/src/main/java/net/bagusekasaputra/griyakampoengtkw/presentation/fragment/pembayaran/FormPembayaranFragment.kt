@@ -597,7 +597,7 @@ class FormPembayaranFragment : Fragment() {
             dialogBinding.tilTermin.isEnabled = true
 
             dialogBinding.edtTermin.setText(
-                Pembayaran.nextPembayaranSequence(pembayaranList, Pembayaran.JenisPembayaran.ITJ)
+                Pembayaran.nextPembayaranSequence(pembayaranList, Pembayaran.JenisTermin.ITJ)
             )
 //            dialogBinding.tilTermin.hint = "Masukkan urutan ITJ"
         }
@@ -606,7 +606,7 @@ class FormPembayaranFragment : Fragment() {
             dialogBinding.tilTermin.isEnabled = true
 
             dialogBinding.edtTermin.setText(
-                Pembayaran.nextPembayaranSequence(pembayaranList, Pembayaran.JenisPembayaran.DP)
+                Pembayaran.nextPembayaranSequence(pembayaranList, Pembayaran.JenisTermin.DP)
             )
 //            dialogBinding.tilTermin.hint = "Masukkan urutan DP"
         }
@@ -615,7 +615,7 @@ class FormPembayaranFragment : Fragment() {
             dialogBinding.tilTermin.isEnabled = true
 
             dialogBinding.edtTermin.setText(
-                Pembayaran.nextPembayaranSequence(pembayaranList, Pembayaran.JenisPembayaran.TERMIN)
+                Pembayaran.nextPembayaranSequence(pembayaranList, Pembayaran.JenisTermin.TERMIN)
             )
 
             // Set automatic Jumlah Uang Dibayar for Termin type

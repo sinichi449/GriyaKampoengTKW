@@ -8,7 +8,7 @@ import net.bagusekasaputra.griyakampoengtkw.domain.DateUtil.toDate
 import net.bagusekasaputra.griyakampoengtkw.domain.NumberUtil
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.HargaKavling
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.indenBooking.HargaRumahIndenBooking
-import net.bagusekasaputra.griyakampoengtkw.domain.entity.pembayaran.Pembayaran.JenisPembayaran
+import net.bagusekasaputra.griyakampoengtkw.domain.entity.pembayaran.Pembayaran.JenisTermin
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.rekap.PeriodeRekap
 import java.math.BigDecimal
 import java.math.RoundingMode
@@ -19,8 +19,8 @@ import java.util.Date
  * A class for representing Pembayaran. You must pass these essential arguments: [termin],
  * [tanggal], [jumlahUangDibayar], [keterangan], and [timeMillis].
  *
- * @param termin must be a combination of [JenisPembayaran] and an integer. E.g: **ITJ 1**, **DP 3**,
- * **Termin 20**, etc. Note that between [JenisPembayaran] and the integer, there should be a **whitespace**.
+ * @param termin must be a combination of [JenisTermin] and an integer. E.g: **ITJ 1**, **DP 3**,
+ * **Termin 20**, etc. Note that between [JenisTermin] and the integer, there should be a **whitespace**.
  * Don't pass this kind of argument: _ITJ1_, _DP3_, _Termin20_, etc.
  * @param tanggal a slashed-style date to show when the [Pembayaran] occurred,
  * for example: _17/12/2023_ would means December, 17th 2023. Highly recommended to pad the Integer < 10 with **0**. So, to represent June, 9th 2023 would be
@@ -308,14 +308,14 @@ data class Pembayaran(
 
         fun nextPembayaranSequence(
             pembayarans: List<Pembayaran>?,
-            jenisPembayaran: JenisPembayaran
+            jenisTermin: JenisTermin
         ): String {
             // Check if not null listPembayaran.
             // If null returns "1"
             if (!pembayarans.isNullOrEmpty()) {
                 // Check if any requested jenis pembayaran Exists
                 val requestedJenisPembayaranList = pembayarans.filter {
-                    it.termin.startsWith(jenisPembayaran.text)
+                    it.termin.startsWith(jenisTermin.text)
                 }
                 return if (requestedJenisPembayaranList.isNotEmpty()) {
                     // If exists, then get the last index of the requested pembayaran.
@@ -370,7 +370,7 @@ data class Pembayaran(
             = hitungTotalUangMasuk(this)
     }
 
-    enum class JenisPembayaran(val text: String) {
+    enum class JenisTermin(val text: String) {
         ITJ("ITJ"),
         DP("DP"),
         TERMIN("Termin"),
@@ -400,9 +400,9 @@ class TerminPembayaranSorter: Pembayaran.PembayaranSorter {
     }
 
     private fun groupPembayaranOnTerminAndSort(listPembayaran: List<Pembayaran>): List<Pembayaran> {
-        val itjGroup = createGroupPembayaran(Pembayaran.JenisPembayaran.ITJ.text, listPembayaran)
-        val dpGroup = createGroupPembayaran(Pembayaran.JenisPembayaran.DP.text, listPembayaran)
-        val terminGroup = createGroupPembayaran(Pembayaran.JenisPembayaran.TERMIN.text, listPembayaran)
+        val itjGroup = createGroupPembayaran(Pembayaran.JenisTermin.ITJ.text, listPembayaran)
+        val dpGroup = createGroupPembayaran(Pembayaran.JenisTermin.DP.text, listPembayaran)
+        val terminGroup = createGroupPembayaran(Pembayaran.JenisTermin.TERMIN.text, listPembayaran)
 
         val sortedPembayaran = mutableListOf<Pembayaran>()
         with(sortedPembayaran) {

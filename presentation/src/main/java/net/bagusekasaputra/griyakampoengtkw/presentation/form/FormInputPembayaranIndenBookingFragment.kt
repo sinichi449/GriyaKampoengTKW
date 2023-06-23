@@ -141,12 +141,12 @@ class FormInputPembayaranIndenBookingFragment : Fragment() {
                         edtTermin.isEnabled = true
                         tilTermin.isEnabled = true
 
-                        val jenisPembayaran = when(it.id) {
-                            rbItj.id -> Pembayaran.JenisPembayaran.ITJ
-                            rbDp.id -> Pembayaran.JenisPembayaran.DP
-                            else -> Pembayaran.JenisPembayaran.TERMIN
+                        val jenisTermin = when(it.id) {
+                            rbItj.id -> Pembayaran.JenisTermin.ITJ
+                            rbDp.id -> Pembayaran.JenisTermin.DP
+                            else -> Pembayaran.JenisTermin.TERMIN
                         }
-                        val nextSequence = Pembayaran.nextPembayaranSequence(pembayaranList, jenisPembayaran)
+                        val nextSequence = Pembayaran.nextPembayaranSequence(pembayaranList, jenisTermin)
                         edtTermin.setText(nextSequence)
                     }
                 }

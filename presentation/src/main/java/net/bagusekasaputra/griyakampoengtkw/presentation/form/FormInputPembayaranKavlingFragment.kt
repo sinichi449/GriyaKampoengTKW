@@ -290,8 +290,8 @@ class FormInputPembayaranKavlingFragment : Fragment() {
     private fun RadioGroup.setCheckedJenisTermin(jenisTermin: String) {
         with(binding) {
             val checkedTermin = when (jenisTermin) {
-                Pembayaran.JenisPembayaran.ITJ.text -> rbItj.id
-                Pembayaran.JenisPembayaran.DP.text -> rbDp.id
+                Pembayaran.JenisTermin.ITJ.text -> rbItj.id
+                Pembayaran.JenisTermin.DP.text -> rbDp.id
                 else -> rbTermin.id
             }
 
@@ -310,10 +310,10 @@ class FormInputPembayaranKavlingFragment : Fragment() {
     private fun RadioGroup.getSelectedJenisTermin(): String {
         return with(binding) {
             when (checkedRadioButtonId) {
-                rbItj.id -> Pembayaran.JenisPembayaran.ITJ.text
-                rbDp.id -> Pembayaran.JenisPembayaran.DP.text
-                rbTermin.id -> Pembayaran.JenisPembayaran.TERMIN.text
-                else -> Pembayaran.JenisPembayaran.TERMIN.text
+                rbItj.id -> Pembayaran.JenisTermin.ITJ.text
+                rbDp.id -> Pembayaran.JenisTermin.DP.text
+                rbTermin.id -> Pembayaran.JenisTermin.TERMIN.text
+                else -> Pembayaran.JenisTermin.TERMIN.text
             }
         }
     }
@@ -324,13 +324,13 @@ class FormInputPembayaranKavlingFragment : Fragment() {
     ) {
         with(binding) {
             rbItj.setOnClickListener {
-                formViewModel.setSelectedJenisTermin(Pembayaran.JenisPembayaran.ITJ)
+                formViewModel.setSelectedJenisTermin(Pembayaran.JenisTermin.ITJ)
             }
             rbDp.setOnClickListener {
-                formViewModel.setSelectedJenisTermin(Pembayaran.JenisPembayaran.DP)
+                formViewModel.setSelectedJenisTermin(Pembayaran.JenisTermin.DP)
             }
             rbTermin.setOnClickListener {
-                formViewModel.setSelectedJenisTermin(Pembayaran.JenisPembayaran.TERMIN)
+                formViewModel.setSelectedJenisTermin(Pembayaran.JenisTermin.TERMIN)
             }
         }
 
