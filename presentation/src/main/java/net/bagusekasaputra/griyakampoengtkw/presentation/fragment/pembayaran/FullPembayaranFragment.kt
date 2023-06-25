@@ -5,6 +5,7 @@ import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import dagger.hilt.android.AndroidEntryPoint
@@ -17,6 +18,7 @@ import net.bagusekasaputra.griyakampoengtkw.domain.entity.pembayaran.BulanAngsur
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.pembayaran.Pembayaran
 import net.bagusekasaputra.griyakampoengtkw.presentation.R
 import net.bagusekasaputra.griyakampoengtkw.presentation.databinding.FragmentFullPembayaranBinding
+import net.bagusekasaputra.griyakampoengtkw.presentation.dialog.ActionPembayaranStandardBottomSheetDialogLegacy
 import net.bagusekasaputra.griyakampoengtkw.presentation.tableview.base.CellItem
 import net.bagusekasaputra.griyakampoengtkw.presentation.tableview.base.ColumnHeader
 import net.bagusekasaputra.griyakampoengtkw.presentation.tableview.base.DoubleRowHeaderConfigurator
@@ -253,6 +255,15 @@ class FullPembayaranFragment : Fragment() {
                 cornerViewTitle = "Termin",
                 cornerTextSeparator = ROW_SEPARATOR
             ))
+            .setOnClickedRowHeader { _, row ->
+                val actionPembayaran = ActionPembayaranStandardBottomSheetDialogLegacy()
+                val bundle = bundleOf(
+                    ActionPembayaranStandardBottomSheetDialogLegacy.EXTRAS_INDEX_PEMBAYARAN_POSITION to row,
+                )
+                actionPembayaran.arguments = bundle
+                actionPembayaran.show(childFragmentManager, null)
+
+            }
             .create()
     }
 

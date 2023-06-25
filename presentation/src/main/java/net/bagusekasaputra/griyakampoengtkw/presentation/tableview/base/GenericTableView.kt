@@ -9,7 +9,7 @@ import com.evrencoskun.tableview.sort.SortState
 class GenericTableView<T>(
     private val tableView: TableView,
     private val dataSets: Collection<T>,
-): ITableViewListener, TableViewHolderListener {
+) {
     private var columnHeaders: List<ColumnHeader> = emptyList()
     private var rowHeaders: List<RowHeader> = emptyList()
     private var cellItems: List<List<CellItem>> = emptyList()
@@ -61,7 +61,46 @@ class GenericTableView<T>(
         with(tableView) {
             tableAdapter = DefaultTableViewAdapter(
                 configurator = doubleRowHeaderConfigurator,
-                tableViewHolderListener = this@GenericTableView,
+                tableViewHolderListener = object : TableViewHolderListener {
+                    override fun onBindCellViewHolder(
+                        holder: CellViewHolder,
+                        cellItemModel: CellItem?,
+                        columnPosition: Int,
+                        rowPosition: Int
+                    ) {
+                        onCellBinding?.let { it(holder, cellItemModel, columnPosition, rowPosition) }
+                    }
+
+                    override fun onBindColumnHeaderViewHolder(
+                        holder: ColumnHeaderViewHolder,
+                        columnHeaderItemModel: ColumnHeader?,
+                        columnPosition: Int
+                    ) {
+                        onColumnHeaderBinding?.let { it(holder, columnHeaderItemModel, columnPosition) }
+                    }
+
+                    override fun onBindRowHeaderViewHolder(
+                        holder: RowHeaderViewHolder,
+                        rowHeaderItemModel: RowHeader?,
+                        rowPosition: Int
+                    ) {
+                        onRowHeaderBinding?.let { it(holder, rowHeaderItemModel, rowPosition) }
+                    }
+
+                    override fun onCreateCornerView(view: View) {
+                        onCornerViewBinding?.let {
+                            it(view)
+                        }
+
+                        view.setOnClickListener {
+                            resetTableSortingStatus()
+
+                            onCornerViewClicked?.let { click ->
+                                click(view)
+                            }
+                        }
+                    }
+                },
             )
 
             setAdapter(tableAdapter)
@@ -77,7 +116,62 @@ class GenericTableView<T>(
                 setColumnWidth(it.first, it.second)
             }
 
-            tableViewListener = this@GenericTableView
+            tableViewListener = object : ITableViewListener {
+                /**
+                 * Table OnClick
+                 */
+                override fun onCellClicked(cellView: RecyclerView.ViewHolder, column: Int, row: Int) {
+                    onClickedCellItem?.let {
+                        it(cellView, column, row)
+                    }
+                }
+
+                override fun onRowHeaderClicked(rowHeaderView: RecyclerView.ViewHolder, row: Int) {
+                    onClickedRowHeader?.let {
+                        it(rowHeaderView, row)
+                    }
+                }
+
+                override fun onColumnHeaderClicked(columnHeaderView: RecyclerView.ViewHolder, column: Int) {
+                    with(tableView) {
+                        val nextSortState = when (getSortingStatus(column)) {
+                            SortState.UNSORTED -> SortState.ASCENDING
+                            SortState.ASCENDING -> SortState.DESCENDING
+                            SortState.DESCENDING -> SortState.UNSORTED
+                        }
+                        if (nextSortState != SortState.UNSORTED) {
+                            sortColumn(column, nextSortState)
+                        } else {
+                            resetTableSortingStatus()
+                        }
+                    }
+
+                    onClickedColumnHeader?.let {
+                        it(columnHeaderView, column)
+                    }
+                }
+
+                /**
+                 * Table onDoubleClick
+                 */
+                override fun onCellDoubleClicked(cellView: RecyclerView.ViewHolder, column: Int, row: Int) {}
+
+                override fun onRowHeaderDoubleClicked(rowHeaderView: RecyclerView.ViewHolder, row: Int) {}
+
+                override fun onColumnHeaderDoubleClicked(
+                    columnHeaderView: RecyclerView.ViewHolder,
+                    column: Int
+                ) {}
+
+                /**
+                 * Table onLongPressed
+                 */
+                override fun onCellLongPressed(cellView: RecyclerView.ViewHolder, column: Int, row: Int) {}
+
+                override fun onColumnHeaderLongPressed(columnHeaderView: RecyclerView.ViewHolder, column: Int) {}
+
+                override fun onRowHeaderLongPressed(rowHeaderView: RecyclerView.ViewHolder, row: Int) {}
+            }
 
             selectionHandler.apply {
                 selectedColumnPosition = -1
@@ -143,6 +237,7 @@ class GenericTableView<T>(
         return this
     }
 
+
     fun setWidthColumnHeaders(widths: List<Pair<Int, Int>>): GenericTableView<T> {
         this.columnWidths = widths
 
@@ -155,6 +250,9 @@ class GenericTableView<T>(
         return this
     }
 
+    /**
+     * On Bind setters
+     */
     fun setOnCellBinding(onBind: (cellViewHolder: CellViewHolder, cellItem: CellItem?, col: Int, row: Int, ) -> Unit, ): GenericTableView<T> {
         onCellBinding = onBind
 
@@ -179,6 +277,15 @@ class GenericTableView<T>(
         return this
     }
 
+    /**
+     * On Click Setters
+     */
+    fun setOnClickedRowHeader(onClick: (rowHeaderView: RecyclerView.ViewHolder, row: Int) -> Unit): GenericTableView<T> {
+        this.onClickedRowHeader = onClick
+
+        return this
+    }
+
     private fun resetTableSortingStatus() {
         repeat(columnHeaders.size) { column ->
             tableView.sortColumn(column, SortState.UNSORTED)
@@ -187,113 +294,5 @@ class GenericTableView<T>(
         create()
     }
 
-
-    /**
-     * Table Binding Listeners
-     */
-    override fun onBindCellViewHolder(
-        holder: CellViewHolder,
-        cellItemModel: CellItem?,
-        columnPosition: Int,
-        rowPosition: Int
-    ) {
-        onCellBinding?.let { it(holder, cellItemModel, columnPosition, rowPosition) }
-    }
-
-    override fun onBindColumnHeaderViewHolder(
-        holder: ColumnHeaderViewHolder,
-        columnHeaderItemModel: ColumnHeader?,
-        columnPosition: Int
-    ) {
-        onColumnHeaderBinding?.let { it(holder, columnHeaderItemModel, columnPosition) }
-    }
-
-    override fun onBindRowHeaderViewHolder(
-        holder: RowHeaderViewHolder,
-        rowHeaderItemModel: RowHeader?,
-        rowPosition: Int
-    ) {
-        onRowHeaderBinding?.let { it(holder, rowHeaderItemModel, rowPosition) }
-    }
-
-    override fun onCreateCornerView(view: View) {
-        onCornerViewBinding?.let {
-            it(view)
-        }
-
-        view.setOnClickListener {
-            resetTableSortingStatus()
-
-            onCornerViewClicked?.let { click ->
-                click(view)
-            }
-        }
-    }
-
-    /**
-     * Table OnClick
-     */
-    override fun onCellClicked(cellView: RecyclerView.ViewHolder, column: Int, row: Int) {
-        onClickedCellItem?.let {
-            it(cellView, column, row)
-        }
-    }
-
-    override fun onRowHeaderClicked(rowHeaderView: RecyclerView.ViewHolder, row: Int) {
-        onClickedRowHeader?.let {
-            it(rowHeaderView, row)
-        }
-    }
-
-    override fun onColumnHeaderClicked(columnHeaderView: RecyclerView.ViewHolder, column: Int) {
-        with(tableView) {
-            val nextSortState = when (getSortingStatus(column)) {
-                SortState.UNSORTED -> SortState.ASCENDING
-                SortState.ASCENDING -> SortState.DESCENDING
-                SortState.DESCENDING -> SortState.UNSORTED
-            }
-            if (nextSortState != SortState.UNSORTED) {
-                sortColumn(column, nextSortState)
-            } else {
-                resetTableSortingStatus()
-            }
-        }
-        onClickedColumnHeader?.let {
-            it(columnHeaderView, column)
-        }
-    }
-
-    /**
-     * Table onDoubleClick
-     */
-    override fun onCellDoubleClicked(cellView: RecyclerView.ViewHolder, column: Int, row: Int) {
-
-    }
-
-    override fun onRowHeaderDoubleClicked(rowHeaderView: RecyclerView.ViewHolder, row: Int) {
-
-    }
-
-    override fun onColumnHeaderDoubleClicked(
-        columnHeaderView: RecyclerView.ViewHolder,
-        column: Int
-    ) {
-
-    }
-
-    /**
-     * Table onLongPressed
-     */
-    override fun onCellLongPressed(cellView: RecyclerView.ViewHolder, column: Int, row: Int) {
-
-    }
-
-    override fun onColumnHeaderLongPressed(columnHeaderView: RecyclerView.ViewHolder, column: Int) {
-
-    }
-
-    override fun onRowHeaderLongPressed(rowHeaderView: RecyclerView.ViewHolder, row: Int) {
-
-    }
 
 }
