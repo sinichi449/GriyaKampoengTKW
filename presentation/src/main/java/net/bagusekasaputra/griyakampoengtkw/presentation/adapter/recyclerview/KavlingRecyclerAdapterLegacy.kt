@@ -8,13 +8,13 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.kavling.Kavling
-import net.bagusekasaputra.griyakampoengtkw.domain.entity.kavling.ProgressKavlingLegacy
+import net.bagusekasaputra.griyakampoengtkw.domain.entity.kavling.ProgressKavling
 import net.bagusekasaputra.griyakampoengtkw.presentation.databinding.LayoutRecyclerKavlingsBinding
 
 @Deprecated("Migrated to KavlingRecyclerAdapter")
 class KavlingRecyclerAdapterLegacy(
     private val kavlings: List<Kavling>,
-    private val mapProgressKavlingLegacy: Map<String, ProgressKavlingLegacy>,
+    private val mapProgressKavling: Map<String, ProgressKavling>,
     private val onRecyclerItemClick: (position: Int) -> Unit,
     private val onRecyclerItemHold: (anchor: View, position: Int) -> Unit,
 ): RecyclerView.Adapter<KavlingRecyclerAdapterLegacy.MyViewHolder>() {
@@ -51,7 +51,7 @@ class KavlingRecyclerAdapterLegacy(
 
         // Fill Layout progress settings
         val warna = Color.parseColor(kavling.warna)
-        val progressKavling = mapProgressKavlingLegacy[kavling.kode]
+        val progressKavling = mapProgressKavling[kavling.kode]
         val persentase = progressKavling?.persentaseBulanIni()
 
         holder.binding.cardKavling.setCardBackgroundColor(warna)

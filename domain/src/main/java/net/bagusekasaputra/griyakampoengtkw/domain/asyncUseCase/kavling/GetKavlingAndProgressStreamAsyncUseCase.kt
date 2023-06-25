@@ -9,7 +9,7 @@ import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.AsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.BaselinePembayaran
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.kavling.KavlingAndProgress
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.kavling.KavlingAndProgress.Companion.sortByKavling
-import net.bagusekasaputra.griyakampoengtkw.domain.entity.kavling.ProgressKavlingLegacy
+import net.bagusekasaputra.griyakampoengtkw.domain.entity.kavling.ProgressKavling
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.pembayaran.Pembayaran
 import net.bagusekasaputra.griyakampoengtkw.domain.repository.BaselinePembayaranRepository
 import net.bagusekasaputra.griyakampoengtkw.domain.repository.KavlingRepository
@@ -39,9 +39,9 @@ class GetKavlingAndProgressStreamAsyncUseCase(
      * @param blok Specify which [blok] you want to fetch.
      * @param dataMode Currently only supports [DataMode.ONLINE]. If you pass another [DataMode],
      * it will get ignored.
-     * @param bulanAngsuran Which month does the [Pembayaran] will be calculated into [ProgressKavlingLegacy.uangMasukBulanIni]?
+     * @param bulanAngsuran Which month does the [Pembayaran] will be calculated into [ProgressKavling.uangMasukBulanIni]?
      * If left null, it will use current actual MONTH. Useful for testing purpose.
-     * @param tahunAngsuran Which year does the [Pembayaran] will be calculated into [ProgressKavlingLegacy.uangMasukBulanIni]?
+     * @param tahunAngsuran Which year does the [Pembayaran] will be calculated into [ProgressKavling.uangMasukBulanIni]?
      * If left null, it will use current actual YEAR. Useful for testing purpose.
      */
 
@@ -90,7 +90,7 @@ class GetKavlingAndProgressStreamAsyncUseCase(
                                 filterMode = Pembayaran.FILTER_USING_BULAN_ANGSURAN,
                             )
 
-                            val progressKavlingLegacy = ProgressKavlingLegacy(
+                            val progressKavling = ProgressKavling(
                                 kavling = kode,
                                 angsuranBulanan = baseline?.jumlahUang ?: 0L,
                                 uangMasukBulanIni = uangMasukBulanIni,
@@ -99,7 +99,7 @@ class GetKavlingAndProgressStreamAsyncUseCase(
                             val kavlingAndProgress = KavlingAndProgress(
                                 blok = request.blok,
                                 kavling = kavling,
-                                progress = progressKavlingLegacy,
+                                progress = progressKavling,
                             )
                             unsortedResults.add(kavlingAndProgress)
 

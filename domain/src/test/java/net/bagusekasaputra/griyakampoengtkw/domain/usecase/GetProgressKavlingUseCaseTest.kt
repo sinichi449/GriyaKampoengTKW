@@ -12,7 +12,7 @@ import org.junit.Test
 
 
 @OptIn(ExperimentalCoroutinesApi::class)
-class GetProgressKavlingLegacyUseCaseTest {
+class GetProgressKavlingUseCaseTest {
 
     private val mockRepository = MockRepository(getTestingFile(this))
     private val kavlingRepository = mockRepository.getKavlingRepository()
