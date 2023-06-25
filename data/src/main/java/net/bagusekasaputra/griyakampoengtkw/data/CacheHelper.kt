@@ -16,6 +16,9 @@ class CacheHelper(
     private val remoteMetadataDataSource: RemoteMetadataDataSource,
 ) {
 
+    /**
+     * @return `true` if cache is invalid, and `false` otherwise.
+     */
     suspend fun checkAndInvalidateCache(
         localTable: String,
         remoteTable: String,

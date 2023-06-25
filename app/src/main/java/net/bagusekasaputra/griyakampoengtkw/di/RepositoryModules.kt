@@ -126,7 +126,7 @@ import java.io.File
 
 @Module
 @InstallIn(ViewModelComponent::class)
-object RepositoryModule {
+object RepositoryModules {
 
     /**
      * Tahapan
@@ -144,8 +144,9 @@ object RepositoryModule {
     fun provideBlockRepository(
         localBlockDataSource: LocalBlockDataSource,
         remoteBlockDataSource: RemoteBlockDataSource,
+        cacheHelper: CacheHelper,
     ): BlockRepository {
-        return BlockRepositoryImpl(localBlockDataSource, remoteBlockDataSource)
+        return BlockRepositoryImpl(localBlockDataSource, remoteBlockDataSource, cacheHelper)
     }
 
 

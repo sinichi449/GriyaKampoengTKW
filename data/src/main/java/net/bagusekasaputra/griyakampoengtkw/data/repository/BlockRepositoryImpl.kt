@@ -1,8 +1,9 @@
 package net.bagusekasaputra.griyakampoengtkw.data.repository
 
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.emitAll
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flow
+import net.bagusekasaputra.griyakampoengtkw.data.CacheHelper
 import net.bagusekasaputra.griyakampoengtkw.data.DataUtil
 import net.bagusekasaputra.griyakampoengtkw.data.MyObjectMapper.mapBlockModel
 import net.bagusekasaputra.griyakampoengtkw.data.interfaces.local.LocalBlockDataSource
@@ -14,63 +15,65 @@ import net.bagusekasaputra.griyakampoengtkw.domain.repository.BlockRepository
 class BlockRepositoryImpl(
     private val localBlockDataSource: LocalBlockDataSource,
     private val remoteBlockDataSource: RemoteBlockDataSource,
+    private val cacheHelper: CacheHelper,
 ): BlockRepository {
 
+    private val cacheTable = "blocks"
+
     override fun getAllBlocks(dataMode: DataMode): Flow<Result<List<Block>?>> {
-        return flow {
-            val flowOffline = flow {
-                // Emit blocks from local instead
-                val getBlockFromLocal = localBlockDataSource.getAllBlocks()
+        val flowOffline = flow<Result<List<Block>?>> {
+           localBlockDataSource.getAllBlocks()
+               .onSuccess {
+                   val blocks = it?.map { model ->
+                       mapBlockModel(model)
+                   }
 
-                if (getBlockFromLocal.isSuccess) {
-                    emit(DataUtil.mapListResult(getBlockFromLocal, ::mapBlockModel))
-                } else {
-                    emit(Result.failure(Throwable("Data block masih kosong.")))
-                }
-            }
-
-            // If the online request failed, it will emit the flow from "flowOffline"
-            val flowOnline = flow<Result<List<Block>?>> {
-                val getBlocksFromRemote = remoteBlockDataSource.getAllBlocks()
-
-                if (getBlocksFromRemote.isSuccess) {
-                    // Emit the blocks
-                    emit(DataUtil.mapListResult(getBlocksFromRemote, ::mapBlockModel))
-
-
-                    // Then write block to local
-                    val blockModels = getBlocksFromRemote.getOrNull()?.map { mapBlockModel(it) }
-
-                    blockModels?.forEach {
-                        localBlockDataSource.addBlock(mapBlockModel(it))
+                   emit(Result.success(blocks))
+               }
+               .onFailure {
+                   emit(Result.failure(it))
+               }
+        }
+        val flowOnline = DataUtil.networkBoundResources(
+            shouldFetch = {
+                cacheHelper.checkAndInvalidateCache(
+                    localTable = cacheTable,
+                    remoteTable = cacheTable,
+                    onInvalid = {
+                        localBlockDataSource.deleteAll()
                     }
+                )
+            },
+            query = { flowOffline.first() },
+            fetch = {
+                remoteBlockDataSource.getAllBlocks().map { models ->
+                    models?.map {
+                        mapBlockModel(it)
+                    }
+                }
+            },
+            saveFetchResult = { blocks ->
+                if (blocks.isNullOrEmpty()) {
+                    Result.failure(Throwable("Not found Block Models from remote data source!"))
                 } else {
-                    // Emit the error
-                    getBlocksFromRemote.exceptionOrNull()?.let { emit(Result.failure(it)) }
+                    val blockModels = blocks.map {
+                        mapBlockModel(it)
+                    }
+                    localBlockDataSource.addAll(blockModels)
 
-                    // Emit from local instead
-                    emitAll(flowOffline)
+                    Result.success(Unit)
                 }
             }
+        )
+        val flowDataLama = flow<Result<List<Block>?>> {
+            // TODO
+            emit(Result.failure(Throwable("Data Lama for Blocks Repository doesn't yet implemented!")))
+        }
 
-//            val flowDataLama = flow<Result<List<Block>>> {
-//                val bloks = backupBlokDataSource.getAllBlocks()
-//                    .getOrEmitFailure(this)
-//
-//                if (bloks.isNullOrEmpty()) {
-//                    emit(Result.success(null))
-//                } else {
-//                    localBlockDataSource.addAll(bloks)
-//
-//                    emitAll(flowOffline)
-//                }
-//            }
-
-            when (dataMode) {
-                DataMode.ONLINE -> emitAll(flowOnline)
-                DataMode.OFFLINE -> emitAll(flowOffline)
-                DataMode.DATA_LAMA -> TODO("Not yet implemented")
-            }
+        return when (dataMode) {
+            DataMode.ONLINE -> flowOnline
+            DataMode.OFFLINE -> flowOffline
+            DataMode.DATA_LAMA -> flowDataLama
         }
     }
 
