@@ -5,15 +5,14 @@ import net.bagusekasaputra.griyakampoengtkw.domain.DataMode
 import net.bagusekasaputra.griyakampoengtkw.domain.repository.BlockRepository
 import net.bagusekasaputra.griyakampoengtkw.domain.repository.KavlingRepository
 
-data class Kavling(
-    val kode: String,
-    val belumIsi: Boolean = true,
-    val warna: String,
-    val ukuran: String,
-    val type: String,
-) {
-    val blockKode = kode.substring(0, 1)
-    val numKode = kode.substring(1).toInt()
+sealed class Kavling {
+    abstract val kode: String
+    abstract val belumIsi: Boolean
+    abstract val warna: String
+    abstract val ukuran: String
+    abstract val type: String
+    abstract val blockKode: String
+    abstract val numKode: Int
 
     fun getPanjang(): String {
         return ukuran.split("x")[0]
@@ -124,15 +123,49 @@ data class Kavling(
                 throw e
             }
         }
-        fun EMPTY(kode: String): Kavling {
-            return Kavling(
-                kode = kode,
-                warna = "#000000",
-                ukuran = "0x0",
-                type = "NULL",
-            )
+    }
+}
+
+data class StandardKavling(
+    override val kode: String,
+    override val belumIsi: Boolean = true,
+    override val warna: String,
+    override val ukuran: String,
+    override val type: String,
+): Kavling() {
+    override val blockKode = kode.substring(0, 1)
+    override val numKode = kode.substring(1).toInt()
+}
+
+data class CombinedKavling(
+    val kavlingKodeList: List<String>,
+    override val belumIsi: Boolean = true,
+    override val warna: String,
+    override val ukuran: String,
+    override val type: String,
+    override val numKode: Int,
+): Kavling() {
+
+    init {
+        if (kavlingKodeList.isEmpty()) {
+            throw IllegalArgumentException("Parameter `kavlingKodeList` untuk CombinedKavling tidak boleh kosong!")
         }
     }
+
+    override val kode: String
+        get() = buildString {
+            kavlingKodeList.forEachIndexed { index, kode ->
+                val lastIndex = index == kavlingKodeList.size - 1
+                if (lastIndex) {
+                    append(kode)
+                } else {
+                    append("$kode + ")
+                }
+            }
+        }
+    override val blockKode: String
+        get() = kavlingKodeList[0].substring(0, 1)
+
 }
 
 interface KavlingSorter {
@@ -152,15 +185,7 @@ class SingleBlockKavlingSorter: KavlingSorter {
     }
 
     override fun sortKodeOnly(kavlingKodeList: List<String>): List<String> {
-        val kavlingList = mutableListOf<Kavling>().apply {
-            kavlingKodeList.forEach { kode ->
-                add(Kavling(kode = kode, warna = "", ukuran = "", type = ""))
-            }
-        }
-
-        val sortedKavlingList = sortKavling(kavlingList)
-
-        return Kavling.getKavlingKodes(sortedKavlingList)
+        return kavlingKodeList
     }
 
 }

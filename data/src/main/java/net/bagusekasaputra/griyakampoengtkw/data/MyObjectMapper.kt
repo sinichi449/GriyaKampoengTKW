@@ -56,7 +56,9 @@ import net.bagusekasaputra.griyakampoengtkw.domain.entity.images.ImageDataDiriUr
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.images.ImageSpr
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.images.ImageSprUri
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.indenBooking.HargaRumahIndenBooking
+import net.bagusekasaputra.griyakampoengtkw.domain.entity.kavling.CombinedKavling
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.kavling.Kavling
+import net.bagusekasaputra.griyakampoengtkw.domain.entity.kavling.StandardKavling
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.pembayaran.BulanAngsuran
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.pembayaran.Pembayaran
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.pembayaran.Pengembalian
@@ -297,13 +299,24 @@ object MyObjectMapper {
      *  Kavling
      */
     fun mapKavling(kavlingModel: KavlingModel): Kavling {
-        return Kavling(
-            kavlingModel.kode,
-            kavlingModel.active,
-            kavlingModel.warna,
-            kavlingModel.ukuran,
-            kavlingModel.type
-        )
+        return if (kavlingModel.isCombined) {
+            CombinedKavling(
+                kavlingKodeList = kavlingModel.getListKode(),
+                belumIsi = kavlingModel.active,
+                warna = kavlingModel.warna,
+                ukuran = kavlingModel.ukuran,
+                numKode = kavlingModel.getNumkode(),
+                type = kavlingModel.type,
+            )
+        } else {
+            StandardKavling(
+                kavlingModel.kode,
+                kavlingModel.active,
+                kavlingModel.warna,
+                kavlingModel.ukuran,
+                kavlingModel.type
+            )
+        }
     }
 
     fun mapKavling(kavling: Kavling): KavlingModel {
