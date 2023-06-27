@@ -2,12 +2,15 @@ package net.bagusekasaputra.griyakampoengtkw.presentation.adapter.recyclerview
 
 import android.content.Context
 import android.graphics.Color
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.card.MaterialCardView
+import net.bagusekasaputra.griyakampoengtkw.domain.entity.kavling.CombinedKavling
+import net.bagusekasaputra.griyakampoengtkw.domain.entity.kavling.Kavling
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.kavling.KavlingAndProgress
 import net.bagusekasaputra.griyakampoengtkw.presentation.databinding.LayoutRecyclerKavlingsBinding
 
@@ -28,6 +31,24 @@ class KavlingRecyclerAdapter(
     }
 
     class MyViewHolder(val binding: LayoutRecyclerKavlingsBinding): RecyclerView.ViewHolder(binding.root)
+
+    override fun getItemViewType(position: Int): Int {
+        val kavlingList = progressList.map {
+            it.kavling
+        }
+        val combinedKavlingPosition = getCombinedKavlingPosition(kavlingList)
+
+        return if (combinedKavlingPosition != null) {
+            if (position == combinedKavlingPosition) {
+                Log.d("COMBINED_KAVLING", "Kavling ${kavlingList[position].kode} identified as CombinedKavling!")
+
+                TYPE_MULTI
+            }
+            else TYPE_SINGLE
+        } else {
+            TYPE_SINGLE
+        }
+    }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MyViewHolder {
         this.context = parent.context
@@ -78,7 +99,6 @@ class KavlingRecyclerAdapter(
         }
     }
 
-
     override fun getItemCount(): Int {
         return progressList.size
     }
@@ -93,6 +113,20 @@ class KavlingRecyclerAdapter(
         super.onViewDetachedFromWindow(holder)
     }
 
+    private fun getCombinedKavlingPosition(kavlingList: List<Kavling>): Int? {
+        var found = false
+        var position = 0
+        for (k in kavlingList) {
+            if (k is CombinedKavling) {
+                found = true
+                break
+            }
+            position++
+        }
+
+        return if (found) position else null
+    }
+
     interface ItemListener {
         fun onKavlingItemClick(kavlingView: MaterialCardView, position: Int)
 
@@ -101,6 +135,11 @@ class KavlingRecyclerAdapter(
             anchor: View,
             position: Int
         ): Boolean
+    }
+
+    companion object {
+        const val TYPE_SINGLE = 0
+        const val TYPE_MULTI = 1
     }
 }
 

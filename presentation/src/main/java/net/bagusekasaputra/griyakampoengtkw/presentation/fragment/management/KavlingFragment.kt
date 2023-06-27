@@ -89,7 +89,15 @@ class KavlingFragment : Fragment(), KavlingRecyclerAdapter.ItemListener {
         with(binding.recyclerKavlings) {
             kavlingRecyclerAdapter = KavlingRecyclerAdapter(emptyList(), this@KavlingFragment)
             adapter = kavlingRecyclerAdapter
-            layoutManager = GridLayoutManager(requireContext(), 3)
+            val gridManager = GridLayoutManager(requireContext(), 3)
+            gridManager.spanSizeLookup = object : GridLayoutManager.SpanSizeLookup() {
+                override fun getSpanSize(position: Int): Int {
+                    val kavlingType = kavlingRecyclerAdapter?.getItemViewType(position)
+
+                    return if (kavlingType == KavlingRecyclerAdapter.TYPE_MULTI) 2 else 1
+                }
+            }
+            layoutManager = gridManager
         }
 
         binding.setupWithViewModel()

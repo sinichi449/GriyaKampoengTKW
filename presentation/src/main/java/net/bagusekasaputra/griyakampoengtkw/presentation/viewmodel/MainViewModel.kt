@@ -25,8 +25,10 @@ import net.bagusekasaputra.griyakampoengtkw.domain.entity.AppUpdate
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.Block
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.Promotion
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.Tahapan
+import net.bagusekasaputra.griyakampoengtkw.domain.entity.kavling.CombinedKavling
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.kavling.Kavling
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.kavling.KavlingAndProgress
+import net.bagusekasaputra.griyakampoengtkw.domain.entity.kavling.ProgressKavling
 import net.bagusekasaputra.griyakampoengtkw.domain.repository.TahapanRepository
 import net.bagusekasaputra.griyakampoengtkw.domain.usecase.appupdate.GetUpdateInformationUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.usecase.block.AddNewBlockUseCase
@@ -34,6 +36,7 @@ import net.bagusekasaputra.griyakampoengtkw.domain.usecase.kavling.AddKavlingUse
 import net.bagusekasaputra.griyakampoengtkw.domain.usecase.kavling.EditKavlingUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.usecase.kavling.RemoveKavlingUseCase
 import net.bagusekasaputra.griyakampoengtkw.presentation.fragment.management.ManagementKavlingFragment
+import net.bagusekasaputra.griyakampoengtkw.presentation.juta
 import net.bagusekasaputra.griyakampoengtkw.presentation.logEvent
 import javax.inject.Inject
 
@@ -207,6 +210,33 @@ class MainViewModel @Inject constructor(
                     withContext(Dispatchers.Main) {
                         if (success) {
                             onComplete()
+
+                            // Add single combined kavling
+                            if (blockKode == "A") {
+                                _kavlingAndProgressList.update {
+                                    val newList = it.toMutableList()
+                                    val warna = it[0].kavling.warna
+                                    val combinedKavling = CombinedKavling(
+                                        kavlingKodeList = listOf("A19", "A20"),
+                                        belumIsi = false,
+                                        warna = warna,
+                                        ukuran = "12x24",
+                                        type = "Type 2 Unit",
+                                        numKode = 19,
+                                    )
+                                    newList.add(KavlingAndProgress(
+                                        blok = blockKode,
+                                        kavling = combinedKavling,
+                                        progress = ProgressKavling(
+                                            combinedKavling.kode,
+                                            angsuranBulanan = 10.0.juta(),
+                                            uangMasukBulanIni = 9.8.juta(),
+                                        )
+                                    ))
+
+                                    newList.toList()
+                                }
+                            }
                         } else {
                             withContext(Dispatchers.Main) {
                                 onFailure("Terjadi kesalahan mendapatkan progress kavling : ${throwable?.localizedMessage}")
