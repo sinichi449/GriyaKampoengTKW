@@ -4,8 +4,14 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.fragment.app.Fragment
 import dagger.hilt.android.AndroidEntryPoint
+import net.bagusekasaputra.griyakampoengtkw.presentation.compose.theme.GriyaKampoengTkwTheme
 import net.bagusekasaputra.griyakampoengtkw.presentation.databinding.FragmentBiayaPembangunanKavlingBinding
 import net.bagusekasaputra.griyakampoengtkw.presentation.util.GriyaNodes
 
@@ -28,6 +34,19 @@ class BiayaPembangunanKavlingFragment : Fragment() {
     ): View {
         // Inflate the layout for this fragment
         binding = FragmentBiayaPembangunanKavlingBinding.inflate(inflater, container, false)
+        binding.composeViewPembangunanKavling.apply {
+            setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnLifecycleDestroyed(lifecycle))
+            setContent {
+                GriyaKampoengTkwTheme {
+                    Surface(
+                        modifier = Modifier.fillMaxWidth(),
+                        color = MaterialTheme.colorScheme.background
+                    ) {
+
+                    }
+                }
+            }
+        }
 
         return binding.root
     }
@@ -35,8 +54,6 @@ class BiayaPembangunanKavlingFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        with(binding) {
-            tvHello.text = kavlingKode
-        }
+
     }
 }

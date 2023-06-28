@@ -82,6 +82,7 @@ import net.bagusekasaputra.griyakampoengtkw.data.repository.IndenBookingCatatanP
 import net.bagusekasaputra.griyakampoengtkw.data.repository.IndenBookingRepositoryImpl
 import net.bagusekasaputra.griyakampoengtkw.data.repository.KavlingCatatanPembayaranRepositoryImpl
 import net.bagusekasaputra.griyakampoengtkw.data.repository.KavlingRepositoryImpl
+import net.bagusekasaputra.griyakampoengtkw.data.repository.MaterialPembangunanRepositoryImpl
 import net.bagusekasaputra.griyakampoengtkw.data.repository.PengembalianRepositoryImpl
 import net.bagusekasaputra.griyakampoengtkw.data.repository.PengingatRepositoryImpl
 import net.bagusekasaputra.griyakampoengtkw.data.repository.PromotionRepositoryImpl
@@ -89,6 +90,7 @@ import net.bagusekasaputra.griyakampoengtkw.data.repository.RekapBesarDetailRepo
 import net.bagusekasaputra.griyakampoengtkw.data.repository.StandardAmbilKuitansiRepositoryImpl
 import net.bagusekasaputra.griyakampoengtkw.data.repository.StatusPembayaranRepositoryImpl
 import net.bagusekasaputra.griyakampoengtkw.data.repository.TahapanRepositoryImpl
+import net.bagusekasaputra.griyakampoengtkw.data.repository.UpahPekerjaRepositoryImpl
 import net.bagusekasaputra.griyakampoengtkw.data.repository.pembayaran.DefaultPembayaranRepository
 import net.bagusekasaputra.griyakampoengtkw.data.repository.pembayaran.LegacyPembayaranRepository
 import net.bagusekasaputra.griyakampoengtkw.domain.repository.AppUpdateRepository
@@ -114,6 +116,7 @@ import net.bagusekasaputra.griyakampoengtkw.domain.repository.IndenBookingCatata
 import net.bagusekasaputra.griyakampoengtkw.domain.repository.IndenBookingRepository
 import net.bagusekasaputra.griyakampoengtkw.domain.repository.KavlingCatatanPembayaranRepository
 import net.bagusekasaputra.griyakampoengtkw.domain.repository.KavlingRepository
+import net.bagusekasaputra.griyakampoengtkw.domain.repository.MaterialPembangunanRepository
 import net.bagusekasaputra.griyakampoengtkw.domain.repository.PembayaranRepository
 import net.bagusekasaputra.griyakampoengtkw.domain.repository.PengembalianRepository
 import net.bagusekasaputra.griyakampoengtkw.domain.repository.PengingatRepository
@@ -122,6 +125,7 @@ import net.bagusekasaputra.griyakampoengtkw.domain.repository.RekapBesarDetailRe
 import net.bagusekasaputra.griyakampoengtkw.domain.repository.StandardAmbilKuitansiRepository
 import net.bagusekasaputra.griyakampoengtkw.domain.repository.StatusPembayaranRepository
 import net.bagusekasaputra.griyakampoengtkw.domain.repository.TahapanRepository
+import net.bagusekasaputra.griyakampoengtkw.domain.repository.UpahPekerjaRepository
 import java.io.File
 
 @Module
@@ -548,6 +552,22 @@ object RepositoryModules {
         cacheHelper: CacheHelper,
     ): PengembalianRepository {
         return PengembalianRepositoryImpl(localDataSource, remoteDataSource, cacheHelper, externalFileDir)
+    }
+
+    /**
+     * Material Pembangunan
+     */
+    @Provides
+    fun provideMaterialPembangunanRepository(): MaterialPembangunanRepository {
+        return MaterialPembangunanRepositoryImpl()
+    }
+
+    /**
+     * Upah Pekerja
+     */
+    @Provides
+    fun provideUpahPekerjaRepository(): UpahPekerjaRepository {
+        return UpahPekerjaRepositoryImpl()
     }
 
 }
