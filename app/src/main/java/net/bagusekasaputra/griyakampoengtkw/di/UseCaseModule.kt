@@ -52,6 +52,7 @@ import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.indenBooking.pem
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.kavling.GetKavlingAndProgressStreamAsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.kavling.GetKavlingByBlockAsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.kavling.GetListUnmigratedKavlingsAsyncUseCase
+import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.materialPembangunan.GetAllMaterialPembangunanAsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.pembayaran.DeletePembayaranAsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.pembayaran.GetListPembayaranBulananAsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.pembayaran.GetSinglePembayaranByKavlingAndTerminAsyncUseCase
@@ -70,6 +71,7 @@ import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.rekap.GetRekapBe
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.rekap.GetRekapGlobalStreamAsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.reportKavling.GetAllReportKavlingAsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.statusPembayaran.GetStatusPembayaranKavlingAsyncUseCase
+import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.upahPekerja.GetAllUpahPekerjaAsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.repository.AppUpdateRepository
 import net.bagusekasaputra.griyakampoengtkw.domain.repository.BackupRestoreRepository
 import net.bagusekasaputra.griyakampoengtkw.domain.repository.BaselinePembayaranRepository
@@ -93,6 +95,7 @@ import net.bagusekasaputra.griyakampoengtkw.domain.repository.IndenBookingCatata
 import net.bagusekasaputra.griyakampoengtkw.domain.repository.IndenBookingRepository
 import net.bagusekasaputra.griyakampoengtkw.domain.repository.KavlingCatatanPembayaranRepository
 import net.bagusekasaputra.griyakampoengtkw.domain.repository.KavlingRepository
+import net.bagusekasaputra.griyakampoengtkw.domain.repository.MaterialPembangunanRepository
 import net.bagusekasaputra.griyakampoengtkw.domain.repository.PembayaranRepository
 import net.bagusekasaputra.griyakampoengtkw.domain.repository.PengembalianRepository
 import net.bagusekasaputra.griyakampoengtkw.domain.repository.PengingatRepository
@@ -100,6 +103,7 @@ import net.bagusekasaputra.griyakampoengtkw.domain.repository.PromotionRepositor
 import net.bagusekasaputra.griyakampoengtkw.domain.repository.RekapBesarDetailRepository
 import net.bagusekasaputra.griyakampoengtkw.domain.repository.StandardAmbilKuitansiRepository
 import net.bagusekasaputra.griyakampoengtkw.domain.repository.StatusPembayaranRepository
+import net.bagusekasaputra.griyakampoengtkw.domain.repository.UpahPekerjaRepository
 import net.bagusekasaputra.griyakampoengtkw.domain.usecase.appupdate.GetUpdateInformationUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.usecase.biayaMarketing.AddBiayaMarketingUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.usecase.biayaMarketing.DeleteAllBiayaMarketingUseCase
@@ -737,4 +741,25 @@ object UseCaseModule {
     @Provides
     fun provideGetPengembalianStreamUseCase(pengembalianRepository: PengembalianRepository)
         = GetPengembalianStreamAsyncUseCase(pengembalianRepository)
+
+    /**
+     * Material Pembangunan
+     */
+    @Provides
+    fun provideGetAllMaterialPembangunanUseCase(
+        materialPembangunanRepository: MaterialPembangunanRepository
+    ): GetAllMaterialPembangunanAsyncUseCase {
+        return GetAllMaterialPembangunanAsyncUseCase(materialPembangunanRepository)
+    }
+
+    /**
+     * Upah Pekerja
+     */
+    @Provides
+    fun provideGetAllUpahPekerjaUseCase(
+        upahPekerjaRepository: UpahPekerjaRepository
+    ): GetAllUpahPekerjaAsyncUseCase {
+        return GetAllUpahPekerjaAsyncUseCase(upahPekerjaRepository)
+    }
+
 }
