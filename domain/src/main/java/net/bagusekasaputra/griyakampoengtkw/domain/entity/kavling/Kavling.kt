@@ -135,6 +135,18 @@ data class StandardKavling(
 ): Kavling() {
     override val blockKode = kode.substring(0, 1)
     override val numKode = kode.substring(1).toInt()
+
+    companion object {
+        fun EMPTY(kode: String): StandardKavling {
+            return StandardKavling(
+                kode = kode,
+                belumIsi = true,
+                warna = "#000000",
+                ukuran = "0x0",
+                type = "Type NULL",
+            )
+        }
+    }
 }
 
 data class CombinedKavling(

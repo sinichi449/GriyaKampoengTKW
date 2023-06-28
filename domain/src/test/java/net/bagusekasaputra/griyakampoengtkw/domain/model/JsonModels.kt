@@ -9,7 +9,9 @@ import net.bagusekasaputra.griyakampoengtkw.domain.entity.BiayaMarketing
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.DataDiri
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.FeeMarketing
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.HargaKavling
+import net.bagusekasaputra.griyakampoengtkw.domain.entity.kavling.CombinedKavling
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.kavling.Kavling
+import net.bagusekasaputra.griyakampoengtkw.domain.entity.kavling.StandardKavling
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.pembayaran.BulanAngsuran
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.pembayaran.Pembayaran
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.pembayaran.Pengembalian
@@ -52,15 +54,40 @@ data class KavlingJson(
     val type: String,
     val ukuran: String,
     val warna: String,
+    val isCombined: Boolean = false,
 ): JsonModel<Kavling> {
+
+    private val kavlingKodeList: List<String> get() = if (isCombined) {
+        kode.split(" + ")
+    } else {
+        listOf(kode)
+    }
+
+    private val numKode: Int get() = if (isCombined) {
+        kavlingKodeList[0].substring(1).toInt()
+    } else {
+        kode.substring(1).toInt()
+    }
+
     override fun toDomain(args: Any?): Kavling {
-        return Kavling(
-            kode = kode,
-            belumIsi = active,
-            warna = warna,
-            ukuran = ukuran,
-            type = type,
-        )
+        return if (isCombined) {
+            CombinedKavling(
+                kavlingKodeList = kavlingKodeList,
+                belumIsi = active,
+                warna = warna,
+                ukuran = ukuran,
+                type = type,
+                numKode = numKode,
+            )
+        } else {
+            StandardKavling(
+                kode = kode,
+                belumIsi = active,
+                warna = warna,
+                ukuran = ukuran,
+                type = type,
+            )
+        }
     }
 }
 

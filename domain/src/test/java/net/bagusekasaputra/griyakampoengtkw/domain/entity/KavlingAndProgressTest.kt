@@ -1,9 +1,9 @@
 package net.bagusekasaputra.griyakampoengtkw.domain.entity
 
-import net.bagusekasaputra.griyakampoengtkw.domain.entity.kavling.Kavling
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.kavling.KavlingAndProgress
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.kavling.KavlingAndProgress.Companion.sortByKavling
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.kavling.ProgressKavling
+import net.bagusekasaputra.griyakampoengtkw.domain.entity.kavling.StandardKavling
 import org.junit.Assert
 import org.junit.Test
 import kotlin.random.Random
@@ -29,7 +29,7 @@ class KavlingAndProgressTest {
             repeat(sizeKavling) {
                 val numKavling = it + 1
                 val kode = "${blok}${numKavling}"
-                val kavling = Kavling.EMPTY(kode)
+                val kavling = StandardKavling.EMPTY(kode)
                 val progressKavling = ProgressKavling.EMPTY(kode)
 
                 add(KavlingAndProgress(
@@ -60,7 +60,7 @@ class KavlingAndProgressTest {
 
                 add(KavlingAndProgress(
                     blok = blok,
-                    kavling = Kavling.EMPTY(kode),
+                    kavling = StandardKavling.EMPTY(kode),
                     progress = ProgressKavling.EMPTY(kode),
                 ))
             }

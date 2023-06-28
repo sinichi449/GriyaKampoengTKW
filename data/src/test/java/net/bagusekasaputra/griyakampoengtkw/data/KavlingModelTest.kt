@@ -2,6 +2,7 @@ package net.bagusekasaputra.griyakampoengtkw.data
 
 import com.google.gson.Gson
 import net.bagusekasaputra.griyakampoengtkw.data.model.KavlingModel
+import net.bagusekasaputra.griyakampoengtkw.domain.entity.kavling.CombinedKavling
 import org.junit.Assert
 import org.junit.Test
 
@@ -47,5 +48,20 @@ class KavlingModelTest {
     @Test
     fun getBlockKodeTest() {
         Assert.assertEquals("A", KavlingModel.getBlockKode(model.kode))
+    }
+
+    @Test
+    fun mapToDomainModelTest() {
+        val result = MyObjectMapper.mapKavling(model)
+        val expected = CombinedKavling(
+            kavlingKodeList = listOf("A19", "A20"),
+            belumIsi = false,
+            warna = "#E93303",
+            ukuran = "12x24",
+            type = "Type 36",
+            numKode = 19,
+        )
+
+        Assert.assertEquals(expected, result)
     }
 }

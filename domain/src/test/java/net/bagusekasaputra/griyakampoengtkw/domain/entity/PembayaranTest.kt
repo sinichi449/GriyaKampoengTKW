@@ -47,7 +47,7 @@ class PembayaranTest {
     @Test
     fun givenJenisPembayaran_shouldReturnNextUrutanTermin() {
         val keyId = "3053d174-4b9b-437c-96aa-68fd44fa0fef"
-        val requestedJenisPembayaran = Pembayaran.JenisPembayaran.DP
+        val requestedJenisPembayaran = Pembayaran.JenisTermin.DP
         val correctNextSequence = "9"
 
         val pembayarans = runBlocking {

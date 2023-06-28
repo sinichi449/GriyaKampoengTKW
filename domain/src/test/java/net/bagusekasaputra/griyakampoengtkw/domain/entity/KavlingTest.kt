@@ -1,12 +1,37 @@
 package net.bagusekasaputra.griyakampoengtkw.domain.entity
 
+import net.bagusekasaputra.griyakampoengtkw.domain.entity.kavling.CombinedKavling
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.kavling.Kavling
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.kavling.SingleBlockKavlingSorter
+import net.bagusekasaputra.griyakampoengtkw.domain.entity.kavling.StandardKavling
 import org.junit.Assert
 import org.junit.Test
 import kotlin.random.Random
 
 class KavlingTest {
+
+    /**
+     * Functional Test
+     */
+
+    private val combinedKavling = CombinedKavling(
+        kavlingKodeList = listOf("A19", "A20"),
+        belumIsi = false,
+        warna = "#E93303",
+        ukuran = "12X24",
+        type = "Type 36",
+        numKode = 19,
+    )
+
+    @Test
+    fun blockKodeTest() {
+        Assert.assertEquals("A", combinedKavling.blockKode)
+    }
+
+    @Test
+    fun kavlingKodeTest() {
+        Assert.assertEquals("A19 + A20", combinedKavling.kode)
+    }
 
     @Test
     fun sortingSingleBlockKavlings_shouldCorrect() {
@@ -14,7 +39,7 @@ class KavlingTest {
         val sortedKavlingList = mutableListOf<Kavling>().apply {
             val randomKavlingSize = Random.nextInt(from = 10, until = 100)
             repeat(randomKavlingSize) { numKode ->
-                add(Kavling(kode = "${blockKode}${numKode + 1}", warna = "", ukuran = "", type = ""))
+                add(StandardKavling(kode = "${blockKode}${numKode + 1}", warna = "", ukuran = "", type = ""))
             }
         }
 
@@ -46,4 +71,5 @@ class KavlingTest {
 
         Assert.assertEquals(false, filteredKavling.containsAll(exclusionList))
     }
+
 }
