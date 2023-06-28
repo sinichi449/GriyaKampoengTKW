@@ -26,23 +26,39 @@ class FirebaseKavlingDataSource(
 
     override suspend fun getAllKavlings(blockKode: String): Result<List<KavlingModel>?> {
         Log.d("FIREBASE_URL", "Kavling is at $kavlingRef")
-        return FirebaseRequestHelper.getOperation(
-            pathToChild = kavlingRef.child(blockKode),
-            onGetSnapshot = { snapshot ->
-                val hashMap = snapshot.getValue<HashMap<String, KavlingModel>>()
-                val kavlings = ArrayList<KavlingModel>()
 
-                hashMap?.keys?.forEach { key ->
-                    hashMap[key]?.let { model ->
-                        kavlings.add(model)
+        return suspendCancellableCoroutine { continuation ->
+            val eventListener = object : ValueEventListener {
+                override fun onDataChange(snapshot: DataSnapshot) {
+                    val kavlingList = buildList {
+                        snapshot.children.forEach { child ->
+                            val dataKavling = child.value as Map<String, Any?>?
+                            val result = KavlingModel(
+                                active = dataKavling?.get("active") as Boolean? ?: true,
+                                kode = dataKavling?.get("kode") as String? ?: "",
+                                type = dataKavling?.get("type") as String? ?: "",
+                                ukuran = dataKavling?.get("ukuran") as String? ?: "",
+                                warna = dataKavling?.get("warna") as String? ?: "",
+                                isCombined = dataKavling?.get("isCombined") as Boolean? ?: false,
+                            )
+
+                            add(result)
+                        }
                     }
+
+                    continuation.resume(
+                        Result.success(kavlingList.ifEmpty { null }),
+                        null
+                    )
                 }
 
-                return@getOperation kavlings
-            },
-            timeOutMsg = "Waktu habis mendapatkan kavling, periksa koneksi Anda.",
-            onClosedConnection = {},
-        )
+                override fun onCancelled(error: DatabaseError) {
+                    continuation.resume(Result.failure(error.toException()), null)
+                }
+            }
+
+            kavlingRef.child(blockKode).addListenerForSingleValueEvent(eventListener)
+        }
     }
 
     override suspend fun addKavling(

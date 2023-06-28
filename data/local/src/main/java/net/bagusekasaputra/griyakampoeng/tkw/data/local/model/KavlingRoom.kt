@@ -23,6 +23,7 @@ data class KavlingRoomEntity(
     var ukuran: String,
     @ColumnInfo(name = "type")
     var type: String,
+    val isCombined: Boolean,
 )
 
 @Dao

@@ -2,11 +2,11 @@
   "formatVersion": 1,
   "database": {
     "version": 34,
-    "identityHash": "5241a4199fd18e67d3a8ca95a0770352",
+    "identityHash": "739788571ff77261c14dbc613cffd4a1",
     "entities": [
       {
         "tableName": "kavlings",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER, `block_kode` TEXT NOT NULL, `kode` TEXT NOT NULL, `warna` TEXT NOT NULL, `is_active` INTEGER NOT NULL, `ukuran` TEXT NOT NULL, `type` TEXT NOT NULL, PRIMARY KEY(`id`))",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER, `block_kode` TEXT NOT NULL, `kode` TEXT NOT NULL, `warna` TEXT NOT NULL, `is_active` INTEGER NOT NULL, `ukuran` TEXT NOT NULL, `type` TEXT NOT NULL, `isCombined` INTEGER NOT NULL, PRIMARY KEY(`id`))",
         "fields": [
           {
             "fieldPath": "id",
@@ -48,6 +48,12 @@
             "fieldPath": "type",
             "columnName": "type",
             "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "isCombined",
+            "columnName": "isCombined",
+            "affinity": "INTEGER",
             "notNull": true
           }
         ],
@@ -1248,7 +1254,7 @@
     "views": [],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '5241a4199fd18e67d3a8ca95a0770352')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '739788571ff77261c14dbc613cffd4a1')"
     ]
   }
 }

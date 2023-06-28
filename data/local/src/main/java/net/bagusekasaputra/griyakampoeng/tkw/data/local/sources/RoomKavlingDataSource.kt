@@ -57,7 +57,8 @@ class RoomKavlingDataSource(
                         and (m.warna == e.warna)
                         and (m.active == e.isActive)
                         and (m.ukuran == e.ukuran)
-                        and (m.type == e.type))
+                        and (m.type == e.type)
+                        and (m.isCombined == e.isCombined))
             },
             insertWork = {
                 kavlingRoomDao.insert(mapKavlingRoomEntity(blockKode, it))
@@ -109,6 +110,7 @@ class RoomKavlingDataSource(
                 active = it.isActive,
                 ukuran = it.ukuran,
                 type = it.type,
+                isCombined = it.isCombined,
             )
         }
     }
@@ -122,6 +124,7 @@ class RoomKavlingDataSource(
                 isActive = it.active,
                 ukuran = it.ukuran,
                 type = it.type,
+                isCombined = it.isCombined,
             )
         }
     }
