@@ -1,6 +1,6 @@
 package net.bagusekasaputra.griyakampoengtkw.data.model
 
-class KavlingModel(
+data class KavlingModel(
     val kode: String = "",
     val warna: String = "",
     // is active means that there are no costumer here
@@ -32,6 +32,5 @@ class KavlingModel(
         fun getBlockKode(kavlingKode: String): String {
             return kavlingKode.substring(0, 1)
         }
-
     }
 }
