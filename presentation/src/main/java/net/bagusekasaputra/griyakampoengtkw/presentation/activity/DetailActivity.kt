@@ -19,6 +19,7 @@ import net.bagusekasaputra.griyakampoengtkw.presentation.R
 import net.bagusekasaputra.griyakampoengtkw.presentation.adapter.viewpager.DetailViewPagerAdapter
 import net.bagusekasaputra.griyakampoengtkw.presentation.databinding.ActivityDetailBinding
 import net.bagusekasaputra.griyakampoengtkw.presentation.fragment.BiayaMarketingFragment
+import net.bagusekasaputra.griyakampoengtkw.presentation.fragment.BiayaPembangunanKavlingFragment
 import net.bagusekasaputra.griyakampoengtkw.presentation.fragment.DataDiriFragment
 import net.bagusekasaputra.griyakampoengtkw.presentation.fragment.pembayaran.FormPembayaranFragment
 import net.bagusekasaputra.griyakampoengtkw.presentation.receiver.ProgressReceiver
@@ -124,21 +125,21 @@ class DetailActivity : AppCompatActivity() {
         pagerAdapter = DetailViewPagerAdapter(supportFragmentManager)
         pagerAdapter.apply {
             addFragment(putKavlingKode(DataDiriFragment(), currentKavlingKode), "Data Diri")
-            addFragment(putKavlingKode(FormPembayaranFragment(), currentKavlingKode), "Form Pembayaran")
-            addFragment(putKavlingKode(BiayaMarketingFragment(), currentKavlingKode), "Biaya Marketing")
+            addFragment(putKavlingKode(FormPembayaranFragment(), currentKavlingKode), "Pembayaran")
+            addFragment(putKavlingKode(BiayaMarketingFragment(), currentKavlingKode), "Marketing")
+            addFragment(putKavlingKode(BiayaPembangunanKavlingFragment(), currentKavlingKode), "Pembangunan")
         }
 
         binding.viewPager.apply {
             adapter = pagerAdapter
-//            setPageTransformer(true, DepthPageTransformer(0.75f))
+            offscreenPageLimit = 2
         }
+
         binding.tabLayout.apply {
             setupWithViewPager(binding.viewPager)
             tabIndicatorAnimationMode = TabLayout.INDICATOR_ANIMATION_MODE_ELASTIC
-//            val getIcon = { iconId: Int -> ContextCompat.getDrawable(this@DetailActivity, iconId) }
-//            getTabAt(0)?.icon = getIcon(R.drawable.ic_baseline_person_24)
-//            getTabAt(1)?.icon = getIcon(R.drawable.ic_baseline_attach_money_24)
-//            getTabAt(2)?.icon = getIcon(R.drawable.ic_baseline_account_balance_wallet_24)
+            tabMode = TabLayout.MODE_SCROLLABLE
+            tabGravity = TabLayout.GRAVITY_CENTER
         }
     }
 
