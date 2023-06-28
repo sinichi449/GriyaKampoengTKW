@@ -13,7 +13,7 @@ data class MaterialPembangunan(
     val hargaTotal: Long,
     val kelunasan: Kelunasan = Kelunasan.Lunas(hargaTotal),
     val kedatangan: Kedatangan = Kedatangan.Belum,
-    val keterangan: String = "",
+    val keterangan: String = "-",
 ) {
     val hargaSatuan: Long get() = if (qty > 0.0) {
         (hargaTotal / qty).toLong()

@@ -1,5 +1,7 @@
 package net.bagusekasaputra.griyakampoengtkw.presentation.compose.screen
 
+import android.util.Log
+import android.view.Gravity
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -13,7 +15,6 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.KeyboardArrowDown
 import androidx.compose.material.icons.outlined.KeyboardArrowUp
 import androidx.compose.material3.Divider
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
@@ -33,14 +34,16 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidViewBinding
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.Dimension
+import com.evrencoskun.tableview.TableView
 import net.bagusekasaputra.griyakampoengtkw.domain.DateUtil.toSlashedString
 import net.bagusekasaputra.griyakampoengtkw.domain.NumberUtil.numericToString
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.pembangunan.MaterialPembangunan
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.pembangunan.MaterialPembangunan.Companion.totalBiaya
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.pembangunan.UpahPekerja
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.pembangunan.UpahPekerja.Companion.totalDibayarkan
+import net.bagusekasaputra.griyakampoengtkw.presentation.R
 import net.bagusekasaputra.griyakampoengtkw.presentation.compose.theme.GriyaKampoengTkwTheme
-import net.bagusekasaputra.griyakampoengtkw.presentation.databinding.LayoutGenericTableviewBinding
+import net.bagusekasaputra.griyakampoengtkw.presentation.databinding.LayoutGenericSingleTableviewBinding
 import net.bagusekasaputra.griyakampoengtkw.presentation.tableview.base.CellItem
 import net.bagusekasaputra.griyakampoengtkw.presentation.tableview.base.ColumnHeader
 import net.bagusekasaputra.griyakampoengtkw.presentation.tableview.base.GenericTableView
@@ -57,13 +60,15 @@ import java.util.Date
 fun BiayaPembangunanKavlingScreen(
     modifier: Modifier = Modifier,
     pembangunanViewModel: PembangunanKavlingViewModel,
-    onTableUpahRowHeaderClicked: (row: Int) -> Unit = {},
-    onTableUpahCellClicked: (column: Int, row: Int) -> Unit = {_, _->},
+    onTableUpahRowHeaderClicked: (row: Int) -> Unit,
+    onTableUpahCellClicked: (column: Int, row: Int) -> Unit,
     onTableMaterialCellClicked: (column: Int, row: Int) -> Unit,
     onTableMaterialRowClicked: (row: Int) -> Unit,
 ) {
     val upahPekerjaList by pembangunanViewModel.upahPekerjaList.collectAsState()
     val materialList by pembangunanViewModel.materialList.collectAsState()
+
+    Log.d("PEMBANGUNAN", "Material : $materialList")
 
     BiayaPembangunanKavlingScreen(
         modifier = modifier,
@@ -107,7 +112,7 @@ fun BiayaPembangunanKavlingScreen(
             onRowHeaderClick = onTableUpahRowHeaderClicked,
             onCellClicked = onTableUpahCellClicked,
         )
-        Spacer(modifier = Modifier.height(16.dp))
+        Spacer(modifier = Modifier.height(32.dp))
         MaterialPembangunanTable(
             materialPembangunan = materialPembangunan,
             onTableCellClicked = onTableMaterialCellClicked,
@@ -120,7 +125,6 @@ fun BiayaPembangunanKavlingScreen(
 /**
  * Informasi Pembangunan
  */
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun InformasiPembangunanKavling(
     modifier: Modifier = Modifier,
@@ -203,134 +207,6 @@ fun RowItemProgressPembangunan(
 }
 
 /**
- * Material Pembangunan Table And Header
- */
-@Composable
-fun MaterialPembangunanTable(
-    modifier: Modifier = Modifier,
-    materialPembangunan: List<MaterialPembangunan>,
-    onTableCellClicked: (column: Int, row: Int) -> Unit = {_,_->},
-    onTableRowClicked: (row: Int) -> Unit = {},
-    showTable: Boolean = true,
-) {
-    Column(modifier = Modifier
-        .fillMaxWidth()
-        .then(modifier)) {
-        TableTitlePembangunanKavling(
-            modifier = Modifier.fillMaxWidth(),
-            title = "Material Pembangunan",
-            sumData = materialPembangunan.totalBiaya(),
-        )
-        Spacer(modifier = Modifier.height(16.dp))
-        if (showTable) {
-            TableViewMaterialPembangunan(
-                materialPembangunan = materialPembangunan,
-                onCellClick = onTableCellClicked,
-                onRowHeaderClick = onTableRowClicked,
-            )
-        }
-    }
-}
-
-@Composable
-fun TableViewMaterialPembangunan(
-    materialPembangunan: List<MaterialPembangunan>,
-    onRowHeaderClick: (row: Int) -> Unit = {},
-    onCellClick: (column: Int, row: Int) -> Unit = {_,_ ->},
-) {
-    val dataProvider = object : TableViewDataProvider<MaterialPembangunan> {
-        override fun getColumnHeaders(data: Collection<MaterialPembangunan>): List<ColumnHeader> {
-            return buildList {
-                add(ColumnHeader("Tanggal"))
-                add(ColumnHeader("Material"))
-                add(ColumnHeader("Qty"))
-                add(ColumnHeader("Biaya"))
-                add(ColumnHeader("Kelunasan"))
-                add(ColumnHeader("Kedatangan"))
-                add(ColumnHeader("Keterangan"))
-            }
-        }
-
-        override fun getRowHeaders(data: Collection<MaterialPembangunan>): List<RowHeader> {
-            return buildList {
-                repeat(data.size) {
-                    add(RowHeader(rowId = it.toString(), data = it.plus(1).toString()))
-                }
-            }
-        }
-
-        override fun getCellItems(data: Collection<MaterialPembangunan>): List<List<CellItem>> {
-            return buildList {
-                data.forEachIndexed { index, item ->
-                    val cellId = index.toString()
-                    val cell = mutableListOf<CellItem>()
-
-                    cell.add(CellItem(cellId, item.tanggal))
-                    cell.add(CellItem(cellId, item.namaMaterial))
-                    cell.add(CellItem(cellId, "${item.qty} ${item.satuan}"))
-                    cell.add(CellItem(cellId, item.hargaTotal))
-                    cell.add(CellItem(cellId, item.kelunasan))
-                    cell.add(CellItem(cellId, item.kedatangan))
-                    cell.add(CellItem(cellId, item.keterangan))
-
-                    add(cell)
-                }
-            }
-        }
-    }
-
-    AndroidViewBinding(
-        modifier = Modifier.fillMaxWidth(),
-        factory = { inflater, parent, attachToParent ->
-            val binding = LayoutGenericTableviewBinding.inflate(inflater, parent, attachToParent)
-
-            GenericTableView(binding.tableView, materialPembangunan)
-                .setDataProvider(dataProvider)
-                .setOnCellBinding { cellViewHolder, cellItem, col, _ ->
-                    with(cellViewHolder) {
-                        when(col) {
-                            TableMaterialPembangunan.INDEX_TANGGAL -> {
-                                tvCell.text = (cellItem?.data as Date?)?.toSlashedString() ?: "01/01/1979"
-                            }
-                            TableMaterialPembangunan.INDEX_BIAYA -> {
-                                val totalBiaya  = (cellItem?.data as Long?)?.numericToString() ?: "0"
-                                tvCell.text = "Rp. $totalBiaya"
-                            }
-                            TableMaterialPembangunan.INDEX_KEDATANGAN -> {
-                                val kedatangan = (cellItem?.data as MaterialPembangunan.Kedatangan?)
-                                tvCell.text = when (kedatangan) {
-                                    is MaterialPembangunan.Kedatangan.Datang -> "DATANG"
-                                    is MaterialPembangunan.Kedatangan.Belum -> "BELUM"
-                                    is MaterialPembangunan.Kedatangan.Partial -> "PARTIAL"
-                                    else -> "N/A"
-                                }
-                            }
-                            TableMaterialPembangunan.INDEX_KELUNASAN -> {
-                                val kelunasan = (cellItem?.data as MaterialPembangunan.Kelunasan?)
-                                tvCell.text = when(kelunasan) {
-                                    is MaterialPembangunan.Kelunasan.Lunas -> "LUNAS"
-                                    is MaterialPembangunan.Kelunasan.Belum -> "BELUM"
-                                    is MaterialPembangunan.Kelunasan.Partial -> "PARTIAL"
-                                    else -> "N/A"
-                                }
-                            }
-                        }
-                    }
-                }
-                .setOnClickedCellItem { _, column, row ->
-                    onCellClick(column, row)
-                }
-                .setOnClickedRowHeader { _, row ->
-                    onRowHeaderClick(row)
-                }
-                .create()
-
-            binding
-        }
-    )
-}
-
-/**
  * Upah Pekerja Table And Header
  */
 @Composable
@@ -409,19 +285,191 @@ fun TableViewUpahPekerja(
     AndroidViewBinding(
         modifier = Modifier.fillMaxWidth(),
         factory = { inflater, parent, attachToParent ->
-            val binding = LayoutGenericTableviewBinding.inflate(inflater, parent, attachToParent)
-
-            GenericTableView(binding.tableView, upahPekerja)
+            LayoutGenericSingleTableviewBinding.inflate(inflater, parent, attachToParent)
+        },
+        update = {
+            GenericTableView(tableView, upahPekerja)
                 .setDataProvider(dataProvider)
-                .setOnClickedRowHeader { _, row ->
-                    onRowHeaderClick(row)
+                .setWidthColumnHeaders(TableUpahPekerja.columnHeaderWidths)
+                .setOnRowHeaderBinding { viewHolder, item, _ ->
+                    with(viewHolder) {
+                        item?.also {
+                            val nomor = TableUpahPekerja.getNomor(it.data)
+                            val sudahIsiKuitansi = TableUpahPekerja.getKuitansiUri(it.rowId).isNotEmpty()
+
+                            if (sudahIsiKuitansi) setRowHeaderBgColour(R.color.table_selected_colour)
+                            getTextView().text = nomor
+                        }
+                    }
+                }
+                .setOnCellBinding { cellViewHolder, cellItem, col, _ ->
+                    with(cellViewHolder) {
+                        when (col) {
+                            TableUpahPekerja.INDEX_TANGGAL -> {
+                                val tanggal = (cellItem?.data as Date?)?.toSlashedString() ?: "-"
+                                tvCell.text = tanggal
+                            }
+                            TableUpahPekerja.INDEX_MANDOR -> {
+                                tvCell.gravity = Gravity.START
+                            }
+                            TableUpahPekerja.INDEX_DIBAYARKAN -> {
+                                val jumlahUang = (cellItem?.data as Long?)?.numericToString() ?: "-"
+                                tvCell.text = jumlahUang
+                            }
+                            TableUpahPekerja.INDEX_PROGRESS -> {
+                                val progress = (cellItem?.data as Double?) ?: 0.0
+                                tvCell.text = "${progress}%"
+                            }
+                            TableUpahPekerja.INDEX_KETERANGAN -> {
+                                tvCell.gravity = Gravity.START
+                            }
+                        }
+                    }
                 }
                 .setOnClickedCellItem { _, column, row ->
                     onCellClicked(column, row)
                 }
+                .setOnClickedRowHeader { _, row ->
+                    onRowHeaderClick(row)
+                }
                 .create()
+        }
+    )
+}
 
-            binding
+/**
+ * Material Pembangunan Table And Header
+ */
+@Composable
+fun MaterialPembangunanTable(
+    modifier: Modifier = Modifier,
+    materialPembangunan: List<MaterialPembangunan>,
+    onTableCellClicked: (column: Int, row: Int) -> Unit = {_,_->},
+    onTableRowClicked: (row: Int) -> Unit = {},
+    showTable: Boolean = true,
+) {
+    Column(modifier = Modifier
+        .fillMaxWidth()
+        .then(modifier)) {
+        TableTitlePembangunanKavling(
+            modifier = Modifier.fillMaxWidth(),
+            title = "Material Pembangunan",
+            sumData = materialPembangunan.totalBiaya(),
+        )
+        Spacer(modifier = Modifier.height(16.dp))
+        if (showTable) {
+            TableViewMaterialPembangunan(
+                materialPembangunan = materialPembangunan,
+                onCellClick = onTableCellClicked,
+                onRowHeaderClick = onTableRowClicked,
+            )
+        }
+    }
+}
+
+@Composable
+fun TableViewMaterialPembangunan(
+    materialPembangunan: List<MaterialPembangunan>,
+    onRowHeaderClick: (row: Int) -> Unit = {},
+    onCellClick: (column: Int, row: Int) -> Unit = {_,_ ->},
+) {
+    val dataProvider = object : TableViewDataProvider<MaterialPembangunan> {
+        override fun getColumnHeaders(data: Collection<MaterialPembangunan>): List<ColumnHeader> {
+            return buildList {
+                add(ColumnHeader("Tanggal"))
+                add(ColumnHeader("Material"))
+                add(ColumnHeader("Qty"))
+                add(ColumnHeader("Biaya"))
+                add(ColumnHeader("Kelunasan"))
+                add(ColumnHeader("Kedatangan"))
+                add(ColumnHeader("Keterangan"))
+            }
+        }
+
+        override fun getRowHeaders(data: Collection<MaterialPembangunan>): List<RowHeader> {
+            return buildList {
+                repeat(data.size) {
+                    add(RowHeader(rowId = it.toString(), data = it.plus(1).toString()))
+                }
+            }
+        }
+
+        override fun getCellItems(data: Collection<MaterialPembangunan>): List<List<CellItem>> {
+            return buildList {
+                data.forEachIndexed { index, item ->
+                    val cellId = index.toString()
+                    val cell = mutableListOf<CellItem>()
+
+                    cell.add(CellItem(cellId, item.tanggal))
+                    cell.add(CellItem(cellId, item.namaMaterial))
+                    cell.add(CellItem(cellId, "${item.qty} ${item.satuan}"))
+                    cell.add(CellItem(cellId, item.hargaTotal))
+                    cell.add(CellItem(cellId, item.kelunasan))
+                    cell.add(CellItem(cellId, item.kedatangan))
+                    cell.add(CellItem(cellId, item.keterangan))
+
+                    add(cell)
+                }
+            }
+        }
+    }
+    val createTable = { tableView: TableView ->
+        GenericTableView(tableView, materialPembangunan)
+            .setDataProvider(dataProvider)
+            .setWidthColumnHeaders(TableMaterialPembangunan.columnHeaderWidths)
+            .setOnCellBinding { cellViewHolder, cellItem, col, _ ->
+                with(cellViewHolder) {
+                    when(col) {
+                        TableMaterialPembangunan.INDEX_TANGGAL -> {
+                            tvCell.text = (cellItem?.data as Date?)?.toSlashedString() ?: "01/01/1979"
+                        }
+                        TableMaterialPembangunan.INDEX_NAMA_MATERIAL -> {
+                            tvCell.gravity = Gravity.START
+                        }
+                        TableMaterialPembangunan.INDEX_BIAYA -> {
+                            val totalBiaya  = (cellItem?.data as Long?)?.numericToString() ?: "0"
+                            tvCell.text = totalBiaya
+                        }
+                        TableMaterialPembangunan.INDEX_KEDATANGAN -> {
+                            val kedatangan = (cellItem?.data as MaterialPembangunan.Kedatangan?)
+                            tvCell.text = when (kedatangan) {
+                                is MaterialPembangunan.Kedatangan.Datang -> "DATANG"
+                                is MaterialPembangunan.Kedatangan.Belum -> "BELUM"
+                                is MaterialPembangunan.Kedatangan.Partial -> "PARTIAL"
+                                else -> "N/A"
+                            }
+                        }
+                        TableMaterialPembangunan.INDEX_KELUNASAN -> {
+                            val kelunasan = (cellItem?.data as MaterialPembangunan.Kelunasan?)
+                            tvCell.text = when(kelunasan) {
+                                is MaterialPembangunan.Kelunasan.Lunas -> "LUNAS"
+                                is MaterialPembangunan.Kelunasan.Belum -> "BELUM"
+                                is MaterialPembangunan.Kelunasan.Partial -> "PARTIAL"
+                                else -> "N/A"
+                            }
+                        }
+                        TableMaterialPembangunan.INDEX_KETERANGAN -> {
+                            tvCell.gravity = Gravity.START
+                        }
+                    }
+                }
+            }
+            .setOnClickedCellItem { _, column, row ->
+                onCellClick(column, row)
+            }
+            .setOnClickedRowHeader { _, row ->
+                onRowHeaderClick(row)
+            }
+            .create()
+    }
+
+    AndroidViewBinding(
+        modifier = Modifier.fillMaxWidth(),
+        factory = { inflater, parent, attachToParent ->
+            LayoutGenericSingleTableviewBinding.inflate(inflater, parent, attachToParent)
+        },
+        update = {
+            createTable(tableView)
         }
     )
 }
@@ -593,6 +641,16 @@ object TableMaterialPembangunan {
     const val INDEX_KELUNASAN = 4
     const val INDEX_KEDATANGAN = 5
     const val INDEX_KETERANGAN = 6
+
+    val columnHeaderWidths = buildList {
+        add(Pair(INDEX_TANGGAL, 250))
+        add(Pair(INDEX_NAMA_MATERIAL, 350))
+        add(Pair(INDEX_QTY, 250))
+        add(Pair(INDEX_BIAYA, 350))
+        add(Pair(INDEX_KELUNASAN, 250))
+        add(Pair(INDEX_KEDATANGAN, 275))
+        add(Pair(INDEX_KETERANGAN, 500))
+    }
 }
 
 object TableUpahPekerja {
@@ -605,6 +663,15 @@ object TableUpahPekerja {
 
     const val ROW_SEPARATOR = "<>"
 
+    val columnHeaderWidths = buildList {
+        add(Pair(INDEX_TANGGAL, 250))
+        add(Pair(INDEX_MANDOR, 350))
+        add(Pair(INDEX_MINGGU_KE, 200))
+        add(Pair(INDEX_DIBAYARKAN, 350))
+        add(Pair(INDEX_PROGRESS, 250))
+        add(Pair(INDEX_KETERANGAN, 500))
+    }
+
     fun getRowHeaderData(index: Int, kuitansiUri: String): RowHeader {
         return RowHeader(
             rowId = index.toString(),
@@ -616,8 +683,19 @@ object TableUpahPekerja {
         )
     }
 
+    fun getNomor(rowHeaderData: String): String {
+        return splitRowHeader(rowHeaderData)[0]
+    }
     fun getKuitansiUri(rowHeaderData: String): String {
-        val split = rowHeaderData.split(ROW_SEPARATOR)
-        return split[1]
+        val split = splitRowHeader(rowHeaderData)
+        return if (split.size > 1) {
+            split[1]
+        } else {
+            ""
+        }
+    }
+
+    private fun splitRowHeader(rowHeaderData: String): List<String> {
+        return rowHeaderData.split(ROW_SEPARATOR)
     }
 }

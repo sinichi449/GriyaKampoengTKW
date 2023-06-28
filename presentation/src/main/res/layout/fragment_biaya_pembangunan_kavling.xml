@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout
+<androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+    android:id="@+id/swipeRefresh_pembangunanKavling"
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
@@ -7,9 +8,25 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     tools:context=".fragment.BiayaPembangunanKavlingFragment">
 
-   <androidx.compose.ui.platform.ComposeView
-       android:id="@+id/composeView_pembangunanKavling"
-       android:layout_width="match_parent"
-       android:layout_height="match_parent"/>
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
 
-</FrameLayout>
+        <androidx.core.widget.NestedScrollView
+            android:id="@+id/scrollView_pembangunanKavling"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
+
+            <androidx.compose.ui.platform.ComposeView
+                android:id="@+id/composeView_pembangunanKavling"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"/>
+
+        </androidx.core.widget.NestedScrollView>
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</androidx.swiperefreshlayout.widget.SwipeRefreshLayout>

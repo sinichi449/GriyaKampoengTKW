@@ -9,7 +9,6 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.onCompletion
 import kotlinx.coroutines.flow.onStart
-import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import net.bagusekasaputra.griyakampoengtkw.domain.DataMode
@@ -17,6 +16,7 @@ import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.materialPembangu
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.upahPekerja.GetAllUpahPekerjaAsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.pembangunan.MaterialPembangunan
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.pembangunan.UpahPekerja
+import net.bagusekasaputra.griyakampoengtkw.presentation.tableview.base.DefaultTableViewAdapter
 import javax.inject.Inject
 
 @HiltViewModel
@@ -28,14 +28,18 @@ class PembangunanKavlingViewModel @Inject constructor(
     var kavlingKode = ""
     var dataMode = DataMode.ONLINE
 
+    var tableMaterialAdapter: DefaultTableViewAdapter? = null
+
     private var jobFetchMaterialPembangunan: Job? = null
     private var jobFetchUpahPekerja: Job? = null
 
     private val _materialList = MutableStateFlow(emptyList<MaterialPembangunan>())
     private val _upahPekerjaList = MutableStateFlow(emptyList<UpahPekerja>())
+    private val _numJobsFinished = MutableStateFlow(0)
 
     val materialList = _materialList.asStateFlow()
     val upahPekerjaList = _upahPekerjaList.asStateFlow()
+    val numJobsFinished = _numJobsFinished.asStateFlow()
 
     fun fetchMaterialPembangunan(kavling: String, listener: ViewModelListener) {
         jobFetchMaterialPembangunan?.cancel()
@@ -55,7 +59,36 @@ class PembangunanKavlingViewModel @Inject constructor(
                     withContext(Dispatchers.IO) {
                         result.onSuccess { items ->
                             if (!items.isNullOrEmpty()) {
-                                _materialList.update { items }
+                                _materialList.value = items
+                            }
+                        }
+                        result.onFailure {
+                            it.printStackTrace()
+                        }
+                    }
+                }
+        }
+    }
+
+    fun fetchUpahPekerja(kavling: String, listener: ViewModelListener) {
+        jobFetchUpahPekerja?.cancel()
+
+        jobFetchUpahPekerja = viewModelScope.launch(Dispatchers.Main) {
+            val request = GetAllUpahPekerjaAsyncUseCase.Request(kavling, dataMode)
+            getAllUpahPekerjaUseCase.execute(request)
+                .onStart { listener.onProgress() }
+                .onCompletion { throwable ->
+                    if (throwable == null) {
+                        listener.onCompleted()
+                    } else {
+                        listener.onFailed(throwable.message)
+                    }
+                }
+                .collect { result ->
+                    withContext(Dispatchers.IO) {
+                        result.onSuccess { items ->
+                            if (!items.isNullOrEmpty()) {
+                                _upahPekerjaList.value = items
                             }
                         }
                         result.onFailure {
