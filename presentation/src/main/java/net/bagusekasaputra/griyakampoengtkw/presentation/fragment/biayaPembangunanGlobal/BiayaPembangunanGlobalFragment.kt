@@ -13,14 +13,14 @@ import dagger.hilt.android.AndroidEntryPoint
 import net.bagusekasaputra.griyakampoengtkw.presentation.adapter.viewpager.BiayaPembangunanViewPagerAdapter
 import net.bagusekasaputra.griyakampoengtkw.presentation.adapter.viewpager.BiayaPembangunanViewPagerAdapter.FragmentAndTitle
 import net.bagusekasaputra.griyakampoengtkw.presentation.databinding.FragmentBiayaPembangunanGlobalBinding
-import net.bagusekasaputra.griyakampoengtkw.presentation.viewmodel.BiayaPembangunanViewModel
+import net.bagusekasaputra.griyakampoengtkw.presentation.viewmodel.BiayaPembangunanGlobalViewModel
 
 @AndroidEntryPoint
 class BiayaPembangunanGlobalFragment : Fragment() {
 
     private lateinit var binding: FragmentBiayaPembangunanGlobalBinding
 
-    private val viewModel by activityViewModels<BiayaPembangunanViewModel>()
+    private val viewModel by activityViewModels<BiayaPembangunanGlobalViewModel>()
 
     private val materialAndUpahKerjaFragments by lazy {
         buildList {

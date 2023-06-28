@@ -7,7 +7,7 @@ import kotlinx.coroutines.flow.update
 import javax.inject.Inject
 
 @HiltViewModel
-class BiayaPembangunanViewModel @Inject constructor(
+class BiayaPembangunanGlobalViewModel @Inject constructor(
 
 ): ViewModel() {
 
