@@ -26,9 +26,9 @@
         tools:layout="@layout/fragment_biaya_pribadi" />
     <fragment
         android:id="@id/nav_biaya_pembangunan"
-        android:name="net.bagusekasaputra.griyakampoengtkw.presentation.fragment.biayaPembangunan.BiayaPembangunanFragment"
+        android:name="net.bagusekasaputra.griyakampoengtkw.presentation.fragment.biayaPembangunanGlobal.BiayaPembangunanGlobalFragment"
         android:label="Biaya Pembangunan"
-        tools:layout="@layout/fragment_biaya_pembangunan"/>
+        tools:layout="@layout/fragment_biaya_pembangunan_global"/>
     <fragment
         android:id="@id/nav_pengembalian_pembayaran"
         android:name="net.bagusekasaputra.griyakampoengtkw.presentation.fragment.PengembalianPembayaranFragment"

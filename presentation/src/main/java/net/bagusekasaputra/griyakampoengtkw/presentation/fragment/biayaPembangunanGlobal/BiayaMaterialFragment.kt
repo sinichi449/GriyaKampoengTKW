@@ -1,4 +1,4 @@
-package net.bagusekasaputra.griyakampoengtkw.presentation.fragment.biayaPembangunan
+package net.bagusekasaputra.griyakampoengtkw.presentation.fragment.biayaPembangunanGlobal
 
 import android.os.Bundle
 import android.view.LayoutInflater

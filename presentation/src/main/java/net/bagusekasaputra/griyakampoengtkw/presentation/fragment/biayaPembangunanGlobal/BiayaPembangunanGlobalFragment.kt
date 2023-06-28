@@ -1,4 +1,4 @@
-package net.bagusekasaputra.griyakampoengtkw.presentation.fragment.biayaPembangunan
+package net.bagusekasaputra.griyakampoengtkw.presentation.fragment.biayaPembangunanGlobal
 
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -12,13 +12,13 @@ import com.google.android.material.tabs.TabLayout
 import dagger.hilt.android.AndroidEntryPoint
 import net.bagusekasaputra.griyakampoengtkw.presentation.adapter.viewpager.BiayaPembangunanViewPagerAdapter
 import net.bagusekasaputra.griyakampoengtkw.presentation.adapter.viewpager.BiayaPembangunanViewPagerAdapter.FragmentAndTitle
-import net.bagusekasaputra.griyakampoengtkw.presentation.databinding.FragmentBiayaPembangunanBinding
+import net.bagusekasaputra.griyakampoengtkw.presentation.databinding.FragmentBiayaPembangunanGlobalBinding
 import net.bagusekasaputra.griyakampoengtkw.presentation.viewmodel.BiayaPembangunanViewModel
 
 @AndroidEntryPoint
-class BiayaPembangunanFragment : Fragment() {
+class BiayaPembangunanGlobalFragment : Fragment() {
 
-    private lateinit var binding: FragmentBiayaPembangunanBinding
+    private lateinit var binding: FragmentBiayaPembangunanGlobalBinding
 
     private val viewModel by activityViewModels<BiayaPembangunanViewModel>()
 
@@ -34,7 +34,7 @@ class BiayaPembangunanFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View {
         // Inflate the layout for this fragment
-        binding = FragmentBiayaPembangunanBinding.inflate(inflater, container, false)
+        binding = FragmentBiayaPembangunanGlobalBinding.inflate(inflater, container, false)
 
         return binding.root
     }
