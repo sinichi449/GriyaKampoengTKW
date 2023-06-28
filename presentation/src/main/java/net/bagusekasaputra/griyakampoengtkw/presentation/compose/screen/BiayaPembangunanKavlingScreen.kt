@@ -1,5 +1,6 @@
 package net.bagusekasaputra.griyakampoengtkw.presentation.compose.screen
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -15,7 +16,6 @@ import androidx.compose.material3.Divider
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedCard
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -37,6 +37,8 @@ import net.bagusekasaputra.griyakampoengtkw.domain.DateUtil.toSlashedString
 import net.bagusekasaputra.griyakampoengtkw.domain.NumberUtil.numericToString
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.pembangunan.MaterialPembangunan
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.pembangunan.MaterialPembangunan.Companion.totalBiaya
+import net.bagusekasaputra.griyakampoengtkw.domain.entity.pembangunan.UpahPekerja
+import net.bagusekasaputra.griyakampoengtkw.domain.entity.pembangunan.UpahPekerja.Companion.totalDibayarkan
 import net.bagusekasaputra.griyakampoengtkw.presentation.compose.theme.GriyaKampoengTkwTheme
 import net.bagusekasaputra.griyakampoengtkw.presentation.databinding.LayoutGenericTableviewBinding
 import net.bagusekasaputra.griyakampoengtkw.presentation.tableview.base.CellItem
@@ -48,92 +50,118 @@ import net.bagusekasaputra.griyakampoengtkw.presentation.toDate
 import net.bagusekasaputra.griyakampoengtkw.presentation.viewmodel.PembangunanKavlingViewModel
 import java.util.Date
 
+/**
+ * Biaya Pembangunan Main Screen
+ */
 @Composable
 fun BiayaPembangunanKavlingScreen(
     modifier: Modifier = Modifier,
     pembangunanViewModel: PembangunanKavlingViewModel,
-    onTableMaterialPembangunanCellClicked: (column: Int, row: Int) -> Unit,
+    onTableUpahRowHeaderClicked: (row: Int) -> Unit = {},
+    onTableUpahCellClicked: (column: Int, row: Int) -> Unit = {_, _->},
+    onTableMaterialCellClicked: (column: Int, row: Int) -> Unit,
+    onTableMaterialRowClicked: (row: Int) -> Unit,
 ) {
+    val upahPekerjaList by pembangunanViewModel.upahPekerjaList.collectAsState()
     val materialList by pembangunanViewModel.materialList.collectAsState()
 
     BiayaPembangunanKavlingScreen(
         modifier = modifier,
+        upahPekerja = upahPekerjaList,
         materialPembangunan = materialList,
-        onTableMaterialPembangunanCellClicked = onTableMaterialPembangunanCellClicked,
+        onTableMaterialCellClicked = onTableMaterialCellClicked,
+        onTableMaterialRowHeaderClicked = onTableMaterialRowClicked,
+        onTableUpahCellClicked = onTableUpahCellClicked,
+        onTableUpahRowHeaderClicked = onTableUpahRowHeaderClicked,
     )
 }
 
 @Composable
 fun BiayaPembangunanKavlingScreen(
     modifier: Modifier = Modifier,
+    upahPekerja: List<UpahPekerja> = emptyList(),
     materialPembangunan: List<MaterialPembangunan> = emptyList(),
-    onTableMaterialPembangunanCellClicked: (column: Int, row: Int) -> Unit = {_,_->},
-    showTable: Boolean = true,
+    onTableUpahRowHeaderClicked: (row: Int) -> Unit = {},
+    onTableUpahCellClicked: (column: Int, row: Int) -> Unit = {_,_->},
+    onTableMaterialCellClicked: (column: Int, row: Int) -> Unit = { _, _->},
+    onTableMaterialRowHeaderClicked: (row: Int) -> Unit = {},
+    showTables: Boolean = true,
 ) {
     var isExpandedCardPembangunan by remember { mutableStateOf(false) }
 
     Column(modifier = Modifier
         .fillMaxSize()
         .then(modifier)) {
-        CardProgressPembangunan(
+        InformasiPembangunanKavling(
             expanded = isExpandedCardPembangunan,
             onClick = {
                 isExpandedCardPembangunan = !isExpandedCardPembangunan
             }
         )
-        Spacer(modifier = Modifier.height(36.dp))
+        Spacer(modifier = Modifier.height(16.dp))
+        Divider()
+        Spacer(modifier = Modifier.height(16.dp))
+        UpahPekerjaTable(
+            upahPekerja = upahPekerja,
+            showTable = showTables,
+            onRowHeaderClick = onTableUpahRowHeaderClicked,
+            onCellClicked = onTableUpahCellClicked,
+        )
+        Spacer(modifier = Modifier.height(16.dp))
         MaterialPembangunanTable(
             materialPembangunan = materialPembangunan,
-            onTableCellClicked = onTableMaterialPembangunanCellClicked,
-            showTable = showTable,
+            onTableCellClicked = onTableMaterialCellClicked,
+            onTableRowClicked = onTableMaterialRowHeaderClicked,
+            showTable = showTables,
         )
     }
 }
 
+/**
+ * Informasi Pembangunan
+ */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun CardProgressPembangunan(
+fun InformasiPembangunanKavling(
     modifier: Modifier = Modifier,
     expanded: Boolean = false,
     onClick: () -> Unit = {},
 ) {
-    OutlinedCard(
+    Column(
         modifier = Modifier
             .fillMaxWidth()
-            .then(modifier),
-        onClick = onClick
+            .then(modifier)
+            .clickable {
+                onClick()
+            },
     ) {
-        Column(modifier = Modifier.padding(16.dp)) {
-            Row(verticalAlignment = Alignment.CenterVertically) {
-                Text(text = "Informasi Pembangunan", style = MaterialTheme.typography.titleMedium)
-                Spacer(modifier = Modifier.width(16.dp))
-                Icon(
-                    imageVector = if (expanded) Icons.Outlined.KeyboardArrowUp
-                        else Icons.Outlined.KeyboardArrowDown,
-                    contentDescription = null
-                )
-            }
-
-            Spacer(modifier = Modifier.height(24.dp))
-
-            RowItemProgressPembangunan(title = "Luas", text = "36 m2")
-            RowItemProgressPembangunan(title = "Progress", text = "24,00 %")
-            RowItemProgressPembangunan(title = "Harga Borong", text = "Rp. 1.000.000,00")
-            RowItemProgressPembangunan(title = "Retensi", text = "3%")
-            Spacer(modifier = Modifier.height(8.dp))
-            Divider()
-            Spacer(modifier = Modifier.height(8.dp))
-            if (expanded) {
-                RowItemProgressPembangunan(title = "Addendum", text = "-")
-                RowItemProgressPembangunan(title = "Kontrak", text = "Rp. 36.000.000,00")
-                RowItemProgressPembangunan(title = "Kontrak + Addendum", text = "Rp. 36.000.000,00")
-            }
-            if (expanded) {
-                RowItemProgressPembangunan(title = "Dana Terserap Progress", text = "Rp. 9.024.000,00")
-                RowItemProgressPembangunan(title = "Dana Terserap Lainnya", text = "-")
-            }
-            RowItemProgressPembangunan(title = "Bisa Diserap", text = "Rp. 8.753.280,00")
+        Row(verticalAlignment = Alignment.CenterVertically) {
+            Text(text = "Informasi Pembangunan", style = MaterialTheme.typography.titleMedium)
+            Spacer(modifier = Modifier.width(16.dp))
+            Icon(
+                imageVector = if (expanded) Icons.Outlined.KeyboardArrowUp
+                else Icons.Outlined.KeyboardArrowDown,
+                contentDescription = null
+            )
         }
+
+        Spacer(modifier = Modifier.height(16.dp))
+
+        RowItemProgressPembangunan(title = "Luas", text = "36 m2")
+        RowItemProgressPembangunan(title = "Progress", text = "24,00 %")
+        RowItemProgressPembangunan(title = "Harga Borong", text = "Rp. 1.000.000,00")
+        RowItemProgressPembangunan(title = "Retensi", text = "3%")
+        Spacer(modifier = Modifier.height(8.dp))
+        if (expanded) {
+            RowItemProgressPembangunan(title = "Addendum", text = "-")
+            RowItemProgressPembangunan(title = "Kontrak", text = "Rp. 36.000.000,00")
+            RowItemProgressPembangunan(title = "Kontrak + Addendum", text = "Rp. 36.000.000,00")
+        }
+        if (expanded) {
+            RowItemProgressPembangunan(title = "Dana Terserap Progress", text = "Rp. 9.024.000,00")
+            RowItemProgressPembangunan(title = "Dana Terserap Lainnya", text = "-")
+        }
+        RowItemProgressPembangunan(title = "Bisa Diserap", text = "Rp. 8.753.280,00")
     }
 }
 
@@ -174,26 +202,31 @@ fun RowItemProgressPembangunan(
     }
 }
 
+/**
+ * Material Pembangunan Table And Header
+ */
 @Composable
 fun MaterialPembangunanTable(
     modifier: Modifier = Modifier,
     materialPembangunan: List<MaterialPembangunan>,
     onTableCellClicked: (column: Int, row: Int) -> Unit = {_,_->},
+    onTableRowClicked: (row: Int) -> Unit = {},
     showTable: Boolean = true,
 ) {
     Column(modifier = Modifier
         .fillMaxWidth()
         .then(modifier)) {
-        Text(text = "Material Pembangunan", style = MaterialTheme.typography.titleLarge)
-        Text(
-            text = "Rp. ${materialPembangunan.totalBiaya().numericToString()}",
-            style = MaterialTheme.typography.bodyMedium
+        TableTitlePembangunanKavling(
+            modifier = Modifier.fillMaxWidth(),
+            title = "Material Pembangunan",
+            sumData = materialPembangunan.totalBiaya(),
         )
         Spacer(modifier = Modifier.height(16.dp))
         if (showTable) {
             TableViewMaterialPembangunan(
                 materialPembangunan = materialPembangunan,
-                onCellClick = onTableCellClicked
+                onCellClick = onTableCellClicked,
+                onRowHeaderClick = onTableRowClicked,
             )
         }
     }
@@ -202,6 +235,7 @@ fun MaterialPembangunanTable(
 @Composable
 fun TableViewMaterialPembangunan(
     materialPembangunan: List<MaterialPembangunan>,
+    onRowHeaderClick: (row: Int) -> Unit = {},
     onCellClick: (column: Int, row: Int) -> Unit = {_,_ ->},
 ) {
     val dataProvider = object : TableViewDataProvider<MaterialPembangunan> {
@@ -286,6 +320,9 @@ fun TableViewMaterialPembangunan(
                 .setOnClickedCellItem { _, column, row ->
                     onCellClick(column, row)
                 }
+                .setOnClickedRowHeader { _, row ->
+                    onRowHeaderClick(row)
+                }
                 .create()
 
             binding
@@ -293,12 +330,132 @@ fun TableViewMaterialPembangunan(
     )
 }
 
+/**
+ * Upah Pekerja Table And Header
+ */
+@Composable
+fun UpahPekerjaTable(
+    modifier: Modifier = Modifier,
+    upahPekerja: List<UpahPekerja> = emptyList(),
+    showTable: Boolean = true,
+    onRowHeaderClick: (row: Int) -> Unit = {},
+    onCellClicked: (column: Int, row: Int) -> Unit = {_,_->},
+) {
+    Column(modifier = Modifier
+        .fillMaxWidth()
+        .then(modifier)) {
+        TableTitlePembangunanKavling(
+            modifier = Modifier.fillMaxWidth(),
+            title = "Upah Pekerja",
+            sumData = upahPekerja.totalDibayarkan(),
+        )
+        Spacer(modifier = Modifier.height(16.dp))
+        if (showTable) {
+            TableViewUpahPekerja(
+                upahPekerja = upahPekerja,
+                onRowHeaderClick = onRowHeaderClick,
+                onCellClicked = onCellClicked
+            )
+        }
+    }
+}
+
+@Composable
+fun TableViewUpahPekerja(
+    upahPekerja: List<UpahPekerja>,
+    onRowHeaderClick: (row: Int) -> Unit,
+    onCellClicked: (column: Int, row: Int) -> Unit,
+) {
+    val dataProvider = object : TableViewDataProvider<UpahPekerja> {
+        override fun getColumnHeaders(data: Collection<UpahPekerja>): List<ColumnHeader> {
+            return buildList {
+                add(ColumnHeader("Tanggal"))
+                add(ColumnHeader("Mandor"))
+                add(ColumnHeader("Minggu Ke"))
+                add(ColumnHeader("Dibayarkan"))
+                add(ColumnHeader("Progress"))
+                add(ColumnHeader("Keterangan"))
+            }
+        }
+
+        override fun getRowHeaders(data: Collection<UpahPekerja>): List<RowHeader> {
+            return buildList {
+                data.forEachIndexed { index, item ->
+                    add(TableUpahPekerja.getRowHeaderData(index, item.kuitansiUri))
+                }
+            }
+        }
+
+        override fun getCellItems(data: Collection<UpahPekerja>): List<List<CellItem>> {
+            return buildList {
+                data.forEachIndexed { index, item ->
+                    val cellId = index.toString()
+                    val cell = mutableListOf<CellItem>()
+
+                    cell.add(CellItem(cellId, item.tanggalDibayarkan))
+                    cell.add(CellItem(cellId, item.mandor))
+                    cell.add(CellItem(cellId, item.mingguKe))
+                    cell.add(CellItem(cellId, item.jumlahDibayarkan))
+                    cell.add(CellItem(cellId, item.progress))
+                    cell.add(CellItem(cellId, item.keterangan))
+
+                    add(cell)
+                }
+            }
+        }
+
+    }
+
+    AndroidViewBinding(
+        modifier = Modifier.fillMaxWidth(),
+        factory = { inflater, parent, attachToParent ->
+            val binding = LayoutGenericTableviewBinding.inflate(inflater, parent, attachToParent)
+
+            GenericTableView(binding.tableView, upahPekerja)
+                .setDataProvider(dataProvider)
+                .setOnClickedRowHeader { _, row ->
+                    onRowHeaderClick(row)
+                }
+                .setOnClickedCellItem { _, column, row ->
+                    onCellClicked(column, row)
+                }
+                .create()
+
+            binding
+        }
+    )
+}
+
+/**
+ * Common Components
+ */
+@Composable
+fun TableTitlePembangunanKavling(
+    modifier: Modifier = Modifier,
+    title: String = "Lorem Ipsum",
+    sumData: Long = 0L
+) {
+    Column(modifier = modifier) {
+        Text(text = title, style = MaterialTheme.typography.titleLarge)
+        Text(
+            text = "Rp. ${sumData.numericToString()}",
+            style = MaterialTheme.typography.bodyMedium
+        )
+    }
+}
+
+
+/**
+ * Previews
+ */
 @Preview(showBackground = true, showSystemUi = true, group = "layout")
 @Composable
 fun BiayaPembangunanKavlingScreenPreview(
-    @PreviewParameter(BiayaMaterialPembangunanParamProvider::class, 1)
+    @PreviewParameter(MaterialPembangunanParamProvider::class, 1)
     materialList: List<MaterialPembangunan>,
 ) {
+    val upahPekerja = UpahPekerjaParamProvider().values.toList()[0]
+
     GriyaKampoengTkwTheme {
         Surface(
             modifier = Modifier.fillMaxSize(),
@@ -306,7 +463,8 @@ fun BiayaPembangunanKavlingScreenPreview(
         ) {
             BiayaPembangunanKavlingScreen(
                 materialPembangunan = materialList,
-                showTable = false,
+                upahPekerja = upahPekerja,
+                showTables = false,
                 modifier = Modifier.padding(16.dp)
             )
         }
@@ -315,8 +473,21 @@ fun BiayaPembangunanKavlingScreenPreview(
 
 @Preview(showBackground = true, group = "components")
 @Composable
+fun UpahPekerjaTablePreview(
+    @PreviewParameter(UpahPekerjaParamProvider::class, 1)
+    upahPekerja: List<UpahPekerja>,
+) {
+    UpahPekerjaTable(
+        modifier = Modifier.padding(16.dp),
+        upahPekerja = upahPekerja,
+        showTable = false,
+    )
+}
+
+@Preview(showBackground = true, group = "components")
+@Composable
 fun TabelBiayaMaterialPreview(
-    @PreviewParameter(BiayaMaterialPembangunanParamProvider::class, 1)
+    @PreviewParameter(MaterialPembangunanParamProvider::class, 1)
     materialPembangunan: List<MaterialPembangunan>,
 ) {
     GriyaKampoengTkwTheme {
@@ -335,7 +506,7 @@ fun CardProgressPembangunanPreview() {
         var expanded by remember {
             mutableStateOf(false)
         }
-        CardProgressPembangunan(
+        InformasiPembangunanKavling(
             modifier = Modifier.padding(16.dp),
             expanded = expanded,
             onClick = {
@@ -345,7 +516,7 @@ fun CardProgressPembangunanPreview() {
     }
 }
 
-private class BiayaMaterialPembangunanParamProvider: PreviewParameterProvider<List<MaterialPembangunan>> {
+private class MaterialPembangunanParamProvider: PreviewParameterProvider<List<MaterialPembangunan>> {
     override val values: Sequence<List<MaterialPembangunan>>
         get() = sequenceOf(
             listOf(
@@ -380,6 +551,40 @@ private class BiayaMaterialPembangunanParamProvider: PreviewParameterProvider<Li
         )
 }
 
+private class UpahPekerjaParamProvider: PreviewParameterProvider<List<UpahPekerja>> {
+    override val values: Sequence<List<UpahPekerja>>
+        get() = sequenceOf(
+            listOf(
+                UpahPekerja(
+                    untukKavling = "D1",
+                    tanggalDibayarkan = "24/06/2023".toDate(),
+                    mingguKe = 1,
+                    mandor = "Pak Sugeng",
+                    progress = 16.0,
+                    jumlahDibayarkan = 3_000_000L,
+                ),
+                UpahPekerja(
+                    untukKavling = "D1",
+                    tanggalDibayarkan = "01/07/2023".toDate(),
+                    mingguKe = 2,
+                    mandor = "Pak Pandri",
+                    progress = 20.74,
+                    jumlahDibayarkan = 790_000L,
+                ),
+                UpahPekerja(
+                    untukKavling = "D1",
+                    tanggalDibayarkan = "08/07/2023".toDate(),
+                    mingguKe = 3,
+                    mandor = "Pak Blablabla",
+                    progress = 24.0,
+                    jumlahDibayarkan = 4_250_000L,
+                    kuitansiUri = "https://www.google.com"
+                ),
+            )
+        )
+
+}
+
 object TableMaterialPembangunan {
     const val INDEX_TANGGAL = 0
     const val INDEX_NAMA_MATERIAL = 1
@@ -388,4 +593,31 @@ object TableMaterialPembangunan {
     const val INDEX_KELUNASAN = 4
     const val INDEX_KEDATANGAN = 5
     const val INDEX_KETERANGAN = 6
+}
+
+object TableUpahPekerja {
+    const val INDEX_TANGGAL = 0
+    const val INDEX_MANDOR = 1
+    const val INDEX_MINGGU_KE = 2
+    const val INDEX_DIBAYARKAN = 3
+    const val INDEX_PROGRESS = 4
+    const val INDEX_KETERANGAN = 5
+
+    const val ROW_SEPARATOR = "<>"
+
+    fun getRowHeaderData(index: Int, kuitansiUri: String): RowHeader {
+        return RowHeader(
+            rowId = index.toString(),
+            data = buildString {
+                append(index.plus(1).toString())
+                append(ROW_SEPARATOR)
+                append(kuitansiUri)
+            }
+        )
+    }
+
+    fun getKuitansiUri(rowHeaderData: String): String {
+        val split = rowHeaderData.split(ROW_SEPARATOR)
+        return split[1]
+    }
 }

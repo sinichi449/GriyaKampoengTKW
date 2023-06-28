@@ -351,7 +351,7 @@ class SplashActivity : AppCompatActivity() {
             // show loading
             withContext(Dispatchers.Main) { loadingBackupsDialog.show() }
 
-            // Get available nama backup
+            // Get available mandor backup
             val arrBackup = backupRestoreViewModel.getListBackup()?.toTypedArray()
 
             // Show dialog pilih data lama

@@ -23,7 +23,7 @@ class ExcelDataExporter(
         val excelExporter = ExcelExporter(
 //            blockKode = blockKode,
 //            kavlingNumber = kavlingNum,
-//            namaPembayar = dataDiri.nama,
+//            namaPembayar = dataDiri.mandor,
 //            hargaKavling = hargaKavling.harga,
 //            tambahLuasan = hargaKavling.tambahanLuas,
 //            totalHarga = NumberUtil.formatLongToString(hargaKavling.hargaDanTambahLuasan),

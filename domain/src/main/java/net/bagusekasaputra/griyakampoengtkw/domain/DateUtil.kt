@@ -220,7 +220,7 @@ object DateUtil {
             10 -> "Okt"
             11 -> "Nov"
             12 -> "Des"
-            else -> throw IllegalArgumentException("Tidak ada nama bulan yang sesuai untuk Bulan $bulan")
+            else -> throw IllegalArgumentException("Tidak ada mandor bulan yang sesuai untuk Bulan $bulan")
         }
     }
 
@@ -238,7 +238,7 @@ object DateUtil {
             10 -> "Oktober"
             11 -> "November"
             12 -> "Desember"
-            else -> throw IllegalArgumentException("Tidak ada nama bulan yang sesuai untuk Bulan $bulan")
+            else -> throw IllegalArgumentException("Tidak ada mandor bulan yang sesuai untuk Bulan $bulan")
         }
     }
 

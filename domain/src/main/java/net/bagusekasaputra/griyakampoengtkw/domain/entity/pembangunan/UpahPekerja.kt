@@ -8,8 +8,17 @@ data class UpahPekerja(
     val untukKavling: String,
     val tanggalDibayarkan: Date,
     val mingguKe: Int,
-    val nama: String,
+    val mandor: String,
     val progress: Double,
     val jumlahDibayarkan: Long,
-    val keterangan: String,
-)
+    val keterangan: String = "-",
+    val kuitansiUri: String = "",
+) {
+    companion object {
+
+        fun List<UpahPekerja>.totalDibayarkan(): Long {
+            return this.sumOf { it.jumlahDibayarkan }
+        }
+
+    }
+}
