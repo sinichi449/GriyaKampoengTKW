@@ -36,4 +36,12 @@ data class MaterialPembangunan(
 
         data class Partial(val jumlah: Double): Kedatangan(jumlah)
     }
+
+    companion object {
+
+        fun List<MaterialPembangunan>.totalBiaya(): Long {
+            return this.sumOf { it.hargaTotal }
+        }
+
+    }
 }

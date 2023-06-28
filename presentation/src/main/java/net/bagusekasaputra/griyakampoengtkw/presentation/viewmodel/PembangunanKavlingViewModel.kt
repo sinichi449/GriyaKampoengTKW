@@ -6,6 +6,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.onCompletion
 import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.update
@@ -32,6 +33,9 @@ class PembangunanKavlingViewModel @Inject constructor(
 
     private val _materialList = MutableStateFlow(emptyList<MaterialPembangunan>())
     private val _upahPekerjaList = MutableStateFlow(emptyList<UpahPekerja>())
+
+    val materialList = _materialList.asStateFlow()
+    val upahPekerjaList = _upahPekerjaList.asStateFlow()
 
     fun fetchMaterialPembangunan(kavling: String, listener: ViewModelListener) {
         jobFetchMaterialPembangunan?.cancel()

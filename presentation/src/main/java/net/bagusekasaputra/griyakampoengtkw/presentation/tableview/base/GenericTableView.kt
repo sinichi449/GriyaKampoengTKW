@@ -286,6 +286,12 @@ class GenericTableView<T>(
         return this
     }
 
+    fun setOnClickedCellItem(onClick: (cellView: RecyclerView.ViewHolder, column: Int, row: Int) -> Unit): GenericTableView<T> {
+        this.onClickedCellItem = onClick
+
+        return this
+    }
+
     private fun resetTableSortingStatus() {
         repeat(columnHeaders.size) { column ->
             tableView.sortColumn(column, SortState.UNSORTED)
