@@ -26,9 +26,12 @@ import kotlinx.coroutines.launch
 import net.bagusekasaputra.griyakampoengtkw.domain.DataMode
 import net.bagusekasaputra.griyakampoengtkw.presentation.compose.screen.BiayaPembangunanKavlingScreen
 import net.bagusekasaputra.griyakampoengtkw.presentation.compose.screen.MaterialPembangunanInputDialog
+import net.bagusekasaputra.griyakampoengtkw.presentation.compose.screen.MaterialPembangunanTable
+import net.bagusekasaputra.griyakampoengtkw.presentation.compose.screen.UpahPekerjaTable
 import net.bagusekasaputra.griyakampoengtkw.presentation.compose.theme.GriyaKampoengTkwTheme
 import net.bagusekasaputra.griyakampoengtkw.presentation.databinding.FragmentBiayaPembangunanKavlingBinding
 import net.bagusekasaputra.griyakampoengtkw.presentation.util.GriyaNodes
+import net.bagusekasaputra.griyakampoengtkw.presentation.util.UiUtils
 import net.bagusekasaputra.griyakampoengtkw.presentation.viewmodel.PembangunanKavlingViewModel
 import net.bagusekasaputra.griyakampoengtkw.presentation.viewmodel.ViewModelListener
 
@@ -37,7 +40,7 @@ class BiayaPembangunanKavlingFragment : Fragment() {
 
     private lateinit var binding: FragmentBiayaPembangunanKavlingBinding
 
-    private val pembangunanViewModel by viewModels<PembangunanKavlingViewModel>()
+    private val viewModel by viewModels<PembangunanKavlingViewModel>()
 
     // TODO: Pass Data Mode
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -45,8 +48,8 @@ class BiayaPembangunanKavlingFragment : Fragment() {
 
         val kavlingKode = arguments?.getString(GriyaNodes.INTENT_KAVLING_KODE)
         if (!kavlingKode.isNullOrEmpty()) {
-            pembangunanViewModel.kavlingKode = kavlingKode
-            pembangunanViewModel.dataMode = DataMode.ONLINE // <-- Change this
+            viewModel.kavlingKode = kavlingKode
+            viewModel.dataMode = DataMode.ONLINE // <-- Change this
         }
     }
 
@@ -64,44 +67,38 @@ class BiayaPembangunanKavlingFragment : Fragment() {
                         modifier = Modifier.fillMaxWidth(),
                         color = MaterialTheme.colorScheme.background
                     ) {
-                        val inputMaterialPembangunanDialog by pembangunanViewModel.inputMaterialPembangunanDialog.collectAsState()
+                        val informasiPembangunan = viewModel.informasiPembangunan.collectAsState()
+                        val materialPembangunan = viewModel.materialList.collectAsState()
+                        val upahPekerja = viewModel.upahPekerjaList.collectAsState()
+                        val currentKavling = viewModel.kavlingKode
+                        val selectedMaterialPembangunan = viewModel.selectedMaterialPembangunan
+                        val inputMaterialPembangunanDialog by viewModel.inputMaterialPembangunanDialog.collectAsState()
 
                         BiayaPembangunanKavlingScreen(
                             modifier = Modifier.padding(16.dp),
-                            pembangunanViewModel = pembangunanViewModel,
-                            onTableUpahRowHeaderClicked = { row ->
-                                Toast.makeText(
-                                    requireContext(),
-                                    "Upah Pekerja $row",
-                                    Toast.LENGTH_SHORT
-                                ).show()
-                            },
-                            onTableUpahCellClicked = { column, row ->
-                                Toast.makeText(
-                                    requireContext(),
-                                    "Upah Pekerja ${column}:${row}" ,
-                                    Toast.LENGTH_SHORT
-                                ).show()
-                            },
-                            onTableMaterialCellClicked = { column, row ->
-                                Toast.makeText(
-                                    requireContext(),
-                                    "Material ${column}:${row}" ,
-                                    Toast.LENGTH_SHORT
-                                ).show()
-                            },
-                            onTableMaterialRowClicked = { row ->
-                                val materialPembangunan = pembangunanViewModel.materialList.value[row]
-                                pembangunanViewModel.selectedMaterialPembangunan = materialPembangunan
+                            informasiPembangunan = informasiPembangunan.value,
+                            materialPembangunanTableView = {
+                                MaterialPembangunanTable(
+                                    materialPembangunan = materialPembangunan.value,
+                                    onTableRowClicked = {
+                                        viewModel.setSelectedMaterialPembangunan(it)
 
-                                pembangunanViewModel.updateInputMaterialDialog()
+                                        // Open Dialog Input
+                                        viewModel.updateInputMaterialDialog()
+                                    }
+                                )
+                            },
+                            upahPekerjaTableView = {
+                                UpahPekerjaTable(
+                                    upahPekerja = upahPekerja.value,
+                                )
                             }
                         )
 
                         if (inputMaterialPembangunanDialog) {
                             MaterialPembangunanInputDialog(
-                                kavling = pembangunanViewModel.kavlingKode,
-                                material = pembangunanViewModel.selectedMaterialPembangunan,
+                                kavling = currentKavling,
+                                material = selectedMaterialPembangunan,
                                 onSubmit = {
                                     // TODO
                                 },
@@ -109,7 +106,7 @@ class BiayaPembangunanKavlingFragment : Fragment() {
                                     // TODO
                                 },
                                 onCancelled = {
-                                    pembangunanViewModel.updateInputMaterialDialog()
+                                    viewModel.updateInputMaterialDialog()
                                 },
                             )
                         }
@@ -131,7 +128,7 @@ class BiayaPembangunanKavlingFragment : Fragment() {
             }
 
             extendedFabPembangunanKavling.setOnClickListener {
-                pembangunanViewModel.updateExtendedFabState()
+                viewModel.updateExtendedFabState()
             }
 
             fabUpahPekerja.setOnClickListener {
@@ -139,8 +136,13 @@ class BiayaPembangunanKavlingFragment : Fragment() {
             }
 
             fabMaterialPembangunan.setOnClickListener {
-                pembangunanViewModel.updateInputMaterialDialog()
+                viewModel.updateInputMaterialDialog()
             }
+
+            UiUtils.hideExtendedFabOnVerticalScroll(
+                nestedScrollView = scrollViewPembangunanKavling,
+                extendedFabs = extendedFabPembangunanKavling,
+            )
         }
 
         sync()
@@ -149,13 +151,13 @@ class BiayaPembangunanKavlingFragment : Fragment() {
     }
 
     private fun sync() {
-        val currentKavling = pembangunanViewModel.kavlingKode
+        val currentKavling = viewModel.kavlingKode
         if (currentKavling.isEmpty()) {
             Snackbar.make(binding.root, "Kavling Kode on Biaya Pembangunan Fragment doesn't received properly!", Snackbar.LENGTH_SHORT)
                 .show()
         } else {
             Log.d("PEMBANGUNAN", "Executing synchronization now!")
-            pembangunanViewModel.fetchMaterialPembangunan(currentKavling, object : ViewModelListener {
+            viewModel.fetchMaterialPembangunan(currentKavling, object : ViewModelListener {
                 override fun onProgress() {
 
                 }
@@ -172,7 +174,7 @@ class BiayaPembangunanKavlingFragment : Fragment() {
                     ).show()
                 }
             })
-            pembangunanViewModel.fetchUpahPekerja(currentKavling, object : ViewModelListener {
+            viewModel.fetchUpahPekerja(currentKavling, object : ViewModelListener {
                 override fun onProgress() {
 
                 }
@@ -197,7 +199,7 @@ class BiayaPembangunanKavlingFragment : Fragment() {
         with(binding) {
             lifecycleScope.launch {
                 repeatOnLifecycle(Lifecycle.State.CREATED) {
-                    pembangunanViewModel.fabIsExtended.collect { isExtended ->
+                    viewModel.fabIsExtended.collect { isExtended ->
                         val fabList = listOf(fabMaterialPembangunan, fabUpahPekerja)
 
                         if (isExtended) {

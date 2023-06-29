@@ -29,6 +29,7 @@ class PembangunanKavlingViewModel @Inject constructor(
     var kavlingKode = ""
     var dataMode = DataMode.ONLINE
     var selectedMaterialPembangunan: MaterialPembangunan? = null
+        private set
 
     private var jobFetchMaterialPembangunan: Job? = null
     private var jobFetchUpahPekerja: Job? = null
@@ -111,5 +112,9 @@ class PembangunanKavlingViewModel @Inject constructor(
 
     fun updateInputMaterialDialog() {
         _inputMaterialPembangunanDialog.update { !it }
+    }
+
+    fun setSelectedMaterialPembangunan(index: Int) {
+        selectedMaterialPembangunan = _materialList.value[index]
     }
 }

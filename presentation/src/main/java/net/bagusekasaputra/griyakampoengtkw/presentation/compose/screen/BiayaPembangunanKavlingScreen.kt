@@ -29,7 +29,6 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -67,7 +66,6 @@ import net.bagusekasaputra.griyakampoengtkw.presentation.tableview.base.GenericT
 import net.bagusekasaputra.griyakampoengtkw.presentation.tableview.base.RowHeader
 import net.bagusekasaputra.griyakampoengtkw.presentation.tableview.base.TableViewDataProvider
 import net.bagusekasaputra.griyakampoengtkw.presentation.toDate
-import net.bagusekasaputra.griyakampoengtkw.presentation.viewmodel.PembangunanKavlingViewModel
 import java.util.Calendar
 import java.util.Date
 
@@ -77,39 +75,9 @@ import java.util.Date
 @Composable
 fun BiayaPembangunanKavlingScreen(
     modifier: Modifier = Modifier,
-    pembangunanViewModel: PembangunanKavlingViewModel,
-    onTableUpahRowHeaderClicked: (row: Int) -> Unit,
-    onTableUpahCellClicked: (column: Int, row: Int) -> Unit,
-    onTableMaterialCellClicked: (column: Int, row: Int) -> Unit,
-    onTableMaterialRowClicked: (row: Int) -> Unit,
-) {
-    val informasiPembangunan by pembangunanViewModel.informasiPembangunan.collectAsState()
-    val upahPekerjaList by pembangunanViewModel.upahPekerjaList.collectAsState()
-    val materialList by pembangunanViewModel.materialList.collectAsState()
-
-    BiayaPembangunanKavlingScreen(
-        modifier = modifier,
-        informasiPembangunan = informasiPembangunan,
-        upahPekerja = upahPekerjaList,
-        materialPembangunan = materialList,
-        onTableMaterialCellClicked = onTableMaterialCellClicked,
-        onTableMaterialRowHeaderClicked = onTableMaterialRowClicked,
-        onTableUpahCellClicked = onTableUpahCellClicked,
-        onTableUpahRowHeaderClicked = onTableUpahRowHeaderClicked,
-    )
-}
-
-@Composable
-private fun BiayaPembangunanKavlingScreen(
-    modifier: Modifier = Modifier,
     informasiPembangunan: InformasiPembangunan = InformasiPembangunan.EMPTY("D1"),
-    upahPekerja: List<UpahPekerja> = emptyList(),
-    materialPembangunan: List<MaterialPembangunan> = emptyList(),
-    onTableUpahRowHeaderClicked: (row: Int) -> Unit = {},
-    onTableUpahCellClicked: (column: Int, row: Int) -> Unit = {_,_->},
-    onTableMaterialCellClicked: (column: Int, row: Int) -> Unit = { _, _->},
-    onTableMaterialRowHeaderClicked: (row: Int) -> Unit = {},
-    showTables: Boolean = true,
+    upahPekerjaTableView: @Composable () -> Unit,
+    materialPembangunanTableView: @Composable () -> Unit,
 ) {
     var isExpandedCardPembangunan by remember { mutableStateOf(false) }
 
@@ -126,19 +94,9 @@ private fun BiayaPembangunanKavlingScreen(
         Spacer(modifier = Modifier.height(16.dp))
         Divider()
         Spacer(modifier = Modifier.height(16.dp))
-        UpahPekerjaTable(
-            upahPekerja = upahPekerja,
-            showTable = showTables,
-            onRowHeaderClick = onTableUpahRowHeaderClicked,
-            onCellClicked = onTableUpahCellClicked,
-        )
+        materialPembangunanTableView()
         Spacer(modifier = Modifier.height(32.dp))
-        MaterialPembangunanTable(
-            materialPembangunan = materialPembangunan,
-            onTableCellClicked = onTableMaterialCellClicked,
-            onTableRowClicked = onTableMaterialRowHeaderClicked,
-            showTable = showTables,
-        )
+        upahPekerjaTableView()
     }
 }
 
@@ -474,7 +432,7 @@ private fun AddendumPembangunanItems(
  * Upah Pekerja Table And Header
  */
 @Composable
-private fun UpahPekerjaTable(
+fun UpahPekerjaTable(
     modifier: Modifier = Modifier,
     upahPekerja: List<UpahPekerja> = emptyList(),
     showTable: Boolean = true,
@@ -605,7 +563,7 @@ private fun TableViewUpahPekerja(
  * Material Pembangunan Table And Header
  */
 @Composable
-private fun MaterialPembangunanTable(
+fun MaterialPembangunanTable(
     modifier: Modifier = Modifier,
     materialPembangunan: List<MaterialPembangunan>,
     onTableCellClicked: (column: Int, row: Int) -> Unit = {_,_->},
@@ -774,10 +732,9 @@ private fun BiayaPembangunanKavlingScreenPreview(
             color = MaterialTheme.colorScheme.background
         ) {
             BiayaPembangunanKavlingScreen(
-                materialPembangunan = materialList,
-                upahPekerja = upahPekerja,
-                showTables = false,
-                modifier = Modifier.padding(16.dp)
+                modifier = Modifier.padding(16.dp),
+                upahPekerjaTableView = {},
+                materialPembangunanTableView = {},
             )
         }
     }
