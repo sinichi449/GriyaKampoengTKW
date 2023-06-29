@@ -21,6 +21,7 @@ import net.bagusekasaputra.griyakampoengtkw.data.model.IndenBookingAmbilKuitansi
 import net.bagusekasaputra.griyakampoengtkw.data.model.IndenBookingCatatanPembayaranModel
 import net.bagusekasaputra.griyakampoengtkw.data.model.KavlingCatatanPembayaranModel
 import net.bagusekasaputra.griyakampoengtkw.data.model.KavlingModel
+import net.bagusekasaputra.griyakampoengtkw.data.model.MaterialPembangunanModel
 import net.bagusekasaputra.griyakampoengtkw.data.model.PembayaranModel
 import net.bagusekasaputra.griyakampoengtkw.data.model.PembayaranModel.Companion.toInvoiceDateStr
 import net.bagusekasaputra.griyakampoengtkw.data.model.PengembalianModel
@@ -59,6 +60,7 @@ import net.bagusekasaputra.griyakampoengtkw.domain.entity.indenBooking.HargaRuma
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.kavling.CombinedKavling
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.kavling.Kavling
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.kavling.StandardKavling
+import net.bagusekasaputra.griyakampoengtkw.domain.entity.pembangunan.MaterialPembangunan
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.pembayaran.BulanAngsuran
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.pembayaran.Pembayaran
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.pembayaran.Pengembalian
@@ -781,6 +783,49 @@ object MyObjectMapper {
                 keterangan = it.keterangan,
                 uri = it.uri,
                 timeMillis = it.timeMillis,
+            )
+        }
+    }
+
+    /**
+     * Material Pembangunan
+     */
+    fun mapMaterialPembangunan(model: MaterialPembangunanModel): MaterialPembangunan {
+        return model.let {
+            MaterialPembangunan(
+                keyId = it.keyId,
+                untukKavling = it.kavling,
+                namaMaterial = it.namaMaterial,
+                tanggal = it.tanggal.toDate(),
+                qty = it.orderQty,
+                satuan = it.satuan,
+                hargaTotal = it.hargaTotal,
+                kelunasan = MaterialPembangunan.getKelunasan(
+                    jumlahTerbayar = it.terbayar,
+                    totalHarga = it.hargaTotal,
+                ),
+                kedatangan = MaterialPembangunan.getKedatangan(
+                    datangQty = it.datangQty,
+                    orderQty = it.orderQty,
+                ),
+                keterangan = it.keterangan,
+            )
+        }
+    }
+
+    fun mapMaterialPembangunan(domain: MaterialPembangunan): MaterialPembangunanModel {
+        return domain.let {
+            MaterialPembangunanModel(
+                kavling = it.untukKavling,
+                keyId = it.keyId,
+                namaMaterial = it.namaMaterial,
+                tanggal = it.tanggal.toSlashedString(),
+                orderQty = it.qty,
+                datangQty = it.kedatangan.qty,
+                satuan = it.satuan,
+                hargaTotal = it.hargaTotal,
+                terbayar = it.kelunasan.terbayar,
+                keterangan = it.keterangan,
             )
         }
     }

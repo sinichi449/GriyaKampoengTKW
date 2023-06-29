@@ -22,7 +22,11 @@ data class MaterialPembangunan(
     }
 
     sealed class Kelunasan(val terbayar: Long) {
-        data class Lunas(val total: Long): Kelunasan(total)
+        data class Lunas(val total: Long): Kelunasan(total) {
+            fun getKembalian(totalHarga: Long): Long {
+                return total - totalHarga
+            }
+        }
 
         object Belum: Kelunasan(0L)
 
@@ -43,5 +47,28 @@ data class MaterialPembangunan(
             return this.sumOf { it.hargaTotal }
         }
 
+        fun getKelunasan(jumlahTerbayar: Long, totalHarga: Long): Kelunasan {
+            return if (jumlahTerbayar < totalHarga) {
+                if (jumlahTerbayar == 0L) {
+                    Kelunasan.Belum
+                } else {
+                    Kelunasan.Partial(jumlahTerbayar)
+                }
+            } else {
+                Kelunasan.Lunas(jumlahTerbayar)
+            }
+        }
+
+        fun getKedatangan(datangQty: Double, orderQty: Double): Kedatangan {
+            return if (datangQty < orderQty) {
+                if (datangQty == 0.0) {
+                    Kedatangan.Belum
+                } else {
+                    Kedatangan.Partial(datangQty)
+                }
+            } else {
+                Kedatangan.Datang(datangQty)
+            }
+        }
     }
 }
