@@ -18,7 +18,6 @@ import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.upahPekerja.GetA
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.pembangunan.InformasiPembangunan
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.pembangunan.MaterialPembangunan
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.pembangunan.UpahPekerja
-import net.bagusekasaputra.griyakampoengtkw.presentation.tableview.base.DefaultTableViewAdapter
 import javax.inject.Inject
 
 @HiltViewModel
@@ -29,8 +28,6 @@ class PembangunanKavlingViewModel @Inject constructor(
 
     var kavlingKode = ""
     var dataMode = DataMode.ONLINE
-
-    var tableMaterialAdapter: DefaultTableViewAdapter? = null
 
     private var jobFetchMaterialPembangunan: Job? = null
     private var jobFetchUpahPekerja: Job? = null
