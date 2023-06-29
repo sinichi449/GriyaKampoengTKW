@@ -1,7 +1,11 @@
 package net.bagusekasaputra.griyakampoengtkw.presentation.compose.screen
 
+import android.app.DatePickerDialog
+import android.content.Context
 import android.view.Gravity
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.gestures.Orientation
+import androidx.compose.foundation.gestures.scrollable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -12,9 +16,13 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.KeyboardArrowDown
 import androidx.compose.material.icons.outlined.KeyboardArrowUp
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Divider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -27,12 +35,17 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.tooling.preview.PreviewParameterProvider
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidViewBinding
+import androidx.compose.ui.window.Dialog
+import androidx.compose.ui.window.DialogProperties
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.Dimension
 import com.evrencoskun.tableview.TableView
@@ -44,6 +57,8 @@ import net.bagusekasaputra.griyakampoengtkw.domain.entity.pembangunan.MaterialPe
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.pembangunan.UpahPekerja
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.pembangunan.UpahPekerja.Companion.totalDibayarkan
 import net.bagusekasaputra.griyakampoengtkw.presentation.R
+import net.bagusekasaputra.griyakampoengtkw.presentation.compose.screen.common.FormDivider
+import net.bagusekasaputra.griyakampoengtkw.presentation.compose.screen.common.FormTextField
 import net.bagusekasaputra.griyakampoengtkw.presentation.compose.theme.GriyaKampoengTkwTheme
 import net.bagusekasaputra.griyakampoengtkw.presentation.databinding.LayoutGenericSingleTableviewBinding
 import net.bagusekasaputra.griyakampoengtkw.presentation.tableview.base.CellItem
@@ -53,6 +68,7 @@ import net.bagusekasaputra.griyakampoengtkw.presentation.tableview.base.RowHeade
 import net.bagusekasaputra.griyakampoengtkw.presentation.tableview.base.TableViewDataProvider
 import net.bagusekasaputra.griyakampoengtkw.presentation.toDate
 import net.bagusekasaputra.griyakampoengtkw.presentation.viewmodel.PembangunanKavlingViewModel
+import java.util.Calendar
 import java.util.Date
 
 /**
@@ -84,7 +100,7 @@ fun BiayaPembangunanKavlingScreen(
 }
 
 @Composable
-fun BiayaPembangunanKavlingScreen(
+private fun BiayaPembangunanKavlingScreen(
     modifier: Modifier = Modifier,
     informasiPembangunan: InformasiPembangunan = InformasiPembangunan.EMPTY("D1"),
     upahPekerja: List<UpahPekerja> = emptyList(),
@@ -127,10 +143,222 @@ fun BiayaPembangunanKavlingScreen(
 }
 
 /**
+ * Dialog Input
+ */
+@OptIn(ExperimentalComposeUiApi::class)
+@Composable
+fun MaterialPembangunanInputDialog(
+    modifier: Modifier = Modifier,
+    kavling: String,
+    material: MaterialPembangunan? = null,
+    onSubmit: (material: MaterialPembangunan) -> Unit = {},
+    onDeleteRequest: (keyId: String?) -> Unit = {},
+    onCancelled: () -> Unit = {},
+) {
+    Dialog(
+        properties = DialogProperties(
+            dismissOnBackPress = true,
+            dismissOnClickOutside = false,
+            usePlatformDefaultWidth = false,
+        ),
+        onDismissRequest = onCancelled,
+    ) {
+        Surface(
+            modifier = Modifier
+                .fillMaxWidth()
+                .then(modifier),
+            color = MaterialTheme.colorScheme.surface,
+            shape = RoundedCornerShape(8.dp),
+        ) {
+            MaterialPembangunanForms(
+                modifier = Modifier.padding(16.dp),
+                kavling = kavling,
+                material = material,
+                onSubmit = onSubmit,
+                onDeleteRequest = onDeleteRequest,
+            )
+        }
+    }
+}
+
+@Composable
+private fun MaterialPembangunanForms(
+    modifier: Modifier = Modifier,
+    kavling: String = "D1",
+    material: MaterialPembangunan? = null,
+    onSubmit: (material: MaterialPembangunan) -> Unit = {},
+    onDeleteRequest: (keyId: String?) -> Unit = {},
+) {
+    val isEditMode = material != null
+    var showDatePicker by remember { mutableStateOf(false) }
+
+    var namaMaterial by remember {
+        mutableStateOf(if (isEditMode) material!!.namaMaterial else "")
+    }
+    var tanggal by remember {
+        mutableStateOf(if (isEditMode) material!!.tanggal.toSlashedString() else "" )
+    }
+    var orderQty by remember {
+        mutableStateOf(if (isEditMode) material!!.qty.toString() else "" )
+    }
+    var satuan by remember {
+        mutableStateOf(if (isEditMode) material!!.satuan else "" )
+    }
+    var hargaTotal by remember {
+        mutableStateOf(if (isEditMode) material!!.hargaTotal.toString() else "" )
+    }
+    var terbayar by remember {
+        mutableStateOf(if (isEditMode) material!!.kelunasan.terbayar.toString() else "" )
+    }
+    var arrivedQty by remember {
+        mutableStateOf(if (isEditMode) material!!.kedatangan.qty.toString() else "" )
+    }
+    var keterangan by remember {
+        mutableStateOf(if (isEditMode) material!!.keterangan else "" )
+    }
+
+    if (showDatePicker) {
+        DatePickerDialogView(
+            ctx = LocalContext.current,
+            onDateSet = { year, month, day ->
+                val dayPadded = day.toString().padStart(2, '0')
+                val monthPadded = month.toString().padStart(2, '0')
+
+                tanggal = "${dayPadded}/${monthPadded}/${year}"
+                showDatePicker = false
+            },
+            onDismiss = { showDatePicker = false }
+        )
+    }
+
+    Column(modifier = modifier.scrollable(
+        state = rememberScrollState(),
+        orientation = Orientation.Vertical,
+    )) {
+        // Title
+        Text(
+            text = if (isEditMode) "Edit Material" else "Tambahkan Material",
+            style = MaterialTheme.typography.headlineSmall,
+        )
+        Spacer(modifier = Modifier.height(32.dp))
+        // Form Fields
+        Column {
+            FormTextField(
+                title = "Nama Material",
+                value = namaMaterial,
+                onValueChange = { namaMaterial = it },
+                onTextCleared = { namaMaterial = "" },
+            )
+            Spacer(modifier = Modifier.height(8.dp))
+
+            // Date Picker
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                verticalAlignment = Alignment.CenterVertically,
+            ) {
+                FormTextField(
+                    title = "Tanggal",
+                    value = tanggal,
+                    onValueChange = { tanggal = it },
+                    onTextCleared = { tanggal = "" },
+                    modifier = Modifier.weight(0.65f),
+                )
+                Spacer(modifier = Modifier.weight(0.05f))
+                Button(
+                    onClick = { showDatePicker = true },
+                    modifier = Modifier.weight(0.3f),
+                ) {
+                    Text(text = "Pilih")
+                }
+            }
+
+            FormDivider(modifier = Modifier.height(8.dp))
+
+            FormTextField(
+                title = "Order Qty",
+                value = orderQty,
+                onValueChange = { orderQty = it },
+                onTextCleared = { orderQty = "" },
+                keyboardType = KeyboardType.Decimal,
+            )
+            Spacer(modifier = Modifier.height(8.dp))
+            FormTextField(
+                title = "Arrived Qty",
+                value = arrivedQty,
+                onValueChange = { arrivedQty = it },
+                onTextCleared = { arrivedQty = "" },
+                keyboardType = KeyboardType.Decimal
+            )
+            Spacer(modifier = Modifier.height(8.dp))
+            FormTextField(
+                title = "Satuan",
+                value = satuan,
+                onValueChange = { satuan = it },
+                onTextCleared = { satuan = "" },
+            )
+
+            FormDivider(modifier = Modifier.height(8.dp))
+
+            FormTextField(
+                title = "Harga Total",
+                value = hargaTotal,
+                onValueChange = { hargaTotal = it },
+                onTextCleared = { hargaTotal = "" },
+                keyboardType = KeyboardType.Number
+            )
+            Spacer(modifier = Modifier.height(8.dp))
+            FormTextField(
+                title = "Terbayar",
+                value = terbayar,
+                onValueChange = { terbayar = it },
+                onTextCleared = { terbayar = "" },
+                keyboardType = KeyboardType.Number
+            )
+
+            FormDivider(modifier = Modifier.height(8.dp))
+
+            FormTextField(
+                title = "Keterangan",
+                value = keterangan,
+                onValueChange = { keterangan = it },
+                onTextCleared = { keterangan = "" },
+                singleLine = false,
+            )
+        }
+        // Submit Button
+        Spacer(modifier = Modifier.height(32.dp))
+        Button(
+            onClick = {
+                val materialPembangunan = materialPembangunanFormsInstance(kavling, namaMaterial, tanggal, orderQty,
+                    satuan, hargaTotal, terbayar, arrivedQty, keterangan)
+
+                onSubmit(materialPembangunan)
+            },
+            modifier = Modifier.fillMaxWidth(),
+        ) {
+            Text(text = if (isEditMode) "Ubah" else "Tambahkan")
+        }
+        Spacer(modifier = Modifier.height(4.dp))
+        Button(
+            onClick = {
+                onDeleteRequest(material?.keyId)
+            },
+            modifier = Modifier.fillMaxWidth(),
+            colors = ButtonDefaults.buttonColors(
+                containerColor = MaterialTheme.colorScheme.secondaryContainer,
+                contentColor = MaterialTheme.colorScheme.onSecondaryContainer,
+            )
+        ) {
+            Text(text = "Hapus")
+        }
+    }
+}
+
+/**
  * Informasi Pembangunan
  */
 @Composable
-fun InformasiPembangunanKavling(
+private fun InformasiPembangunanKavling(
     modifier: Modifier = Modifier,
     informasiPembangunan: InformasiPembangunan = InformasiPembangunan.EMPTY("D1"),
     expanded: Boolean = false,
@@ -167,7 +395,7 @@ fun InformasiPembangunanKavling(
 }
 
 @Composable
-fun RowItemInformasiPembangunan(
+private fun RowItemInformasiPembangunan(
     modifier: Modifier = Modifier,
     title: String,
     text: String
@@ -204,7 +432,7 @@ fun RowItemInformasiPembangunan(
 }
 
 @Composable
-fun AddendumPembangunanItems(
+private fun AddendumPembangunanItems(
     modifier: Modifier = Modifier,
     addendum: List<InformasiPembangunan.Addendum> = emptyList(),
 ) {
@@ -246,7 +474,7 @@ fun AddendumPembangunanItems(
  * Upah Pekerja Table And Header
  */
 @Composable
-fun UpahPekerjaTable(
+private fun UpahPekerjaTable(
     modifier: Modifier = Modifier,
     upahPekerja: List<UpahPekerja> = emptyList(),
     showTable: Boolean = true,
@@ -273,7 +501,7 @@ fun UpahPekerjaTable(
 }
 
 @Composable
-fun TableViewUpahPekerja(
+private fun TableViewUpahPekerja(
     upahPekerja: List<UpahPekerja>,
     onRowHeaderClick: (row: Int) -> Unit,
     onCellClicked: (column: Int, row: Int) -> Unit,
@@ -377,7 +605,7 @@ fun TableViewUpahPekerja(
  * Material Pembangunan Table And Header
  */
 @Composable
-fun MaterialPembangunanTable(
+private fun MaterialPembangunanTable(
     modifier: Modifier = Modifier,
     materialPembangunan: List<MaterialPembangunan>,
     onTableCellClicked: (column: Int, row: Int) -> Unit = {_,_->},
@@ -404,7 +632,7 @@ fun MaterialPembangunanTable(
 }
 
 @Composable
-fun TableViewMaterialPembangunan(
+private fun TableViewMaterialPembangunan(
     materialPembangunan: List<MaterialPembangunan>,
     onRowHeaderClick: (row: Int) -> Unit = {},
     onCellClick: (column: Int, row: Int) -> Unit = {_,_ ->},
@@ -514,7 +742,7 @@ fun TableViewMaterialPembangunan(
  * Common Components
  */
 @Composable
-fun TableTitlePembangunanKavling(
+private fun TableTitlePembangunanKavling(
     modifier: Modifier = Modifier,
     title: String = "Lorem Ipsum",
     sumData: Long = 0L
@@ -534,7 +762,7 @@ fun TableTitlePembangunanKavling(
  */
 @Preview(showBackground = true, showSystemUi = true, group = "layout")
 @Composable
-fun BiayaPembangunanKavlingScreenPreview(
+private fun BiayaPembangunanKavlingScreenPreview(
     @PreviewParameter(MaterialPembangunanParamProvider::class, 1)
     materialList: List<MaterialPembangunan>,
 ) {
@@ -557,7 +785,7 @@ fun BiayaPembangunanKavlingScreenPreview(
 
 @Preview(showBackground = true, group = "components")
 @Composable
-fun UpahPekerjaTablePreview(
+private fun UpahPekerjaTablePreview(
     @PreviewParameter(UpahPekerjaParamProvider::class, 1)
     upahPekerja: List<UpahPekerja>,
 ) {
@@ -570,7 +798,7 @@ fun UpahPekerjaTablePreview(
 
 @Preview(showBackground = true, group = "components")
 @Composable
-fun TabelBiayaMaterialPreview(
+private fun TabelBiayaMaterialPreview(
     @PreviewParameter(MaterialPembangunanParamProvider::class, 1)
     materialPembangunan: List<MaterialPembangunan>,
 ) {
@@ -583,9 +811,9 @@ fun TabelBiayaMaterialPreview(
     }
 }
 
-@Preview(showBackground = true, group = "isolated")
+@Preview(showBackground = true, group = "components")
 @Composable
-fun CardInformasiPembangunanPreview() {
+private fun CardInformasiPembangunanPreview() {
     GriyaKampoengTkwTheme {
         var expanded by remember {
             mutableStateOf(true)
@@ -600,13 +828,19 @@ fun CardInformasiPembangunanPreview() {
     }
 }
 
-@Preview(showBackground = true, group = "isolated")
+@Preview(showBackground = true, group = "components")
 @Composable
-fun AddendumPembangunanItemsPreview(
+private fun AddendumPembangunanItemsPreview(
     @PreviewParameter(AddendumPembangunanParameterProvider::class, 1)
     addendum: List<InformasiPembangunan.Addendum>
 ) {
     AddendumPembangunanItems(addendum = addendum)
+}
+
+@Preview(showBackground = true, group = "isolated")
+@Composable
+private fun MaterialPembangunanFormsPreview() {
+    MaterialPembangunanForms()
 }
 
 private class AddendumPembangunanParameterProvider: PreviewParameterProvider<List<InformasiPembangunan.Addendum>> {
@@ -688,6 +922,64 @@ private class UpahPekerjaParamProvider: PreviewParameterProvider<List<UpahPekerj
             )
         )
 
+}
+
+private fun DatePickerDialogView(
+    ctx: Context,
+    onDateSet: (tahun: Int, bulan: Int, tanggal: Int) -> Unit,
+    onDismiss: () -> Unit,
+) {
+    val calendar = Calendar.getInstance()
+    val currentYear = calendar.get(Calendar.YEAR)
+    val currentMonth = calendar.get(Calendar.MONTH)
+    val currentDay = calendar.get(Calendar.DAY_OF_MONTH)
+
+    val listener = DatePickerDialog.OnDateSetListener { _, year, month, dayOfMonth ->
+        onDateSet(year, month + 1, dayOfMonth)
+    }
+
+    val datePicker = DatePickerDialog(
+        ctx, R.style.DatePicker, listener,
+        currentYear, currentMonth, currentDay
+    )
+    datePicker.setOnDismissListener{ onDismiss() }
+
+    datePicker.show()
+}
+
+private fun materialPembangunanFormsInstance(
+    kavling: String,
+    namaMaterial: String,
+    tanggal: String,
+    orderQty: String,
+    satuan: String,
+    hargaTotal: String,
+    terbayar: String,
+    arrivedQty: String,
+    keterangan: String,
+): MaterialPembangunan {
+    val jumlahTerbayar = terbayar.ifEmpty { "0" }.toLong()
+    val mHargaTotal = hargaTotal.ifEmpty { "0" }.toLong()
+    val mArrivedQty = arrivedQty.ifEmpty { "0.0" }.toDouble()
+    val mOrderQty = orderQty.ifEmpty { "0.0" }.toDouble()
+
+    return MaterialPembangunan(
+        untukKavling = kavling,
+        namaMaterial = namaMaterial.ifEmpty { "NULL" },
+        tanggal = tanggal.ifEmpty { "01/01/1970" }.toDate(),
+        qty = orderQty.ifEmpty { "0.0" }.toDouble(),
+        satuan = satuan,
+        hargaTotal = mHargaTotal,
+        kelunasan = MaterialPembangunan.getKelunasan(
+            jumlahTerbayar = jumlahTerbayar,
+            totalHarga = mHargaTotal,
+        ),
+        kedatangan = MaterialPembangunan.getKedatangan(
+            datangQty = mArrivedQty,
+            orderQty = mOrderQty,
+        ),
+        keterangan = keterangan.ifEmpty { "-" }
+    )
 }
 
 object TableMaterialPembangunan {

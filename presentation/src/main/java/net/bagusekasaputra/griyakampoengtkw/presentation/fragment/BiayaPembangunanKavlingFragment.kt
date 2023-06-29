@@ -10,6 +10,8 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.compose.ui.unit.dp
@@ -23,6 +25,7 @@ import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 import net.bagusekasaputra.griyakampoengtkw.domain.DataMode
 import net.bagusekasaputra.griyakampoengtkw.presentation.compose.screen.BiayaPembangunanKavlingScreen
+import net.bagusekasaputra.griyakampoengtkw.presentation.compose.screen.MaterialPembangunanInputDialog
 import net.bagusekasaputra.griyakampoengtkw.presentation.compose.theme.GriyaKampoengTkwTheme
 import net.bagusekasaputra.griyakampoengtkw.presentation.databinding.FragmentBiayaPembangunanKavlingBinding
 import net.bagusekasaputra.griyakampoengtkw.presentation.util.GriyaNodes
@@ -61,6 +64,8 @@ class BiayaPembangunanKavlingFragment : Fragment() {
                         modifier = Modifier.fillMaxWidth(),
                         color = MaterialTheme.colorScheme.background
                     ) {
+                        val inputMaterialPembangunanDialog by pembangunanViewModel.inputMaterialPembangunanDialog.collectAsState()
+
                         BiayaPembangunanKavlingScreen(
                             modifier = Modifier.padding(16.dp),
                             pembangunanViewModel = pembangunanViewModel,
@@ -86,13 +91,28 @@ class BiayaPembangunanKavlingFragment : Fragment() {
                                 ).show()
                             },
                             onTableMaterialRowClicked = { row ->
-                                Toast.makeText(
-                                    requireContext(),
-                                    "Material $row",
-                                    Toast.LENGTH_SHORT
-                                ).show()
+                                val materialPembangunan = pembangunanViewModel.materialList.value[row]
+                                pembangunanViewModel.selectedMaterialPembangunan = materialPembangunan
+
+                                pembangunanViewModel.updateInputMaterialDialog()
                             }
                         )
+
+                        if (inputMaterialPembangunanDialog) {
+                            MaterialPembangunanInputDialog(
+                                kavling = pembangunanViewModel.kavlingKode,
+                                material = pembangunanViewModel.selectedMaterialPembangunan,
+                                onSubmit = {
+                                    // TODO
+                                },
+                                onDeleteRequest = { keyId ->
+                                    // TODO
+                                },
+                                onCancelled = {
+                                    pembangunanViewModel.updateInputMaterialDialog()
+                                },
+                            )
+                        }
                     }
                 }
             }
@@ -119,7 +139,7 @@ class BiayaPembangunanKavlingFragment : Fragment() {
             }
 
             fabMaterialPembangunan.setOnClickListener {
-                Toast.makeText(requireContext(), "Tambahkan Material Pembangunan", Toast.LENGTH_SHORT).show()
+                pembangunanViewModel.updateInputMaterialDialog()
             }
         }
 
