@@ -49,4 +49,23 @@ class MaterialPembangunanRepositoryImpl: MaterialPembangunanRepository {
         }
     }
 
+    override suspend fun insert(
+        kavling: String,
+        materialPembangunan: MaterialPembangunan
+    ): Result<Unit> {
+        TODO("Not yet implemented")
+    }
+
+    override suspend fun delete(kavling: String, keyId: String): Result<Unit> {
+        TODO("Not yet implemented")
+    }
+
+    override suspend fun update(
+        kavling: String,
+        keyId: String,
+        newData: MaterialPembangunan
+    ): Result<Unit> {
+        TODO("Not yet implemented")
+    }
+
 }

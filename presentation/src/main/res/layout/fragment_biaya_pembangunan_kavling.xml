@@ -27,6 +27,35 @@
 
         </androidx.core.widget.NestedScrollView>
 
+        <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
+            android:id="@+id/extendedFab_pembangunanKavling"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            android:layout_marginBottom="24dp"
+            android:layout_marginEnd="24dp"
+            android:text="Tambahkan"
+            app:icon="@drawable/ic_baseline_add_24"/>
+
+        <com.google.android.material.floatingactionbutton.FloatingActionButton
+            android:id="@+id/fab_upahPekerja"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintEnd_toEndOf="@id/extendedFab_pembangunanKavling"
+            app:layout_constraintBottom_toTopOf="@id/extendedFab_pembangunanKavling"
+            android:layout_marginBottom="24dp"
+            android:src="@drawable/ic_baseline_attach_money_24"/>
+
+        <com.google.android.material.floatingactionbutton.FloatingActionButton
+            android:id="@+id/fab_materialPembangunan"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintBottom_toTopOf="@id/fab_upahPekerja"
+            app:layout_constraintEnd_toEndOf="@id/extendedFab_pembangunanKavling"
+            android:layout_marginBottom="24dp"
+            android:src="@drawable/baseline_construction_24"/>
+
     </androidx.constraintlayout.widget.ConstraintLayout>
 
 </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>

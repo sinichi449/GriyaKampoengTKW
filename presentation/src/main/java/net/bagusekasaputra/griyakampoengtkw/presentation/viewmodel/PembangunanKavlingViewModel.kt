@@ -9,6 +9,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.onCompletion
 import kotlinx.coroutines.flow.onStart
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import net.bagusekasaputra.griyakampoengtkw.domain.DataMode
@@ -34,10 +35,12 @@ class PembangunanKavlingViewModel @Inject constructor(
     private var jobFetchMaterialPembangunan: Job? = null
     private var jobFetchUpahPekerja: Job? = null
 
+    private val _fabIsExtended = MutableStateFlow(false)
+    val fabIsExtended = _fabIsExtended.asStateFlow()
+
     private val _informasiPembangunan = MutableStateFlow(InformasiPembangunan.EMPTY(kavlingKode))
     private val _materialList = MutableStateFlow(emptyList<MaterialPembangunan>())
     private val _upahPekerjaList = MutableStateFlow(emptyList<UpahPekerja>())
-    private val _numJobsFinished = MutableStateFlow(0)
 
     val informasiPembangunan = _informasiPembangunan.asStateFlow()
     val materialList = _materialList.asStateFlow()
@@ -99,5 +102,9 @@ class PembangunanKavlingViewModel @Inject constructor(
                     }
                 }
         }
+    }
+
+    fun updateExtendedFabState() {
+        _fabIsExtended.update{ !it }
     }
 }

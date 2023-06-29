@@ -15,8 +15,12 @@ import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.compose.ui.unit.dp
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
 import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.launch
 import net.bagusekasaputra.griyakampoengtkw.domain.DataMode
 import net.bagusekasaputra.griyakampoengtkw.presentation.compose.screen.BiayaPembangunanKavlingScreen
 import net.bagusekasaputra.griyakampoengtkw.presentation.compose.theme.GriyaKampoengTkwTheme
@@ -105,9 +109,23 @@ class BiayaPembangunanKavlingFragment : Fragment() {
                 sync()
                 swipeRefreshPembangunanKavling.isRefreshing = false
             }
+
+            extendedFabPembangunanKavling.setOnClickListener {
+                pembangunanViewModel.updateExtendedFabState()
+            }
+
+            fabUpahPekerja.setOnClickListener {
+                Toast.makeText(requireContext(), "Tambahkan Upah Pekerja", Toast.LENGTH_SHORT).show()
+            }
+
+            fabMaterialPembangunan.setOnClickListener {
+                Toast.makeText(requireContext(), "Tambahkan Material Pembangunan", Toast.LENGTH_SHORT).show()
+            }
         }
 
         sync()
+
+        setupViewModel()
     }
 
     private fun sync() {
@@ -152,6 +170,26 @@ class BiayaPembangunanKavlingFragment : Fragment() {
                 }
 
             })
+        }
+    }
+
+    private fun setupViewModel() {
+        with(binding) {
+            lifecycleScope.launch {
+                repeatOnLifecycle(Lifecycle.State.CREATED) {
+                    pembangunanViewModel.fabIsExtended.collect { isExtended ->
+                        val fabList = listOf(fabMaterialPembangunan, fabUpahPekerja)
+
+                        if (isExtended) {
+                            extendedFabPembangunanKavling.extend()
+                            fabList.forEach { it.show() }
+                        } else {
+                            extendedFabPembangunanKavling.shrink()
+                            fabList.forEach { it.hide() }
+                        }
+                    }
+                }
+            }
         }
     }
 }
