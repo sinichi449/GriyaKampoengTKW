@@ -14,6 +14,7 @@ import kotlinx.coroutines.withContext
 import net.bagusekasaputra.griyakampoengtkw.domain.DataMode
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.materialPembangunan.GetAllMaterialPembangunanAsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.upahPekerja.GetAllUpahPekerjaAsyncUseCase
+import net.bagusekasaputra.griyakampoengtkw.domain.entity.pembangunan.InformasiPembangunan
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.pembangunan.MaterialPembangunan
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.pembangunan.UpahPekerja
 import net.bagusekasaputra.griyakampoengtkw.presentation.tableview.base.DefaultTableViewAdapter
@@ -33,13 +34,14 @@ class PembangunanKavlingViewModel @Inject constructor(
     private var jobFetchMaterialPembangunan: Job? = null
     private var jobFetchUpahPekerja: Job? = null
 
+    private val _informasiPembangunan = MutableStateFlow(InformasiPembangunan.EMPTY(kavlingKode))
     private val _materialList = MutableStateFlow(emptyList<MaterialPembangunan>())
     private val _upahPekerjaList = MutableStateFlow(emptyList<UpahPekerja>())
     private val _numJobsFinished = MutableStateFlow(0)
 
+    val informasiPembangunan = _informasiPembangunan.asStateFlow()
     val materialList = _materialList.asStateFlow()
     val upahPekerjaList = _upahPekerjaList.asStateFlow()
-    val numJobsFinished = _numJobsFinished.asStateFlow()
 
     fun fetchMaterialPembangunan(kavling: String, listener: ViewModelListener) {
         jobFetchMaterialPembangunan?.cancel()

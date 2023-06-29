@@ -1,6 +1,5 @@
 package net.bagusekasaputra.griyakampoengtkw.presentation.compose.screen
 
-import android.util.Log
 import android.view.Gravity
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
@@ -11,6 +10,8 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.KeyboardArrowDown
 import androidx.compose.material.icons.outlined.KeyboardArrowUp
@@ -37,6 +38,7 @@ import androidx.constraintlayout.compose.Dimension
 import com.evrencoskun.tableview.TableView
 import net.bagusekasaputra.griyakampoengtkw.domain.DateUtil.toSlashedString
 import net.bagusekasaputra.griyakampoengtkw.domain.NumberUtil.numericToString
+import net.bagusekasaputra.griyakampoengtkw.domain.entity.pembangunan.InformasiPembangunan
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.pembangunan.MaterialPembangunan
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.pembangunan.MaterialPembangunan.Companion.totalBiaya
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.pembangunan.UpahPekerja
@@ -65,13 +67,13 @@ fun BiayaPembangunanKavlingScreen(
     onTableMaterialCellClicked: (column: Int, row: Int) -> Unit,
     onTableMaterialRowClicked: (row: Int) -> Unit,
 ) {
+    val informasiPembangunan by pembangunanViewModel.informasiPembangunan.collectAsState()
     val upahPekerjaList by pembangunanViewModel.upahPekerjaList.collectAsState()
     val materialList by pembangunanViewModel.materialList.collectAsState()
 
-    Log.d("PEMBANGUNAN", "Material : $materialList")
-
     BiayaPembangunanKavlingScreen(
         modifier = modifier,
+        informasiPembangunan = informasiPembangunan,
         upahPekerja = upahPekerjaList,
         materialPembangunan = materialList,
         onTableMaterialCellClicked = onTableMaterialCellClicked,
@@ -84,6 +86,7 @@ fun BiayaPembangunanKavlingScreen(
 @Composable
 fun BiayaPembangunanKavlingScreen(
     modifier: Modifier = Modifier,
+    informasiPembangunan: InformasiPembangunan = InformasiPembangunan.EMPTY("D1"),
     upahPekerja: List<UpahPekerja> = emptyList(),
     materialPembangunan: List<MaterialPembangunan> = emptyList(),
     onTableUpahRowHeaderClicked: (row: Int) -> Unit = {},
@@ -99,6 +102,7 @@ fun BiayaPembangunanKavlingScreen(
         .then(modifier)) {
         InformasiPembangunanKavling(
             expanded = isExpandedCardPembangunan,
+            informasiPembangunan = informasiPembangunan,
             onClick = {
                 isExpandedCardPembangunan = !isExpandedCardPembangunan
             }
@@ -128,6 +132,7 @@ fun BiayaPembangunanKavlingScreen(
 @Composable
 fun InformasiPembangunanKavling(
     modifier: Modifier = Modifier,
+    informasiPembangunan: InformasiPembangunan = InformasiPembangunan.EMPTY("D1"),
     expanded: Boolean = false,
     onClick: () -> Unit = {},
 ) {
@@ -150,27 +155,19 @@ fun InformasiPembangunanKavling(
         }
 
         Spacer(modifier = Modifier.height(16.dp))
+        informasiPembangunan.also {
+            RowItemInformasiPembangunan(title = "Luas", text = "${it.luas} m2")
+            RowItemInformasiPembangunan(title = "Progress", text = "${it.progress}%")
+            RowItemInformasiPembangunan(title = "Harga Borong", text = "Rp. ${it.hargaBorong.numericToString()}")
+            RowItemInformasiPembangunan(title = "Retensi", text = "${it.persentaseRetensi}%")
 
-        RowItemProgressPembangunan(title = "Luas", text = "36 m2")
-        RowItemProgressPembangunan(title = "Progress", text = "24,00 %")
-        RowItemProgressPembangunan(title = "Harga Borong", text = "Rp. 1.000.000,00")
-        RowItemProgressPembangunan(title = "Retensi", text = "3%")
-        Spacer(modifier = Modifier.height(8.dp))
-        if (expanded) {
-            RowItemProgressPembangunan(title = "Addendum", text = "-")
-            RowItemProgressPembangunan(title = "Kontrak", text = "Rp. 36.000.000,00")
-            RowItemProgressPembangunan(title = "Kontrak + Addendum", text = "Rp. 36.000.000,00")
+            Spacer(modifier = Modifier.height(8.dp))
         }
-        if (expanded) {
-            RowItemProgressPembangunan(title = "Dana Terserap Progress", text = "Rp. 9.024.000,00")
-            RowItemProgressPembangunan(title = "Dana Terserap Lainnya", text = "-")
-        }
-        RowItemProgressPembangunan(title = "Bisa Diserap", text = "Rp. 8.753.280,00")
     }
 }
 
 @Composable
-fun RowItemProgressPembangunan(
+fun RowItemInformasiPembangunan(
     modifier: Modifier = Modifier,
     title: String,
     text: String
@@ -203,6 +200,45 @@ fun RowItemProgressPembangunan(
                 width = Dimension.fillToConstraints
             }
         )
+    }
+}
+
+@Composable
+fun AddendumPembangunanItems(
+    modifier: Modifier = Modifier,
+    addendum: List<InformasiPembangunan.Addendum> = emptyList(),
+) {
+    LazyColumn(modifier = Modifier
+        .fillMaxWidth()
+        .then(modifier)) {
+        items(addendum) {
+            ConstraintLayout(modifier = Modifier.fillMaxWidth()) {
+                val (titleRef, contentRef) = createRefs()
+
+                Text(
+                    text = it.keterangan,
+                    style = MaterialTheme.typography.labelMedium,
+                    modifier = Modifier.constrainAs(titleRef) {
+                        top.linkTo(parent.top)
+                        bottom.linkTo(parent.bottom)
+                        start.linkTo(parent.start)
+                        end.linkTo(contentRef.start)
+                        width = Dimension.fillToConstraints
+                    }
+                )
+                Text(
+                    text = "Rp. ${it.jumlahUang.numericToString()}",
+                    style = MaterialTheme.typography.bodyMedium,
+                    modifier = Modifier.constrainAs(contentRef) {
+                        top.linkTo(parent.top)
+                        bottom.linkTo(parent.bottom)
+                        end.linkTo(parent.end)
+                        start.linkTo(titleRef.end)
+                        width = Dimension.fillToConstraints
+                    }
+                )
+            }
+        }
     }
 }
 
@@ -547,12 +583,12 @@ fun TabelBiayaMaterialPreview(
     }
 }
 
-@Preview(showBackground = true, group = "components")
+@Preview(showBackground = true, group = "isolated")
 @Composable
-fun CardProgressPembangunanPreview() {
+fun CardInformasiPembangunanPreview() {
     GriyaKampoengTkwTheme {
         var expanded by remember {
-            mutableStateOf(false)
+            mutableStateOf(true)
         }
         InformasiPembangunanKavling(
             modifier = Modifier.padding(16.dp),
@@ -562,6 +598,27 @@ fun CardProgressPembangunanPreview() {
             }
         )
     }
+}
+
+@Preview(showBackground = true, group = "isolated")
+@Composable
+fun AddendumPembangunanItemsPreview(
+    @PreviewParameter(AddendumPembangunanParameterProvider::class, 1)
+    addendum: List<InformasiPembangunan.Addendum>
+) {
+    AddendumPembangunanItems(addendum = addendum)
+}
+
+private class AddendumPembangunanParameterProvider: PreviewParameterProvider<List<InformasiPembangunan.Addendum>> {
+    override val values: Sequence<List<InformasiPembangunan.Addendum>>
+        get() = sequenceOf(
+            listOf(
+                InformasiPembangunan.Addendum(1_200_000L, "Septick Tank"),
+                InformasiPembangunan.Addendum(600_000L, "Urug-urug"),
+                InformasiPembangunan.Addendum(1_000_000, "Pasturisasi Taman"),
+            )
+        )
+
 }
 
 private class MaterialPembangunanParamProvider: PreviewParameterProvider<List<MaterialPembangunan>> {
