@@ -35,10 +35,10 @@ class PembangunanKavlingViewModel @Inject constructor(
     private var jobFetchUpahPekerja: Job? = null
 
     private val _fabIsExtended = MutableStateFlow(false)
-    private val _inputMaterialPembangunanDialog = MutableStateFlow(false)
+    private val _materialPembangunanDialogState = MutableStateFlow(false)
 
     val fabIsExtended = _fabIsExtended.asStateFlow()
-    val inputMaterialPembangunanDialog = _inputMaterialPembangunanDialog.asStateFlow()
+    val materialPembangunanDialogState = _materialPembangunanDialogState.asStateFlow()
 
     private val _informasiPembangunan = MutableStateFlow(InformasiPembangunan.EMPTY(kavlingKode))
     private val _materialList = MutableStateFlow(emptyList<MaterialPembangunan>())
@@ -110,8 +110,8 @@ class PembangunanKavlingViewModel @Inject constructor(
         _fabIsExtended.update{ !it }
     }
 
-    fun updateInputMaterialDialog() {
-        _inputMaterialPembangunanDialog.update { !it }
+    fun updateMaterialPembangunanDialogState() {
+        _materialPembangunanDialogState.update { !it }
     }
 
     fun setSelectedMaterialPembangunan(index: Int) {

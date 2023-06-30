@@ -11,7 +11,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
+import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.compose.ui.unit.dp
@@ -25,9 +25,10 @@ import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 import net.bagusekasaputra.griyakampoengtkw.domain.DataMode
 import net.bagusekasaputra.griyakampoengtkw.presentation.compose.screen.BiayaPembangunanKavlingScreen
-import net.bagusekasaputra.griyakampoengtkw.presentation.compose.screen.MaterialPembangunanInputDialog
+import net.bagusekasaputra.griyakampoengtkw.presentation.compose.screen.MaterialPembangunanForms
 import net.bagusekasaputra.griyakampoengtkw.presentation.compose.screen.MaterialPembangunanTable
 import net.bagusekasaputra.griyakampoengtkw.presentation.compose.screen.UpahPekerjaTable
+import net.bagusekasaputra.griyakampoengtkw.presentation.compose.screen.common.FormsDialog
 import net.bagusekasaputra.griyakampoengtkw.presentation.compose.theme.GriyaKampoengTkwTheme
 import net.bagusekasaputra.griyakampoengtkw.presentation.databinding.FragmentBiayaPembangunanKavlingBinding
 import net.bagusekasaputra.griyakampoengtkw.presentation.util.GriyaNodes
@@ -53,6 +54,7 @@ class BiayaPembangunanKavlingFragment : Fragment() {
         }
     }
 
+    @OptIn(ExperimentalComposeUiApi::class)
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -70,9 +72,6 @@ class BiayaPembangunanKavlingFragment : Fragment() {
                         val informasiPembangunan = viewModel.informasiPembangunan.collectAsState()
                         val materialPembangunan = viewModel.materialList.collectAsState()
                         val upahPekerja = viewModel.upahPekerjaList.collectAsState()
-                        val currentKavling = viewModel.kavlingKode
-                        val selectedMaterialPembangunan = viewModel.selectedMaterialPembangunan
-                        val inputMaterialPembangunanDialog by viewModel.inputMaterialPembangunanDialog.collectAsState()
 
                         BiayaPembangunanKavlingScreen(
                             modifier = Modifier.padding(16.dp),
@@ -84,7 +83,7 @@ class BiayaPembangunanKavlingFragment : Fragment() {
                                         viewModel.setSelectedMaterialPembangunan(it)
 
                                         // Open Dialog Input
-                                        viewModel.updateInputMaterialDialog()
+                                        viewModel.updateMaterialPembangunanDialogState()
                                     }
                                 )
                             },
@@ -95,20 +94,23 @@ class BiayaPembangunanKavlingFragment : Fragment() {
                             }
                         )
 
-                        if (inputMaterialPembangunanDialog) {
-                            MaterialPembangunanInputDialog(
-                                kavling = currentKavling,
-                                material = selectedMaterialPembangunan,
-                                onSubmit = {
-                                    // TODO
-                                },
-                                onDeleteRequest = { keyId ->
-                                    // TODO
-                                },
-                                onCancelled = {
-                                    viewModel.updateInputMaterialDialog()
-                                },
-                            )
+                        viewModel.materialPembangunanDialogState.collectAsState().value.also {
+                            FormsDialog(
+                                show = it,
+                                onDismissRequest = { viewModel.updateMaterialPembangunanDialogState() },
+                            ) {
+                                MaterialPembangunanForms(
+                                    modifier = Modifier.padding(16.dp),
+                                    kavling = viewModel.kavlingKode,
+                                    material = viewModel.selectedMaterialPembangunan,
+                                    onSubmit = {
+                                       // TODO
+                                    },
+                                    onDeleteRequest = { keyId ->
+                                        // TODO
+                                    }
+                                )
+                            }
                         }
                     }
                 }
@@ -136,7 +138,7 @@ class BiayaPembangunanKavlingFragment : Fragment() {
             }
 
             fabMaterialPembangunan.setOnClickListener {
-                viewModel.updateInputMaterialDialog()
+                viewModel.updateMaterialPembangunanDialogState()
             }
 
             UiUtils.hideExtendedFabOnVerticalScroll(
