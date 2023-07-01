@@ -7,12 +7,14 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.onCompletion
 import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import net.bagusekasaputra.griyakampoengtkw.domain.DataMode
+import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.materialPembangunan.AddMaterialPembangunanAsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.materialPembangunan.GetAllMaterialPembangunanAsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.upahPekerja.GetAllUpahPekerjaAsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.pembangunan.InformasiPembangunan
@@ -24,6 +26,7 @@ import javax.inject.Inject
 class PembangunanKavlingViewModel @Inject constructor(
     private val getAllMaterialPembangunanUseCase: GetAllMaterialPembangunanAsyncUseCase,
     private val getAllUpahPekerjaUseCase: GetAllUpahPekerjaAsyncUseCase,
+    private val addMaterialPembangunanUseCase: AddMaterialPembangunanAsyncUseCase,
 ): ViewModel() {
 
     var kavlingKode = ""
@@ -33,6 +36,7 @@ class PembangunanKavlingViewModel @Inject constructor(
 
     private var jobFetchMaterialPembangunan: Job? = null
     private var jobFetchUpahPekerja: Job? = null
+    private var jobAddMaterialPembangunan: Job? = null
 
     private val _fabIsExtended = MutableStateFlow(false)
     private val _materialPembangunanDialogState = MutableStateFlow(false)
@@ -106,15 +110,44 @@ class PembangunanKavlingViewModel @Inject constructor(
         }
     }
 
+    fun addMaterialPembangunan(
+        materialPembangunan: MaterialPembangunan,
+        listener: ViewModelListener,
+    ) {
+        jobAddMaterialPembangunan?.cancel()
+
+        jobAddMaterialPembangunan = viewModelScope.launch(Dispatchers.Main) {
+            listener.onProgress()
+
+            val request = AddMaterialPembangunanAsyncUseCase.Request(materialPembangunan)
+            // Must be executed only once
+            val result = withContext(Dispatchers.IO) {
+                addMaterialPembangunanUseCase.execute(request).first()
+            }
+
+            result.onSuccess {
+                listener.onCompleted()
+            }
+            result.onFailure {
+                listener.onFailed(it.message)
+            }
+        }
+    }
+
     fun updateExtendedFabState() {
         _fabIsExtended.update{ !it }
     }
 
-    fun updateMaterialPembangunanDialogState() {
+    fun updateMaterialPembangunanDialogState(clearSelected: Boolean = true) {
         _materialPembangunanDialogState.update { !it }
+
+        if (clearSelected) {
+            selectedMaterialPembangunan = null
+        }
     }
 
     fun setSelectedMaterialPembangunan(index: Int) {
         selectedMaterialPembangunan = _materialList.value[index]
     }
+
 }

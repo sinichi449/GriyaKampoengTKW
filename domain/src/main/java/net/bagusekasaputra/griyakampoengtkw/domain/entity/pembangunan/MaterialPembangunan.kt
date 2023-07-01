@@ -21,6 +21,16 @@ data class MaterialPembangunan(
         0L
     }
 
+    fun validate() {
+        if (untukKavling.isEmpty()) throw IllegalArgumentException("Kavling belum terspesifikasi!")
+
+        if (namaMaterial.isEmpty()) throw IllegalArgumentException("Nama material tidak boleh kosong!")
+
+        if (qty < 0.0) throw IllegalArgumentException("Qty tidak boleh kurang dari nol")
+
+        if (satuan.isEmpty()) throw IllegalArgumentException("Satuan tidak boleh kosong!")
+    }
+
     sealed class Kelunasan(val terbayar: Long) {
         data class Lunas(val total: Long): Kelunasan(total) {
             fun getKembalian(totalHarga: Long): Long {

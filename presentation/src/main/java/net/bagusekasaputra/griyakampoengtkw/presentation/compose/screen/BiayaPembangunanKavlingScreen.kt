@@ -4,6 +4,7 @@ import android.app.DatePickerDialog
 import android.content.Context
 import android.view.Gravity
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -11,6 +12,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -19,6 +21,7 @@ import androidx.compose.material.icons.outlined.KeyboardArrowDown
 import androidx.compose.material.icons.outlined.KeyboardArrowUp
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Divider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -102,7 +105,7 @@ fun MaterialPembangunanForms(
     modifier: Modifier = Modifier,
     kavling: String = "D1",
     material: MaterialPembangunan? = null,
-    onSubmit: (material: MaterialPembangunan) -> Unit = {},
+    onSubmit: (editMode: Boolean, material: MaterialPembangunan) -> Unit = {_, _ ->},
     onDeleteRequest: (keyId: String?) -> Unit = {},
 ) {
     val isEditMode = material != null
@@ -131,6 +134,16 @@ fun MaterialPembangunanForms(
     }
     var keterangan by remember {
         mutableStateOf(if (isEditMode) material!!.keterangan else "" )
+    }
+
+    var enableSubmit by remember { mutableStateOf(true) }
+    var enableDelete by remember { mutableStateOf(true) }
+    var submitText by remember { mutableStateOf(if (isEditMode) "Ubah" else "Tambahkan") }
+
+    fun onProgress() {
+        enableSubmit = false
+        enableDelete = false
+        submitText = "Memproses data ..."
     }
 
     if (showDatePicker) {
@@ -245,16 +258,25 @@ fun MaterialPembangunanForms(
                 val materialPembangunan = materialPembangunanFormsInstance(kavling, namaMaterial, tanggal, orderQty,
                     satuan, hargaTotal, terbayar, arrivedQty, keterangan)
 
-                onSubmit(materialPembangunan)
+                onSubmit(isEditMode, materialPembangunan)
+
+                onProgress()
             },
             modifier = Modifier.fillMaxWidth(),
         ) {
-            Text(text = if (isEditMode) "Ubah" else "Tambahkan")
+            if (enableSubmit) {
+                Text(text = submitText)
+            } else {
+                TextProgress(text = submitText)
+            }
         }
         Spacer(modifier = Modifier.height(4.dp))
+        // Delete Button
         Button(
             onClick = {
                 onDeleteRequest(material?.keyId)
+
+                onProgress()
             },
             modifier = Modifier.fillMaxWidth(),
             colors = ButtonDefaults.buttonColors(
@@ -265,6 +287,33 @@ fun MaterialPembangunanForms(
             Text(text = "Hapus")
         }
     }
+}
+
+@Composable
+private fun TextProgress(
+    modifier: Modifier = Modifier,
+    text: String = "Memproses data ..."
+) {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .then(modifier),
+        horizontalArrangement = Arrangement.Center,
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        CircularProgressIndicator(
+            modifier = Modifier.size(32.dp),
+            color = MaterialTheme.colorScheme.onSurface
+        )
+        Spacer(modifier = Modifier.width(16.dp))
+        Text(text = text, style = MaterialTheme.typography.bodyMedium)
+    }
+}
+
+@Preview(showBackground = true, group = "isolated")
+@Composable
+private fun TextProgressPreview() {
+    TextProgress()
 }
 
 /**

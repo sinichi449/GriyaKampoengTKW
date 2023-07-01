@@ -11,7 +11,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.collectAsState
-import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.compose.ui.unit.dp
@@ -32,6 +31,7 @@ import net.bagusekasaputra.griyakampoengtkw.presentation.compose.screen.common.F
 import net.bagusekasaputra.griyakampoengtkw.presentation.compose.theme.GriyaKampoengTkwTheme
 import net.bagusekasaputra.griyakampoengtkw.presentation.databinding.FragmentBiayaPembangunanKavlingBinding
 import net.bagusekasaputra.griyakampoengtkw.presentation.util.GriyaNodes
+import net.bagusekasaputra.griyakampoengtkw.presentation.util.NotificationUtil
 import net.bagusekasaputra.griyakampoengtkw.presentation.util.UiUtils
 import net.bagusekasaputra.griyakampoengtkw.presentation.viewmodel.PembangunanKavlingViewModel
 import net.bagusekasaputra.griyakampoengtkw.presentation.viewmodel.ViewModelListener
@@ -54,7 +54,6 @@ class BiayaPembangunanKavlingFragment : Fragment() {
         }
     }
 
-    @OptIn(ExperimentalComposeUiApi::class)
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -83,7 +82,7 @@ class BiayaPembangunanKavlingFragment : Fragment() {
                                         viewModel.setSelectedMaterialPembangunan(it)
 
                                         // Open Dialog Input
-                                        viewModel.updateMaterialPembangunanDialogState()
+                                        viewModel.updateMaterialPembangunanDialogState(clearSelected = false)
                                     }
                                 )
                             },
@@ -97,14 +96,39 @@ class BiayaPembangunanKavlingFragment : Fragment() {
                         viewModel.materialPembangunanDialogState.collectAsState().value.also {
                             FormsDialog(
                                 show = it,
-                                onDismissRequest = { viewModel.updateMaterialPembangunanDialogState() },
+                                onDismissRequest = {
+                                    // Delete previously `selectedMaterialPembangunan`
+                                    viewModel.updateMaterialPembangunanDialogState()
+                                },
                             ) {
                                 MaterialPembangunanForms(
                                     modifier = Modifier.padding(16.dp),
                                     kavling = viewModel.kavlingKode,
                                     material = viewModel.selectedMaterialPembangunan,
-                                    onSubmit = {
-                                       // TODO
+                                    onSubmit = { editMode, material ->
+                                        val listener = object : ViewModelListener {
+                                            override fun onProgress() {}
+
+                                            override fun onCompleted() {
+                                                viewModel.updateMaterialPembangunanDialogState()
+                                            }
+
+                                            override fun onFailed(failMsg: String?) {
+                                                viewModel.updateMaterialPembangunanDialogState()
+
+                                                NotificationUtil.createNotification(
+                                                    activity = requireActivity(),
+                                                    title = "Gagal Menambahkan ${material.namaMaterial}",
+                                                    text = failMsg ?: "NULL",
+                                                )
+                                            }
+                                        }
+
+                                        if (editMode) {
+                                            // TODO
+                                        } else {
+                                            viewModel.addMaterialPembangunan(material, listener)
+                                        }
                                     },
                                     onDeleteRequest = { keyId ->
                                         // TODO

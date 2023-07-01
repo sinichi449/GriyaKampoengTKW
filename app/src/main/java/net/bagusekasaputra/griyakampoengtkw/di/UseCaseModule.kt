@@ -52,6 +52,7 @@ import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.indenBooking.pem
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.kavling.GetKavlingAndProgressStreamAsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.kavling.GetKavlingByBlockAsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.kavling.GetListUnmigratedKavlingsAsyncUseCase
+import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.materialPembangunan.AddMaterialPembangunanAsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.materialPembangunan.GetAllMaterialPembangunanAsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.pembayaran.DeletePembayaranAsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.pembayaran.GetListPembayaranBulananAsyncUseCase
@@ -750,6 +751,13 @@ object UseCaseModule {
         materialPembangunanRepository: MaterialPembangunanRepository
     ): GetAllMaterialPembangunanAsyncUseCase {
         return GetAllMaterialPembangunanAsyncUseCase(materialPembangunanRepository)
+    }
+
+    @Provides
+    fun provideAddMaterialPembangunanUseCase(
+        materialPembangunanRepository: MaterialPembangunanRepository,
+    ): AddMaterialPembangunanAsyncUseCase {
+        return AddMaterialPembangunanAsyncUseCase(materialPembangunanRepository)
     }
 
     /**
