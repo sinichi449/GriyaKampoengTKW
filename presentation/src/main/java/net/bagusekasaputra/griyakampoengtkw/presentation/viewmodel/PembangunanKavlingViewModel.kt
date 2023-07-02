@@ -151,13 +151,14 @@ class PembangunanKavlingViewModel @Inject constructor(
             // Must be executed only once
             val result = withContext(Dispatchers.IO) {
                 addMaterialPembangunanUseCase.execute(request).first()
-            }
+                    .onSuccess {
+                        withContext(Dispatchers.Main) { listener.onCompleted() }
+                    }
+                    .onFailure {
+                        it.printStackTrace()
 
-            result.onSuccess {
-                listener.onCompleted()
-            }
-            result.onFailure {
-                listener.onFailed(it.message)
+                        withContext(Dispatchers.Main) { listener.onFailed(it.message) }
+                    }
             }
         }
     }
