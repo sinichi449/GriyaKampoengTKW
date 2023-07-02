@@ -43,7 +43,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidViewBinding
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.Dimension
-import com.evrencoskun.tableview.TableView
 import net.bagusekasaputra.griyakampoengtkw.domain.DateUtil.padWithZero
 import net.bagusekasaputra.griyakampoengtkw.domain.DateUtil.toSlashedString
 import net.bagusekasaputra.griyakampoengtkw.domain.NumberUtil.numericToString
@@ -301,33 +300,6 @@ fun MaterialPembangunanForms(
     }
 }
 
-@Composable
-private fun TextProgress(
-    modifier: Modifier = Modifier,
-    text: String = "Memproses data ..."
-) {
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .then(modifier),
-        horizontalArrangement = Arrangement.Center,
-        verticalAlignment = Alignment.CenterVertically,
-    ) {
-        CircularProgressIndicator(
-            modifier = Modifier.size(32.dp),
-            color = MaterialTheme.colorScheme.onSurface
-        )
-        Spacer(modifier = Modifier.width(16.dp))
-        Text(text = text, style = MaterialTheme.typography.bodyMedium)
-    }
-}
-
-@Preview(showBackground = true, group = "isolated")
-@Composable
-private fun TextProgressPreview() {
-    TextProgress()
-}
-
 /**
  * Informasi Pembangunan
  */
@@ -582,6 +554,7 @@ private fun TableViewUpahPekerja(
 fun MaterialPembangunanTable(
     modifier: Modifier = Modifier,
     materialPembangunan: List<MaterialPembangunan>,
+    selectedRow: Int = -1,
     onTableCellClicked: (column: Int, row: Int) -> Unit = {_,_->},
     onTableRowClicked: (row: Int) -> Unit = {},
     showTable: Boolean = true,
@@ -598,6 +571,7 @@ fun MaterialPembangunanTable(
         if (showTable) {
             TableViewMaterialPembangunan(
                 materialPembangunan = materialPembangunan,
+                selectedRow = selectedRow,
                 onCellClick = onTableCellClicked,
                 onRowHeaderClick = onTableRowClicked,
             )
@@ -608,6 +582,7 @@ fun MaterialPembangunanTable(
 @Composable
 private fun TableViewMaterialPembangunan(
     materialPembangunan: List<MaterialPembangunan>,
+    selectedRow: Int = -1,
     onRowHeaderClick: (row: Int) -> Unit = {},
     onCellClick: (column: Int, row: Int) -> Unit = {_,_ ->},
 ) {
@@ -651,55 +626,6 @@ private fun TableViewMaterialPembangunan(
             }
         }
     }
-    val createTable = { tableView: TableView ->
-        GenericTableView(tableView, materialPembangunan)
-            .setDataProvider(dataProvider)
-            .setWidthColumnHeaders(TableMaterialPembangunan.columnHeaderWidths)
-            .setOnCellBinding { cellViewHolder, cellItem, col, _ ->
-                with(cellViewHolder) {
-                    when(col) {
-                        TableMaterialPembangunan.INDEX_TANGGAL -> {
-                            tvCell.text = (cellItem?.data as Date?)?.toSlashedString() ?: "01/01/1979"
-                        }
-                        TableMaterialPembangunan.INDEX_NAMA_MATERIAL -> {
-                            tvCell.gravity = Gravity.START
-                        }
-                        TableMaterialPembangunan.INDEX_BIAYA -> {
-                            val totalBiaya  = (cellItem?.data as Long?)?.numericToString() ?: "0"
-                            tvCell.text = totalBiaya
-                        }
-                        TableMaterialPembangunan.INDEX_KEDATANGAN -> {
-                            val kedatangan = (cellItem?.data as MaterialPembangunan.Kedatangan?)
-                            tvCell.text = when (kedatangan) {
-                                is MaterialPembangunan.Kedatangan.Datang -> "DATANG"
-                                is MaterialPembangunan.Kedatangan.Belum -> "BELUM"
-                                is MaterialPembangunan.Kedatangan.Partial -> "PARTIAL"
-                                else -> "N/A"
-                            }
-                        }
-                        TableMaterialPembangunan.INDEX_KELUNASAN -> {
-                            val kelunasan = (cellItem?.data as MaterialPembangunan.Kelunasan?)
-                            tvCell.text = when(kelunasan) {
-                                is MaterialPembangunan.Kelunasan.Lunas -> "LUNAS"
-                                is MaterialPembangunan.Kelunasan.Belum -> "BELUM"
-                                is MaterialPembangunan.Kelunasan.Partial -> "PARTIAL"
-                                else -> "N/A"
-                            }
-                        }
-                        TableMaterialPembangunan.INDEX_KETERANGAN -> {
-                            tvCell.gravity = Gravity.START
-                        }
-                    }
-                }
-            }
-            .setOnClickedCellItem { _, column, row ->
-                onCellClick(column, row)
-            }
-            .setOnClickedRowHeader { _, row ->
-                onRowHeaderClick(row)
-            }
-            .create()
-    }
 
     AndroidViewBinding(
         modifier = Modifier.fillMaxWidth(),
@@ -707,7 +633,55 @@ private fun TableViewMaterialPembangunan(
             LayoutGenericSingleTableviewBinding.inflate(inflater, parent, attachToParent)
         },
         update = {
-            createTable(tableView)
+            GenericTableView(tableView, materialPembangunan)
+                .setDataProvider(dataProvider)
+                .setWidthColumnHeaders(TableMaterialPembangunan.columnHeaderWidths)
+                .setOnCellBinding { cellViewHolder, cellItem, col, _ ->
+                    with(cellViewHolder) {
+                        when(col) {
+                            TableMaterialPembangunan.INDEX_TANGGAL -> {
+                                tvCell.text = (cellItem?.data as Date?)?.toSlashedString() ?: "01/01/1979"
+                            }
+                            TableMaterialPembangunan.INDEX_NAMA_MATERIAL -> {
+                                tvCell.gravity = Gravity.START
+                            }
+                            TableMaterialPembangunan.INDEX_BIAYA -> {
+                                val totalBiaya  = (cellItem?.data as Long?)?.numericToString() ?: "0"
+                                tvCell.text = totalBiaya
+                            }
+                            TableMaterialPembangunan.INDEX_KEDATANGAN -> {
+                                val kedatangan = (cellItem?.data as MaterialPembangunan.Kedatangan?)
+                                tvCell.text = when (kedatangan) {
+                                    is MaterialPembangunan.Kedatangan.Datang -> "DATANG"
+                                    is MaterialPembangunan.Kedatangan.Belum -> "BELUM"
+                                    is MaterialPembangunan.Kedatangan.Partial -> "PARTIAL"
+                                    else -> "N/A"
+                                }
+                            }
+                            TableMaterialPembangunan.INDEX_KELUNASAN -> {
+                                val kelunasan = (cellItem?.data as MaterialPembangunan.Kelunasan?)
+                                tvCell.text = when(kelunasan) {
+                                    is MaterialPembangunan.Kelunasan.Lunas -> "LUNAS"
+                                    is MaterialPembangunan.Kelunasan.Belum -> "BELUM"
+                                    is MaterialPembangunan.Kelunasan.Partial -> "PARTIAL"
+                                    else -> "N/A"
+                                }
+                            }
+                            TableMaterialPembangunan.INDEX_KETERANGAN -> {
+                                tvCell.gravity = Gravity.START
+                            }
+                        }
+                    }
+                }
+                .setOnClickedCellItem { _, column, row ->
+                    onCellClick(column, row)
+                }
+                .setOnClickedRowHeader { _, row ->
+                    onRowHeaderClick(row)
+                }
+                .create()
+
+            tableView.selectionHandler.selectedRowPosition = selectedRow
         }
     )
 }
@@ -727,6 +701,27 @@ private fun TableTitlePembangunanKavling(
             text = "Rp. ${sumData.numericToString()}",
             style = MaterialTheme.typography.bodyMedium
         )
+    }
+}
+
+@Composable
+private fun TextProgress(
+    modifier: Modifier = Modifier,
+    text: String = "Memproses data ..."
+) {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .then(modifier),
+        horizontalArrangement = Arrangement.Center,
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        CircularProgressIndicator(
+            modifier = Modifier.size(32.dp),
+            color = MaterialTheme.colorScheme.onSurface
+        )
+        Spacer(modifier = Modifier.width(16.dp))
+        Text(text = text, style = MaterialTheme.typography.bodyMedium)
     }
 }
 
@@ -814,6 +809,12 @@ private fun AddendumPembangunanItemsPreview(
 @Composable
 private fun MaterialPembangunanFormsPreview() {
     MaterialPembangunanForms()
+}
+
+@Preview(showBackground = true, group = "isolated")
+@Composable
+private fun TextProgressPreview() {
+    TextProgress()
 }
 
 private class AddendumPembangunanParameterProvider: PreviewParameterProvider<List<InformasiPembangunan.Addendum>> {
