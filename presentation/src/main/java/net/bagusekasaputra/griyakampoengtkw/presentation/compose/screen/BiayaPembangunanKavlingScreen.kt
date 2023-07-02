@@ -44,6 +44,7 @@ import androidx.compose.ui.viewinterop.AndroidViewBinding
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.Dimension
 import com.evrencoskun.tableview.TableView
+import net.bagusekasaputra.griyakampoengtkw.domain.DateUtil.padWithZero
 import net.bagusekasaputra.griyakampoengtkw.domain.DateUtil.toSlashedString
 import net.bagusekasaputra.griyakampoengtkw.domain.NumberUtil.numericToString
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.pembangunan.InformasiPembangunan
@@ -115,7 +116,18 @@ fun MaterialPembangunanForms(
         mutableStateOf(if (isEditMode) material!!.namaMaterial else "")
     }
     var tanggal by remember {
-        mutableStateOf(if (isEditMode) material!!.tanggal.toSlashedString() else "" )
+        mutableStateOf(if (isEditMode) {
+            material!!.tanggal.toSlashedString()
+        } else {
+            val calendar = Calendar.getInstance()
+            val tahun = calendar.get(Calendar.YEAR)
+            val bulan = calendar.get(Calendar.MONTH).plus(1)
+                .padWithZero()
+            val tanggal = calendar.get(Calendar.DAY_OF_MONTH)
+                .padWithZero()
+
+            "${tanggal}/${bulan}/${tahun}"
+        })
     }
     var orderQty by remember {
         mutableStateOf(if (isEditMode) material!!.qty.toString() else "" )

@@ -262,4 +262,11 @@ object DateUtil {
             }
         }
     }
+
+    /**
+     * For Bulan and Tanggal
+     */
+    fun Int.padWithZero(): String {
+        return this.toString().padStart(2, '0')
+    }
 }
