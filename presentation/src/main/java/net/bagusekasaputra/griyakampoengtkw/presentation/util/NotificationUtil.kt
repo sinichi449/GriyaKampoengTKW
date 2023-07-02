@@ -6,6 +6,7 @@ import android.app.NotificationManager
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Build
+import androidx.annotation.DrawableRes
 import androidx.core.app.ActivityCompat
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
@@ -16,6 +17,7 @@ import net.bagusekasaputra.griyakampoengtkw.presentation.receiver.ProgressReceiv
 object NotificationUtil {
     const val CHANNEL_NAME = "GriyaKampoengTKW"
     const val PROGRESS_CHANNEL = "GktTaskProgress"
+    const val DEFAULT_CHANNEL = "DefaultChannel"
     const val UPLOAD_INDEN_BOOKING_ID = 99
 
     fun createNotification(
@@ -33,10 +35,42 @@ object NotificationUtil {
         activity.sendBroadcast(intent)
     }
 
+    fun FragmentActivity.createNotification(
+        channelId: String = DEFAULT_CHANNEL,
+        notificationId: Int = 7613,
+        content: NotificationCompat.Builder.() -> Unit,
+    ) {
+        val context = this.applicationContext
+        val notificationManager = NotificationManagerCompat.from(context)
+
+        createChannel(notificationManager, channelId)
+
+        val notification = NotificationCompat.Builder(context, channelId).apply {
+            content(this)
+        }.build()
+
+        if (ActivityCompat.checkSelfPermission(
+                context,
+                Manifest.permission.POST_NOTIFICATIONS
+            ) != PackageManager.PERMISSION_GRANTED
+        ) {
+            // TODO: Consider calling
+            //    ActivityCompat#requestPermissions
+            // here to request the missing permissions, and then overriding
+            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+            //                                          int[] grantResults)
+            // to handle the case where the user grants the permission. See the documentation
+            // for ActivityCompat#requestPermissions for more details.
+            return
+        }
+        notificationManager.notify(notificationId, notification)
+    }
+
     fun createNotification(
         activity: FragmentActivity,
         title: String,
         text: String,
+        @DrawableRes icon: Int = R.drawable.ic_baseline_hourglass_top_24,
         channelId: String = PROGRESS_CHANNEL,
         notificationId: Int = 7613,
     ) {
@@ -46,7 +80,7 @@ object NotificationUtil {
         createChannel(notificationManager, channelId)
 
         val notification = NotificationCompat.Builder(context, channelId).apply {
-            setSmallIcon(R.drawable.ic_baseline_hourglass_top_24)
+            setSmallIcon(icon)
             setContentTitle(title)
             setContentText(text)
         }.build()

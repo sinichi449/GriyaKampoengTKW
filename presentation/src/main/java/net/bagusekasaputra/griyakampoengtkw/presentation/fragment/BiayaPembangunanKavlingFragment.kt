@@ -27,6 +27,7 @@ import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 import net.bagusekasaputra.griyakampoengtkw.domain.DataMode
+import net.bagusekasaputra.griyakampoengtkw.presentation.R
 import net.bagusekasaputra.griyakampoengtkw.presentation.compose.screen.BiayaPembangunanKavlingScreen
 import net.bagusekasaputra.griyakampoengtkw.presentation.compose.screen.common.FormsDialog
 import net.bagusekasaputra.griyakampoengtkw.presentation.compose.screen.common.MaterialPembangunanForms
@@ -35,7 +36,7 @@ import net.bagusekasaputra.griyakampoengtkw.presentation.compose.screen.common.U
 import net.bagusekasaputra.griyakampoengtkw.presentation.compose.theme.GriyaKampoengTkwTheme
 import net.bagusekasaputra.griyakampoengtkw.presentation.databinding.FragmentBiayaPembangunanKavlingBinding
 import net.bagusekasaputra.griyakampoengtkw.presentation.util.GriyaNodes
-import net.bagusekasaputra.griyakampoengtkw.presentation.util.NotificationUtil
+import net.bagusekasaputra.griyakampoengtkw.presentation.util.NotificationUtil.createNotification
 import net.bagusekasaputra.griyakampoengtkw.presentation.util.UiUtils
 import net.bagusekasaputra.griyakampoengtkw.presentation.viewmodel.PembangunanKavlingViewModel
 import net.bagusekasaputra.griyakampoengtkw.presentation.viewmodel.ViewModelListener
@@ -120,16 +121,23 @@ class BiayaPembangunanKavlingFragment : Fragment() {
                                                 viewModel.updateMaterialPembangunanDialogState()
 
                                                 sync(SyncRequest.MATERIAL_PEMBANGUNAN)
+
+                                                requireActivity().createNotification {
+                                                    setSmallIcon(R.drawable.ic_baseline_check_circle_18)
+                                                    setContentTitle("Berhasil Menambahkan!")
+                                                    setContentText("Material \"${result.namaMaterial}\" berhasil ditambahkan.")
+                                                    setAutoCancel(true)
+                                                }
                                             }
 
                                             override fun onFailed(failMsg: String?) {
                                                 viewModel.updateMaterialPembangunanDialogState()
 
-                                                NotificationUtil.createNotification(
-                                                    activity = requireActivity(),
-                                                    title = "Gagal Menambahkan ${result.namaMaterial}",
-                                                    text = failMsg ?: "NULL",
-                                                )
+                                                requireActivity().createNotification {
+                                                    setSmallIcon(R.drawable.baseline_close_24)
+                                                    setContentTitle("Terjadi Kesalahan!")
+                                                    setContentText(failMsg ?: "Unknown Error inserting ${result.namaMaterial}")
+                                                }
                                             }
                                         }
 
