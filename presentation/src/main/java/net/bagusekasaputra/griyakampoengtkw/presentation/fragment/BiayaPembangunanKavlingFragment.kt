@@ -23,6 +23,7 @@ import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
@@ -105,15 +106,17 @@ class BiayaPembangunanKavlingFragment : Fragment() {
                         viewModel.materialPembangunanDialogState.collectAsState().value.also {
                             FormsDialog(
                                 show = it,
-                                onDismissRequest = {
-                                    // Delete previously `selectedMaterialPembangunan`
-                                    viewModel.updateMaterialPembangunanDialogState()
-                                },
+                                onDismissRequest = { viewModel.updateMaterialPembangunanDialogState() },
                             ) {
+                                var isOnProgress by remember { mutableStateOf(false) }
+
                                 MaterialPembangunanForms(
                                     modifier = Modifier.padding(16.dp),
                                     material = viewModel.selectedMaterialPembangunan,
+                                    isOnProgress = isOnProgress,
                                     onSubmit = { editMode, result ->
+                                        isOnProgress = true
+
                                         val listener = object : ViewModelListener {
                                             override fun onProgress() {}
 
@@ -140,7 +143,6 @@ class BiayaPembangunanKavlingFragment : Fragment() {
                                                 }
                                             }
                                         }
-
                                         if (editMode) {
                                             viewModel.editMaterialPembangunan(
                                                 oldData = viewModel.selectedMaterialPembangunan!!,
@@ -171,37 +173,43 @@ class BiayaPembangunanKavlingFragment : Fragment() {
                                         }
                                     },
                                     onDeleteRequest = { keyId ->
-                                        val listener = object : ViewModelListener {
-                                            override fun onProgress() {}
+                                        dialogDeleteConfirmation(
+                                            onConfirmed = {
+                                                isOnProgress = true
 
-                                            override fun onCompleted() {
-                                                viewModel.updateMaterialPembangunanDialogState(clearSelected = true)
+                                                val listener = object : ViewModelListener {
+                                                    override fun onProgress() {}
 
-                                                requireActivity().createNotification {
-                                                    setSmallIcon(R.drawable.ic_baseline_check_circle_18)
-                                                    setContentTitle("Berhasil Menghapus!")
-                                                    setContentText("Menghapus $keyId berhasil!")
-                                                    setAutoCancel(true)
+                                                    override fun onCompleted() {
+                                                        viewModel.updateMaterialPembangunanDialogState(clearSelected = true)
+
+                                                        requireActivity().createNotification {
+                                                            setSmallIcon(R.drawable.ic_baseline_check_circle_18)
+                                                            setContentTitle("Berhasil Menghapus!")
+                                                            setContentText("Menghapus $keyId berhasil!")
+                                                            setAutoCancel(true)
+                                                        }
+
+                                                        sync(SyncRequest.MATERIAL_PEMBANGUNAN)
+                                                    }
+
+                                                    override fun onFailed(failMsg: String?) {
+                                                        viewModel.updateMaterialPembangunanDialogState(clearSelected = true)
+
+                                                        requireActivity().createNotification {
+                                                            setSmallIcon(R.drawable.baseline_close_24)
+                                                            setContentTitle("Gagal Menghapus!")
+                                                            setContentText(failMsg)
+                                                        }
+                                                    }
                                                 }
-
-                                                sync(SyncRequest.MATERIAL_PEMBANGUNAN)
-                                            }
-
-                                            override fun onFailed(failMsg: String?) {
-                                                viewModel.updateMaterialPembangunanDialogState(clearSelected = true)
-
-                                                requireActivity().createNotification {
-                                                    setSmallIcon(R.drawable.baseline_close_24)
-                                                    setContentTitle("Gagal Menghapus!")
-                                                    setContentText(failMsg)
-                                                }
-                                            }
-                                        }
-
-                                        viewModel.deleteMaterialPembangunan(
-                                            kavling = viewModel.kavlingKode,
-                                            keyId = keyId!!,
-                                            listener = listener,
+                                                viewModel.deleteMaterialPembangunan(
+                                                    kavling = viewModel.kavlingKode,
+                                                    keyId = keyId!!,
+                                                    listener = listener,
+                                                )
+                                            },
+                                            onCanceled = { isOnProgress = false }
                                         )
                                     }
                                 )
@@ -311,6 +319,27 @@ class BiayaPembangunanKavlingFragment : Fragment() {
                 }
             }
         }
+    }
+
+    private fun dialogDeleteConfirmation(
+        onConfirmed: () -> Unit,
+        onCanceled: () -> Unit,
+    ) {
+        MaterialAlertDialogBuilder(requireContext()).apply {
+            setTitle("Hapus Item?")
+            setMessage("Apakah Anda yakin ingin menghapus item ini?")
+            setPositiveButton("Ya") { dialog, _ ->
+                dialog.dismiss()
+
+                onConfirmed()
+            }
+            setNegativeButton("Tidak") { dialog, _ ->
+                dialog.dismiss()
+
+                onCanceled()
+            }
+        }
+            .show()
     }
 
     private object SyncRequest {

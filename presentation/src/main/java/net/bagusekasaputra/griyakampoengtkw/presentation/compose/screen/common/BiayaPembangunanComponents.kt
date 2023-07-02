@@ -54,6 +54,7 @@ import java.util.Date
 fun MaterialPembangunanForms(
     modifier: Modifier = Modifier,
     material: MaterialPembangunan? = null,
+    isOnProgress: Boolean = false,
     onSubmit: (editMode: Boolean, result: MBFormsResult) -> Unit = {_, _ ->},
     onDeleteRequest: (keyId: String?) -> Unit = {},
 ) {
@@ -94,16 +95,6 @@ fun MaterialPembangunanForms(
     }
     var keterangan by remember {
         mutableStateOf(if (isEditMode) material!!.keterangan else "" )
-    }
-
-    var enableSubmit by remember { mutableStateOf(true) }
-    var enableDelete by remember { mutableStateOf(true) }
-    var submitText by remember { mutableStateOf(if (isEditMode) "Ubah" else "Tambahkan") }
-
-    fun onProgress() {
-        enableSubmit = false
-        enableDelete = false
-        submitText = "Memproses data ..."
     }
 
     if (showDatePicker) {
@@ -217,16 +208,16 @@ fun MaterialPembangunanForms(
             onClick = {
                 val result = MBFormsResult(namaMaterial, tanggal, orderQty,
                     satuan, hargaTotal, terbayar, arrivedQty, keterangan)
-                onSubmit(isEditMode, result)
 
-                onProgress()
+                onSubmit(isEditMode, result)
             },
             modifier = Modifier.fillMaxWidth(),
+            enabled = !isOnProgress,
         ) {
-            if (enableSubmit) {
-                Text(text = submitText)
+            if (!isOnProgress) {
+                Text(text = if (isEditMode) "Ubah" else "Tambahkan")
             } else {
-                TextProgress(text = submitText)
+                TextProgress(text = "Memproses data ...")
             }
         }
         Spacer(modifier = Modifier.height(4.dp))
@@ -236,14 +227,13 @@ fun MaterialPembangunanForms(
             Button(
                 onClick = {
                     onDeleteRequest(material?.keyId)
-
-                    onProgress()
                 },
                 modifier = Modifier.fillMaxWidth(),
                 colors = ButtonDefaults.buttonColors(
                     containerColor = MaterialTheme.colorScheme.secondaryContainer,
                     contentColor = MaterialTheme.colorScheme.onSecondaryContainer,
-                )
+                ),
+                enabled = !isOnProgress,
             ) {
                 Text(text = "Hapus")
             }
