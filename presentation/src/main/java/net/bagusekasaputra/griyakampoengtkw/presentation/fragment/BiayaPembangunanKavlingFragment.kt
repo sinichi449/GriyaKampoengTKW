@@ -124,8 +124,8 @@ class BiayaPembangunanKavlingFragment : Fragment() {
 
                                                 requireActivity().createNotification {
                                                     setSmallIcon(R.drawable.ic_baseline_check_circle_18)
-                                                    setContentTitle("Berhasil ${if (editMode) "Menambahkan" else "Mengubah"}!")
-                                                    setContentText("Material \"${result.namaMaterial}\" berhasil ditambahkan.")
+                                                    setContentTitle("Berhasil ${if (editMode) "Mengubah" else "Menambahkan"}!")
+                                                    setContentText("Material \"${result.namaMaterial}\" berhasil ${if (editMode) "diubah" else "ditambahkan"}.")
                                                     setAutoCancel(true)
                                                 }
                                             }
