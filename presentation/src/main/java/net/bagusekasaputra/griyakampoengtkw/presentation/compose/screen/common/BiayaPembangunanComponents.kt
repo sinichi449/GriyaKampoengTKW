@@ -54,12 +54,14 @@ import java.util.Date
 fun MaterialPembangunanForms(
     modifier: Modifier = Modifier,
     material: MaterialPembangunan? = null,
-    isOnProgress: Boolean = false,
     onSubmit: (editMode: Boolean, result: MBFormsResult) -> Unit = {_, _ ->},
     onDeleteRequest: (keyId: String?) -> Unit = {},
 ) {
     val isEditMode = material != null
     var showDatePicker by remember { mutableStateOf(false) }
+    var isOnProgress by remember { mutableStateOf(false) }
+    var showDeleteDialog by remember { mutableStateOf(false) }
+    var keyIdToDelete by remember { mutableStateOf("") }
 
     var namaMaterial by remember {
         mutableStateOf(if (isEditMode) material!!.namaMaterial else "")
@@ -202,6 +204,7 @@ fun MaterialPembangunanForms(
                 singleLine = false,
             )
         }
+
         // Submit Button
         Spacer(modifier = Modifier.height(32.dp))
         Button(
@@ -210,6 +213,8 @@ fun MaterialPembangunanForms(
                     satuan, hargaTotal, terbayar, arrivedQty, keterangan)
 
                 onSubmit(isEditMode, result)
+
+                isOnProgress = true
             },
             modifier = Modifier.fillMaxWidth(),
             enabled = !isOnProgress,
@@ -226,7 +231,8 @@ fun MaterialPembangunanForms(
         if (isEditMode) {
             Button(
                 onClick = {
-                    onDeleteRequest(material?.keyId)
+                    showDeleteDialog = true
+                    keyIdToDelete = material?.keyId ?: ""
                 },
                 modifier = Modifier.fillMaxWidth(),
                 colors = ButtonDefaults.buttonColors(
@@ -239,6 +245,23 @@ fun MaterialPembangunanForms(
             }
         }
     }
+
+
+    DeleteConfirmationDialog(
+        show = showDeleteDialog,
+        title = "Hapus Item?",
+        content = "Apakah Anda yakin ingin menghapus item ini?",
+        onConfirmed = {
+            onDeleteRequest(keyIdToDelete)
+            isOnProgress = true
+
+            showDeleteDialog = false
+        },
+        onCancelled = {
+            isOnProgress = false
+            showDeleteDialog = false
+        }
+    )
 }
 
 /**

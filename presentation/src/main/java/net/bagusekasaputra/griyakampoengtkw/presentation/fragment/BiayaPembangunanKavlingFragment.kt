@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
+import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -19,6 +20,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.compose.ui.unit.dp
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.FragmentActivity
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
@@ -70,152 +72,13 @@ class BiayaPembangunanKavlingFragment : Fragment() {
             setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnLifecycleDestroyed(lifecycle))
             setContent {
                 GriyaKampoengTkwTheme {
-                    Surface(
-                        modifier = Modifier.fillMaxWidth(),
-                        color = MaterialTheme.colorScheme.background
-                    ) {
-                        val informasiPembangunan = viewModel.informasiPembangunan.collectAsState()
-                        val materialPembangunan = viewModel.materialList.collectAsState()
-                        val upahPekerja = viewModel.upahPekerjaList.collectAsState()
-
-                        var mbSelectedRow by remember { mutableStateOf(-1) }
-
-                        BiayaPembangunanKavlingScreen(
-                            modifier = Modifier.padding(16.dp),
-                            informasiPembangunan = informasiPembangunan.value,
-                            materialPembangunanTableView = {
-                                MaterialPembangunanTable(
-                                    materialPembangunan = materialPembangunan.value,
-                                    selectedRow = mbSelectedRow,
-                                    onTableRowClicked = {
-                                        viewModel.setSelectedMaterialPembangunan(it)
-                                        mbSelectedRow = it
-
-                                        // Open Dialog Input
-                                        viewModel.updateMaterialPembangunanDialogState(clearSelected = false)
-                                    }
-                                )
-                            },
-                            upahPekerjaTableView = {
-                                UpahPekerjaTable(
-                                    upahPekerja = upahPekerja.value,
-                                )
-                            }
-                        )
-
-                        viewModel.materialPembangunanDialogState.collectAsState().value.also {
-                            FormsDialog(
-                                show = it,
-                                onDismissRequest = { viewModel.updateMaterialPembangunanDialogState() },
-                            ) {
-                                var isOnProgress by remember { mutableStateOf(false) }
-
-                                MaterialPembangunanForms(
-                                    modifier = Modifier.padding(16.dp),
-                                    material = viewModel.selectedMaterialPembangunan,
-                                    isOnProgress = isOnProgress,
-                                    onSubmit = { editMode, result ->
-                                        isOnProgress = true
-
-                                        val listener = object : ViewModelListener {
-                                            override fun onProgress() {}
-
-                                            override fun onCompleted() {
-                                                viewModel.updateMaterialPembangunanDialogState()
-
-                                                sync(SyncRequest.MATERIAL_PEMBANGUNAN)
-
-                                                requireActivity().createNotification {
-                                                    setSmallIcon(R.drawable.ic_baseline_check_circle_18)
-                                                    setContentTitle("Berhasil ${if (editMode) "Mengubah" else "Menambahkan"}!")
-                                                    setContentText("Material \"${result.namaMaterial}\" berhasil ${if (editMode) "diubah" else "ditambahkan"}.")
-                                                    setAutoCancel(true)
-                                                }
-                                            }
-
-                                            override fun onFailed(failMsg: String?) {
-                                                viewModel.updateMaterialPembangunanDialogState()
-
-                                                requireActivity().createNotification {
-                                                    setSmallIcon(R.drawable.baseline_close_24)
-                                                    setContentTitle("Terjadi Kesalahan!")
-                                                    setContentText(failMsg ?: "Unknown Error inserting ${result.namaMaterial}")
-                                                }
-                                            }
-                                        }
-                                        if (editMode) {
-                                            viewModel.editMaterialPembangunan(
-                                                oldData = viewModel.selectedMaterialPembangunan!!,
-                                                kavling = viewModel.kavlingKode,
-                                                nama = result.namaMaterial,
-                                                tanggal = result.tanggal,
-                                                orderQty = result.orderQty.toDouble(),
-                                                satuan = result.satuan,
-                                                arrivedQty = result.arrivedQty.toDouble(),
-                                                hargaTotal = result.hargaTotal.toLong(),
-                                                totalBayar = result.terbayar.toLong(),
-                                                keterangan = result.keterangan,
-                                                listener = listener,
-                                            )
-                                        } else {
-                                            viewModel.addMaterialPembangunan(
-                                                kavling = viewModel.kavlingKode,
-                                                nama = result.namaMaterial,
-                                                tanggal = result.tanggal,
-                                                orderQty = result.orderQty.toDouble(),
-                                                satuan = result.satuan,
-                                                arrivedQty = result.arrivedQty.toDouble(),
-                                                hargaTotal = result.hargaTotal.toLong(),
-                                                totalBayar = result.terbayar.toLong(),
-                                                keterangan = result.keterangan,
-                                                listener = listener,
-                                            )
-                                        }
-                                    },
-                                    onDeleteRequest = { keyId ->
-                                        dialogDeleteConfirmation(
-                                            onConfirmed = {
-                                                isOnProgress = true
-
-                                                val listener = object : ViewModelListener {
-                                                    override fun onProgress() {}
-
-                                                    override fun onCompleted() {
-                                                        viewModel.updateMaterialPembangunanDialogState(clearSelected = true)
-
-                                                        requireActivity().createNotification {
-                                                            setSmallIcon(R.drawable.ic_baseline_check_circle_18)
-                                                            setContentTitle("Berhasil Menghapus!")
-                                                            setContentText("Menghapus $keyId berhasil!")
-                                                            setAutoCancel(true)
-                                                        }
-
-                                                        sync(SyncRequest.MATERIAL_PEMBANGUNAN)
-                                                    }
-
-                                                    override fun onFailed(failMsg: String?) {
-                                                        viewModel.updateMaterialPembangunanDialogState(clearSelected = true)
-
-                                                        requireActivity().createNotification {
-                                                            setSmallIcon(R.drawable.baseline_close_24)
-                                                            setContentTitle("Gagal Menghapus!")
-                                                            setContentText(failMsg)
-                                                        }
-                                                    }
-                                                }
-                                                viewModel.deleteMaterialPembangunan(
-                                                    kavling = viewModel.kavlingKode,
-                                                    keyId = keyId!!,
-                                                    listener = listener,
-                                                )
-                                            },
-                                            onCanceled = { isOnProgress = false }
-                                        )
-                                    }
-                                )
-                            }
+                    MyLayout(
+                        activity = requireActivity(),
+                        viewModel = viewModel,
+                        onSyncRequest = {
+                            sync(it)
                         }
-                    }
+                    )
                 }
             }
         }
@@ -341,11 +204,154 @@ class BiayaPembangunanKavlingFragment : Fragment() {
         }
             .show()
     }
+}
 
-    private object SyncRequest {
-        const val MATERIAL_PEMBANGUNAN = 0
-        const val UPAH_PEKERJA = 1
+private object SyncRequest {
+    const val MATERIAL_PEMBANGUNAN = 0
+    const val UPAH_PEKERJA = 1
 
-        val ALL = intArrayOf(MATERIAL_PEMBANGUNAN, UPAH_PEKERJA)
+    val ALL = intArrayOf(MATERIAL_PEMBANGUNAN, UPAH_PEKERJA)
+}
+
+@Composable
+private fun MyLayout(
+    activity: FragmentActivity,
+    viewModel: PembangunanKavlingViewModel,
+    onSyncRequest: (requestCode: Int) -> Unit,
+
+) {
+    Surface(
+        modifier = Modifier.fillMaxWidth(),
+        color = MaterialTheme.colorScheme.background
+    ) {
+        val informasiPembangunan = viewModel.informasiPembangunan.collectAsState()
+        val materialPembangunan = viewModel.materialList.collectAsState()
+        val upahPekerja = viewModel.upahPekerjaList.collectAsState()
+
+        var mbSelectedRow by remember { mutableStateOf(-1) }
+
+        BiayaPembangunanKavlingScreen(
+            modifier = Modifier.padding(16.dp),
+            informasiPembangunan = informasiPembangunan.value,
+            materialPembangunanTableView = {
+                MaterialPembangunanTable(
+                    materialPembangunan = materialPembangunan.value,
+                    selectedRow = mbSelectedRow,
+                    onTableRowClicked = {
+                        viewModel.setSelectedMaterialPembangunan(it)
+                        mbSelectedRow = it
+
+                        // Open Dialog Input
+                        viewModel.updateMaterialPembangunanDialogState(clearSelected = false)
+                    }
+                )
+            },
+            upahPekerjaTableView = {
+                UpahPekerjaTable(
+                    upahPekerja = upahPekerja.value,
+                )
+            }
+        )
+
+        viewModel.materialPembangunanDialogState.collectAsState().value.also {
+            FormsDialog(
+                show = it,
+                onDismissRequest = { viewModel.updateMaterialPembangunanDialogState() },
+            ) {
+                MaterialPembangunanForms(
+                    modifier = Modifier.padding(16.dp),
+                    material = viewModel.selectedMaterialPembangunan,
+                    onSubmit = { editMode, result ->
+                        val listener = object : ViewModelListener {
+                            override fun onProgress() {}
+
+                            override fun onCompleted() {
+                                viewModel.updateMaterialPembangunanDialogState()
+
+                                onSyncRequest(SyncRequest.MATERIAL_PEMBANGUNAN)
+
+                                activity.createNotification {
+                                    setSmallIcon(R.drawable.ic_baseline_check_circle_18)
+                                    setContentTitle("Berhasil ${if (editMode) "Mengubah" else "Menambahkan"}!")
+                                    setContentText("Material \"${result.namaMaterial}\" berhasil ${if (editMode) "diubah" else "ditambahkan"}.")
+                                    setAutoCancel(true)
+                                }
+                            }
+
+                            override fun onFailed(failMsg: String?) {
+                                viewModel.updateMaterialPembangunanDialogState()
+
+                                activity.createNotification {
+                                    setSmallIcon(R.drawable.baseline_close_24)
+                                    setContentTitle("Terjadi Kesalahan!")
+                                    setContentText(failMsg ?: "Unknown Error inserting ${result.namaMaterial}")
+                                }
+                            }
+                        }
+                        if (editMode) {
+                            viewModel.editMaterialPembangunan(
+                                oldData = viewModel.selectedMaterialPembangunan!!,
+                                kavling = viewModel.kavlingKode,
+                                nama = result.namaMaterial,
+                                tanggal = result.tanggal,
+                                orderQty = result.orderQty.toDouble(),
+                                satuan = result.satuan,
+                                arrivedQty = result.arrivedQty.toDouble(),
+                                hargaTotal = result.hargaTotal.toLong(),
+                                totalBayar = result.terbayar.toLong(),
+                                keterangan = result.keterangan,
+                                listener = listener,
+                            )
+                        } else {
+                            viewModel.addMaterialPembangunan(
+                                kavling = viewModel.kavlingKode,
+                                nama = result.namaMaterial,
+                                tanggal = result.tanggal,
+                                orderQty = result.orderQty.toDouble(),
+                                satuan = result.satuan,
+                                arrivedQty = result.arrivedQty.toDouble(),
+                                hargaTotal = result.hargaTotal.toLong(),
+                                totalBayar = result.terbayar.toLong(),
+                                keterangan = result.keterangan,
+                                listener = listener,
+                            )
+                        }
+                    },
+                    onDeleteRequest = { keyId ->
+                        val listener = object : ViewModelListener {
+                            override fun onProgress() {}
+
+                            override fun onCompleted() {
+                                viewModel.updateMaterialPembangunanDialogState(clearSelected = true)
+
+                                activity.createNotification {
+                                    setSmallIcon(R.drawable.ic_baseline_check_circle_18)
+                                    setContentTitle("Berhasil Menghapus!")
+                                    setContentText("Menghapus $keyId berhasil!")
+                                    setAutoCancel(true)
+                                }
+
+                                onSyncRequest(SyncRequest.MATERIAL_PEMBANGUNAN)
+                            }
+
+                            override fun onFailed(failMsg: String?) {
+                                viewModel.updateMaterialPembangunanDialogState(clearSelected = true)
+
+                                activity.createNotification {
+                                    setSmallIcon(R.drawable.baseline_close_24)
+                                    setContentTitle("Gagal Menghapus!")
+                                    setContentText(failMsg)
+                                }
+                            }
+                        }
+                        viewModel.deleteMaterialPembangunan(
+                            kavling = viewModel.kavlingKode,
+                            keyId = keyId!!,
+                            listener = listener,
+                        )
+                    }
+                )
+            }
+        }
     }
 }

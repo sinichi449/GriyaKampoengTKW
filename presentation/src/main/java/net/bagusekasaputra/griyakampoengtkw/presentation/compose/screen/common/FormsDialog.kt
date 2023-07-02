@@ -2,6 +2,7 @@ package net.bagusekasaputra.griyakampoengtkw.presentation.compose.screen.common
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -80,6 +81,77 @@ fun FormsOnProgressDialog(
             }
         }
     }
+}
+
+@Composable
+fun DeleteConfirmationDialog(
+    modifier: Modifier = Modifier,
+    show: Boolean,
+    title: String = "This is title",
+    content: String = "Lorem ipsum dolor sit amet, consectetur adipiscing elit?",
+    positiveButtonText: String = "Ya",
+    negativeButtonText: String = "Tidak",
+    onConfirmed: () -> Unit = {},
+    onCancelled: () -> Unit = {},
+) {
+    if (show) {
+        Dialog(onDismissRequest = onCancelled) {
+            Surface(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .then(modifier),
+                color = MaterialTheme.colorScheme.background
+            ) {
+                DeleteConfirmationLayout(
+                    modifier = Modifier.padding(16.dp),
+                    title = title,
+                    content = content,
+                    positiveButtonText = positiveButtonText,
+                    negativeButtonText = negativeButtonText,
+                    onPositiveButtonClick = onConfirmed,
+                    onNegativeButtonClick = onCancelled,
+                )
+            }
+        }
+    }
+}
+
+@Composable
+private fun DeleteConfirmationLayout(
+    modifier: Modifier = Modifier,
+    title: String = "This is title",
+    content: String = "Lorem ipsum dolor sit amet, consectetur adipiscing elit?",
+    positiveButtonText: String = "Ya",
+    negativeButtonText: String = "Tidak",
+    onPositiveButtonClick: () -> Unit = {},
+    onNegativeButtonClick: () -> Unit = {},
+) {
+    Column(modifier = Modifier
+        .fillMaxWidth()
+        .then(modifier)) {
+        Text(text = title, style = MaterialTheme.typography.titleMedium)
+        Spacer(modifier = Modifier.height(8.dp))
+        Text(text = content, style = MaterialTheme.typography.bodyMedium)
+        Spacer(modifier = Modifier.height(8.dp))
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.End,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            TextButton(onClick = onNegativeButtonClick) {
+                Text(text = negativeButtonText.uppercase())
+            }
+            TextButton(onClick = onPositiveButtonClick) {
+                Text(text = positiveButtonText.uppercase())
+            }
+        }
+    }
+}
+
+@Preview(showBackground = true, group = "isolated")
+@Composable
+fun DeleteConfirmationLayoutScreen() {
+    DeleteConfirmationLayout()
 }
 
 @Composable
