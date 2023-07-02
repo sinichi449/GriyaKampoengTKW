@@ -1,6 +1,7 @@
 package net.bagusekasaputra.griyakampoengtkw.domain.entity.pembangunan
 
 import net.bagusekasaputra.griyakampoengtkw.domain.IdUtil
+import net.bagusekasaputra.griyakampoengtkw.domain.interfaces.ContainImage
 import java.util.Date
 
 data class MaterialPembangunan(
@@ -15,7 +16,8 @@ data class MaterialPembangunan(
     val kelunasan: Kelunasan = Kelunasan.Lunas(hargaTotal),
     val kedatangan: Kedatangan = Kedatangan.Belum,
     val keterangan: String = "-",
-) {
+    override val imageUris: List<String> = emptyList(),
+): ContainImage {
     val hargaSatuan: Long get() = if (qty > 0.0) {
         (hargaTotal / qty).toLong()
     } else {
@@ -60,6 +62,10 @@ data class MaterialPembangunan(
 
         fun List<MaterialPembangunan>.totalBiaya(): Long {
             return this.sumOf { it.hargaTotal }
+        }
+
+        fun List<MaterialPembangunan>.sortByTanggal(): List<MaterialPembangunan> {
+            return this.sortedBy { it.tanggal }
         }
 
         fun getKelunasan(jumlahTerbayar: Long, totalHarga: Long): Kelunasan {

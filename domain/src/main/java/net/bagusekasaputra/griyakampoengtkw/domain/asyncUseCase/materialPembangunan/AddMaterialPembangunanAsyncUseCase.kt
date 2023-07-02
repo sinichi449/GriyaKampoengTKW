@@ -19,7 +19,6 @@ class AddMaterialPembangunanAsyncUseCase(
             materialPembangunan.validate()
 
             emit(materialPembangunanRepository.insert(
-                kavling = materialPembangunan.untuk,
                 materialPembangunan = materialPembangunan,
             ))
         }

@@ -12,7 +12,7 @@ interface MaterialPembangunanRepository {
         dataMode: DataMode
     ): Flow<Result<List<MaterialPembangunan>?>>
 
-    suspend fun insert(kavling: String, materialPembangunan: MaterialPembangunan): Result<Unit>
+    suspend fun insert(materialPembangunan: MaterialPembangunan): Result<Unit>
 
     suspend fun delete(kavling: String, keyId: String): Result<Unit>
 

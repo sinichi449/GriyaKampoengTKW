@@ -118,6 +118,8 @@ class BiayaPembangunanKavlingFragment : Fragment() {
 
                                             override fun onCompleted() {
                                                 viewModel.updateMaterialPembangunanDialogState()
+
+                                                sync(SyncRequest.MATERIAL_PEMBANGUNAN)
                                             }
 
                                             override fun onFailed(failMsg: String?) {
@@ -194,48 +196,57 @@ class BiayaPembangunanKavlingFragment : Fragment() {
         setupViewModel()
     }
 
-    private fun sync() {
+    private fun sync(vararg requests: Int = SyncRequest.ALL) {
         val currentKavling = viewModel.kavlingKode
         if (currentKavling.isEmpty()) {
             Snackbar.make(binding.root, "Kavling Kode on Biaya Pembangunan Fragment doesn't received properly!", Snackbar.LENGTH_SHORT)
                 .show()
         } else {
             Log.d("PEMBANGUNAN", "Executing synchronization now!")
-            viewModel.fetchMaterialPembangunan(currentKavling, object : ViewModelListener {
-                override fun onProgress() {
+            requests.forEach { requestCode ->
+                when (requestCode) {
+                    SyncRequest.MATERIAL_PEMBANGUNAN -> {
+                        viewModel.fetchMaterialPembangunan(currentKavling, object : ViewModelListener {
+                            override fun onProgress() {
 
+                            }
+
+                            override fun onCompleted() {
+
+                            }
+
+                            override fun onFailed(failMsg: String?) {
+                                Toast.makeText(
+                                    requireContext(),
+                                    "Gagal mendapatkan Material Pembangunan: $failMsg",
+                                    Toast.LENGTH_LONG
+                                ).show()
+                            }
+                        })
+                    }
+                    SyncRequest.UPAH_PEKERJA -> {
+                        viewModel.fetchUpahPekerja(currentKavling, object : ViewModelListener {
+                            override fun onProgress() {
+
+                            }
+
+                            override fun onCompleted() {
+
+                            }
+
+                            override fun onFailed(failMsg: String?) {
+                                Toast.makeText(
+                                    requireContext(),
+                                    "Gagal mendapatkan Upah Pekerja: $failMsg",
+                                    Toast.LENGTH_LONG
+                                ).show()
+                            }
+
+                        })
+                    }
+                    else -> {}
                 }
-
-                override fun onCompleted() {
-
-                }
-
-                override fun onFailed(failMsg: String?) {
-                    Toast.makeText(
-                        requireContext(),
-                        "Gagal mendapatkan Material Pembangunan: $failMsg",
-                        Toast.LENGTH_LONG
-                    ).show()
-                }
-            })
-            viewModel.fetchUpahPekerja(currentKavling, object : ViewModelListener {
-                override fun onProgress() {
-
-                }
-
-                override fun onCompleted() {
-
-                }
-
-                override fun onFailed(failMsg: String?) {
-                    Toast.makeText(
-                        requireContext(),
-                        "Gagal mendapatkan Upah Pekerja: $failMsg",
-                        Toast.LENGTH_LONG
-                    ).show()
-                }
-
-            })
+            }
         }
     }
 
@@ -257,5 +268,12 @@ class BiayaPembangunanKavlingFragment : Fragment() {
                 }
             }
         }
+    }
+
+    private object SyncRequest {
+        const val MATERIAL_PEMBANGUNAN = 0
+        const val UPAH_PEKERJA = 1
+
+        val ALL = intArrayOf(MATERIAL_PEMBANGUNAN, UPAH_PEKERJA)
     }
 }

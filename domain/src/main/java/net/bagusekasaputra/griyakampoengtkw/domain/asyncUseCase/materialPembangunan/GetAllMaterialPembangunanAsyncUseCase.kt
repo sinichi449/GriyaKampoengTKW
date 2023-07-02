@@ -1,9 +1,11 @@
 package net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.materialPembangunan
 
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.onEach
 import net.bagusekasaputra.griyakampoengtkw.domain.DataMode
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.AsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.pembangunan.MaterialPembangunan
+import net.bagusekasaputra.griyakampoengtkw.domain.entity.pembangunan.MaterialPembangunan.Companion.sortByTanggal
 import net.bagusekasaputra.griyakampoengtkw.domain.repository.MaterialPembangunanRepository
 
 class GetAllMaterialPembangunanAsyncUseCase(
@@ -18,10 +20,15 @@ class GetAllMaterialPembangunanAsyncUseCase(
 
     override fun process(request: Request): Flow<Result<List<MaterialPembangunan>?>> {
         return materialPembangunanRepository.getAll(
-            request.untuk,
-            request.kategori,
-            request.dataMode
+            untuk = request.untuk,
+            kategori = request.kategori,
+            dataMode = request.dataMode
         )
+            .onEach { result ->
+                result.onSuccess {
+                    it?.sortByTanggal()
+                }
+            }
     }
 
 }

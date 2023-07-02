@@ -52,6 +52,7 @@ import net.bagusekasaputra.griyakampoengtkw.data.interfaces.remote.RemoteIndenBo
 import net.bagusekasaputra.griyakampoengtkw.data.interfaces.remote.RemoteIndenBookingDataSource
 import net.bagusekasaputra.griyakampoengtkw.data.interfaces.remote.RemoteKavlingCatatanPembayaranDataSource
 import net.bagusekasaputra.griyakampoengtkw.data.interfaces.remote.RemoteKavlingDataSource
+import net.bagusekasaputra.griyakampoengtkw.data.interfaces.remote.RemoteMaterialPembangunanDataSource
 import net.bagusekasaputra.griyakampoengtkw.data.interfaces.remote.RemoteMetadataDataSource
 import net.bagusekasaputra.griyakampoengtkw.data.interfaces.remote.RemotePembayaranDataSource
 import net.bagusekasaputra.griyakampoengtkw.data.interfaces.remote.RemotePengembalianDataSource
@@ -558,8 +559,10 @@ object RepositoryModules {
      * Material Pembangunan
      */
     @Provides
-    fun provideMaterialPembangunanRepository(): MaterialPembangunanRepository {
-        return MaterialPembangunanRepositoryImpl()
+    fun provideMaterialPembangunanRepository(
+        remoteDataSource: RemoteMaterialPembangunanDataSource
+    ): MaterialPembangunanRepository {
+        return MaterialPembangunanRepositoryImpl(remoteDataSource)
     }
 
     /**

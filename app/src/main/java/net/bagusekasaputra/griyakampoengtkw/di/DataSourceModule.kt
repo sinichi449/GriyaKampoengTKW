@@ -1,5 +1,3 @@
-@file:Suppress("DEPRECATION")
-
 package net.bagusekasaputra.griyakampoengtkw.di
 
 import com.google.firebase.database.DatabaseReference
@@ -488,6 +486,16 @@ object DataSourceModule {
         @TahapanReference storageReference: StorageReference,
     ): RemotePengembalianDataSource {
         return FirebasePengembalianDataSource(databaseReference, storageReference)
+    }
+
+    /**
+     * Material Pembangunan
+     */
+    @Provides
+    fun provideRemoteMaterialPembangunanDataSource(
+        @TahapanReference databaseReference: DatabaseReference,
+    ): RemoteMaterialPembangunanDataSource {
+        return FirebaseMaterialPembangunanDataSource(databaseReference)
     }
 
 }

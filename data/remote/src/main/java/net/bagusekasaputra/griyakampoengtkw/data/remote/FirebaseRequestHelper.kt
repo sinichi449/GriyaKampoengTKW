@@ -187,7 +187,7 @@ object FirebaseRequestHelper {
     suspend fun <O> readDataOnce(
         reference: DatabaseReference,
         withDataReceived: (snapshot: DataSnapshot) -> Result<O>
-    ) = suspendCancellableCoroutine<Result<O>> { continuation ->
+    ) = suspendCancellableCoroutine { continuation ->
         val eventListener = object : ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
                 if (continuation.isActive) {
