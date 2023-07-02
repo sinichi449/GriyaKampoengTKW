@@ -24,10 +24,6 @@ data class MaterialPembangunan(
         0L
     }
 
-    enum class Kategori {
-        GLOBAL, KAVLING
-    }
-
     fun validate() {
         if (untuk.isEmpty()) throw IllegalArgumentException("Kavling belum terspesifikasi!")
 
@@ -36,6 +32,20 @@ data class MaterialPembangunan(
         if (qty < 0.0) throw IllegalArgumentException("Qty tidak boleh kurang dari nol")
 
         if (satuan.isEmpty()) throw IllegalArgumentException("Satuan tidak boleh kosong!")
+    }
+
+    fun getIdentifier(): Identifier {
+        return Identifier(
+            kategori = kategori,
+            target = untuk,
+            keyId = keyId,
+        )
+    }
+
+
+
+    enum class Kategori {
+        GLOBAL, KAVLING
     }
 
     sealed class Kelunasan(val terbayar: Long) {
@@ -58,8 +68,13 @@ data class MaterialPembangunan(
         data class Partial(val jumlah: Double): Kedatangan(jumlah)
     }
 
-    companion object {
+    data class Identifier(
+        val kategori: Kategori,
+        val target: String,
+        val keyId: String,
+    )
 
+    companion object {
         fun List<MaterialPembangunan>.totalBiaya(): Long {
             return this.sumOf { it.hargaTotal }
         }

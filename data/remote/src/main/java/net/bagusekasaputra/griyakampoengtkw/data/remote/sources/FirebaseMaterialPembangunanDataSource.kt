@@ -9,6 +9,7 @@ import net.bagusekasaputra.griyakampoengtkw.data.model.MaterialPembangunanModel
 import net.bagusekasaputra.griyakampoengtkw.data.remote.FirebaseNodes
 import net.bagusekasaputra.griyakampoengtkw.data.remote.FirebaseRequestHelper
 
+@OptIn(ExperimentalCoroutinesApi::class)
 class FirebaseMaterialPembangunanDataSource(
     private val databaseReference: DatabaseReference
 ): RemoteMaterialPembangunanDataSource {
@@ -33,7 +34,6 @@ class FirebaseMaterialPembangunanDataSource(
         )
     }
 
-    @OptIn(ExperimentalCoroutinesApi::class)
     override suspend fun insert(model: MaterialPembangunanModel): Result<Unit> {
         return suspendCancellableCoroutine { continuation ->
             val reference = getReference(databaseReference, model.untuk, model.kategori)
@@ -51,6 +51,34 @@ class FirebaseMaterialPembangunanDataSource(
                     }
                 }
         }
+    }
+
+    override suspend fun delete(kategori: String, target: String, keyId: String): Result<Unit> {
+        return suspendCancellableCoroutine { continuation ->
+            val reference = getReference(databaseReference, target, kategori)
+                .child(keyId)
+
+            reference.removeValue()
+                .addOnSuccessListener {
+                    if (continuation.isActive) {
+                        continuation.resume(Result.success(Unit), null)
+                    }
+                }
+                .addOnFailureListener {
+                    if (continuation.isActive) {
+                        continuation.resume(Result.failure(it), null)
+                    }
+                }
+        }
+    }
+
+    override suspend fun update(
+        kategori: String,
+        target: String,
+        keyId: String,
+        newData: MaterialPembangunanModel
+    ): Result<Unit> {
+        return insert(newData)
     }
 
     override fun getTableName(): String {

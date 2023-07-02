@@ -35,16 +35,25 @@ class MaterialPembangunanRepositoryImpl(
         )
     }
 
-    override suspend fun delete(kavling: String, keyId: String): Result<Unit> {
-        TODO("Not yet implemented")
+    override suspend fun delete(identifier: MaterialPembangunan.Identifier): Result<Unit> {
+        return remoteDataSource.delete(
+            kategori = identifier.kategori.name,
+            target = identifier.target,
+            keyId = identifier.keyId,
+        )
     }
 
     override suspend fun update(
-        kavling: String,
-        keyId: String,
+        identifier: MaterialPembangunan.Identifier,
         newData: MaterialPembangunan
     ): Result<Unit> {
-        TODO("Not yet implemented")
+        return remoteDataSource.update(
+            kategori = identifier.kategori.name,
+            target = identifier.target,
+            keyId = identifier.keyId,
+            newData = MyObjectMapper.mapMaterialPembangunan(newData),
+        )
     }
+
 
 }

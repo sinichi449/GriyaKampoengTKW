@@ -9,13 +9,16 @@ interface MaterialPembangunanRepository {
     fun getAll(
         untuk: String,
         kategori: MaterialPembangunan.Kategori,
-        dataMode: DataMode
+        dataMode: DataMode,
     ): Flow<Result<List<MaterialPembangunan>?>>
 
     suspend fun insert(materialPembangunan: MaterialPembangunan): Result<Unit>
 
-    suspend fun delete(kavling: String, keyId: String): Result<Unit>
+    suspend fun delete(identifier: MaterialPembangunan.Identifier): Result<Unit>
 
-    suspend fun update(kavling: String, keyId: String, newData: MaterialPembangunan): Result<Unit>
+    suspend fun update(
+        identifier: MaterialPembangunan.Identifier,
+        newData: MaterialPembangunan
+    ): Result<Unit>
 
 }

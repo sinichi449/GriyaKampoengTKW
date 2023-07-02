@@ -124,7 +124,7 @@ class BiayaPembangunanKavlingFragment : Fragment() {
 
                                                 requireActivity().createNotification {
                                                     setSmallIcon(R.drawable.ic_baseline_check_circle_18)
-                                                    setContentTitle("Berhasil Menambahkan!")
+                                                    setContentTitle("Berhasil ${if (editMode) "Menambahkan" else "Mengubah"}!")
                                                     setContentText("Material \"${result.namaMaterial}\" berhasil ditambahkan.")
                                                     setAutoCancel(true)
                                                 }
@@ -142,7 +142,19 @@ class BiayaPembangunanKavlingFragment : Fragment() {
                                         }
 
                                         if (editMode) {
-                                            // TODO
+                                            viewModel.editMaterialPembangunan(
+                                                oldData = viewModel.selectedMaterialPembangunan!!,
+                                                kavling = viewModel.kavlingKode,
+                                                nama = result.namaMaterial,
+                                                tanggal = result.tanggal,
+                                                orderQty = result.orderQty.toDouble(),
+                                                satuan = result.satuan,
+                                                arrivedQty = result.arrivedQty.toDouble(),
+                                                hargaTotal = result.hargaTotal.toLong(),
+                                                totalBayar = result.terbayar.toLong(),
+                                                keterangan = result.keterangan,
+                                                listener = listener,
+                                            )
                                         } else {
                                             viewModel.addMaterialPembangunan(
                                                 kavling = viewModel.kavlingKode,

@@ -9,4 +9,13 @@ interface RemoteMaterialPembangunanDataSource: Cacheable {
 
     suspend fun insert(model: MaterialPembangunanModel): Result<Unit>
 
+    suspend fun delete(kategori: String, target: String, keyId: String): Result<Unit>
+
+    suspend fun update(
+        kategori: String,
+        target: String,
+        keyId: String,
+        newData: MaterialPembangunanModel
+    ): Result<Unit>
+
 }
