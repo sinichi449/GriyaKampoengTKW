@@ -5,7 +5,8 @@ import java.util.Date
 
 data class MaterialPembangunan(
     val keyId: String = IdUtil.generateUUID(),
-    val untukKavling: String,
+    val untuk: String,
+    val kategori: Kategori,
     val namaMaterial: String,
     val tanggal: Date,
     val qty: Double,
@@ -21,8 +22,12 @@ data class MaterialPembangunan(
         0L
     }
 
+    enum class Kategori {
+        GLOBAL, KAVLING
+    }
+
     fun validate() {
-        if (untukKavling.isEmpty()) throw IllegalArgumentException("Kavling belum terspesifikasi!")
+        if (untuk.isEmpty()) throw IllegalArgumentException("Kavling belum terspesifikasi!")
 
         if (namaMaterial.isEmpty()) throw IllegalArgumentException("Nama material tidak boleh kosong!")
 
@@ -78,6 +83,14 @@ data class MaterialPembangunan(
                 }
             } else {
                 Kedatangan.Datang(datangQty)
+            }
+        }
+
+        fun getKategori(kategori: String): Kategori {
+            return when (kategori.uppercase()) {
+                "KAVLING" -> Kategori.KAVLING
+                "GLOBAL" -> Kategori.GLOBAL
+                else -> throw IllegalArgumentException("Kategori Material Pembangunan $kategori doesn't exist!")
             }
         }
     }

@@ -6,7 +6,11 @@ import net.bagusekasaputra.griyakampoengtkw.domain.entity.pembangunan.MaterialPe
 
 interface MaterialPembangunanRepository {
 
-    fun getAll(kavling: String, dataMode: DataMode): Flow<Result<List<MaterialPembangunan>?>>
+    fun getAll(
+        untuk: String,
+        kategori: MaterialPembangunan.Kategori,
+        dataMode: DataMode
+    ): Flow<Result<List<MaterialPembangunan>?>>
 
     suspend fun insert(kavling: String, materialPembangunan: MaterialPembangunan): Result<Unit>
 

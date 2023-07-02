@@ -794,7 +794,8 @@ object MyObjectMapper {
         return model.let {
             MaterialPembangunan(
                 keyId = it.keyId,
-                untukKavling = it.kavling,
+                untuk = it.untuk,
+                kategori = MaterialPembangunan.getKategori(it.kategori),
                 namaMaterial = it.namaMaterial,
                 tanggal = it.tanggal.toDate(),
                 qty = it.orderQty,
@@ -816,7 +817,8 @@ object MyObjectMapper {
     fun mapMaterialPembangunan(domain: MaterialPembangunan): MaterialPembangunanModel {
         return domain.let {
             MaterialPembangunanModel(
-                kavling = it.untukKavling,
+                untuk = it.untuk,
+                kategori = domain.kategori.name,
                 keyId = it.keyId,
                 namaMaterial = it.namaMaterial,
                 tanggal = it.tanggal.toSlashedString(),

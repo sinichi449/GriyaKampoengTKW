@@ -1,8 +1,9 @@
 package net.bagusekasaputra.griyakampoengtkw.data.model
 
 data class MaterialPembangunanModel(
-    val kavling: String = "",
     val keyId: String = "",
+    val untuk: String = "",
+    val kategori: String = "",
     val namaMaterial: String = "",
     val tanggal: String = "01/01/1970",
     val orderQty: Double = 0.0,

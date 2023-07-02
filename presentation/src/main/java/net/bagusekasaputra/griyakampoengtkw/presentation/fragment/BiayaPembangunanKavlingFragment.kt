@@ -28,10 +28,10 @@ import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 import net.bagusekasaputra.griyakampoengtkw.domain.DataMode
 import net.bagusekasaputra.griyakampoengtkw.presentation.compose.screen.BiayaPembangunanKavlingScreen
-import net.bagusekasaputra.griyakampoengtkw.presentation.compose.screen.MaterialPembangunanForms
-import net.bagusekasaputra.griyakampoengtkw.presentation.compose.screen.MaterialPembangunanTable
-import net.bagusekasaputra.griyakampoengtkw.presentation.compose.screen.UpahPekerjaTable
 import net.bagusekasaputra.griyakampoengtkw.presentation.compose.screen.common.FormsDialog
+import net.bagusekasaputra.griyakampoengtkw.presentation.compose.screen.common.MaterialPembangunanForms
+import net.bagusekasaputra.griyakampoengtkw.presentation.compose.screen.common.MaterialPembangunanTable
+import net.bagusekasaputra.griyakampoengtkw.presentation.compose.screen.common.UpahPekerjaTable
 import net.bagusekasaputra.griyakampoengtkw.presentation.compose.theme.GriyaKampoengTkwTheme
 import net.bagusekasaputra.griyakampoengtkw.presentation.databinding.FragmentBiayaPembangunanKavlingBinding
 import net.bagusekasaputra.griyakampoengtkw.presentation.util.GriyaNodes
@@ -111,9 +111,8 @@ class BiayaPembangunanKavlingFragment : Fragment() {
                             ) {
                                 MaterialPembangunanForms(
                                     modifier = Modifier.padding(16.dp),
-                                    kavling = viewModel.kavlingKode,
                                     material = viewModel.selectedMaterialPembangunan,
-                                    onSubmit = { editMode, material ->
+                                    onSubmit = { editMode, result ->
                                         val listener = object : ViewModelListener {
                                             override fun onProgress() {}
 
@@ -126,7 +125,7 @@ class BiayaPembangunanKavlingFragment : Fragment() {
 
                                                 NotificationUtil.createNotification(
                                                     activity = requireActivity(),
-                                                    title = "Gagal Menambahkan ${material.namaMaterial}",
+                                                    title = "Gagal Menambahkan ${result.namaMaterial}",
                                                     text = failMsg ?: "NULL",
                                                 )
                                             }
@@ -135,7 +134,18 @@ class BiayaPembangunanKavlingFragment : Fragment() {
                                         if (editMode) {
                                             // TODO
                                         } else {
-                                            viewModel.addMaterialPembangunan(material, listener)
+                                            viewModel.addMaterialPembangunan(
+                                                kavling = viewModel.kavlingKode,
+                                                nama = result.namaMaterial,
+                                                tanggal = result.tanggal,
+                                                orderQty = result.orderQty.toDouble(),
+                                                satuan = result.satuan,
+                                                arrivedQty = result.arrivedQty.toDouble(),
+                                                hargaTotal = result.hargaTotal.toLong(),
+                                                totalBayar = result.terbayar.toLong(),
+                                                keterangan = result.keterangan,
+                                                listener = listener,
+                                            )
                                         }
                                     },
                                     onDeleteRequest = { keyId ->

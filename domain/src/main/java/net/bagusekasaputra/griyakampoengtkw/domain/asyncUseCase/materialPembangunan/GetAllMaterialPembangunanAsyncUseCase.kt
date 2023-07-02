@@ -11,12 +11,17 @@ class GetAllMaterialPembangunanAsyncUseCase(
 ): AsyncUseCase<GetAllMaterialPembangunanAsyncUseCase.Request, List<MaterialPembangunan>?>() {
 
     data class Request(
-        val kavling: String,
+        val untuk: String,
+        val kategori: MaterialPembangunan.Kategori,
         val dataMode: DataMode
     ): AsyncUseCase.Request
 
     override fun process(request: Request): Flow<Result<List<MaterialPembangunan>?>> {
-        return materialPembangunanRepository.getAll(request.kavling, request.dataMode)
+        return materialPembangunanRepository.getAll(
+            request.untuk,
+            request.kategori,
+            request.dataMode
+        )
     }
 
 }

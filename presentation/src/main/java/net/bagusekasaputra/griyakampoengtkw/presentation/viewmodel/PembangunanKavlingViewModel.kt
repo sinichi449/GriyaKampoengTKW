@@ -14,6 +14,7 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import net.bagusekasaputra.griyakampoengtkw.domain.DataMode
+import net.bagusekasaputra.griyakampoengtkw.domain.DateUtil.toDate
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.materialPembangunan.AddMaterialPembangunanAsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.materialPembangunan.GetAllMaterialPembangunanAsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.upahPekerja.GetAllUpahPekerjaAsyncUseCase
@@ -56,7 +57,11 @@ class PembangunanKavlingViewModel @Inject constructor(
         jobFetchMaterialPembangunan?.cancel()
 
         jobFetchMaterialPembangunan = viewModelScope.launch(Dispatchers.Main) {
-            val request = GetAllMaterialPembangunanAsyncUseCase.Request(kavling, dataMode)
+            val request = GetAllMaterialPembangunanAsyncUseCase.Request(
+                untuk = kavling,
+                kategori = MaterialPembangunan.Kategori.KAVLING,
+                dataMode = dataMode,
+            )
             getAllMaterialPembangunanUseCase.execute(request)
                 .onStart { listener.onProgress() }
                 .onCompletion { throwable ->
@@ -111,7 +116,15 @@ class PembangunanKavlingViewModel @Inject constructor(
     }
 
     fun addMaterialPembangunan(
-        materialPembangunan: MaterialPembangunan,
+        kavling: String,
+        nama: String,
+        tanggal: String,
+        orderQty: Double,
+        arrivedQty: Double,
+        satuan: String,
+        hargaTotal: Long,
+        totalBayar: Long,
+        keterangan: String,
         listener: ViewModelListener,
     ) {
         jobAddMaterialPembangunan?.cancel()
@@ -119,6 +132,18 @@ class PembangunanKavlingViewModel @Inject constructor(
         jobAddMaterialPembangunan = viewModelScope.launch(Dispatchers.Main) {
             listener.onProgress()
 
+            val materialPembangunan = MaterialPembangunan(
+                untuk = kavling,
+                kategori = MaterialPembangunan.Kategori.KAVLING,
+                namaMaterial = nama,
+                tanggal = tanggal.toDate(),
+                qty = orderQty,
+                satuan = satuan,
+                hargaTotal = hargaTotal,
+                kelunasan = MaterialPembangunan.getKelunasan(totalBayar, hargaTotal),
+                kedatangan = MaterialPembangunan.getKedatangan(arrivedQty, orderQty),
+                keterangan = keterangan,
+            )
             val request = AddMaterialPembangunanAsyncUseCase.Request(materialPembangunan)
             // Must be executed only once
             val result = withContext(Dispatchers.IO) {
