@@ -132,7 +132,7 @@ class DetailActivity : AppCompatActivity() {
 
         binding.viewPager.apply {
             adapter = pagerAdapter
-            offscreenPageLimit = 2
+            offscreenPageLimit = 4
         }
 
         binding.tabLayout.apply {
