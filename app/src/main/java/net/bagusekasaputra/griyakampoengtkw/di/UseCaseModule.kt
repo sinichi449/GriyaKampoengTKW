@@ -53,6 +53,7 @@ import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.kavling.GetKavli
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.kavling.GetKavlingByBlockAsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.kavling.GetListUnmigratedKavlingsAsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.materialPembangunan.AddMaterialPembangunanAsyncUseCase
+import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.materialPembangunan.DeleteMaterialPembangunanAsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.materialPembangunan.GetAllMaterialPembangunanAsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.materialPembangunan.UpdateMaterialPembangunanAsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.pembayaran.DeletePembayaranAsyncUseCase
@@ -762,10 +763,17 @@ object UseCaseModule {
     }
 
     @Provides
-    fun provideUpdateMaterialPembangnanUseCase(
+    fun provideUpdateMaterialPembangunanUseCase(
         materialPembangunanRepository: MaterialPembangunanRepository,
     ): UpdateMaterialPembangunanAsyncUseCase {
         return UpdateMaterialPembangunanAsyncUseCase(materialPembangunanRepository)
+    }
+
+    @Provides
+    fun provideDeleteMaterialPembangunanUseCase(
+        materialPembangunanRepository: MaterialPembangunanRepository,
+    ): DeleteMaterialPembangunanAsyncUseCase {
+        return DeleteMaterialPembangunanAsyncUseCase(materialPembangunanRepository)
     }
 
     /**

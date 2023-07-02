@@ -16,6 +16,7 @@ import kotlinx.coroutines.withContext
 import net.bagusekasaputra.griyakampoengtkw.domain.DataMode
 import net.bagusekasaputra.griyakampoengtkw.domain.DateUtil.toDate
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.materialPembangunan.AddMaterialPembangunanAsyncUseCase
+import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.materialPembangunan.DeleteMaterialPembangunanAsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.materialPembangunan.GetAllMaterialPembangunanAsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.materialPembangunan.UpdateMaterialPembangunanAsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.upahPekerja.GetAllUpahPekerjaAsyncUseCase
@@ -30,6 +31,7 @@ class PembangunanKavlingViewModel @Inject constructor(
     private val getAllUpahPekerjaUseCase: GetAllUpahPekerjaAsyncUseCase,
     private val addMaterialPembangunanUseCase: AddMaterialPembangunanAsyncUseCase,
     private val updateMaterialPembangunanUseCase: UpdateMaterialPembangunanAsyncUseCase,
+    private val deleteMaterialPembangunanUseCase: DeleteMaterialPembangunanAsyncUseCase,
 ): ViewModel() {
 
     var kavlingKode = ""
@@ -41,6 +43,7 @@ class PembangunanKavlingViewModel @Inject constructor(
     private var jobFetchUpahPekerja: Job? = null
     private var jobAddMaterialPembangunan: Job? = null
     private var jobUpdateMaterialPembangunan: Job? = null
+    private var jobDeleteMaterialPembangunan: Job? = null
 
     private val _fabIsExtended = MutableStateFlow(false)
     private val _materialPembangunanDialogState = MutableStateFlow(false)
@@ -211,6 +214,33 @@ class PembangunanKavlingViewModel @Inject constructor(
                         }
                     }
             }
+        }
+    }
+
+    fun deleteMaterialPembangunan(
+        kavling: String,
+        keyId: String,
+        listener: ViewModelListener,
+    ) {
+        jobDeleteMaterialPembangunan?.cancel()
+
+        listener.onProgress()
+
+        jobDeleteMaterialPembangunan = viewModelScope.launch(Dispatchers.IO) {
+            val request = DeleteMaterialPembangunanAsyncUseCase.Request(
+                keyId = keyId,
+                targetBangunan = kavling,
+                kategori = MaterialPembangunan.Kategori.KAVLING,
+            )
+            deleteMaterialPembangunanUseCase.execute(request).first()
+                .onSuccess {
+                    withContext(Dispatchers.Main) { listener.onCompleted() }
+                }
+                .onFailure {
+                    it.printStackTrace()
+
+                    withContext(Dispatchers.Main) { listener.onFailed(it.message) }
+                }
         }
     }
 

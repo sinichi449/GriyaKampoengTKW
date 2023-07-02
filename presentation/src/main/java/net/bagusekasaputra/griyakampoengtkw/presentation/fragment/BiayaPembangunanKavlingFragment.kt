@@ -171,7 +171,38 @@ class BiayaPembangunanKavlingFragment : Fragment() {
                                         }
                                     },
                                     onDeleteRequest = { keyId ->
-                                        // TODO
+                                        val listener = object : ViewModelListener {
+                                            override fun onProgress() {}
+
+                                            override fun onCompleted() {
+                                                viewModel.updateMaterialPembangunanDialogState(clearSelected = true)
+
+                                                requireActivity().createNotification {
+                                                    setSmallIcon(R.drawable.ic_baseline_check_circle_18)
+                                                    setContentTitle("Berhasil Menghapus!")
+                                                    setContentText("Menghapus $keyId berhasil!")
+                                                    setAutoCancel(true)
+                                                }
+
+                                                sync(SyncRequest.MATERIAL_PEMBANGUNAN)
+                                            }
+
+                                            override fun onFailed(failMsg: String?) {
+                                                viewModel.updateMaterialPembangunanDialogState(clearSelected = true)
+
+                                                requireActivity().createNotification {
+                                                    setSmallIcon(R.drawable.baseline_close_24)
+                                                    setContentTitle("Gagal Menghapus!")
+                                                    setContentText(failMsg)
+                                                }
+                                            }
+                                        }
+
+                                        viewModel.deleteMaterialPembangunan(
+                                            kavling = viewModel.kavlingKode,
+                                            keyId = keyId!!,
+                                            listener = listener,
+                                        )
                                     }
                                 )
                             }
@@ -227,13 +258,9 @@ class BiayaPembangunanKavlingFragment : Fragment() {
                 when (requestCode) {
                     SyncRequest.MATERIAL_PEMBANGUNAN -> {
                         viewModel.fetchMaterialPembangunan(currentKavling, object : ViewModelListener {
-                            override fun onProgress() {
+                            override fun onProgress() {}
 
-                            }
-
-                            override fun onCompleted() {
-
-                            }
+                            override fun onCompleted() {}
 
                             override fun onFailed(failMsg: String?) {
                                 Toast.makeText(
@@ -246,13 +273,9 @@ class BiayaPembangunanKavlingFragment : Fragment() {
                     }
                     SyncRequest.UPAH_PEKERJA -> {
                         viewModel.fetchUpahPekerja(currentKavling, object : ViewModelListener {
-                            override fun onProgress() {
+                            override fun onProgress() {}
 
-                            }
-
-                            override fun onCompleted() {
-
-                            }
+                            override fun onCompleted() {}
 
                             override fun onFailed(failMsg: String?) {
                                 Toast.makeText(

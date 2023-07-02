@@ -230,20 +230,23 @@ fun MaterialPembangunanForms(
             }
         }
         Spacer(modifier = Modifier.height(4.dp))
-        // Delete Button
-        Button(
-            onClick = {
-                onDeleteRequest(material?.keyId)
 
-                onProgress()
-            },
-            modifier = Modifier.fillMaxWidth(),
-            colors = ButtonDefaults.buttonColors(
-                containerColor = MaterialTheme.colorScheme.secondaryContainer,
-                contentColor = MaterialTheme.colorScheme.onSecondaryContainer,
-            )
-        ) {
-            Text(text = "Hapus")
+        // Delete Button -> Only shown on edit mode
+        if (isEditMode) {
+            Button(
+                onClick = {
+                    onDeleteRequest(material?.keyId)
+
+                    onProgress()
+                },
+                modifier = Modifier.fillMaxWidth(),
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = MaterialTheme.colorScheme.secondaryContainer,
+                    contentColor = MaterialTheme.colorScheme.onSecondaryContainer,
+                )
+            ) {
+                Text(text = "Hapus")
+            }
         }
     }
 }
