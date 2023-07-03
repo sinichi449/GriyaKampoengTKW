@@ -15,6 +15,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import net.bagusekasaputra.griyakampoengtkw.domain.DataMode
 import net.bagusekasaputra.griyakampoengtkw.domain.DateUtil.toDate
+import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.CheckPembangunanKavlingEligibilityAsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.materialPembangunan.AddMaterialPembangunanAsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.materialPembangunan.DeleteMaterialPembangunanAsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.materialPembangunan.GetAllMaterialPembangunanAsyncUseCase
@@ -23,15 +24,19 @@ import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.upahPekerja.GetA
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.pembangunan.InformasiPembangunan
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.pembangunan.MaterialPembangunan
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.pembangunan.UpahPekerja
+import net.bagusekasaputra.griyakampoengtkw.domain.misc.PembayaranBelumMencukupiException
 import javax.inject.Inject
 
 @HiltViewModel
 class PembangunanKavlingViewModel @Inject constructor(
+    private val checkPembangunanKavlingEligibilityUseCase: CheckPembangunanKavlingEligibilityAsyncUseCase,
+    /* Material Pembangunan */
     private val getAllMaterialPembangunanUseCase: GetAllMaterialPembangunanAsyncUseCase,
-    private val getAllUpahPekerjaUseCase: GetAllUpahPekerjaAsyncUseCase,
     private val addMaterialPembangunanUseCase: AddMaterialPembangunanAsyncUseCase,
     private val updateMaterialPembangunanUseCase: UpdateMaterialPembangunanAsyncUseCase,
     private val deleteMaterialPembangunanUseCase: DeleteMaterialPembangunanAsyncUseCase,
+    /* Upah Pekerja */
+    private val getAllUpahPekerjaUseCase: GetAllUpahPekerjaAsyncUseCase,
 ): ViewModel() {
 
     var kavlingKode = ""
@@ -39,15 +44,18 @@ class PembangunanKavlingViewModel @Inject constructor(
     var selectedMaterialPembangunan: MaterialPembangunan? = null
         private set
 
+    private var jobCheckElligibility: Job? = null
     private var jobFetchMaterialPembangunan: Job? = null
     private var jobFetchUpahPekerja: Job? = null
     private var jobAddMaterialPembangunan: Job? = null
     private var jobUpdateMaterialPembangunan: Job? = null
     private var jobDeleteMaterialPembangunan: Job? = null
 
+    private val _elligibilityStatus = MutableStateFlow<ElligibiltyStatus?>(null)
     private val _fabIsExtended = MutableStateFlow(false)
     private val _materialPembangunanDialogState = MutableStateFlow(false)
 
+    val elligibilityStatus = _elligibilityStatus.asStateFlow()
     val fabIsExtended = _fabIsExtended.asStateFlow()
     val materialPembangunanDialogState = _materialPembangunanDialogState.asStateFlow()
 
@@ -58,6 +66,46 @@ class PembangunanKavlingViewModel @Inject constructor(
     val informasiPembangunan = _informasiPembangunan.asStateFlow()
     val materialList = _materialList.asStateFlow()
     val upahPekerjaList = _upahPekerjaList.asStateFlow()
+
+    fun checkElligibility(kavling: String, listener: ViewModelListener) {
+        jobCheckElligibility?.cancel()
+
+        listener.onProgress()
+
+        jobCheckElligibility = viewModelScope.launch(Dispatchers.IO) {
+            val request = CheckPembangunanKavlingEligibilityAsyncUseCase.Request(kavling)
+            checkPembangunanKavlingEligibilityUseCase.execute(request).collect { result ->
+                result.onSuccess {
+                    _elligibilityStatus.update {
+                        ElligibiltyStatus(
+                            elligible = true,
+                            reason = ""
+                        )
+                    }
+
+                    withContext(Dispatchers.Main) { listener.onCompleted() }
+                }
+                result.onFailure {
+                    it.printStackTrace()
+
+                    withContext(Dispatchers.Main) {
+                        if (it is PembayaranBelumMencukupiException) {
+                            _elligibilityStatus.update { _ ->
+                                ElligibiltyStatus(
+                                    elligible = false,
+                                    reason = it.message ?: "NULL"
+                                )
+                            }
+
+                            listener.onCompleted()
+                        } else {
+                            listener.onFailed(it.message)
+                        }
+                    }
+                }
+            }
+        }
+    }
 
     fun fetchMaterialPembangunan(kavling: String, listener: ViewModelListener) {
         jobFetchMaterialPembangunan?.cancel()
@@ -260,4 +308,8 @@ class PembangunanKavlingViewModel @Inject constructor(
         selectedMaterialPembangunan = _materialList.value[index]
     }
 
+    data class ElligibiltyStatus(
+        val elligible: Boolean,
+        val reason: String,
+    )
 }

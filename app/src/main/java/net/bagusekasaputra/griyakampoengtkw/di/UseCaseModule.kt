@@ -9,6 +9,7 @@ import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import net.bagusekasaputra.griyakampoengtkw.cache.CacheInitializer
 import net.bagusekasaputra.griyakampoengtkw.cache.DefaultCacheInitializer
+import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.CheckPembangunanKavlingEligibilityAsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.ambilKuitansi.InsertAmbilKuitansiAsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.backupRestore.CreateBackupAsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.backupRestore.GetListBackupAsyncUseCase
@@ -744,6 +745,17 @@ object UseCaseModule {
     @Provides
     fun provideGetPengembalianStreamUseCase(pengembalianRepository: PengembalianRepository)
         = GetPengembalianStreamAsyncUseCase(pengembalianRepository)
+
+    /**
+     * Check Pembangunan Elligibility
+     */
+    @Provides
+    fun provideCheckPembangunanKavlingElligibilityUseCase(
+        @Default pembayaranRepository: PembayaranRepository,
+        hargaKavlingRepository: HargaKavlingRepository,
+    ): CheckPembangunanKavlingEligibilityAsyncUseCase {
+        return CheckPembangunanKavlingEligibilityAsyncUseCase(pembayaranRepository, hargaKavlingRepository)
+    }
 
     /**
      * Material Pembangunan

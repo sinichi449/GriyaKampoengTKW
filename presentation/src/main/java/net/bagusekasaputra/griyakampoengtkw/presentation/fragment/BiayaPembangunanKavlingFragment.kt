@@ -6,18 +6,26 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.ViewCompositionStrategy
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.tooling.preview.datasource.LoremIpsum
 import androidx.compose.ui.unit.dp
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentActivity
@@ -90,6 +98,25 @@ class BiayaPembangunanKavlingFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         with(binding) {
+            viewModel.checkElligibility(viewModel.kavlingKode, object : ViewModelListener {
+                override fun onProgress() {
+                    swipeRefreshPembangunanKavling.isRefreshing = true
+                }
+
+                override fun onCompleted() {
+                    swipeRefreshPembangunanKavling.isRefreshing = false
+
+                    sync()
+                }
+
+                override fun onFailed(failMsg: String?) {
+                    swipeRefreshPembangunanKavling.isRefreshing = false
+
+                    Snackbar.make(root, "Verifikasi gagal: $failMsg", Snackbar.LENGTH_LONG)
+                        .show()
+                }
+            })
+
             swipeRefreshPembangunanKavling.setOnRefreshListener {
                 sync()
                 swipeRefreshPembangunanKavling.isRefreshing = false
@@ -113,8 +140,6 @@ class BiayaPembangunanKavlingFragment : Fragment() {
             )
         }
 
-        sync()
-
         setupViewModel()
     }
 
@@ -124,41 +149,47 @@ class BiayaPembangunanKavlingFragment : Fragment() {
             Snackbar.make(binding.root, "Kavling Kode on Biaya Pembangunan Fragment doesn't received properly!", Snackbar.LENGTH_SHORT)
                 .show()
         } else {
-            Log.d("PEMBANGUNAN", "Executing synchronization now!")
-            requests.forEach { requestCode ->
-                when (requestCode) {
-                    SyncRequest.MATERIAL_PEMBANGUNAN -> {
-                        viewModel.fetchMaterialPembangunan(currentKavling, object : ViewModelListener {
-                            override fun onProgress() {}
+            if (viewModel.elligibilityStatus.value?.elligible == true) {
+                Log.d("PEMBANGUNAN", "Executing synchronization now!")
+                requests.forEach { requestCode ->
+                    when (requestCode) {
+                        SyncRequest.MATERIAL_PEMBANGUNAN -> {
+                            viewModel.fetchMaterialPembangunan(
+                                currentKavling,
+                                object : ViewModelListener {
+                                    override fun onProgress() {}
 
-                            override fun onCompleted() {}
+                                    override fun onCompleted() {}
 
-                            override fun onFailed(failMsg: String?) {
-                                Toast.makeText(
-                                    requireContext(),
-                                    "Gagal mendapatkan Material Pembangunan: $failMsg",
-                                    Toast.LENGTH_LONG
-                                ).show()
-                            }
-                        })
+                                    override fun onFailed(failMsg: String?) {
+                                        Toast.makeText(
+                                            requireContext(),
+                                            "Gagal mendapatkan Material Pembangunan: $failMsg",
+                                            Toast.LENGTH_LONG
+                                        ).show()
+                                    }
+                                })
+                        }
+
+                        SyncRequest.UPAH_PEKERJA -> {
+                            viewModel.fetchUpahPekerja(currentKavling, object : ViewModelListener {
+                                override fun onProgress() {}
+
+                                override fun onCompleted() {}
+
+                                override fun onFailed(failMsg: String?) {
+                                    Toast.makeText(
+                                        requireContext(),
+                                        "Gagal mendapatkan Upah Pekerja: $failMsg",
+                                        Toast.LENGTH_LONG
+                                    ).show()
+                                }
+
+                            })
+                        }
+
+                        else -> {}
                     }
-                    SyncRequest.UPAH_PEKERJA -> {
-                        viewModel.fetchUpahPekerja(currentKavling, object : ViewModelListener {
-                            override fun onProgress() {}
-
-                            override fun onCompleted() {}
-
-                            override fun onFailed(failMsg: String?) {
-                                Toast.makeText(
-                                    requireContext(),
-                                    "Gagal mendapatkan Upah Pekerja: $failMsg",
-                                    Toast.LENGTH_LONG
-                                ).show()
-                            }
-
-                        })
-                    }
-                    else -> {}
                 }
             }
         }
@@ -178,6 +209,25 @@ class BiayaPembangunanKavlingFragment : Fragment() {
                             extendedFabPembangunanKavling.shrink()
                             fabList.forEach { it.hide() }
                         }
+                    }
+                }
+            }
+
+            lifecycleScope.launch {
+                repeatOnLifecycle(Lifecycle.State.RESUMED) {
+                    viewModel.elligibilityStatus.collect {
+                        val fabsVisibility = if (it?.elligible == true) {
+                            View.VISIBLE
+                        } else {
+                            View.GONE
+                        }
+                        val fabs = listOf(fabMaterialPembangunan, fabUpahPekerja)
+
+                        fabs.forEach { fab ->
+                            fab.visibility = fabsVisibility
+                            fab.hide()
+                        }
+                        extendedFabPembangunanKavling.visibility = fabsVisibility
                     }
                 }
             }
@@ -218,140 +268,183 @@ private fun MyLayout(
     activity: FragmentActivity,
     viewModel: PembangunanKavlingViewModel,
     onSyncRequest: (requestCode: Int) -> Unit,
-
 ) {
+    val elligibilityStatus by viewModel.elligibilityStatus.collectAsState()
+
     Surface(
-        modifier = Modifier.fillMaxWidth(),
-        color = MaterialTheme.colorScheme.background
+        modifier = Modifier.fillMaxSize(),
+        color = MaterialTheme.colorScheme.surface
     ) {
-        val informasiPembangunan = viewModel.informasiPembangunan.collectAsState()
-        val materialPembangunan = viewModel.materialList.collectAsState()
-        val upahPekerja = viewModel.upahPekerjaList.collectAsState()
+        if (elligibilityStatus?.elligible != true) {
+            PembangunanNotElligibleLayout(
+                text = elligibilityStatus?.reason ?: "NULL",
+            )
+        } else {
+            val informasiPembangunan = viewModel.informasiPembangunan.collectAsState()
+            val materialPembangunan = viewModel.materialList.collectAsState()
+            val upahPekerja = viewModel.upahPekerjaList.collectAsState()
 
-        var mbSelectedRow by remember { mutableStateOf(-1) }
+            var mbSelectedRow by remember { mutableStateOf(-1) }
 
-        BiayaPembangunanKavlingScreen(
-            modifier = Modifier.padding(16.dp),
-            informasiPembangunan = informasiPembangunan.value,
-            materialPembangunanTableView = {
-                MaterialPembangunanTable(
-                    materialPembangunan = materialPembangunan.value,
-                    selectedRow = mbSelectedRow,
-                    onTableRowClicked = {
-                        viewModel.setSelectedMaterialPembangunan(it)
-                        mbSelectedRow = it
+            BiayaPembangunanKavlingScreen(
+                modifier = Modifier.padding(16.dp),
+                informasiPembangunan = informasiPembangunan.value,
+                materialPembangunanTableView = {
+                    MaterialPembangunanTable(
+                        materialPembangunan = materialPembangunan.value,
+                        selectedRow = mbSelectedRow,
+                        onTableRowClicked = {
+                            viewModel.setSelectedMaterialPembangunan(it)
+                            mbSelectedRow = it
 
-                        // Open Dialog Input
-                        viewModel.updateMaterialPembangunanDialogState(clearSelected = false)
-                    }
-                )
-            },
-            upahPekerjaTableView = {
-                UpahPekerjaTable(
-                    upahPekerja = upahPekerja.value,
-                )
-            }
-        )
-
-        viewModel.materialPembangunanDialogState.collectAsState().value.also {
-            FormsDialog(
-                show = it,
-                onDismissRequest = { viewModel.updateMaterialPembangunanDialogState() },
-            ) {
-                MaterialPembangunanForms(
-                    modifier = Modifier.padding(16.dp),
-                    material = viewModel.selectedMaterialPembangunan,
-                    onSubmit = { editMode, result ->
-                        val listener = object : ViewModelListener {
-                            override fun onProgress() {}
-
-                            override fun onCompleted() {
-                                viewModel.updateMaterialPembangunanDialogState()
-
-                                onSyncRequest(SyncRequest.MATERIAL_PEMBANGUNAN)
-
-                                activity.createNotification {
-                                    setSmallIcon(R.drawable.ic_baseline_check_circle_18)
-                                    setContentTitle("Berhasil ${if (editMode) "Mengubah" else "Menambahkan"}!")
-                                    setContentText("Material \"${result.namaMaterial}\" berhasil ${if (editMode) "diubah" else "ditambahkan"}.")
-                                    setAutoCancel(true)
-                                }
-                            }
-
-                            override fun onFailed(failMsg: String?) {
-                                viewModel.updateMaterialPembangunanDialogState()
-
-                                activity.createNotification {
-                                    setSmallIcon(R.drawable.baseline_close_24)
-                                    setContentTitle("Terjadi Kesalahan!")
-                                    setContentText(failMsg ?: "Unknown Error inserting ${result.namaMaterial}")
-                                }
-                            }
+                            // Open Dialog Input
+                            viewModel.updateMaterialPembangunanDialogState(clearSelected = false)
                         }
-                        if (editMode) {
-                            viewModel.editMaterialPembangunan(
-                                oldData = viewModel.selectedMaterialPembangunan!!,
+                    )
+                },
+                upahPekerjaTableView = {
+                    UpahPekerjaTable(
+                        upahPekerja = upahPekerja.value,
+                    )
+                }
+            )
+
+            viewModel.materialPembangunanDialogState.collectAsState().value.also {
+                FormsDialog(
+                    show = it,
+                    onDismissRequest = { viewModel.updateMaterialPembangunanDialogState() },
+                ) {
+                    MaterialPembangunanForms(
+                        modifier = Modifier.padding(16.dp),
+                        material = viewModel.selectedMaterialPembangunan,
+                        onSubmit = { editMode, result ->
+                            val listener = object : ViewModelListener {
+                                override fun onProgress() {}
+
+                                override fun onCompleted() {
+                                    viewModel.updateMaterialPembangunanDialogState()
+
+                                    onSyncRequest(SyncRequest.MATERIAL_PEMBANGUNAN)
+
+                                    activity.createNotification {
+                                        setSmallIcon(R.drawable.ic_baseline_check_circle_18)
+                                        setContentTitle("Berhasil ${if (editMode) "Mengubah" else "Menambahkan"}!")
+                                        setContentText("Material \"${result.namaMaterial}\" berhasil ${if (editMode) "diubah" else "ditambahkan"}.")
+                                        setAutoCancel(true)
+                                    }
+                                }
+
+                                override fun onFailed(failMsg: String?) {
+                                    viewModel.updateMaterialPembangunanDialogState()
+
+                                    activity.createNotification {
+                                        setSmallIcon(R.drawable.baseline_close_24)
+                                        setContentTitle("Terjadi Kesalahan!")
+                                        setContentText(
+                                            failMsg
+                                                ?: "Unknown Error inserting ${result.namaMaterial}"
+                                        )
+                                    }
+                                }
+                            }
+                            if (editMode) {
+                                viewModel.editMaterialPembangunan(
+                                    oldData = viewModel.selectedMaterialPembangunan!!,
+                                    kavling = viewModel.kavlingKode,
+                                    nama = result.namaMaterial,
+                                    tanggal = result.tanggal,
+                                    orderQty = result.orderQty.toDouble(),
+                                    satuan = result.satuan,
+                                    arrivedQty = result.arrivedQty.toDouble(),
+                                    hargaTotal = result.hargaTotal.toLong(),
+                                    totalBayar = result.terbayar.toLong(),
+                                    keterangan = result.keterangan,
+                                    listener = listener,
+                                )
+                            } else {
+                                viewModel.addMaterialPembangunan(
+                                    kavling = viewModel.kavlingKode,
+                                    nama = result.namaMaterial,
+                                    tanggal = result.tanggal,
+                                    orderQty = result.orderQty.toDouble(),
+                                    satuan = result.satuan,
+                                    arrivedQty = result.arrivedQty.toDouble(),
+                                    hargaTotal = result.hargaTotal.toLong(),
+                                    totalBayar = result.terbayar.toLong(),
+                                    keterangan = result.keterangan,
+                                    listener = listener,
+                                )
+                            }
+                        },
+                        onDeleteRequest = { keyId ->
+                            val listener = object : ViewModelListener {
+                                override fun onProgress() {}
+
+                                override fun onCompleted() {
+                                    viewModel.updateMaterialPembangunanDialogState(clearSelected = true)
+
+                                    activity.createNotification {
+                                        setSmallIcon(R.drawable.ic_baseline_check_circle_18)
+                                        setContentTitle("Berhasil Menghapus!")
+                                        setContentText("Menghapus $keyId berhasil!")
+                                        setAutoCancel(true)
+                                    }
+
+                                    onSyncRequest(SyncRequest.MATERIAL_PEMBANGUNAN)
+                                }
+
+                                override fun onFailed(failMsg: String?) {
+                                    viewModel.updateMaterialPembangunanDialogState(clearSelected = true)
+
+                                    activity.createNotification {
+                                        setSmallIcon(R.drawable.baseline_close_24)
+                                        setContentTitle("Gagal Menghapus!")
+                                        setContentText(failMsg)
+                                    }
+                                }
+                            }
+                            viewModel.deleteMaterialPembangunan(
                                 kavling = viewModel.kavlingKode,
-                                nama = result.namaMaterial,
-                                tanggal = result.tanggal,
-                                orderQty = result.orderQty.toDouble(),
-                                satuan = result.satuan,
-                                arrivedQty = result.arrivedQty.toDouble(),
-                                hargaTotal = result.hargaTotal.toLong(),
-                                totalBayar = result.terbayar.toLong(),
-                                keterangan = result.keterangan,
+                                keyId = keyId!!,
                                 listener = listener,
                             )
-                        } else {
-                            viewModel.addMaterialPembangunan(
-                                kavling = viewModel.kavlingKode,
-                                nama = result.namaMaterial,
-                                tanggal = result.tanggal,
-                                orderQty = result.orderQty.toDouble(),
-                                satuan = result.satuan,
-                                arrivedQty = result.arrivedQty.toDouble(),
-                                hargaTotal = result.hargaTotal.toLong(),
-                                totalBayar = result.terbayar.toLong(),
-                                keterangan = result.keterangan,
-                                listener = listener,
-                            )
                         }
-                    },
-                    onDeleteRequest = { keyId ->
-                        val listener = object : ViewModelListener {
-                            override fun onProgress() {}
-
-                            override fun onCompleted() {
-                                viewModel.updateMaterialPembangunanDialogState(clearSelected = true)
-
-                                activity.createNotification {
-                                    setSmallIcon(R.drawable.ic_baseline_check_circle_18)
-                                    setContentTitle("Berhasil Menghapus!")
-                                    setContentText("Menghapus $keyId berhasil!")
-                                    setAutoCancel(true)
-                                }
-
-                                onSyncRequest(SyncRequest.MATERIAL_PEMBANGUNAN)
-                            }
-
-                            override fun onFailed(failMsg: String?) {
-                                viewModel.updateMaterialPembangunanDialogState(clearSelected = true)
-
-                                activity.createNotification {
-                                    setSmallIcon(R.drawable.baseline_close_24)
-                                    setContentTitle("Gagal Menghapus!")
-                                    setContentText(failMsg)
-                                }
-                            }
-                        }
-                        viewModel.deleteMaterialPembangunan(
-                            kavling = viewModel.kavlingKode,
-                            keyId = keyId!!,
-                            listener = listener,
-                        )
-                    }
-                )
+                    )
+                }
             }
         }
     }
 }
+
+@Composable
+private fun PembangunanNotElligibleLayout(
+    modifier: Modifier = Modifier,
+    text: String,
+) {
+    Column(
+        modifier = Modifier.fillMaxSize().then(modifier),
+        verticalArrangement = Arrangement.Center,
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        Text(
+            text = text,
+            modifier = Modifier.fillMaxWidth().padding(32.dp),
+            textAlign = TextAlign.Center,
+            style = MaterialTheme.typography.bodyMedium,
+        )
+    }
+}
+
+@Preview(showBackground = true, group = "layouts")
+@Composable
+private fun PembangunanNotElligibleLayoutPreview() {
+    val text = buildString {
+        LoremIpsum(15).values.forEach {
+            append(it)
+        }
+    }
+    PembangunanNotElligibleLayout(
+        text = text,
+    )
+}
+

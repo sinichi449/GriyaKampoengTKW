@@ -23,3 +23,7 @@ class InvalidTimeFrameBaselinePembayaranException(
 class UserCanceledOperationException(
     message: String = "Operasi telah dibatalkan oleh user"
 ): Exception(message)
+
+class PembayaranBelumMencukupiException(
+    message: String = "Pembayaran belum mencukupi untuk membuka fitur ini!",
+): Throwable(message)
