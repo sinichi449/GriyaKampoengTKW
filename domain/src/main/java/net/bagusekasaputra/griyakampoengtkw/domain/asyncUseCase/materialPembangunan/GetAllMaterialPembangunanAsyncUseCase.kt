@@ -1,7 +1,9 @@
 package net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.materialPembangunan
 
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.flow.emitAll
+import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.map
 import net.bagusekasaputra.griyakampoengtkw.domain.DataMode
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.AsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.pembangunan.MaterialPembangunan
@@ -19,16 +21,17 @@ class GetAllMaterialPembangunanAsyncUseCase(
     ): AsyncUseCase.Request
 
     override fun process(request: Request): Flow<Result<List<MaterialPembangunan>?>> {
-        return materialPembangunanRepository.getAll(
-            untuk = request.untuk,
-            kategori = request.kategori,
-            dataMode = request.dataMode
-        )
-            .onEach { result ->
-                result.onSuccess {
-                    it?.sortByTanggal()
+        return flow {
+            emitAll(materialPembangunanRepository.getAll(
+                untuk = request.untuk,
+                kategori = request.kategori,
+                dataMode = request.dataMode
+            ).map { result ->
+                result.map { items ->
+                    items?.sortByTanggal()
                 }
-            }
+            })
+        }
     }
 
 }

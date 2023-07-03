@@ -80,7 +80,7 @@ data class MaterialPembangunan(
         }
 
         fun List<MaterialPembangunan>.sortByTanggal(): List<MaterialPembangunan> {
-            return this.sortedBy { it.tanggal }
+            return this.sortedBy { it.tanggal.time }
         }
 
         fun getKelunasan(jumlahTerbayar: Long, totalHarga: Long): Kelunasan {
