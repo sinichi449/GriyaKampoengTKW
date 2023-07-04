@@ -269,4 +269,10 @@ object DateUtil {
     fun Int.padWithZero(): String {
         return this.toString().padStart(2, '0')
     }
+
+    fun getTodaysDate(): String {
+        val calendar = Calendar.getInstance()
+
+        return calendar.time.toSlashedString()
+    }
 }

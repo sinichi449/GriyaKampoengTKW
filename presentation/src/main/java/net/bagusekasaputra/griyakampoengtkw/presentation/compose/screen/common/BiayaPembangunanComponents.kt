@@ -1,20 +1,13 @@
 package net.bagusekasaputra.griyakampoengtkw.presentation.compose.screen.common
 
-import android.app.DatePickerDialog
-import android.content.Context
 import android.view.Gravity
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -115,9 +108,9 @@ fun MaterialPembangunanForms(
 
     Column(modifier = modifier) {
         // Title
-        Text(
-            text = if (isEditMode) "Edit Material" else "Tambahkan Material",
-            style = MaterialTheme.typography.headlineSmall,
+        FormsTitle(
+            entityName = "Material",
+            isEditMode = isEditMode
         )
         Spacer(modifier = Modifier.height(32.dp))
         // Form Fields
@@ -204,46 +197,24 @@ fun MaterialPembangunanForms(
                 singleLine = false,
             )
         }
-
-        // Submit Button
         Spacer(modifier = Modifier.height(32.dp))
-        Button(
-            onClick = {
+        FormsSubmitAndDeleteButton(
+            isOnProgress = isOnProgress,
+            isEditMode = isEditMode,
+            onSubmit = {
                 val result = MBFormsResult(namaMaterial, tanggal, orderQty,
                     satuan, hargaTotal, terbayar, arrivedQty, keterangan)
 
                 onSubmit(isEditMode, result)
-
-                isOnProgress = true
             },
-            modifier = Modifier.fillMaxWidth(),
-            enabled = !isOnProgress,
-        ) {
-            if (!isOnProgress) {
-                Text(text = if (isEditMode) "Ubah" else "Tambahkan")
-            } else {
-                TextProgress(text = "Memproses data ...")
-            }
-        }
-        Spacer(modifier = Modifier.height(4.dp))
-
-        // Delete Button -> Only shown on edit mode
-        if (isEditMode) {
-            Button(
-                onClick = {
-                    showDeleteDialog = true
-                    keyIdToDelete = material?.keyId ?: ""
-                },
-                modifier = Modifier.fillMaxWidth(),
-                colors = ButtonDefaults.buttonColors(
-                    containerColor = MaterialTheme.colorScheme.secondaryContainer,
-                    contentColor = MaterialTheme.colorScheme.onSecondaryContainer,
-                ),
-                enabled = !isOnProgress,
-            ) {
-                Text(text = "Hapus")
-            }
-        }
+            onDelete = {
+                showDeleteDialog = true
+                keyIdToDelete = material?.keyId ?: ""
+            },
+            onProgressChanges = {
+                isOnProgress = it
+            },
+        )
     }
 
 
@@ -552,50 +523,6 @@ private fun TableTitlePembangunanKavling(
     }
 }
 
-@Composable
-private fun TextProgress(
-    modifier: Modifier = Modifier,
-    text: String = "Memproses data ..."
-) {
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .then(modifier),
-        horizontalArrangement = Arrangement.Center,
-        verticalAlignment = Alignment.CenterVertically,
-    ) {
-        CircularProgressIndicator(
-            modifier = Modifier.size(32.dp),
-            color = MaterialTheme.colorScheme.onSurface
-        )
-        Spacer(modifier = Modifier.width(16.dp))
-        Text(text = text, style = MaterialTheme.typography.bodyMedium)
-    }
-}
-
-private fun DatePickerDialogView(
-    ctx: Context,
-    onDateSet: (tahun: Int, bulan: Int, tanggal: Int) -> Unit,
-    onDismiss: () -> Unit,
-) {
-    val calendar = Calendar.getInstance()
-    val currentYear = calendar.get(Calendar.YEAR)
-    val currentMonth = calendar.get(Calendar.MONTH)
-    val currentDay = calendar.get(Calendar.DAY_OF_MONTH)
-
-    val listener = DatePickerDialog.OnDateSetListener { _, year, month, dayOfMonth ->
-        onDateSet(year, month + 1, dayOfMonth)
-    }
-
-    val datePicker = DatePickerDialog(
-        ctx, R.style.DatePicker, listener,
-        currentYear, currentMonth, currentDay
-    )
-    datePicker.setOnDismissListener{ onDismiss() }
-
-    datePicker.show()
-}
-
 @Preview(showBackground = true, group = "isolated")
 @Composable
 private fun MaterialPembangunanFormsPreview() {
@@ -622,12 +549,6 @@ private fun TabelBiayaMaterialPreview() {
             showTable = false,
         )
     }
-}
-
-@Preview(showBackground = true, group = "isolated")
-@Composable
-private fun TextProgressPreview() {
-    TextProgress()
 }
 
 object TableMaterialPembangunan {
@@ -705,5 +626,14 @@ data class MBFormsResult(
     val hargaTotal: String,
     val terbayar: String,
     val arrivedQty: String,
+    val keterangan: String,
+)
+
+data class UKFormsResult(
+    val tanggalDibayarkan: String,
+    val namaMandor: String,
+    val mingguKe: String,
+    val jumlahDibayarkan: String,
+    val progress: String,
     val keterangan: String,
 )

@@ -43,6 +43,7 @@ import net.bagusekasaputra.griyakampoengtkw.presentation.compose.screen.BiayaPem
 import net.bagusekasaputra.griyakampoengtkw.presentation.compose.screen.common.FormsDialog
 import net.bagusekasaputra.griyakampoengtkw.presentation.compose.screen.common.MaterialPembangunanForms
 import net.bagusekasaputra.griyakampoengtkw.presentation.compose.screen.common.MaterialPembangunanTable
+import net.bagusekasaputra.griyakampoengtkw.presentation.compose.screen.common.UpahPekerjaForms
 import net.bagusekasaputra.griyakampoengtkw.presentation.compose.screen.common.UpahPekerjaTable
 import net.bagusekasaputra.griyakampoengtkw.presentation.compose.theme.GriyaKampoengTkwTheme
 import net.bagusekasaputra.griyakampoengtkw.presentation.databinding.FragmentBiayaPembangunanKavlingBinding
@@ -127,7 +128,7 @@ class BiayaPembangunanKavlingFragment : Fragment() {
             }
 
             fabUpahPekerja.setOnClickListener {
-                Toast.makeText(requireContext(), "Tambahkan Upah Pekerja", Toast.LENGTH_SHORT).show()
+                viewModel.updateUpahPekerjaDialogState()
             }
 
             fabMaterialPembangunan.setOnClickListener {
@@ -285,6 +286,7 @@ private fun MyLayout(
             val upahPekerja = viewModel.upahPekerjaList.collectAsState()
 
             var mbSelectedRow by remember { mutableStateOf(-1) }
+            var ukSelectedRow by remember { mutableStateOf(-1) }
 
             BiayaPembangunanKavlingScreen(
                 modifier = Modifier.padding(16.dp),
@@ -299,16 +301,28 @@ private fun MyLayout(
 
                             // Open Dialog Input
                             viewModel.updateMaterialPembangunanDialogState(clearSelected = false)
+                        },
+                        onTableCellClicked = { column, row ->
+                            // TODO
                         }
                     )
                 },
                 upahPekerjaTableView = {
                     UpahPekerjaTable(
                         upahPekerja = upahPekerja.value,
+                        onRowHeaderClick = {
+                            ukSelectedRow = it
+
+                            viewModel.updateUpahPekerjaDialogState()
+                        },
+                        onCellClicked = { column, row ->
+                            // TODO
+                        }
                     )
                 }
             )
 
+            // Material Pembangunan Dialog
             viewModel.materialPembangunanDialogState.collectAsState().value.also {
                 FormsDialog(
                     show = it,
@@ -412,6 +426,25 @@ private fun MyLayout(
                     )
                 }
             }
+
+            // Upah Pekerja Dialog
+            viewModel.upahPekerjaDialogState.collectAsState().value.also {
+                FormsDialog(
+                    show = it,
+                    onDismissRequest = { viewModel.updateUpahPekerjaDialogState() },
+                ) {
+                    UpahPekerjaForms(
+                        modifier = Modifier.padding(16.dp),
+                        upahPekerja = viewModel.selectedUpahPekerja,
+                        onSubmit = { isEditMode, result ->
+
+                        },
+                        onDeleteRequest = { keyId ->
+
+                        }
+                    )
+                }
+            }
         }
     }
 }
@@ -422,13 +455,17 @@ private fun PembangunanNotElligibleLayout(
     text: String,
 ) {
     Column(
-        modifier = Modifier.fillMaxSize().then(modifier),
+        modifier = Modifier
+            .fillMaxSize()
+            .then(modifier),
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Text(
             text = text,
-            modifier = Modifier.fillMaxWidth().padding(32.dp),
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(32.dp),
             textAlign = TextAlign.Center,
             style = MaterialTheme.typography.bodyMedium,
         )

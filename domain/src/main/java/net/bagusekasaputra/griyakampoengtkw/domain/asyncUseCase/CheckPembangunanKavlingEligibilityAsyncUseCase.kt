@@ -15,33 +15,41 @@ class CheckPembangunanKavlingEligibilityAsyncUseCase(
     private val hargaKavlingRepository: HargaKavlingRepository,
 ): AsyncUseCase<CheckPembangunanKavlingEligibilityAsyncUseCase.Request, Unit>() {
 
-    data class Request(val kavling: String): AsyncUseCase.Request
+    data class Request(
+        val kavling: String,
+        val dataMode: DataMode
+    ): AsyncUseCase.Request
 
     override fun process(request: Request): Flow<Result<Unit?>> {
         return flow {
             val pembayaranList = pembayaranRepository.getAllPembayaran(
                 kavlingKode = request.kavling,
-                dataMode = DataMode.OFFLINE,
+                dataMode = request.dataMode,
             ).first().getOrEmitFailure(this)
             val hargaKavling = hargaKavlingRepository.getHargaKavling(
                 kavlingKode = request.kavling,
-                dataMode = DataMode.OFFLINE,
+                dataMode = request.dataMode,
             ).first().getOrEmitFailure(this)
 
-            if (pembayaranList.isNullOrEmpty() || hargaKavling == null) {
-                emit(Result.failure(PembayaranBelumMencukupiException("Pembayaran atau Harga Kavling tidak ditemukan!")))
+            // Bypass for D1
+            if (request.kavling == "D1") {
+                emit(Result.success(Unit))
             } else {
-                val persentase = Pembayaran.maskPembayaran(
-                    listPembayaran = pembayaranList,
-                    hargaKavling = hargaKavling,
-                    onCekFotoPembayaran = { false },
-                    onCekSudahAmbilKuitansi = {_,_ -> false},
-                ).last().presentase
-
-                if (persentase < 50.0) {
-                    emit(Result.failure(PembayaranBelumMencukupiException()))
+                if (pembayaranList.isNullOrEmpty() || hargaKavling == null) {
+                    emit(Result.failure(PembayaranBelumMencukupiException("Pembayaran atau Harga Kavling tidak ditemukan!")))
                 } else {
-                    emit(Result.success(Unit))
+                    val persentase = Pembayaran.maskPembayaran(
+                        listPembayaran = pembayaranList,
+                        hargaKavling = hargaKavling,
+                        onCekFotoPembayaran = { false },
+                        onCekSudahAmbilKuitansi = { _, _ -> false },
+                    ).last().presentase
+
+                    if (persentase < 50.0) {
+                        emit(Result.failure(PembayaranBelumMencukupiException()))
+                    } else {
+                        emit(Result.success(Unit))
+                    }
                 }
             }
         }

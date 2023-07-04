@@ -43,6 +43,8 @@ class PembangunanKavlingViewModel @Inject constructor(
     var dataMode = DataMode.ONLINE
     var selectedMaterialPembangunan: MaterialPembangunan? = null
         private set
+    var selectedUpahPekerja: UpahPekerja? = null
+        private set
 
     private var jobCheckElligibility: Job? = null
     private var jobFetchMaterialPembangunan: Job? = null
@@ -54,10 +56,12 @@ class PembangunanKavlingViewModel @Inject constructor(
     private val _elligibilityStatus = MutableStateFlow<ElligibiltyStatus?>(null)
     private val _fabIsExtended = MutableStateFlow(false)
     private val _materialPembangunanDialogState = MutableStateFlow(false)
+    private val _upahPekerjaDialogState = MutableStateFlow(false)
 
     val elligibilityStatus = _elligibilityStatus.asStateFlow()
     val fabIsExtended = _fabIsExtended.asStateFlow()
     val materialPembangunanDialogState = _materialPembangunanDialogState.asStateFlow()
+    val upahPekerjaDialogState = _upahPekerjaDialogState.asStateFlow()
 
     private val _informasiPembangunan = MutableStateFlow(InformasiPembangunan.EMPTY(kavlingKode))
     private val _materialList = MutableStateFlow(emptyList<MaterialPembangunan>())
@@ -73,7 +77,7 @@ class PembangunanKavlingViewModel @Inject constructor(
         listener.onProgress()
 
         jobCheckElligibility = viewModelScope.launch(Dispatchers.IO) {
-            val request = CheckPembangunanKavlingEligibilityAsyncUseCase.Request(kavling)
+            val request = CheckPembangunanKavlingEligibilityAsyncUseCase.Request(kavling, dataMode)
             checkPembangunanKavlingEligibilityUseCase.execute(request).collect { result ->
                 result.onSuccess {
                     _elligibilityStatus.update {
@@ -143,29 +147,28 @@ class PembangunanKavlingViewModel @Inject constructor(
     fun fetchUpahPekerja(kavling: String, listener: ViewModelListener) {
         jobFetchUpahPekerja?.cancel()
 
-        jobFetchUpahPekerja = viewModelScope.launch(Dispatchers.Main) {
+        listener.onProgress()
+
+        jobFetchUpahPekerja = viewModelScope.launch(Dispatchers.IO) {
             val request = GetAllUpahPekerjaAsyncUseCase.Request(kavling, dataMode)
-            getAllUpahPekerjaUseCase.execute(request)
-                .onStart { listener.onProgress() }
-                .onCompletion { throwable ->
-                    if (throwable == null) {
+            getAllUpahPekerjaUseCase.execute(request).collect { result ->
+                result.onFailure {
+                    it.printStackTrace()
+
+                    withContext(Dispatchers.Main) {
+                        listener.onFailed(it.message)
+                    }
+                }
+                result.onSuccess { items ->
+                    withContext(Dispatchers.Main) {
+                        if (!items.isNullOrEmpty()) {
+                            _upahPekerjaList.value = items
+                        }
+
                         listener.onCompleted()
-                    } else {
-                        listener.onFailed(throwable.message)
                     }
                 }
-                .collect { result ->
-                    withContext(Dispatchers.IO) {
-                        result.onSuccess { items ->
-                            if (!items.isNullOrEmpty()) {
-                                _upahPekerjaList.value = items
-                            }
-                        }
-                        result.onFailure {
-                            it.printStackTrace()
-                        }
-                    }
-                }
+            }
         }
     }
 
@@ -301,6 +304,14 @@ class PembangunanKavlingViewModel @Inject constructor(
 
         if (clearSelected) {
             selectedMaterialPembangunan = null
+        }
+    }
+
+    fun updateUpahPekerjaDialogState(clearSelected: Boolean = true) {
+        _upahPekerjaDialogState.update { !it }
+
+        if (clearSelected) {
+            selectedUpahPekerja = null
         }
     }
 
