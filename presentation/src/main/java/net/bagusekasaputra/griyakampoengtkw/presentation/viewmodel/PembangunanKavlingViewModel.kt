@@ -319,6 +319,10 @@ class PembangunanKavlingViewModel @Inject constructor(
         selectedMaterialPembangunan = _materialList.value[index]
     }
 
+    fun setSelectedUpahPekerja(index: Int) {
+        selectedUpahPekerja = _upahPekerjaList.value[index]
+    }
+
     data class ElligibiltyStatus(
         val elligible: Boolean,
         val reason: String,

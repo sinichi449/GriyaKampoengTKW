@@ -311,9 +311,11 @@ private fun MyLayout(
                     UpahPekerjaTable(
                         upahPekerja = upahPekerja.value,
                         onRowHeaderClick = {
+                            viewModel.setSelectedUpahPekerja(it)
                             ukSelectedRow = it
 
-                            viewModel.updateUpahPekerjaDialogState()
+                            // Open Dialog Input
+                            viewModel.updateUpahPekerjaDialogState(clearSelected = false)
                         },
                         onCellClicked = { column, row ->
                             // TODO
