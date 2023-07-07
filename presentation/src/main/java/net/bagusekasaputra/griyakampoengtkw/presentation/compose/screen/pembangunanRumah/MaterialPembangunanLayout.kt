@@ -2,16 +2,10 @@ package net.bagusekasaputra.griyakampoengtkw.presentation.compose.screen.pembang
 
 import android.graphics.Typeface
 import android.view.Gravity
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidViewBinding
 import net.bagusekasaputra.griyakampoengtkw.domain.NumberUtil.numericToString
 import net.bagusekasaputra.griyakampoengtkw.presentation.databinding.LayoutTableGenericSingleCornerBinding
@@ -21,7 +15,6 @@ import net.bagusekasaputra.griyakampoengtkw.presentation.tableview.base.ColumnHe
 import net.bagusekasaputra.griyakampoengtkw.presentation.tableview.base.GenericTableView
 import net.bagusekasaputra.griyakampoengtkw.presentation.tableview.base.RowHeader
 import net.bagusekasaputra.griyakampoengtkw.presentation.tableview.base.TableViewDataProvider
-import kotlin.random.Random
 
 @Composable
 fun MaterialPembangunanLayout(
@@ -29,30 +22,12 @@ fun MaterialPembangunanLayout(
     data: List<MaterialPembangunanUiModel>,
     total: Long,
 ) {
-    Column(modifier = Modifier
-        .fillMaxWidth()
-        .then(modifier)) {
-        TitleAndTotal(title = "Rincian Material", total = total)
-        Spacer(modifier = Modifier.height(16.dp))
+    DataPembangunanRumahLayout(
+        modifier = modifier,
+        title = "Rincian Material",
+        total = total
+    ) {
         MaterialPembangunanTable(tableData = data)
-    }
-}
-
-@Composable
-private fun TitleAndTotal(
-    modifier: Modifier = Modifier,
-    title: String,
-    total: Long,
-) {
-    Column(modifier = modifier) {
-        Text(
-            text = title,
-            style = MaterialTheme.typography.titleMedium
-        )
-        Text(
-            text = if (total == 0L) "Tidak ada data" else "Rp. ${total.numericToString()}",
-            style = MaterialTheme.typography.bodySmall
-        )
     }
 }
 
@@ -171,25 +146,16 @@ private fun MaterialPembangunanTable(
 
 @Preview(showBackground = true, group = "sub-components")
 @Composable
-private fun TitleAndTotalPreview() {
-    TitleAndTotal(
-        title = "Biaya Material",
-        total = 28_335_000L,
-    )
-}
-
-@Preview(showBackground = true, group = "sub-components")
-@Composable
 private fun MaterialPembangunanTablePreview() {
     MaterialPembangunanTable(
-        tableData = PreviewParams.materialPembangunan(5)
+        tableData = PembangunanRumahPreviewParams.materialPembangunan(5)
     )
 }
 
 @Preview(showBackground = true, group = "components")
 @Composable
 private fun MaterialPembangunanLayoutPreview() {
-    val data = PreviewParams.materialPembangunan(3)
+    val data = PembangunanRumahPreviewParams.materialPembangunan(3)
     val total = data.sumOf { it.totalHarga }
 
     MaterialPembangunanLayout(
@@ -210,23 +176,4 @@ private fun MaterialPembangunanLayoutOnEmptyPreview() {
     )
 }
 
-private object PreviewParams {
-
-    fun materialPembangunan(size: Int): List<MaterialPembangunanUiModel> {
-        return buildList {
-            repeat(size) {
-                val randomQty = Random.nextInt(from = 1, until = 100)
-                val randomHarga = Random.nextLong(from = 1, until = 1000) * 1000L
-
-                add(MaterialPembangunanUiModel(
-                    nama = "Material $it",
-                    qty = randomQty.toDouble(),
-                    satuan = "unit",
-                    totalHarga = randomHarga,
-                ))
-            }
-        }
-    }
-
-}
 
