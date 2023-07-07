@@ -296,3 +296,5 @@ class GenericTableView<T>(
 
 
 }
+
+fun rowAndCellId(index: Int) = index.toString()

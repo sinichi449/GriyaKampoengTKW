@@ -4,37 +4,44 @@ import android.graphics.Typeface
 import android.view.Gravity
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.viewinterop.AndroidViewBinding
 import net.bagusekasaputra.griyakampoengtkw.domain.NumberUtil.numericToString
 import net.bagusekasaputra.griyakampoengtkw.presentation.databinding.LayoutTableGenericSingleCornerBinding
-import net.bagusekasaputra.griyakampoengtkw.presentation.model.MaterialPembangunanUiModel
+import net.bagusekasaputra.griyakampoengtkw.presentation.model.pembangunan.MaterialPembangunanUiModel
 import net.bagusekasaputra.griyakampoengtkw.presentation.tableview.base.CellItem
 import net.bagusekasaputra.griyakampoengtkw.presentation.tableview.base.ColumnHeader
 import net.bagusekasaputra.griyakampoengtkw.presentation.tableview.base.GenericTableView
 import net.bagusekasaputra.griyakampoengtkw.presentation.tableview.base.RowHeader
 import net.bagusekasaputra.griyakampoengtkw.presentation.tableview.base.TableViewDataProvider
+import net.bagusekasaputra.griyakampoengtkw.presentation.tableview.base.rowAndCellId
 
 @Composable
 fun MaterialPembangunanLayout(
     modifier: Modifier = Modifier,
-    data: List<MaterialPembangunanUiModel>,
-    total: Long,
+    totalMaterial: Long,
+    materialPembangunanTable: @Composable () -> Unit,
 ) {
     DataPembangunanRumahLayout(
         modifier = modifier,
         title = "Rincian Material",
-        total = total
+        total = totalMaterial
     ) {
-        MaterialPembangunanTable(tableData = data)
+        materialPembangunanTable()
     }
 }
 
 @Composable
-private fun MaterialPembangunanTable(
+fun MaterialPembangunanTable(
     modifier: Modifier = Modifier,
     tableData: List<MaterialPembangunanUiModel>,
+    selectedRow: Int = -1,
+    onRowHeaderClicked: (row: Int) -> Unit = {},
 ) {
     AndroidViewBinding(
         modifier = Modifier
@@ -46,9 +53,6 @@ private fun MaterialPembangunanTable(
             binding
         },
         update = {
-            val rowAndCellId = { index: Int ->
-                index.toString()
-            }
             val columns = object {
                 val material = 0
                 val qty = 1
@@ -89,8 +93,8 @@ private fun MaterialPembangunanTable(
                                 val cells = mutableListOf<CellItem>()
 
                                 cells.add(CellItem(cellId, item.nama))
-                                cells.add(CellItem(cellId, item.qty))
-                                cells.add(CellItem(cellId, item.totalHarga))
+                                cells.add(CellItem(cellId, item.qtyTotal))
+                                cells.add(CellItem(cellId, item.hargaTotal))
 
                                 add(cells)
                             }
@@ -100,8 +104,8 @@ private fun MaterialPembangunanTable(
                             val emptyData = MaterialPembangunanUiModel.empty()
 
                             cells.add(CellItem(cellId, emptyData.nama))
-                            cells.add(CellItem(cellId, emptyData.qty))
-                            cells.add(CellItem(cellId, emptyData.totalHarga))
+                            cells.add(CellItem(cellId, emptyData.qtyTotal))
+                            cells.add(CellItem(cellId, emptyData.hargaTotal))
 
                             add(cells)
                         }
@@ -114,7 +118,7 @@ private fun MaterialPembangunanTable(
                 add(columns.totalHarga to 300)
             }
 
-            GenericTableView(this.tableView, tableData)
+            val genericTableView = GenericTableView(this.tableView, tableData)
                 .setWidthColumnHeaders(columnHeaderWidths)
                 .setOnCellBinding { viewHolder, cellItem, column, row ->
                     viewHolder.apply {
@@ -138,8 +142,14 @@ private fun MaterialPembangunanTable(
                         }
                     }
                 }
+                .setOnClickedRowHeader { _, row ->
+                    onRowHeaderClicked(row)
+                }
                 .setDataProvider(dataProvider)
-                .create()
+
+            genericTableView.create()
+
+            tableView.selectionHandler.selectedRowPosition = selectedRow
         }
     )
 }
@@ -147,33 +157,55 @@ private fun MaterialPembangunanTable(
 @Preview(showBackground = true, group = "sub-components")
 @Composable
 private fun MaterialPembangunanTablePreview() {
+    var selectedRow by remember { mutableStateOf(-1) }
+
     MaterialPembangunanTable(
-        tableData = PembangunanRumahPreviewParams.materialPembangunan(5)
+        tableData = PembangunanRumahPreviewParams.materialPembangunan(5),
+        selectedRow = selectedRow,
+        onRowHeaderClicked = {
+            selectedRow = it
+        },
     )
 }
 
-@Preview(showBackground = true, group = "components")
+@Preview(showBackground = true, group = "components-fixed")
 @Composable
 private fun MaterialPembangunanLayoutPreview() {
     val data = PembangunanRumahPreviewParams.materialPembangunan(3)
-    val total = data.sumOf { it.totalHarga }
+    val total = data.sumOf { it.hargaTotal }
+    var selectedRow by remember { mutableStateOf(-1) }
+    var logMaterialDialog by remember { mutableStateOf(false) }
 
-    MaterialPembangunanLayout(
-        data = data,
-        total = total
-    )
+    MaterialPembangunanLayout(totalMaterial = total) {
+        MaterialPembangunanTable(
+            tableData = data,
+            selectedRow = selectedRow,
+            onRowHeaderClicked = {
+                selectedRow = it
+                logMaterialDialog = true
+            }
+        )
+    }
+
+    if (selectedRow >= 0) {
+        PembelianLogDetailDialog(
+            show = logMaterialDialog,
+            title = data[selectedRow].nama,
+            logs = data[selectedRow].logs,
+            onDismiss = { logMaterialDialog = false }
+        )
+    }
 }
 
-@Preview(showBackground = true, group = "components")
+@Preview(showBackground = true, group = "components-fixed")
 @Composable
 private fun MaterialPembangunanLayoutOnEmptyPreview() {
     val data = emptyList<MaterialPembangunanUiModel>()
     val total = 0L
 
-    MaterialPembangunanLayout(
-        data = data,
-        total = total
-    )
+    MaterialPembangunanLayout(totalMaterial = total) {
+        MaterialPembangunanTable(tableData = data)
+    }
 }
 
 
