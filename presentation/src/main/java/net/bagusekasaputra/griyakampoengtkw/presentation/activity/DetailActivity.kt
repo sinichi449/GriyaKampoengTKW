@@ -9,6 +9,13 @@ import android.view.MenuItem
 import android.view.View
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
 import androidx.fragment.app.Fragment
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.tabs.TabLayout
@@ -17,6 +24,7 @@ import net.bagusekasaputra.griyakampoengtkw.domain.DataMode
 import net.bagusekasaputra.griyakampoengtkw.domain.dataModeOf
 import net.bagusekasaputra.griyakampoengtkw.presentation.R
 import net.bagusekasaputra.griyakampoengtkw.presentation.adapter.viewpager.DetailViewPagerAdapter
+import net.bagusekasaputra.griyakampoengtkw.presentation.compose.theme.GriyaKampoengTkwTheme
 import net.bagusekasaputra.griyakampoengtkw.presentation.databinding.ActivityDetailBinding
 import net.bagusekasaputra.griyakampoengtkw.presentation.fragment.BiayaMarketingFragment
 import net.bagusekasaputra.griyakampoengtkw.presentation.fragment.DataDiriFragment
@@ -201,4 +209,24 @@ class DetailActivity : AppCompatActivity() {
 
         super.onDestroy()
     }
+}
+
+@Composable
+private fun PembangunanRumahLayout(
+    modifier: Modifier = Modifier,
+) {
+    GriyaKampoengTkwTheme {
+        LazyColumn(
+            modifier = Modifier.fillMaxWidth().then(modifier),
+            contentPadding = PaddingValues(16.dp)
+        ) {
+
+        }
+    }
+}
+
+@Preview(showBackground = true, group = "layouts")
+@Composable
+private fun PembangunanRumahLayoutPreview() {
+    PembangunanRumahLayout()
 }
