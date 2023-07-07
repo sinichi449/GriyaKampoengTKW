@@ -1,4 +1,4 @@
-package net.bagusekasaputra.griyakampoengtkw.presentation.compose.screen
+package net.bagusekasaputra.griyakampoengtkw.presentation.compose.screen.pembangunanRumah
 
 import android.graphics.Typeface
 import android.view.Gravity
