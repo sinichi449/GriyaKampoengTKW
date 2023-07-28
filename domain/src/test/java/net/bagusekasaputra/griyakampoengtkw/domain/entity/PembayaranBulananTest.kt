@@ -7,6 +7,7 @@ import net.bagusekasaputra.griyakampoengtkw.domain.DataMode
 import net.bagusekasaputra.griyakampoengtkw.domain.DateUtil
 import net.bagusekasaputra.griyakampoengtkw.domain.DateUtil.normalize
 import net.bagusekasaputra.griyakampoengtkw.domain.DateUtil.toDate
+import net.bagusekasaputra.griyakampoengtkw.domain.DateUtil.toSlashedString
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.pembayaran.BulanAngsuran
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.pembayaran.Pembayaran
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.pembayaran.PembayaranBulanan
@@ -155,6 +156,17 @@ class PembayaranBulananTest {
             Assert.assertEquals(true,
                 bulanListPembayaranBulanan.isNotEmpty() && fromBulanBeliUntilToday.isNotEmpty()
             )
+            println("Bulan List")
+            println("=========================")
+            bulanListPembayaranBulanan.forEach {
+                println(it.toSlashedString())
+            }
+            println("\n\nFrom Bulan Beli")
+            println("=========================")
+            fromBulanBeliUntilToday.forEach {
+                println(it.toSlashedString())
+            }
+
             Assert.assertEquals(true, bulanListPembayaranBulanan.containsAll(fromBulanBeliUntilToday))
         }
     }
@@ -179,6 +191,66 @@ class PembayaranBulananTest {
             listPembayaran = pembayaranList,
             baselinePembayaran = BaselinePembayaran.EMPTY(kavling),
         ))
+    }
+
+    @Test
+    fun givenExistInvoiceSeveralMonthsAhead_shouldAlsoContainsIt() {
+        val timeMillis = System.currentTimeMillis()
+        // Buat pembayaran list hingga bulan Oktober 2023
+        val pembayaranList = listOf(
+            Pembayaran(
+                termin = "ITJ 1", tanggal = "09/07/2023", jumlahUangDibayar = "5,000,000",
+                bulanAngsuran = BulanAngsuran(7, 2023),
+                keterangan = "-", timeMillis =  timeMillis,
+            ),
+            Pembayaran(
+                termin = "DP 1", tanggal = "19/07/2023", jumlahUangDibayar = "5,000,000",
+                bulanAngsuran = BulanAngsuran(7, 2023),
+                keterangan = "-", timeMillis =  timeMillis,
+            ),
+            Pembayaran(
+                termin = "DP 2", tanggal = "27/07/2023", jumlahUangDibayar = "5,000,000",
+                bulanAngsuran = BulanAngsuran(8, 2023),
+                keterangan = "-", timeMillis =  timeMillis,
+            ),
+            Pembayaran(
+                termin = "DP 3", tanggal = "28/07/2023", jumlahUangDibayar = "5,000,000",
+                bulanAngsuran = BulanAngsuran(9, 2023),
+                keterangan = "-", timeMillis =  timeMillis,
+            ),
+            Pembayaran(
+                termin = "DP 4", tanggal = "29/07/2023", jumlahUangDibayar = "5,000,000",
+                bulanAngsuran = BulanAngsuran(10, 2023),
+                keterangan = "-", timeMillis =  timeMillis,
+            ),
+        )
+
+        // Group ke Pembayaran Bulanan
+        val kavling = "A9"
+        val baselinePembayaran = BaselinePembayaran(
+            kavling = kavling,
+            opsiBulan = 48,
+            jumlahUang = 5_000_000L,
+            tanggalPembayaranMaks = 29,
+        )
+        val tanggalSekarang = "28/07/2023".toDate()
+        val pembayaranBulanan = PembayaranBulanan.groupPembayaranIntoBulanan(
+            kavling = kavling,
+            baselinePembayaran = baselinePembayaran,
+            pembayaranList = pembayaranList,
+            tanggalSekarang = tanggalSekarang,
+        )
+
+        var allOkay = false
+        for (pb in pembayaranBulanan) {
+            (8..10).forEach { bulan ->
+                if (pb.bulan == bulan && pb.tahun == 2023) {
+                    allOkay = true
+                }
+            }
+        }
+
+        Assert.assertEquals(true, allOkay)
     }
 
 }

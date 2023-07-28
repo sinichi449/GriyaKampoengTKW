@@ -53,15 +53,17 @@ data class PembayaranBulanan(
             }
 
             return if (pembayaransSortedByBulanAngsuran.isNotEmpty()) {
-                val bulanPembelianKavling = pembayaransSortedByBulanAngsuran.first()
+                val firstPembelianDate = pembayaransSortedByBulanAngsuran.first()
+                    .bulanAngsuran.date
+                val lastPembayaranDate = pembayaransSortedByBulanAngsuran.last()
                     .bulanAngsuran.date
 
-                val fromPembelianUntilTodayDateList = DateUtil.getListMonths(
-                    bulanPembelianKavling, tanggalSekarang
+                val fromPembelianUntilLastPembayaran = DateUtil.getListMonths(
+                    firstPembelianDate, lastPembayaranDate
                 )
                 val pembayaranBulanans = mutableListOf<PembayaranBulanan>()
 
-                fromPembelianUntilTodayDateList.forEach {
+                fromPembelianUntilLastPembayaran.forEach {
                     val calendar = Calendar.getInstance().apply {
                         time = it
                     }
