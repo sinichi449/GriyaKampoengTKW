@@ -59,7 +59,7 @@ class GetListPembayaranBulananAsyncUseCase(
                 } else {
                     emit(Result.failure(IllegalStateException("Angsuran Bulanan masih kosong. Mohon segera isi!")))
 
-                    val defaultBaseline = BaselinePembayaran(request.kavlingKode, 0, 0L, 1)
+                    val defaultBaseline = BaselinePembayaran(request.kavlingKode, 48, 0L, 1)
 
                     PembayaranBulanan.groupPembayaranIntoBulanan(
                         request.kavlingKode, defaultBaseline, maskedPembayaran
