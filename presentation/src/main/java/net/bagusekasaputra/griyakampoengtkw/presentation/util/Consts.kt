@@ -11,10 +11,10 @@ object Consts {
         add("Malaysia")
         add("Arab Saudi")
         add("Abu Dhabi")
-        add("Bangladesh")
         add("Kamboja")
         add("Brunei Darussalam")
         add("Korea")
+        add("Other...")
     }
 
     const val KEY_DATA_MODE = "DATA_MODE"
