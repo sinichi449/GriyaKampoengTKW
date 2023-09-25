@@ -38,6 +38,9 @@ class PembayaranTabelFullActivity : AppCompatActivity() {
 
         val kavling = intent?.extras?.getString(EXTRAS_KAVLING_KODE)
         if (!kavling.isNullOrEmpty()) {
+            // Save to viewmodel to prevent a loss due to configuration changes.
+            pembayaranViewModel.currentKavlingKode = kavling
+
             val snackBarLoading = Snackbar.make(binding.root, "Mendapatkan List Pembayaran ...", Snackbar.LENGTH_INDEFINITE)
             pembayaranViewModel.getListPembayaranBulanan(
                 kavling,
