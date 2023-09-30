@@ -6,6 +6,9 @@ interface TambahanPembayaranRepository {
 
     suspend fun getAllByKavling(kavling: String): Result<List<TambahanPembayaran>?>
 
+    suspend fun getById(kavling: String, id: String): Result<TambahanPembayaran?>
+
     suspend fun insert(tambahanPembayaran: TambahanPembayaran): Result<Nothing?>
 
+    suspend fun update(id: String, newData: TambahanPembayaran): Result<Nothing?>
 }

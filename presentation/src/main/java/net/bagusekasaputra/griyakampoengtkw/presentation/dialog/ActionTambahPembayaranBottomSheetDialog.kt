@@ -1,0 +1,147 @@
+package net.bagusekasaputra.griyakampoengtkw.presentation.dialog
+
+import android.app.Activity
+import android.content.Intent
+import android.os.Bundle
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
+import android.widget.Toast
+import androidx.fragment.app.activityViewModels
+import com.google.android.material.bottomsheet.BottomSheetDialogFragment
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import dagger.hilt.android.AndroidEntryPoint
+import net.bagusekasaputra.griyakampoengtkw.presentation.activity.FormActivity
+import net.bagusekasaputra.griyakampoengtkw.presentation.activity.UpdateTambahanPembayaranParcel
+import net.bagusekasaputra.griyakampoengtkw.presentation.databinding.DialogActionsItemTambahanPembayaranBinding
+import net.bagusekasaputra.griyakampoengtkw.presentation.viewmodel.FormPembayaranViewModel
+import net.bagusekasaputra.griyakampoengtkw.presentation.viewmodel.PembayaranSyncRequest
+
+@AndroidEntryPoint
+class ActionTambahPembayaranBottomSheetDialog: BottomSheetDialogFragment() {
+
+    private lateinit var binding: DialogActionsItemTambahanPembayaranBinding
+    private val viewModel by activityViewModels<FormPembayaranViewModel>()
+    private var indexPembayaran: Int? = null
+
+    private val REQUEST_UBAH_TAMBAHAN_PEMBAYARAN = 119
+
+    companion object {
+        const val EXTRAS_INDEX_TABLE_POSITION = "EXTRAS_INDEX_TABLE_POSITION"
+    }
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+
+        indexPembayaran = arguments?.getInt(EXTRAS_INDEX_TABLE_POSITION)
+    }
+
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View {
+        binding = DialogActionsItemTambahanPembayaranBinding.inflate(inflater, container, false)
+
+        return binding.root
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
+        val tambahanPembayaran = viewModel.tambahanPembayarans.value?.get(indexPembayaran!!)!!
+
+        // Dialog Title
+        binding.tvTitle.text = buildString {
+            append(tambahanPembayaran.kategori.toString() + " - ")
+            append(tambahanPembayaran.keterangan)
+
+            if (tambahanPembayaran.sudahIsiFoto) {
+                binding.cardTambahkanFotoPembayaran.visibility = View.GONE
+                binding.cardLihatFotoPembayaran.apply {
+                    visibility = View.VISIBLE
+                    setOnClickListener {
+                        // TODO: Lihat foto
+                    }
+                }
+
+                binding.cardHapusFotoPembayaran.apply {
+                    visibility = View.VISIBLE
+                    setOnClickListener {
+                        // Show delete confirmation
+                        MaterialAlertDialogBuilder(requireContext()).apply {
+                            setTitle("Hapus Foto?")
+                            setMessage("Apakah Anda yakin menghapus Foto Pembayaran ini?")
+                            setPositiveButton("Ya") { dialog, _ ->
+                                // TODO: Hapus Foto
+                            }
+                            setNegativeButton("Tidak") { dialog, _ -> dialog.dismiss()}
+                        }.create()
+                            .show()
+                    }
+                }
+            } else {
+                binding.cardTambahkanFotoPembayaran.apply {
+                    visibility = View.VISIBLE
+                    setOnClickListener {
+                        // TODO: Tambah Foto
+                    }
+                }
+                binding.cardLihatFotoPembayaran.visibility = View.GONE
+                binding.cardHapusFotoPembayaran.visibility = View.GONE
+            }
+
+            // Go to FormActivity when cardEditDataPembayaran clicked
+            binding.cardEditDataPembayaran.setOnClickListener {
+                val intent = Intent(requireContext(), FormActivity::class.java)
+                val ubahDataParcel = UpdateTambahanPembayaranParcel(
+                    kavling = viewModel.currentKavlingKode!!,
+                    id = tambahanPembayaran.id
+                )
+                intent.putExtra(FormActivity.EXTRAS_PARCEL, ubahDataParcel)
+
+                @Suppress("DEPRECATION")
+                startActivityForResult(intent, REQUEST_UBAH_TAMBAHAN_PEMBAYARAN)
+            }
+
+            binding.cardHapusDataPembayaran.setOnClickListener {
+                // Show hapus Pembayaran confirmation.
+                // Foto pembayaran will also deleted!
+                MaterialAlertDialogBuilder(requireContext())
+                    .setTitle("Hapus Pembayaran?")
+                    .setMessage("Apakah Anda yakin menghapus pembayaran ini? " +
+                            "Foto pembayaran juga akan terhapus!")
+                    .setPositiveButton("Ya") { dialogHapus, _ ->
+                        dialogHapus.dismiss()
+
+                        // TODO: Hapus Data
+                    }
+                    .setNegativeButton("Tidak") { dialog, _ ->
+                        dialog.dismiss()
+                    }
+                    .create()
+                    .show()
+            }
+        }
+    }
+
+    @Suppress("DEPRECATION")
+    @Deprecated("Deprecated in Java")
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+
+        if (requestCode == REQUEST_UBAH_TAMBAHAN_PEMBAYARAN) {
+            if (resultCode == Activity.RESULT_OK) {
+                data?.extras?.getString(FormActivity.EXTRAS_SUCCESS_DATA)?.also {
+                    dismiss()
+
+                    viewModel.requestSync(PembayaranSyncRequest.TAMBAHAN_PEMBAYARAN)
+                }
+            } else {
+                data?.extras?.getString(FormActivity.EXTRAS_FAIL_MSG)?.also {
+                    Toast.makeText(requireContext(), it, Toast.LENGTH_LONG).show()
+                }
+            }
+        }
+    }
+}

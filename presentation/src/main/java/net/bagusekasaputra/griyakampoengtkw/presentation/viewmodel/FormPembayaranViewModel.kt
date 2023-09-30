@@ -29,6 +29,8 @@ import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.pembayaran.Updat
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.statusPembayaran.GetStatusPembayaranKavlingAsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.tambahanPembayaran.AddTambahanPembayaranAsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.tambahanPembayaran.GetTambahanPembayaranAsyncUseCase
+import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.tambahanPembayaran.GetTambahanPembayaranByIdAsyncUseCase
+import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.tambahanPembayaran.UpdateTambahanPembayaranAsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.BaselinePembayaran
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.CatatanPembayaran
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.KavlingCatatanPembayaran
@@ -67,6 +69,8 @@ class FormPembayaranViewModel @Inject constructor(
     // Tambahan Pembayaran
     private val getTambahanPembayaranUseCase: GetTambahanPembayaranAsyncUseCase,
     private val addTambahanPembayaranUseCase: AddTambahanPembayaranAsyncUseCase,
+    private val getTambahanPembayaranByIdUseCase: GetTambahanPembayaranByIdAsyncUseCase,
+    private val updateTambahanPembayaranUseCase: UpdateTambahanPembayaranAsyncUseCase,
 ): ViewModel() {
 
     // Pembayaran Bulanan
@@ -130,6 +134,12 @@ class FormPembayaranViewModel @Inject constructor(
     private val _tambahanPembayarans = MutableLiveData<List<TambahanPembayaran>>(emptyList())
     val tambahanPembayarans: LiveData<List<TambahanPembayaran>>
         get() = _tambahanPembayarans
+
+    private val _tambahanPembayaranSelected = MutableLiveData<TambahanPembayaran>()
+    val tambahanPembayaranSelected: LiveData<TambahanPembayaran>
+        get() = _tambahanPembayaranSelected
+
+    var tambahanPembayaranSelectedId: String = "NO-ID"
 
 
     // Sync Request
@@ -563,6 +573,30 @@ class FormPembayaranViewModel @Inject constructor(
         }
     }
 
+    fun getTambahanPembayaran(
+        kavling: String,
+        id: String,
+        onFailure: (msg: String) -> Unit,
+    ) {
+        readTambahanPembayaranJob?.cancel()
+
+        readTambahanPembayaranJob = viewModelScope.launch(Dispatchers.IO) {
+            val request = GetTambahanPembayaranByIdAsyncUseCase.Request(kavling, id)
+            getTambahanPembayaranByIdUseCase.execute(request).collect { result ->
+                result.onSuccess {
+                    if (it != null) {
+                        _tambahanPembayaranSelected.postValue(it)
+                    }
+                }
+                result.onFailure {
+                    withContext(Dispatchers.Main) {
+                        onFailure(it.message ?: "Unknown Error")
+                    }
+                }
+            }
+        }
+    }
+
     fun insertTambahanPembayaran(tambahanPembayaran: TambahanPembayaran) {
         writeTambahanPembayaranJob?.cancel()
 
@@ -571,6 +605,27 @@ class FormPembayaranViewModel @Inject constructor(
         writeTambahanPembayaranJob = viewModelScope.launch(Dispatchers.IO) {
             val request = AddTambahanPembayaranAsyncUseCase.Request(tambahanPembayaran)
             addTambahanPembayaranUseCase.execute(request).collect { result ->
+                result.onSuccess {
+                    _insertTambahanPembayaranOperation.postValue(UiState.Success())
+                }
+                result.onFailure {
+                    _insertTambahanPembayaranOperation.postValue(UiState.Failure(it.message))
+                }
+            }
+        }
+    }
+
+    fun updateTambahanPembayaran(
+        oldData: TambahanPembayaran,
+        newData: TambahanPembayaran,
+    ) {
+        writeTambahanPembayaranJob?.cancel()
+
+        _insertTambahanPembayaranOperation.value = UiState.Loading()
+
+        writeTambahanPembayaranJob = viewModelScope.launch(Dispatchers.IO) {
+            val request = UpdateTambahanPembayaranAsyncUseCase.Request(oldData, newData)
+            updateTambahanPembayaranUseCase.execute(request).collect { result ->
                 result.onSuccess {
                     _insertTambahanPembayaranOperation.postValue(UiState.Success())
                 }

@@ -14,10 +14,13 @@ import androidx.fragment.app.activityViewModels
 import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
 import net.bagusekasaputra.griyakampoengtkw.domain.DateUtil.toDate
+import net.bagusekasaputra.griyakampoengtkw.domain.DateUtil.toSlashedString
 import net.bagusekasaputra.griyakampoengtkw.domain.NumberUtil.numericToLong
+import net.bagusekasaputra.griyakampoengtkw.domain.NumberUtil.numericToString
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.pembayaran.TambahanPembayaran
 import net.bagusekasaputra.griyakampoengtkw.presentation.activity.FormActivity
 import net.bagusekasaputra.griyakampoengtkw.presentation.activity.InsertTambahanPembayaranParcel
+import net.bagusekasaputra.griyakampoengtkw.presentation.activity.UpdateTambahanPembayaranParcel
 import net.bagusekasaputra.griyakampoengtkw.presentation.custom.addThousandTextListener
 import net.bagusekasaputra.griyakampoengtkw.presentation.databinding.FragmentFormInputTambahanPembayaranBinding
 import net.bagusekasaputra.griyakampoengtkw.presentation.model.UiState
@@ -43,6 +46,11 @@ class FormInputTambahanPembayaranFragment : Fragment() {
                 is InsertTambahanPembayaranParcel -> {
                     pembayaranViewModel.currentKavlingKode = parcelable.kavling
                     pembayaranViewModel.formIsEditMode = false
+                }
+                is UpdateTambahanPembayaranParcel -> {
+                    pembayaranViewModel.currentKavlingKode = parcelable.kavling
+                    pembayaranViewModel.tambahanPembayaranSelectedId = parcelable.id
+                    pembayaranViewModel.formIsEditMode = true
                 }
             }
         }
@@ -72,6 +80,17 @@ class FormInputTambahanPembayaranFragment : Fragment() {
         val datePickerDialog = DatePickerHelper(requireContext(), binding.btnPilihTanggal, binding.edtTanggal)
         if (pembayaranViewModel.formIsEditMode) {
             datePickerDialog.setupDateDefaultOrPick(false)
+
+            binding.layoutLoading.visibility = View.VISIBLE
+            binding.layoutContent.visibility = View.GONE
+
+            pembayaranViewModel.getTambahanPembayaran(
+                kavling = pembayaranViewModel.currentKavlingKode!!,
+                id = pembayaranViewModel.tambahanPembayaranSelectedId,
+                onFailure = {
+                    Toast.makeText(requireContext(), it, Toast.LENGTH_LONG).show()
+                }
+            )
         } else {
             datePickerDialog.setupDateDefaultOrPick(true)
         }
@@ -95,7 +114,7 @@ class FormInputTambahanPembayaranFragment : Fragment() {
                 val tanggal = binding.edtTanggal.text?.toString()?.toDate() ?: "01/01/2020".toDate()
                 val keterangan = binding.edtKeterangan.text?.toString() ?: ""
 
-                val tambahanPembayaran = TambahanPembayaran(
+                var tambahanPembayaran = TambahanPembayaran(
                     kavling = pembayaranViewModel.currentKavlingKode!!,
                     jumlahUang = jumlahUang,
                     sudahIsiFoto = false,
@@ -103,7 +122,15 @@ class FormInputTambahanPembayaranFragment : Fragment() {
                     keterangan = keterangan,
                     kategori = kategori
                 )
-                pembayaranViewModel.insertTambahanPembayaran(tambahanPembayaran)
+                if (pembayaranViewModel.formIsEditMode) {
+                    tambahanPembayaran = tambahanPembayaran.copy(id = pembayaranViewModel.tambahanPembayaranSelectedId)
+                    pembayaranViewModel.updateTambahanPembayaran(
+                        oldData = pembayaranViewModel.tambahanPembayaranSelected.value!!,
+                        newData = tambahanPembayaran,
+                    )
+                } else {
+                    pembayaranViewModel.insertTambahanPembayaran(tambahanPembayaran)
+                }
 
                 // Prevent from double click
                 formActivity.getFabDone().hide()
@@ -139,6 +166,34 @@ class FormInputTambahanPembayaranFragment : Fragment() {
                     }
                 }
             }
+        }
+
+        // Listen for tambahanPembayaran's Live Value on Edit Mode
+        if (pembayaranViewModel.formIsEditMode) {
+            pembayaranViewModel.tambahanPembayaranSelected.observe(requireActivity()) { selected ->
+                if (selected != null) {
+                    setupViewForEditMode(selected)
+                }
+            }
+        }
+    }
+
+    private fun setupViewForEditMode(tambahanPembayaran: TambahanPembayaran) {
+        with(binding) {
+            layoutLoading.visibility = View.GONE
+            layoutContent.visibility = View.VISIBLE
+
+            rgKategori.check(
+                if (tambahanPembayaran.kategori == TambahanPembayaran.Kategori.PEMBANGUNAN) {
+                    rbBangunan.id
+                } else {
+                    rbTambahanLuasan.id
+                }
+            )
+
+            edtTanggal.setText(tambahanPembayaran.tanggal.toSlashedString())
+            edtJumlahUangDibayar.setText(tambahanPembayaran.jumlahUang.numericToString())
+            edtKeterangan.setText(tambahanPembayaran.keterangan)
         }
     }
 

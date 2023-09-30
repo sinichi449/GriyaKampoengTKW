@@ -26,6 +26,7 @@ import net.bagusekasaputra.griyakampoengtkw.presentation.activity.FormActivity
 import net.bagusekasaputra.griyakampoengtkw.presentation.activity.InsertTambahanPembayaranParcel
 import net.bagusekasaputra.griyakampoengtkw.presentation.databinding.FragmentFullPembayaranBinding
 import net.bagusekasaputra.griyakampoengtkw.presentation.dialog.ActionPembayaranStandardBottomSheetDialogLegacy
+import net.bagusekasaputra.griyakampoengtkw.presentation.dialog.ActionTambahPembayaranBottomSheetDialog
 import net.bagusekasaputra.griyakampoengtkw.presentation.tableview.base.CellItem
 import net.bagusekasaputra.griyakampoengtkw.presentation.tableview.base.ColumnHeader
 import net.bagusekasaputra.griyakampoengtkw.presentation.tableview.base.DoubleRowHeaderConfigurator
@@ -371,8 +372,14 @@ class FullPembayaranFragment : Fragment() {
                 add(2 to 500)
             })
             .useDoubleCorner(DoubleRowHeaderConfigurator("Kategori", ROW_SEPARATOR))
-            .setOnClickedRowHeader { rowHeaderView, row ->
-                // TODO: Lihat foto pembayaran tambahan
+            .setOnClickedRowHeader { _, row ->
+                val actionDialog = ActionTambahPembayaranBottomSheetDialog()
+                val bundle = bundleOf(
+                    ActionTambahPembayaranBottomSheetDialog.EXTRAS_INDEX_TABLE_POSITION to row
+                )
+                actionDialog.arguments = bundle
+
+                actionDialog.show(childFragmentManager, null)
             }
             .create()
     }
