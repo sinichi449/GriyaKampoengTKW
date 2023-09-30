@@ -4,6 +4,7 @@ import android.util.Log
 import net.bagusekasaputra.griyakampoengtkw.domain.DateUtil.toDate
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.pembayaran.TambahanPembayaran
 import net.bagusekasaputra.griyakampoengtkw.domain.repository.TambahanPembayaranRepository
+import kotlin.random.Random
 
 class TambahanPembayaranRepositoryImpl: TambahanPembayaranRepository {
     override suspend fun getAllByKavling(kavling: String): Result<List<TambahanPembayaran>?> {
@@ -29,6 +30,11 @@ class TambahanPembayaranRepositoryImpl: TambahanPembayaranRepository {
     }
 
     override suspend fun insert(tambahanPembayaran: TambahanPembayaran): Result<Nothing?> {
-        return Result.success(null)
+        val success = Random.nextBoolean()
+        return if (success) {
+            Result.success(null)
+        } else {
+            Result.failure(Exception("Random Error!"))
+        }
     }
 }

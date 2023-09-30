@@ -7,10 +7,13 @@ import android.os.Parcelable
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.core.os.BundleCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import com.google.android.material.snackbar.Snackbar
+import net.bagusekasaputra.griyakampoengtkw.domain.DateUtil.toDate
+import net.bagusekasaputra.griyakampoengtkw.domain.NumberUtil.numericToLong
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.pembayaran.TambahanPembayaran
 import net.bagusekasaputra.griyakampoengtkw.presentation.activity.FormActivity
 import net.bagusekasaputra.griyakampoengtkw.presentation.activity.InsertTambahanPembayaranParcel
@@ -19,8 +22,8 @@ import net.bagusekasaputra.griyakampoengtkw.presentation.databinding.FragmentFor
 import net.bagusekasaputra.griyakampoengtkw.presentation.model.UiState
 import net.bagusekasaputra.griyakampoengtkw.presentation.util.DatePickerHelper
 import net.bagusekasaputra.griyakampoengtkw.presentation.util.FormUtil
+import net.bagusekasaputra.griyakampoengtkw.presentation.util.InputUtil
 import net.bagusekasaputra.griyakampoengtkw.presentation.viewmodel.FormPembayaranViewModel
-import java.util.Calendar
 
 class FormInputTambahanPembayaranFragment : Fragment() {
 
@@ -72,16 +75,39 @@ class FormInputTambahanPembayaranFragment : Fragment() {
         }
 
         formActivity.getFabDone().setOnClickListener {
-            val tambahanPembayaran = TambahanPembayaran(
-                kavling = pembayaranViewModel.currentKavlingKode!!,
-                kategori = TambahanPembayaran.Kategori.PEMBANGUNAN,
-                jumlahUang = 1_000_000L,
-                tanggal = Calendar.getInstance().time,
-                keterangan = "",
-                sudahIsiFoto = false,
+            val isInvalidEdt = InputUtil.isNullOrEmptyEditTexts(
+                binding.edtJumlahUangDibayar,
+                binding.edtTanggal
             )
+            val isEmptyKategori = binding.rgKategori.checkedRadioButtonId == -1
 
-            pembayaranViewModel.insertTambahanPembayaran(tambahanPembayaran)
+            if (!isInvalidEdt && !isEmptyKategori) {
+                val kategori = binding.rgKategori.checkedRadioButtonId.let {
+                    if (it == binding.rbTambahanLuasan.id) {
+                        TambahanPembayaran.Kategori.LUASAN
+                    } else {
+                        TambahanPembayaran.Kategori.PEMBANGUNAN
+                    }
+                }
+                val jumlahUang = binding.edtJumlahUangDibayar.text?.toString()?.numericToLong() ?: 0L
+                val tanggal = binding.edtTanggal.text?.toString()?.toDate() ?: "01/01/2020".toDate()
+                val keterangan = binding.edtKeterangan.text?.toString() ?: ""
+
+                val tambahanPembayaran = TambahanPembayaran(
+                    kavling = pembayaranViewModel.currentKavlingKode!!,
+                    jumlahUang = jumlahUang,
+                    sudahIsiFoto = false,
+                    tanggal = tanggal,
+                    keterangan = keterangan,
+                    kategori = kategori
+                )
+                pembayaranViewModel.insertTambahanPembayaran(tambahanPembayaran)
+
+                // Prevent from double click
+                formActivity.getFabDone().hide()
+            } else {
+                Toast.makeText(requireContext(), "Form tidak valid!!", Toast.LENGTH_SHORT).show()
+            }
         }
 
         setupViewModel()

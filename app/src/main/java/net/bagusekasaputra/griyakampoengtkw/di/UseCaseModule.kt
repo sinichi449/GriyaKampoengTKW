@@ -9,7 +9,6 @@ import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import net.bagusekasaputra.griyakampoengtkw.cache.CacheInitializer
 import net.bagusekasaputra.griyakampoengtkw.cache.DefaultCacheInitializer
-import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.tambahanPembayaran.GetTambahanPembayaranAsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.ambilKuitansi.InsertAmbilKuitansiAsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.backupRestore.CreateBackupAsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.backupRestore.GetListBackupAsyncUseCase
@@ -71,6 +70,8 @@ import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.rekap.GetRekapBe
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.rekap.GetRekapGlobalStreamAsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.reportKavling.GetAllReportKavlingAsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.statusPembayaran.GetStatusPembayaranKavlingAsyncUseCase
+import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.tambahanPembayaran.AddTambahanPembayaranAsyncUseCase
+import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.tambahanPembayaran.GetTambahanPembayaranAsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.repository.AppUpdateRepository
 import net.bagusekasaputra.griyakampoengtkw.domain.repository.BackupRestoreRepository
 import net.bagusekasaputra.griyakampoengtkw.domain.repository.BaselinePembayaranRepository
@@ -748,5 +749,12 @@ object UseCaseModule {
         tambahanPembayaranRepository: TambahanPembayaranRepository
     ): GetTambahanPembayaranAsyncUseCase {
         return GetTambahanPembayaranAsyncUseCase(tambahanPembayaranRepository)
+    }
+
+    @Provides
+    fun provideAddTambahanPembayaran(
+        tambahanPembayaranRepository: TambahanPembayaranRepository
+    ): AddTambahanPembayaranAsyncUseCase {
+        return AddTambahanPembayaranAsyncUseCase(tambahanPembayaranRepository)
     }
 }

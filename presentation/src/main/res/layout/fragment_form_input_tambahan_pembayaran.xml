@@ -41,7 +41,7 @@
                     android:id="@+id/rb_bangunan"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="Bangunan"
+                    android:text="Pembangunan"
                     android:theme="@style/Theme.GriyaKampoengTKW.Material3"/>
 
             </RadioGroup>
