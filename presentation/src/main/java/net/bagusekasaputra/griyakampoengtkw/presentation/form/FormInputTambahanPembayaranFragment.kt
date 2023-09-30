@@ -12,6 +12,7 @@ import androidx.core.os.BundleCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import com.google.android.material.snackbar.Snackbar
+import dagger.hilt.android.AndroidEntryPoint
 import net.bagusekasaputra.griyakampoengtkw.domain.DateUtil.toDate
 import net.bagusekasaputra.griyakampoengtkw.domain.NumberUtil.numericToLong
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.pembayaran.TambahanPembayaran
@@ -25,6 +26,7 @@ import net.bagusekasaputra.griyakampoengtkw.presentation.util.FormUtil
 import net.bagusekasaputra.griyakampoengtkw.presentation.util.InputUtil
 import net.bagusekasaputra.griyakampoengtkw.presentation.viewmodel.FormPembayaranViewModel
 
+@AndroidEntryPoint
 class FormInputTambahanPembayaranFragment : Fragment() {
 
     private lateinit var binding: FragmentFormInputTambahanPembayaranBinding
