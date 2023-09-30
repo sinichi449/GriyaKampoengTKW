@@ -89,6 +89,7 @@ import net.bagusekasaputra.griyakampoengtkw.data.repository.RekapBesarDetailRepo
 import net.bagusekasaputra.griyakampoengtkw.data.repository.StandardAmbilKuitansiRepositoryImpl
 import net.bagusekasaputra.griyakampoengtkw.data.repository.StatusPembayaranRepositoryImpl
 import net.bagusekasaputra.griyakampoengtkw.data.repository.TahapanRepositoryImpl
+import net.bagusekasaputra.griyakampoengtkw.data.repository.TambahanPembayaranRepositoryImpl
 import net.bagusekasaputra.griyakampoengtkw.data.repository.pembayaran.DefaultPembayaranRepository
 import net.bagusekasaputra.griyakampoengtkw.data.repository.pembayaran.LegacyPembayaranRepository
 import net.bagusekasaputra.griyakampoengtkw.domain.repository.AppUpdateRepository
@@ -122,6 +123,7 @@ import net.bagusekasaputra.griyakampoengtkw.domain.repository.RekapBesarDetailRe
 import net.bagusekasaputra.griyakampoengtkw.domain.repository.StandardAmbilKuitansiRepository
 import net.bagusekasaputra.griyakampoengtkw.domain.repository.StatusPembayaranRepository
 import net.bagusekasaputra.griyakampoengtkw.domain.repository.TahapanRepository
+import net.bagusekasaputra.griyakampoengtkw.domain.repository.TambahanPembayaranRepository
 import java.io.File
 
 @Module
@@ -550,4 +552,14 @@ object RepositoryModules {
         return PengembalianRepositoryImpl(localDataSource, remoteDataSource, cacheHelper, externalFileDir)
     }
 
+
+    /**
+     * Tambahan Pembayaran
+     */
+    @Provides
+    fun provideTambahanPembayaranRepository(
+
+    ): TambahanPembayaranRepository {
+        return TambahanPembayaranRepositoryImpl()
+    }
 }

@@ -9,6 +9,7 @@ import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import net.bagusekasaputra.griyakampoengtkw.cache.CacheInitializer
 import net.bagusekasaputra.griyakampoengtkw.cache.DefaultCacheInitializer
+import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.tambahanPembayaran.GetTambahanPembayaranAsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.ambilKuitansi.InsertAmbilKuitansiAsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.backupRestore.CreateBackupAsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.backupRestore.GetListBackupAsyncUseCase
@@ -100,6 +101,7 @@ import net.bagusekasaputra.griyakampoengtkw.domain.repository.PromotionRepositor
 import net.bagusekasaputra.griyakampoengtkw.domain.repository.RekapBesarDetailRepository
 import net.bagusekasaputra.griyakampoengtkw.domain.repository.StandardAmbilKuitansiRepository
 import net.bagusekasaputra.griyakampoengtkw.domain.repository.StatusPembayaranRepository
+import net.bagusekasaputra.griyakampoengtkw.domain.repository.TambahanPembayaranRepository
 import net.bagusekasaputra.griyakampoengtkw.domain.usecase.appupdate.GetUpdateInformationUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.usecase.biayaMarketing.AddBiayaMarketingUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.usecase.biayaMarketing.DeleteAllBiayaMarketingUseCase
@@ -737,4 +739,14 @@ object UseCaseModule {
     @Provides
     fun provideGetPengembalianStreamUseCase(pengembalianRepository: PengembalianRepository)
         = GetPengembalianStreamAsyncUseCase(pengembalianRepository)
+
+    /**
+     * Tambahan Pembayaran
+     */
+    @Provides
+    fun provideGetTambahanPembayaranByKavling(
+        tambahanPembayaranRepository: TambahanPembayaranRepository
+    ): GetTambahanPembayaranAsyncUseCase {
+        return GetTambahanPembayaranAsyncUseCase(tambahanPembayaranRepository)
+    }
 }

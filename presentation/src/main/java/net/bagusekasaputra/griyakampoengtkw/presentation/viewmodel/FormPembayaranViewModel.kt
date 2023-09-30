@@ -16,6 +16,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import net.bagusekasaputra.griyakampoengtkw.domain.AsyncUseCaseHelper
 import net.bagusekasaputra.griyakampoengtkw.domain.DataMode
+import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.tambahanPembayaran.GetTambahanPembayaranAsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.ambilKuitansi.InsertAmbilKuitansiAsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.baselinePembayaran.SetBaselinePembayaranAsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.catatanPembayaran.AddCatatanPembayaranAsyncUseCase
@@ -33,6 +34,7 @@ import net.bagusekasaputra.griyakampoengtkw.domain.entity.KavlingCatatanPembayar
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.StandardAmbilKuitansi
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.pembayaran.Pembayaran
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.pembayaran.PembayaranBulanan
+import net.bagusekasaputra.griyakampoengtkw.domain.entity.pembayaran.TambahanPembayaran
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.statusPembayaran.StatusPembayaran
 import net.bagusekasaputra.griyakampoengtkw.domain.usecase.pembayaran.AddPembayaranUseCase
 import net.bagusekasaputra.griyakampoengtkw.presentation.combineWith
@@ -61,6 +63,8 @@ class FormPembayaranViewModel @Inject constructor(
     private val getCatatanPembayaranAsyncUseCase: GetCatatanPembayaranAsyncUseCase,
     private val addCatatanPembayaranAsyncUseCase: AddCatatanPembayaranAsyncUseCase,
     private val deleteCatatanPembayaranAsyncUseCase: DeleteCatatanPembayaranAsyncUseCase,
+    // Tambahan Pembayaran
+    private val getTambahanPembayaranUseCase: GetTambahanPembayaranAsyncUseCase,
 ): ViewModel() {
 
     // Pembayaran Bulanan
@@ -120,6 +124,11 @@ class FormPembayaranViewModel @Inject constructor(
     val pembayaran: LiveData<UiState<Pembayaran?>>
         get() = _pembayaran
 
+    // Tambahan Pembayaran
+    private val _tambahanPembayarans = MutableLiveData<List<TambahanPembayaran>>(emptyList())
+    val tambahanPembayarans: LiveData<List<TambahanPembayaran>>
+        get() = _tambahanPembayarans
+
 
     // Sync Request
     private val _syncRequests = MutableLiveData<Array<Int>?>(null)
@@ -137,8 +146,13 @@ class FormPembayaranViewModel @Inject constructor(
     var dataMode = DataMode.ONLINE
     var isFullScreenTable = false
 
+    /** Jobs **/
+    // Pembayaran
     var writeBaselinePembayaranJob: Job? = null
     var readPembayaranBulananJob: Job? = null
+
+    // Tambahan Pembayaran
+    var readTambahanPembayaranJob: Job? = null
 
     private val isFinishOperation = MutableLiveData<Boolean>()
     private val asyncHelper = AsyncUseCaseHelper(isFinishOperation)
@@ -517,6 +531,35 @@ class FormPembayaranViewModel @Inject constructor(
         }
     }
 
+    /**
+     * Tambahan Pembayaran
+     */
+    fun getTambahanPembayaran(
+        kavling: String,
+        onFailure: (msg: String) -> Unit
+    ) {
+        readTambahanPembayaranJob?.cancel()
+
+        readTambahanPembayaranJob = viewModelScope.launch(Dispatchers.IO) {
+            val request = GetTambahanPembayaranAsyncUseCase.Request(kavling)
+            getTambahanPembayaranUseCase.execute(request).collect { result ->
+                result.onSuccess {
+                    Log.d("TAMBAHAN_PEMBAYARAN", it.toString())
+                    if (!it.isNullOrEmpty()) {
+                        _tambahanPembayarans.postValue(it)
+                    }
+                }
+                result.onFailure {
+                    withContext(Dispatchers.Main) {
+                        val cause = it.message ?: "Unknown Error Fetching Tambahan Pembayaran"
+                        Log.d("DEBUG_ME", cause)
+                        onFailure(cause)
+                    }
+                }
+            }
+        }
+    }
+
 
 
     /**
@@ -539,7 +582,8 @@ object PembayaranSyncRequest {
     const val TABEL_PEMBAYARAN = 2
     const val CATATAN_PEMBAYARAN = 3
     const val STATUS_PEMBAYARAN = 4
+    const val TAMBAHAN_PEMBAYARAN = 5
 
     val ALL = intArrayOf(HARGA_KAVLING, BASELINE_PEMBAYARAN,
-        TABEL_PEMBAYARAN, CATATAN_PEMBAYARAN, STATUS_PEMBAYARAN)
+        TABEL_PEMBAYARAN, CATATAN_PEMBAYARAN, STATUS_PEMBAYARAN, TAMBAHAN_PEMBAYARAN)
 }

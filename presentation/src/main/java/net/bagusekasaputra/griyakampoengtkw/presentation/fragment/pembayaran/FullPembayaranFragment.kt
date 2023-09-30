@@ -8,6 +8,7 @@ import android.view.ViewGroup
 import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
+import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
 import net.bagusekasaputra.griyakampoengtkw.domain.DateUtil.toSlashedString
 import net.bagusekasaputra.griyakampoengtkw.domain.NumberUtil
@@ -16,6 +17,7 @@ import net.bagusekasaputra.griyakampoengtkw.domain.NumberUtil.numericToString
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.BaselinePembayaran
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.pembayaran.BulanAngsuran
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.pembayaran.Pembayaran
+import net.bagusekasaputra.griyakampoengtkw.domain.entity.pembayaran.TambahanPembayaran
 import net.bagusekasaputra.griyakampoengtkw.presentation.R
 import net.bagusekasaputra.griyakampoengtkw.presentation.databinding.FragmentFullPembayaranBinding
 import net.bagusekasaputra.griyakampoengtkw.presentation.dialog.ActionPembayaranStandardBottomSheetDialogLegacy
@@ -132,6 +134,49 @@ class FullPembayaranFragment : Fragment() {
         }
     }
 
+    private val tambahanDataProvider = object : TableViewDataProvider<TambahanPembayaran> {
+        override fun getColumnHeaders(data: Collection<TambahanPembayaran>): List<ColumnHeader> {
+            return buildList {
+                add(ColumnHeader("Tanggal"))
+                add(ColumnHeader("Jumlah"))
+                add(ColumnHeader("Keterangan"))
+            }
+        }
+
+        override fun getRowHeaders(data: Collection<TambahanPembayaran>): List<RowHeader> {
+            val tambahanList = data.toMutableList()
+            return buildList {
+                tambahanList.forEachIndexed { index, item ->
+                    val rowId = (index + 1).toString()
+                    val rowData = buildString {
+                        append(rowId + ROW_SEPARATOR)
+                        append(item.kategori.kode + ROW_SEPARATOR)
+                        append(item.sudahIsiFoto.toString() + ROW_SEPARATOR)
+                    }
+                    add(RowHeader(rowId, rowData))
+                }
+            }
+        }
+
+        override fun getCellItems(data: Collection<TambahanPembayaran>): List<List<CellItem>> {
+            val tambahanList = data.toMutableList()
+            return buildList {
+                tambahanList.forEachIndexed { index, item ->
+                    val cellId = (index + 1).toString()
+                    val cell = mutableListOf<CellItem>()
+                    cell.add(CellItem(cellId, item.tanggal))
+                    cell.add(CellItem(cellId, item.jumlahUang))
+                    cell.add(CellItem(cellId, item.keterangan))
+
+                    add(cell)
+                }
+            }
+        }
+
+    }
+
+
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -145,6 +190,12 @@ class FullPembayaranFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         setupViewModel()
+
+        binding.layoutTambahanHeader.setOnClickListener {
+            // TODO: Add Tambahan Forms
+            Snackbar.make(binding.root, "Ho-oh...", Snackbar.LENGTH_SHORT)
+                .show()
+        }
     }
 
     private fun setupViewModel() {
@@ -168,6 +219,10 @@ class FullPembayaranFragment : Fragment() {
                     }
                 }
             }
+        }
+
+        viewModel.tambahanPembayarans.observe(requireActivity()) {
+            if (!it.isNullOrEmpty()) setTableTambahan(it)
         }
     }
 
@@ -263,6 +318,52 @@ class FullPembayaranFragment : Fragment() {
                 actionPembayaran.arguments = bundle
                 actionPembayaran.show(childFragmentManager, null)
 
+            }
+            .create()
+    }
+
+    private fun setTableTambahan(tambahan: List<TambahanPembayaran>) {
+        GenericTableView(binding.tableTambahanPembayaran, tambahan)
+            .setDataProvider(tambahanDataProvider)
+            .setOnRowHeaderBinding { viewHolder, item, row ->
+                if (item != null) {
+                    val split = item.data.split(ROW_SEPARATOR)
+                    val kategori = split[1]
+                    val sudahIsiFoto = split[2].toBoolean()
+                    with(viewHolder as DoubleRowHeaderViewHolder) {
+                        tvRowHeader.text = kategori
+                        bgColour = if (sudahIsiFoto) {
+                            R.color.table_selected_colour
+                        } else {
+                            R.color.table_unselected_colour
+                        }
+                    }
+                }
+            }
+            .setOnCellBinding { cellViewHolder, cellItem, col, row ->
+                with(cellViewHolder) {
+                    when (col) {
+                        0 -> {
+                            tvCell.text = (cellItem?.data as Date?)?.toSlashedString() ?: "-"
+                        }
+                        1 -> {
+                            tvCell.text = (cellItem?.data as Long?)?.numericToString()
+                        }
+                        else -> {
+                            tvCell.text = (cellItem?.data as String?)?.toString() ?: "-"
+                            tvCell.gravity = Gravity.START
+                        }
+                    }
+                }
+            }
+            .setWidthColumnHeaders(buildList {
+                add(0 to 250)
+                add(1 to 350)
+                add(2 to 500)
+            })
+            .useDoubleCorner(DoubleRowHeaderConfigurator("Kategori", ROW_SEPARATOR))
+            .setOnClickedRowHeader { rowHeaderView, row ->
+                // TODO: Lihat foto pembayaran tambahan
             }
             .create()
     }

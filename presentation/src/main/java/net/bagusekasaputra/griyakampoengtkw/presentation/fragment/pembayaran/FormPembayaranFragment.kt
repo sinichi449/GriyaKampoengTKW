@@ -270,6 +270,15 @@ class FormPembayaranFragment : Fragment() {
                             },
                         )
                     }
+
+                    PembayaranSyncRequest.TAMBAHAN_PEMBAYARAN -> {
+                        pembayaranViewModel.getTambahanPembayaran(
+                            currentKavlingKode!!,
+                            onFailure = { cause ->
+                                Toast.makeText(requireContext(), cause, Toast.LENGTH_LONG).show()
+                            }
+                        )
+                    }
                 }
             }
         }

@@ -124,9 +124,10 @@ class SplashActivity : AppCompatActivity() {
             bindingLoading = ActivitySplashWithLoadingBinding.inflate(layoutInflater)
             setContentView(bindingLoading.root)
 
-            if (fingerPrintAvailable) {
-                BiometricUtil.beginAuthentication(this, biometricManager, biometricPrompt)
-            }
+//            if (fingerPrintAvailable) {
+//                BiometricUtil.beginAuthentication(this, biometricManager, biometricPrompt)
+//            }
+            onAuthenticationSuccess()
         }
         // Convert integer to long milliseconds
         val millis = (seconds * 1000).toLong()
