@@ -1,0 +1,148 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".form.FormInputTambahanPembayaranFragment"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <!-- Form content -->
+    <androidx.core.widget.NestedScrollView
+        android:id="@+id/layout_content"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:visibility="visible">
+
+        <androidx.appcompat.widget.LinearLayoutCompat
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <com.google.android.material.textview.MaterialTextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Kategori"
+                style="@style/TextAppearance.MaterialComponents.Headline6"/>
+
+            <RadioGroup
+                android:id="@+id/rg_kategori"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp">
+
+                <com.google.android.material.radiobutton.MaterialRadioButton
+                    android:id="@+id/rb_tambahanLuasan"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Tambahan Luasan"
+                    android:theme="@style/Theme.GriyaKampoengTKW.Material3"/>
+
+                <com.google.android.material.radiobutton.MaterialRadioButton
+                    android:id="@+id/rb_bangunan"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Bangunan"
+                    android:theme="@style/Theme.GriyaKampoengTKW.Material3"/>
+
+            </RadioGroup>
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp">
+
+                <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/til_tanggal"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintEnd_toStartOf="@id/btn_pilih_tanggal"
+                    app:layout_constraintHorizontal_weight="0.75"
+                    android:layout_marginEnd="8dp"
+                    android:hint="Tanggal"
+                    app:startIconDrawable="@drawable/ic_baseline_calendar_month_24"
+                    app:endIconMode="clear_text"
+                    style="@style/OutlinedTextInputLayout">
+
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/edt_tanggal"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        style="@style/OutlineEditText"/>
+
+                </com.google.android.material.textfield.TextInputLayout>
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btn_pilih_tanggal"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    app:layout_constraintStart_toEndOf="@id/til_tanggal"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="@id/til_tanggal"
+                    app:layout_constraintBottom_toBottomOf="@id/til_tanggal"
+                    app:layout_constraintHorizontal_weight="0.25"
+                    android:textSize="12sp"
+                    android:textColor="@color/secondaryColor"
+                    android:text="Pilih"
+                    app:cornerRadius="8dp"
+                    style="@style/TextDialogButton"/>
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="Jumlah Uang Dibayar"
+                android:layout_marginTop="8dp"
+                app:startIconDrawable="@drawable/ic_baseline_attach_money_24"
+                app:endIconMode="clear_text"
+                style="@style/DenseOutlinedTextInputLayout">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/edt_jumlah_uang_dibayar"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:inputType="number"
+                    style="@style/DenseOutlineEditText"/>
+
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="Keterangan"
+                android:layout_marginTop="8dp"
+                app:startIconDrawable="@drawable/ic_baseline_notes_24"
+                app:endIconMode="clear_text"
+                style="@style/OutlinedTextInputLayout">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/edt_keterangan"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:inputType="textMultiLine"
+                    style="@style/OutlineEditText"/>
+
+            </com.google.android.material.textfield.TextInputLayout>
+
+        </androidx.appcompat.widget.LinearLayoutCompat>
+
+    </androidx.core.widget.NestedScrollView>
+
+    <!-- Layout Loading -->
+    <androidx.appcompat.widget.LinearLayoutCompat
+        android:id="@+id/layout_loading"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:gravity="center"
+        android:visibility="gone">
+
+        <ProgressBar
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"/>
+
+    </androidx.appcompat.widget.LinearLayoutCompat>
+
+</FrameLayout>

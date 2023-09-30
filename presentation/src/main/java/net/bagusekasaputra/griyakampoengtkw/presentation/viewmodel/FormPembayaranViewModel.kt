@@ -9,6 +9,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
@@ -16,7 +17,6 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import net.bagusekasaputra.griyakampoengtkw.domain.AsyncUseCaseHelper
 import net.bagusekasaputra.griyakampoengtkw.domain.DataMode
-import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.tambahanPembayaran.GetTambahanPembayaranAsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.ambilKuitansi.InsertAmbilKuitansiAsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.baselinePembayaran.SetBaselinePembayaranAsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.catatanPembayaran.AddCatatanPembayaranAsyncUseCase
@@ -28,6 +28,7 @@ import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.pembayaran.GetSi
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.pembayaran.InsertPembayaranAsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.pembayaran.UpdatePembayaranAsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.statusPembayaran.GetStatusPembayaranKavlingAsyncUseCase
+import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.tambahanPembayaran.GetTambahanPembayaranAsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.BaselinePembayaran
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.CatatanPembayaran
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.KavlingCatatanPembayaran
@@ -40,6 +41,7 @@ import net.bagusekasaputra.griyakampoengtkw.domain.usecase.pembayaran.AddPembaya
 import net.bagusekasaputra.griyakampoengtkw.presentation.combineWith
 import net.bagusekasaputra.griyakampoengtkw.presentation.model.UiState
 import javax.inject.Inject
+import kotlin.random.Random
 
 /**
  * Soon, all "Pembayaran" related data will be moved here.
@@ -153,6 +155,7 @@ class FormPembayaranViewModel @Inject constructor(
 
     // Tambahan Pembayaran
     var readTambahanPembayaranJob: Job? = null
+    var writeTambahanPembayaranJob: Job? = null
 
     private val isFinishOperation = MutableLiveData<Boolean>()
     private val asyncHelper = AsyncUseCaseHelper(isFinishOperation)
@@ -560,6 +563,23 @@ class FormPembayaranViewModel @Inject constructor(
         }
     }
 
+    fun insertTambahanPembayaran(tambahanPembayaran: TambahanPembayaran) {
+        writeTambahanPembayaranJob?.cancel()
+
+        _insertTambahanPembayaranOperation.value = UiState.Loading()
+
+        writeTambahanPembayaranJob = viewModelScope.launch(Dispatchers.IO) {
+            // TODO: AddTambahanPembayaran Use Case
+            delay(5000L)
+            val success = Random.nextBoolean()
+            if (success) {
+                _insertTambahanPembayaranOperation.postValue(UiState.Success())
+            } else {
+                _insertTambahanPembayaranOperation.postValue(UiState.Failure("Random Error"))
+            }
+        }
+    }
+
 
 
     /**
@@ -574,6 +594,11 @@ class FormPembayaranViewModel @Inject constructor(
 
     private val _insertPembayaranOperation = MutableStateFlow<UiState<Nothing?>?>(null)
     val insertPembayaranOperation = _insertPembayaranOperation.asStateFlow()
+
+    // Tambahan Pembayaran
+    private val _insertTambahanPembayaranOperation = MutableLiveData<UiState<Nothing?>?>(null)
+    val insertTambahanPembayaranOperation: LiveData<UiState<Nothing?>?>
+        get() = _insertTambahanPembayaranOperation
 }
 
 object PembayaranSyncRequest {

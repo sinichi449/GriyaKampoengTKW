@@ -62,6 +62,7 @@ class FormActivity : AppCompatActivity() {
             val bundle = bundleOf(EXTRAS_PARCEL to parcelable)
             val destination = when (parcelable) {
                 is InsertFormPembayaranParcel, is UpdateFormPembayaranParcel -> R.id.nav_form_pembayaran_kavling
+                is InsertTambahanPembayaranParcel -> R.id.nav_form_tambahan_pembayaran
                 else -> null
             }
 
@@ -152,4 +153,9 @@ data class UpdateFormPembayaranParcel(
     val tipePembayaran: Int,
     val kavling: String,
     val termin: String,
+): Parcelable
+
+@Parcelize
+data class InsertTambahanPembayaranParcel(
+    val kavling: String
 ): Parcelable

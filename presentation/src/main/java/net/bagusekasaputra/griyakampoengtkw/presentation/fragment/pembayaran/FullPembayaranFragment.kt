@@ -1,10 +1,13 @@
 package net.bagusekasaputra.griyakampoengtkw.presentation.fragment.pembayaran
 
+import android.app.Activity
+import android.content.Intent
 import android.os.Bundle
 import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
@@ -19,6 +22,8 @@ import net.bagusekasaputra.griyakampoengtkw.domain.entity.pembayaran.BulanAngsur
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.pembayaran.Pembayaran
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.pembayaran.TambahanPembayaran
 import net.bagusekasaputra.griyakampoengtkw.presentation.R
+import net.bagusekasaputra.griyakampoengtkw.presentation.activity.FormActivity
+import net.bagusekasaputra.griyakampoengtkw.presentation.activity.InsertTambahanPembayaranParcel
 import net.bagusekasaputra.griyakampoengtkw.presentation.databinding.FragmentFullPembayaranBinding
 import net.bagusekasaputra.griyakampoengtkw.presentation.dialog.ActionPembayaranStandardBottomSheetDialogLegacy
 import net.bagusekasaputra.griyakampoengtkw.presentation.tableview.base.CellItem
@@ -30,6 +35,7 @@ import net.bagusekasaputra.griyakampoengtkw.presentation.tableview.base.RowHeade
 import net.bagusekasaputra.griyakampoengtkw.presentation.tableview.base.TableViewDataProvider
 import net.bagusekasaputra.griyakampoengtkw.presentation.toDate
 import net.bagusekasaputra.griyakampoengtkw.presentation.viewmodel.FormPembayaranViewModel
+import net.bagusekasaputra.griyakampoengtkw.presentation.viewmodel.PembayaranSyncRequest
 import java.util.Date
 
 @AndroidEntryPoint
@@ -175,6 +181,7 @@ class FullPembayaranFragment : Fragment() {
 
     }
 
+    private val REQUEST_INSERT_TAMBAHAN_PEMBAYARAN = 118
 
 
     override fun onCreateView(
@@ -192,9 +199,11 @@ class FullPembayaranFragment : Fragment() {
         setupViewModel()
 
         binding.layoutTambahanHeader.setOnClickListener {
-            // TODO: Add Tambahan Forms
-            Snackbar.make(binding.root, "Ho-oh...", Snackbar.LENGTH_SHORT)
-                .show()
+            val intent = Intent(requireContext(), FormActivity::class.java)
+            val insertTambahanPembayaranParcel = InsertTambahanPembayaranParcel(viewModel.currentKavlingKode!!)
+            intent.putExtra(FormActivity.EXTRAS_PARCEL, insertTambahanPembayaranParcel)
+            @Suppress("DEPRECATION")
+            startActivityForResult(intent, REQUEST_INSERT_TAMBAHAN_PEMBAYARAN)
         }
     }
 
@@ -396,6 +405,25 @@ class FullPembayaranFragment : Fragment() {
 
             binding.tvInfoBlmDibayarBulanIni.visibility = View.GONE
             binding.tvBlmDibayarBulanIni.visibility = View.GONE
+        }
+    }
+
+    @Suppress("DEPRECATION")
+    @Deprecated("Deprecated in Java", ReplaceWith(
+        "super.onActivityResult(requestCode, resultCode, data)",
+        "androidx.fragment.app.Fragment"))
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+
+        if (resultCode == Activity.RESULT_OK) {
+            Snackbar.make(binding.root, "Berhasil menambahkan Tambahan Pembayaran !", Snackbar.LENGTH_SHORT)
+                .show()
+
+            viewModel.requestSync(PembayaranSyncRequest.TAMBAHAN_PEMBAYARAN)
+        } else {
+            data?.extras?.getString(FormActivity.EXTRAS_FAIL_MSG)?.also {
+                Toast.makeText(requireContext(), it, Toast.LENGTH_LONG).show()
+            }
         }
     }
 }

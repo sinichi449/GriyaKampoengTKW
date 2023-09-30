@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <navigation xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/nav_graph_form_activity"
     app:startDestination="@id/nav_form_data_diri_inden_booking">
 
@@ -18,5 +19,11 @@
         android:id="@+id/nav_form_pembayaran_kavling"
         android:name="net.bagusekasaputra.griyakampoengtkw.presentation.form.FormInputPembayaranKavlingFragment"
         android:label="Pembayaran"/>
+
+    <fragment
+        android:id="@+id/nav_form_tambahan_pembayaran"
+        android:name="net.bagusekasaputra.griyakampoengtkw.presentation.form.FormInputTambahanPembayaranFragment"
+        android:label="Tambahan Pembayaran"
+        tools:layout="@layout/fragment_form_input_tambahan_pembayaran" />
 
 </navigation>
