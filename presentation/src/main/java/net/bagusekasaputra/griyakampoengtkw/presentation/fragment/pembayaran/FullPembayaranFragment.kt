@@ -26,7 +26,7 @@ import net.bagusekasaputra.griyakampoengtkw.presentation.activity.FormActivity
 import net.bagusekasaputra.griyakampoengtkw.presentation.activity.InsertTambahanPembayaranParcel
 import net.bagusekasaputra.griyakampoengtkw.presentation.databinding.FragmentFullPembayaranBinding
 import net.bagusekasaputra.griyakampoengtkw.presentation.dialog.ActionPembayaranStandardBottomSheetDialogLegacy
-import net.bagusekasaputra.griyakampoengtkw.presentation.dialog.ActionTambahPembayaranBottomSheetDialog
+import net.bagusekasaputra.griyakampoengtkw.presentation.dialog.ActionTambahanPembayaranBottomSheetDialog
 import net.bagusekasaputra.griyakampoengtkw.presentation.tableview.base.CellItem
 import net.bagusekasaputra.griyakampoengtkw.presentation.tableview.base.ColumnHeader
 import net.bagusekasaputra.griyakampoengtkw.presentation.tableview.base.DoubleRowHeaderConfigurator
@@ -381,9 +381,9 @@ class FullPembayaranFragment : Fragment() {
             })
             .useDoubleCorner(DoubleRowHeaderConfigurator("Kategori", ROW_SEPARATOR))
             .setOnClickedRowHeader { _, row ->
-                val actionDialog = ActionTambahPembayaranBottomSheetDialog()
+                val actionDialog = ActionTambahanPembayaranBottomSheetDialog()
                 val bundle = bundleOf(
-                    ActionTambahPembayaranBottomSheetDialog.EXTRAS_INDEX_TABLE_POSITION to row
+                    ActionTambahanPembayaranBottomSheetDialog.EXTRAS_INDEX_TABLE_POSITION to row
                 )
                 actionDialog.arguments = bundle
 
