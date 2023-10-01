@@ -298,7 +298,8 @@ data class Pembayaran(
                 totalUangMasuk += NumberUtil.formatStringToLong(it.jumlahUangDibayar)
                 it.totalUangMasuk = NumberUtil.formatLongToString(totalUangMasuk)
                 it.presentase = it.hitungPersentase(hargaKavling)
-                it.sisaBelumTerbayar = NumberUtil.formatLongToString(hargaKavling - totalUangMasuk)
+                // Fix exclude tambah luasan for `sisaBelumTerbayar`
+                it.sisaBelumTerbayar = NumberUtil.formatLongToString(hargaKavling.hargaLong - totalUangMasuk)
                 it.sudahIsiFotoPembayaran = onCekFotoPembayaran(it.termin)
                 it.sudahAmbilKuitansi = onCekSudahAmbilKuitansi(hargaKavling.kavlingKode, it.termin)
 
