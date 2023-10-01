@@ -92,27 +92,27 @@ class SplashActivity : AppCompatActivity() {
         AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
 
         val fingerPrintHwAvailable = packageManager.hasSystemFeature(PackageManager.FEATURE_FINGERPRINT)
-        if (fingerPrintHwAvailable) {
-            // Init biometric authentication. If authentication is successful,
-            // then execute connectivityCheckAndInitServer() and initialize the cache.
-            biometricManager = BiometricManager.from(this)
-            biometricPrompt = BiometricUtil.instanceOfBiometricPrompt(this,
-                onFailure = { errorCode: Int, _ ->
-                    if (errorCode == BiometricPrompt.ERROR_USER_CANCELED ||
-                        errorCode == BiometricPrompt.ERROR_NEGATIVE_BUTTON ||
-                        errorCode == BiometricPrompt.ERROR_CANCELED) {
-                        onAuthenticationFailed()
-                    }
-                },
-                onSuccess = { onAuthenticationSuccess() }
-            )
-        } else {
-            BiometricUtil.fallbackToPasswordAuthentication(
-                this,
-                onCorrectPassword = { onAuthenticationSuccess() },
-                onFalsePassword = { onAuthenticationFailed() }
-            )
-        }
+//        if (fingerPrintHwAvailable) {
+//            // Init biometric authentication. If authentication is successful,
+//            // then execute connectivityCheckAndInitServer() and initialize the cache.
+//            biometricManager = BiometricManager.from(this)
+//            biometricPrompt = BiometricUtil.instanceOfBiometricPrompt(this,
+//                onFailure = { errorCode: Int, _ ->
+//                    if (errorCode == BiometricPrompt.ERROR_USER_CANCELED ||
+//                        errorCode == BiometricPrompt.ERROR_NEGATIVE_BUTTON ||
+//                        errorCode == BiometricPrompt.ERROR_CANCELED) {
+//                        onAuthenticationFailed()
+//                    }
+//                },
+//                onSuccess = { onAuthenticationSuccess() }
+//            )
+//        } else {
+//            BiometricUtil.fallbackToPasswordAuthentication(
+//                this,
+//                onCorrectPassword = { onAuthenticationSuccess() },
+//                onFalsePassword = { onAuthenticationFailed() }
+//            )
+//        }
 
         showSplashScreen(1.5f, fingerPrintHwAvailable)
     }
