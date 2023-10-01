@@ -232,7 +232,15 @@ class FullPembayaranFragment : Fragment() {
         }
 
         viewModel.tambahanPembayarans.observe(requireActivity()) {
-            if (!it.isNullOrEmpty()) setTableTambahan(it)
+            if (!it.isNullOrEmpty()) {
+                binding.tvRecordTdkDitemukan.visibility = View.GONE
+                binding.tableTambahanPembayaran.visibility = View.VISIBLE
+
+                setTableTambahan(it)
+            } else {
+                binding.tvRecordTdkDitemukan.visibility = View.VISIBLE
+                binding.tableTambahanPembayaran.visibility = View.GONE
+            }
         }
     }
 
