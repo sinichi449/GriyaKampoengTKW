@@ -11,4 +11,7 @@ interface TambahanPembayaranRepository {
     suspend fun insert(tambahanPembayaran: TambahanPembayaran): Result<Nothing?>
 
     suspend fun update(kavling: String, id: String, newData: TambahanPembayaran): Result<Nothing?>
+
+    suspend fun delete(kavling: String, id: String): Result<Nothing?>
+
 }

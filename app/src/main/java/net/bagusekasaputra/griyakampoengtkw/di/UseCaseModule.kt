@@ -71,6 +71,7 @@ import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.rekap.GetRekapGl
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.reportKavling.GetAllReportKavlingAsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.statusPembayaran.GetStatusPembayaranKavlingAsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.tambahanPembayaran.AddTambahanPembayaranAsyncUseCase
+import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.tambahanPembayaran.DeleteTambahanPembayaranAsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.tambahanPembayaran.GetTambahanPembayaranAsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.tambahanPembayaran.GetTambahanPembayaranByIdAsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.tambahanPembayaran.UpdateTambahanPembayaranAsyncUseCase
@@ -772,5 +773,12 @@ object UseCaseModule {
         tambahanPembayaranRepository: TambahanPembayaranRepository
     ): UpdateTambahanPembayaranAsyncUseCase {
         return UpdateTambahanPembayaranAsyncUseCase(tambahanPembayaranRepository)
+    }
+
+    @Provides
+    fun provideDeleteTambahanPembayaran(
+        tambahanPembayaranRepository: TambahanPembayaranRepository
+    ): DeleteTambahanPembayaranAsyncUseCase {
+        return DeleteTambahanPembayaranAsyncUseCase(tambahanPembayaranRepository)
     }
 }

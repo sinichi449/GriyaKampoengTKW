@@ -28,6 +28,7 @@ import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.pembayaran.Inser
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.pembayaran.UpdatePembayaranAsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.statusPembayaran.GetStatusPembayaranKavlingAsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.tambahanPembayaran.AddTambahanPembayaranAsyncUseCase
+import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.tambahanPembayaran.DeleteTambahanPembayaranAsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.tambahanPembayaran.GetTambahanPembayaranAsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.tambahanPembayaran.GetTambahanPembayaranByIdAsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.tambahanPembayaran.UpdateTambahanPembayaranAsyncUseCase
@@ -71,6 +72,7 @@ class FormPembayaranViewModel @Inject constructor(
     private val addTambahanPembayaranUseCase: AddTambahanPembayaranAsyncUseCase,
     private val getTambahanPembayaranByIdUseCase: GetTambahanPembayaranByIdAsyncUseCase,
     private val updateTambahanPembayaranUseCase: UpdateTambahanPembayaranAsyncUseCase,
+    private val deleteTambahanPembayaranUseCase: DeleteTambahanPembayaranAsyncUseCase,
 ): ViewModel() {
 
     // Pembayaran Bulanan
@@ -631,6 +633,31 @@ class FormPembayaranViewModel @Inject constructor(
                 }
                 result.onFailure {
                     _insertTambahanPembayaranOperation.postValue(UiState.Failure(it.message))
+                }
+            }
+        }
+    }
+
+    fun deleteTambahanPembayaran(
+        kavling: String,
+        id: String,
+        onSuccess: () -> Unit,
+        onFailure: (msg: String) -> Unit,
+    ) {
+        writeTambahanPembayaranJob?.cancel()
+
+        writeTambahanPembayaranJob = viewModelScope.launch(Dispatchers.IO) {
+            val request = DeleteTambahanPembayaranAsyncUseCase.Request(kavling, id)
+            deleteTambahanPembayaranUseCase.execute(request).collect { result ->
+                result.onSuccess {
+                    withContext(Dispatchers.Main) {
+                        onSuccess()
+                    }
+                }
+                result.onFailure {
+                    withContext(Dispatchers.Main) {
+                        onFailure(it.message ?: "Unknown Error")
+                    }
                 }
             }
         }

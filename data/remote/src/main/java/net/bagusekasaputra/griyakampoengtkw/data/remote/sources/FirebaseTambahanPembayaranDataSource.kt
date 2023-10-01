@@ -134,6 +134,21 @@ class FirebaseTambahanPembayaranDataSource(
     }
 
     override suspend fun delete(kavling: String, id: String): Result<Nothing?> {
-        return Result.failure(NotImplementedError("An operation is not implemented: Not yet implemented"))
+        return suspendCancellableCoroutine { continuation ->
+            tambahanPembayaranRef
+                .child(kavling)
+                .child(id)
+                .removeValue()
+                .addOnSuccessListener {
+                    if (continuation.isActive) {
+                        continuation.resume(Result.success(null), null)
+                    }
+                }
+                .addOnFailureListener {
+                    if (continuation.isActive) {
+                        continuation.resume(Result.failure(it), null)
+                    }
+                }
+        }
     }
 }

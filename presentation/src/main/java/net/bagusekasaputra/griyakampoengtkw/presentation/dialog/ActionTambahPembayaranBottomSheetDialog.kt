@@ -114,7 +114,21 @@ class ActionTambahPembayaranBottomSheetDialog: BottomSheetDialogFragment() {
                     .setPositiveButton("Ya") { dialogHapus, _ ->
                         dialogHapus.dismiss()
 
-                        // TODO: Hapus Data
+                        viewModel.deleteTambahanPembayaran(
+                            kavling = viewModel.currentKavlingKode!!,
+                            id = tambahanPembayaran.id,
+                            onSuccess = {
+                                dismiss()
+
+                                viewModel.requestSync(PembayaranSyncRequest.TAMBAHAN_PEMBAYARAN)
+                            },
+                            onFailure = { msg ->
+                                dismiss()
+
+                                Toast.makeText(requireContext(), msg, Toast.LENGTH_LONG).show()
+                            }
+                        )
+                        // TODO: Hapus foto
                     }
                     .setNegativeButton("Tidak") { dialog, _ ->
                         dialog.dismiss()

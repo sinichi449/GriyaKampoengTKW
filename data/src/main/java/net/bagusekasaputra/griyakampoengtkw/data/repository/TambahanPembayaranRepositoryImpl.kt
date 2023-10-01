@@ -42,4 +42,8 @@ class TambahanPembayaranRepositoryImpl(
 
         return remoteDataSource.update(kavling, id, newModel)
     }
+
+    override suspend fun delete(kavling: String, id: String): Result<Nothing?> {
+        return remoteDataSource.delete(kavling, id)
+    }
 }
