@@ -97,10 +97,14 @@ class FirebaseTambahanPembayaranDataSource(
                 .child(model.id)
                 .setValue(model)
                 .addOnSuccessListener {
-                    continuation.resume(Result.success(null), null)
+                    if (continuation.isActive) {
+                        continuation.resume(Result.success(null), null)
+                    }
                 }
                 .addOnFailureListener {
-                    continuation.resume(Result.failure(it), null)
+                    if (continuation.isActive) {
+                        continuation.resume(Result.failure(it), null)
+                    }
                 }
         }
     }
@@ -110,7 +114,23 @@ class FirebaseTambahanPembayaranDataSource(
         id: String,
         newData: TambahanPembayaranModel
     ): Result<Nothing?> {
-        return Result.failure(NotImplementedError("An operation is not implemented: Not yet implemented"))
+        return suspendCancellableCoroutine { continuation ->
+            // TODO: Check if is Exists
+            tambahanPembayaranRef
+                .child(kavling)
+                .child(id)
+                .setValue(newData)
+                .addOnSuccessListener {
+                    if (continuation.isActive) {
+                        continuation.resume(Result.success(null), null)
+                    }
+                }
+                .addOnFailureListener {
+                    if (continuation.isActive) {
+                        continuation.resume(Result.failure(it), null)
+                    }
+                }
+        }
     }
 
     override suspend fun delete(kavling: String, id: String): Result<Nothing?> {

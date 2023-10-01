@@ -20,6 +20,8 @@ class UpdateTambahanPembayaranAsyncUseCase(
             // Check equality
             if (request.oldData == request.newData) {
                 emit(Result.failure(Exception("Data tidak ada yang berubah!")))
+            } else if (request.oldData.id != request.newData.id) {
+                emit(Result.failure(Exception("ID tidak valid!")))
             } else {
                 emit(tambahanPembayaranRepository.update(
                     request.oldData.kavling,
