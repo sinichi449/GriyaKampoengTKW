@@ -1,71 +1,45 @@
 package net.bagusekasaputra.griyakampoengtkw.data.repository
 
 import android.util.Log
-import kotlinx.coroutines.delay
-import net.bagusekasaputra.griyakampoengtkw.domain.DateUtil.toDate
+import net.bagusekasaputra.griyakampoengtkw.data.MyObjectMapper
+import net.bagusekasaputra.griyakampoengtkw.data.interfaces.remote.RemoteTambahanPembayaranDataSource
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.pembayaran.TambahanPembayaran
 import net.bagusekasaputra.griyakampoengtkw.domain.repository.TambahanPembayaranRepository
-import kotlin.random.Random
 
-class TambahanPembayaranRepositoryImpl: TambahanPembayaranRepository {
+class TambahanPembayaranRepositoryImpl(
+    private val remoteDataSource: RemoteTambahanPembayaranDataSource,
+): TambahanPembayaranRepository {
+
     override suspend fun getAllByKavling(kavling: String): Result<List<TambahanPembayaran>?> {
         Log.d("TAMBAHAN_PEMBAYARAN", "Request for kavling: $kavling")
-        return Result.success(listOf(
-            TambahanPembayaran(
-                kavling = kavling,
-                kategori = TambahanPembayaran.Kategori.LUASAN,
-                tanggal = "01/01/2029".toDate(),
-                jumlahUang = 12_000_000,
-                keterangan = "DP 1 tambahan 40 m2",
-                sudahIsiFoto = false
-            ),
-            TambahanPembayaran(
-                kavling = kavling,
-                kategori = TambahanPembayaran.Kategori.PEMBANGUNAN,
-                tanggal = "01/01/2029".toDate(),
-                jumlahUang = 12_000_000,
-                keterangan = "Meja dapur L",
-                sudahIsiFoto = true,
-            )
-        ))
+        return remoteDataSource.getAll(kavling).map { models ->
+            models?.map {
+                MyObjectMapper.mapTambahanPembayaran(it)
+            }
+        }
     }
 
     override suspend fun getById(kavling: String, id: String): Result<TambahanPembayaran?> {
-        val success = Random.nextBoolean()
-        delay(3000L)
-        return if (success) {
-            Result.success(
-                TambahanPembayaran(
-                    kavling = kavling,
-                    kategori = TambahanPembayaran.Kategori.LUASAN,
-                    tanggal = "01/01/2029".toDate(),
-                    jumlahUang = 12_000_000,
-                    keterangan = "DP 1 tambahan 40 m2",
-                    sudahIsiFoto = false
-                )
-            )
-        } else {
-            Result.failure(Exception("Random Error!"))
+        return remoteDataSource.getById(kavling, id).map { model ->
+            model?.let {
+                MyObjectMapper.mapTambahanPembayaran(it)
+            }
         }
     }
 
     override suspend fun insert(tambahanPembayaran: TambahanPembayaran): Result<Nothing?> {
-        val success = Random.nextBoolean()
-        delay(5000L)
-        return if (success) {
-            Result.success(null)
-        } else {
-            Result.failure(Exception("Random Error!"))
-        }
+        val model = MyObjectMapper.mapTambahanPembayaran(tambahanPembayaran)
+
+        return remoteDataSource.insert(model)
     }
 
-    override suspend fun update(id: String, newData: TambahanPembayaran): Result<Nothing?> {
-        val success = Random.nextBoolean()
-        delay(5000L)
-        return if (success) {
-            Result.success(null)
-        } else {
-            Result.failure(Exception("Random Error!"))
-        }
+    override suspend fun update(
+        kavling: String,
+        id: String,
+        newData: TambahanPembayaran
+    ): Result<Nothing?> {
+        val newModel = MyObjectMapper.mapTambahanPembayaran(newData)
+
+        return remoteDataSource.update(kavling, id, newModel)
     }
 }

@@ -30,6 +30,7 @@ import net.bagusekasaputra.griyakampoengtkw.data.model.StatusPembayaranModel
 import net.bagusekasaputra.griyakampoengtkw.data.model.StatusPembayaranModel.LogPengembalianModel
 import net.bagusekasaputra.griyakampoengtkw.data.model.StatusPembayaranModel.LogStatusModel
 import net.bagusekasaputra.griyakampoengtkw.data.model.TahapanModel
+import net.bagusekasaputra.griyakampoengtkw.data.model.TambahanPembayaranModel
 import net.bagusekasaputra.griyakampoengtkw.domain.DateUtil.toDate
 import net.bagusekasaputra.griyakampoengtkw.domain.DateUtil.toSlashedString
 import net.bagusekasaputra.griyakampoengtkw.domain.ImageUtil
@@ -62,6 +63,7 @@ import net.bagusekasaputra.griyakampoengtkw.domain.entity.kavling.StandardKavlin
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.pembayaran.BulanAngsuran
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.pembayaran.Pembayaran
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.pembayaran.Pengembalian
+import net.bagusekasaputra.griyakampoengtkw.domain.entity.pembayaran.TambahanPembayaran
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.statusPembayaran.LogPengembalian
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.statusPembayaran.StatusPembayaran
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.statusPembayaran.StatusPembayaran.LogStatus
@@ -780,6 +782,39 @@ object MyObjectMapper {
                 jumlah = it.jumlah,
                 keterangan = it.keterangan,
                 uri = it.uri,
+                timeMillis = it.timeMillis,
+            )
+        }
+    }
+
+    /**
+     * Tambahan Pembayaran
+     */
+    fun mapTambahanPembayaran(entity: TambahanPembayaran): TambahanPembayaranModel {
+        return entity.let {
+            TambahanPembayaranModel(
+                id = it.id,
+                kavling = it.kavling,
+                kategori = it.kategori.kode,
+                tanggal = it.tanggal.toSlashedString(),
+                jumlahUang = it.jumlahUang,
+                keterangan = it.keterangan,
+                timeMillis = it.timeMillis,
+            )
+        }
+    }
+
+    // TODO: Needs additional attention for sudah isi foto
+    fun mapTambahanPembayaran(model: TambahanPembayaranModel): TambahanPembayaran {
+        return model.let {
+            TambahanPembayaran(
+                id = it.id,
+                kavling = it.kavling,
+                kategori = TambahanPembayaran.getKategoriFromKode(it.kategori),
+                tanggal = it.tanggal.toDate(),
+                jumlahUang = it.jumlahUang,
+                sudahIsiFoto = false,
+                keterangan = it.keterangan,
                 timeMillis = it.timeMillis,
             )
         }

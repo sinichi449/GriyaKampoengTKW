@@ -18,4 +18,14 @@ data class TambahanPembayaran(
         LUASAN("L"),
         PEMBANGUNAN("P"),
     }
+
+    companion object {
+        fun getKategoriFromKode(kode: String): Kategori {
+            return when(kode) {
+                "L" -> Kategori.LUASAN
+                "P" -> Kategori.PEMBANGUNAN
+                else -> Kategori.PEMBANGUNAN
+            }
+        }
+    }
 }

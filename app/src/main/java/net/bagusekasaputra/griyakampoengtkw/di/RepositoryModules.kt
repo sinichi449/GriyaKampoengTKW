@@ -59,6 +59,7 @@ import net.bagusekasaputra.griyakampoengtkw.data.interfaces.remote.RemotePromoti
 import net.bagusekasaputra.griyakampoengtkw.data.interfaces.remote.RemoteStandardAmbilKuitansiDataSource
 import net.bagusekasaputra.griyakampoengtkw.data.interfaces.remote.RemoteStatusPembayaranDataSource
 import net.bagusekasaputra.griyakampoengtkw.data.interfaces.remote.RemoteTahapanDataSource
+import net.bagusekasaputra.griyakampoengtkw.data.interfaces.remote.RemoteTambahanPembayaranDataSource
 import net.bagusekasaputra.griyakampoengtkw.data.repository.AppUpdateRepositoryImpl
 import net.bagusekasaputra.griyakampoengtkw.data.repository.BaselinePembayaranRepositoryImpl
 import net.bagusekasaputra.griyakampoengtkw.data.repository.BiayaLainRepositoryImpl
@@ -558,8 +559,8 @@ object RepositoryModules {
      */
     @Provides
     fun provideTambahanPembayaranRepository(
-
+        remoteDataSource: RemoteTambahanPembayaranDataSource,
     ): TambahanPembayaranRepository {
-        return TambahanPembayaranRepositoryImpl()
+        return TambahanPembayaranRepositoryImpl(remoteDataSource)
     }
 }

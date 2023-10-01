@@ -26,6 +26,7 @@ object FirebaseNodes {
     const val KAVLING_EXCLUSION_LIST = "excludeForRekap"
     const val PENGEMBALIAN_PEMBAYARAN = "pengembalianPembayaran"
     const val MAINTENTANCE = "maintenance"
+    const val TAMBAHAN_PEMBAYARAN = "tambahanPembayaran"
 
     const val IMAGE_DATA_DIRI = "data_diri_images"
     const val IMAGES_FOTO_PEMBAYARAN = "foto_pembayaran_images"

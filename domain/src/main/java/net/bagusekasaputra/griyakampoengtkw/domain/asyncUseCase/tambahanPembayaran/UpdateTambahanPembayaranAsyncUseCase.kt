@@ -22,6 +22,7 @@ class UpdateTambahanPembayaranAsyncUseCase(
                 emit(Result.failure(Exception("Data tidak ada yang berubah!")))
             } else {
                 emit(tambahanPembayaranRepository.update(
+                    request.oldData.kavling,
                     request.oldData.id,
                     request.newData
                 ))
