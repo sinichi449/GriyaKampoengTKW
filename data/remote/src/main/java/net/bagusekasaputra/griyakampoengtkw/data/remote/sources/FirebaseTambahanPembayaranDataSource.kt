@@ -64,7 +64,30 @@ class FirebaseTambahanPembayaranDataSource(
     }
 
     override suspend fun getById(kavling: String, id: String): Result<TambahanPembayaranModel?> {
-        return Result.failure(NotImplementedError("An operation is not implemented: Not yet implemented"))
+        return suspendCancellableCoroutine { continuation ->
+            val eventListener = object : ValueEventListener {
+                override fun onDataChange(snapshot: DataSnapshot) {
+                    val model = snapshot.getValue<TambahanPembayaranModel?>()
+
+                    continuation.resume(Result.success(model), null)
+                }
+
+                override fun onCancelled(error: DatabaseError) {
+                    if (continuation.isActive) {
+                        continuation.resume(
+                            Result.failure(error.toException()),
+                            null,
+                        )
+                    }
+                }
+
+            }
+
+            tambahanPembayaranRef
+                .child(kavling)
+                .child(id)
+                .addListenerForSingleValueEvent(eventListener)
+        }
     }
 
     override suspend fun insert(model: TambahanPembayaranModel): Result<Nothing?> {
