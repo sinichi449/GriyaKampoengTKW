@@ -56,7 +56,9 @@ data class Pembayaran(
 
     fun hitungPersentase(hargaKavling: HargaKavling): Double {
         val floatTotalUangMasuk = NumberUtil.formatStringToLong(totalUangMasuk).toFloat()
-        val floatHargaKavling = hargaKavling.toFloat()
+//        val floatHargaKavling = hargaKavling.toFloat()
+        // Fix persentase calculation not included Tambah Luasan
+        val floatHargaKavling = hargaKavling.hargaLong.toFloat()
         val persentase = floatTotalUangMasuk.div(floatHargaKavling).let {
             val bigDecimal = it.toBigDecimal().setScale(4, RoundingMode.HALF_UP)
             return@let bigDecimal.multiply(BigDecimal.valueOf(100))
