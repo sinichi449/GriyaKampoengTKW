@@ -73,6 +73,7 @@ import net.bagusekasaputra.griyakampoengtkw.data.repository.FeeMarketingReposito
 import net.bagusekasaputra.griyakampoengtkw.data.repository.FotoKuitansiRepositoryImpl
 import net.bagusekasaputra.griyakampoengtkw.data.repository.FotoPembayaranIndenBookingRepositoryImpl
 import net.bagusekasaputra.griyakampoengtkw.data.repository.FotoPembayaranRepositoryImpl
+import net.bagusekasaputra.griyakampoengtkw.data.repository.FotoTambahanPembayaranRepositoryImpl
 import net.bagusekasaputra.griyakampoengtkw.data.repository.HargaKavlingRepositoryImpl
 import net.bagusekasaputra.griyakampoengtkw.data.repository.HargaRumahIndenBookingRepositoryImpl
 import net.bagusekasaputra.griyakampoengtkw.data.repository.ImageDataDiriIndenBookingRepositoryImpl
@@ -106,6 +107,7 @@ import net.bagusekasaputra.griyakampoengtkw.domain.repository.FeeMarketingReposi
 import net.bagusekasaputra.griyakampoengtkw.domain.repository.FotoKuitansiRepository
 import net.bagusekasaputra.griyakampoengtkw.domain.repository.FotoPembayaranIndenBookingRepository
 import net.bagusekasaputra.griyakampoengtkw.domain.repository.FotoPembayaranRepository
+import net.bagusekasaputra.griyakampoengtkw.domain.repository.FotoTambahanPembayaranRepository
 import net.bagusekasaputra.griyakampoengtkw.domain.repository.HargaKavlingRepository
 import net.bagusekasaputra.griyakampoengtkw.domain.repository.HargaRumahIndenBookingRepository
 import net.bagusekasaputra.griyakampoengtkw.domain.repository.ImageDataDiriIndenBookingRepository
@@ -562,5 +564,15 @@ object RepositoryModules {
         remoteDataSource: RemoteTambahanPembayaranDataSource,
     ): TambahanPembayaranRepository {
         return TambahanPembayaranRepositoryImpl(remoteDataSource)
+    }
+
+    /**
+     * Foto Tambahan Pembayaran
+     */
+    @Provides
+    fun provideFotoTambahanPembayaranRepository(
+
+    ): FotoTambahanPembayaranRepository {
+        return FotoTambahanPembayaranRepositoryImpl()
     }
 }

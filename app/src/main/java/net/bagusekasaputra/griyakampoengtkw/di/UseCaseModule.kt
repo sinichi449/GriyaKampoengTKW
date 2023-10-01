@@ -33,6 +33,7 @@ import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.fotoPembayaran.A
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.fotoPembayaran.DeleteFotoPembayaranAsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.fotoPembayaran.GetFotoPembayaranAsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.fotoPembayaran.IsFotoPembayaranExistAsyncUseCase
+import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.fotoTambahanPembayaran.AddFotoTambahanPembayaranAsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.hargaKavling.GetHargaKavlingAsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.indenBooking.GetAllIndenBookingAsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.indenBooking.dataDiri.EditDataDiriIndenBookingAsyncUseCase
@@ -88,6 +89,7 @@ import net.bagusekasaputra.griyakampoengtkw.domain.repository.FeeMarketingReposi
 import net.bagusekasaputra.griyakampoengtkw.domain.repository.FotoKuitansiRepository
 import net.bagusekasaputra.griyakampoengtkw.domain.repository.FotoPembayaranIndenBookingRepository
 import net.bagusekasaputra.griyakampoengtkw.domain.repository.FotoPembayaranRepository
+import net.bagusekasaputra.griyakampoengtkw.domain.repository.FotoTambahanPembayaranRepository
 import net.bagusekasaputra.griyakampoengtkw.domain.repository.HargaKavlingRepository
 import net.bagusekasaputra.griyakampoengtkw.domain.repository.HargaRumahIndenBookingRepository
 import net.bagusekasaputra.griyakampoengtkw.domain.repository.ImageDataDiriIndenBookingRepository
@@ -780,5 +782,15 @@ object UseCaseModule {
         tambahanPembayaranRepository: TambahanPembayaranRepository
     ): DeleteTambahanPembayaranAsyncUseCase {
         return DeleteTambahanPembayaranAsyncUseCase(tambahanPembayaranRepository)
+    }
+
+    /**
+     * Foto Tambahan Pembayaran
+     */
+    @Provides
+    fun provideAddFotoTambahanPembayaranUseCase(
+        fotoTambahanPembayaranRepository: FotoTambahanPembayaranRepository
+    ): AddFotoTambahanPembayaranAsyncUseCase {
+        return AddFotoTambahanPembayaranAsyncUseCase(fotoTambahanPembayaranRepository)
     }
 }
