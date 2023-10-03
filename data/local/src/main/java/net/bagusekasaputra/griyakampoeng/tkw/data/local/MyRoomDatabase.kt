@@ -27,6 +27,8 @@ import net.bagusekasaputra.griyakampoeng.tkw.data.local.model.FotoPembayaranDao
 import net.bagusekasaputra.griyakampoeng.tkw.data.local.model.FotoPembayaranEntity
 import net.bagusekasaputra.griyakampoeng.tkw.data.local.model.FotoPembayaranIndenBookingDao
 import net.bagusekasaputra.griyakampoeng.tkw.data.local.model.FotoPembayaranIndenBookingEntity
+import net.bagusekasaputra.griyakampoeng.tkw.data.local.model.FotoTambahanPembayaranDao
+import net.bagusekasaputra.griyakampoeng.tkw.data.local.model.FotoTambahanPembayaranEntity
 import net.bagusekasaputra.griyakampoeng.tkw.data.local.model.HargaKavlingRoomDao
 import net.bagusekasaputra.griyakampoeng.tkw.data.local.model.HargaKavlingRoomEntity
 import net.bagusekasaputra.griyakampoeng.tkw.data.local.model.HargaRumahDao
@@ -56,18 +58,21 @@ import net.bagusekasaputra.griyakampoeng.tkw.data.local.model.StandardAmbilKuita
 import net.bagusekasaputra.griyakampoeng.tkw.data.local.model.StandardAmbilKuitansiEntity
 
 @Database(
-    entities = [KavlingRoomEntity::class, ImageDataDiriRoomEntity::class, BlockRoomEntity::class,
-               DataDiriRoomEntity::class, FotoKuitansiRoomEntity::class, ImageSprRoomEntity::class,
-               FotoPembayaranEntity::class, PembayaranRoomEntity::class, HargaKavlingRoomEntity::class,
-               KavlingCatatanPembayaranRoomEntity::class, FeeMarketingRoomEntity::class,
-                BiayaMarketingV2RoomEntity::class, PengingatRoomEntity::class, MetadataEntity::class,
-               BiayaLainRoomEntity::class, BaselinePembayaranRoomEntity::class,
-               FotoIdentitasIndenBookingEntity::class, DataDiriIndenBookingEntity::class,
-               PembayaranIndenBookingEntity::class, StandardAmbilKuitansiEntity::class,
-               HargaRumahEntity::class, FotoPembayaranIndenBookingEntity::class,
-               IndenBookingCatatanPembayaranEntity::class, IndenBookingAmbilKuitansiEntity::class,
-               BackupRestoreEntity::class, PengembalianEntity::class],
-    version = 34,
+    entities = [
+        KavlingRoomEntity::class, ImageDataDiriRoomEntity::class, BlockRoomEntity::class,
+        DataDiriRoomEntity::class, FotoKuitansiRoomEntity::class, ImageSprRoomEntity::class,
+        FotoPembayaranEntity::class, PembayaranRoomEntity::class, HargaKavlingRoomEntity::class,
+        KavlingCatatanPembayaranRoomEntity::class, FeeMarketingRoomEntity::class,
+        BiayaMarketingV2RoomEntity::class, PengingatRoomEntity::class, MetadataEntity::class,
+        BiayaLainRoomEntity::class, BaselinePembayaranRoomEntity::class,
+        FotoIdentitasIndenBookingEntity::class, DataDiriIndenBookingEntity::class,
+        PembayaranIndenBookingEntity::class, StandardAmbilKuitansiEntity::class,
+        HargaRumahEntity::class, FotoPembayaranIndenBookingEntity::class,
+        IndenBookingCatatanPembayaranEntity::class, IndenBookingAmbilKuitansiEntity::class,
+        BackupRestoreEntity::class, PengembalianEntity::class,
+        FotoTambahanPembayaranEntity::class,
+    ],
+    version = 35,
     exportSchema = true,
 )
 abstract class MyRoomDatabase: RoomDatabase() {
@@ -123,5 +128,7 @@ abstract class MyRoomDatabase: RoomDatabase() {
     abstract fun getBackupRestoreDao(): BackupRestoreDao
 
     abstract fun getPengembalianDao(): PengembalianDao
+
+    abstract fun getFotoTambahanPembayaranDao(): FotoTambahanPembayaranDao
 
 }

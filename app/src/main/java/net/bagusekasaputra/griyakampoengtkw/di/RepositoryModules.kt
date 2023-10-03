@@ -16,6 +16,7 @@ import net.bagusekasaputra.griyakampoengtkw.data.interfaces.local.LocalFeeMarket
 import net.bagusekasaputra.griyakampoengtkw.data.interfaces.local.LocalFotoKuitansiDataSource
 import net.bagusekasaputra.griyakampoengtkw.data.interfaces.local.LocalFotoPembayaranDataSource
 import net.bagusekasaputra.griyakampoengtkw.data.interfaces.local.LocalFotoPembayaranIndenBookingDataSource
+import net.bagusekasaputra.griyakampoengtkw.data.interfaces.local.LocalFotoTambahanPembayaranDataSource
 import net.bagusekasaputra.griyakampoengtkw.data.interfaces.local.LocalHargaKavlingDataSource
 import net.bagusekasaputra.griyakampoengtkw.data.interfaces.local.LocalHargaRumahIndenBookingDataSource
 import net.bagusekasaputra.griyakampoengtkw.data.interfaces.local.LocalImageDataDiriDataSource
@@ -42,6 +43,7 @@ import net.bagusekasaputra.griyakampoengtkw.data.interfaces.remote.RemoteDatabas
 import net.bagusekasaputra.griyakampoengtkw.data.interfaces.remote.RemoteFeeMarketingDataSource
 import net.bagusekasaputra.griyakampoengtkw.data.interfaces.remote.RemoteFotoPembayaranDataSource
 import net.bagusekasaputra.griyakampoengtkw.data.interfaces.remote.RemoteFotoPembayaranIndenBookingDataSource
+import net.bagusekasaputra.griyakampoengtkw.data.interfaces.remote.RemoteFotoTambahanPembayaranDataSource
 import net.bagusekasaputra.griyakampoengtkw.data.interfaces.remote.RemoteHargaKavlingSource
 import net.bagusekasaputra.griyakampoengtkw.data.interfaces.remote.RemoteHargaRumahIndenBookingDataSource
 import net.bagusekasaputra.griyakampoengtkw.data.interfaces.remote.RemoteImageDataDiriDataSource
@@ -571,8 +573,11 @@ object RepositoryModules {
      */
     @Provides
     fun provideFotoTambahanPembayaranRepository(
-
+        localDataSource: LocalFotoTambahanPembayaranDataSource,
+        remoteDataSource: RemoteFotoTambahanPembayaranDataSource,
+        localMetadata: LocalMetadataDataSource,
+        remoteMetadata: RemoteMetadataDataSource,
     ): FotoTambahanPembayaranRepository {
-        return FotoTambahanPembayaranRepositoryImpl()
+        return FotoTambahanPembayaranRepositoryImpl(localDataSource, remoteDataSource, localMetadata, remoteMetadata)
     }
 }

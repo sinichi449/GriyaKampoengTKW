@@ -12,6 +12,7 @@ import net.bagusekasaputra.griyakampoengtkw.data.model.DatabaseUserModel
 import net.bagusekasaputra.griyakampoengtkw.data.model.FeeMarketingModel
 import net.bagusekasaputra.griyakampoengtkw.data.model.FotoPembayaranIndenBookingModel
 import net.bagusekasaputra.griyakampoengtkw.data.model.FotoPembayaranModel
+import net.bagusekasaputra.griyakampoengtkw.data.model.FotoTambahanPembayaranModel
 import net.bagusekasaputra.griyakampoengtkw.data.model.HargaKavlingModel
 import net.bagusekasaputra.griyakampoengtkw.data.model.HargaRumahModel
 import net.bagusekasaputra.griyakampoengtkw.data.model.ImageDataDiriIndenBookingModel
@@ -44,6 +45,7 @@ import net.bagusekasaputra.griyakampoengtkw.domain.entity.DataDiri
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.DatabaseUser
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.FeeMarketing
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.FotoPembayaran
+import net.bagusekasaputra.griyakampoengtkw.domain.entity.FotoTambahanPembayaran
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.HargaKavling
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.IndenBookingAmbilKuitansi
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.IndenBookingCatatanPembayaran
@@ -816,6 +818,29 @@ object MyObjectMapper {
                 sudahIsiFoto = false,
                 keterangan = it.keterangan,
                 timeMillis = it.timeMillis,
+            )
+        }
+    }
+
+    /**
+     * Foto Tambahan Pembayaran
+     */
+    fun mapFotoTambahanPembayaran(entity: FotoTambahanPembayaran): FotoTambahanPembayaranModel {
+        return entity.let {
+            FotoTambahanPembayaranModel(
+                kavling = it.kavling,
+                tambahanPembayaranId = it.tambahanPembayaranId,
+                uri = it.uri
+            )
+        }
+    }
+
+    fun mapFotoTambahanPembayaran(model: FotoTambahanPembayaranModel): FotoTambahanPembayaran {
+        return model.let {
+            FotoTambahanPembayaran(
+                kavling = it.kavling,
+                tambahanPembayaranId = it.tambahanPembayaranId,
+                uri = it.uri
             )
         }
     }

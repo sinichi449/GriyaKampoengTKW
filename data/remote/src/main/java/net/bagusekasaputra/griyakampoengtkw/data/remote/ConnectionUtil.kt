@@ -1,5 +1,7 @@
 package net.bagusekasaputra.griyakampoengtkw.data.remote
 
+import kotlinx.coroutines.CancellableContinuation
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import java.util.Timer
 import java.util.TimerTask
 
@@ -23,5 +25,14 @@ object ConnectionUtil {
         }
 
         timer.schedule(timerTask, serverTimeout)
+    }
+
+    @OptIn(ExperimentalCoroutinesApi::class)
+    fun <T> CancellableContinuation<T>.resumeIfActive(
+        resumeObj: T
+    ) {
+        if (this.isActive) {
+            this.resume(resumeObj, null)
+        }
     }
 }

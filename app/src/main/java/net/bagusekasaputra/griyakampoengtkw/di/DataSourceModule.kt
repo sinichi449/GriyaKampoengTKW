@@ -500,4 +500,23 @@ object DataSourceModule {
         return FirebaseTambahanPembayaranDataSource(databaseReference)
     }
 
+    /**
+     * Foto Tambahan Pembayaran
+     */
+    @Provides
+    fun provideLocalFotoTambahanPembayaranDataSource(
+        roomDatabase: MyRoomDatabase,
+        @ExternalDir externalFileDir: File?
+    ): LocalFotoTambahanPembayaranDataSource {
+        return RoomFotoTambahanPembayaranDataSource(roomDatabase, externalFileDir)
+    }
+
+    @Provides
+    fun provideRemoteFotoTambahanPembayaranDataSource(
+        @TahapanReference storageReference: StorageReference,
+        @ExternalDir externalFileDir: File?,
+    ): RemoteFotoTambahanPembayaranDataSource {
+        return StorageFotoTambahanPembayaranDataSource(storageReference, externalFileDir)
+    }
+
 }
