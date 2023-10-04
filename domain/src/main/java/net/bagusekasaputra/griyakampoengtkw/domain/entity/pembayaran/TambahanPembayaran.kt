@@ -27,5 +27,26 @@ data class TambahanPembayaran(
                 else -> Kategori.PEMBANGUNAN
             }
         }
+
+        suspend fun mask(
+            listTambahan: List<TambahanPembayaran>,
+            onCekFoto: suspend (kavling: String, id: String) -> Boolean,
+        ): List<TambahanPembayaran> {
+            // Sort by tanggal
+            val sortedList = listTambahan.sortedBy {
+                it.tanggal.time
+            }
+            val maskedList = buildList {
+                sortedList.forEach {
+                    // Update this class as cek foto
+                    val updatedEntity = it.copy(
+                        sudahIsiFoto = onCekFoto(it.kavling, it.id)
+                    )
+                    add(updatedEntity)
+                }
+            }
+
+            return maskedList
+        }
     }
 }

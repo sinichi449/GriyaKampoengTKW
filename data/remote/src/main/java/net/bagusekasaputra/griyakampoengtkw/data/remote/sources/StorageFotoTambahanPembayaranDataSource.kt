@@ -66,4 +66,28 @@ class StorageFotoTambahanPembayaranDataSource(
                 }
         }
     }
+
+    override suspend fun isFotoExist(kavling: String, id: String): Result<Boolean> {
+        return suspendCancellableCoroutine { continuation ->
+            val targetRef = FotoTambahanPembayaranModel(
+                kavling = kavling,
+                tambahanPembayaranId = id,
+            ).let {
+                ref.child(it.getKavlingAndFilePath())
+            }
+
+            targetRef.downloadUrl
+                .addOnSuccessListener {
+                    continuation.resumeIfActive(Result.success(true))
+                }
+                .addOnFailureListener {
+                    if (it.message == "Object does not exist at location.") {
+                        continuation.resumeIfActive(Result.success(false))
+                    } else {
+                        it.printStackTrace()
+                        continuation.resumeIfActive(Result.failure(it))
+                    }
+                }
+        }
+    }
 }

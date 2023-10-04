@@ -8,4 +8,5 @@ interface RemoteFotoTambahanPembayaranDataSource {
 
     suspend fun insert(model: FotoTambahanPembayaranModel): Result<Nothing?>
 
+    suspend fun isFotoExist(kavling: String, id: String): Result<Boolean>
 }

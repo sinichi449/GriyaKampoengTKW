@@ -47,7 +47,7 @@ class FotoTambahanPembayaranRepositoryImpl(
     }
 
     override suspend fun isFotoExists(kavling: String, id: String): Result<Boolean> {
-        return Result.failure(NotImplementedError("Operation not yet implemented"))
+        return remoteDataSource.isFotoExist(kavling, id)
     }
 
     private suspend fun updateMetadata(kavling: String) {

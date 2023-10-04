@@ -751,9 +751,10 @@ object UseCaseModule {
      */
     @Provides
     fun provideGetTambahanPembayaranByKavling(
-        tambahanPembayaranRepository: TambahanPembayaranRepository
+        tambahanPembayaranRepository: TambahanPembayaranRepository,
+        fotoRepository: FotoTambahanPembayaranRepository,
     ): GetTambahanPembayaranAsyncUseCase {
-        return GetTambahanPembayaranAsyncUseCase(tambahanPembayaranRepository)
+        return GetTambahanPembayaranAsyncUseCase(tambahanPembayaranRepository, fotoRepository)
     }
 
     @Provides
