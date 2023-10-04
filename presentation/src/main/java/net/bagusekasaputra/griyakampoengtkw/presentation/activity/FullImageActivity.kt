@@ -11,11 +11,12 @@ import android.widget.ImageView
 import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.net.toUri
 import com.igreenwood.loupe.Loupe
 import dagger.hilt.android.AndroidEntryPoint
-import net.bagusekasaputra.griyakampoengtkw.presentation.model.ImageTransport
 import net.bagusekasaputra.griyakampoengtkw.presentation.R
 import net.bagusekasaputra.griyakampoengtkw.presentation.databinding.ActivityFullImageBinding
+import net.bagusekasaputra.griyakampoengtkw.presentation.model.ImageTransport
 import net.bagusekasaputra.griyakampoengtkw.presentation.util.GriyaNodes
 import net.bagusekasaputra.griyakampoengtkw.presentation.viewmodel.ImageViewModel
 
@@ -212,6 +213,44 @@ class FullImageActivity : AppCompatActivity() {
                                 .show()
                         }
                     )
+                }
+            }
+            GriyaNodes.INTENT_FOTO_TAMBAHAN_PEMBAYARAN -> {
+                val selectedKavling = mapContent["kavling"]
+                val selectedId = mapContent["id"]
+
+                if ((selectedKavling == null) || (selectedId == null)) {
+                    Toast.makeText(
+                        this,
+                        "Image Transport Kav. $selectedKavling dan ID $selectedId tidak dapat diproses Intent!",
+                        Toast.LENGTH_LONG
+                    ).show()
+                } else {
+                    imageViewModel.getFotoTambahanPembayaran(
+                        kavling = selectedKavling,
+                        id = selectedId,
+                        onFailure = { msg ->
+                            Toast.makeText(
+                                this,
+                                "Gagal mendapatkan foto: $msg",
+                                Toast.LENGTH_LONG
+                            ).show()
+                        }
+                    )
+
+                    imageViewModel.fotoTambahanPembayaran.observe(this) { foto ->
+                        if (foto != null) {
+                            val bitmap = imageViewModel.getBitmapFromUri(contentResolver, foto.uri.toUri())
+
+                            createLoupe(bitmap)
+                        } else {
+                            Toast.makeText(
+                                this,
+                                "Foto Pembayaran $selectedId tidak ditemukan",
+                                Toast.LENGTH_SHORT
+                            ).show()
+                        }
+                    }
                 }
             }
         }

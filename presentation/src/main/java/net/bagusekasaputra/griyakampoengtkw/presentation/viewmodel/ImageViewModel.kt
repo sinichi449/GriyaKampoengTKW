@@ -21,12 +21,14 @@ import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.fotoPembayaran.D
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.fotoPembayaran.GetFotoPembayaranAsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.fotoPembayaran.IsFotoPembayaranExistAsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.fotoTambahanPembayaran.AddFotoTambahanPembayaranAsyncUseCase
+import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.fotoTambahanPembayaran.GetFotoTambahanPembayaranAsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.indenBooking.fotoPembayaran.DeleteFotoPembayaranIndenBookingAsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.indenBooking.fotoPembayaran.GetFotoPembayaranIndenBookingAsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.indenBooking.fotoPembayaran.InsertFotoPembayaranIndenBookingAsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.indenBooking.imageDataDiri.GetImageDataDiriIndenBookingAsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.FotoKuitansi
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.FotoPembayaran
+import net.bagusekasaputra.griyakampoengtkw.domain.entity.FotoTambahanPembayaran
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.images.FotoPembayaranIndenBooking
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.images.ImageDataDiri
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.images.ImageDataDiriIndenBooking
@@ -65,6 +67,7 @@ class ImageViewModel @Inject constructor(
     private val insertFotoPembayaranIndenBookingAsyncUseCase: InsertFotoPembayaranIndenBookingAsyncUseCase,
     private val deleteFotoPembayaranIndenBookingAsyncUseCase: DeleteFotoPembayaranIndenBookingAsyncUseCase,
     // Foto Tambahan Pembayaran
+    private val getFotoTambahanPembayaranUseCase: GetFotoTambahanPembayaranAsyncUseCase,
     private val addFotoTambahanPembayaranUseCase: AddFotoTambahanPembayaranAsyncUseCase,
 ): ViewModel() {
 
@@ -75,6 +78,10 @@ class ImageViewModel @Inject constructor(
     val imageDataDiriLive = MutableLiveData<ImageDataDiri?>()
 
     val fotoPembayaranLive = MutableLiveData<FotoPembayaran?>()
+
+    private val _fotoTambahanPembayaranLive = MutableLiveData<FotoTambahanPembayaran?>()
+    val fotoTambahanPembayaran: LiveData<FotoTambahanPembayaran?>
+        get() = _fotoTambahanPembayaranLive
 
     val isFinishLoadingImage = MutableLiveData<Boolean>()
 
@@ -493,6 +500,27 @@ class ImageViewModel @Inject constructor(
     /**
      * Foto Tambahan Pembayaran
      */
+    fun getFotoTambahanPembayaran(
+        kavling: String,
+        id: String,
+        onFailure: (msg: String) -> Unit
+    ) {
+        viewModelScope.launch(Dispatchers.IO) {
+            val request = GetFotoTambahanPembayaranAsyncUseCase.Request(kavling, id)
+            getFotoTambahanPembayaranUseCase.execute(request).collect { result ->
+                result.onSuccess {
+                    _fotoTambahanPembayaranLive.postValue(it)
+                }
+                result.onFailure {
+                    withContext(Dispatchers.Main) {
+                        onFailure(it.message ?: "Unknown error")
+                    }
+                }
+            }
+        }
+    }
+
+
     fun addFotoTambahanPembayaran(
         kavling: String,
         id: String,

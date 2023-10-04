@@ -16,8 +16,10 @@ import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import dagger.hilt.android.AndroidEntryPoint
 import net.bagusekasaputra.griyakampoengtkw.presentation.activity.FormActivity
+import net.bagusekasaputra.griyakampoengtkw.presentation.activity.FullImageActivity
 import net.bagusekasaputra.griyakampoengtkw.presentation.activity.UpdateTambahanPembayaranParcel
 import net.bagusekasaputra.griyakampoengtkw.presentation.databinding.DialogActionsItemTambahanPembayaranBinding
+import net.bagusekasaputra.griyakampoengtkw.presentation.util.GriyaNodes
 import net.bagusekasaputra.griyakampoengtkw.presentation.util.NotificationUtil
 import net.bagusekasaputra.griyakampoengtkw.presentation.viewmodel.FormPembayaranViewModel
 import net.bagusekasaputra.griyakampoengtkw.presentation.viewmodel.ImageViewModel
@@ -129,7 +131,16 @@ class ActionTambahanPembayaranBottomSheetDialog: BottomSheetDialogFragment() {
             binding.cardLihatFotoPembayaran.apply {
                 visibility = View.VISIBLE
                 setOnClickListener {
-                    // TODO: Lihat foto
+                    val imageTransport = imageViewModel.createImageTransport(
+                        sendIntent = GriyaNodes.INTENT_FOTO_TAMBAHAN_PEMBAYARAN,
+                        content = mapOf(
+                            Pair("kavling", viewModel.currentKavlingKode!!),
+                            Pair("id", tambahanPembayaran.id)
+                        )
+                    )
+                    val fullImageIntent = Intent(requireContext(), FullImageActivity::class.java)
+                    fullImageIntent.putExtra(GriyaNodes.INTENT_SOURCE_IMAGE, imageTransport)
+                    startActivity(fullImageIntent)
                 }
             }
 
