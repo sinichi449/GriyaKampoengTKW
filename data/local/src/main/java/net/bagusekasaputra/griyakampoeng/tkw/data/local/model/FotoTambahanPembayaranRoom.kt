@@ -29,4 +29,6 @@ interface FotoTambahanPembayaranDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun insert(entity: FotoTambahanPembayaranEntity): Long
 
+    @Query("DELETE FROM foto_tambahan_pembayaran WHERE kavling=:kavling")
+    fun deleteByKavling(kavling: String)
 }

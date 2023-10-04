@@ -1,5 +1,6 @@
 package net.bagusekasaputra.griyakampoengtkw.data.repository
 
+import android.util.Log
 import net.bagusekasaputra.griyakampoengtkw.data.MyObjectMapper
 import net.bagusekasaputra.griyakampoengtkw.data.interfaces.local.LocalFotoTambahanPembayaranDataSource
 import net.bagusekasaputra.griyakampoengtkw.data.interfaces.local.LocalMetadataDataSource
@@ -25,8 +26,38 @@ class FotoTambahanPembayaranRepositoryImpl(
     private var hasMetadataChecked = false
 
     override suspend fun get(kavling: String, id: String): Result<FotoTambahanPembayaran?> {
-        return remoteDataSource.get(kavling, id).map { model ->
-            model?.let { MyObjectMapper.mapFotoTambahanPembayaran(it) }
+        if (!hasMetadataChecked) {
+            Log.d("TAMBAHAN_PEMBAYARAN", "Metadata hasn't checked. Checking now...")
+            val localTimestamp = localMetadata.get(localTable(kavling))?.timestamp
+            val serverTimestamp = remoteMetadata.get(remoteTable(kavling))!!.timestamp
+            val cacheInvalid = localTimestamp != serverTimestamp
+
+            if (cacheInvalid) {
+                Log.d("TAMBAHAN_PEMBAYARAN", "Cache invalid! Purging cache ...")
+                localDataSource.deleteAll(kavling)
+                localMetadata.insert(MetadataModel(localTable(kavling), serverTimestamp))
+            }
+
+            hasMetadataChecked = true
+        }
+
+        val modelLocal = localDataSource.get(kavling, id).getOrNull()
+        if (modelLocal == null) {
+            Log.d("TAMBAHAN_PEMBAYARAN", "No cache detected! Getting from remote ...")
+            remoteDataSource.get(kavling, id).let { result ->
+                result.onSuccess {
+                    Log.d("TAMBAHAN_PEMBAYARAN", "Successfully acquire from remote! Inserting to cache ...")
+                    if (it != null) localDataSource.insert(it, true)
+                }
+                result.onFailure {
+                    Log.d("TAMBAHAN_PEMBAYARAN", "Failed acquiring remote model: ${it.message}")
+                }
+            }
+        }
+
+        return localDataSource.get(kavling, id).map {
+            if (it != null) MyObjectMapper.mapFotoTambahanPembayaran(it)
+            else null
         }
     }
 

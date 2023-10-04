@@ -55,6 +55,18 @@ class RoomFotoTambahanPembayaranDataSource(
         }
     }
 
+    override suspend fun deleteAll(kavling: String): Result<Nothing?> {
+        return try {
+            dao.deleteByKavling(kavling)
+
+            Result.success(null)
+        } catch (e: Exception) {
+            e.printStackTrace()
+
+            Result.failure(e)
+        }
+    }
+
     private fun FotoTambahanPembayaranEntity.toModel(): FotoTambahanPembayaranModel {
         return this.let {
             FotoTambahanPembayaranModel(
