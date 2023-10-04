@@ -32,6 +32,7 @@ import net.bagusekasaputra.griyakampoengtkw.data.interfaces.local.LocalPembayara
 import net.bagusekasaputra.griyakampoengtkw.data.interfaces.local.LocalPengembalianDataSource
 import net.bagusekasaputra.griyakampoengtkw.data.interfaces.local.LocalPengingatDataSource
 import net.bagusekasaputra.griyakampoengtkw.data.interfaces.local.LocalStandardAmbilKuitansiDataSource
+import net.bagusekasaputra.griyakampoengtkw.data.interfaces.local.LocalTambahanPembayaranDataSource
 import net.bagusekasaputra.griyakampoengtkw.data.interfaces.remote.RemoteAppUpdateSource
 import net.bagusekasaputra.griyakampoengtkw.data.interfaces.remote.RemoteBackupRestoreDataSource
 import net.bagusekasaputra.griyakampoengtkw.data.interfaces.remote.RemoteBaselinePembayaranDataSource
@@ -563,9 +564,13 @@ object RepositoryModules {
      */
     @Provides
     fun provideTambahanPembayaranRepository(
+        localDataSource: LocalTambahanPembayaranDataSource,
         remoteDataSource: RemoteTambahanPembayaranDataSource,
+        localMetadata: LocalMetadataDataSource,
+        remoteMetadata: RemoteMetadataDataSource,
+        cacheHelper: CacheHelper,
     ): TambahanPembayaranRepository {
-        return TambahanPembayaranRepositoryImpl(remoteDataSource)
+        return TambahanPembayaranRepositoryImpl(localDataSource, remoteDataSource, localMetadata, remoteMetadata, cacheHelper)
     }
 
     /**

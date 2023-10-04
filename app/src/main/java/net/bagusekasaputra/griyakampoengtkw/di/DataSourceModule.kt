@@ -494,6 +494,13 @@ object DataSourceModule {
      * Tambahan Pembayaran
      */
     @Provides
+    fun provideLocalTambahanPembayaranDataSource(
+        myRoomDatabase: MyRoomDatabase,
+    ): LocalTambahanPembayaranDataSource {
+        return RoomTambahanPembayaranDataSource(myRoomDatabase)
+    }
+
+    @Provides
     fun provideRemoteTambahanPembayaranDataSource(
         @TahapanReference databaseReference: DatabaseReference,
     ): RemoteTambahanPembayaranDataSource {

@@ -56,6 +56,8 @@ import net.bagusekasaputra.griyakampoeng.tkw.data.local.model.PengingatRoomDao
 import net.bagusekasaputra.griyakampoeng.tkw.data.local.model.PengingatRoomEntity
 import net.bagusekasaputra.griyakampoeng.tkw.data.local.model.StandardAmbilKuitansiDao
 import net.bagusekasaputra.griyakampoeng.tkw.data.local.model.StandardAmbilKuitansiEntity
+import net.bagusekasaputra.griyakampoeng.tkw.data.local.model.TambahanPembayaranDao
+import net.bagusekasaputra.griyakampoeng.tkw.data.local.model.TambahanPembayaranEntity
 
 @Database(
     entities = [
@@ -70,9 +72,9 @@ import net.bagusekasaputra.griyakampoeng.tkw.data.local.model.StandardAmbilKuita
         HargaRumahEntity::class, FotoPembayaranIndenBookingEntity::class,
         IndenBookingCatatanPembayaranEntity::class, IndenBookingAmbilKuitansiEntity::class,
         BackupRestoreEntity::class, PengembalianEntity::class,
-        FotoTambahanPembayaranEntity::class,
+        FotoTambahanPembayaranEntity::class, TambahanPembayaranEntity::class,
     ],
-    version = 35,
+    version = 36,
     exportSchema = true,
 )
 abstract class MyRoomDatabase: RoomDatabase() {
@@ -130,5 +132,7 @@ abstract class MyRoomDatabase: RoomDatabase() {
     abstract fun getPengembalianDao(): PengembalianDao
 
     abstract fun getFotoTambahanPembayaranDao(): FotoTambahanPembayaranDao
+
+    abstract fun getTambahanPembayaranDao(): TambahanPembayaranDao
 
 }
