@@ -70,7 +70,23 @@ class RoomTambahanPembayaranDataSource(
         id: String,
         newData: TambahanPembayaranModel
     ): Result<Nothing?> {
-        TODO("Not yet implemented")
+        return try {
+            val oldData = dao.getById(kavling, id)
+            if (oldData == null) {
+                Result.failure(Exception("Cache update gagal: Data tidak ditemukan"))
+            } else {
+                dao.delete(kavling, id)
+
+                val newEntity = mapTambahanPembayaran(newData)
+                dao.insert(newEntity)
+
+                Result.success(null)
+            }
+        } catch (e: Exception) {
+            e.printStackTrace()
+
+            Result.failure(e)
+        }
     }
 
     override suspend fun delete(kavling: String, id: String): Result<Nothing?> {

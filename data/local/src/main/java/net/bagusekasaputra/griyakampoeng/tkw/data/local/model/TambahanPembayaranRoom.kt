@@ -9,10 +9,9 @@ import androidx.room.Query
 
 @Entity(tableName = "tambahanPembayaran")
 data class TambahanPembayaranEntity(
-    @PrimaryKey(autoGenerate = true)
-    val id: Long? = null,
-    val kavling: String,
+    @PrimaryKey(autoGenerate = false)
     val pembayaranId: String,
+    val kavling: String,
     val kategori: String,
     val tanggal: String,
     val jumlahUang: Long,
@@ -31,6 +30,9 @@ interface TambahanPembayaranDao {
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun insert(entity: TambahanPembayaranEntity): Long
+
+    @Query("DELETE FROM tambahanPembayaran WHERE kavling=:kavling AND pembayaranId=:pembayaranId")
+    fun delete(kavling: String, pembayaranId: String)
 
     @Query("DELETE FROM tambahanPembayaran")
     fun deleteAll()

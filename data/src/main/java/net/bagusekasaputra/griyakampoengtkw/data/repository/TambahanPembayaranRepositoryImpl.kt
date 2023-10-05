@@ -71,7 +71,9 @@ class TambahanPembayaranRepositoryImpl(
     ): Result<Nothing?> {
         val newModel = MyObjectMapper.mapTambahanPembayaran(newData)
 
-        return remoteDataSource.update(kavling, id, newModel)
+        return remoteDataSource.update(kavling, id, newModel).onSuccess {
+            localDataSource.update(kavling, id, newModel)
+        }
     }
 
     override suspend fun delete(kavling: String, id: String): Result<Nothing?> {
