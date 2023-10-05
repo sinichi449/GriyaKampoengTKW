@@ -90,7 +90,15 @@ class RoomTambahanPembayaranDataSource(
     }
 
     override suspend fun delete(kavling: String, id: String): Result<Nothing?> {
-        TODO("Not yet implemented")
+        return try {
+            dao.delete(kavling, id)
+
+            Result.success(null)
+        } catch (e: Exception) {
+            e.printStackTrace()
+
+            Result.failure(e)
+        }
     }
 
     override suspend fun deleteAll(): Result<Nothing?> {

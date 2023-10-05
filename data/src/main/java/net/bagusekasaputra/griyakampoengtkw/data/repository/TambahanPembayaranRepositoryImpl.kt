@@ -69,6 +69,8 @@ class TambahanPembayaranRepositoryImpl(
         id: String,
         newData: TambahanPembayaran
     ): Result<Nothing?> {
+        updateMetadata()
+
         val newModel = MyObjectMapper.mapTambahanPembayaran(newData)
 
         return remoteDataSource.update(kavling, id, newModel).onSuccess {
@@ -77,7 +79,11 @@ class TambahanPembayaranRepositoryImpl(
     }
 
     override suspend fun delete(kavling: String, id: String): Result<Nothing?> {
-        return remoteDataSource.delete(kavling, id)
+        updateMetadata()
+
+        return remoteDataSource.delete(kavling, id).onSuccess {
+            localDataSource.delete(kavling, id)
+        }
     }
 
     private suspend fun cacheIsPurged(): Boolean {
