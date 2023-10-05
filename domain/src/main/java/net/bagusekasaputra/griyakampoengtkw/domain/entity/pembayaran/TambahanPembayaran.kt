@@ -48,5 +48,9 @@ data class TambahanPembayaran(
 
             return maskedList
         }
+
+        fun List<TambahanPembayaran>.total(): Long {
+            return this.sumOf { it.jumlahUang }
+        }
     }
 }

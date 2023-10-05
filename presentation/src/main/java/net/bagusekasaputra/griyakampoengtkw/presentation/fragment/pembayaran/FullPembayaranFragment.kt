@@ -21,6 +21,7 @@ import net.bagusekasaputra.griyakampoengtkw.domain.entity.BaselinePembayaran
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.pembayaran.BulanAngsuran
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.pembayaran.Pembayaran
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.pembayaran.TambahanPembayaran
+import net.bagusekasaputra.griyakampoengtkw.domain.entity.pembayaran.TambahanPembayaran.Companion.total
 import net.bagusekasaputra.griyakampoengtkw.presentation.R
 import net.bagusekasaputra.griyakampoengtkw.presentation.activity.FormActivity
 import net.bagusekasaputra.griyakampoengtkw.presentation.activity.InsertTambahanPembayaranParcel
@@ -234,12 +235,17 @@ class FullPembayaranFragment : Fragment() {
         viewModel.tambahanPembayarans.observe(requireActivity()) {
             if (!it.isNullOrEmpty()) {
                 binding.tvRecordTdkDitemukan.visibility = View.GONE
-                binding.tableTambahanPembayaran.visibility = View.VISIBLE
+                binding.layoutDataPembayaran.visibility = View.VISIBLE
 
                 setTableTambahan(it)
+                val totalTambahan = buildString {
+                    append("Rp. ")
+                    append(it.total().numericToString())
+                }
+                binding.tvTotalTambahan.text = totalTambahan
             } else {
                 binding.tvRecordTdkDitemukan.visibility = View.VISIBLE
-                binding.tableTambahanPembayaran.visibility = View.GONE
+                binding.layoutDataPembayaran.visibility = View.GONE
             }
         }
     }

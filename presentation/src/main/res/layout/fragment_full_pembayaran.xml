@@ -182,27 +182,45 @@
             style="@style/TextAppearance.MaterialComponents.Body2"
             android:visibility="visible"/>
 
-        <com.evrencoskun.tableview.TableView
-            android:id="@+id/table_tambahanPembayaran"
+        <androidx.appcompat.widget.LinearLayoutCompat
+            android:id="@+id/layout_data_pembayaran"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/layout_tambahanHeader"
             app:layout_constraintEnd_toEndOf="parent"
             android:layout_marginTop="16dp"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            app:column_header_height="@dimen/table_pembayaran_column_header_height"
-            app:row_header_width="@dimen/table_generic_double_row_header_width"
-            app:separator_color="@color/table_separator_colour"
-            app:show_horizontal_separator="true"
-            app:show_vertical_separator="true"
-            app:selected_color="@color/table_selected_colour"
-            app:shadow_color="@color/table_shadowed_colour"
-            app:unselected_color="@color/table_unselected_colour"
-            app:allow_click_inside_cell="true"
-            app:allow_click_inside_row_header="true"
-            app:allow_click_inside_column_header="true"
-            android:layout_marginHorizontal="4dp"
-            android:visibility="gone"/>
+            android:visibility="gone"
+            android:orientation="vertical">
+
+            <com.evrencoskun.tableview.TableView
+                android:id="@+id/table_tambahanPembayaran"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:column_header_height="@dimen/table_pembayaran_column_header_height"
+                app:row_header_width="@dimen/table_generic_double_row_header_width"
+                app:separator_color="@color/table_separator_colour"
+                app:show_horizontal_separator="true"
+                app:show_vertical_separator="true"
+                app:selected_color="@color/table_selected_colour"
+                app:shadow_color="@color/table_shadowed_colour"
+                app:unselected_color="@color/table_unselected_colour"
+                app:allow_click_inside_cell="true"
+                app:allow_click_inside_row_header="true"
+                app:allow_click_inside_column_header="true"
+                android:layout_marginHorizontal="4dp"/>
+
+            <com.google.android.material.textview.MaterialTextView
+                android:id="@+id/tv_total_tambahan"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:layout_marginEnd="16dp"
+                android:text="Rp. 0"
+                style="@style/TextAppearance.MaterialComponents.Subtitle1"
+                android:gravity="end"/>
+
+        </androidx.appcompat.widget.LinearLayoutCompat>
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
