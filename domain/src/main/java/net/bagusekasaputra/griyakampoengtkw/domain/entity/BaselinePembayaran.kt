@@ -2,20 +2,17 @@ package net.bagusekasaputra.griyakampoengtkw.domain.entity
 
 import net.bagusekasaputra.griyakampoengtkw.domain.DateUtil
 import net.bagusekasaputra.griyakampoengtkw.domain.DateUtil.toDate
-import net.bagusekasaputra.griyakampoengtkw.domain.DateUtil.toLocalDate
 import net.bagusekasaputra.griyakampoengtkw.domain.NumberUtil
+import net.bagusekasaputra.griyakampoengtkw.domain.entity.pembayaran.BulanAngsuran
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.pembayaran.Pembayaran
+import net.bagusekasaputra.griyakampoengtkw.domain.entity.pembayaran.Pembayaran.Companion.FILTER_USING_BULAN_ANGSURAN
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.pembayaran.Pembayaran.Companion.filterPeriode
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.rekap.PeriodeRekap
-import java.lang.IllegalArgumentException
+import net.bagusekasaputra.griyakampoengtkw.domain.misc.InvalidTimeFrameBaselinePembayaranException
 import java.math.BigDecimal
 import java.math.RoundingMode
-import java.time.Period
 import java.util.Calendar
 import java.util.Date
-import net.bagusekasaputra.griyakampoengtkw.domain.entity.pembayaran.BulanAngsuran
-import net.bagusekasaputra.griyakampoengtkw.domain.entity.pembayaran.Pembayaran.Companion.FILTER_USING_BULAN_ANGSURAN
-import net.bagusekasaputra.griyakampoengtkw.domain.misc.InvalidTimeFrameBaselinePembayaranException
 
 data class BaselinePembayaran(
     val kavling: String,
@@ -65,15 +62,18 @@ data class BaselinePembayaran(
     }
 
     fun hitungSisaBulanAngsuran(tanggalPembelian: Date): Int {
-        // Sisa Bulan Angsuran = Opsi Bulan Angsuran - (Diff Bulan Sekarang & Bulan Tanggal Pembelian)
-        val resetToTanggalSatuTanggalPembelian = Calendar.getInstance().apply {
-            time = tanggalPembelian
-            set(Calendar.DAY_OF_MONTH, 1)
-        }.time
-        val tanggalSekarang = Calendar.getInstance().time
+        val from = org.joda.time.LocalDate.fromDateFields(tanggalPembelian)
+        val t0 = org.joda.time.LocalDate.fromDateFields(Calendar.getInstance().time)
 
-        return opsiBulan - Period.between(resetToTanggalSatuTanggalPembelian.toLocalDate(), tanggalSekarang.toLocalDate())
-            .months
+        val period = org.joda.time.Period(from, t0)
+        val years = period.years
+        val months = if (years > 0) {
+            (years * 12) + period.months
+        } else {
+            period.months
+        }
+
+        return opsiBulan - months
     }
 
     companion object {

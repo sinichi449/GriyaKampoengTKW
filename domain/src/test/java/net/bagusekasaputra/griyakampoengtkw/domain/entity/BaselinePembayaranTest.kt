@@ -121,4 +121,29 @@ class BaselinePembayaranTest {
             )
         }
     }
+
+    @Test
+    fun hitungSisaWaktuTest() {
+        val tanggalPembelian = "1/10/2022".toDate()
+        val baselinePembayaran = BaselinePembayaran(
+            kavling = "A2",
+            opsiBulan = 24,
+            tanggalPembayaranMaks = 28,
+            jumlahUang = 5_000_000L,
+        )
+
+        val tanggalSekarang = "20/11/2024".toDate()
+
+        val from = org.joda.time.LocalDate.fromDateFields(tanggalPembelian)
+        val t0 = org.joda.time.LocalDate.fromDateFields(tanggalSekarang)
+        val period = org.joda.time.Period(from, t0)
+        val years = period.years
+        val months = if (years > 0) {
+            (years * 12) + period.months
+        } else {
+            period.months
+        }
+
+        Assert.assertEquals(-1, baselinePembayaran.opsiBulan - months)
+    }
 }
