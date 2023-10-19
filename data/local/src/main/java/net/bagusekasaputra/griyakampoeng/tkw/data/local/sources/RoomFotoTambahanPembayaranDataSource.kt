@@ -5,6 +5,7 @@ import androidx.core.net.toUri
 import net.bagusekasaputra.griyakampoeng.tkw.data.local.MyRoomDatabase
 import net.bagusekasaputra.griyakampoeng.tkw.data.local.model.FotoTambahanPembayaranEntity
 import net.bagusekasaputra.griyakampoengtkw.data.interfaces.local.LocalFotoTambahanPembayaranDataSource
+import net.bagusekasaputra.griyakampoengtkw.data.model.FotoPembayaranModel
 import net.bagusekasaputra.griyakampoengtkw.data.model.FotoTambahanPembayaranModel
 import java.io.File
 
@@ -55,6 +56,26 @@ class RoomFotoTambahanPembayaranDataSource(
         }
     }
 
+    override suspend fun delete(kavling: String, id: String): Result<Nothing?> {
+        return try {
+            FotoTambahanPembayaranModel(
+                kavling = kavling,
+                tambahanPembayaranId = id,
+            ).also {
+                File(externalFileDir, "${FotoPembayaranModel.DST_FOLDER}/${it.getKavlingAndFilePath()}")
+                    .delete()
+            }
+
+            dao.delete(kavling, id)
+
+            Result.success(null)
+        } catch (e: Exception) {
+            e.printStackTrace()
+
+            Result.failure(e)
+        }
+    }
+
     override suspend fun deleteAll(kavling: String): Result<Nothing?> {
         return try {
             dao.deleteByKavling(kavling)
@@ -72,7 +93,7 @@ class RoomFotoTambahanPembayaranDataSource(
             FotoTambahanPembayaranModel(
                 kavling = it.kavling,
                 tambahanPembayaranId = it.pembayaranId,
-                uri = it.uri
+                uri = it.uri,
             )
         }
     }

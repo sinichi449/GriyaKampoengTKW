@@ -90,4 +90,22 @@ class StorageFotoTambahanPembayaranDataSource(
                 }
         }
     }
+
+    override suspend fun delete(kavling: String, id: String): Result<Nothing?> {
+        return suspendCancellableCoroutine { continuation ->
+            val filename = FotoTambahanPembayaranModel(
+                kavling = kavling,
+                tambahanPembayaranId = id,
+            ).getKavlingAndFilePath()
+
+            ref.child(filename)
+                .delete()
+                .addOnCompleteListener {
+                    continuation.resumeIfActive(Result.success(null))
+                }
+                .addOnFailureListener {
+                    continuation.resumeIfActive(Result.failure(it))
+                }
+        }
+    }
 }

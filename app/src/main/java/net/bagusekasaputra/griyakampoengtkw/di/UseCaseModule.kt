@@ -34,6 +34,7 @@ import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.fotoPembayaran.D
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.fotoPembayaran.GetFotoPembayaranAsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.fotoPembayaran.IsFotoPembayaranExistAsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.fotoTambahanPembayaran.AddFotoTambahanPembayaranAsyncUseCase
+import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.fotoTambahanPembayaran.DeleteFotoTambahanPembayaranAsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.fotoTambahanPembayaran.GetFotoTambahanPembayaranAsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.hargaKavling.GetHargaKavlingAsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.indenBooking.GetAllIndenBookingAsyncUseCase
@@ -801,5 +802,12 @@ object UseCaseModule {
         fotoTambahanPembayaranRepository: FotoTambahanPembayaranRepository
     ): AddFotoTambahanPembayaranAsyncUseCase {
         return AddFotoTambahanPembayaranAsyncUseCase(fotoTambahanPembayaranRepository)
+    }
+
+    @Provides
+    fun provideDeleteFotoTambahanPembayaranUseCase(
+        repo: FotoTambahanPembayaranRepository
+    ): DeleteFotoTambahanPembayaranAsyncUseCase {
+        return DeleteFotoTambahanPembayaranAsyncUseCase(repo)
     }
 }

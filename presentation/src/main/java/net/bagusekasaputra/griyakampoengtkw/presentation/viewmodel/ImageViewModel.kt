@@ -21,6 +21,7 @@ import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.fotoPembayaran.D
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.fotoPembayaran.GetFotoPembayaranAsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.fotoPembayaran.IsFotoPembayaranExistAsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.fotoTambahanPembayaran.AddFotoTambahanPembayaranAsyncUseCase
+import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.fotoTambahanPembayaran.DeleteFotoTambahanPembayaranAsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.fotoTambahanPembayaran.GetFotoTambahanPembayaranAsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.indenBooking.fotoPembayaran.DeleteFotoPembayaranIndenBookingAsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.indenBooking.fotoPembayaran.GetFotoPembayaranIndenBookingAsyncUseCase
@@ -69,6 +70,7 @@ class ImageViewModel @Inject constructor(
     // Foto Tambahan Pembayaran
     private val getFotoTambahanPembayaranUseCase: GetFotoTambahanPembayaranAsyncUseCase,
     private val addFotoTambahanPembayaranUseCase: AddFotoTambahanPembayaranAsyncUseCase,
+    private val deleteFotoTambahanPembayaranUseCase: DeleteFotoTambahanPembayaranAsyncUseCase,
 ): ViewModel() {
 
     val fotoKuitansiLive = MutableLiveData<FotoKuitansi>()
@@ -541,6 +543,31 @@ class ImageViewModel @Inject constructor(
                 result.onFailure {
                     withContext(Dispatchers.Main) {
                         onComplete("Gagal menambahkan: ${it.message}")
+                    }
+                }
+            }
+        }
+    }
+
+    fun deleteFotoTambahanPembayaran(
+        kavling: String,
+        id: String,
+        onProgress: () -> Unit,
+        onComplete: (msg: String) -> Unit,
+    ) {
+        onProgress()
+
+        viewModelScope.launch(Dispatchers.IO) {
+            val request = DeleteFotoTambahanPembayaranAsyncUseCase.Request(kavling, id)
+            deleteFotoTambahanPembayaranUseCase.execute(request).collect { result ->
+                result.onSuccess {
+                    withContext(Dispatchers.Main) {
+                        onComplete("Berhasil menghapus foto pembayaran !")
+                    }
+                }
+                result.onFailure {
+                    withContext(Dispatchers.Main) {
+                        onComplete("Gagal: ${it.message}")
                     }
                 }
             }

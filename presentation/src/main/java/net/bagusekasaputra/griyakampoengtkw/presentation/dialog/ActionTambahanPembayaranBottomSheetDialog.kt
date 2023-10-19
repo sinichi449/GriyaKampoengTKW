@@ -152,7 +152,18 @@ class ActionTambahanPembayaranBottomSheetDialog: BottomSheetDialogFragment() {
                         setTitle("Hapus Foto?")
                         setMessage("Apakah Anda yakin menghapus Foto Pembayaran ini?")
                         setPositiveButton("Ya") { dialog, _ ->
-                            // TODO: Hapus Foto
+                            imageViewModel.deleteFotoTambahanPembayaran(
+                                kavling = viewModel.currentKavlingKode!!,
+                                id = tambahanPembayaran.id,
+                                onProgress = {
+                                    binding.progressbarHapusFoto.visibility = View.VISIBLE
+                                },
+                                onComplete = {
+                                    binding.progressbarHapusFoto.visibility = View.GONE
+
+                                    Toast.makeText(requireContext(), it, Toast.LENGTH_LONG).show()
+                                }
+                            )
                         }
                         setNegativeButton("Tidak") { dialog, _ -> dialog.dismiss()}
                     }.create()

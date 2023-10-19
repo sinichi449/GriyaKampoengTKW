@@ -8,5 +8,7 @@ interface LocalFotoTambahanPembayaranDataSource {
 
     suspend fun insert(model: FotoTambahanPembayaranModel, fromRemote: Boolean): Result<Nothing?>
 
+    suspend fun delete(kavling: String, id: String): Result<Nothing?>
+
     suspend fun deleteAll(kavling: String): Result<Nothing?>
 }

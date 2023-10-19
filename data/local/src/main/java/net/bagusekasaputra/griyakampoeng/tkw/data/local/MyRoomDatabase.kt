@@ -74,7 +74,7 @@ import net.bagusekasaputra.griyakampoeng.tkw.data.local.model.TambahanPembayaran
         BackupRestoreEntity::class, PengembalianEntity::class,
         FotoTambahanPembayaranEntity::class, TambahanPembayaranEntity::class,
     ],
-    version = 37,
+    version = 39,
     exportSchema = true,
 )
 abstract class MyRoomDatabase: RoomDatabase() {

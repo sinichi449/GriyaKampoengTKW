@@ -9,4 +9,6 @@ interface FotoTambahanPembayaranRepository {
     suspend fun insert(entity: FotoTambahanPembayaran): Result<Nothing?>
 
     suspend fun isFotoExists(kavling: String, id: String): Result<Boolean>
+
+    suspend fun delete(kavling: String, id: String): Result<Nothing?>
 }

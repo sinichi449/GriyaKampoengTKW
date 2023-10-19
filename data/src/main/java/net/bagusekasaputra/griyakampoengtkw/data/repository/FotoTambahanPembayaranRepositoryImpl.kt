@@ -81,6 +81,25 @@ class FotoTambahanPembayaranRepositoryImpl(
         return remoteDataSource.isFotoExist(kavling, id)
     }
 
+    override suspend fun delete(kavling: String, id: String): Result<Nothing?> {
+        updateMetadata(kavling)
+
+        return remoteDataSource.delete(kavling, id)
+            .onSuccess {
+                localDataSource.delete(kavling, id)
+                    .onFailure {
+                        it.printStackTrace()
+
+                        throw it
+                    }
+            }
+            .onFailure {
+                it.printStackTrace()
+
+                throw it
+            }
+    }
+
     private suspend fun updateMetadata(kavling: String) {
         val currentTimeMillis = System.currentTimeMillis()
         val oldTimestamp = localMetadata.get(localTable(kavling))?.timestamp ?: 0L
