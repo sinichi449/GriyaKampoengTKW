@@ -273,9 +273,11 @@ class FullPembayaranFragment : Fragment() {
         pembayarans: List<Pembayaran>
     ) {
         if (fullScreen) {
-            binding.tvInfoSisaWaktuAngsuran.visibility = View.VISIBLE
+            // Hide Sisa Waktu Angsuran on Fullscreen Mode
+            binding.tvInfoSisaWaktuAngsuran.visibility = View.GONE
+            binding.tvSisaWaktuAngsuran.visibility = View.GONE
+
             binding.tvInfoSisaBlmTerbayar.visibility = View.VISIBLE
-            binding.tvSisaWaktuAngsuran.visibility = View.VISIBLE
             binding.tvSisaBlmTerbayar.visibility = View.VISIBLE
 
             binding.tvInfoBlmDibayarBulanIni.visibility = View.VISIBLE
