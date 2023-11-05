@@ -251,14 +251,14 @@ object DateUtil {
         }.toList()
     }
 
-    fun tahunListOf(last: Int = 5): List<String> {
+    fun tahunListOf(last: Int = 5, forward: Int = 5): List<String> {
         val tahunSekarang = Calendar.getInstance().get(Calendar.YEAR)
+        val lastYear = tahunSekarang - last
+        val forwardYear = tahunSekarang + forward
 
-        return buildList(last) {
-            repeat(last) { index ->
-                val tahun = tahunSekarang - index
-
-                add(tahun.toString())
+        return buildList {
+            (lastYear..forwardYear).forEach {
+                add(it.toString())
             }
         }
     }
