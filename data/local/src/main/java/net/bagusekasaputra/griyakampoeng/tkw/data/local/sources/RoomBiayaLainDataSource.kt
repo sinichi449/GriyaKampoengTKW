@@ -17,8 +17,6 @@ class RoomBiayaLainDataSource(
         return flow {
             val listModel = dao.getAll()
 
-
-
             emit(Result.success(
                 listModel?.map {
                     BiayaLainModel(
@@ -52,22 +50,16 @@ class RoomBiayaLainDataSource(
     override suspend fun insertAll(listModel: List<BiayaLainModel>): Result<Nothing?> {
         return try {
             listModel.forEach { model ->
-                dao.insert(
-                    BiayaLainRoomEntity(
-                        jenisBiaya = model.jenisBiaya,
-                        harga = model.harga,
-                        tanggal = model.tanggal,
-                    )
-                )
+                // Refactor <-> Duplication
+                val result = insert(model)
+                if (result.isFailure) {
+                    throw Exception()
+                }
             }
-
-
 
             Result.success(null)
         } catch (e: Exception) {
             e.printStackTrace()
-
-
 
             Result.failure(e)
         }
@@ -75,13 +67,15 @@ class RoomBiayaLainDataSource(
 
     override suspend fun insert(model: BiayaLainModel): Result<Nothing?> {
         return try {
-            dao.insert(
-                BiayaLainRoomEntity(
-                    jenisBiaya = model.jenisBiaya,
-                    harga = model.harga,
-                    tanggal = model.tanggal,
+            // only write to non-null data
+            if (model.jenisBiaya.isNotEmpty())
+                dao.insert(
+                    BiayaLainRoomEntity(
+                        jenisBiaya = model.jenisBiaya,
+                        harga = model.harga,
+                        tanggal = model.tanggal,
+                    )
                 )
-            )
 
 
 
