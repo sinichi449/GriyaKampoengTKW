@@ -7,5 +7,9 @@ data class PembayaranTambahLuasan(
     val kavling: String,
     val tanggal: String,
     val jumlahUang: Long,
+    val keterangan: String = "-",
     val timeMillis: Long = System.currentTimeMillis()
-)
+) {
+
+
+}

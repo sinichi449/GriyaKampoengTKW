@@ -18,9 +18,11 @@ import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
 import net.bagusekasaputra.griyakampoengtkw.domain.DataMode
 import net.bagusekasaputra.griyakampoengtkw.domain.NumberUtil
+import net.bagusekasaputra.griyakampoengtkw.domain.NumberUtil.numericToString
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.BaselinePembayaran
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.DataDiri
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.HargaKavling
+import net.bagusekasaputra.griyakampoengtkw.domain.entity.PembayaranTambahLuasan
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.pembayaran.Pembayaran
 import net.bagusekasaputra.griyakampoengtkw.presentation.R
 import net.bagusekasaputra.griyakampoengtkw.presentation.activity.FormActivity
@@ -32,6 +34,11 @@ import net.bagusekasaputra.griyakampoengtkw.presentation.custom.ThousandSeparato
 import net.bagusekasaputra.griyakampoengtkw.presentation.databinding.*
 import net.bagusekasaputra.griyakampoengtkw.presentation.dialog.FormBaselinePembayaranDialog
 import net.bagusekasaputra.griyakampoengtkw.presentation.model.UiState
+import net.bagusekasaputra.griyakampoengtkw.presentation.tableview.base.CellItem
+import net.bagusekasaputra.griyakampoengtkw.presentation.tableview.base.ColumnHeader
+import net.bagusekasaputra.griyakampoengtkw.presentation.tableview.base.GenericTableView
+import net.bagusekasaputra.griyakampoengtkw.presentation.tableview.base.RowHeader
+import net.bagusekasaputra.griyakampoengtkw.presentation.tableview.base.TableViewDataProvider
 import net.bagusekasaputra.griyakampoengtkw.presentation.util.*
 import net.bagusekasaputra.griyakampoengtkw.presentation.util.DialogUtil.additionalDialogSetting
 import net.bagusekasaputra.griyakampoengtkw.presentation.util.exporter.ExporterWrapper
@@ -39,7 +46,6 @@ import net.bagusekasaputra.griyakampoengtkw.presentation.viewmodel.DetailViewMod
 import net.bagusekasaputra.griyakampoengtkw.presentation.viewmodel.FormPembayaranViewModel
 import net.bagusekasaputra.griyakampoengtkw.presentation.viewmodel.FormPembayaranViewModel.TablePembayaranType
 import net.bagusekasaputra.griyakampoengtkw.presentation.viewmodel.PembayaranSyncRequest
-import java.util.*
 import javax.inject.Inject
 
 @SuppressLint("SetTextI18n")
@@ -339,10 +345,13 @@ class FormPembayaranFragment : Fragment() {
                         binding.tvInfoLoadingTambahanLuasan?.visibility = View.GONE
                         if (!k.data.isNullOrEmpty()) {
                             // override k.data with dummy list if
+                            binding.tableviewTambahanLuasan?.visibility = View.VISIBLE
+                            setupTableTambahanLuasan(k.data)
 
-                            binding.tvInfoLoadingTambahanLuasan?.text = "Congrats! Something Happens!"
-                        } else {
-                            binding.layoutTabelTambahanLuasan?.visibility = View.GONE
+                            val total = k.data.sumOf { it.jumlahUang }
+                                .numericToString()
+                            binding.tvTotalTambahLuasan?.visibility = View.VISIBLE
+                            binding.tvTotalTambahLuasan?.text = total
                         }
                     }
                 }
@@ -443,6 +452,67 @@ class FormPembayaranFragment : Fragment() {
 
         dialogBinding.btnBatal.setOnClickListener {
             dialogView.dismiss()
+        }
+    }
+
+    private fun setupTableTambahanLuasan(pembayaranTambahLuasanList: List<PembayaranTambahLuasan>) {
+        if (pembayaranTambahLuasanList.isNotEmpty() && binding.tableviewTambahanLuasan != null) {
+            val Columns = object {
+                val TANGGAL = 0
+                val JUMLAH_UANG = 1
+                val KETERANGAN = 2
+            }
+            val widthColumnHeaders = listOf(
+                Pair(Columns.TANGGAL, 250),
+                Pair(Columns.JUMLAH_UANG, 350),
+                Pair(Columns.KETERANGAN, 500),
+            )
+
+            GenericTableView(binding.tableviewTambahanLuasan!!, pembayaranTambahLuasanList)
+                .setDataProvider(object : TableViewDataProvider<PembayaranTambahLuasan> {
+                    override fun getColumnHeaders(data: Collection<PembayaranTambahLuasan>): List<ColumnHeader> {
+                        return buildList {
+                            add(ColumnHeader("Tanggal"))
+                            add(ColumnHeader("Jumlah Uang"))
+                            add(ColumnHeader("Keterangan"))
+                        }
+                    }
+
+                    override fun getRowHeaders(data: Collection<PembayaranTambahLuasan>): List<RowHeader> {
+                        return buildList {
+                            (1 .. data.size).forEach {
+                                val result = it.toString()
+                                add(RowHeader(result, result))
+                            }
+                        }
+                    }
+
+                    override fun getCellItems(data: Collection<PembayaranTambahLuasan>): List<List<CellItem>> {
+                        val list = data.toMutableList()
+                        return buildList {
+                            list.forEachIndexed { index, item ->
+                                val cellId = index.plus(1).toString()
+                                val cell = mutableListOf<CellItem>()
+
+                                cell.add(CellItem(cellId, item.tanggal))
+                                cell.add(CellItem(cellId, item.jumlahUang.numericToString()))
+                                cell.add(CellItem(cellId, item.keterangan))
+
+                                add(cell)
+                            }
+                        }
+                    }
+
+                })
+                .setWidthColumnHeaders(widthColumnHeaders)
+                .setOnCellBinding { cellViewHolder, cellItem, col, row ->
+                    if (col == Columns.KETERANGAN) {
+                        cellViewHolder.tvCell.gravity = Gravity.START
+                    } else {
+                        cellViewHolder.tvCell.gravity = Gravity.CENTER
+                    }
+                }
+                .create()
         }
     }
 
