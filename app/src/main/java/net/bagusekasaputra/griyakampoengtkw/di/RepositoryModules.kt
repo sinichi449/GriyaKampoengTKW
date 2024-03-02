@@ -82,6 +82,7 @@ import net.bagusekasaputra.griyakampoengtkw.data.repository.IndenBookingCatatanP
 import net.bagusekasaputra.griyakampoengtkw.data.repository.IndenBookingRepositoryImpl
 import net.bagusekasaputra.griyakampoengtkw.data.repository.KavlingCatatanPembayaranRepositoryImpl
 import net.bagusekasaputra.griyakampoengtkw.data.repository.KavlingRepositoryImpl
+import net.bagusekasaputra.griyakampoengtkw.data.repository.PembayaranTambahLuasanRepositoryImpl
 import net.bagusekasaputra.griyakampoengtkw.data.repository.PengembalianRepositoryImpl
 import net.bagusekasaputra.griyakampoengtkw.data.repository.PengingatRepositoryImpl
 import net.bagusekasaputra.griyakampoengtkw.data.repository.PromotionRepositoryImpl
@@ -115,6 +116,7 @@ import net.bagusekasaputra.griyakampoengtkw.domain.repository.IndenBookingReposi
 import net.bagusekasaputra.griyakampoengtkw.domain.repository.KavlingCatatanPembayaranRepository
 import net.bagusekasaputra.griyakampoengtkw.domain.repository.KavlingRepository
 import net.bagusekasaputra.griyakampoengtkw.domain.repository.PembayaranRepository
+import net.bagusekasaputra.griyakampoengtkw.domain.repository.PembayaranTambahLuasanRepository
 import net.bagusekasaputra.griyakampoengtkw.domain.repository.PengembalianRepository
 import net.bagusekasaputra.griyakampoengtkw.domain.repository.PengingatRepository
 import net.bagusekasaputra.griyakampoengtkw.domain.repository.PromotionRepository
@@ -550,4 +552,11 @@ object RepositoryModules {
         return PengembalianRepositoryImpl(localDataSource, remoteDataSource, cacheHelper, externalFileDir)
     }
 
+    /**
+     * Pembayaran Tambahan Luasan
+     */
+    @Provides
+    fun providePembayaranTambahanLuasanRepository(): PembayaranTambahLuasanRepository {
+        return PembayaranTambahLuasanRepositoryImpl()
+    }
 }

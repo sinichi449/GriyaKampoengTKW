@@ -26,10 +26,12 @@ import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.pembayaran.GetLi
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.pembayaran.GetSinglePembayaranByKavlingAndTerminAsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.pembayaran.InsertPembayaranAsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.pembayaran.UpdatePembayaranAsyncUseCase
+import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.pembayaranTambahLuasan.GetAllPembayaranTambahLuasanAsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.statusPembayaran.GetStatusPembayaranKavlingAsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.BaselinePembayaran
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.CatatanPembayaran
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.KavlingCatatanPembayaran
+import net.bagusekasaputra.griyakampoengtkw.domain.entity.PembayaranTambahLuasan
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.StandardAmbilKuitansi
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.pembayaran.Pembayaran
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.pembayaran.PembayaranBulanan
@@ -61,6 +63,8 @@ class FormPembayaranViewModel @Inject constructor(
     private val getCatatanPembayaranAsyncUseCase: GetCatatanPembayaranAsyncUseCase,
     private val addCatatanPembayaranAsyncUseCase: AddCatatanPembayaranAsyncUseCase,
     private val deleteCatatanPembayaranAsyncUseCase: DeleteCatatanPembayaranAsyncUseCase,
+    // Tambah Luasan
+    private val getAllTambahanLuasPembayaran: GetAllPembayaranTambahLuasanAsyncUseCase,
 ): ViewModel() {
 
     // Pembayaran Bulanan
@@ -120,6 +124,11 @@ class FormPembayaranViewModel @Inject constructor(
     val pembayaran: LiveData<UiState<Pembayaran?>>
         get() = _pembayaran
 
+    // Tambahan Luasan Pembayarna
+    private val _tambahanLuasPembayaran = MutableLiveData<UiState<List<PembayaranTambahLuasan>?>>()
+    val tambahanLuasPembayaran: LiveData<UiState<List<PembayaranTambahLuasan>?>>
+        get() = _tambahanLuasPembayaran
+
 
     // Sync Request
     private val _syncRequests = MutableLiveData<Array<Int>?>(null)
@@ -139,6 +148,8 @@ class FormPembayaranViewModel @Inject constructor(
 
     var writeBaselinePembayaranJob: Job? = null
     var readPembayaranBulananJob: Job? = null
+
+    var readTambahanLuasPembayaranJob: Job? = null
 
     private val isFinishOperation = MutableLiveData<Boolean>()
     private val asyncHelper = AsyncUseCaseHelper(isFinishOperation)
@@ -517,7 +528,29 @@ class FormPembayaranViewModel @Inject constructor(
         }
     }
 
+    /**
+     * Pembayaran Tambahan Luasan
+     */
+    fun getAllTambahanLuasPembayaran(kavlingKode: String) {
+        readTambahanLuasPembayaranJob?.cancel()
 
+        _tambahanLuasPembayaran.value = UiState.Loading()
+
+        val request = GetAllPembayaranTambahLuasanAsyncUseCase.Request(kavlingKode)
+        readTambahanLuasPembayaranJob = viewModelScope.launch(Dispatchers.IO) {
+            getAllTambahanLuasPembayaran.execute(request).collect { result ->
+                result.onSuccess {
+                    _tambahanLuasPembayaran.postValue(UiState.Success(it))
+                }
+
+                result.onFailure {
+                    _tambahanLuasPembayaran.postValue(UiState.Failure(
+                        failMsg = "Gagal mendapatkan list tambahan pembayaran: ${it.message}",
+                    ))
+                }
+            }
+        }
+    }
 
     /**
      * Operation observers
@@ -539,7 +572,8 @@ object PembayaranSyncRequest {
     const val TABEL_PEMBAYARAN = 2
     const val CATATAN_PEMBAYARAN = 3
     const val STATUS_PEMBAYARAN = 4
+    const val TAMBAHAN_PEMBAYARAN = 5
 
     val ALL = intArrayOf(HARGA_KAVLING, BASELINE_PEMBAYARAN,
-        TABEL_PEMBAYARAN, CATATAN_PEMBAYARAN, STATUS_PEMBAYARAN)
+        TABEL_PEMBAYARAN, CATATAN_PEMBAYARAN, STATUS_PEMBAYARAN, TAMBAHAN_PEMBAYARAN)
 }

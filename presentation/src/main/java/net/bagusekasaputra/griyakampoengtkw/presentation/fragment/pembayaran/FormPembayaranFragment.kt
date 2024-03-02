@@ -31,6 +31,7 @@ import net.bagusekasaputra.griyakampoengtkw.presentation.custom.TabelPembayaranN
 import net.bagusekasaputra.griyakampoengtkw.presentation.custom.ThousandSeparatorTextWatcher
 import net.bagusekasaputra.griyakampoengtkw.presentation.databinding.*
 import net.bagusekasaputra.griyakampoengtkw.presentation.dialog.FormBaselinePembayaranDialog
+import net.bagusekasaputra.griyakampoengtkw.presentation.model.UiState
 import net.bagusekasaputra.griyakampoengtkw.presentation.util.*
 import net.bagusekasaputra.griyakampoengtkw.presentation.util.DialogUtil.additionalDialogSetting
 import net.bagusekasaputra.griyakampoengtkw.presentation.util.exporter.ExporterWrapper
@@ -270,6 +271,10 @@ class FormPembayaranFragment : Fragment() {
                             },
                         )
                     }
+
+                    PembayaranSyncRequest.TAMBAHAN_PEMBAYARAN -> {
+                        pembayaranViewModel.getAllTambahanLuasPembayaran(currentKavlingKode!!)
+                    }
                 }
             }
         }
@@ -316,6 +321,33 @@ class FormPembayaranFragment : Fragment() {
                         setAngsuranBulananDetail(listPembayaran, baselinePembayaran)
                     }
                 }
+            }
+        }
+
+        pembayaranViewModel.tambahanLuasPembayaran.observe(requireActivity()) { k ->
+            if (k != null) {
+                binding.layoutTabelTambahanLuasan?.visibility = View.VISIBLE
+
+                when (k) {
+                    is UiState.Loading -> {
+                        binding.tvInfoLoadingTambahanLuasan?.text = "Sedang memuat ..."
+                    }
+                    is UiState.Failure -> {
+                        binding.tvInfoLoadingTambahanLuasan?.text = "Terjadi kesalahan!"
+                    }
+                    is UiState.Success -> {
+                        binding.tvInfoLoadingTambahanLuasan?.visibility = View.GONE
+                        if (!k.data.isNullOrEmpty()) {
+                            // override k.data with dummy list if
+
+                            binding.tvInfoLoadingTambahanLuasan?.text = "Congrats! Something Happens!"
+                        } else {
+                            binding.layoutTabelTambahanLuasan?.visibility = View.GONE
+                        }
+                    }
+                }
+            } else {
+                binding.layoutTabelTambahanLuasan?.visibility = View.GONE
             }
         }
     }

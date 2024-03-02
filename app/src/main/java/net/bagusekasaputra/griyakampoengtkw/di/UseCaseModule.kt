@@ -57,6 +57,7 @@ import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.pembayaran.GetLi
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.pembayaran.GetSinglePembayaranByKavlingAndTerminAsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.pembayaran.InsertPembayaranAsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.pembayaran.UpdatePembayaranAsyncUseCase
+import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.pembayaranTambahLuasan.GetAllPembayaranTambahLuasanAsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.pengembalian.GetPengembalianStreamAsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.pengingat.AddPengingatAsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.pengingat.DeletePengingatAsyncUseCase
@@ -94,6 +95,7 @@ import net.bagusekasaputra.griyakampoengtkw.domain.repository.IndenBookingReposi
 import net.bagusekasaputra.griyakampoengtkw.domain.repository.KavlingCatatanPembayaranRepository
 import net.bagusekasaputra.griyakampoengtkw.domain.repository.KavlingRepository
 import net.bagusekasaputra.griyakampoengtkw.domain.repository.PembayaranRepository
+import net.bagusekasaputra.griyakampoengtkw.domain.repository.PembayaranTambahLuasanRepository
 import net.bagusekasaputra.griyakampoengtkw.domain.repository.PengembalianRepository
 import net.bagusekasaputra.griyakampoengtkw.domain.repository.PengingatRepository
 import net.bagusekasaputra.griyakampoengtkw.domain.repository.PromotionRepository
@@ -737,4 +739,12 @@ object UseCaseModule {
     @Provides
     fun provideGetPengembalianStreamUseCase(pengembalianRepository: PengembalianRepository)
         = GetPengembalianStreamAsyncUseCase(pengembalianRepository)
+
+    /**
+     * Pembayaran Tambah Luasan
+     */
+    @Provides
+    fun provideGetAllPembayaranTambahLuasanUseCase(repository: PembayaranTambahLuasanRepository): GetAllPembayaranTambahLuasanAsyncUseCase {
+        return GetAllPembayaranTambahLuasanAsyncUseCase(repository)
+    }
 }
