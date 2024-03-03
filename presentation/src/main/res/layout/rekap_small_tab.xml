@@ -22,10 +22,23 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         app:layout_constraintStart_toEndOf="@id/btn_rekap_global"
-        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintEnd_toStartOf="@id/btn_rekap_user"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintBottom_toBottomOf="parent"
         android:text="Besar"
+        android:textColor="@color/primaryTextColor"
+        app:strokeColor="@color/secondaryColor"
+        style="@style/Widget.MaterialComponents.Button.OutlinedButton"/>
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/btn_rekap_user"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        app:layout_constraintStart_toEndOf="@id/btn_rekap_besar"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        android:text="User"
         android:textColor="@color/primaryTextColor"
         app:strokeColor="@color/secondaryColor"
         style="@style/Widget.MaterialComponents.Button.OutlinedButton"/>

@@ -47,6 +47,10 @@ class RekapFragment : Fragment() {
             navigateTo(RekapType.Besar)
         }
 
+        binding.smallTab?.btnRekapUser?.setOnClickListener {
+            navigateTo(RekapType.User)
+        }
+
         binding.swipeRefreshRekap.isEnabled = false
     }
 
@@ -69,6 +73,7 @@ class RekapFragment : Fragment() {
             val fragment = when (rekapType) {
                 RekapType.Global -> RekapGlobalFragment()
                 RekapType.Besar -> RekapBesarFragment()
+                RekapType.User -> RekapUserFragment()
                 else -> null
             }
             fragment?.let {
@@ -101,6 +106,10 @@ class RekapFragment : Fragment() {
                     setBackgroundColor(white)
                     setTextColor(purple)
                 }
+                this.btnRekapUser.apply {
+                    setBackgroundColor(white)
+                    setTextColor(purple)
+                }
             }
             RekapType.Besar -> {
                 this.btnRekapGlobal.apply {
@@ -109,6 +118,24 @@ class RekapFragment : Fragment() {
                 }
 
                 this.btnRekapBesar.apply {
+                    setBackgroundColor(purple)
+                    setTextColor(white)
+                }
+                this.btnRekapUser.apply {
+                    setBackgroundColor(white)
+                    setTextColor(purple)
+                }
+            }
+            RekapType.User -> {
+                this.btnRekapGlobal.apply {
+                    setBackgroundColor(white)
+                    setTextColor(purple)
+                }
+                this.btnRekapBesar.apply {
+                    setBackgroundColor(white)
+                    setTextColor(purple)
+                }
+                this.btnRekapUser.apply {
                     setBackgroundColor(purple)
                     setTextColor(white)
                 }

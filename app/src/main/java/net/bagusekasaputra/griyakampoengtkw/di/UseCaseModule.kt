@@ -71,6 +71,7 @@ import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.rekap.GetListRek
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.rekap.GetRekapBesarDetailAsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.rekap.GetRekapBesarOverviewAsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.rekap.GetRekapGlobalStreamAsyncUseCase
+import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.rekap.GetUserPaymentStatusWithSpecifiedInvoiceAsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.reportKavling.GetAllReportKavlingAsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.statusPembayaran.GetStatusPembayaranKavlingAsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.repository.AppUpdateRepository
@@ -280,6 +281,13 @@ object UseCaseModule {
     ): DeleteAllPembayaranUseCase {
         return DeleteAllPembayaranUseCase(pembayaranRepository, fotoPembayaranRepository)
     }
+
+    @Provides
+    fun provideGetUserPaymentStatusWithSpecifiedInvoiceUseCase(
+        blockRepository: BlockRepository,
+        kavlingRepository: KavlingRepository,
+        @Legacy pembayaranRepository: PembayaranRepository,
+    ) = GetUserPaymentStatusWithSpecifiedInvoiceAsyncUseCase(blockRepository, kavlingRepository, pembayaranRepository)
 
 
     /**

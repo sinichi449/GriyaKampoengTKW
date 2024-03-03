@@ -30,12 +30,14 @@ import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.pembayaran.Updat
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.pembayaranTambahLuasan.AddNewTambahLuasanPembayaranAsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.pembayaranTambahLuasan.DeleteByIdTambahLuasanPembayaranAsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.pembayaranTambahLuasan.GetAllPembayaranTambahLuasanAsyncUseCase
+import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.rekap.GetUserPaymentStatusWithSpecifiedInvoiceAsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.statusPembayaran.GetStatusPembayaranKavlingAsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.BaselinePembayaran
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.CatatanPembayaran
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.KavlingCatatanPembayaran
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.PembayaranTambahLuasan
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.StandardAmbilKuitansi
+import net.bagusekasaputra.griyakampoengtkw.domain.entity.pembayaran.BulanAngsuran
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.pembayaran.Pembayaran
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.pembayaran.PembayaranBulanan
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.statusPembayaran.StatusPembayaran
@@ -61,6 +63,8 @@ class FormPembayaranViewModel @Inject constructor(
     private val insertPembayaranUseCase: InsertPembayaranAsyncUseCase,
     private val addPembayaranUseCase: AddPembayaranUseCase,
     private val deletePembayaranAsyncUseCase: DeletePembayaranAsyncUseCase,
+    // User Payment Status
+    private val getUserPaymentStatusWithInvoice: GetUserPaymentStatusWithSpecifiedInvoiceAsyncUseCase,
     // Ambil Kuitansi
     private val insertAmbilKuitansiAsyncUseCase: InsertAmbilKuitansiAsyncUseCase,
     // Kavling Catatan Pembayaran
@@ -70,7 +74,7 @@ class FormPembayaranViewModel @Inject constructor(
     // Tambah Luasan
     private val getAllTambahanLuasPembayaran: GetAllPembayaranTambahLuasanAsyncUseCase,
     private val addNewTambahLuasanUseCase: AddNewTambahLuasanPembayaranAsyncUseCase,
-    private val deleteTambahLuasanUseCase: DeleteByIdTambahLuasanPembayaranAsyncUseCase
+    private val deleteTambahLuasanUseCase: DeleteByIdTambahLuasanPembayaranAsyncUseCase,
 ): ViewModel() {
 
     // Pembayaran Bulanan
@@ -108,6 +112,11 @@ class FormPembayaranViewModel @Inject constructor(
     private val _pembayaranList = MutableLiveData<UiState<List<Pembayaran>?>>()
     val pembayaranList: LiveData<UiState<List<Pembayaran>?>>
         get() = _pembayaranList
+
+    // User Payment Status List
+    private val _userPaymentStatus = MutableLiveData<List<List<String>>?>()
+    val userPaymentStatus: LiveData<List<List<String>>?>
+        get() = _userPaymentStatus
 
     // Status Pembayaran
     private val _statusPembayaranLive = MutableLiveData<StatusPembayaran?>(null)
@@ -161,6 +170,9 @@ class FormPembayaranViewModel @Inject constructor(
 
     var readTambahanLuasPembayaranJob: Job? = null
     var writeTambahanLuasPembayaranJob: Job? = null
+
+    var bulanRekapUser = 1
+    var tahunRekapUser = 2022
 
     private val isFinishOperation = MutableLiveData<Boolean>()
     private val asyncHelper = AsyncUseCaseHelper(isFinishOperation)
@@ -353,6 +365,30 @@ class FormPembayaranViewModel @Inject constructor(
                     withContext(Dispatchers.Main) {
                         onFailure("Gagal menghapus pembayaran: " +
                                 "${it.javaClass.simpleName}:${it.message}")
+                    }
+                }
+            }
+        }
+    }
+
+    fun getUserPaymentStatusWithInvoice(
+        bulanAngsuran: BulanAngsuran,
+        onSuccess: () -> Unit,
+        onFailure: (msg: String) -> Unit
+    ) {
+        val request = GetUserPaymentStatusWithSpecifiedInvoiceAsyncUseCase.Request(bulanAngsuran)
+
+        viewModelScope.launch(Dispatchers.IO) {
+            getUserPaymentStatusWithInvoice.execute(request).collect { result ->
+                result.onSuccess {
+                    _userPaymentStatus.postValue(result.getOrNull() ?: emptyList())
+                    withContext(Dispatchers.Main) {
+                        onSuccess()
+                    }
+                }
+                result.onFailure {
+                    withContext(Dispatchers.Main) {
+                        onFailure(it.message ?: "Terjadi kesalahan!")
                     }
                 }
             }
