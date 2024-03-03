@@ -27,6 +27,7 @@ import net.bagusekasaputra.griyakampoengtkw.domain.entity.pembayaran.Pembayaran
 import net.bagusekasaputra.griyakampoengtkw.presentation.R
 import net.bagusekasaputra.griyakampoengtkw.presentation.activity.FormActivity
 import net.bagusekasaputra.griyakampoengtkw.presentation.activity.InsertFormPembayaranParcel
+import net.bagusekasaputra.griyakampoengtkw.presentation.activity.InsertTambahLuasanPembayaranParcel
 import net.bagusekasaputra.griyakampoengtkw.presentation.activity.PembayaranTabelFullActivity
 import net.bagusekasaputra.griyakampoengtkw.presentation.custom.StatusPembayaranLayoutHelper
 import net.bagusekasaputra.griyakampoengtkw.presentation.custom.TabelPembayaranNavHelper
@@ -62,6 +63,7 @@ class FormPembayaranFragment : Fragment() {
     private val pembayaranViewModel: FormPembayaranViewModel by activityViewModels()
 
     private val requestTambahFormPembayaran = 901
+    private val requestPembayaranTambahLuasan = 902
     private var currentKavlingKode: String? = null
     private var layoutStatusPembayaran: StatusPembayaranLayoutHelper? = null
 
@@ -227,7 +229,7 @@ class FormPembayaranFragment : Fragment() {
         }
 
         binding.fabTambahLuasan?.setOnClickListener {
-            // TODO
+            openNewTambahLuasanPembayaranIntent()
         }
     }
 
@@ -249,6 +251,23 @@ class FormPembayaranFragment : Fragment() {
             intent.putExtra(FormActivity.EXTRAS_PARCEL, insertFormPembayaranParcel)
             @Suppress("DEPRECATION")
             startActivityForResult(intent, requestTambahFormPembayaran)
+        }
+    }
+
+    private fun openNewTambahLuasanPembayaranIntent() {
+        val jumlahTambahLuasan = viewModel.hargaKavlingLive.value?.tambahLuasanLong ?: 0L
+
+        if (jumlahTambahLuasan <= 0) {
+            Toast.makeText(requireContext(), "Harga Tambah Luasan masih kosong!", Toast.LENGTH_SHORT)
+                .show()
+        } else {
+            // Go to FormActivity
+            val intent = Intent(requireContext(), FormActivity::class.java)
+            val parcel = InsertTambahLuasanPembayaranParcel(currentKavlingKode!!)
+
+            intent.putExtra(FormActivity.EXTRAS_PARCEL, parcel)
+            @Suppress("DEPRECATION")
+            startActivityForResult(intent, requestPembayaranTambahLuasan)
         }
     }
 
