@@ -1,10 +1,12 @@
 package net.bagusekasaputra.griyakampoengtkw.presentation.fragment.rekap
 
+import android.content.Context
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.inputmethod.InputMethodManager
 import android.widget.Toast
 import androidx.fragment.app.activityViewModels
 import com.google.android.material.snackbar.Snackbar
@@ -41,6 +43,9 @@ class RekapUserFragment : Fragment() {
                 if (isInvalidEdt) {
                     Snackbar.make(root, "Input masih kosong!", Snackbar.LENGTH_SHORT).show()
                 } else {
+                    // Hide Keyboard
+                    InputUtil.hideKeyboard(requireContext(), root.windowToken)
+
                     viewModel.bulanRekapUser = edtBulan.text?.toString()?.toInt() ?: 1
                     viewModel.tahunRekapUser = edtTahun.text?.toString()?.toInt() ?: 2022
 
