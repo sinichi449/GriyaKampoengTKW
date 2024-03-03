@@ -467,6 +467,7 @@ class FormPembayaranFragment : Fragment() {
                 Pair(Columns.JUMLAH_UANG, 350),
                 Pair(Columns.KETERANGAN, 500),
             )
+            val rowSeparator = "<>"
 
             GenericTableView(binding.tableviewTambahanLuasan!!, pembayaranTambahLuasanList)
                 .setDataProvider(object : TableViewDataProvider<PembayaranTambahLuasan> {
@@ -479,10 +480,17 @@ class FormPembayaranFragment : Fragment() {
                     }
 
                     override fun getRowHeaders(data: Collection<PembayaranTambahLuasan>): List<RowHeader> {
+                        val list = data.toMutableList()
                         return buildList {
-                            (1 .. data.size).forEach {
-                                val result = it.toString()
-                                add(RowHeader(result, result))
+                            list.forEachIndexed { index, item ->
+                                val rowId = index.plus(1).toString()
+                                val rowData = TambahanLuasanRowData(
+                                    nomor = index.plus(1),
+                                    sudahIsiFoto = item.fotoUri.isNotEmpty(),
+                                    sudahAmbilKuitansi = item.sudahAmbilKuitansi,
+                                )
+
+                                add(RowHeader(rowId, rowData.asString(TambahanLuasanRowData.DEFAULT_SEPARATOR)))
                             }
                         }
                     }
@@ -505,6 +513,19 @@ class FormPembayaranFragment : Fragment() {
 
                 })
                 .setWidthColumnHeaders(widthColumnHeaders)
+                .setOnRowHeaderBinding { viewHolder, item, row ->
+                    val data = item?.data?.let {
+                        TambahanLuasanRowData.fromString(it, TambahanLuasanRowData.DEFAULT_SEPARATOR)
+                    }
+
+                    if (data != null) {
+                        viewHolder.setRowHeaderBgColour(
+                            if (data.sudahIsiFoto) R.color.table_selected_colour
+                        else R.color.table_unselected_colour)
+                    }
+
+                    viewHolder.setRowHeaderText(data?.nomor?.toString() ?: "0")
+                }
                 .setOnCellBinding { cellViewHolder, cellItem, col, row ->
                     if (col == Columns.KETERANGAN) {
                         cellViewHolder.tvCell.gravity = Gravity.START
@@ -778,5 +799,32 @@ class FormPembayaranFragment : Fragment() {
             .setPositiveButton("Tutup") { dialog, _ -> dialog.dismiss() }
             .create()
             .show()
+    }
+}
+
+data class TambahanLuasanRowData(
+    val nomor: Int,
+    val sudahIsiFoto: Boolean,
+    val sudahAmbilKuitansi: Boolean,
+) {
+
+    fun asString(separator: String) = buildString {
+        append(nomor).append(separator)
+        append(sudahIsiFoto).append(separator)
+        append(sudahAmbilKuitansi.toString()).append(separator)
+    }
+
+    companion object {
+        const val DEFAULT_SEPARATOR = "<>"
+
+        fun fromString(str: String, separator: String): TambahanLuasanRowData {
+            val split = str.split(separator)
+
+            return TambahanLuasanRowData(
+                nomor = split[0].toInt(),
+                sudahIsiFoto = split[1].toBoolean(),
+                sudahAmbilKuitansi = split[2].toBoolean(),
+            )
+        }
     }
 }

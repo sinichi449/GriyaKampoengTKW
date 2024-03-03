@@ -16,9 +16,9 @@ class PembayaranTambahLuasanRepositoryImpl: PembayaranTambahLuasanRepository {
             if (kavling == defaultKavling) {
                 emit(Result.success(
                     listOf(
-                        PembayaranTambahLuasan(kavling = defaultKavling, tanggal = "14/07/2023", jumlahUang = 1_000_000L),
-                        PembayaranTambahLuasan(kavling = defaultKavling, tanggal = "23/09/2023", jumlahUang = 26_000_000L),
-                        PembayaranTambahLuasan(kavling = defaultKavling, tanggal = "12/12/2023", jumlahUang = 9_000_000L),
+                        PembayaranTambahLuasan(kavling = defaultKavling, fotoUri = "lorem ipsum", tanggal = "14/07/2023", jumlahUang = 1_000_000L),
+                        PembayaranTambahLuasan(kavling = defaultKavling, fotoUri = "", tanggal = "23/09/2023", jumlahUang = 26_000_000L),
+                        PembayaranTambahLuasan(kavling = defaultKavling, fotoUri = "", tanggal = "12/12/2023", jumlahUang = 9_000_000L),
                     )
                 ))
             } else {
