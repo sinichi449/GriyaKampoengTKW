@@ -665,6 +665,16 @@ class FormPembayaranFragment : Fragment() {
                     Toast.makeText(requireContext(), it, Toast.LENGTH_LONG).show()
                 }
             }
+        } else if (requestCode == requestPembayaranTambahLuasan) {
+            if (resultCode == Activity.RESULT_OK) {
+                Toast.makeText(requireContext(), "Berhasil menambahkan tambahan luasan!", Toast.LENGTH_SHORT).show()
+
+                pembayaranViewModel.requestSync(PembayaranSyncRequest.TAMBAHAN_PEMBAYARAN)
+            } else {
+                data?.extras?.getString(FormActivity.EXTRAS_FAIL_MSG)?.also {
+                    Toast.makeText(requireContext(), it, Toast.LENGTH_LONG).show()
+                }
+            }
         }
     }
 

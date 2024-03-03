@@ -82,4 +82,30 @@ class PembayaranTambahLuasanRepositoryImplD(
         }
     }
 
+    override fun add(pembayaranTambahLuasan: PembayaranTambahLuasan): Flow<Result<Nothing?>> {
+        return flow {
+            updateMetadata()
+
+            val model = MyObjectMapper.mapTambahLuasanPembayaran(pembayaranTambahLuasan)
+            val remoteResult = remoteSource.add(model)
+            remoteResult.onSuccess {
+                // TODO: Insert to local data source too
+                emit(Result.success(null))
+            }
+
+            remoteResult.onFailure {
+                emit(Result.failure(it))
+            }
+        }
+    }
+
+    private suspend fun updateMetadata() {
+        val currentTimemillis = System.currentTimeMillis()
+        val oldMetadata = localMetadata.get(metadataTable) ?: MetadataModel(metadataTable, 0L)
+        val newMetadata = MetadataModel(metadataTable, currentTimemillis)
+
+        localMetadata.insert(newMetadata)
+        remoteMetadata.update(oldMetadata, newMetadata)
+    }
+
 }

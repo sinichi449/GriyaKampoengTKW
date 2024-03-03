@@ -7,4 +7,6 @@ interface PembayaranTambahLuasanRepository {
 
     fun getAll(kavling: String): Flow<Result<List<PembayaranTambahLuasan>?>>
 
+    fun add(pembayaranTambahLuasan: PembayaranTambahLuasan): Flow<Result<Nothing?>>
+
 }

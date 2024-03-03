@@ -1,5 +1,7 @@
 package net.bagusekasaputra.griyakampoengtkw.presentation.form
 
+import android.app.Activity
+import android.content.Intent
 import android.os.Bundle
 import android.os.Parcelable
 import androidx.fragment.app.Fragment
@@ -10,7 +12,9 @@ import android.widget.Toast
 import androidx.core.os.BundleCompat
 import androidx.fragment.app.activityViewModels
 import dagger.hilt.android.AndroidEntryPoint
+import net.bagusekasaputra.griyakampoengtkw.domain.NumberUtil.numericToLong
 import net.bagusekasaputra.griyakampoengtkw.domain.NumberUtil.numericToString
+import net.bagusekasaputra.griyakampoengtkw.domain.entity.PembayaranTambahLuasan
 import net.bagusekasaputra.griyakampoengtkw.presentation.R
 import net.bagusekasaputra.griyakampoengtkw.presentation.activity.FormActivity
 import net.bagusekasaputra.griyakampoengtkw.presentation.activity.InsertTambahLuasanPembayaranParcel
@@ -19,6 +23,8 @@ import net.bagusekasaputra.griyakampoengtkw.presentation.custom.addThousandTextL
 import net.bagusekasaputra.griyakampoengtkw.presentation.databinding.FragmentFormInputTambahLuasanPembayaranBinding
 import net.bagusekasaputra.griyakampoengtkw.presentation.model.UiState
 import net.bagusekasaputra.griyakampoengtkw.presentation.util.DatePickerHelper
+import net.bagusekasaputra.griyakampoengtkw.presentation.util.FormUtil
+import net.bagusekasaputra.griyakampoengtkw.presentation.util.InputUtil
 import net.bagusekasaputra.griyakampoengtkw.presentation.viewmodel.FormInputViewModel
 import net.bagusekasaputra.griyakampoengtkw.presentation.viewmodel.FormPembayaranViewModel
 
@@ -99,12 +105,55 @@ class FormInputTambahLuasanPembayaranFragment : Fragment() {
         }
 
         formActivity.getFabDone().setOnClickListener {
-            Toast.makeText(requireContext(), "Oke good!", Toast.LENGTH_SHORT).show()
+            with(binding) {
+                val isInvalidEdt = InputUtil.isNullOrEmptyEditTexts(
+                    edtTanggal, edtJumlahUangDibayar
+                )
+
+                if (!isInvalidEdt) {
+                    val tanggal = edtTanggal.text?.toString()
+                    val uangDibayar = edtJumlahUangDibayar.text?.toString()?.numericToLong()
+                    val keterangan = edtKeterangan.text?.toString()
+
+                    val entity = PembayaranTambahLuasan(
+                        kavling = pembayaranViewModel.currentKavlingKode!!,
+                        tanggal = tanggal!!,
+                        jumlahUang = uangDibayar!!,
+                        keterangan = if (keterangan.isNullOrBlank()) "-" else keterangan,
+                    )
+
+                    if (pembayaranViewModel.formIsEditMode) {
+                        // TODO execute update
+                    } else {
+                        pembayaranViewModel.addTambahLuasanPembayaran(entity)
+                    }
+                } else {
+                    Toast.makeText(requireContext(), "Input masih belum benar!", Toast.LENGTH_LONG).show()
+                }
+            }
         }
     }
 
     private fun setupViewModel() {
-        // TODO
+        pembayaranViewModel.addTambahLuasanOperation.observe(requireActivity()) { k ->
+            k?.also { uiState ->
+                when (uiState) {
+                    is UiState.Loading -> {
+                        onLoading(true)
+                        binding.tvInfoSedangMemuat.text = "Memproses data tunggu sebentar ..."
+                    }
+                    is UiState.Failure -> {
+                        val resultIntent = Intent()
+                        resultIntent.putExtra(FormActivity.EXTRAS_FAIL_MSG, uiState.failMsg)
+
+                        FormUtil.sendResultAndExit(requireActivity(), Activity.RESULT_CANCELED, resultIntent)
+                    }
+                    is UiState.Success -> {
+                        FormUtil.sendResultAndExit(requireActivity(), Activity.RESULT_OK, null)
+                    }
+                }
+            }
+        }
     }
 
     private fun setupViewModelForEditMode() {
@@ -134,6 +183,8 @@ class FormInputTambahLuasanPembayaranFragment : Fragment() {
             layoutLoading.visibility = if (loading) View.VISIBLE else View.GONE
             layoutForm.visibility = if (loading) View.GONE else View.VISIBLE
         }
+        val fabDone = (requireActivity() as FormActivity).getFabDone()
+        if (loading) fabDone.hide() else fabDone.show()
     }
 
 }

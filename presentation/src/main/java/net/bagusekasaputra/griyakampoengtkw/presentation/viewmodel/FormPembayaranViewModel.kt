@@ -27,6 +27,7 @@ import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.pembayaran.GetLi
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.pembayaran.GetSinglePembayaranByKavlingAndTerminAsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.pembayaran.InsertPembayaranAsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.pembayaran.UpdatePembayaranAsyncUseCase
+import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.pembayaranTambahLuasan.AddNewTambahLuasanPembayaranAsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.pembayaranTambahLuasan.GetAllPembayaranTambahLuasanAsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.statusPembayaran.GetStatusPembayaranKavlingAsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.BaselinePembayaran
@@ -67,6 +68,7 @@ class FormPembayaranViewModel @Inject constructor(
     private val deleteCatatanPembayaranAsyncUseCase: DeleteCatatanPembayaranAsyncUseCase,
     // Tambah Luasan
     private val getAllTambahanLuasPembayaran: GetAllPembayaranTambahLuasanAsyncUseCase,
+    private val addNewTambahLuasanUseCase: AddNewTambahLuasanPembayaranAsyncUseCase,
 ): ViewModel() {
 
     // Pembayaran Bulanan
@@ -156,6 +158,7 @@ class FormPembayaranViewModel @Inject constructor(
     var readPembayaranBulananJob: Job? = null
 
     var readTambahanLuasPembayaranJob: Job? = null
+    var writeTambahanLuasPembayaranJob: Job? = null
 
     private val isFinishOperation = MutableLiveData<Boolean>()
     private val asyncHelper = AsyncUseCaseHelper(isFinishOperation)
@@ -588,6 +591,25 @@ class FormPembayaranViewModel @Inject constructor(
         }
     }
 
+    fun addTambahLuasanPembayaran(entity: PembayaranTambahLuasan) {
+        writeTambahanLuasPembayaranJob?.cancel()
+
+        _addTambahLuasanOperation.value = UiState.Loading()
+
+        val request = AddNewTambahLuasanPembayaranAsyncUseCase.Request(entity)
+        writeTambahanLuasPembayaranJob = viewModelScope.launch(Dispatchers.IO) {
+            addNewTambahLuasanUseCase.execute(request).collect { result ->
+                result.onSuccess {
+                    _addTambahLuasanOperation.postValue(UiState.Success(null))
+                }
+
+                result.onFailure {
+                    _addTambahLuasanOperation.postValue(UiState.Failure(it.message))
+                }
+            }
+        }
+    }
+
     /**
      * Operation observers
      */
@@ -600,6 +622,10 @@ class FormPembayaranViewModel @Inject constructor(
 
     private val _insertPembayaranOperation = MutableStateFlow<UiState<Nothing?>?>(null)
     val insertPembayaranOperation = _insertPembayaranOperation.asStateFlow()
+
+    private val _addTambahLuasanOperation = MutableLiveData<UiState<Nothing?>>()
+    val addTambahLuasanOperation: LiveData<UiState<Nothing?>>
+        get() = _addTambahLuasanOperation
 }
 
 object PembayaranSyncRequest {

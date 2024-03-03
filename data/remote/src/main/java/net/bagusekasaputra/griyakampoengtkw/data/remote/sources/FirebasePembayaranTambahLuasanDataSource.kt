@@ -3,6 +3,7 @@ package net.bagusekasaputra.griyakampoengtkw.data.remote.sources
 import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.ktx.getValue
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.suspendCancellableCoroutine
 import net.bagusekasaputra.griyakampoengtkw.data.interfaces.remote.RemotePembayaranTambahLuasanDataSource
 import net.bagusekasaputra.griyakampoengtkw.data.model.PembayaranTambahLuasanModel
 import net.bagusekasaputra.griyakampoengtkw.data.remote.FirebaseNodes
@@ -37,5 +38,22 @@ class FirebasePembayaranTambahLuasanDataSource(
             timeOutMsg = "Waktu habis mendapatkan Pembayaran Tambah Luasan",
             onClosedConnection = {}
         )
+    }
+
+    override suspend fun add(model: PembayaranTambahLuasanModel): Result<Nothing?> {
+        return suspendCancellableCoroutine { continuation ->
+            ref.child(model.kavling).child(model.id)
+                .setValue(model)
+                .addOnSuccessListener {
+                    if (continuation.isActive) {
+                        continuation.resume(Result.success(null), null)
+                    }
+                }
+                .addOnFailureListener {
+                    if (continuation.isActive) {
+                        continuation.resume(Result.failure(it), null)
+                    }
+                }
+        }
     }
 }

@@ -57,6 +57,7 @@ import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.pembayaran.GetLi
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.pembayaran.GetSinglePembayaranByKavlingAndTerminAsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.pembayaran.InsertPembayaranAsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.pembayaran.UpdatePembayaranAsyncUseCase
+import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.pembayaranTambahLuasan.AddNewTambahLuasanPembayaranAsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.pembayaranTambahLuasan.GetAllPembayaranTambahLuasanAsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.pengembalian.GetPengembalianStreamAsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.pengingat.AddPengingatAsyncUseCase
@@ -747,4 +748,8 @@ object UseCaseModule {
     fun provideGetAllPembayaranTambahLuasanUseCase(repository: PembayaranTambahLuasanRepository): GetAllPembayaranTambahLuasanAsyncUseCase {
         return GetAllPembayaranTambahLuasanAsyncUseCase(repository)
     }
+
+    @Provides
+    fun provideAddNewTambahLuasanPembayaranUseCase(repository: PembayaranTambahLuasanRepository)
+        = AddNewTambahLuasanPembayaranAsyncUseCase(repository)
 }
