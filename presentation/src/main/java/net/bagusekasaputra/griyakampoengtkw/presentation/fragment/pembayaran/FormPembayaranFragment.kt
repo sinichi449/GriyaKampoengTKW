@@ -396,6 +396,8 @@ class FormPembayaranFragment : Fragment() {
                                 .numericToString()
                             binding.tvTotalTambahLuasan?.visibility = View.VISIBLE
                             binding.tvTotalTambahLuasan?.text = total
+                        } else {
+                            binding.layoutTabelTambahanLuasan?.visibility = View.GONE
                         }
                     }
                 }
