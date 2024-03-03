@@ -11,6 +11,7 @@ import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AlertDialog
 import androidx.core.content.ContextCompat
+import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
@@ -33,6 +34,7 @@ import net.bagusekasaputra.griyakampoengtkw.presentation.custom.StatusPembayaran
 import net.bagusekasaputra.griyakampoengtkw.presentation.custom.TabelPembayaranNavHelper
 import net.bagusekasaputra.griyakampoengtkw.presentation.custom.ThousandSeparatorTextWatcher
 import net.bagusekasaputra.griyakampoengtkw.presentation.databinding.*
+import net.bagusekasaputra.griyakampoengtkw.presentation.dialog.ActionTambahLuasanPembayaranBottomSheetDialog
 import net.bagusekasaputra.griyakampoengtkw.presentation.dialog.FormBaselinePembayaranDialog
 import net.bagusekasaputra.griyakampoengtkw.presentation.model.UiState
 import net.bagusekasaputra.griyakampoengtkw.presentation.tableview.base.CellItem
@@ -578,6 +580,14 @@ class FormPembayaranFragment : Fragment() {
                     } else {
                         cellViewHolder.tvCell.gravity = Gravity.CENTER
                     }
+                }
+                .setOnClickedRowHeader { rowHeaderView, row ->
+                    val actionDialog = ActionTambahLuasanPembayaranBottomSheetDialog()
+                    val bundle = bundleOf(
+                        ActionTambahLuasanPembayaranBottomSheetDialog.EXTRAS_SELECTED_INDEX_POSITION to row
+                    )
+                    actionDialog.arguments = bundle
+                    actionDialog.show(childFragmentManager, null)
                 }
                 .create()
         }

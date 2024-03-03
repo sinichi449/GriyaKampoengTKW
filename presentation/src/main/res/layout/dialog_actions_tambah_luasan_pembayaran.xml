@@ -1,0 +1,360 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.appcompat.widget.LinearLayoutCompat xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:theme="@style/Theme.GriyaKampoengTKW.BlackWhite"
+    android:paddingBottom="16dp"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <com.google.android.material.textview.MaterialTextView
+        android:id="@+id/tv_pembayaran_info"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="PTL 05/05/2023 - 5,000,000"
+        style="@style/TextAppearance.MaterialComponents.Headline6"
+        android:paddingTop="16dp"
+        android:paddingHorizontal="16dp"/>
+
+    <com.google.android.material.textview.MaterialTextView
+        android:id="@+id/tv_pembayaran_id"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="NOID"
+        android:paddingHorizontal="16dp"
+        style="@style/TextAppearance.MaterialComponents.Overline"/>
+
+    <!-- Data Tambaha Luasan -->
+    <androidx.appcompat.widget.LinearLayoutCompat
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="24dp"
+        android:orientation="vertical">
+
+        <com.google.android.material.textview.MaterialTextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="16dp"
+            android:text="Data Tambah Luasan Entry"/>
+
+        <!-- Ubah Pembayaran -->
+        <com.google.android.material.card.MaterialCardView
+            android:id="@+id/card_edit_data_pembayaran"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:layout_marginHorizontal="8dp"
+            android:clickable="true"
+            android:focusable="true"
+            app:cardElevation="0dp">
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:padding="8dp">
+
+                <ImageView
+                    android:id="@+id/img_ubah_pembayaran"
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    android:src="@drawable/ic_baseline_edit_24"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"/>
+
+                <com.google.android.material.textview.MaterialTextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginHorizontal="16dp"
+                    app:layout_constraintStart_toEndOf="@id/img_ubah_pembayaran"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="@id/img_ubah_pembayaran"
+                    app:layout_constraintBottom_toBottomOf="@id/img_ubah_pembayaran"
+                    android:text="Edit Data"
+                    style="@style/TextAppearance.MaterialComponents.Subtitle1"/>
+
+                <ProgressBar
+                    android:id="@+id/progressBar_editData"
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    android:visibility="gone"/>
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+        </com.google.android.material.card.MaterialCardView>
+
+        <!-- Hapus Pembayaran -->
+        <com.google.android.material.card.MaterialCardView
+            android:id="@+id/card_hapus_data_pembayaran"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:layout_marginHorizontal="8dp"
+            android:clickable="true"
+            android:focusable="true"
+            app:cardElevation="0dp">
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:padding="8dp">
+
+                <ImageView
+                    android:id="@+id/img_hapus_pembayaran"
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    android:src="@drawable/baseline_delete_24"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"/>
+
+                <com.google.android.material.textview.MaterialTextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginHorizontal="16dp"
+                    app:layout_constraintStart_toEndOf="@id/img_hapus_pembayaran"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="@id/img_hapus_pembayaran"
+                    app:layout_constraintBottom_toBottomOf="@id/img_hapus_pembayaran"
+                    android:text="Hapus Data"
+                    style="@style/TextAppearance.MaterialComponents.Subtitle1"/>
+
+                <ProgressBar
+                    android:id="@+id/progressbar_hapus_data"
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    android:visibility="gone"/>
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+        </com.google.android.material.card.MaterialCardView>
+
+    </androidx.appcompat.widget.LinearLayoutCompat>
+
+
+    <com.google.android.material.divider.MaterialDivider
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginVertical="8dp"/>
+
+    <!-- Foto Pembayaran Group Layout -->
+    <androidx.appcompat.widget.LinearLayoutCompat
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:layout_marginTop="8dp">
+
+        <com.google.android.material.textview.MaterialTextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Foto Pembayaran"
+            android:layout_marginHorizontal="16dp"/>
+
+        <!-- Tambahkan Foto Pembayaran -->
+        <com.google.android.material.card.MaterialCardView
+            android:id="@+id/card_tambahkan_foto_pembayaran"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:cardElevation="0dp"
+            android:layout_marginTop="8dp"
+            android:layout_marginHorizontal="8dp"
+            android:clickable="true"
+            android:focusable="true">
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:padding="8dp">
+
+                <ImageView
+                    android:id="@+id/img_tambahkan_foto_pembayaran"
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    android:src="@drawable/ic_baseline_camera_alt_24"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"/>
+
+                <com.google.android.material.textview.MaterialTextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    app:layout_constraintStart_toEndOf="@id/img_tambahkan_foto_pembayaran"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="@id/img_tambahkan_foto_pembayaran"
+                    app:layout_constraintBottom_toBottomOf="@id/img_tambahkan_foto_pembayaran"
+                    android:layout_marginHorizontal="16dp"
+                    style="@style/TextAppearance.MaterialComponents.Subtitle1"
+                    android:text="Tambahkan Foto"/>
+
+                <ProgressBar
+                    android:id="@+id/progressbar_tambahkan_foto"
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    android:visibility="gone"/>
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+        </com.google.android.material.card.MaterialCardView>
+
+        <!-- Lihat Foto Pembayaran -->
+        <com.google.android.material.card.MaterialCardView
+            android:id="@+id/card_lihat_foto_pembayaran"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:cardElevation="0dp"
+            android:layout_marginTop="8dp"
+            android:layout_marginHorizontal="8dp"
+            android:clickable="true"
+            android:focusable="true">
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:padding="8dp">
+
+                <ImageView
+                    android:id="@+id/img_lihat_foto_pembayaran"
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    android:src="@drawable/ic_photo_black_48dp"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"/>
+
+                <com.google.android.material.textview.MaterialTextView
+                    android:id="@+id/tvInfo_liat_foto_pembayaran"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    app:layout_constraintStart_toEndOf="@id/img_lihat_foto_pembayaran"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="@id/img_lihat_foto_pembayaran"
+                    app:layout_constraintBottom_toBottomOf="@id/img_lihat_foto_pembayaran"
+                    android:layout_marginHorizontal="16dp"
+                    style="@style/TextAppearance.MaterialComponents.Subtitle1"
+                    android:text="Lihat Foto"/>
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+        </com.google.android.material.card.MaterialCardView>
+
+        <!-- Hapus Foto Pembayaran -->
+        <com.google.android.material.card.MaterialCardView
+            android:id="@+id/card_hapus_foto_pembayaran"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:cardElevation="0dp"
+            android:layout_marginTop="8dp"
+            android:layout_marginHorizontal="8dp"
+            android:clickable="true"
+            android:focusable="true">
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:padding="8dp">
+
+                <ImageView
+                    android:id="@+id/img_hapus_foto_pembayaran"
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    android:src="@drawable/baseline_broken_image_24"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"/>
+
+                <com.google.android.material.textview.MaterialTextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    app:layout_constraintStart_toEndOf="@id/img_hapus_foto_pembayaran"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="@id/img_hapus_foto_pembayaran"
+                    app:layout_constraintBottom_toBottomOf="@id/img_hapus_foto_pembayaran"
+                    android:layout_marginHorizontal="16dp"
+                    style="@style/TextAppearance.MaterialComponents.Subtitle1"
+                    android:text="Hapus Foto"/>
+
+                <ProgressBar
+                    android:id="@+id/progressbar_hapus_foto"
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    android:visibility="gone"/>
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+        </com.google.android.material.card.MaterialCardView>
+
+    </androidx.appcompat.widget.LinearLayoutCompat>
+
+    <com.google.android.material.divider.MaterialDivider
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginVertical="8dp"/>
+
+    <!-- Sudah Ambil Kuitansi -->
+    <com.google.android.material.card.MaterialCardView
+        android:id="@+id/card_ambil_kuitansi"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:clickable="true"
+        android:focusable="true"
+        app:cardElevation="0dp">
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="8dp">
+
+            <ImageView
+                android:id="@+id/img_sudah_ambil_kuitansi"
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:src="@drawable/baseline_receipt_24"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintStart_toStartOf="parent"/>
+
+            <com.google.android.material.switchmaterial.SwitchMaterial
+                android:id="@+id/switch_sudah_ambil_kuitansi"
+                android:layout_width="wrap_content"
+                android:layout_height="24dp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="@id/img_sudah_ambil_kuitansi"
+                app:layout_constraintBottom_toBottomOf="@id/img_sudah_ambil_kuitansi"
+                style="@style/Widget.AppCompat.CompoundButton.Switch"
+                app:useMaterialThemeColors="true"
+                android:visibility="visible"/>
+
+            <ProgressBar
+                android:id="@+id/progress_ambil_kuitansi"
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="@id/img_sudah_ambil_kuitansi"
+                app:layout_constraintBottom_toBottomOf="@id/img_sudah_ambil_kuitansi"
+                android:visibility="gone"/>
+
+            <com.google.android.material.textview.MaterialTextView
+                android:id="@+id/tvInfo_ambil_kuitansi"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                app:layout_constraintStart_toEndOf="@id/img_sudah_ambil_kuitansi"
+                app:layout_constraintEnd_toStartOf="@id/switch_sudah_ambil_kuitansi"
+                app:layout_constraintTop_toTopOf="@id/img_sudah_ambil_kuitansi"
+                app:layout_constraintBottom_toBottomOf="@id/img_sudah_ambil_kuitansi"
+                android:layout_marginHorizontal="16dp"
+                style="@style/TextAppearance.MaterialComponents.Subtitle1"
+                android:text="Ambil Kuitansi"/>
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+    </com.google.android.material.card.MaterialCardView>
+
+</androidx.appcompat.widget.LinearLayoutCompat>
