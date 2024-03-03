@@ -7,17 +7,20 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.fragment.app.activityViewModels
+import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.pembayaran.BulanAngsuran
 import net.bagusekasaputra.griyakampoengtkw.presentation.R
 import net.bagusekasaputra.griyakampoengtkw.presentation.databinding.FragmentRekapUserBinding
+import net.bagusekasaputra.griyakampoengtkw.presentation.util.InputUtil
 import net.bagusekasaputra.griyakampoengtkw.presentation.viewmodel.FormPembayaranViewModel
+import net.bagusekasaputra.griyakampoengtkw.presentation.viewmodel.RekapViewModel
 
 @AndroidEntryPoint
 class RekapUserFragment : Fragment() {
 
     private lateinit var binding: FragmentRekapUserBinding
-    private val viewModel by activityViewModels<FormPembayaranViewModel>()
+    private val viewModel by activityViewModels<RekapViewModel>()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -34,23 +37,29 @@ class RekapUserFragment : Fragment() {
 
         binding.btnStart.setOnClickListener {
             with(binding) {
-                viewModel.bulanRekapUser = edtBulan.text?.toString()?.toInt() ?: 1
-                viewModel.tahunRekapUser = edtTahun.text?.toString()?.toInt() ?: 2022
+                val isInvalidEdt = InputUtil.isNullOrEmptyEditTexts(edtBulan, edtTahun)
+                if (isInvalidEdt) {
+                    Snackbar.make(root, "Input masih kosong!", Snackbar.LENGTH_SHORT).show()
+                } else {
+                    viewModel.bulanRekapUser = edtBulan.text?.toString()?.toInt() ?: 1
+                    viewModel.tahunRekapUser = edtTahun.text?.toString()?.toInt() ?: 2022
 
-                layoutPilihBulanAngsuran.visibility = View.GONE
-                layoutLoading.visibility = View.VISIBLE
+                    layoutPilihBulanAngsuran.visibility = View.GONE
+                    layoutLoading.visibility = View.VISIBLE
 
-                val bulanAngsuran = BulanAngsuran(viewModel.bulanRekapUser, viewModel.tahunRekapUser)
-                viewModel.getUserPaymentStatusWithInvoice(
-                    bulanAngsuran = bulanAngsuran,
-                    onSuccess = {
-                        layoutLoading.visibility = View.GONE
-                        layoutContent.visibility = View.VISIBLE
-                    },
-                    onFailure = {
-                        Toast.makeText(requireContext(), it, Toast.LENGTH_LONG).show()
-                    }
-                )
+                    val bulanAngsuran =
+                        BulanAngsuran(viewModel.bulanRekapUser, viewModel.tahunRekapUser)
+                    viewModel.getUserPaymentStatusWithInvoice(
+                        bulanAngsuran = bulanAngsuran,
+                        onSuccess = {
+                            layoutLoading.visibility = View.GONE
+                            layoutContent.visibility = View.VISIBLE
+                        },
+                        onFailure = {
+                            Toast.makeText(requireContext(), it, Toast.LENGTH_LONG).show()
+                        }
+                    )
+                }
             }
         }
 

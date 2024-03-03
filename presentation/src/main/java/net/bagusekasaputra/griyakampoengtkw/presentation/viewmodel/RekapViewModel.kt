@@ -22,6 +22,8 @@ import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.rekap.GetListRek
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.rekap.GetRekapBesarDetailAsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.rekap.GetRekapBesarOverviewAsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.rekap.GetRekapGlobalStreamAsyncUseCase
+import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.rekap.GetUserPaymentStatusWithSpecifiedInvoiceAsyncUseCase
+import net.bagusekasaputra.griyakampoengtkw.domain.entity.pembayaran.BulanAngsuran
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.pembayaran.Pembayaran
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.rekap.PeriodeRekap
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.rekap.RekapBesarDetail
@@ -42,6 +44,8 @@ class RekapViewModel @Inject constructor(
     private val getRekapGlobalStreamUseCase: GetRekapGlobalStreamAsyncUseCase,
     private val getRekapBesarOverviewAsyncUseCase: GetRekapBesarOverviewAsyncUseCase,
     private val getRekapBesarDetailAsyncUseCase: GetRekapBesarDetailAsyncUseCase,
+    // User Payment Status
+    private val getUserPaymentStatusWithInvoice: GetUserPaymentStatusWithSpecifiedInvoiceAsyncUseCase,
 ): ViewModel() {
 
     val currentFragment = MutableLiveData<RekapType>()
@@ -91,9 +95,17 @@ class RekapViewModel @Inject constructor(
     // Progress RekapBesarOverview
     val rekapBesarOverviewMessage = getRekapBesarOverviewAsyncUseCase.messageProgress
 
+    // User Payment Status List
+    private val _userPaymentStatus = MutableLiveData<List<List<String>>?>()
+    val userPaymentStatus: LiveData<List<List<String>>?>
+        get() = _userPaymentStatus
+
     var fabScrollMode = FabMode.Downward
     var selectedBackupName: String? = null
     var dataMode: DataMode = DataMode.ONLINE
+
+    var bulanRekapUser = 1
+    var tahunRekapUser = 2022
 
     var gettingRekapBesarJob: Job? = null
     var jobFetchRekapGlobal: Job? = null
@@ -297,6 +309,33 @@ class RekapViewModel @Inject constructor(
 
     private fun doesIncludeDataLama(): Boolean {
         return _listKavlingDataLamaRekapBesarIncludedLive.value.isNullOrEmpty().not()
+    }
+
+    /**
+     * Rekap User
+     */
+    fun getUserPaymentStatusWithInvoice(
+        bulanAngsuran: BulanAngsuran,
+        onSuccess: () -> Unit,
+        onFailure: (msg: String) -> Unit
+    ) {
+        val request = GetUserPaymentStatusWithSpecifiedInvoiceAsyncUseCase.Request(bulanAngsuran)
+
+        viewModelScope.launch(Dispatchers.IO) {
+            getUserPaymentStatusWithInvoice.execute(request).collect { result ->
+                result.onSuccess {
+                    _userPaymentStatus.postValue(result.getOrNull() ?: emptyList())
+                    withContext(Dispatchers.Main) {
+                        onSuccess()
+                    }
+                }
+                result.onFailure {
+                    withContext(Dispatchers.Main) {
+                        onFailure(it.message ?: "Terjadi kesalahan!")
+                    }
+                }
+            }
+        }
     }
 
 
