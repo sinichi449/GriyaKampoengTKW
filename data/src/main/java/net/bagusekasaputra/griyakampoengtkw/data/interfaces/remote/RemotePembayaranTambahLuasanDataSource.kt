@@ -8,5 +8,6 @@ interface RemotePembayaranTambahLuasanDataSource {
 
     suspend fun add(model: PembayaranTambahLuasanModel): Result<Nothing?>
 
+    suspend fun deleteById(kavling: String, id: String): Result<Nothing?>
 
 }

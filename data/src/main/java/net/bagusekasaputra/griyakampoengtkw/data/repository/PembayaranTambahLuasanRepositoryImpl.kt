@@ -99,6 +99,22 @@ class PembayaranTambahLuasanRepositoryImplD(
         }
     }
 
+    override fun delete(kavling: String, id: String): Flow<Result<Nothing?>> {
+        return flow {
+            updateMetadata()
+
+            val remoteResult = remoteSource.deleteById(kavling, id)
+            remoteResult.onSuccess {
+                // TODO: Also delete on Local Data Source
+            }
+            remoteResult.onFailure {
+                Log.d("DEBUG_ME", "Delete Pembayaran Tambah Luasan on $kavling with $id has FAILED: ${it.message}")
+            }
+
+            emit(remoteResult)
+        }
+    }
+
     private suspend fun updateMetadata() {
         val currentTimemillis = System.currentTimeMillis()
         val oldMetadata = localMetadata.get(metadataTable) ?: MetadataModel(metadataTable, 0L)

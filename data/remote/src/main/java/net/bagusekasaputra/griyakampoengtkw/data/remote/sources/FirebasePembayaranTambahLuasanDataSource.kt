@@ -56,4 +56,21 @@ class FirebasePembayaranTambahLuasanDataSource(
                 }
         }
     }
+
+    override suspend fun deleteById(kavling: String, id: String): Result<Nothing?> {
+        return suspendCancellableCoroutine { continuation ->
+            ref.child(kavling).child(id)
+                .removeValue()
+                .addOnSuccessListener {
+                    if (continuation.isActive) {
+                        continuation.resume(Result.success(null), null)
+                    }
+                }
+                .addOnFailureListener {
+                    if (continuation.isActive) {
+                        continuation.resume(Result.failure(it), null)
+                    }
+                }
+        }
+    }
 }

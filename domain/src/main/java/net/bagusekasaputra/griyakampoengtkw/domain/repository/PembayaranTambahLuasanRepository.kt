@@ -9,4 +9,6 @@ interface PembayaranTambahLuasanRepository {
 
     fun add(pembayaranTambahLuasan: PembayaranTambahLuasan): Flow<Result<Nothing?>>
 
+    fun delete(kavling: String, id: String): Flow<Result<Nothing?>>
+
 }

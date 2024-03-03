@@ -5,14 +5,17 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.fragment.app.activityViewModels
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import net.bagusekasaputra.griyakampoengtkw.domain.NumberUtil.numericToString
 import net.bagusekasaputra.griyakampoengtkw.presentation.activity.FormActivity
 import net.bagusekasaputra.griyakampoengtkw.presentation.activity.UpdateTambahLuasanPembayaranParcel
 import net.bagusekasaputra.griyakampoengtkw.presentation.databinding.DialogActionsTambahLuasanPembayaranBinding
 import net.bagusekasaputra.griyakampoengtkw.presentation.model.UiState
 import net.bagusekasaputra.griyakampoengtkw.presentation.viewmodel.FormPembayaranViewModel
+import net.bagusekasaputra.griyakampoengtkw.presentation.viewmodel.PembayaranSyncRequest
 
 class ActionTambahLuasanPembayaranBottomSheetDialog: BottomSheetDialogFragment() {
 
@@ -76,6 +79,44 @@ class ActionTambahLuasanPembayaranBottomSheetDialog: BottomSheetDialogFragment()
             )
             intent.putExtra(FormActivity.EXTRAS_PARCEL, parcel)
             startActivityForResult(intent, ubahPembayaranRequestCode)
+        }
+
+        binding.cardHapusDataPembayaran.setOnClickListener {
+            // Foto Pembayaran also deleted, hazu datta...
+            MaterialAlertDialogBuilder(requireContext())
+                .setTitle("Hapus Tambah Luasan Data?")
+                .setMessage("Apakah Anda yakin menghapus pembayaran $currentId? Foto Pembayaran juga akan terhapus!")
+                .setPositiveButton("Ya") { dialogHapus, _ ->
+                    dialogHapus.dismiss()
+
+                    // Show loading icon
+                    with(binding) {
+                        progressbarHapusData.visibility = View.VISIBLE
+                        progressbarHapusFoto.visibility = View.VISIBLE
+                    }
+
+                    viewModel.deleteTambahLuasanPembayaran(
+                        kavling = currentKavling!!,
+                        id = currentId!!,
+                        onSuccess = {
+                            Toast.makeText(requireContext(), "Berhasil menghapus data!", Toast.LENGTH_SHORT).show()
+                            dialogHapus.dismiss()
+
+                            this@ActionTambahLuasanPembayaranBottomSheetDialog.dismiss()
+
+                            viewModel.requestSync(PembayaranSyncRequest.TAMBAHAN_PEMBAYARAN)
+                        },
+                        onFailure = {
+                            Toast.makeText(requireContext(), it, Toast.LENGTH_LONG).show()
+                            this@ActionTambahLuasanPembayaranBottomSheetDialog.dismiss()
+                        }
+                    )
+                }
+                .setNegativeButton("Tidak") { dialog, _ ->
+                    dialog.dismiss()
+                }
+                .create()
+                .show()
         }
     }
 

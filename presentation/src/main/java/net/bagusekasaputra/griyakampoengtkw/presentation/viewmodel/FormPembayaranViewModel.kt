@@ -28,6 +28,7 @@ import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.pembayaran.GetSi
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.pembayaran.InsertPembayaranAsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.pembayaran.UpdatePembayaranAsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.pembayaranTambahLuasan.AddNewTambahLuasanPembayaranAsyncUseCase
+import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.pembayaranTambahLuasan.DeleteByIdTambahLuasanPembayaranAsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.pembayaranTambahLuasan.GetAllPembayaranTambahLuasanAsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.statusPembayaran.GetStatusPembayaranKavlingAsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.BaselinePembayaran
@@ -69,6 +70,7 @@ class FormPembayaranViewModel @Inject constructor(
     // Tambah Luasan
     private val getAllTambahanLuasPembayaran: GetAllPembayaranTambahLuasanAsyncUseCase,
     private val addNewTambahLuasanUseCase: AddNewTambahLuasanPembayaranAsyncUseCase,
+    private val deleteTambahLuasanUseCase: DeleteByIdTambahLuasanPembayaranAsyncUseCase
 ): ViewModel() {
 
     // Pembayaran Bulanan
@@ -605,6 +607,31 @@ class FormPembayaranViewModel @Inject constructor(
 
                 result.onFailure {
                     _addTambahLuasanOperation.postValue(UiState.Failure(it.message))
+                }
+            }
+        }
+    }
+
+    fun deleteTambahLuasanPembayaran(
+        kavling: String,
+        id: String,
+        onSuccess: () -> Unit,
+        onFailure: (msg: String) -> Unit
+    ) {
+        writeTambahanLuasPembayaranJob?.cancel()
+
+        val request = DeleteByIdTambahLuasanPembayaranAsyncUseCase.Request(kavling, id)
+        writeTambahanLuasPembayaranJob = viewModelScope.launch(Dispatchers.IO) {
+            deleteTambahLuasanUseCase.execute(request).collect { result ->
+                result.onSuccess {
+                    withContext(Dispatchers.Main) {
+                        onSuccess()
+                    }
+                }
+                result.onFailure {
+                    withContext(Dispatchers.Main) {
+                        onFailure(it.message ?: "Unknown error deleting Tambah Luasan Pembayaran!")
+                    }
                 }
             }
         }
