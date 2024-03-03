@@ -1,5 +1,6 @@
 package net.bagusekasaputra.griyakampoengtkw.domain.entity
 
+import net.bagusekasaputra.griyakampoengtkw.domain.DateUtil.toDate
 import java.util.UUID
 
 data class PembayaranTambahLuasan(
@@ -13,5 +14,13 @@ data class PembayaranTambahLuasan(
     val timeMillis: Long = System.currentTimeMillis()
 ) {
 
+
+    companion object {
+        fun sortByTanggal(entities: List<PembayaranTambahLuasan>): List<PembayaranTambahLuasan> {
+            return entities.sortedBy {
+                it.tanggal.toDate().time
+            }
+        }
+    }
 
 }
