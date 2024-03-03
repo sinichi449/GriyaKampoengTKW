@@ -211,30 +211,55 @@ class FormPembayaranFragment : Fragment() {
             }
         }
 
+        binding.nestedScrollMain?.setOnScrollChangeListener { _, _, cY, _, oY ->
+            if (cY != oY) {
+                pembayaranViewModel.setFabTambahLuasanVisibility(false)
+            }
+        }
 
         binding.fabActions?.setOnClickListener {
-            val totalHargaKavling = viewModel.hargaKavlingLive.value?.hargaDanTambahLuasan ?: 0L
-            val isEmptyHargaKavling =  totalHargaKavling <= 0L
-
-            if (isEmptyHargaKavling) {
-                Toast.makeText(requireContext(), "Harga kavling masih kosong", Toast.LENGTH_SHORT)
-                    .show()
+            val fabTambahLuasanAlreadyVisible = pembayaranViewModel.fabTambahLuasanVisibility.value ?: false
+            if (!fabTambahLuasanAlreadyVisible) {
+                pembayaranViewModel.setFabTambahLuasanVisibility(true)
             } else {
-                // Go to FormActivity
-                val intent = Intent(requireContext(), FormActivity::class.java)
-                val insertFormPembayaranParcel = InsertFormPembayaranParcel(
-                    tipePembayaran = Pembayaran.PEMBAYARAN_KAVLING,
-                    kavling = pembayaranViewModel.currentKavlingKode!!,
-                )
-
-                intent.putExtra(FormActivity.EXTRAS_PARCEL, insertFormPembayaranParcel)
-                @Suppress("DEPRECATION")
-                startActivityForResult(intent, requestTambahFormPembayaran)
+                openNewPembayaranIntent()
             }
+        }
+
+        binding.fabTambahLuasan?.setOnClickListener {
+            // TODO
+        }
+    }
+
+    private fun openNewPembayaranIntent() {
+        val totalHargaKavling = viewModel.hargaKavlingLive.value?.hargaDanTambahLuasan ?: 0L
+        val isEmptyHargaKavling =  totalHargaKavling <= 0L
+
+        if (isEmptyHargaKavling) {
+            Toast.makeText(requireContext(), "Harga kavling masih kosong", Toast.LENGTH_SHORT)
+                .show()
+        } else {
+            // Go to FormActivity
+            val intent = Intent(requireContext(), FormActivity::class.java)
+            val insertFormPembayaranParcel = InsertFormPembayaranParcel(
+                tipePembayaran = Pembayaran.PEMBAYARAN_KAVLING,
+                kavling = pembayaranViewModel.currentKavlingKode!!,
+            )
+
+            intent.putExtra(FormActivity.EXTRAS_PARCEL, insertFormPembayaranParcel)
+            @Suppress("DEPRECATION")
+            startActivityForResult(intent, requestTambahFormPembayaran)
         }
     }
 
     private fun setupViewModel() {
+        pembayaranViewModel.fabTambahLuasanVisibility.observe(requireActivity()) {
+            it?.also { isVisible ->
+                if (isVisible) binding.fabTambahLuasan?.show()
+                else binding.fabTambahLuasan?.hide()
+            }
+        }
+
         pembayaranViewModel.syncRequests.observe(requireActivity()) {
             it?.onEach { requestCode ->
                 when (requestCode) {

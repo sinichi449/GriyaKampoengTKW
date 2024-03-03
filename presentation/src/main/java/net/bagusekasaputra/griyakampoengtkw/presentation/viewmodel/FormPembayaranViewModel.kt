@@ -164,6 +164,13 @@ class FormPembayaranViewModel @Inject constructor(
         tableTypeLive.value = type
     }
 
+    // Fab Tambah Luasan
+    private val _fabTambahLuasanVisibility = MutableLiveData<Boolean>(false)
+    val fabTambahLuasanVisibility: LiveData<Boolean> get() = _fabTambahLuasanVisibility
+    fun setFabTambahLuasanVisibility(visible: Boolean) {
+        _fabTambahLuasanVisibility.value = visible
+    }
+
 
 
     /**
