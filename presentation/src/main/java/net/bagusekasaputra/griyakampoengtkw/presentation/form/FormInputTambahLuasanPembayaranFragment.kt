@@ -10,11 +10,14 @@ import android.widget.Toast
 import androidx.core.os.BundleCompat
 import androidx.fragment.app.activityViewModels
 import dagger.hilt.android.AndroidEntryPoint
+import net.bagusekasaputra.griyakampoengtkw.domain.NumberUtil.numericToString
 import net.bagusekasaputra.griyakampoengtkw.presentation.R
 import net.bagusekasaputra.griyakampoengtkw.presentation.activity.FormActivity
 import net.bagusekasaputra.griyakampoengtkw.presentation.activity.InsertTambahLuasanPembayaranParcel
+import net.bagusekasaputra.griyakampoengtkw.presentation.activity.UpdateTambahLuasanPembayaranParcel
 import net.bagusekasaputra.griyakampoengtkw.presentation.custom.addThousandTextListener
 import net.bagusekasaputra.griyakampoengtkw.presentation.databinding.FragmentFormInputTambahLuasanPembayaranBinding
+import net.bagusekasaputra.griyakampoengtkw.presentation.model.UiState
 import net.bagusekasaputra.griyakampoengtkw.presentation.util.DatePickerHelper
 import net.bagusekasaputra.griyakampoengtkw.presentation.viewmodel.FormInputViewModel
 import net.bagusekasaputra.griyakampoengtkw.presentation.viewmodel.FormPembayaranViewModel
@@ -39,6 +42,11 @@ class FormInputTambahLuasanPembayaranFragment : Fragment() {
                 is InsertTambahLuasanPembayaranParcel -> {
                     pembayaranViewModel.currentKavlingKode = parcelable.kavling
                     pembayaranViewModel.formIsEditMode = false
+                }
+                is UpdateTambahLuasanPembayaranParcel -> {
+                    pembayaranViewModel.currentKavlingKode = parcelable.kavling
+                    pembayaranViewModel.currentTambahLuasanId = parcelable.id
+                    pembayaranViewModel.formIsEditMode = true
                 }
             }
         }
@@ -77,13 +85,15 @@ class FormInputTambahLuasanPembayaranFragment : Fragment() {
                 datePickerHelper.setupDateDefaultOrPick(false)
 
                 // Get specific tambahan luasan id and kavling
+                pembayaranViewModel.getTambahanLuasPembayaran(
+                    kavling = pembayaranViewModel.currentKavlingKode!!,
+                    id = pembayaranViewModel.currentTambahLuasanId!!,
+                )
 
-//                setupViewModelForEditMode()
+                setupViewModelForEditMode()
             } else {
                 datePickerHelper.setupDateDefaultOrPick(true)
 
-//                pembayaranViewModel.fetchPembayaranData(pembayaranViewModel.currentKavlingKode!!)
-//
                 setupViewModel()
             }
         }
@@ -95,6 +105,35 @@ class FormInputTambahLuasanPembayaranFragment : Fragment() {
 
     private fun setupViewModel() {
         // TODO
+    }
+
+    private fun setupViewModelForEditMode() {
+        pembayaranViewModel.tambahanLuasItem.observe(requireActivity()) { k ->
+            k?.also { uiState ->
+                when (uiState) {
+                    is UiState.Loading -> { onLoading(true) }
+                    is UiState.Success -> {
+                        onLoading(false)
+
+                        with(binding) {
+                            edtTanggal.setText(uiState.data?.tanggal)
+                            edtJumlahUangDibayar.setText(uiState.data?.jumlahUang?.numericToString())
+                            edtKeterangan.setText(uiState.data?.keterangan)
+                        }
+                    }
+                    is UiState.Failure -> {
+                        Toast.makeText(requireContext(), uiState.failMsg, Toast.LENGTH_LONG).show()
+                    }
+                }
+            }
+        }
+    }
+
+    private fun onLoading(loading: Boolean) {
+        with(binding) {
+            layoutLoading.visibility = if (loading) View.VISIBLE else View.GONE
+            layoutForm.visibility = if (loading) View.GONE else View.VISIBLE
+        }
     }
 
 }

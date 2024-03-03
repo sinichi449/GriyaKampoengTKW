@@ -9,6 +9,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
@@ -39,6 +40,7 @@ import net.bagusekasaputra.griyakampoengtkw.domain.entity.statusPembayaran.Statu
 import net.bagusekasaputra.griyakampoengtkw.domain.usecase.pembayaran.AddPembayaranUseCase
 import net.bagusekasaputra.griyakampoengtkw.presentation.combineWith
 import net.bagusekasaputra.griyakampoengtkw.presentation.model.UiState
+import java.util.UUID
 import javax.inject.Inject
 
 /**
@@ -129,6 +131,9 @@ class FormPembayaranViewModel @Inject constructor(
     val tambahanLuasPembayaran: LiveData<UiState<List<PembayaranTambahLuasan>?>>
         get() = _tambahanLuasPembayaran
 
+    private val _tambahanLuasItem = MutableLiveData<UiState<PembayaranTambahLuasan?>>()
+    val tambahanLuasItem: LiveData<UiState<PembayaranTambahLuasan?>>
+        get() = _tambahanLuasItem
 
     // Sync Request
     private val _syncRequests = MutableLiveData<Array<Int>?>(null)
@@ -142,6 +147,7 @@ class FormPembayaranViewModel @Inject constructor(
 
     var currentKavlingKode: String? = null
     var currentTermin: String? = null
+    var currentTambahLuasanId: String? = null
     var formIsEditMode = false
     var dataMode = DataMode.ONLINE
     var isFullScreenTable = false
@@ -556,6 +562,29 @@ class FormPembayaranViewModel @Inject constructor(
                     ))
                 }
             }
+        }
+    }
+
+    fun getTambahanLuasPembayaran(kavling: String, id: String) {
+        readTambahanLuasPembayaranJob?.cancel()
+
+        _tambahanLuasItem.value = UiState.Loading()
+
+        // TODO: Requests
+        readTambahanLuasPembayaranJob = viewModelScope.launch(Dispatchers.IO) {
+            delay(4000)
+            _tambahanLuasItem.postValue(UiState.Success(
+                PembayaranTambahLuasan(
+                    id = id,
+                    kavling = kavling,
+                    sudahAmbilKuitansi = false,
+                    fotoUri = "",
+                    tanggal = "06/06/2006",
+                    jumlahUang = 5_250_000L,
+                    keterangan = "tes 5",
+                    timeMillis = System.currentTimeMillis(),
+                )
+            ))
         }
     }
 
