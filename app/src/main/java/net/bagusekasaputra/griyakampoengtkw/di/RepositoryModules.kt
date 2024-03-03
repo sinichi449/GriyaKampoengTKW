@@ -28,6 +28,7 @@ import net.bagusekasaputra.griyakampoengtkw.data.interfaces.local.LocalKavlingCa
 import net.bagusekasaputra.griyakampoengtkw.data.interfaces.local.LocalKavlingDataSource
 import net.bagusekasaputra.griyakampoengtkw.data.interfaces.local.LocalMetadataDataSource
 import net.bagusekasaputra.griyakampoengtkw.data.interfaces.local.LocalPembayaranDataSource
+import net.bagusekasaputra.griyakampoengtkw.data.interfaces.local.LocalPembayaranTambahLuasanDataSource
 import net.bagusekasaputra.griyakampoengtkw.data.interfaces.local.LocalPengembalianDataSource
 import net.bagusekasaputra.griyakampoengtkw.data.interfaces.local.LocalPengingatDataSource
 import net.bagusekasaputra.griyakampoengtkw.data.interfaces.local.LocalStandardAmbilKuitansiDataSource
@@ -54,6 +55,7 @@ import net.bagusekasaputra.griyakampoengtkw.data.interfaces.remote.RemoteKavling
 import net.bagusekasaputra.griyakampoengtkw.data.interfaces.remote.RemoteKavlingDataSource
 import net.bagusekasaputra.griyakampoengtkw.data.interfaces.remote.RemoteMetadataDataSource
 import net.bagusekasaputra.griyakampoengtkw.data.interfaces.remote.RemotePembayaranDataSource
+import net.bagusekasaputra.griyakampoengtkw.data.interfaces.remote.RemotePembayaranTambahLuasanDataSource
 import net.bagusekasaputra.griyakampoengtkw.data.interfaces.remote.RemotePengembalianDataSource
 import net.bagusekasaputra.griyakampoengtkw.data.interfaces.remote.RemotePromotionDataSource
 import net.bagusekasaputra.griyakampoengtkw.data.interfaces.remote.RemoteStandardAmbilKuitansiDataSource
@@ -82,7 +84,7 @@ import net.bagusekasaputra.griyakampoengtkw.data.repository.IndenBookingCatatanP
 import net.bagusekasaputra.griyakampoengtkw.data.repository.IndenBookingRepositoryImpl
 import net.bagusekasaputra.griyakampoengtkw.data.repository.KavlingCatatanPembayaranRepositoryImpl
 import net.bagusekasaputra.griyakampoengtkw.data.repository.KavlingRepositoryImpl
-import net.bagusekasaputra.griyakampoengtkw.data.repository.PembayaranTambahLuasanRepositoryImpl
+import net.bagusekasaputra.griyakampoengtkw.data.repository.PembayaranTambahLuasanRepositoryImplD
 import net.bagusekasaputra.griyakampoengtkw.data.repository.PengembalianRepositoryImpl
 import net.bagusekasaputra.griyakampoengtkw.data.repository.PengingatRepositoryImpl
 import net.bagusekasaputra.griyakampoengtkw.data.repository.PromotionRepositoryImpl
@@ -556,7 +558,14 @@ object RepositoryModules {
      * Pembayaran Tambahan Luasan
      */
     @Provides
-    fun providePembayaranTambahanLuasanRepository(): PembayaranTambahLuasanRepository {
-        return PembayaranTambahLuasanRepositoryImpl()
+    fun providePembayaranTambahanLuasanRepository(
+        localSource: LocalPembayaranTambahLuasanDataSource,
+        remoteSource: RemotePembayaranTambahLuasanDataSource,
+        localMetadata: LocalMetadataDataSource,
+        remoteMetadata: RemoteMetadataDataSource,
+    ): PembayaranTambahLuasanRepository {
+        return PembayaranTambahLuasanRepositoryImplD(
+            localSource, remoteSource, localMetadata, remoteMetadata
+        )
     }
 }

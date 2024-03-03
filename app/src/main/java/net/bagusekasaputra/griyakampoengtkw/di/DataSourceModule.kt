@@ -490,4 +490,16 @@ object DataSourceModule {
         return FirebasePengembalianDataSource(databaseReference, storageReference)
     }
 
+    /**
+     * Pembayaran Tambah Luasan
+     */
+    @Provides
+    fun provideLocalPembayaranTambahLuasanDataSource(): LocalPembayaranTambahLuasanDataSource
+        = RoomPembayaranTambahLuasanDataSource()
+
+    @Provides
+    fun provideRemotePembayaranTambahLuasanDataSource(
+        @TahapanReference databaseReference: DatabaseReference,
+    ): RemotePembayaranTambahLuasanDataSource
+        = FirebasePembayaranTambahLuasanDataSource(databaseReference)
 }

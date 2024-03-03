@@ -23,6 +23,7 @@ import net.bagusekasaputra.griyakampoengtkw.data.model.KavlingCatatanPembayaranM
 import net.bagusekasaputra.griyakampoengtkw.data.model.KavlingModel
 import net.bagusekasaputra.griyakampoengtkw.data.model.PembayaranModel
 import net.bagusekasaputra.griyakampoengtkw.data.model.PembayaranModel.Companion.toInvoiceDateStr
+import net.bagusekasaputra.griyakampoengtkw.data.model.PembayaranTambahLuasanModel
 import net.bagusekasaputra.griyakampoengtkw.data.model.PengembalianModel
 import net.bagusekasaputra.griyakampoengtkw.data.model.PromotionModel
 import net.bagusekasaputra.griyakampoengtkw.data.model.StandardAmbilKuitansiModel
@@ -47,6 +48,7 @@ import net.bagusekasaputra.griyakampoengtkw.domain.entity.HargaKavling
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.IndenBookingAmbilKuitansi
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.IndenBookingCatatanPembayaran
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.KavlingCatatanPembayaran
+import net.bagusekasaputra.griyakampoengtkw.domain.entity.PembayaranTambahLuasan
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.Promotion
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.StandardAmbilKuitansi
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.Tahapan
@@ -783,5 +785,34 @@ object MyObjectMapper {
                 timeMillis = it.timeMillis,
             )
         }
+    }
+
+    /**
+     * Pembayaran Tambah Luasan
+     */
+
+    fun mapTambahLuasanPembayaran(model: PembayaranTambahLuasanModel): PembayaranTambahLuasan {
+        return PembayaranTambahLuasan(
+            id = model.id,
+            kavling = model.kavling,
+            fotoUri = "",
+            sudahAmbilKuitansi = model.sudahAmbilKuitansi,
+            tanggal = model.tanggal,
+            jumlahUang = model.jumlahUang,
+            keterangan = model.keterangan,
+            timeMillis = model.timeMillis,
+        )
+    }
+
+    fun mapTambahLuasanPembayaran(entity: PembayaranTambahLuasan): PembayaranTambahLuasanModel {
+        return PembayaranTambahLuasanModel(
+            kavling = entity.kavling,
+            id = entity.id,
+            sudahAmbilKuitansi = entity.sudahAmbilKuitansi,
+            tanggal = entity.tanggal,
+            jumlahUang = entity.jumlahUang,
+            keterangan = entity.keterangan,
+            timeMillis = entity.timeMillis,
+        )
     }
 }
