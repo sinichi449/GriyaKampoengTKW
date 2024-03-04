@@ -43,6 +43,7 @@ import net.bagusekasaputra.griyakampoengtkw.data.interfaces.remote.RemoteDatabas
 import net.bagusekasaputra.griyakampoengtkw.data.interfaces.remote.RemoteFeeMarketingDataSource
 import net.bagusekasaputra.griyakampoengtkw.data.interfaces.remote.RemoteFotoPembayaranDataSource
 import net.bagusekasaputra.griyakampoengtkw.data.interfaces.remote.RemoteFotoPembayaranIndenBookingDataSource
+import net.bagusekasaputra.griyakampoengtkw.data.interfaces.remote.RemoteFotoTambahLuasanDataSource
 import net.bagusekasaputra.griyakampoengtkw.data.interfaces.remote.RemoteHargaKavlingSource
 import net.bagusekasaputra.griyakampoengtkw.data.interfaces.remote.RemoteHargaRumahIndenBookingDataSource
 import net.bagusekasaputra.griyakampoengtkw.data.interfaces.remote.RemoteImageDataDiriDataSource
@@ -74,6 +75,7 @@ import net.bagusekasaputra.griyakampoengtkw.data.repository.FeeMarketingReposito
 import net.bagusekasaputra.griyakampoengtkw.data.repository.FotoKuitansiRepositoryImpl
 import net.bagusekasaputra.griyakampoengtkw.data.repository.FotoPembayaranIndenBookingRepositoryImpl
 import net.bagusekasaputra.griyakampoengtkw.data.repository.FotoPembayaranRepositoryImpl
+import net.bagusekasaputra.griyakampoengtkw.data.repository.FotoTambahLuasanRepositoryImpl
 import net.bagusekasaputra.griyakampoengtkw.data.repository.HargaKavlingRepositoryImpl
 import net.bagusekasaputra.griyakampoengtkw.data.repository.HargaRumahIndenBookingRepositoryImpl
 import net.bagusekasaputra.griyakampoengtkw.data.repository.ImageDataDiriIndenBookingRepositoryImpl
@@ -107,6 +109,7 @@ import net.bagusekasaputra.griyakampoengtkw.domain.repository.FeeMarketingReposi
 import net.bagusekasaputra.griyakampoengtkw.domain.repository.FotoKuitansiRepository
 import net.bagusekasaputra.griyakampoengtkw.domain.repository.FotoPembayaranIndenBookingRepository
 import net.bagusekasaputra.griyakampoengtkw.domain.repository.FotoPembayaranRepository
+import net.bagusekasaputra.griyakampoengtkw.domain.repository.FotoTambahLuasanRepository
 import net.bagusekasaputra.griyakampoengtkw.domain.repository.HargaKavlingRepository
 import net.bagusekasaputra.griyakampoengtkw.domain.repository.HargaRumahIndenBookingRepository
 import net.bagusekasaputra.griyakampoengtkw.domain.repository.ImageDataDiriIndenBookingRepository
@@ -567,5 +570,15 @@ object RepositoryModules {
         return PembayaranTambahLuasanRepositoryImplD(
             localSource, remoteSource, localMetadata, remoteMetadata
         )
+    }
+
+    /**
+     * Foto Tambah Luasan
+     */
+    @Provides
+    fun provideFotoTambahLuasanRepository(
+        remoteSource: RemoteFotoTambahLuasanDataSource
+    ): FotoTambahLuasanRepository {
+        return FotoTambahLuasanRepositoryImpl(remoteSource)
     }
 }

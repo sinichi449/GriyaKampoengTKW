@@ -12,16 +12,20 @@ import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import net.bagusekasaputra.griyakampoengtkw.domain.NumberUtil.numericToString
 import net.bagusekasaputra.griyakampoengtkw.presentation.activity.FormActivity
+import net.bagusekasaputra.griyakampoengtkw.presentation.activity.FullImageActivity
 import net.bagusekasaputra.griyakampoengtkw.presentation.activity.UpdateTambahLuasanPembayaranParcel
 import net.bagusekasaputra.griyakampoengtkw.presentation.databinding.DialogActionsTambahLuasanPembayaranBinding
 import net.bagusekasaputra.griyakampoengtkw.presentation.model.UiState
+import net.bagusekasaputra.griyakampoengtkw.presentation.util.GriyaNodes
 import net.bagusekasaputra.griyakampoengtkw.presentation.viewmodel.FormPembayaranViewModel
+import net.bagusekasaputra.griyakampoengtkw.presentation.viewmodel.ImageViewModel
 import net.bagusekasaputra.griyakampoengtkw.presentation.viewmodel.PembayaranSyncRequest
 
 class ActionTambahLuasanPembayaranBottomSheetDialog: BottomSheetDialogFragment() {
 
     private lateinit var binding: DialogActionsTambahLuasanPembayaranBinding
     private val viewModel by activityViewModels<FormPembayaranViewModel>()
+    private val imageViewModel by activityViewModels<ImageViewModel>()
     private var selectedIndex: Int? = null
 
     // Need both of these to be passed into Picker Register result
@@ -70,6 +74,21 @@ class ActionTambahLuasanPembayaranBottomSheetDialog: BottomSheetDialogFragment()
                 append(data?.tanggal).append(" - ").append(data?.jumlahUang?.numericToString())
             }
             tvPembayaranId.text = data?.id
+        }
+
+        // TODO: Add conditional statement whether foto tambah luasan is exist
+        binding.cardLihatFotoPembayaran.setOnClickListener {
+            val imageTransport = imageViewModel.createImageTransport(
+                sendIntent = GriyaNodes.INTENT_FOTO_TAMBAH_LUASAN,
+                content = mapOf(
+                    "kavling" to currentKavling,
+                    "id" to currentId
+                )
+            )
+            val intent = Intent(requireContext(), FullImageActivity::class.java)
+            intent.putExtra(GriyaNodes.INTENT_SOURCE_IMAGE, imageTransport)
+
+            startActivity(intent)
         }
 
         binding.cardEditDataPembayaran.setOnClickListener {

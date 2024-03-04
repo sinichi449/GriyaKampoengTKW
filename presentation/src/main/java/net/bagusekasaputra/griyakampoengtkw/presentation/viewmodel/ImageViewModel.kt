@@ -20,12 +20,14 @@ import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.fotoPembayaran.A
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.fotoPembayaran.DeleteFotoPembayaranAsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.fotoPembayaran.GetFotoPembayaranAsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.fotoPembayaran.IsFotoPembayaranExistAsyncUseCase
+import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.fotoTambahLuasan.GetFotoTambahLuasanAsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.indenBooking.fotoPembayaran.DeleteFotoPembayaranIndenBookingAsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.indenBooking.fotoPembayaran.GetFotoPembayaranIndenBookingAsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.indenBooking.fotoPembayaran.InsertFotoPembayaranIndenBookingAsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.indenBooking.imageDataDiri.GetImageDataDiriIndenBookingAsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.FotoKuitansi
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.FotoPembayaran
+import net.bagusekasaputra.griyakampoengtkw.domain.entity.FotoTambahLuasan
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.images.ImageDataDiri
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.images.ImageSpr
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.images.FotoPembayaranIndenBooking
@@ -38,6 +40,7 @@ import net.bagusekasaputra.griyakampoengtkw.domain.usecase.imageDataDiri.GetImag
 import net.bagusekasaputra.griyakampoengtkw.domain.usecase.imageSpr.AddImageSprUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.usecase.imageSpr.GetImageSprByKavlingKodeUseCase
 import net.bagusekasaputra.griyakampoengtkw.presentation.model.ImageTransport
+import net.bagusekasaputra.griyakampoengtkw.presentation.model.UiState
 import javax.inject.Inject
 
 @HiltViewModel
@@ -63,6 +66,8 @@ class ImageViewModel @Inject constructor(
     private val getFotoPembayaranIndenBookingAsyncUseCase: GetFotoPembayaranIndenBookingAsyncUseCase,
     private val insertFotoPembayaranIndenBookingAsyncUseCase: InsertFotoPembayaranIndenBookingAsyncUseCase,
     private val deleteFotoPembayaranIndenBookingAsyncUseCase: DeleteFotoPembayaranIndenBookingAsyncUseCase,
+    // Foto Tambah Luasan
+    private val getFotoTambahLuasanUseCase: GetFotoTambahLuasanAsyncUseCase,
 ): ViewModel() {
 
     val fotoKuitansiLive = MutableLiveData<FotoKuitansi>()
@@ -74,6 +79,10 @@ class ImageViewModel @Inject constructor(
     val fotoPembayaranLive = MutableLiveData<FotoPembayaran?>()
 
     val isFinishLoadingImage = MutableLiveData<Boolean>()
+
+    private val _fotoTambahLuasan = MutableLiveData<UiState<FotoTambahLuasan?>>()
+    val fotoTambahLuasan: LiveData<UiState<FotoTambahLuasan?>>
+        get() = _fotoTambahLuasan
 
     // Image Data Diri Inden Booking
     private val _imageDataDiriIndenBooking = MutableLiveData<ImageDataDiriIndenBooking?>()
@@ -91,6 +100,8 @@ class ImageViewModel @Inject constructor(
     private val asyncUseCaseHelper = AsyncUseCaseHelper(isFinishAddImage)
 
     var dataMode = DataMode.ONLINE
+
+    private var readFotoTambahLuasanJob: Job? = null
 
 
     // Image Data Diri
@@ -486,6 +497,30 @@ class ImageViewModel @Inject constructor(
             }
         }
     }
+
+    /**
+     * Foto Tambah Luasan
+     */
+    fun getFotoTambahLuasan(tambahLuasanId: String, kavlingKode: String) {
+        readFotoTambahLuasanJob?.cancel()
+
+        _fotoTambahLuasan.value = UiState.Loading()
+
+        val request = GetFotoTambahLuasanAsyncUseCase.Request(kavlingKode, tambahLuasanId)
+        readFotoTambahLuasanJob = viewModelScope.launch(Dispatchers.IO) {
+            getFotoTambahLuasanUseCase.execute(request).collect { result ->
+                result.onSuccess { data ->
+                    _fotoTambahLuasan.postValue(
+                        UiState.Success(data)
+                    )
+                }
+                result.onFailure {
+                    _fotoTambahLuasan.postValue(UiState.Failure(it.message))
+                }
+            }
+        }
+    }
+
 
     fun <T> createImageTransport(sendIntent: String, content: T): ImageTransport<T> {
         return ImageTransport(sendIntent, content, dataMode)

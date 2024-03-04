@@ -502,4 +502,15 @@ object DataSourceModule {
         @TahapanReference databaseReference: DatabaseReference,
     ): RemotePembayaranTambahLuasanDataSource
         = FirebasePembayaranTambahLuasanDataSource(databaseReference)
+
+    /**
+     * Foto Tambah Luasan
+     */
+    @Provides
+    fun provideRemoteFotoTambahLuasanDataSource(
+        @TahapanReference storageReference: StorageReference,
+        @ExternalDir externalFilesDir: File?
+    ): RemoteFotoTambahLuasanDataSource {
+        return StorageFotoTambahLuasanDataSource(storageReference, externalFilesDir)
+    }
 }

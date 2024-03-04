@@ -11,11 +11,13 @@ import android.widget.ImageView
 import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.net.toUri
 import com.igreenwood.loupe.Loupe
 import dagger.hilt.android.AndroidEntryPoint
 import net.bagusekasaputra.griyakampoengtkw.presentation.model.ImageTransport
 import net.bagusekasaputra.griyakampoengtkw.presentation.R
 import net.bagusekasaputra.griyakampoengtkw.presentation.databinding.ActivityFullImageBinding
+import net.bagusekasaputra.griyakampoengtkw.presentation.model.UiState
 import net.bagusekasaputra.griyakampoengtkw.presentation.util.GriyaNodes
 import net.bagusekasaputra.griyakampoengtkw.presentation.viewmodel.ImageViewModel
 
@@ -212,6 +214,51 @@ class FullImageActivity : AppCompatActivity() {
                                 .show()
                         }
                     )
+                }
+            }
+            GriyaNodes.INTENT_FOTO_TAMBAH_LUASAN -> {
+                val kavling = mapContent["kavling"]
+                val id = mapContent["id"]
+
+                if (kavling.isNullOrEmpty() || id.isNullOrEmpty()) {
+                    Toast.makeText(this, "Image Transport kavling & id is null!", Toast.LENGTH_LONG).show()
+                } else {
+
+                    imageViewModel.getFotoTambahLuasan(id, kavling)
+
+                    val progressDialog = ProgressDialog(this).apply {
+                        setTitle("Mendapatkan Data ...")
+                        setMessage("Mohon tunggu sebentar.")
+                        isIndeterminate = true
+                    }
+                    imageViewModel.fotoTambahLuasan.observe(this) { i ->
+                        i?.also { uiState ->
+                            when (uiState) {
+                                is UiState.Loading -> {
+                                    progressDialog.show()
+                                }
+                                is UiState.Success -> {
+                                    progressDialog.dismiss()
+
+                                    val fileUri = uiState.data?.uri?.toUri()
+                                    if (fileUri != null) {
+                                        val bitmap = imageViewModel.getBitmapFromUri(contentResolver, fileUri)
+
+                                        createLoupe(bitmap)
+                                    } else {
+                                        Toast.makeText(this, "File not FOUND!", Toast.LENGTH_SHORT).show()
+                                    }
+                                }
+                                is UiState.Failure -> {
+                                    progressDialog.dismiss()
+
+                                    val errMsg = uiState.failMsg ?: "UNKNOWN ERROR"
+                                    Toast.makeText(this, "Error occured: $errMsg", Toast.LENGTH_LONG)
+                                        .show()
+                                }
+                            }
+                        }
+                    }
                 }
             }
         }

@@ -33,6 +33,7 @@ object FirebaseNodes {
     const val IMAGE_SPR = "spr_images"
     const val IMAGE_INDEN_BOOKING = "inden_booking_images"
     const val IMAGE_PENGEMBALIAN = "pengembalian_images"
+    const val IMAGE_TAMBAH_LUASAN = "tambah_luasan_images"
 
     const val OBJECT_NOT_FOUND_MESSAGE = "Object does not exist at location."
 
