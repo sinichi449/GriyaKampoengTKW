@@ -507,6 +507,13 @@ object DataSourceModule {
      * Foto Tambah Luasan
      */
     @Provides
+    fun provideLocalFotoTambahLuasanDataSource(
+        @ExternalDir externalFileDir: File?
+    ): LocalFotoTambahLuasanDataSource {
+        return RoomFotoTambahLuasanDataSource(externalFileDir)
+    }
+
+    @Provides
     fun provideRemoteFotoTambahLuasanDataSource(
         @TahapanReference storageReference: StorageReference,
         @ExternalDir externalFilesDir: File?

@@ -16,6 +16,7 @@ import net.bagusekasaputra.griyakampoengtkw.data.interfaces.local.LocalFeeMarket
 import net.bagusekasaputra.griyakampoengtkw.data.interfaces.local.LocalFotoKuitansiDataSource
 import net.bagusekasaputra.griyakampoengtkw.data.interfaces.local.LocalFotoPembayaranDataSource
 import net.bagusekasaputra.griyakampoengtkw.data.interfaces.local.LocalFotoPembayaranIndenBookingDataSource
+import net.bagusekasaputra.griyakampoengtkw.data.interfaces.local.LocalFotoTambahLuasanDataSource
 import net.bagusekasaputra.griyakampoengtkw.data.interfaces.local.LocalHargaKavlingDataSource
 import net.bagusekasaputra.griyakampoengtkw.data.interfaces.local.LocalHargaRumahIndenBookingDataSource
 import net.bagusekasaputra.griyakampoengtkw.data.interfaces.local.LocalImageDataDiriDataSource
@@ -577,8 +578,13 @@ object RepositoryModules {
      */
     @Provides
     fun provideFotoTambahLuasanRepository(
-        remoteSource: RemoteFotoTambahLuasanDataSource
+        localSource: LocalFotoTambahLuasanDataSource,
+        remoteSource: RemoteFotoTambahLuasanDataSource,
+        localMetadata: LocalMetadataDataSource,
+        remoteMetadata: RemoteMetadataDataSource,
     ): FotoTambahLuasanRepository {
-        return FotoTambahLuasanRepositoryImpl(remoteSource)
+        return FotoTambahLuasanRepositoryImpl(
+            localSource, remoteSource, localMetadata, remoteMetadata
+        )
     }
 }
