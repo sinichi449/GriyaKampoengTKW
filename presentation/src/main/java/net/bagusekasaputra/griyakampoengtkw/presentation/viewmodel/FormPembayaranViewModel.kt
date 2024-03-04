@@ -30,6 +30,8 @@ import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.pembayaran.Updat
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.pembayaranTambahLuasan.AddNewTambahLuasanPembayaranAsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.pembayaranTambahLuasan.DeleteByIdTambahLuasanPembayaranAsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.pembayaranTambahLuasan.GetAllPembayaranTambahLuasanAsyncUseCase
+import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.pembayaranTambahLuasan.GetItemPembayaranTambahLuasanAsyncUseCase
+import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.pembayaranTambahLuasan.UpdatePembayaranTambahLuasanAsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.rekap.GetUserPaymentStatusWithSpecifiedInvoiceAsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.statusPembayaran.GetStatusPembayaranKavlingAsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.BaselinePembayaran
@@ -71,7 +73,9 @@ class FormPembayaranViewModel @Inject constructor(
     private val deleteCatatanPembayaranAsyncUseCase: DeleteCatatanPembayaranAsyncUseCase,
     // Tambah Luasan
     private val getAllTambahanLuasPembayaran: GetAllPembayaranTambahLuasanAsyncUseCase,
+    private val getItemTambahanLuasPembayaranUseCase: GetItemPembayaranTambahLuasanAsyncUseCase,
     private val addNewTambahLuasanUseCase: AddNewTambahLuasanPembayaranAsyncUseCase,
+    private val updateTambahLuasanUseCase: UpdatePembayaranTambahLuasanAsyncUseCase,
     private val deleteTambahLuasanUseCase: DeleteByIdTambahLuasanPembayaranAsyncUseCase,
 ): ViewModel() {
 
@@ -577,21 +581,16 @@ class FormPembayaranViewModel @Inject constructor(
 
         _tambahanLuasItem.value = UiState.Loading()
 
-        // TODO: Requests
+        val request = GetItemPembayaranTambahLuasanAsyncUseCase.Request(kavling, id)
         readTambahanLuasPembayaranJob = viewModelScope.launch(Dispatchers.IO) {
-            delay(4000)
-            _tambahanLuasItem.postValue(UiState.Success(
-                PembayaranTambahLuasan(
-                    id = id,
-                    kavling = kavling,
-                    sudahAmbilKuitansi = false,
-                    fotoUri = "",
-                    tanggal = "06/06/2006",
-                    jumlahUang = 5_250_000L,
-                    keterangan = "tes 5",
-                    timeMillis = System.currentTimeMillis(),
-                )
-            ))
+            getItemTambahanLuasPembayaranUseCase.execute(request).collect { result ->
+                result.onSuccess {
+                    _tambahanLuasItem.postValue(UiState.Success(it))
+                }
+                result.onFailure {
+                    _tambahanLuasItem.postValue(UiState.Failure(it.message))
+                }
+            }
         }
     }
 
@@ -607,6 +606,24 @@ class FormPembayaranViewModel @Inject constructor(
                     _addTambahLuasanOperation.postValue(UiState.Success(null))
                 }
 
+                result.onFailure {
+                    _addTambahLuasanOperation.postValue(UiState.Failure(it.message))
+                }
+            }
+        }
+    }
+
+    fun updateTambahLuasan(oldId: String, newData: PembayaranTambahLuasan) {
+        writeTambahanLuasPembayaranJob?.cancel()
+
+        _addTambahLuasanOperation.value = UiState.Loading()
+
+        val request = UpdatePembayaranTambahLuasanAsyncUseCase.Request(oldId, newData)
+        writeTambahanLuasPembayaranJob = viewModelScope.launch(Dispatchers.IO) {
+            updateTambahLuasanUseCase.execute(request).collect { result ->
+                result.onSuccess {
+                    _addTambahLuasanOperation.postValue(UiState.Success())
+                }
                 result.onFailure {
                     _addTambahLuasanOperation.postValue(UiState.Failure(it.message))
                 }

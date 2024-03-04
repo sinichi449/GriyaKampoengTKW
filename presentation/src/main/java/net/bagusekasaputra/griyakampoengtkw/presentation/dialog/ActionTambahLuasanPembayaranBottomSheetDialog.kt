@@ -1,5 +1,6 @@
 package net.bagusekasaputra.griyakampoengtkw.presentation.dialog
 
+import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -117,6 +118,23 @@ class ActionTambahLuasanPembayaranBottomSheetDialog: BottomSheetDialogFragment()
                 }
                 .create()
                 .show()
+        }
+    }
+
+    @Deprecated("Deprecated in Java")
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+
+        if (requestCode == ubahPembayaranRequestCode) {
+            if (resultCode == Activity.RESULT_OK) {
+                dismiss()
+
+                viewModel.requestSync(PembayaranSyncRequest.TAMBAHAN_PEMBAYARAN)
+            } else {
+                data?.extras?.getString(FormActivity.EXTRAS_FAIL_MSG)?.also {
+                    Toast.makeText(requireContext(), it, Toast.LENGTH_LONG).show()
+                }
+            }
         }
     }
 

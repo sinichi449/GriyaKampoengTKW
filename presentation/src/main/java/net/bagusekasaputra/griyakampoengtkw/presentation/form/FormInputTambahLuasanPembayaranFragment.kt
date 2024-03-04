@@ -123,7 +123,12 @@ class FormInputTambahLuasanPembayaranFragment : Fragment() {
                     )
 
                     if (pembayaranViewModel.formIsEditMode) {
-                        // TODO execute update
+                        // Replace new entity's id with old id
+                        val updatedEntityId = entity.copy(id = pembayaranViewModel.currentTambahLuasanId!!)
+                        pembayaranViewModel.updateTambahLuasan(
+                            oldId = pembayaranViewModel.currentTambahLuasanId!!,
+                            newData = updatedEntityId,
+                        )
                     } else {
                         pembayaranViewModel.addTambahLuasanPembayaran(entity)
                     }
@@ -157,6 +162,8 @@ class FormInputTambahLuasanPembayaranFragment : Fragment() {
     }
 
     private fun setupViewModelForEditMode() {
+        setupViewModel()
+
         pembayaranViewModel.tambahanLuasItem.observe(requireActivity()) { k ->
             k?.also { uiState ->
                 when (uiState) {

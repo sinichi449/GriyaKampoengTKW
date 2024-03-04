@@ -40,6 +40,16 @@ class FirebasePembayaranTambahLuasanDataSource(
         )
     }
 
+    override suspend fun get(kavling: String, id: String): Result<PembayaranTambahLuasanModel?> {
+        return FirebaseRequestHelper.getOperation(
+            pathToChild = ref.child(kavling).child(id),
+            onGetSnapshot = { snapshot ->
+                return@getOperation snapshot.getValue<PembayaranTambahLuasanModel>()
+            },
+            onClosedConnection = {}
+        )
+    }
+
     override suspend fun add(model: PembayaranTambahLuasanModel): Result<Nothing?> {
         return suspendCancellableCoroutine { continuation ->
             ref.child(model.kavling).child(model.id)
@@ -54,6 +64,18 @@ class FirebasePembayaranTambahLuasanDataSource(
                         continuation.resume(Result.failure(it), null)
                     }
                 }
+        }
+    }
+
+    override suspend fun update(
+        id: String,
+        newModel: PembayaranTambahLuasanModel
+    ): Result<Nothing?> {
+        val deleteOperation = deleteById(newModel.kavling, id)
+        return if (deleteOperation.isSuccess) {
+            add(newModel)
+        } else {
+            Result.failure(deleteOperation.exceptionOrNull() ?: Exception("Terjadi kesalahan override data!"))
         }
     }
 

@@ -82,6 +82,20 @@ class PembayaranTambahLuasanRepositoryImplD(
         }
     }
 
+    override fun get(kavling: String, id: String): Flow<Result<PembayaranTambahLuasan?>> {
+        return flow {
+            remoteSource.get(kavling, id)
+                .onSuccess {
+                    val data =
+                        if (it != null) MyObjectMapper.mapTambahLuasanPembayaran(it) else null
+                    emit(Result.success(data))
+                }
+                .onFailure {
+                    emit(Result.failure(it))
+                }
+        }
+    }
+
     override fun add(pembayaranTambahLuasan: PembayaranTambahLuasan): Flow<Result<Nothing?>> {
         return flow {
             updateMetadata()
@@ -93,6 +107,23 @@ class PembayaranTambahLuasanRepositoryImplD(
                 emit(Result.success(null))
             }
 
+            remoteResult.onFailure {
+                emit(Result.failure(it))
+            }
+        }
+    }
+
+    override fun update(oldId: String, newEntity: PembayaranTambahLuasan): Flow<Result<Nothing?>> {
+        return flow {
+            updateMetadata()
+
+            val newModel = MyObjectMapper.mapTambahLuasanPembayaran(newEntity)
+            val remoteResult = remoteSource.update(oldId, newModel)
+
+            remoteResult.onSuccess {
+                // TODO: Insert to local data source too
+                emit(Result.success(null))
+            }
             remoteResult.onFailure {
                 emit(Result.failure(it))
             }

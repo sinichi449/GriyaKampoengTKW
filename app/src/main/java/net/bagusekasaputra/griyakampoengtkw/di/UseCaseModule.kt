@@ -60,6 +60,8 @@ import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.pembayaran.Updat
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.pembayaranTambahLuasan.AddNewTambahLuasanPembayaranAsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.pembayaranTambahLuasan.DeleteByIdTambahLuasanPembayaranAsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.pembayaranTambahLuasan.GetAllPembayaranTambahLuasanAsyncUseCase
+import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.pembayaranTambahLuasan.GetItemPembayaranTambahLuasanAsyncUseCase
+import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.pembayaranTambahLuasan.UpdatePembayaranTambahLuasanAsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.pengembalian.GetPengembalianStreamAsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.pengingat.AddPengingatAsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.pengingat.DeletePengingatAsyncUseCase
@@ -759,8 +761,16 @@ object UseCaseModule {
     }
 
     @Provides
+    fun provideGetItemPembayaranTambahLuasanUseCase(repository: PembayaranTambahLuasanRepository)
+        = GetItemPembayaranTambahLuasanAsyncUseCase(repository)
+
+    @Provides
     fun provideAddNewTambahLuasanPembayaranUseCase(repository: PembayaranTambahLuasanRepository)
         = AddNewTambahLuasanPembayaranAsyncUseCase(repository)
+
+    @Provides
+    fun provideUpdateTambahLuasanPembayaranUseCase(repository: PembayaranTambahLuasanRepository)
+        = UpdatePembayaranTambahLuasanAsyncUseCase(repository)
 
     @Provides
     fun provideDeleteByIdTambahLuasanPembayaranUseCase(repository: PembayaranTambahLuasanRepository)
