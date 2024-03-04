@@ -55,13 +55,6 @@ class FotoTambahLuasanRepositoryImpl(
                 Log.d("DEBUG_ME", "FotoTambahLuasan retrived from Local Data Source")
                 emit(Result.success(MyObjectMapper.mapFotoTambahLuasan(localModel)))
             }
-
-//            emit(
-//                remoteSource.get(kavling, tambahLuasanId).map { model ->
-//                    if (model != null) MyObjectMapper.mapFotoTambahLuasan(model)
-//                    else null
-//                }
-//            )
         }
     }
 

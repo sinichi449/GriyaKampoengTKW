@@ -6,6 +6,7 @@ import android.app.Activity
 import android.content.Intent
 import android.content.SharedPreferences
 import android.os.Bundle
+import android.util.Log
 import android.view.*
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
@@ -534,7 +535,7 @@ class FormPembayaranFragment : Fragment() {
                                 val rowId = index.plus(1).toString()
                                 val rowData = TambahanLuasanRowData(
                                     nomor = index.plus(1),
-                                    sudahIsiFoto = item.fotoUri.isNotEmpty(),
+                                    sudahIsiFoto = item.fotoUri != "",
                                     sudahAmbilKuitansi = item.sudahAmbilKuitansi,
                                 )
 
@@ -567,6 +568,7 @@ class FormPembayaranFragment : Fragment() {
                     }
 
                     if (data != null) {
+                        Log.d("DEBUG_ME_PRO", "Data ${data.nomor} => ${data.sudahIsiFoto}")
                         viewHolder.setRowHeaderBgColour(
                             if (data.sudahIsiFoto) R.color.table_selected_colour
                         else R.color.table_unselected_colour)

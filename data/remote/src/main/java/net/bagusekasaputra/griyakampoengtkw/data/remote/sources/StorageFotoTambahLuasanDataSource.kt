@@ -6,6 +6,7 @@ import com.google.android.gms.tasks.OnCompleteListener
 import com.google.android.gms.tasks.OnFailureListener
 import com.google.firebase.storage.FileDownloadTask
 import com.google.firebase.storage.OnProgressListener
+import com.google.firebase.storage.StorageException
 import com.google.firebase.storage.StorageReference
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.suspendCancellableCoroutine
@@ -39,7 +40,8 @@ class StorageFotoTambahLuasanDataSource(
 
             Log.d("DEBUG_ME", "Saving to ${dstFile.toUri()}")
 
-            ref.child(model.getKavlingAndFilePath()).getFile(dstFile)
+            ref.child(model.getKavlingAndFilePath())
+                .getFile(dstFile)
                 .addOnProgressListener {}
                 .addOnCompleteListener {
                     if (continuation.isActive) {
@@ -52,13 +54,14 @@ class StorageFotoTambahLuasanDataSource(
                     }
                 }
                 .addOnFailureListener {
-                    it.printStackTrace()
                     if (continuation.isActive) {
-                        continuation.resume(Result.failure(it), null)
+                        if (it is StorageException) {
+                            continuation.resume(Result.success(null), null)
+                        } else {
+                            continuation.resume(Result.failure(it), null)
+                        }
                     }
                 }
         }
     }
-
-
 }

@@ -758,8 +758,11 @@ object UseCaseModule {
      * Pembayaran Tambah Luasan
      */
     @Provides
-    fun provideGetAllPembayaranTambahLuasanUseCase(repository: PembayaranTambahLuasanRepository): GetAllPembayaranTambahLuasanAsyncUseCase {
-        return GetAllPembayaranTambahLuasanAsyncUseCase(repository)
+    fun provideGetAllPembayaranTambahLuasanUseCase(
+        dataRepository: PembayaranTambahLuasanRepository,
+        fotoRepository: FotoTambahLuasanRepository,
+    ): GetAllPembayaranTambahLuasanAsyncUseCase {
+        return GetAllPembayaranTambahLuasanAsyncUseCase(dataRepository, fotoRepository)
     }
 
     @Provides
