@@ -21,6 +21,7 @@ import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.fotoPembayaran.D
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.fotoPembayaran.GetFotoPembayaranAsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.fotoPembayaran.IsFotoPembayaranExistAsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.fotoTambahLuasan.GetFotoTambahLuasanAsyncUseCase
+import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.fotoTambahLuasan.InsertFotoTambahLuasanAsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.indenBooking.fotoPembayaran.DeleteFotoPembayaranIndenBookingAsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.indenBooking.fotoPembayaran.GetFotoPembayaranIndenBookingAsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.indenBooking.fotoPembayaran.InsertFotoPembayaranIndenBookingAsyncUseCase
@@ -68,6 +69,7 @@ class ImageViewModel @Inject constructor(
     private val deleteFotoPembayaranIndenBookingAsyncUseCase: DeleteFotoPembayaranIndenBookingAsyncUseCase,
     // Foto Tambah Luasan
     private val getFotoTambahLuasanUseCase: GetFotoTambahLuasanAsyncUseCase,
+    private val insertFotoTambahLuasanUseCase: InsertFotoTambahLuasanAsyncUseCase,
 ): ViewModel() {
 
     val fotoKuitansiLive = MutableLiveData<FotoKuitansi>()
@@ -102,6 +104,7 @@ class ImageViewModel @Inject constructor(
     var dataMode = DataMode.ONLINE
 
     private var readFotoTambahLuasanJob: Job? = null
+    private var writeFotoTambahLuasanJob: Job? = null
 
 
     // Image Data Diri
@@ -521,6 +524,23 @@ class ImageViewModel @Inject constructor(
         }
     }
 
+    fun insertFotoTambahLuasan(entity: FotoTambahLuasan) {
+        writeFotoTambahLuasanJob?.cancel()
+
+        _writeFotoTambahLuasanOperation.value = UiState.Loading()
+
+        val request = InsertFotoTambahLuasanAsyncUseCase.Request(entity)
+        writeFotoTambahLuasanJob = viewModelScope.launch(Dispatchers.IO) {
+            insertFotoTambahLuasanUseCase.execute(request).collect { result ->
+                result.onSuccess {
+                    _writeFotoTambahLuasanOperation.postValue(UiState.Success())
+                }
+                result.onFailure {
+                    _writeFotoTambahLuasanOperation.postValue(UiState.Failure(it.message))
+                }
+            }
+        }
+    }
 
     fun <T> createImageTransport(sendIntent: String, content: T): ImageTransport<T> {
         return ImageTransport(sendIntent, content, dataMode)
@@ -531,6 +551,9 @@ class ImageViewModel @Inject constructor(
     }
 
 
+    private val _writeFotoTambahLuasanOperation = MutableLiveData<UiState<Nothing?>>()
+    val writeFotoTambahLuasanOperation: LiveData<UiState<Nothing?>>
+        get() = _writeFotoTambahLuasanOperation
 
     override fun onCleared() {
         super.onCleared()

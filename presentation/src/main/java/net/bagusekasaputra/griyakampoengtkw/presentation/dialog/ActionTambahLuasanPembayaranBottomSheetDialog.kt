@@ -2,25 +2,34 @@ package net.bagusekasaputra.griyakampoengtkw.presentation.dialog
 
 import android.app.Activity
 import android.content.Intent
+import android.content.SharedPreferences
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ProgressBar
 import android.widget.Toast
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.fragment.app.activityViewModels
+import com.github.dhaval2404.imagepicker.ImagePicker
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import dagger.hilt.android.AndroidEntryPoint
 import net.bagusekasaputra.griyakampoengtkw.domain.NumberUtil.numericToString
+import net.bagusekasaputra.griyakampoengtkw.domain.entity.FotoTambahLuasan
 import net.bagusekasaputra.griyakampoengtkw.presentation.activity.FormActivity
 import net.bagusekasaputra.griyakampoengtkw.presentation.activity.FullImageActivity
 import net.bagusekasaputra.griyakampoengtkw.presentation.activity.UpdateTambahLuasanPembayaranParcel
 import net.bagusekasaputra.griyakampoengtkw.presentation.databinding.DialogActionsTambahLuasanPembayaranBinding
 import net.bagusekasaputra.griyakampoengtkw.presentation.model.UiState
 import net.bagusekasaputra.griyakampoengtkw.presentation.util.GriyaNodes
+import net.bagusekasaputra.griyakampoengtkw.presentation.util.NotificationUtil
 import net.bagusekasaputra.griyakampoengtkw.presentation.viewmodel.FormPembayaranViewModel
 import net.bagusekasaputra.griyakampoengtkw.presentation.viewmodel.ImageViewModel
 import net.bagusekasaputra.griyakampoengtkw.presentation.viewmodel.PembayaranSyncRequest
+import javax.inject.Inject
 
+@AndroidEntryPoint
 class ActionTambahLuasanPembayaranBottomSheetDialog: BottomSheetDialogFragment() {
 
     private lateinit var binding: DialogActionsTambahLuasanPembayaranBinding
@@ -33,7 +42,70 @@ class ActionTambahLuasanPembayaranBottomSheetDialog: BottomSheetDialogFragment()
     private var currentId: String? = ""
     private var sudahIsiFoto: Boolean = false
 
+    private var progressBarTambahFoto: ProgressBar? = null
+
     private val ubahPembayaranRequestCode = 1002
+
+    @Inject
+    lateinit var sharedPrefs: SharedPreferences
+
+    private val pickerResultLauncher =
+        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+            val resultCode = result.resultCode
+            val intent = result.data
+
+            when (resultCode) {
+                Activity.RESULT_OK -> {
+                    val uri = intent?.data
+                    if (uri != null) {
+                        NotificationUtil.createNotification(
+                            activity = requireActivity(),
+                            title = "Upload Foto Pembayaran",
+                            content = "Mohon tunggu sebentar ...",
+                            finished = false,
+                        )
+
+                        imageViewModel.insertFotoTambahLuasan(
+                            FotoTambahLuasan(
+                                tambahLuasanId = currentId!!,
+                                kavling = currentKavling!!,
+                                uri = uri.toString()
+                            )
+                        )
+
+                        imageViewModel.writeFotoTambahLuasanOperation.observe(requireActivity()) { k ->
+                            k?.also { uiState ->
+                                when (uiState) {
+                                    is UiState.Loading -> {
+                                        progressBarTambahFoto?.visibility = View.VISIBLE
+                                    }
+                                    is UiState.Success -> {
+                                        progressBarTambahFoto?.visibility = View.GONE
+
+                                        this.dismiss()
+
+                                        viewModel.requestSync(PembayaranSyncRequest.TAMBAHAN_PEMBAYARAN)
+                                    }
+                                    is UiState.Failure -> {
+                                        progressBarTambahFoto?.visibility = View.GONE
+                                    }
+                                }
+                            }
+                        }
+                    } else {
+                        Toast.makeText(requireContext(), "Uri is Empty!", Toast.LENGTH_SHORT).show()
+                    }
+                }
+                ImagePicker.RESULT_ERROR -> {
+                    Toast.makeText(requireContext(), ImagePicker.getError(intent), Toast.LENGTH_LONG).show()
+                }
+                else -> {
+                    Toast.makeText(requireContext(), "Operasi dibatalkan", Toast.LENGTH_SHORT)
+                        .show()
+                }
+            }
+        }
+
 
     companion object {
         const val EXTRAS_SELECTED_INDEX_POSITION = "EXTRAS_SELECTED_INDEX_POSITION"
@@ -70,6 +142,8 @@ class ActionTambahLuasanPembayaranBottomSheetDialog: BottomSheetDialogFragment()
         currentId = data?.id
         sudahIsiFoto = data?.fotoUri?.isNotEmpty() ?: false
 
+        progressBarTambahFoto = binding.progressbarTambahkanFoto
+
 
         with(binding) {
             // Dialog Title
@@ -99,6 +173,10 @@ class ActionTambahLuasanPembayaranBottomSheetDialog: BottomSheetDialogFragment()
                 cardLihatFotoPembayaran.visibility = View.GONE
                 cardTambahkanFotoPembayaran.visibility = View.VISIBLE
                 cardHapusFotoPembayaran.visibility = View.GONE
+
+                cardTambahkanFotoPembayaran.setOnClickListener {
+                    launchFotoPickerDialog()
+                }
             }
         }
 
@@ -168,4 +246,12 @@ class ActionTambahLuasanPembayaranBottomSheetDialog: BottomSheetDialogFragment()
         }
     }
 
+    private fun launchFotoPickerDialog() {
+        ImagePicker.with(this)
+            .crop()
+            .compress(sharedPrefs.getInt("max_size_foto_pembayaran", 256))
+            .createIntent {
+                pickerResultLauncher.launch(it)
+            }
+    }
 }

@@ -58,4 +58,32 @@ class FotoTambahLuasanRepositoryImpl(
         }
     }
 
+    override fun insert(entity: FotoTambahLuasan): Flow<Result<Nothing?>> {
+        return flow {
+            updateMetadata()
+
+            val model = MyObjectMapper.mapFotoTambahLuasan(entity)
+            localSource.insert(model).getOrThrow()
+            remoteSource.insert(model)
+                .onSuccess {
+                    emit(Result.success(null))
+                }
+                .onFailure {
+                    emit(Result.failure(it))
+                }
+        }
+    }
+
+    private suspend fun updateMetadata() {
+        val currentTimemillis = System.currentTimeMillis()
+        val oldTimestamp = localMetadata.get(metadataTable)?.timestamp ?: 0L
+
+        remoteMetadata.update(
+            oldMetadataModel = MetadataModel(metadataTable, oldTimestamp),
+            newMetadataModel = MetadataModel(metadataTable, currentTimemillis),
+        )
+        localMetadata.insert(
+            MetadataModel(metadataTable, currentTimemillis)
+        )
+    }
 }

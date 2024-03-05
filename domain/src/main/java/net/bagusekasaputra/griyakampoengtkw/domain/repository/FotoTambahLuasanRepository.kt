@@ -7,4 +7,6 @@ interface FotoTambahLuasanRepository {
 
     fun get(kavling: String, tambahLuasanId: String): Flow<Result<FotoTambahLuasan?>>
 
+    fun insert(entity: FotoTambahLuasan): Flow<Result<Nothing?>>
+
 }

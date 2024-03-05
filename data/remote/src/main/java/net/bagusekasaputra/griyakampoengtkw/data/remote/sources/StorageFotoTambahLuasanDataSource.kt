@@ -64,4 +64,27 @@ class StorageFotoTambahLuasanDataSource(
                 }
         }
     }
+
+    override suspend fun insert(model: FotoTambahLuasanModel): Result<Nothing?> {
+        return suspendCancellableCoroutine { continuation ->
+            val kavlingAndFilePath = model.getKavlingAndFilePath()
+            val uri = "${FotoTambahLuasanModel.DST_FOLDER}/${kavlingAndFilePath}".let {
+                File(externalFilesDir, it).toUri()
+            }
+
+            ref.child(kavlingAndFilePath)
+                .putFile(uri)
+                .addOnProgressListener {  }
+                .addOnCompleteListener {
+                    if (continuation.isActive) {
+                        continuation.resume(Result.success(null), null)
+                    }
+                }
+                .addOnFailureListener {
+                    if (continuation.isActive) {
+                        continuation.resume(Result.failure(it), null)
+                    }
+                }
+        }
+    }
 }

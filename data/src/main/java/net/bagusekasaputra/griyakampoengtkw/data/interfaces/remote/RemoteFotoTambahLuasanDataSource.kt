@@ -6,4 +6,6 @@ interface RemoteFotoTambahLuasanDataSource {
 
     suspend fun get(kavling: String, id: String): Result<FotoTambahLuasanModel?>
 
+    suspend fun insert(model: FotoTambahLuasanModel): Result<Nothing?>
+
 }
