@@ -82,6 +82,9 @@ class ActionTambahLuasanPembayaranBottomSheetDialog: BottomSheetDialogFragment()
                                     is UiState.Success -> {
                                         progressBarTambahFoto?.visibility = View.GONE
 
+                                        Toast.makeText(requireContext(), "Berhasil menambahkan foto tambah luasan!", Toast.LENGTH_SHORT)
+                                            .show()
+
                                         this.dismiss()
 
                                         viewModel.requestSync(PembayaranSyncRequest.TAMBAHAN_PEMBAYARAN)
