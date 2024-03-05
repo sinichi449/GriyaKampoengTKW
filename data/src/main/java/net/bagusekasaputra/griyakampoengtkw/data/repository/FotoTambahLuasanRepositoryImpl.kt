@@ -9,6 +9,7 @@ import net.bagusekasaputra.griyakampoengtkw.data.interfaces.local.LocalMetadataD
 import net.bagusekasaputra.griyakampoengtkw.data.interfaces.remote.RemoteFotoTambahLuasanDataSource
 import net.bagusekasaputra.griyakampoengtkw.data.interfaces.remote.RemoteMetadataDataSource
 import net.bagusekasaputra.griyakampoengtkw.data.model.MetadataModel
+import net.bagusekasaputra.griyakampoengtkw.domain.entity.FotoPembayaran
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.FotoTambahLuasan
 import net.bagusekasaputra.griyakampoengtkw.domain.repository.FotoTambahLuasanRepository
 
@@ -65,6 +66,21 @@ class FotoTambahLuasanRepositoryImpl(
             val model = MyObjectMapper.mapFotoTambahLuasan(entity)
             localSource.insert(model).getOrThrow()
             remoteSource.insert(model)
+                .onSuccess {
+                    emit(Result.success(null))
+                }
+                .onFailure {
+                    emit(Result.failure(it))
+                }
+        }
+    }
+
+    override fun delete(kavling: String, tambahLuasanId: String): Flow<Result<Nothing?>> {
+        return flow {
+            updateMetadata()
+
+            localSource.delete(kavling, tambahLuasanId).getOrThrow()
+            remoteSource.delete(kavling, tambahLuasanId)
                 .onSuccess {
                     emit(Result.success(null))
                 }

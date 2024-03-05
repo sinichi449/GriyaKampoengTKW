@@ -8,4 +8,5 @@ interface RemoteFotoTambahLuasanDataSource {
 
     suspend fun insert(model: FotoTambahLuasanModel): Result<Nothing?>
 
+    suspend fun delete(kavling: String, id: String): Result<Nothing?>
 }

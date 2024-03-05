@@ -20,6 +20,7 @@ import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.fotoPembayaran.A
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.fotoPembayaran.DeleteFotoPembayaranAsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.fotoPembayaran.GetFotoPembayaranAsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.fotoPembayaran.IsFotoPembayaranExistAsyncUseCase
+import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.fotoTambahLuasan.DeleteFotoTambahLuasanAsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.fotoTambahLuasan.GetFotoTambahLuasanAsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.fotoTambahLuasan.InsertFotoTambahLuasanAsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.indenBooking.fotoPembayaran.DeleteFotoPembayaranIndenBookingAsyncUseCase
@@ -70,6 +71,7 @@ class ImageViewModel @Inject constructor(
     // Foto Tambah Luasan
     private val getFotoTambahLuasanUseCase: GetFotoTambahLuasanAsyncUseCase,
     private val insertFotoTambahLuasanUseCase: InsertFotoTambahLuasanAsyncUseCase,
+    private val deleteFotoTambahLuasanUseCase: DeleteFotoTambahLuasanAsyncUseCase,
 ): ViewModel() {
 
     val fotoKuitansiLive = MutableLiveData<FotoKuitansi>()
@@ -542,6 +544,28 @@ class ImageViewModel @Inject constructor(
         }
     }
 
+    fun deleteFotoTambahLuasan(tambahLuasanId: String, kavling: String) {
+        writeFotoTambahLuasanJob?.cancel()
+
+        _writeFotoTambahLuasanOperation.value = UiState.Loading()
+
+        val request = DeleteFotoTambahLuasanAsyncUseCase.Request(kavling, tambahLuasanId)
+        writeFotoTambahLuasanJob = viewModelScope.launch(Dispatchers.IO) {
+            deleteFotoTambahLuasanUseCase.execute(request).collect { result ->
+                result.onSuccess {
+                    _writeFotoTambahLuasanOperation.postValue(UiState.Success())
+                }
+                result.onFailure {
+                    _writeFotoTambahLuasanOperation.postValue(UiState.Failure(it.message))
+                }
+            }
+        }
+    }
+
+
+    /**
+     * Utility Functions
+     */
     fun <T> createImageTransport(sendIntent: String, content: T): ImageTransport<T> {
         return ImageTransport(sendIntent, content, dataMode)
     }

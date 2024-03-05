@@ -9,4 +9,6 @@ interface FotoTambahLuasanRepository {
 
     fun insert(entity: FotoTambahLuasan): Flow<Result<Nothing?>>
 
+    fun delete(kavling: String, tambahLuasanId: String): Flow<Result<Nothing?>>
+
 }

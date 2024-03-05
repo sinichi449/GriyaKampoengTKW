@@ -73,28 +73,24 @@ class ActionTambahLuasanPembayaranBottomSheetDialog: BottomSheetDialogFragment()
                             )
                         )
 
-                        imageViewModel.writeFotoTambahLuasanOperation.observe(requireActivity()) { k ->
-                            k?.also { uiState ->
-                                when (uiState) {
-                                    is UiState.Loading -> {
-                                        progressBarTambahFoto?.visibility = View.VISIBLE
-                                    }
-                                    is UiState.Success -> {
-                                        progressBarTambahFoto?.visibility = View.GONE
+                        observeWriteFotoOperation(
+                            onLoading = { progressBarTambahFoto?.visibility = View.VISIBLE },
+                            onSuccess = {
+                                progressBarTambahFoto?.visibility = View.GONE
 
-                                        Toast.makeText(requireContext(), "Berhasil menambahkan foto tambah luasan!", Toast.LENGTH_SHORT)
-                                            .show()
+                                Toast.makeText(requireContext(), "Berhasil menambahkan foto tambah luasan!", Toast.LENGTH_SHORT)
+                                    .show()
 
-                                        this.dismiss()
+                                this.dismiss()
 
-                                        viewModel.requestSync(PembayaranSyncRequest.TAMBAHAN_PEMBAYARAN)
-                                    }
-                                    is UiState.Failure -> {
-                                        progressBarTambahFoto?.visibility = View.GONE
-                                    }
-                                }
+                                viewModel.requestSync(PembayaranSyncRequest.TAMBAHAN_PEMBAYARAN)
+                            },
+                            onFailure = { failMsg ->
+                                progressBarTambahFoto?.visibility = View.GONE
+
+                                Toast.makeText(requireContext(), "Gagal: ${failMsg}", Toast.LENGTH_LONG).show()
                             }
-                        }
+                        )
                     } else {
                         Toast.makeText(requireContext(), "Uri is Empty!", Toast.LENGTH_SHORT).show()
                     }
@@ -172,6 +168,42 @@ class ActionTambahLuasanPembayaranBottomSheetDialog: BottomSheetDialogFragment()
 
                     startActivity(intent)
                 }
+
+                binding.cardHapusFotoPembayaran.setOnClickListener {
+                    MaterialAlertDialogBuilder(requireContext())
+                        .setTitle("Hapus Foto?")
+                        .setMessage("Apakah Anda yakin menghapus foto tambahan luasan $currentId?")
+                        .setPositiveButton("Ya") { dialog, _ ->
+                            imageViewModel.deleteFotoTambahLuasan(
+                                tambahLuasanId = currentId!!,
+                                kavling = currentKavling!!,
+                            )
+
+                            observeWriteFotoOperation(
+                                onLoading = {
+                                    dialog.dismiss()
+
+                                    progressbarHapusFoto.visibility = View.VISIBLE
+                                },
+                                onSuccess = {
+                                    Toast.makeText(requireContext(), "Berhasil menghapus!", Toast.LENGTH_SHORT).show()
+
+                                    this@ActionTambahLuasanPembayaranBottomSheetDialog.dismiss()
+
+                                    viewModel.requestSync(PembayaranSyncRequest.TAMBAHAN_PEMBAYARAN)
+                                },
+                                onFailure = {
+                                    Toast.makeText(requireContext(), "Gagal: $it", Toast.LENGTH_SHORT).show()
+                                }
+                            )
+
+                        }
+                        .setNegativeButton("Tidak") { dialog, _ ->
+                            dialog.dismiss()
+                        }
+                        .create()
+                        .show()
+                }
             } else {
                 cardLihatFotoPembayaran.visibility = View.GONE
                 cardTambahkanFotoPembayaran.visibility = View.VISIBLE
@@ -244,6 +276,28 @@ class ActionTambahLuasanPembayaranBottomSheetDialog: BottomSheetDialogFragment()
             } else {
                 data?.extras?.getString(FormActivity.EXTRAS_FAIL_MSG)?.also {
                     Toast.makeText(requireContext(), it, Toast.LENGTH_LONG).show()
+                }
+            }
+        }
+    }
+
+    private fun observeWriteFotoOperation(
+        onLoading: () -> Unit,
+        onSuccess: () -> Unit,
+        onFailure: (failMsg: String) -> Unit,
+    ) {
+        imageViewModel.writeFotoTambahLuasanOperation.observe(requireActivity()) { k ->
+            k?.also { uiState ->
+                when (uiState) {
+                    is UiState.Loading -> {
+                        onLoading()
+                    }
+                    is UiState.Success -> {
+                        onSuccess()
+                    }
+                    is UiState.Failure -> {
+                        onFailure(uiState.failMsg ?: "UNKNOWN ERROR")
+                    }
                 }
             }
         }

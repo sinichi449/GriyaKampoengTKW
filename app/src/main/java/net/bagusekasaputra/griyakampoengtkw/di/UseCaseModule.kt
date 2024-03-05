@@ -33,6 +33,7 @@ import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.fotoPembayaran.A
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.fotoPembayaran.DeleteFotoPembayaranAsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.fotoPembayaran.GetFotoPembayaranAsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.fotoPembayaran.IsFotoPembayaranExistAsyncUseCase
+import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.fotoTambahLuasan.DeleteFotoTambahLuasanAsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.fotoTambahLuasan.GetFotoTambahLuasanAsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.fotoTambahLuasan.InsertFotoTambahLuasanAsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.hargaKavling.GetHargaKavlingAsyncUseCase
@@ -792,4 +793,8 @@ object UseCaseModule {
     @Provides
     fun provideInsertFotoTambahLuasanUseCase(repository: FotoTambahLuasanRepository)
         = InsertFotoTambahLuasanAsyncUseCase(repository)
+
+    @Provides
+    fun provideDeleteFotoTambahLuasanUseCase(repository: FotoTambahLuasanRepository)
+        = DeleteFotoTambahLuasanAsyncUseCase(repository)
 }

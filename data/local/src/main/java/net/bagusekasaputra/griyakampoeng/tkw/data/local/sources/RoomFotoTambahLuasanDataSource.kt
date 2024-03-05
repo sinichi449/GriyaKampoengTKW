@@ -56,6 +56,27 @@ class RoomFotoTambahLuasanDataSource(
         }
     }
 
+    override suspend fun delete(kavling: String, id: String): Result<Nothing?> {
+        return try {
+            val model = FotoTambahLuasanModel(
+                tambahLuasanId = id,
+                kavling = kavling,
+                uri = ""
+            )
+            val dstFile = File(externalFilesDir, FotoTambahLuasanModel.DST_FOLDER).let {
+                File(it, model.getKavlingAndFilePath())
+            }
+
+            if (dstFile.delete()) {
+                Result.success(null)
+            } else {
+                Result.failure(Exception("Terjadi kesalahan menghapus dari local data source!"))
+            }
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
+    }
+
     override suspend fun deleteAll(): Result<Nothing?> {
         return try {
             val dstFile = File(externalFilesDir, FotoTambahLuasanModel.DST_FOLDER)
