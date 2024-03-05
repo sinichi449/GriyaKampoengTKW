@@ -79,10 +79,24 @@ class FotoTambahLuasanRepositoryImpl(
         return flow {
             updateMetadata()
 
-            localSource.delete(kavling, tambahLuasanId).getOrThrow()
+            if (localSource.isExist(kavling, tambahLuasanId).getOrNull() == true) {
+                localSource.delete(kavling, tambahLuasanId).getOrThrow()
+            }
             remoteSource.delete(kavling, tambahLuasanId)
                 .onSuccess {
                     emit(Result.success(null))
+                }
+                .onFailure {
+                    emit(Result.failure(it))
+                }
+        }
+    }
+
+    override fun isExist(kavling: String, tambahLuasanId: String): Flow<Result<Boolean>> {
+        return flow {
+            remoteSource.isExist(kavling, tambahLuasanId)
+                .onSuccess {
+                    emit(Result.success(it))
                 }
                 .onFailure {
                     emit(Result.failure(it))

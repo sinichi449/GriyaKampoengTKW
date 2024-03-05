@@ -77,6 +77,19 @@ class RoomFotoTambahLuasanDataSource(
         }
     }
 
+    override suspend fun isExist(kavling: String, id: String): Result<Boolean> {
+        val model = FotoTambahLuasanModel(
+            tambahLuasanId = id,
+            kavling = kavling,
+            uri = ""
+        )
+        val dstFile = File(externalFilesDir, FotoTambahLuasanModel.DST_FOLDER).let {
+            File(it, model.getKavlingAndFilePath())
+        }
+
+        return Result.success(dstFile.exists())
+    }
+
     override suspend fun deleteAll(): Result<Nothing?> {
         return try {
             val dstFile = File(externalFilesDir, FotoTambahLuasanModel.DST_FOLDER)

@@ -110,4 +110,33 @@ class StorageFotoTambahLuasanDataSource(
                 }
         }
     }
+
+    override suspend fun isExist(kavling: String, id: String): Result<Boolean> {
+        return suspendCancellableCoroutine { continuation ->
+            val model = FotoTambahLuasanModel(
+                tambahLuasanId = id,
+                kavling = kavling,
+                uri = ""
+            )
+
+            ref.child(model.getKavlingAndFilePath())
+                .downloadUrl
+                .addOnCompleteListener {
+                    if (continuation.isActive) {
+                        continuation.resume(Result.success(true), null)
+                    }
+                }
+                .addOnFailureListener {
+                    if (continuation.isActive) {
+                        if (it.message == "Object does not exist at location.") {
+                            Log.d("DEBUG_ME_PRO", "Download url returns with error: ${it.message}")
+                            continuation.resume(Result.success(false), null)
+                        } else {
+                            Log.d("DEBUG_ME_PRO", "Download url returns with error: ${it.message}")
+                            continuation.resume(Result.failure(it), null)
+                        }
+                    }
+                }
+        }
+    }
 }

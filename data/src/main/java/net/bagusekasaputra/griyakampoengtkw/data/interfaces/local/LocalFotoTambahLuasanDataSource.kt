@@ -11,4 +11,7 @@ interface LocalFotoTambahLuasanDataSource {
     suspend fun insert(model: FotoTambahLuasanModel): Result<Nothing?>
 
     suspend fun delete(kavling: String, id: String): Result<Nothing?>
+
+    suspend fun isExist(kavling: String, id: String): Result<Boolean>
+
 }

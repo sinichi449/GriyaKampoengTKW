@@ -11,4 +11,5 @@ interface FotoTambahLuasanRepository {
 
     fun delete(kavling: String, tambahLuasanId: String): Flow<Result<Nothing?>>
 
+    fun isExist(kavling: String, tambahLuasanId: String): Flow<Result<Boolean>>
 }

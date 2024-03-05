@@ -780,8 +780,11 @@ object UseCaseModule {
         = UpdatePembayaranTambahLuasanAsyncUseCase(repository)
 
     @Provides
-    fun provideDeleteByIdTambahLuasanPembayaranUseCase(repository: PembayaranTambahLuasanRepository)
-        = DeleteByIdTambahLuasanPembayaranAsyncUseCase(repository)
+    fun provideDeleteByIdTambahLuasanPembayaranUseCase(
+        dataRepository: PembayaranTambahLuasanRepository,
+        fotoRepository: FotoTambahLuasanRepository,
+    )
+        = DeleteByIdTambahLuasanPembayaranAsyncUseCase(dataRepository, fotoRepository)
 
     /**
      * Foto Tambah Luasan
