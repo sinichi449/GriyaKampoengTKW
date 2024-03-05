@@ -154,6 +154,7 @@ class ActionTambahLuasanPembayaranBottomSheetDialog: BottomSheetDialogFragment()
             if (sudahIsiFoto) {
                 cardTambahkanFotoPembayaran.visibility = View.GONE
                 cardHapusFotoPembayaran.visibility = View.VISIBLE
+                cardAmbilKuitansi.visibility = View.VISIBLE
 
                 binding.cardLihatFotoPembayaran.setOnClickListener {
                     val imageTransport = imageViewModel.createImageTransport(
@@ -204,10 +205,55 @@ class ActionTambahLuasanPembayaranBottomSheetDialog: BottomSheetDialogFragment()
                         .create()
                         .show()
                 }
+
+                switchSudahAmbilKuitansi.setOnCheckedChangeListener { _, isChecked ->
+                    val updatedData = data!!.copy(
+                        sudahAmbilKuitansi = isChecked,
+                        timeMillis = System.currentTimeMillis(),
+                    )
+
+                    viewModel.updateTambahLuasan(
+                        oldId = currentId!!,
+                        newData = updatedData
+                    )
+
+                    viewModel.addTambahLuasanOperation.observe(requireActivity()) { i ->
+                        i?.also { state ->
+                            when (state) {
+                                is UiState.Loading -> {
+                                    this@ActionTambahLuasanPembayaranBottomSheetDialog.isCancelable = false
+
+                                    with(switchSudahAmbilKuitansi) {
+                                        isEnabled = false
+                                        visibility = View.GONE
+                                    }
+
+                                    progressAmbilKuitansi.visibility = View.VISIBLE
+                                }
+                                is UiState.Success -> {
+                                    this@ActionTambahLuasanPembayaranBottomSheetDialog.isCancelable = true
+
+                                    with(switchSudahAmbilKuitansi) {
+                                        isEnabled = true
+                                        visibility = View.VISIBLE
+                                    }
+
+                                    progressAmbilKuitansi.visibility = View.GONE
+                                }
+                                is UiState.Failure -> {
+                                    this@ActionTambahLuasanPembayaranBottomSheetDialog.dismiss()
+
+                                    Toast.makeText(requireContext(), state.failMsg, Toast.LENGTH_LONG).show()
+                                }
+                            }
+                        }
+                    }
+                }
             } else {
                 cardLihatFotoPembayaran.visibility = View.GONE
                 cardTambahkanFotoPembayaran.visibility = View.VISIBLE
                 cardHapusFotoPembayaran.visibility = View.GONE
+                cardAmbilKuitansi.visibility = View.GONE
 
                 cardTambahkanFotoPembayaran.setOnClickListener {
                     launchFotoPickerDialog()
