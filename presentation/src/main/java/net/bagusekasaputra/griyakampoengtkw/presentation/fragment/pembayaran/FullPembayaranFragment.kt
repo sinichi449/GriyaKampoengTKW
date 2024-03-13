@@ -1,6 +1,7 @@
 package net.bagusekasaputra.griyakampoengtkw.presentation.fragment.pembayaran
 
 import android.os.Bundle
+import android.util.Log
 import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.View
@@ -14,11 +15,14 @@ import net.bagusekasaputra.griyakampoengtkw.domain.NumberUtil
 import net.bagusekasaputra.griyakampoengtkw.domain.NumberUtil.numericToLong
 import net.bagusekasaputra.griyakampoengtkw.domain.NumberUtil.numericToString
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.BaselinePembayaran
+import net.bagusekasaputra.griyakampoengtkw.domain.entity.PembayaranTambahLuasan
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.pembayaran.BulanAngsuran
 import net.bagusekasaputra.griyakampoengtkw.domain.entity.pembayaran.Pembayaran
 import net.bagusekasaputra.griyakampoengtkw.presentation.R
 import net.bagusekasaputra.griyakampoengtkw.presentation.databinding.FragmentFullPembayaranBinding
 import net.bagusekasaputra.griyakampoengtkw.presentation.dialog.ActionPembayaranStandardBottomSheetDialogLegacy
+import net.bagusekasaputra.griyakampoengtkw.presentation.dialog.ActionTambahLuasanPembayaranBottomSheetDialog
+import net.bagusekasaputra.griyakampoengtkw.presentation.model.UiState
 import net.bagusekasaputra.griyakampoengtkw.presentation.tableview.base.CellItem
 import net.bagusekasaputra.griyakampoengtkw.presentation.tableview.base.ColumnHeader
 import net.bagusekasaputra.griyakampoengtkw.presentation.tableview.base.DoubleRowHeaderConfigurator
@@ -169,6 +173,42 @@ class FullPembayaranFragment : Fragment() {
                 }
             }
         }
+
+        viewModel.tambahanLuasPembayaran.observe(requireActivity()) { k ->
+            binding.tableviewTambahanLuasan.also {
+                if (k != null) {
+                    it.root.visibility = View.VISIBLE
+
+                    when (k) {
+                        is UiState.Loading -> {
+                            it.tvInfoLoadingTambahanLuasan.text = "Sedang memuat ..."
+                        }
+
+                        is UiState.Failure -> {
+                            it.tvInfoLoadingTambahanLuasan.text = "Terjadi kesalahan!"
+                        }
+
+                        is UiState.Success -> {
+                            it.tvInfoLoadingTambahanLuasan.visibility = View.GONE
+                            if (!k.data.isNullOrEmpty()) {
+                                // override k.data with dummy list if
+                                it.tableviewTambahanLuasan.visibility = View.VISIBLE
+                                setupTableTambahanLuasan(k.data)
+
+                                val total = k.data.sumOf { total -> total.jumlahUang }
+                                    .numericToString()
+                                it.tvTotalTambahLuasan.visibility = View.VISIBLE
+                                it.tvTotalTambahLuasan.text = total
+                            } else {
+                                it.root.visibility = View.GONE
+                            }
+                        }
+                    }
+                } else {
+                    it.root.visibility = View.GONE
+                }
+            }
+        }
     }
 
     private fun setSisaWaktuAngsuran(baselinePembayaran: BaselinePembayaran) {
@@ -265,6 +305,97 @@ class FullPembayaranFragment : Fragment() {
 
             }
             .create()
+    }
+
+    private fun setupTableTambahanLuasan(pembayaranTambahLuasanList: List<PembayaranTambahLuasan>) {
+        if (pembayaranTambahLuasanList.isNotEmpty()) {
+            val Columns = object {
+                val TANGGAL = 0
+                val JUMLAH_UANG = 1
+                val KETERANGAN = 2
+            }
+            val widthColumnHeaders = listOf(
+                Pair(Columns.TANGGAL, if (viewModel.isFullScreenTable) 350 else 250),
+                Pair(Columns.JUMLAH_UANG, if (viewModel.isFullScreenTable) 450 else 350),
+                Pair(Columns.KETERANGAN, if (viewModel.isFullScreenTable) 600 else 500),
+            )
+            val rowSeparator = "<>"
+
+            GenericTableView(binding.tableviewTambahanLuasan.tableviewTambahanLuasan, pembayaranTambahLuasanList)
+                .setDataProvider(object : TableViewDataProvider<PembayaranTambahLuasan> {
+                    override fun getColumnHeaders(data: Collection<PembayaranTambahLuasan>): List<ColumnHeader> {
+                        return buildList {
+                            add(ColumnHeader("Tanggal"))
+                            add(ColumnHeader("Jumlah Uang"))
+                            add(ColumnHeader("Keterangan"))
+                        }
+                    }
+
+                    override fun getRowHeaders(data: Collection<PembayaranTambahLuasan>): List<RowHeader> {
+                        val list = data.toMutableList()
+                        return buildList {
+                            list.forEachIndexed { index, item ->
+                                val rowId = index.plus(1).toString()
+                                val rowData = TambahanLuasanRowData(
+                                    nomor = index.plus(1),
+                                    sudahIsiFoto = item.fotoUri != "",
+                                    sudahAmbilKuitansi = item.sudahAmbilKuitansi,
+                                )
+
+                                add(RowHeader(rowId, rowData.asString(TambahanLuasanRowData.DEFAULT_SEPARATOR)))
+                            }
+                        }
+                    }
+
+                    override fun getCellItems(data: Collection<PembayaranTambahLuasan>): List<List<CellItem>> {
+                        val list = data.toMutableList()
+                        return buildList {
+                            list.forEachIndexed { index, item ->
+                                val cellId = index.plus(1).toString()
+                                val cell = mutableListOf<CellItem>()
+
+                                cell.add(CellItem(cellId, item.tanggal))
+                                cell.add(CellItem(cellId, item.jumlahUang.numericToString()))
+                                cell.add(CellItem(cellId, item.keterangan))
+
+                                add(cell)
+                            }
+                        }
+                    }
+
+                })
+                .setWidthColumnHeaders(widthColumnHeaders)
+                .setOnRowHeaderBinding { viewHolder, item, row ->
+                    val data = item?.data?.let {
+                        TambahanLuasanRowData.fromString(it, TambahanLuasanRowData.DEFAULT_SEPARATOR)
+                    }
+
+                    if (data != null) {
+                        Log.d("DEBUG_ME_PRO", "Data ${data.nomor} => ${data.sudahIsiFoto}")
+                        viewHolder.setRowHeaderBgColour(
+                            if (data.sudahIsiFoto) R.color.table_selected_colour
+                            else R.color.table_unselected_colour)
+                    }
+
+                    viewHolder.setRowHeaderText(data?.nomor?.toString() ?: "0")
+                }
+                .setOnCellBinding { cellViewHolder, cellItem, col, row ->
+                    if (col == Columns.KETERANGAN) {
+                        cellViewHolder.tvCell.gravity = Gravity.START
+                    } else {
+                        cellViewHolder.tvCell.gravity = Gravity.CENTER
+                    }
+                }
+                .setOnClickedRowHeader { rowHeaderView, row ->
+                    val actionDialog = ActionTambahLuasanPembayaranBottomSheetDialog()
+                    val bundle = bundleOf(
+                        ActionTambahLuasanPembayaranBottomSheetDialog.EXTRAS_SELECTED_INDEX_POSITION to row
+                    )
+                    actionDialog.arguments = bundle
+                    actionDialog.show(childFragmentManager, null)
+                }
+                .create()
+        }
     }
 
     private fun setupFullScreen(

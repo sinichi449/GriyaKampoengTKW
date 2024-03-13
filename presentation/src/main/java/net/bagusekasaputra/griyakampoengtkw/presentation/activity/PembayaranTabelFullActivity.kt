@@ -50,6 +50,8 @@ class PembayaranTabelFullActivity : AppCompatActivity() {
                     Toast.makeText(this, it, Toast.LENGTH_LONG).show()
                 },
             )
+
+            pembayaranViewModel.getAllTambahanLuasPembayaran(kavling)
         }
 
         // Show sisa blm dibayar bulan ini

@@ -376,38 +376,6 @@ class FormPembayaranFragment : Fragment() {
                 }
             }
         }
-
-        pembayaranViewModel.tambahanLuasPembayaran.observe(requireActivity()) { k ->
-            if (k != null) {
-                binding.layoutTabelTambahanLuasan?.visibility = View.VISIBLE
-
-                when (k) {
-                    is UiState.Loading -> {
-                        binding.tvInfoLoadingTambahanLuasan?.text = "Sedang memuat ..."
-                    }
-                    is UiState.Failure -> {
-                        binding.tvInfoLoadingTambahanLuasan?.text = "Terjadi kesalahan!"
-                    }
-                    is UiState.Success -> {
-                        binding.tvInfoLoadingTambahanLuasan?.visibility = View.GONE
-                        if (!k.data.isNullOrEmpty()) {
-                            // override k.data with dummy list if
-                            binding.tableviewTambahanLuasan?.visibility = View.VISIBLE
-                            setupTableTambahanLuasan(k.data)
-
-                            val total = k.data.sumOf { it.jumlahUang }
-                                .numericToString()
-                            binding.tvTotalTambahLuasan?.visibility = View.VISIBLE
-                            binding.tvTotalTambahLuasan?.text = total
-                        } else {
-                            binding.layoutTabelTambahanLuasan?.visibility = View.GONE
-                        }
-                    }
-                }
-            } else {
-                binding.layoutTabelTambahanLuasan?.visibility = View.GONE
-            }
-        }
     }
 
     private fun onLoadingFormPembayaran(finished: Boolean) {
@@ -501,97 +469,6 @@ class FormPembayaranFragment : Fragment() {
 
         dialogBinding.btnBatal.setOnClickListener {
             dialogView.dismiss()
-        }
-    }
-
-    private fun setupTableTambahanLuasan(pembayaranTambahLuasanList: List<PembayaranTambahLuasan>) {
-        if (pembayaranTambahLuasanList.isNotEmpty() && binding.tableviewTambahanLuasan != null) {
-            val Columns = object {
-                val TANGGAL = 0
-                val JUMLAH_UANG = 1
-                val KETERANGAN = 2
-            }
-            val widthColumnHeaders = listOf(
-                Pair(Columns.TANGGAL, 250),
-                Pair(Columns.JUMLAH_UANG, 350),
-                Pair(Columns.KETERANGAN, 500),
-            )
-            val rowSeparator = "<>"
-
-            GenericTableView(binding.tableviewTambahanLuasan!!, pembayaranTambahLuasanList)
-                .setDataProvider(object : TableViewDataProvider<PembayaranTambahLuasan> {
-                    override fun getColumnHeaders(data: Collection<PembayaranTambahLuasan>): List<ColumnHeader> {
-                        return buildList {
-                            add(ColumnHeader("Tanggal"))
-                            add(ColumnHeader("Jumlah Uang"))
-                            add(ColumnHeader("Keterangan"))
-                        }
-                    }
-
-                    override fun getRowHeaders(data: Collection<PembayaranTambahLuasan>): List<RowHeader> {
-                        val list = data.toMutableList()
-                        return buildList {
-                            list.forEachIndexed { index, item ->
-                                val rowId = index.plus(1).toString()
-                                val rowData = TambahanLuasanRowData(
-                                    nomor = index.plus(1),
-                                    sudahIsiFoto = item.fotoUri != "",
-                                    sudahAmbilKuitansi = item.sudahAmbilKuitansi,
-                                )
-
-                                add(RowHeader(rowId, rowData.asString(TambahanLuasanRowData.DEFAULT_SEPARATOR)))
-                            }
-                        }
-                    }
-
-                    override fun getCellItems(data: Collection<PembayaranTambahLuasan>): List<List<CellItem>> {
-                        val list = data.toMutableList()
-                        return buildList {
-                            list.forEachIndexed { index, item ->
-                                val cellId = index.plus(1).toString()
-                                val cell = mutableListOf<CellItem>()
-
-                                cell.add(CellItem(cellId, item.tanggal))
-                                cell.add(CellItem(cellId, item.jumlahUang.numericToString()))
-                                cell.add(CellItem(cellId, item.keterangan))
-
-                                add(cell)
-                            }
-                        }
-                    }
-
-                })
-                .setWidthColumnHeaders(widthColumnHeaders)
-                .setOnRowHeaderBinding { viewHolder, item, row ->
-                    val data = item?.data?.let {
-                        TambahanLuasanRowData.fromString(it, TambahanLuasanRowData.DEFAULT_SEPARATOR)
-                    }
-
-                    if (data != null) {
-                        Log.d("DEBUG_ME_PRO", "Data ${data.nomor} => ${data.sudahIsiFoto}")
-                        viewHolder.setRowHeaderBgColour(
-                            if (data.sudahIsiFoto) R.color.table_selected_colour
-                        else R.color.table_unselected_colour)
-                    }
-
-                    viewHolder.setRowHeaderText(data?.nomor?.toString() ?: "0")
-                }
-                .setOnCellBinding { cellViewHolder, cellItem, col, row ->
-                    if (col == Columns.KETERANGAN) {
-                        cellViewHolder.tvCell.gravity = Gravity.START
-                    } else {
-                        cellViewHolder.tvCell.gravity = Gravity.CENTER
-                    }
-                }
-                .setOnClickedRowHeader { rowHeaderView, row ->
-                    val actionDialog = ActionTambahLuasanPembayaranBottomSheetDialog()
-                    val bundle = bundleOf(
-                        ActionTambahLuasanPembayaranBottomSheetDialog.EXTRAS_SELECTED_INDEX_POSITION to row
-                    )
-                    actionDialog.arguments = bundle
-                    actionDialog.show(childFragmentManager, null)
-                }
-                .create()
         }
     }
 

@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginHorizontal="4dp">
+
+    <com.google.android.material.textview.MaterialTextView
+        android:id="@+id/tvInfo_tambahan_luasan"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="24dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        style="@style/TextAppearance.MaterialComponents.Headline6"
+        android:text="Tambahan Luasan"/>
+
+    <com.google.android.material.textview.MaterialTextView
+        android:id="@+id/tvInfo_loading_tambahanLuasan"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/tvInfo_tambahan_luasan"
+        android:text="Sedang memuat ..."
+        android:layout_marginTop="16dp"
+        style="@style/TextAppearance.MaterialComponents.Overline"/>
+
+    <com.evrencoskun.tableview.TableView
+        android:id="@+id/tableview_tambahanLuasan"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/tvInfo_tambahan_luasan"
+        app:column_header_height="@dimen/table_pembayaran_column_header_height"
+        app:row_header_width="@dimen/default_row_header_width"
+        app:separator_color="@color/table_separator_colour"
+        app:show_horizontal_separator="true"
+        app:show_vertical_separator="true"
+        app:selected_color="@color/table_selected_colour"
+        app:shadow_color="@color/table_shadowed_colour"
+        app:unselected_color="@color/table_unselected_colour"
+        app:allow_click_inside_cell="true"
+        app:allow_click_inside_row_header="true"
+        app:allow_click_inside_column_header="true"
+        android:layout_marginTop="8dp"
+        android:visibility="gone"/>
+
+    <com.google.android.material.textview.MaterialTextView
+        android:id="@+id/tv_total_tambah_luasan"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toBottomOf="@id/tableview_tambahanLuasan"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginTop="16dp"
+        android:text="Rp. 0"
+        style="@style/TextAppearance.MaterialComponents.Subtitle1"
+        android:textStyle="bold"
+        android:visibility="gone"/>
+
+</androidx.constraintlayout.widget.ConstraintLayout>
+

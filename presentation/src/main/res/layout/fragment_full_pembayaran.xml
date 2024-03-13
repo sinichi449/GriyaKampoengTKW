@@ -132,4 +132,14 @@
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
+    <include
+        android:id="@+id/tableview_tambahanLuasan"
+        layout="@layout/layout_table_tambah_luasan"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/layout_sisa_total_pembayaran"
+        android:padding="4dp"/>
+
 </androidx.constraintlayout.widget.ConstraintLayout>
