@@ -2,6 +2,7 @@ package net.bagusekasaputra.griyakampoengtkw.presentation.activity
 
 import android.annotation.SuppressLint
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import android.widget.Toast
 import androidx.activity.viewModels
@@ -17,6 +18,7 @@ import net.bagusekasaputra.griyakampoengtkw.presentation.custom.TabelPembayaranN
 import net.bagusekasaputra.griyakampoengtkw.presentation.databinding.ActivityPembayaranTabelFullBinding
 import net.bagusekasaputra.griyakampoengtkw.presentation.tableview.formPembayaran.BulananPembayaranTableWrapper
 import net.bagusekasaputra.griyakampoengtkw.presentation.tableview.formPembayaran.FullPembayaranTableWrapper
+import net.bagusekasaputra.griyakampoengtkw.presentation.viewmodel.DetailViewModel
 import net.bagusekasaputra.griyakampoengtkw.presentation.viewmodel.FormPembayaranViewModel
 import net.bagusekasaputra.griyakampoengtkw.presentation.viewmodel.FormPembayaranViewModel.TablePembayaranType
 
@@ -30,6 +32,7 @@ class PembayaranTabelFullActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityPembayaranTabelFullBinding
     private val pembayaranViewModel by viewModels<FormPembayaranViewModel>()
+    private val detailViewModel by viewModels<DetailViewModel>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -52,6 +55,11 @@ class PembayaranTabelFullActivity : AppCompatActivity() {
             )
 
             pembayaranViewModel.getAllTambahanLuasPembayaran(kavling)
+
+            // Get Data Diri
+            detailViewModel.getDataDiri(kavling) {
+                Log.d("DEBUG_ME", "Gagal mendapatkan data diri utk Pembayaran Table Header: $it")
+            }
         }
 
         // Show sisa blm dibayar bulan ini
@@ -73,10 +81,10 @@ class PembayaranTabelFullActivity : AppCompatActivity() {
                         binding.btnSwitchTabel?.text = "Per Bulan"
 
                         binding.columnHeaderTabelFullPembayaran?.apply {
-                            val emptyPembayaran = Pembayaran("ITJ 1", "01/01/1979", "0", "0", 0.0, "0", "", 0L)
-
-                            FullPembayaranTableWrapper(this, listOf(emptyPembayaran))
-                                .createTable(lifecycleScope)
+//                            val emptyPembayaran = Pembayaran("ITJ 1", "01/01/1979", "0", "0", 0.0, "0", "", 0L)
+//
+//                            FullPembayaranTableWrapper(this, listOf(emptyPembayaran))
+//                                .createTable(lifecycleScope)
 
                             visibility = View.VISIBLE
                         }
@@ -101,6 +109,17 @@ class PembayaranTabelFullActivity : AppCompatActivity() {
                 }
             }
 
+        }
+
+        setupViewModel()
+    }
+
+    private fun setupViewModel() {
+        detailViewModel.dataDiriLive.observe(this) { dataDiri ->
+            if (dataDiri != null) {
+                binding.tvHeaderNama?.text = "Nama\t\t\t\t\t\t\t\t: ${dataDiri.nama}"
+                binding.tvHeaderKavling?.text = "Kavling\t\t\t\t\t\t\t: ${pembayaranViewModel.currentKavlingKode}"
+            }
         }
     }
 
