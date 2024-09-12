@@ -38,4 +38,9 @@
         android:id="@+id/nav_pengaturan"
         android:name="net.bagusekasaputra.griyakampoengtkw.presentation.activity.SettingsActivity"
         android:label="SettingsActivity" />
+    <fragment
+        android:id="@+id/nav_pembatalan"
+        android:name="net.bagusekasaputra.griyakampoengtkw.presentation.fragment.pembatalan.PembatalanListFragment"
+        android:label="Pembatalan List"
+        tools:layout="@layout/fragment_pembatalan_list" />
 </navigation>

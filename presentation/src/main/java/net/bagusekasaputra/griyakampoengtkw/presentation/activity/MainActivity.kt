@@ -75,6 +75,7 @@ class MainActivity : AppCompatActivity() {
     private val appBarTopLevelDestinations by lazy {
         setOf(
             R.id.nav_management_kavling,
+            R.id.nav_pembatalan,
             R.id.nav_database_user,
             R.id.nav_inden_booking,
             R.id.nav_biaya_pribadi,

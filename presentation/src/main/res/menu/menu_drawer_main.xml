@@ -10,6 +10,11 @@
         android:checkable="true"/>
 
     <item
+        android:id="@id/nav_pembatalan"
+        android:title="Pembatalan List"
+        android:icon="@drawable/baseline_pembatalan_24"/>
+
+    <item
         android:id="@id/nav_database_user"
         android:title="Database User"
         android:icon="@drawable/baseline_calon_pembeli_24"
