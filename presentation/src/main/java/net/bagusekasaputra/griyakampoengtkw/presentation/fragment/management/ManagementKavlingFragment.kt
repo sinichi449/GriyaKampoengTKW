@@ -30,13 +30,11 @@ class ManagementKavlingFragment : Fragment() {
 
 
     // Write to sharedPrefs to Standard Node to retrieve from Firebase
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
+    override fun onResume() {
+        super.onResume()
 
-        val sharedPrefs = PreferenceManager.getDefaultSharedPreferences(requireContext())
-        sharedPrefs.edit(true) {
-            putString("NODE_TYPE", "NODE_STANDARD")
-        }
+        viewModel.managementKavlingFragment.value = this
+        fabActions?.visibility = View.VISIBLE
     }
 
     override fun onCreateView(
@@ -53,6 +51,11 @@ class ManagementKavlingFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        val sharedPrefs = PreferenceManager.getDefaultSharedPreferences(requireContext())
+        sharedPrefs.edit(true) {
+            putString("NODE_TYPE", "NODE_STANDARD")
+        }
 
         setupViewPager()
 
@@ -118,13 +121,6 @@ class ManagementKavlingFragment : Fragment() {
             getTabAt(1)?.icon = getIcon(R.drawable.ic_baseline_report_24)
             getTabAt(2)?.icon = getIcon(R.drawable.ic_baseline_attach_money_24)
         }
-    }
-
-    override fun onResume() {
-        super.onResume()
-
-        viewModel.managementKavlingFragment.value = this
-        fabActions?.visibility = View.VISIBLE
     }
 
     override fun onPause() {

@@ -39,16 +39,6 @@ class PembatalanListFragment : Fragment() {
     private val viewModel: PembatalanViewModel by activityViewModels()
     private var kavlingPembatalanRecyclerAdapter: KavlingPembatalanRecyclerAdapter? = null
 
-    // Write to sharedPrefs to Pembatalan Node to retrieve from Firebase
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-
-        val sharedPrefs = PreferenceManager.getDefaultSharedPreferences(requireContext())
-        sharedPrefs.edit(true) {
-            putString("NODE_TYPE", "NODE_PEMBATALAN")
-        }
-    }
-
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -61,6 +51,11 @@ class PembatalanListFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        val sharedPrefs = PreferenceManager.getDefaultSharedPreferences(requireContext())
+        sharedPrefs.edit(true) {
+            putString("NODE_TYPE", "NODE_PEMBATALAN")
+        }
 
         // Init RecyclerKavlings
         with(binding.recyclerKavlings) {
