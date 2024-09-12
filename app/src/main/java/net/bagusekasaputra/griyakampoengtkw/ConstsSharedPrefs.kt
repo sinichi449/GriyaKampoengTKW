@@ -12,6 +12,11 @@ object ConstsSharedPrefs {
 
     const val SELECTED_TAHAPAN = "SELECTED_TAHAPAN"
 
+    // Shared prefs for "standard" or "pembatalan" node
+    const val NODE_TYPE = "NODE_TYPE"
+    const val NODE_STANDARD = "NODE_STANDARD"
+    const val NODE_PEMBATALAN = "NODE_PEMBATALAN"
+
     /**
      * As a key pointer for [DatabaseReference]' child when user has selected [SplashActivity.DATA_LAMA].
      *

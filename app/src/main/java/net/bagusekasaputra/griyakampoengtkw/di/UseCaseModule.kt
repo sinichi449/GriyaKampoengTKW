@@ -52,6 +52,7 @@ import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.indenBooking.ima
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.indenBooking.imageDataDiri.UpdateFotoIdentitasIndenBookingAsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.indenBooking.pembayaran.GetAllPembayaranIndenBookingAsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.indenBooking.pembayaran.InsertPembayaranIndenBookingAsyncUseCase
+import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.kavling.GetKavlingAndNamaAsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.kavling.GetKavlingAndProgressStreamAsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.kavling.GetKavlingByBlockAsyncUseCase
 import net.bagusekasaputra.griyakampoengtkw.domain.asyncUseCase.kavling.GetListUnmigratedKavlingsAsyncUseCase
@@ -211,6 +212,15 @@ object UseCaseModule {
         baselineRepository: BaselinePembayaranRepository
     ) = GetKavlingAndProgressStreamAsyncUseCase(kavlingRepository, pembayaranRepository, baselineRepository)
 
+
+    /**
+     * Kavling And Nama
+     */
+    @Provides
+    fun provideGetKavlingAndNamaUseCase(
+        kavlingRepository: KavlingRepository,
+        dataDiriRepository: DataDiriRepository,
+    ) = GetKavlingAndNamaAsyncUseCase(kavlingRepository, dataDiriRepository)
 
     /**
      * Data Diri

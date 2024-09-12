@@ -43,12 +43,13 @@ object PersistentModules {
         }
 
         val tahapanReference = getTahapanReference(sharedPrefs)
+        val nodeTypeReference = sharedPrefs.getString(ConstsSharedPrefs.NODE_TYPE, ConstsSharedPrefs.NODE_STANDARD)
         val backupName = sharedPrefs.getBackupName()
 
         // Set database file name's suffix to `tahapanReference` if `backupName` is not `null`.
         // Note that if `backupName` is not null, it means user has selected `DataMode.DATA_LAMA`.
         val dbName = if (backupName.isNullOrEmpty()) {
-            tahapanReference
+            "${tahapanReference}_${nodeTypeReference}"
         } else {
             backupName.replace(" ", "_") // Remote whitespaces
         }
@@ -68,7 +69,14 @@ object PersistentModules {
     @Provides
     fun provideTahapanFirebaseDatabaseReference(sharedPrefs: SharedPreferences): DatabaseReference {
         val rootReference = FirebaseDatabase.getInstance(firebaseUrl).reference
-        val tahapanReference = rootReference.child(getTahapanReference(sharedPrefs))
+        // Get NODE_TYPE reference
+        val nodeType = sharedPrefs.getString(ConstsSharedPrefs.NODE_TYPE, ConstsSharedPrefs.NODE_STANDARD)
+        val tahapanReference = if (nodeType == ConstsSharedPrefs.NODE_PEMBATALAN) {
+                rootReference.child(getTahapanReference(sharedPrefs))
+                    .child("pembatalan")
+            } else {
+                rootReference.child(getTahapanReference(sharedPrefs))
+            }
 
         // Get reference by whether the `SharedPreferences`' has `backupName` value.
         // If yes, then it should point to `backups/$backupName` reference.
@@ -90,7 +98,13 @@ object PersistentModules {
     @Provides
     fun provideTahapanStorageReference(sharedPrefs: SharedPreferences): StorageReference {
         val rootReference = FirebaseStorage.getInstance().reference
-        val tahapanReference = rootReference.child(getTahapanReference(sharedPrefs))
+        val nodeType = sharedPrefs.getString(ConstsSharedPrefs.NODE_TYPE, ConstsSharedPrefs.NODE_STANDARD)
+        val tahapanReference = if (nodeType == ConstsSharedPrefs.NODE_PEMBATALAN) {
+                rootReference.child(getTahapanReference(sharedPrefs))
+                    .child("pembatalan_images")
+            } else {
+                rootReference.child(getTahapanReference(sharedPrefs))
+            }
 
         // Get reference by whether the `SharedPreferences`' has `backupName` value.
         // If yes, then it should point to `backups/$backupName` reference.
@@ -119,6 +133,8 @@ object PersistentModules {
     private fun SharedPreferences.getBackupName(): String? {
         return getString(ConstsSharedPrefs.BACKUP_NAME, "")
     }
+
+
 
     /**
      * Device Storage

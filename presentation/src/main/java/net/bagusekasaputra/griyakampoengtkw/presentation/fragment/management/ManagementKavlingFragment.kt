@@ -1,12 +1,15 @@
 package net.bagusekasaputra.griyakampoengtkw.presentation.fragment.management
 
+import android.content.Context
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.core.content.ContextCompat
+import androidx.core.content.edit
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
+import androidx.preference.PreferenceManager
 import androidx.viewpager.widget.ViewPager
 import com.google.android.material.appbar.AppBarLayout
 import com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
@@ -25,8 +28,16 @@ class ManagementKavlingFragment : Fragment() {
     private val viewModel: MainViewModel by activityViewModels()
     private var fabActions: ExtendedFloatingActionButton? = null
 
-    // This listener need to be removed on onStop()
-    // Set visibility of MainActivity's FAB
+
+    // Write to sharedPrefs to Standard Node to retrieve from Firebase
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+
+        val sharedPrefs = PreferenceManager.getDefaultSharedPreferences(requireContext())
+        sharedPrefs.edit(true) {
+            putString("NODE_TYPE", "NODE_STANDARD")
+        }
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,

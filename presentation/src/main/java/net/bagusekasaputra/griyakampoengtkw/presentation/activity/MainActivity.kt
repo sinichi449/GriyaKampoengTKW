@@ -53,6 +53,7 @@ class MainActivity : AppCompatActivity() {
 
     companion object {
         const val INTENT_KAVLING_KODE = "kavling_kode"
+        const val INTENT_PEMBATALAN = "pembatalan"
         
         const val EXTRAS_VERSION_NAME = "versionName"
         const val EXTRAS_VERSION_CODE = "versionCode"

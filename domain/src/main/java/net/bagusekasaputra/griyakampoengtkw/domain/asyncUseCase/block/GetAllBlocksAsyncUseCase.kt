@@ -11,7 +11,10 @@ class GetAllBlocksAsyncUseCase(
     private val blockRepository: BlockRepository,
 ): AsyncUseCase<GetAllBlocksAsyncUseCase.Request, List<Block>?>() {
 
-    data class Request(val dataMode: DataMode): AsyncUseCase.Request
+    data class Request(
+        val dataMode: DataMode,
+        val fromPembatalan: Boolean = false,
+    ): AsyncUseCase.Request
 
     override fun process(request: Request): Flow<Result<List<Block>?>> {
         return blockRepository.getAllBlocks(request.dataMode).map { result ->
