@@ -150,8 +150,9 @@ object PersistentModules {
     fun provideExternalFilesDir(@ApplicationContext context: Context, sharedPrefs: SharedPreferences): File? {
         val root = context.getExternalFilesDir(null)
         val tahapan = getTahapanReference(sharedPrefs)
+        val nodeType = sharedPrefs.getString(ConstsSharedPrefs.NODE_TYPE, ConstsSharedPrefs.NODE_STANDARD)
         val backupName = sharedPrefs.getBackupName()
-        val fileWithTahapan = File(root, tahapan)
+        val fileWithTahapan = File(root, "${tahapan}_${nodeType}")
 
         val resultFile: File = if (!backupName.isNullOrEmpty()) {
             File(fileWithTahapan, "${FirebaseNodes.BACKUPS}/$backupName")
