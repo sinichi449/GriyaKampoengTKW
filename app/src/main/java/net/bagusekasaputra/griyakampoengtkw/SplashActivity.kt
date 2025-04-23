@@ -164,29 +164,33 @@ class SplashActivity : AppCompatActivity() {
         val dispatcher = Dispatchers.IO
 
         lifecycleScope.launch(dispatcher) {
-            val connectivityCheckResult = connectivityCheckAndInitServer(
-                dispatcher = dispatcher,
-                onDeviceConnectivityCheck = { isOnline ->
-                    if (isOnline) {
-                        bindingLoading.layoutCekKoneksi.tvInfoPeriksaInternet.text = "Memeriksa status server"
-                    } else {
-                        Toast.makeText(this@SplashActivity, "Device terdeteksi offline, mohon cek koneksi Anda.", Toast.LENGTH_LONG).show()
-                    }
-                },
-                onServerMaintenance = {
-                    MaterialAlertDialogBuilder(this@SplashActivity)
-                        .setTitle("Server Maintenance")
-                        .setCancelable(false)
-                        .setMessage("Mohon maaf, untuk saat ini server sedang menjalani proses pemeliharaan. Anda hanya bisa membuka Data Lama. Silakan coba lagi nanti.")
-                        .setPositiveButton("Oke") { dialog, _ ->
-                            dialog.dismiss()
-                        }
-                        .create()
-                        .show()
-                },
-                onFailureCheckMaintenance = { failMsg ->
-                    Toast.makeText(this@SplashActivity, "Gagal mengecek status server: $failMsg", Toast.LENGTH_LONG).show()
-                },
+//            val connectivityCheckResult = connectivityCheckAndInitServer(
+//                dispatcher = dispatcher,
+//                onDeviceConnectivityCheck = { isOnline ->
+//                    if (isOnline) {
+//                        bindingLoading.layoutCekKoneksi.tvInfoPeriksaInternet.text = "Memeriksa status server"
+//                    } else {
+//                        Toast.makeText(this@SplashActivity, "Device terdeteksi offline, mohon cek koneksi Anda.", Toast.LENGTH_LONG).show()
+//                    }
+//                },
+//                onServerMaintenance = {
+//                    MaterialAlertDialogBuilder(this@SplashActivity)
+//                        .setTitle("Server Maintenance")
+//                        .setCancelable(false)
+//                        .setMessage("Mohon maaf, untuk saat ini server sedang menjalani proses pemeliharaan. Anda hanya bisa membuka Data Lama. Silakan coba lagi nanti.")
+//                        .setPositiveButton("Oke") { dialog, _ ->
+//                            dialog.dismiss()
+//                        }
+//                        .create()
+//                        .show()
+//                },
+//                onFailureCheckMaintenance = { failMsg ->
+//                    Toast.makeText(this@SplashActivity, "Gagal mengecek status server: $failMsg", Toast.LENGTH_LONG).show()
+//                },
+//            )
+            val connectivityCheckResult = ConnectionCheckResult(
+                isDeviceOnline = true,
+                shouldShowDataBaru = true,
             )
 
             // Pilih Tahapan and save Tahapan to ViewModel
