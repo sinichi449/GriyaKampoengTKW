@@ -117,8 +117,8 @@ class PembayaranTabelFullActivity : AppCompatActivity() {
     private fun setupViewModel() {
         detailViewModel.dataDiriLive.observe(this) { dataDiri ->
             if (dataDiri != null) {
-                binding.tvHeaderNama?.text = "Nama\t\t\t\t\t\t\t\t: ${dataDiri.nama}"
-                binding.tvHeaderKavling?.text = "Kavling\t\t\t\t\t\t\t: ${pembayaranViewModel.currentKavlingKode}"
+                binding.tvHeaderNama?.text = "Nama\t\t\t\t: ${dataDiri.nama}"
+                binding.tvHeaderKavling?.text = "Kavling\t\t: ${pembayaranViewModel.currentKavlingKode}"
             }
         }
     }

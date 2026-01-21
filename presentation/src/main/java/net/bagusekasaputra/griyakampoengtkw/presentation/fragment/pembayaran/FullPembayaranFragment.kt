@@ -224,14 +224,49 @@ class FullPembayaranFragment : Fragment() {
     }
 
     private fun setTablePembayaran(pembayarans: List<Pembayaran>) {
-        val widthColumnHeaders = listOf(
-            Pair(COLUMN_INVOICE, 250),
-            Pair(COLUMN_TANGGAL, 250),
-            Pair(COLUMN_UANG_DIBAYAR, 350),
-            Pair(COLUMN_TOTAL, 350),
-            Pair(COLUMN_PERSENTASE, 300),
-            Pair(COLUMN_KETERANGAN_PROGRESS, 500),
-        )
+        val resources = binding.root.resources
+        val orientation = resources.configuration.orientation
+
+        // 1. Define the list variable
+        val widthColumnHeaders: List<Pair<Int, Int>>
+
+        // 2. Switch logic based on orientation
+        if (orientation == android.content.res.Configuration.ORIENTATION_LANDSCAPE) {
+            // --- LANDSCAPE: DYNAMIC CALCULATION ---
+
+            // Get screen width
+            val screenWidth = resources.displayMetrics.widthPixels
+
+            // Get Row Header width from dimensions
+            val rowHeaderWidth = resources.getDimensionPixelSize(
+                R.dimen.table_generic_double_row_header_width
+            )
+
+            // Calculate scrollable area
+            val availableWidth = screenWidth - rowHeaderWidth
+
+            // Apply percentages (Total ~100%)
+            widthColumnHeaders = listOf(
+                Pair(COLUMN_INVOICE, (availableWidth * 0.125).toInt()),
+                Pair(COLUMN_TANGGAL, (availableWidth * 0.125).toInt()),
+                Pair(COLUMN_UANG_DIBAYAR, (availableWidth * 0.175).toInt()),
+                Pair(COLUMN_TOTAL, (availableWidth * 0.175).toInt()),
+                Pair(COLUMN_PERSENTASE, (availableWidth * 0.150).toInt()),
+                Pair(COLUMN_KETERANGAN_PROGRESS, (availableWidth * 0.245).toInt())
+            )
+
+        } else {
+            // --- PORTRAIT: MANUAL / HARDCODED (SCROLLABLE) ---
+            // Keeps your original values so user can scroll horizontally
+            widthColumnHeaders = listOf(
+                Pair(COLUMN_INVOICE, 250),
+                Pair(COLUMN_TANGGAL, 250),
+                Pair(COLUMN_UANG_DIBAYAR, 350),
+                Pair(COLUMN_TOTAL, 350),
+                Pair(COLUMN_PERSENTASE, 300),
+                Pair(COLUMN_KETERANGAN_PROGRESS, 500),
+            )
+        }
 
         GenericTableView(binding.tableFormPembayaran, pembayarans)
             .setDataProvider(tableDataProvider)
