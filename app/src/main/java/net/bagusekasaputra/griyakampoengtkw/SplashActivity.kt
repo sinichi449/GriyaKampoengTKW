@@ -21,6 +21,7 @@ import androidx.core.content.edit
 import androidx.fragment.app.DialogFragment
 import androidx.lifecycle.lifecycleScope
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import com.google.firebase.FirebaseApp
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.FirebaseDatabase
@@ -32,6 +33,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.channels.trySendBlocking
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.callbackFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flowOn
@@ -160,78 +162,10 @@ class SplashActivity : AppCompatActivity() {
     }
 
     private fun onAuthenticationSuccess() {
-        // Connectivity check and init server
-        val dispatcher = Dispatchers.IO
+        // OLD CODE: The logic is now moved to startDataSetup()
 
-        lifecycleScope.launch(dispatcher) {
-//            val connectivityCheckResult = connectivityCheckAndInitServer(
-//                dispatcher = dispatcher,
-//                onDeviceConnectivityCheck = { isOnline ->
-//                    if (isOnline) {
-//                        bindingLoading.layoutCekKoneksi.tvInfoPeriksaInternet.text = "Memeriksa status server"
-//                    } else {
-//                        Toast.makeText(this@SplashActivity, "Device terdeteksi offline, mohon cek koneksi Anda.", Toast.LENGTH_LONG).show()
-//                    }
-//                },
-//                onServerMaintenance = {
-//                    MaterialAlertDialogBuilder(this@SplashActivity)
-//                        .setTitle("Server Maintenance")
-//                        .setCancelable(false)
-//                        .setMessage("Mohon maaf, untuk saat ini server sedang menjalani proses pemeliharaan. Anda hanya bisa membuka Data Lama. Silakan coba lagi nanti.")
-//                        .setPositiveButton("Oke") { dialog, _ ->
-//                            dialog.dismiss()
-//                        }
-//                        .create()
-//                        .show()
-//                },
-//                onFailureCheckMaintenance = { failMsg ->
-//                    Toast.makeText(this@SplashActivity, "Gagal mengecek status server: $failMsg", Toast.LENGTH_LONG).show()
-//                },
-//            )
-            val connectivityCheckResult = ConnectionCheckResult(
-                isDeviceOnline = true,
-                shouldShowDataBaru = true,
-            )
-
-            // Pilih Tahapan and save Tahapan to ViewModel
-            withContext(Dispatchers.Main) {
-                // Get pending change tahapan if available
-                val selectedTahapanChange = getChangeTahapanFromIntent(intent)
-                if (selectedTahapanChange != null) {
-                    viewModel.selectedTahapan.value = selectedTahapanChange
-                } else {
-                    dialogPilihTahapan { dialog, tahapan ->
-                        viewModel.selectedTahapan.value = tahapan
-
-                        dialog.dismiss()
-                    }
-                }
-            }
-
-            // Show jenis data
-            withContext(Dispatchers.Main) {
-                showJenisDataButton(connectivityCheckResult) {
-                    viewModel.selectedJenisData.value = it
-                }
-            }
-
-            // Handle Tahapan and Jenis Data And initialize cache
-            withContext(Dispatchers.Main) {
-                viewModel.tahapanAndJenisData.observe(this@SplashActivity) {
-                    it?.also { tahapanAndJenisData ->
-                        val selectedTahapan = tahapanAndJenisData.first
-                        val selectedJenisData = tahapanAndJenisData.second
-
-                        if ((selectedTahapan != null) && (selectedJenisData != null)) {
-                            handleTahapanAndJenisData(
-                                selectedJenisData, selectedTahapan,
-                                connectivityCheckResult.isDeviceOnline,
-                            )
-                        }
-                    }
-                }
-            }
-        }
+        // NEW CODE: Start the flow by asking for the branch
+        showBranchSelectionDialog()
     }
 
     private fun handleTahapanAndJenisData(
@@ -391,109 +325,65 @@ class SplashActivity : AppCompatActivity() {
         }
     }
 
-    private suspend fun connectivityCheckAndInitServer(
-        dispatcher: CoroutineDispatcher,
-        onDeviceConnectivityCheck: (isOnline: Boolean) -> Unit,
-        onServerMaintenance: () -> Unit,
-        onFailureCheckMaintenance: (failMsg: String) -> Unit,
-    ): ConnectionCheckResult {
-        return callbackFlow {
-            if (deviceIsOnline()) {
-                withContext(Dispatchers.Main) {
-                    onDeviceConnectivityCheck(true)
-                }
-                // Check Maintenance status
-                checkMaintenance()
-                    .onSuccess { maintenance ->
-                        if (maintenance) {
-                            withContext(Dispatchers.Main) {
-                                onServerMaintenance()
-                            }
+    private fun checkMaintenance() {
+        // 1. Get the branch the user just selected
+        val selectedBranch = sharedPreferences.getString(
+            ConstsSharedPrefs.SELECTED_BRANCH,
+            ConstsSharedPrefs.BRANCH_GKT1
+        ) ?: ConstsSharedPrefs.BRANCH_GKT1
 
-                            trySendBlocking(ConnectionCheckResult(
-                                isDeviceOnline = true,
-                                shouldShowDataBaru = false,
-                            ))
-                        } else {
-                            trySendBlocking(ConnectionCheckResult(
-                                isDeviceOnline = true,
-                                shouldShowDataBaru = true,
-                            ))
-                        }
-                    }
-                    .onFailure {
-                        withContext(Dispatchers.Main) {
-                            onFailureCheckMaintenance(it.localizedMessage ?: "Unknown Error")
-                        }
-                        trySendBlocking(ConnectionCheckResult(
-                            isDeviceOnline = true,
-                            shouldShowDataBaru = false,
-                        ))
-                    }
+        // 2. Determine the specific Database URL and App Instance for that branch
+        val targetUrl = if (selectedBranch == ConstsSharedPrefs.BRANCH_GKT2) {
+            GriyaNodes.FIREBASE_RDB_GKT2
+        } else {
+            GriyaNodes.FIREBASE_RDB_GKT1
+        }
+
+        // Helper to switch between Default App (GKT1) and Secondary App (GKT2)
+        val firebaseApp = getBranchApp(selectedBranch)
+
+        lifecycleScope.launchWhenCreated {
+            // 3. Check Connection (Now uses the function we just added)
+            val isConnected = isOnline()
+
+            if (!isConnected) {
+                // Offline Mode: Wait briefly then load local data
+                // (Using the new startDataSetup flow instead of moveToMainActivity)
+                delay(2000) // Ensure you have a delay function or use kotlinx.coroutines.delay(2000)
+                startDataSetup()
             } else {
-                withContext(Dispatchers.Main) {
-                    onDeviceConnectivityCheck(false)
-                }
+                // 4. Connect to the CORRECT database instance
+                val database = FirebaseDatabase.getInstance(firebaseApp, targetUrl)
+                val maintenanceRef = database.reference.child(RemoteNodes.MAINTENTANCE)
 
-                trySendBlocking(ConnectionCheckResult(
-                    isDeviceOnline = false, shouldShowDataBaru = false
-                ))
-            }
+                maintenanceRef.addListenerForSingleValueEvent(object : ValueEventListener {
+                    override fun onDataChange(snapshot: DataSnapshot) {
+                        val isMaintenance = snapshot.getValue<Boolean>() ?: false
 
-            awaitClose {  }
-        }
-            .flowOn(dispatcher)
-            .first()
-    }
-
-    @OptIn(ExperimentalCoroutinesApi::class)
-    private suspend fun deviceIsOnline(): Boolean {
-        return suspendCancellableCoroutine { continuation ->
-            try {
-                val timeOutMs = 3000
-                val sock = Socket()
-                val sockAddr = InetSocketAddress("8.8.8.8", 53)
-
-                sock.connect(sockAddr, timeOutMs)
-                sock.close()
-
-                if (continuation.isActive) {
-                    continuation.resume(true, null)
-                }
-            } catch (e: IOException) {
-                if (continuation.isActive) {
-                    continuation.resume(false, null)
-                }
-            }
-        }
-    }
-
-    @OptIn(ExperimentalCoroutinesApi::class)
-    private suspend fun checkMaintenance(): Result<Boolean> {
-        return suspendCancellableCoroutine { continuation ->
-            val eventListener = object : ValueEventListener {
-                override fun onDataChange(snapshot: DataSnapshot) {
-                    val statusServer = snapshot.getValue<Boolean>()
-
-                    if (continuation.isActive) {
-                        continuation.resume(Result.success(statusServer ?: true), null)
+                        if (isMaintenance) {
+                            // Show Maintenance Dialog
+                            MaterialAlertDialogBuilder(this@SplashActivity)
+                                .setTitle("Sedang Perbaikan")
+                                .setMessage("Server ini sedang maintenance. Silahkan pilih lokasi lain.")
+                                .setCancelable(false)
+                                .setPositiveButton("Pilih Lokasi Lain") { dialog, _ ->
+                                    dialog.dismiss()
+                                    showBranchSelectionDialog() // Give them a second chance
+                                }
+                                .show()
+                        } else {
+                            // Server is Online & Ready -> Proceed to Data Setup
+                            startDataSetup()
+                        }
                     }
-                }
 
-                override fun onCancelled(error: DatabaseError) {
-                    if (continuation.isActive) {
-                        val exception = error.toException()
-                        continuation.resume(Result.failure(exception), null)
+                    override fun onCancelled(error: DatabaseError) {
+                        // On error, try to proceed anyway
+                        Toast.makeText(this@SplashActivity, "Gagal memuat status: ${error.message}", Toast.LENGTH_SHORT).show()
+                        startDataSetup()
                     }
-                }
-
+                })
             }
-
-            val database = FirebaseDatabase.getInstance(GriyaNodes.firebaseUrl)
-            val maintenanceRef = database.reference.child(RemoteNodes.MAINTENTANCE)
-
-
-            maintenanceRef.addListenerForSingleValueEvent(eventListener)
         }
     }
 
@@ -522,6 +412,127 @@ class SplashActivity : AppCompatActivity() {
         }
     }
 
+    // Helper to get the correct Firebase App (Same logic as PersistentModules)
+    private fun getBranchApp(branch: String): FirebaseApp {
+        if (branch == ConstsSharedPrefs.BRANCH_GKT1) {
+            return FirebaseApp.getInstance()
+        }
+
+        val appName = "GK2_SECONDARY_APP"
+        return try {
+            FirebaseApp.getInstance(appName)
+        } catch (e: IllegalStateException) {
+            // Initialize manually if not ready
+            val options = com.google.firebase.FirebaseOptions.Builder()
+                .setApiKey(GriyaNodes.GKT2_API_KEY)
+                .setApplicationId(GriyaNodes.GKT2_APP_ID)
+                .setProjectId(GriyaNodes.GKT2_PROJECT_ID)
+                .setDatabaseUrl(GriyaNodes.FIREBASE_RDB_GKT2)
+                .setStorageBucket(GriyaNodes.FIREBASE_STORAGE_GKT2)
+                .build()
+            FirebaseApp.initializeApp(applicationContext, options, appName)
+        }
+    }
+
+    // Branch selection dialog
+    private fun showBranchSelectionDialog() {
+        val options = arrayOf("GKT1", "GKT2")
+
+        // Check if we already have a selection (optional - if you want to remember it)
+        val currentSelection = sharedPreferences.getString(ConstsSharedPrefs.SELECTED_BRANCH,
+            ConstsSharedPrefs.BRANCH_GKT1)
+        val selectedIndex = if (currentSelection == ConstsSharedPrefs.BRANCH_GKT2) 1 else 0
+
+        MaterialAlertDialogBuilder(this)
+            .setTitle("Pilih Lokasi")
+            .setSingleChoiceItems(options, selectedIndex) { dialog, which ->
+                // 1. Determine which branch code to use
+                val selectedBranch = if (which == 0) ConstsSharedPrefs.BRANCH_GKT1 else ConstsSharedPrefs.BRANCH_GKT2
+
+                // 2. Save the selection immediately
+                sharedPreferences.edit(true) {
+                    putString(ConstsSharedPrefs.SELECTED_BRANCH, selectedBranch)
+                }
+
+                // 3. Dismiss and proceed to Maintenance Check
+                dialog.dismiss()
+
+                // Trigger the next step (Maintenance Check) MANUALLY here
+                lifecycleScope.launch {
+                    checkMaintenance()
+                }
+            }
+            .setCancelable(false)
+            .show()
+    }
+
+    // This contains the ORIGINAL logic that was inside onAuthenticationSuccess
+    private fun startDataSetup() {
+        val dispatcher = Dispatchers.IO
+
+        lifecycleScope.launch(dispatcher) {
+            val connectivityCheckResult = ConnectionCheckResult(
+                isDeviceOnline = true,
+                shouldShowDataBaru = true,
+            )
+
+            // Pilih Tahapan and save Tahapan to ViewModel
+            withContext(Dispatchers.Main) {
+                // Get pending change tahapan if available
+                val selectedTahapanChange = getChangeTahapanFromIntent(intent)
+                if (selectedTahapanChange != null) {
+                    viewModel.selectedTahapan.value = selectedTahapanChange
+                } else {
+                    dialogPilihTahapan { dialog, tahapan ->
+                        viewModel.selectedTahapan.value = tahapan
+
+                        dialog.dismiss()
+                    }
+                }
+            }
+
+            // Show jenis data
+            withContext(Dispatchers.Main) {
+                showJenisDataButton(connectivityCheckResult) {
+                    viewModel.selectedJenisData.value = it
+                }
+            }
+
+            // Handle Tahapan and Jenis Data And initialize cache
+            withContext(Dispatchers.Main) {
+                viewModel.tahapanAndJenisData.observe(this@SplashActivity) {
+                    it?.also { tahapanAndJenisData ->
+                        val selectedTahapan = tahapanAndJenisData.first
+                        val selectedJenisData = tahapanAndJenisData.second
+
+                        if ((selectedTahapan != null) && (selectedJenisData != null)) {
+                            handleTahapanAndJenisData(
+                                selectedJenisData, selectedTahapan,
+                                connectivityCheckResult.isDeviceOnline,
+                            )
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    @Suppress("BlockingMethodInNonBlockingContext") // Socket code is safe here because we use Dispatchers.IO
+    private suspend fun isOnline(): Boolean {
+        return withContext(Dispatchers.IO) {
+            try {
+                val timeoutMs = 1500
+                val socket = Socket()
+                val socketAddress = InetSocketAddress("8.8.8.8", 53)
+
+                socket.connect(socketAddress, timeoutMs)
+                socket.close()
+                true
+            } catch (e: IOException) {
+                false
+            }
+        }
+    }
 
     companion object {
         const val DATA_LAMA = 0

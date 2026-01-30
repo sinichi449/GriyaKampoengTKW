@@ -5,6 +5,7 @@ import android.content.SharedPreferences
 import androidx.room.Room
 import androidx.room.RoomDatabase
 import androidx.sqlite.db.SupportSQLiteDatabase
+import com.google.firebase.FirebaseApp
 import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.storage.FirebaseStorage
@@ -20,7 +21,7 @@ import net.bagusekasaputra.griyakampoengtkw.data.CacheHelper
 import net.bagusekasaputra.griyakampoengtkw.data.interfaces.local.LocalMetadataDataSource
 import net.bagusekasaputra.griyakampoengtkw.data.interfaces.remote.RemoteMetadataDataSource
 import net.bagusekasaputra.griyakampoengtkw.data.remote.FirebaseNodes
-import net.bagusekasaputra.griyakampoengtkw.presentation.util.GriyaNodes.Companion.firebaseUrl
+import net.bagusekasaputra.griyakampoengtkw.presentation.util.GriyaNodes
 import java.io.File
 
 @Module
@@ -46,10 +47,15 @@ object PersistentModules {
         val nodeTypeReference = sharedPrefs.getString(ConstsSharedPrefs.NODE_TYPE, ConstsSharedPrefs.NODE_STANDARD)
         val backupName = sharedPrefs.getBackupName()
 
+        // NEW: Get the selected branch. Default to empty or a code for the first branch.
+        val branchPrefix = sharedPrefs.getString(ConstsSharedPrefs.SELECTED_BRANCH,
+            ConstsSharedPrefs.BRANCH_GKT1) ?: ConstsSharedPrefs.BRANCH_GKT1
+
         // Set database file name's suffix to `tahapanReference` if `backupName` is not `null`.
         // Note that if `backupName` is not null, it means user has selected `DataMode.DATA_LAMA`.
         val dbName = if (backupName.isNullOrEmpty()) {
-            "${tahapanReference}_${nodeTypeReference}"
+            // NEW: Add branchPrefix to the filename
+            "$${branchPrefix}_${tahapanReference}_${nodeTypeReference}"
         } else {
             backupName.replace(" ", "_") // Remote whitespaces
         }
@@ -57,18 +63,62 @@ object PersistentModules {
             appContext, MyRoomDatabase::class.java,
             "GKT_${dbName}.db"
         )
-            .fallbackToDestructiveMigration()
+            .fallbackToDestructiveMigration() // Important: This wipes the DB if schema changes
             .addCallback(onDestructiveMigrationCallback)
             .build()
     }
 
+    // --- HELPER FUNCTION: The "Branch Switcher" ---
+    private fun getFirebaseApp(context: Context, branch: String): FirebaseApp {
+        // If Branch 1, use the default app (configured by google-services.json)
+        if (branch == ConstsSharedPrefs.BRANCH_GKT1) {
+            return FirebaseApp.getInstance()
+        }
+
+        // If Branch 2, we must look for (or create) a secondary app
+        val appName = "GKT2_SECONDARY_APP"
+
+        return try {
+            FirebaseApp.getInstance(appName)
+        } catch (e: IllegalStateException) {
+            // App not initialized yet, let's build it manually
+            e.printStackTrace()
+            val options = com.google.firebase.FirebaseOptions.Builder()
+                .setApiKey(GriyaNodes.GKT2_API_KEY)
+                .setApplicationId(GriyaNodes.GKT2_APP_ID)
+                .setProjectId(GriyaNodes.GKT2_PROJECT_ID)
+                .setDatabaseUrl(GriyaNodes.FIREBASE_RDB_GKT2)
+                .setStorageBucket(GriyaNodes.FIREBASE_STORAGE_GKT2)
+                .build()
+
+            FirebaseApp.initializeApp(context, options, appName)
+        }
+    }
+
+    // --- UPDATED DATABASE PROVIDER ---
     /**
      * Firebase Realtime-Database
      */
     @TahapanReference
     @Provides
-    fun provideTahapanFirebaseDatabaseReference(sharedPrefs: SharedPreferences): DatabaseReference {
-        val rootReference = FirebaseDatabase.getInstance(firebaseUrl).reference
+    // NEW: We need Context to initialize the secondary app
+    fun provideTahapanFirebaseDatabaseReference(
+        @ApplicationContext context: Context,
+        sharedPrefs: SharedPreferences,
+    ): DatabaseReference {
+        // NEW: Capture the branch
+        val selectedBranch = sharedPrefs.getString(ConstsSharedPrefs.SELECTED_BRANCH,
+            ConstsSharedPrefs.BRANCH_GKT1) ?: ConstsSharedPrefs.BRANCH_GKT1
+
+        // 1. Get the correct App Engine (JSON vs. Manual)
+        val firebaseApp = getFirebaseApp(context, selectedBranch)
+
+        // 2 . Get the Reference using the specific App
+        // Note: We use getInstance(app) to ensure Auth works for that specific project
+        val firebaseUrl = if (selectedBranch == ConstsSharedPrefs.BRANCH_GKT1)
+            GriyaNodes.FIREBASE_RDB_GKT1 else GriyaNodes.FIREBASE_RDB_GKT2
+        val rootReference = FirebaseDatabase.getInstance(firebaseApp, firebaseUrl).reference
+
         // Get NODE_TYPE reference
         val nodeType = sharedPrefs.getString(ConstsSharedPrefs.NODE_TYPE, ConstsSharedPrefs.NODE_STANDARD)
         val tahapanReference = if (nodeType == ConstsSharedPrefs.NODE_PEMBATALAN) {
@@ -96,8 +146,28 @@ object PersistentModules {
 
     @TahapanReference
     @Provides
-    fun provideTahapanStorageReference(sharedPrefs: SharedPreferences): StorageReference {
-        val rootReference = FirebaseStorage.getInstance().reference
+    fun provideTahapanStorageReference(
+        @ApplicationContext context: Context,
+        sharedPrefs: SharedPreferences,
+    ): StorageReference {
+        // 1. Determine which branch (Storage Bucket) to use
+        val selectedBranch = sharedPrefs.getString(ConstsSharedPrefs.SELECTED_BRANCH,
+            ConstsSharedPrefs.BRANCH_GKT1) ?: ConstsSharedPrefs.BRANCH_GKT1
+
+        val firebaseApp = getFirebaseApp(context, selectedBranch)
+
+        // Use the specific App and URL
+        val bucketUrl = when (selectedBranch) {
+            ConstsSharedPrefs.BRANCH_GKT1 -> GriyaNodes.FIREBASE_STORAGE_GKT1
+            ConstsSharedPrefs.BRANCH_GKT2 -> GriyaNodes.FIREBASE_STORAGE_GKT2
+            else -> GriyaNodes.FIREBASE_STORAGE_GKT1 // Fallback
+        }
+
+        // 2. Initialize Storage with the specific bucket URL
+        // Note: We use getInstance(url) just like we did for the Database
+        val rootReference = FirebaseStorage.getInstance(firebaseApp, bucketUrl).reference
+
+        // 3. Continue with your existing logic...
         val nodeType = sharedPrefs.getString(ConstsSharedPrefs.NODE_TYPE, ConstsSharedPrefs.NODE_STANDARD)
         val tahapanReference = if (nodeType == ConstsSharedPrefs.NODE_PEMBATALAN) {
                 rootReference.child(getTahapanReference(sharedPrefs))

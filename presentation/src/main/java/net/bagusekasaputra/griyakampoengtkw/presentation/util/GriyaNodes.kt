@@ -30,7 +30,16 @@ class GriyaNodes {
 
         const val LOG_TAG = "DEBUG_ME"
 
-        const val firebaseUrl = "https://griya-kampoeng-tkw-mobile-default-rtdb.asia-southeast1.firebasedatabase.app/"
+        const val FIREBASE_RDB_GKT1 = "https://griya-kampoeng-tkw-mobile-default-rtdb.asia-southeast1.firebasedatabase.app/"
+        const val FIREBASE_RDB_GKT2 = "https://griya-kampoeng-tkw-ii-default-rtdb.asia-southeast1.firebasedatabase.app/"
+
+        const val FIREBASE_STORAGE_GKT1 = "gs://griya-kampoeng-tkw-mobile.appspot.com"
+        const val FIREBASE_STORAGE_GKT2 = "gs://griya-kampoeng-tkw-ii.appspot.com"
+
+        // NEW: Credentials for Project 2 (Manual Setup)
+        const val GKT2_API_KEY = "AIzaSyCyry1IaL3yhvqsYkUrzXtwoyvyPtHaLts"
+        const val GKT2_APP_ID = "1:691186637991:android:c1c0356b5085bcf7104f82"
+        const val GKT2_PROJECT_ID = "griya-kampoeng-tkw-ii"
 
         // Timestamp
         const val timestamp = "timestamp"

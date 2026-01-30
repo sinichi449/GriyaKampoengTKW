@@ -25,4 +25,8 @@ object ConstsSharedPrefs {
      */
     const val BACKUP_NAME = "BACKUP_NAME"
 
+    // NEW
+    const val SELECTED_BRANCH = "SELECTED_BRANCH"
+    const val BRANCH_GKT1 = "GKT1"
+    const val BRANCH_GKT2 = "GKT2"
 }
