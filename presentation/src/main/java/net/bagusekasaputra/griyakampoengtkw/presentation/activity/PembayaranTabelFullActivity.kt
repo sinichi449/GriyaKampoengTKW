@@ -24,7 +24,7 @@ import net.bagusekasaputra.griyakampoengtkw.presentation.viewmodel.FormPembayara
 
 @SuppressLint("SetTextI18n")
 @AndroidEntryPoint
-class PembayaranTabelFullActivity : AppCompatActivity() {
+class PembayaranTabelFullActivity : BaseGriyaActivity() {
 
     companion object {
         const val EXTRAS_KAVLING_KODE = "EXTRAS_KAVLING_KODE"

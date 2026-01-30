@@ -49,7 +49,7 @@ import javax.inject.Inject
  */
 @Suppress("DEPRECATION")
 @AndroidEntryPoint
-class MainActivity : AppCompatActivity() {
+class MainActivity : BaseGriyaActivity() {
 
     companion object {
         const val INTENT_KAVLING_KODE = "kavling_kode"

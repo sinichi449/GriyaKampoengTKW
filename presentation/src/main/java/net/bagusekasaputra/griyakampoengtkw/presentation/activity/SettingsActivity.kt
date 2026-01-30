@@ -27,7 +27,7 @@ import net.bagusekasaputra.griyakampoengtkw.presentation.viewmodel.SettingsViewM
 import java.util.Calendar
 
 @AndroidEntryPoint
-class SettingsActivity : AppCompatActivity() {
+class SettingsActivity : BaseGriyaActivity() {
 
     private lateinit var binding: SettingsActivityBinding
 

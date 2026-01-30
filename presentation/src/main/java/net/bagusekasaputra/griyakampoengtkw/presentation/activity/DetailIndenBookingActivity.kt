@@ -18,7 +18,7 @@ import net.bagusekasaputra.griyakampoengtkw.presentation.fragment.indenBooking.F
 import net.bagusekasaputra.griyakampoengtkw.presentation.viewmodel.IndenBookingViewModel
 
 @AndroidEntryPoint
-class DetailIndenBookingActivity : AppCompatActivity() {
+class DetailIndenBookingActivity : BaseGriyaActivity() {
 
     private lateinit var binding: ActivityDetailIndenBookingBinding
     private val viewModel by viewModels<IndenBookingViewModel>()

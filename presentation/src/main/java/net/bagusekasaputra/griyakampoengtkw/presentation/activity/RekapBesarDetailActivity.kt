@@ -23,7 +23,7 @@ import net.bagusekasaputra.griyakampoengtkw.presentation.util.UiUtils
 import net.bagusekasaputra.griyakampoengtkw.presentation.viewmodel.RekapViewModel
 
 @AndroidEntryPoint
-class RekapBesarDetailActivity : AppCompatActivity() {
+class RekapBesarDetailActivity : BaseGriyaActivity() {
 
     private lateinit var binding: ActivityRekapBesarDetailBinding
     private lateinit var navController: NavController

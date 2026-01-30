@@ -19,7 +19,7 @@ import net.bagusekasaputra.griyakampoengtkw.presentation.R
 import net.bagusekasaputra.griyakampoengtkw.presentation.databinding.ActivityFormBinding
 
 @AndroidEntryPoint
-class FormActivity : AppCompatActivity() {
+class FormActivity : BaseGriyaActivity() {
 
     private lateinit var binding: ActivityFormBinding
     private lateinit var navController: NavController

@@ -97,4 +97,8 @@
     <color name="md_theme_dark_inverseSurface">#E6E1E5</color>
     <color name="md_theme_dark_inverseOnSurface">#313033</color>
     <color name="md_theme_dark_inversePrimary">#6750A4</color>
+    <color name="gkt2_primary">#03A9F4</color>
+    <color name="gkt2_primary_dark">#3F51B5</color>
+    <color name="gkt1_primary">#F44336</color>
+    <color name="gkt1_primary_dark">#E91E63</color>
 </resources>

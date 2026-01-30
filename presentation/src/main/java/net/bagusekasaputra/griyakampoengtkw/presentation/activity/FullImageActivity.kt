@@ -22,7 +22,7 @@ import net.bagusekasaputra.griyakampoengtkw.presentation.util.GriyaNodes
 import net.bagusekasaputra.griyakampoengtkw.presentation.viewmodel.ImageViewModel
 
 @AndroidEntryPoint
-class FullImageActivity : AppCompatActivity() {
+class FullImageActivity : BaseGriyaActivity() {
 
     private lateinit var binding: ActivityFullImageBinding
     private val imageViewModel: ImageViewModel by viewModels()

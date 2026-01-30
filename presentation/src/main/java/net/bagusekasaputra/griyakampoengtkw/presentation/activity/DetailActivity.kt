@@ -30,7 +30,7 @@ import net.bagusekasaputra.griyakampoengtkw.presentation.viewmodel.ImageViewMode
 import javax.inject.Inject
 
 @AndroidEntryPoint
-class DetailActivity : AppCompatActivity() {
+class DetailActivity : BaseGriyaActivity() {
 
     private lateinit var binding: ActivityDetailBinding
     private lateinit var pagerAdapter: DetailViewPagerAdapter
