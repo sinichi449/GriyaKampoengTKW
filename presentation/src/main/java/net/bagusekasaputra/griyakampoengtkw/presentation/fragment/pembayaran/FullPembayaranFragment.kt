@@ -1,15 +1,26 @@
 package net.bagusekasaputra.griyakampoengtkw.presentation.fragment.pembayaran
 
+import android.content.ContentValues
+import android.graphics.Bitmap
+import android.net.Uri
+import android.os.Build
 import android.os.Bundle
+import android.os.Environment
+import android.provider.MediaStore
 import android.util.Log
 import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
+import androidx.lifecycle.lifecycleScope
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import net.bagusekasaputra.griyakampoengtkw.domain.DateUtil.toSlashedString
 import net.bagusekasaputra.griyakampoengtkw.domain.NumberUtil
 import net.bagusekasaputra.griyakampoengtkw.domain.NumberUtil.numericToLong
@@ -31,14 +42,21 @@ import net.bagusekasaputra.griyakampoengtkw.presentation.tableview.base.GenericT
 import net.bagusekasaputra.griyakampoengtkw.presentation.tableview.base.RowHeader
 import net.bagusekasaputra.griyakampoengtkw.presentation.tableview.base.TableViewDataProvider
 import net.bagusekasaputra.griyakampoengtkw.presentation.toDate
+import net.bagusekasaputra.griyakampoengtkw.presentation.util.PembayaranReceiptGenerator
+import net.bagusekasaputra.griyakampoengtkw.presentation.viewmodel.DetailViewModel
 import net.bagusekasaputra.griyakampoengtkw.presentation.viewmodel.FormPembayaranViewModel
+import java.io.File
+import java.io.FileOutputStream
+import java.io.OutputStream
 import java.util.Date
+import androidx.core.view.isVisible
 
 @AndroidEntryPoint
 class FullPembayaranFragment : Fragment() {
 
     private lateinit var binding: FragmentFullPembayaranBinding
     private val viewModel by activityViewModels<FormPembayaranViewModel>()
+    private val detailViewModel by activityViewModels<DetailViewModel>()
 
     companion object {
         const val COLUMN_INVOICE = 0
@@ -149,6 +167,10 @@ class FullPembayaranFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         setupViewModel()
+
+        binding.btnCetak.setOnClickListener {
+            exportToImage()
+        }
     }
 
     private fun setupViewModel() {
@@ -463,6 +485,140 @@ class FullPembayaranFragment : Fragment() {
 
             binding.tvInfoBlmDibayarBulanIni.visibility = View.GONE
             binding.tvBlmDibayarBulanIni.visibility = View.GONE
+        }
+    }
+
+    // Inside FullPembayaranFragment.kt
+
+    private fun exportToImage() {
+        val angsuranData = viewModel.fullPembayaransLive.value
+
+        /// --- FIX: Unwrap the UiState ---
+        val tambahanState = viewModel.tambahanLuasPembayaran.value
+        val tambahanData = if (tambahanState is UiState.Success) {
+            tambahanState.data
+        } else {
+            null // Treat Loading or Failure as "no data to print" for now
+        }
+
+        // Check if we have ANYTHING to print
+        if (angsuranData.isNullOrEmpty() && tambahanData.isNullOrEmpty()) {
+            Toast.makeText(requireContext(), "Tidak ada data untuk dicetak", Toast.LENGTH_SHORT).show()
+            return
+        }
+
+        // 1. Gather Header Info (Nama, Kavling)
+        // NOTE: Replace these strings with the actual variables from your ViewModel or TextViews
+        // Since I cannot see where you store "Nama" in your code, I added placeholders.
+        // --- EXACT PLACEHOLDERS START ---
+        val realNama = detailViewModel.dataDiriLive.value?.nama ?: "Tanpa Nama"
+        val realKavling = viewModel.currentKavlingKode
+
+        val headerLines = listOf(
+            "Nama      : $realNama",
+            "Kavling   : $realKavling"
+        )
+        // 2. Gather Footer Info (Sisa Waktu, Totals)
+        // We grab the text directly from the TextViews you already set up in setupViewModel()
+        val footerLines = mutableListOf<String>()
+
+        // Add Sisa Waktu
+        if (binding.tvSisaWaktuAngsuran.isVisible) {
+            footerLines.add("Sisa Waktu Angsuran : ${binding.tvSisaWaktuAngsuran.text}")
+        }
+
+        // Add Sisa Belum Terbayar
+        if (binding.tvSisaBlmTerbayar.isVisible) {
+            footerLines.add("Sisa Belum Terbayar : ${binding.tvSisaBlmTerbayar.text}")
+        }
+
+        // Add Belum Dibayar Bulan Ini (if visible)
+        if (binding.tvBlmDibayarBulanIni.isVisible) {
+            footerLines.add("Belum Dibayar Bulan Ini : ${binding.tvBlmDibayarBulanIni.text}")
+        }
+
+        // 3. Generate
+        lifecycleScope.launch(Dispatchers.IO) {
+            try {
+                val bitmap = PembayaranReceiptGenerator.generateBitmap(
+                    requireContext(),
+                    angsuranData ?: emptyList(),
+                    tambahanData, // Now passing the unwrapped List<PembayaranTambahLuasan>?
+                    headerLines,
+                    footerLines
+                )
+                saveBitmapToGallery(bitmap)
+            } catch (e: Exception) {
+                e.printStackTrace()
+                withContext(Dispatchers.Main) {
+                    Toast.makeText(requireContext(), "Error: ${e.message}", Toast.LENGTH_SHORT).show()
+                }
+            }
+        }
+    }
+
+    private suspend fun saveBitmapToGallery(bitmap: Bitmap) {
+        val context = requireContext()
+        val filename = "Pembayaran_Griya_${System.currentTimeMillis()}.jpg"
+        var fos: OutputStream? = null
+        var imageUri: Uri? = null
+
+        withContext(Dispatchers.IO) {
+            try {
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                    // --- Android 10+ Logic ---
+                    val contentResolver = context.contentResolver
+                    val contentValues = ContentValues().apply {
+                        put(MediaStore.MediaColumns.DISPLAY_NAME, filename)
+                        put(MediaStore.MediaColumns.MIME_TYPE, "image/jpeg")
+                        put(MediaStore.MediaColumns.RELATIVE_PATH, Environment.DIRECTORY_PICTURES + "/GriyaKampoeng")
+                        put(MediaStore.Images.Media.IS_PENDING, 1)
+                    }
+
+                    // FIX: Capture the URI in a local 'val' first
+                    val uri = contentResolver.insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, contentValues)
+
+                    // Update the outer variable for later use
+                    imageUri = uri
+
+                    // Use the local 'uri' (which is safe) to open the stream
+                    fos = uri?.let { contentResolver.openOutputStream(it) }
+
+                } else {
+                    // --- Android 9 and Below Logic ---
+                    val imagesDir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES)
+                    val appDir = File(imagesDir, "GriyaKampoeng")
+                    if (!appDir.exists()) appDir.mkdirs()
+
+                    val image = File(appDir, filename)
+                    fos = FileOutputStream(image)
+                }
+
+                fos?.use {
+                    bitmap.compress(Bitmap.CompressFormat.JPEG, 100, it)
+                }
+
+                // Update pending status for Android 10+
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                    // Safely unwrap the outer imageUri here using let
+                    imageUri?.let { uri ->
+                        val contentValues = ContentValues().apply {
+                            put(MediaStore.Images.Media.IS_PENDING, 0)
+                        }
+                        context.contentResolver.update(uri, contentValues, null, null)
+                    }
+                }
+
+                withContext(Dispatchers.Main) {
+                    Toast.makeText(context, "Struk berhasil disimpan di Gallery", Toast.LENGTH_LONG).show()
+                }
+
+            } catch (e: Exception) {
+                e.printStackTrace()
+                withContext(Dispatchers.Main) {
+                    Toast.makeText(context, "Gagal menyimpan gambar: ${e.localizedMessage}", Toast.LENGTH_SHORT).show()
+                }
+            }
         }
     }
 }
