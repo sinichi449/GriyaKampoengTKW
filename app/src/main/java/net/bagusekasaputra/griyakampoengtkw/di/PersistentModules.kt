@@ -88,7 +88,7 @@ object PersistentModules {
                 .setApplicationId(GriyaNodes.GKT2_APP_ID)
                 .setProjectId(GriyaNodes.GKT2_PROJECT_ID)
                 .setDatabaseUrl(GriyaNodes.FIREBASE_RDB_GKT2)
-                .setStorageBucket(GriyaNodes.FIREBASE_STORAGE_GKT2)
+                .setStorageBucket(GriyaNodes.FIREBASE_STORAGE_GKT2.removePrefix("gs://"))
                 .build()
 
             FirebaseApp.initializeApp(context, options, appName)

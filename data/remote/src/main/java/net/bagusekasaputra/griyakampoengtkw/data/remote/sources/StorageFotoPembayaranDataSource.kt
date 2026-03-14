@@ -6,6 +6,7 @@ import com.google.android.gms.tasks.OnCompleteListener
 import com.google.android.gms.tasks.OnFailureListener
 import com.google.firebase.storage.FileDownloadTask
 import com.google.firebase.storage.OnProgressListener
+import com.google.firebase.storage.StorageException
 import com.google.firebase.storage.StorageReference
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.channels.trySendBlocking
@@ -16,6 +17,7 @@ import net.bagusekasaputra.griyakampoengtkw.data.interfaces.remote.RemoteFotoPem
 import net.bagusekasaputra.griyakampoengtkw.data.model.FotoPembayaranModel
 import net.bagusekasaputra.griyakampoengtkw.data.remote.FirebaseNodes
 import java.io.File
+
 
 class StorageFotoPembayaranDataSource(
     private val storageReference: StorageReference,
@@ -165,6 +167,20 @@ class StorageFotoPembayaranDataSource(
                         Log.d("DEBUG_ME",
                             "StorageFotoPembayaran->isFotoPembayaranExist(): Error at getting download url for foto pembayaran $kavlingKode on termin $termin : ${it.message}")
                         it.printStackTrace()
+
+                        if (it is StorageException) {
+                            Log.e(
+                                "DEBUG_ME",
+                                "HTTP Result Code: " + it.httpResultCode
+                            )
+
+                            if (it.cause != null) {
+                                Log.e(
+                                    "DEBUG_ME",
+                                    "Inner Exception: " + it.cause!!.message
+                                )
+                            }
+                        }
 
                         trySendBlocking(Result.failure(it))
                     }
