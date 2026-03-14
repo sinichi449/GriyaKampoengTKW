@@ -249,6 +249,20 @@ class FullPembayaranFragment : Fragment() {
         val resources = binding.root.resources
         val orientation = resources.configuration.orientation
 
+        // 1. Determine Branch Color
+        val sharedPrefs = androidx.preference.PreferenceManager.getDefaultSharedPreferences(requireContext())
+        val selectedBranch = sharedPrefs.getString(
+            "SELECTED_BRANCH",
+            "GKT1"
+        )
+
+        // Assuming you have these colors in colors.xml (e.g., from BaseGriyaActivity)
+        val headerColorRes = if (selectedBranch == "GKT2") {
+            R.color.gkt2_primary_dark // Your Blue Color
+        } else {
+            R.color.gkt1_primary // Your Red Color
+        }
+
         // 1. Define the list variable
         val widthColumnHeaders: List<Pair<Int, Int>>
 
@@ -292,6 +306,17 @@ class FullPembayaranFragment : Fragment() {
 
         GenericTableView(binding.tableFormPembayaran, pembayarans)
             .setDataProvider(tableDataProvider)
+            // 2. Add Column Header Binding
+            .setOnColumnHeaderBinding { viewHolder, _, _ ->
+                viewHolder.columnHeaderBackgroundColour = headerColorRes
+                viewHolder.columnHeaderTextColour = R.color.white
+            }
+            // 3. Add Corner View Binding (To color the top-left "Termin" box)
+            .setOnCornerViewBinding { view ->
+                view.setBackgroundColor(
+                    androidx.core.content.ContextCompat.getColor(requireContext(), headerColorRes)
+                )
+            }
             .setOnRowHeaderBinding { viewHolder, item, row ->
                 val rowHeaderData = item?.data?.let {
                     RowHeaderData.fromString(it, ROW_SEPARATOR)

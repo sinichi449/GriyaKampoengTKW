@@ -67,8 +67,23 @@ object PembayaranReceiptGenerator {
             isAntiAlias = true
         }
 
+        // 1. Fetch the selected branch
+        val sharedPrefs = androidx.preference.PreferenceManager.getDefaultSharedPreferences(context)
+        val selectedBranch = sharedPrefs.getString(
+            "SELECTED_BRANCH",
+            "GKT1"
+        )
+
+// 2. Determine the color based on the branch
+        val headerColorRes = if (selectedBranch == "GKT2") {
+            R.color.gkt2_primary_dark // Your Blue Color
+        } else {
+            R.color.gkt1_primary // Your Red Color
+        }
+
+// 3. Apply the dynamic color to the paint
         val tableHeaderBgPaintAngsuran = Paint().apply {
-            color = ContextCompat.getColor(context, R.color.gkt1_primary)
+            color = ContextCompat.getColor(context, headerColorRes)
             style = Paint.Style.FILL
         }
 
